@@ -32,7 +32,6 @@ import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.exception.CerberusException;
@@ -43,9 +42,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * {Insert class description here}
@@ -89,17 +86,20 @@ public class TestService implements ITestService {
 
     @Override
     public Answer create(Test test) {
-        return testDao.create(test);
+        Answer ans = testDao.create(test);
+        return ans;
     }
 
     @Override
     public Answer update(String keyTest, Test test) {
-        return testDao.update(keyTest, test);
+        Answer ans = testDao.update(keyTest, test);
+        return ans;
     }
 
     @Override
     public Answer delete(Test test) {
-        return testDao.delete(test);
+        Answer ans = testDao.delete(test);
+        return ans;
     }
 
     @Override
@@ -233,7 +233,6 @@ public class TestService implements ITestService {
         });
     }
 
-    
     @Override
     public Answer updateIfExists(String originalTest, Test test) {
         Answer ans = new Answer();

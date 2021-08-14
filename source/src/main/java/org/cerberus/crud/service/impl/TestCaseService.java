@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.TestCase;
@@ -47,6 +48,7 @@ import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
+import org.cerberus.crud.service.IEventHookService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.IParameterService;
@@ -66,6 +68,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.event.IEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -117,6 +120,8 @@ public class TestCaseService implements ITestCaseService {
     private ITestCaseDepService testCaseDepService;
     @Autowired
     private ITestCaseLabelService testCaseLabelService;
+    @Autowired
+    private IEventService eventService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -248,16 +253,6 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean updateTestCaseInformationCountries(TestCase tc) {
-        return testCaseDao.updateTestCaseInformationCountries(tc);
-    }
-
-    @Override
-    public boolean createTestCase(TestCase testCase) throws CerberusException {
-        return testCaseDao.createTestCase(testCase);
-    }
-
-    @Override
     public List<TestCase> getTestCaseForPrePostTesting(String test, String application, String country, String system, String build, String revision) {
         List<TestCase> tmpTests = testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
         List<TestCase> resultTests = new ArrayList<>();
@@ -325,11 +320,6 @@ public class TestCaseService implements ITestCaseService {
             }
         }
         return result;
-    }
-
-    @Override
-    public boolean deleteTestCase(TestCase testCase) {
-        return testCaseDao.deleteTestCase(testCase);
     }
 
     @Override
@@ -529,14 +519,18 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public Answer update(String keyTest, String keyTestCase, TestCase testCase) {
+    public Answer update(String keyTest, String keyTestcase, TestCase testcase) {
         // We first create the corresponding test if it doesn,'t exist.
-        if (testCase.getTest() != null) {
-            if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrModif(), null, "", null));
+        if (testcase.getTest() != null) {
+            if (!testService.exist(testcase.getTest())) {
+                testService.create(factoryTest.create(testcase.getTest(), "", true, null, testcase.getUsrModif(), null, "", null));
             }
         }
-        return testCaseDao.update(keyTest, keyTestCase, testCase);
+        Answer ans = testCaseDao.update(keyTest, keyTestcase, testcase);
+        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_UPDATE, testcase, keyTest, keyTestcase, null);
+        }
+        return ans;
     }
 
     @Override
@@ -547,12 +541,20 @@ public class TestCaseService implements ITestCaseService {
                 testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
             }
         }
-        return testCaseDao.create(testCase);
+        Answer ans = testCaseDao.create(testCase);
+        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_CREATE, testCase, null, null, null);
+        }
+        return ans;
     }
 
     @Override
     public Answer delete(TestCase testCase) {
-        return testCaseDao.delete(testCase);
+        Answer ans = testCaseDao.delete(testCase);
+        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_DELETE, testCase, null, null, null);
+        }
+        return ans;
     }
 
     @Override

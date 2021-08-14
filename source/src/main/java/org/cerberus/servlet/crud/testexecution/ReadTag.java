@@ -216,7 +216,7 @@ public class ReadTag extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Tag tagCur : (List<Tag>) resp.getDataList()) {
-                jsonArray.put(convertTagToJSONObject(tagCur));
+                jsonArray.put(tagCur.toJson());
             }
         }
 
@@ -242,7 +242,7 @@ public class ReadTag extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Tag tag = (Tag) answer.getItem();
-            JSONObject response = convertTagToJSONObject(tag);
+            JSONObject response = tag.toJson();
             object.put("contentTable", response);
         }
 
@@ -265,25 +265,18 @@ public class ReadTag extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Tag tagObj = (Tag) answer.getItem();
-            JSONObject response = convertTagToJSONObject(tagObj);
+            JSONObject response = tagObj.toJson();
 //            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(tagObj, request));
 //            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(tagObj, request));
 
             object.put("contentTable", response);
         }
 
-//        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
+//         object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
-    }
-
-    private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
-
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(tag));
-        return result;
     }
 
     private AnswerItem<JSONObject> findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {

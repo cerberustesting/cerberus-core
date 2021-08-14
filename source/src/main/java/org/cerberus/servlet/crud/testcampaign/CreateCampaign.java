@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.testcampaign;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,18 +33,20 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.factory.IFactoryCampaignLabel;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;
+import org.cerberus.crud.factory.IFactoryEventHook;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.IEventHookService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -95,13 +96,8 @@ public class CreateCampaign extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
-        String notifyStart = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyStart"), "N", charset);
-        String notifyEnd = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyEnd"), "N", charset);
-        String slackNotifyStartTagExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifySlackStart"), "N", charset);
-        String slackNotifyEndTagExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifySlackEnd"), "N", charset);
+        String campaignName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String distribList = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
         String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
         String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
@@ -110,8 +106,6 @@ public class CreateCampaign extends HttpServlet {
         String group2 = ParameterParserUtil.parseStringParam(request.getParameter("Group2"), "");
         String group3 = ParameterParserUtil.parseStringParam(request.getParameter("Group3"), "");
 
-        String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
-        String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
         String cIScoreThreshold = ParameterParserUtil.parseStringParam(request.getParameter("CIScoreThreshold"), "");
         String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
         String verbose = ParameterParserUtil.parseStringParam(request.getParameter("Verbose"), "");
@@ -125,7 +119,7 @@ public class CreateCampaign extends HttpServlet {
         String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isNullOrEmpty(campaignName)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
                     .replace("%OPERATION%", "Create")
@@ -135,8 +129,7 @@ public class CreateCampaign extends HttpServlet {
             ICampaignService campaignService = appContext.getBean(ICampaignService.class);
             IFactoryCampaign factoryCampaign = appContext.getBean(IFactoryCampaign.class);
 
-            Campaign camp = factoryCampaign.create(0, name, distribList, notifyStart, notifyEnd,
-                    slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
+            Campaign camp = factoryCampaign.create(0, campaignName,
                     cIScoreThreshold,
                     tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
                     desc, longDesc, group1, group2, group3,
@@ -144,9 +137,9 @@ public class CreateCampaign extends HttpServlet {
 
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
-            schedAns.setResultMessage(msg);
 
             finalAnswer = campaignService.create(camp);
+
             if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
                  * Adding Log entry.
@@ -155,18 +148,34 @@ public class CreateCampaign extends HttpServlet {
                 logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : ['" + camp.getCampaign() + "']", request);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                if (request.getParameter("SchedulerList") != null) {
+                if (request.getParameter("ScheduledEntries") != null) {
                     // Getting list of Schedule Entries from JSON Call
-                    JSONArray objApplicationArray = new JSONArray(request.getParameter("SchedulerList"));
+                    JSONArray objApplicationArray = new JSONArray(request.getParameter("ScheduledEntries"));
                     List<ScheduleEntry> schList = new ArrayList<>();
-                    schList = getScheduleEntryListFromParameter(request, appContext, name, objApplicationArray);
+                    schList = getScheduleEntryListFromParameter(request, appContext, campaignName, objApplicationArray);
 
                     if (!schList.isEmpty()) {
                         IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                        schedAns.setResultMessage(msg);
                         schedAns = scheduleentryservice.createListSched(schList);
+                        if (!schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            finalAnswer = schedAns;
+                        }
                     }
-                    if (!schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        finalAnswer = schedAns;
+                }
+
+                if (request.getParameter("EventEntries") != null) {
+                    // Getting list of Schedule Entries from JSON Call
+                    JSONArray objApplicationArray = new JSONArray(request.getParameter("EventEntries"));
+                    List<EventHook> eventHookList = new ArrayList<>();
+                    eventHookList = getEventHookEntryListFromParameter(request, appContext, campaignName, objApplicationArray);
+
+                    if (!eventHookList.isEmpty()) {
+                        IEventHookService eventHookService = appContext.getBean(IEventHookService.class);
+                        schedAns = eventHookService.createList(eventHookList);
+                        if (!schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            finalAnswer = schedAns;
+                        }
                     }
                 }
 
@@ -174,13 +183,16 @@ public class CreateCampaign extends HttpServlet {
                     JSONArray parameters = new JSONArray(parameter);
                     ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
                     IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
-                    ans = campaignParameterService.deleteByCampaign(name);
+                    ans = campaignParameterService.deleteByCampaign(campaignName);
                     int i = 0;
                     while (i < parameters.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         JSONArray bat = parameters.getJSONArray(i);
                         CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
                         ans = campaignParameterService.create(co);
                         i++;
+                    }
+                    if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        finalAnswer = ans;
                     }
                 }
 
@@ -194,13 +206,12 @@ public class CreateCampaign extends HttpServlet {
                         CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
                         arr.add(co);
                     }
-
-                    finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(name, arr);
+                    ans = campaignLabelService.compareListAndUpdateInsertDeleteElements(campaignName, arr);
+                    if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        finalAnswer = ans;
+                    }
                 }
 
-                if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    finalAnswer = ans;
-                }
             }
         }
 
@@ -227,10 +238,9 @@ public class CreateCampaign extends HttpServlet {
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
-            String active = policy.sanitize(tcsaJson.getString("active"));
+            String active = policy.sanitize(tcsaJson.getString("isActive"));
             String desc = policy.sanitize(tcsaJson.getString("description"));
-            String strId = tcsaJson.getString("ID");
-            String lastExecutionStr = tcsaJson.getString("lastExecution");
+            String strId = tcsaJson.getString("id");
             String type = "CAMPAIGN";
             String name = campaign;
 
@@ -254,6 +264,48 @@ public class CreateCampaign extends HttpServlet {
             }
         }
         return scheList;
+    }
+
+    private List<EventHook> getEventHookEntryListFromParameter(HttpServletRequest request, ApplicationContext appContext, String campaign, JSONArray json) throws JSONException {
+        List<EventHook> evtList = new ArrayList<>();
+        IFactoryEventHook evtFactory = appContext.getBean(IFactoryEventHook.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objJson.getBoolean("toDelete");
+            String objectKey1 = campaign;
+            String hookConnector = policy.sanitize(objJson.getString("hookConnector"));
+            String eventReference = policy.sanitize(objJson.getString("eventReference"));
+            String hookRecipient = objJson.getString("hookRecipient");
+            String description = policy.sanitize(objJson.getString("description"));
+            boolean isActive = objJson.getBoolean("isActive");
+            String hookChannel = policy.sanitize(objJson.getString("hookChannel"));
+            String strId = objJson.getString("id");
+
+            int id;
+            if (strId.isEmpty()) {
+                id = 0;
+            } else {
+                try {
+                    id = Integer.parseInt(strId);
+                } catch (NumberFormatException e) {
+                    LOG.warn("Unable to parse pool size: " + strId + ". Applying default value");
+                    id = 0;
+                }
+            }
+
+            Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
+
+            if (!delete) {
+                EventHook evt = evtFactory.create(id, eventReference, objectKey1, "", isActive, hookConnector, hookRecipient, hookChannel, description, request.getRemoteUser(), timestampfactice, request.getRemoteUser(), timestampfactice);
+                evtList.add(evt);
+            }
+        }
+        return evtList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -36,8 +36,8 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.email.IEmailGenerationService;
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.IEmailGenerationService;
+import org.cerberus.service.notifications.email.entity.Email;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
@@ -47,7 +47,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notifications.email.IEmailService;
 
 /**
  * @author vertigo

@@ -199,53 +199,6 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")
         },
         {
-            "data": "notifyStartTagExecution",
-            "visible": false,
-            "sName": "notifyStartTagExecution",
-            "sWidth": "30px",
-            "title": doc.getDocLabel("testcampaign", "notifyStartTagExecution")
-        },
-        {
-            "data": "notifyEndTagExecution",
-            "sName": "notifyEndTagExecution",
-            "sWidth": "30px",
-            "title": doc.getDocLabel("testcampaign", "notifyEndTagExecution")
-        },
-        {
-            "data": "distribList",
-            "visible": false,
-            "sName": "distribList",
-            "sWidth": "80px",
-            "title": doc.getDocLabel("testcampaign", "distribList")
-        },
-        {
-            "data": "SlackNotifyStartTagExecution",
-            "visible": false,
-            "sName": "SlackNotifyStartTagExecution",
-            "sWidth": "30px",
-            "title": doc.getDocLabel("testcampaign", "SlackNotifyStartTagExecution")
-        },
-        {
-            "data": "SlackNotifyEndTagExecution",
-            "sName": "SlackNotifyEndTagExecution",
-            "sWidth": "30px",
-            "title": doc.getDocLabel("testcampaign", "SlackNotifyEndTagExecution")
-        },
-        {
-            "data": "SlackWebhook",
-            "visible": false,
-            "sName": "SlackWebhook",
-            "sWidth": "80px",
-            "title": doc.getDocLabel("testcampaign", "SlackWebhook")
-        },
-        {
-            "data": "SlackChannel",
-            "visible": false,
-            "sName": "SlackChannel",
-            "sWidth": "80px",
-            "title": doc.getDocLabel("testcampaign", "SlackChannel")
-        },
-        {
             "data": "description",
             "sName": "description",
             "sWidth": "180px",
@@ -264,6 +217,27 @@ function aoColumnsFunc(tableId) {
             "sName": "CIScoreThreshold",
             "sWidth": "180px",
             "title": doc.getDocLabel("campaign", "CIScoreThreshold")
+        },
+        {
+            "data": "group1",
+            "visible": false,
+            "sName": "group1",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Group1")
+        },
+        {
+            "data": "group1",
+            "visible": false,
+            "sName": "group1",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Group2")
+        },
+        {
+            "data": "group1",
+            "visible": false,
+            "sName": "group1",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Group3")
         },
         {
             "data": "UsrCreated",

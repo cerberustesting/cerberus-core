@@ -17,13 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.slack;
+package org.cerberus.service.notifications.slack;
 
+import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.json.JSONObject;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
 public interface ISlackGenerationService {
 
@@ -34,7 +37,7 @@ public interface ISlackGenerationService {
      * @return
      * @throws Exception
      */
-    public JSONObject generateNotifyStartTagExecution(String tag, String channel) throws Exception;
+    public JSONObject generateNotifyStartTagExecution(Tag tag, String channel) throws Exception;
 
     /**
      *
@@ -43,6 +46,33 @@ public interface ISlackGenerationService {
      * @return
      * @throws Exception
      */
-    public JSONObject generateNotifyEndTagExecution(String tag, String channel) throws Exception;
+    public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws Exception;
 
+    /**
+     *
+     * @param exe
+     * @param channel
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyStartExecution(TestCaseExecution exe, String channel) throws Exception;
+
+    /**
+     *
+     * @param exe
+     * @param channel
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyEndExecution(TestCaseExecution exe, String channel) throws Exception;
+
+    /**
+     *
+     * @param testCase
+     * @param channel
+     * @param eventReference
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyTestCaseChange(TestCase testCase, String channel, String eventReference) throws Exception;
 }

@@ -189,6 +189,23 @@ public class TestCaseDep {
         return testCaseDependencyJson;
     }
 
+    public JSONObject toJsonV001() {
+        JSONObject testCaseDependencyJson = new JSONObject();
+        try {
+            testCaseDependencyJson.put("JSONVersion", "001");
+            testCaseDependencyJson.put("id", this.getId());
+            testCaseDependencyJson.put("dependencyTest", this.getDependencyTest());
+            testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
+            testCaseDependencyJson.put("type", this.getType());
+            testCaseDependencyJson.put("isActive", this.isActive());
+            testCaseDependencyJson.put("description", this.getDescription());
+            testCaseDependencyJson.put("dependencyEvent", this.getDependencyEvent());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseDependencyJson;
+    }
+
     @Override
     public String toString() {
         return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", type=" + type + ", dependencyTest=" + dependencyTest + ", dependencyTestcase=" + dependencyTestcase + ", dependencyEvent=" + dependencyEvent + ", isActive=" + isActive + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", dependencyDescription=" + testcaseDescription + '}';

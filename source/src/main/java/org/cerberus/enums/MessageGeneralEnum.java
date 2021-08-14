@@ -59,6 +59,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_MANUALURL_INVALID(81, "FA", "ManualURL parameter activated but myhost parameter empty. Either desactivate the manual URL mode or define at least the myhost parameter."),
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST(82, "FA", "Environment '%ENV%' does not exit."),
     VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN(82, "FA", "The environment you defined in myenvdata parameter '%ENV%' does not exit."),
+    VALIDATION_FAILED_PRIORITY_DOESNOTEXIST(82, "FA", "The priority '%PRIO%' you defined in testcase  does not exit."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADIP(83, "FA", "Selenium IP parameter (ss_ip) : '%IP%' is empty or badly formated."),
     VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT(84, "FA", "Selenium Port parameter (ss_p) : '%PORT%' is empty or badly formated."),
     VALIDATION_FAILED_URL_MALFORMED(86, "FA", "URL to access Robot server '%URL%' is not correct and cannot be handled by Cerberus. Please check your Robot server and port parameter."),

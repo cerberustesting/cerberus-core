@@ -372,11 +372,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             LOG.debug("Executor : " + executor);
             String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
             String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
-            tag = tag
-                    .replace("%TIMESTAMP%", mytimestamp)
-                    .replace("%USER%", myuser)
-                    .replace("%REQCOUNTRYLIST%", reqCountries)
-                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
             if (campaign != null && !campaign.isEmpty()) {
                 final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
@@ -385,9 +380,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     // If parameters are already defined from request, we ignore the campaign values.
                     if (countries == null || countries.isEmpty()) {
                         countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
+                        countryJSONArray = new JSONArray(countries);
+                        reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
                     }
                     if (environments == null || environments.isEmpty()) {
                         environments = parsedCampaignParameters.getItem().get(CampaignParameter.ENVIRONMENT_PARAMETER);
+                        envJSONArray = new JSONArray(environments);
+                        reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
                     }
                     if (robots == null || robots.isEmpty()) {
                         robots = parsedCampaignParameters.getItem().get(CampaignParameter.ROBOT_PARAMETER);
@@ -412,6 +411,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     }
                 }
             }
+            tag = tag
+                    .replace("%TIMESTAMP%", mytimestamp)
+                    .replace("%USER%", myuser)
+                    .replace("%REQCOUNTRYLIST%", reqCountries)
+                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
             if (countries == null || countries.isEmpty()) {
                 errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.\n");

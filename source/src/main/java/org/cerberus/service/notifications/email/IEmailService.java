@@ -17,33 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email.impl;
+package org.cerberus.service.notifications.email;
 
-import org.cerberus.service.email.entity.Email;
-import org.cerberus.service.email.IEmailFactory;
-import org.springframework.stereotype.Service;
+import org.cerberus.service.notifications.email.entity.Email;
 
 /**
  *
  * @author bcivel
+ * @author vertigo17
  */
-@Service
-public class EmailFactory implements IEmailFactory {
+public interface IEmailService {
 
-    @Override
-    public Email create(String host, int smtpPort, String userName, String password, boolean setTls, String subject, String body,
-            String from, String to, String cc) {
-        Email email = new Email();
-        email.setBody(body);
-        email.setCc(cc);
-        email.setFrom(from);
-        email.setHost(host);
-        email.setPassword(password);
-        email.setSetTls(setTls);
-        email.setSmtpPort(smtpPort);
-        email.setSubject(subject);
-        email.setTo(to);
-        email.setUserName(userName);
-        return email;
-    }
+    public void sendHtmlMail(Email cerberusEmail) throws Exception;
+
 }

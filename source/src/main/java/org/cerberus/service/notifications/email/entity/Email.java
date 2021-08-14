@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email.entity;
+package org.cerberus.service.notifications.email.entity;
 
 /**
  * @author bcivel
+ * @author vertigo17
  */
 public class Email {
 

@@ -20,6 +20,10 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -27,6 +31,9 @@ import java.sql.Timestamp;
  */
 public class ScheduleEntry {
 
+    private static final Logger LOG = LogManager.getLogger(ScheduleEntry.class);
+    
+    
     private long ID;
     private String type;
     private String name;
@@ -170,4 +177,25 @@ public class ScheduleEntry {
         }
         return true;
     }
+
+    public JSONObject toJson() {
+        JSONObject objJson = new JSONObject();
+        try {
+            objJson.put("id", this.getID());
+            objJson.put("type", this.getType());
+            objJson.put("name", this.getName());
+            objJson.put("cronDefinition", this.getCronDefinition());
+            objJson.put("isActive", this.getActive());
+            objJson.put("lastExecution", this.getLastExecution());
+            objJson.put("description", this.getDescription());
+            objJson.put("usrCreated", this.getUsrCreated());
+            objJson.put("dateCreated", this.getDateCreated());
+            objJson.put("usrModif", this.getUsrModif());
+            objJson.put("dateModif", this.getDateModif());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return objJson;
+    }
+
 }

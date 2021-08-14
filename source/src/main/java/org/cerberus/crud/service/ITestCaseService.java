@@ -123,20 +123,7 @@ public interface ITestCaseService {
      */
     boolean updateTestCaseInformation(TestCase testCase);
 
-    /**
-     *
-     * @param tc
-     * @return
-     */
-    boolean updateTestCaseInformationCountries(TestCase tc);
 
-    /**
-     *
-     * @param testCase
-     * @return
-     * @throws CerberusException
-     */
-    boolean createTestCase(TestCase testCase) throws CerberusException;
 
     /**
      *
@@ -169,11 +156,6 @@ public interface ITestCaseService {
      */
     List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system);
 
-    /**
-     * @param testCase
-     * @return true if delete is OK
-     */
-    boolean deleteTestCase(TestCase testCase);
 
     /**
      * @param campaign

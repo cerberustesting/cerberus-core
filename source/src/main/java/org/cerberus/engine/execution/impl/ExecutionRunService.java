@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
@@ -80,6 +81,7 @@ import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Video;
+import org.cerberus.event.IEventService;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.executor.IExecutorService;
@@ -183,6 +185,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IAppServiceService appServiceService;
     @Autowired
     private IExecutorService executorService;
+    @Autowired
+    private IEventService eventService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -971,13 +975,22 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry management, in case the result is not (OK or NE), we
              * execute the job again reducing the retry to 1.
              */
-            boolean isRetried = retriesService.manageRetries(tCExecution);
+            boolean willBeRetried = retriesService.manageRetries(tCExecution);
 
             /**
              * Updating queue to done status only for execution from queue
              */
             if (tCExecution.getQueueID() != 0) {
                 executionQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+            }
+
+            /**
+             * Trigger the necessary Event for WebHook and notification
+             * management.
+             */
+            eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END, tCExecution, null, null, null);
+            if (!willBeRetried) {
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY, tCExecution, null, null, null);
             }
 
             /**
@@ -995,7 +1008,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * the corresponding dependencies and put corresponding Queue
              * entries to QUEUED status.
              */
-            if (!isRetried) {
+            if (!willBeRetried) {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
             }
 

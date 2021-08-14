@@ -17,14 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email;
+package org.cerberus.service.notifications.email;
 
+import org.cerberus.crud.entity.EventHook;
+import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.User;
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.entity.Email;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
 public interface IEmailGenerationService {
 
@@ -80,20 +84,44 @@ public interface IEmailGenerationService {
     /**
      *
      * @param Tag
-     * @param campaign
      * @param to
      * @return
      * @throws Exception
      */
-    public Email generateNotifyStartTagExecution(String Tag, String campaign, String to) throws Exception;
+    public Email generateNotifyStartTagExecution(Tag Tag, String to) throws Exception;
     
     /**
      *
      * @param Tag
-     * @param campaign
      * @param to
      * @return
      * @throws Exception
      */
-    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to) throws Exception;
+    public Email generateNotifyEndTagExecution(Tag Tag, String to) throws Exception;
+    /**
+     *
+     * @param exe
+     * @param to
+     * @return
+     * @throws Exception
+     */
+    public Email generateNotifyStartExecution(TestCaseExecution exe, String to) throws Exception;
+    
+    /**
+     *
+     * @param exe
+     * @param to
+     * @return
+     * @throws Exception
+     */
+    public Email generateNotifyEndExecution(TestCaseExecution exe, String to) throws Exception;
+    /**
+     *
+     * @param testCase
+     * @param to
+     * @param eventReference
+     * @return
+     * @throws Exception
+     */
+    public Email generateNotifyTestCaseChange(TestCase testCase, String to, String eventReference) throws Exception;
 }

@@ -17,19 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email.impl;
+package org.cerberus.service.notifications.email.impl;
 
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.entity.Email;
 import org.apache.commons.mail.HtmlEmail;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notifications.email.IEmailService;
 import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
 @Service
 public class EmailService implements IEmailService {

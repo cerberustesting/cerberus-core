@@ -50,12 +50,13 @@ import org.springframework.web.util.JavaScriptUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.util.StringUtil;
 
 /**
  *
  * @author Nouxx
  */
-@WebServlet(name = "GetTagDetailsV001", urlPatterns = { "/GetTagDetailsV001" })
+@WebServlet(name = "GetTagDetailsV001", urlPatterns = {"/GetTagDetailsV001"})
 public class GetTagDetailsV001 extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
@@ -102,8 +103,12 @@ public class GetTagDetailsV001 extends HttpServlet {
                 environmentsList = invariantService.readByIdName("ENVIRONMENT");
                 JSONObject jsonResponse = new JSONObject();
                 Tag tag = tagService.convert(tagService.readByKey(Tag));
-                cerberusUrlParameter = formatCerberusURL(
-                        parameterService.findParameterByKey("cerberus_gui_url", "").getValue());
+
+                cerberusUrlParameter = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
+                if (StringUtil.isNullOrEmpty(cerberusUrlParameter)) {
+                    cerberusUrlParameter = parameterService.getParameterStringByKey("cerberus_url", "", "");
+                }
+
                 if (tag != null) {
                     jsonResponse.put("tag", Tag);
                     jsonResponse.put("tagDurationInMs",
@@ -124,11 +129,11 @@ public class GetTagDetailsV001 extends HttpServlet {
                     response.getWriter().print(jsonResponse.toString());
                 }
             } catch (CerberusException ex) {
-                LOG.debug(ex.getMessageError().getDescription());
+                LOG.error(ex.getMessageError().getDescription(), ex);
             } catch (JSONException ex) {
-                LOG.debug(ex.getMessage());
+                LOG.error(ex.getMessage(), ex);
             } catch (ParseException ex) {
-                LOG.debug(ex.getMessage());
+                LOG.error(ex.getMessage(), ex);
             }
         }
     }
@@ -169,7 +174,7 @@ public class GetTagDetailsV001 extends HttpServlet {
             result.put("attribute8", invariant.getGp8());
             result.put("attribute9", invariant.getGp9());
         } catch (JSONException e) {
-            LOG.debug(e.toString());
+            LOG.error(e.toString(), e);
         }
         return result;
     }
@@ -185,16 +190,6 @@ public class GetTagDetailsV001 extends HttpServlet {
         }
     }
 
-    private String formatCerberusURL(String url) {
-        int urlLength = url.length();
-        String lastCharacter = url.substring(urlLength - 1);
-        if (lastCharacter.equals("/")) {
-            return url.substring(0, urlLength - 1);
-        } else {
-            return url;
-        }
-    }
-
     private JSONObject executionToJson(TestCaseExecution execution) {
         JSONObject result = new JSONObject();
         Invariant priority = getInvariant(Integer.toString(execution.getTestCaseObj().getPriority()), prioritiesList);
@@ -203,12 +198,12 @@ public class GetTagDetailsV001 extends HttpServlet {
         try {
             result.put("id", execution.getId());
             result.put("status", execution.getControlStatus());
-            result.put("link", cerberusUrlParameter + "/TestCaseExecution.jsp?executionId="+ execution.getId());
+            result.put("link", cerberusUrlParameter + "/TestCaseExecution.jsp?executionId=" + execution.getId());
             result.put("manualExecution", cerberusBooleanToBoolean(execution.getManualExecution()));
-            result.put("message", JavaScriptUtils.javaScriptEscape(execution.getControlMessage()));        
-            result.put("priority",invariantToJSON(priority));
+            result.put("message", JavaScriptUtils.javaScriptEscape(execution.getControlMessage()));
+            result.put("priority", invariantToJSON(priority));
             result.put("country", invariantToJSON(country));
-            result.put("environment",invariantToJSON(environment));
+            result.put("environment", invariantToJSON(environment));
             result.put("start", execution.getStart());
             result.put("end", execution.getEnd());
             result.put("durationInMs", execution.getEnd() - execution.getStart());
@@ -238,7 +233,7 @@ public class GetTagDetailsV001 extends HttpServlet {
             robot.put("executor", execution.getExecutor());
             result.put("robot", robot);
         } catch (JSONException e) {
-            LOG.debug(e.toString());
+            LOG.error(e.toString(), e);
         }
         return result;
     }

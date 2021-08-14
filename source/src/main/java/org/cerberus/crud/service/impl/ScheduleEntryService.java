@@ -141,11 +141,11 @@ public class ScheduleEntryService implements IScheduleEntryService {
 
     @Override
     public Answer createListSched(List<ScheduleEntry> objectList) {
-        Answer ans = new Answer(null);
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean changed = false;
         if (objectList.isEmpty()) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "No data to create."));
             ans.setResultMessage(msg);
             return ans;
         } else {

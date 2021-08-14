@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.slack;
+package org.cerberus.service.notifications.googlechat;
 
 import org.json.JSONObject;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
-public interface ISlackService {
+public interface IChatService {
 
-    public void sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception;
+    public void sendGoogleChatMessage(JSONObject cerberusMessage, String webHook, String threadKey) throws Exception;
 
 }

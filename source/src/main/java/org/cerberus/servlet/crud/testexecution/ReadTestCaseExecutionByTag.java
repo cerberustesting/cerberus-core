@@ -909,9 +909,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     
     private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
         
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(tag));
-        return result;
+        return tag.toJson();
     }
     
     private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) throws JSONException {

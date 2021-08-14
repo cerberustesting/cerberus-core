@@ -5883,3 +5883,67 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdes
 -- 1628
 ALTER TABLE `robotexecutor` ADD COLUMN `NodeProxyPort` INT NULL DEFAULT 0 AFTER `host_password`;
 
+-- 1529
+CREATE TABLE `eventhook` ( `ID` int(11) NOT NULL AUTO_INCREMENT,  `EventReference` VARCHAR(45) NOT NULL DEFAULT '',  `ObjectKey1` VARCHAR(150) NOT NULL DEFAULT '',  `ObjectKey2` VARCHAR(150) NOT NULL DEFAULT '',  
+    `IsActive` BOOLEAN DEFAULT 1, 
+    `HookConnector` VARCHAR(150) NOT NULL DEFAULT '', `HookRecipient` VARCHAR(500)  NOT NULL DEFAULT '', `HookChannel` VARCHAR(150) NOT NULL DEFAULT '', 
+    `Description` VARCHAR(500) DEFAULT '', 
+    `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',  
+    PRIMARY KEY (`ID`),  KEY `IX_eventhook_01` (`EventReference`))
+  ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- 1530
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_notification_executionstart_subject', '[Cerberus] Execution %EXECUTIONID% started.', 'Subject of Cerberus start of execution notification email. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER% and %TESTCASE% can be used as variables.')
+  ,('', 'cerberus_notification_executionstart_body', 'Hello,<br><br>The Cerberus Execution %EXECUTIONID% of testcase \'%TESTFOLDER% - %TESTCASE%\' just started on %ENVIRONMENT% and %COUNTRY% and on %ROBOT%.<br><br>You can follow its execution <a href="%URLEXECUTION%">here</a>.','Cerberus start of execution notification email body. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER% and %TESTCASE% can be used as variables.')
+  ,('', 'cerberus_notification_from','Cerberus <no.reply@cerberus-testing.com>', 'From field of Cerberus notification email.')
+  ,('', 'cerberus_notification_executionend_subject', '[Cerberus] Execution %EXECUTIONID% finished with status %STATUS%.', 'Subject of Cerberus end of execution notification email. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER%, %TESTCASE% and %STATUS% can be used as variables.')
+  ,('', 'cerberus_notification_executionend_body', 'Hello,<br><br>The Cerberus Execution %EXECUTIONID% of testcase \'%TESTFOLDER% - %TESTCASE%\' has just finished on %ENVIRONMENT% and %COUNTRY% and on %ROBOT%.<br><br>You can analyse the result <a href="%URLEXECUTION%">here</a>.','Cerberus End of execution notification email body. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER%, %TESTCASE% and %STATUS% can be used as variables.');
+
+-- 1531
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('EVENTHOOK', 'CAMPAIGN_START', 100, 'When a campaign starts.')
+  ,('EVENTHOOK', 'CAMPAIGN_END', 200, 'When a campaign ends.')
+  ,('EVENTHOOK', 'CAMPAIGN_END_CIKO', 300, 'When a campaign ends with a CIScore KO.')
+  ,('EVENTHOOK', 'EXECUTION_START', 400, 'When a testcase execution starts.')
+  ,('EVENTHOOK', 'EXECUTION_END', 500, 'When a testcase execution ends.')
+  ,('EVENTHOOK', 'EXECUTION_END_LASTRETRY', 550, 'When a testcase execution ends (only on the last retry of the testcase).')
+  ,('EVENTHOOK', 'TESTCASE_CREATE', 700, 'When a testcase is created.')
+  ,('EVENTHOOK', 'TESTCASE_UPDATE', 720, 'When a testcase is updated.')
+  ,('EVENTHOOK', 'TESTCASE_DELETE', 740, 'When a testcase is deleted.')
+  ,('EVENTCONNECTOR', 'SLACK', 200, 'Slack connector.')
+  ,('EVENTCONNECTOR', 'EMAIL', 100, 'EMail connector.')
+  ,('EVENTCONNECTOR', 'TEAMS', 220, 'Microsoft Teams connector.')
+  ,('EVENTCONNECTOR', 'GENERIC', 900, 'Native Cerberus connector.')
+  ,('EVENTCONNECTOR', 'GOOGLE-CHAT', 240, 'Google Chat connector.')
+  ,('INVARIANTPRIVATE', 'EVENTHOOK', '850', '')
+  ,('INVARIANTPRIVATE', 'EVENTCONNECTOR', '900', '');
+
+-- 1532
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+    select "CAMPAIGN_START", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyStartTagExecution = "Y";
+
+-- 1533
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+    select "CAMPAIGN_END", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "Y";
+
+-- 1534
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+    select "CAMPAIGN_END_CIKO", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "CIKO";
+
+-- 1535
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+    select "CAMPAIGN_START", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyStartTagExecution = "Y";
+
+-- 1536
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+  select "CAMPAIGN_END", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "Y";
+
+-- 1537
+INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
+  select "CAMPAIGN_END_CIKO", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "CIKO";
+
+-- 1538
+ALTER TABLE `campaign` 
+    DROP COLUMN `SlackChannel`,DROP COLUMN `SlackWebhook`,DROP COLUMN `SlackNotifyEndTagExecution`,DROP COLUMN `SlackNotifyStartTagExecution`,DROP COLUMN `NotifyEndTagExecution`,DROP COLUMN `NotifyStartTagExecution`,DROP COLUMN `DistribList`;
+

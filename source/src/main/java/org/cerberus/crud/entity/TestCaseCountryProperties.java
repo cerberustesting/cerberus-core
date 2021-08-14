@@ -456,4 +456,41 @@ public class TestCaseCountryProperties {
         return testCaseCountryPropertiesJson;
     }
 
+    public JSONObject toJsonV001() {
+        JSONObject testCaseCountryPropertiesJson = new JSONObject();
+        try {
+            testCaseCountryPropertiesJson.put("JSONVersion", "001");
+            testCaseCountryPropertiesJson.put("fromTest", this.getTest());
+            testCaseCountryPropertiesJson.put("fromTestcase", this.getTestcase());
+            testCaseCountryPropertiesJson.put("property", this.getProperty());
+            testCaseCountryPropertiesJson.put("description", this.getDescription());
+            testCaseCountryPropertiesJson.put("type", this.getType());
+            testCaseCountryPropertiesJson.put("dataBase", this.getDatabase());
+            testCaseCountryPropertiesJson.put("value1", this.getValue1());
+            testCaseCountryPropertiesJson.put("value2", this.getValue2());
+            testCaseCountryPropertiesJson.put("length", this.getLength());
+            testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
+            testCaseCountryPropertiesJson.put("nature", this.getNature());
+            testCaseCountryPropertiesJson.put("rank", this.getRank());
+            testCaseCountryPropertiesJson.put("usrCreated", this.getUsrCreated());
+            testCaseCountryPropertiesJson.put("dateCreated", this.getDateCreated());
+            testCaseCountryPropertiesJson.put("usrModif", this.getUsrModif());
+            testCaseCountryPropertiesJson.put("dateModif", this.getDateModif());
+
+            JSONArray countriesJson = new JSONArray();
+            if (this.getInvariantCountries() != null) {
+                for (Invariant countryInv : this.getInvariantCountries()) {
+                    if (countryInv != null) {
+                        countriesJson.put(countryInv.toJsonV001());
+                    }
+                }
+            }
+            testCaseCountryPropertiesJson.put("countries", countriesJson);
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseCountryPropertiesJson;
+    }
+    
 }

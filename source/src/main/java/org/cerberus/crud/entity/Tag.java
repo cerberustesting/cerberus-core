@@ -19,14 +19,19 @@
  */
 package org.cerberus.crud.entity;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * @author vertigo
+ * @author vertigo17
  */
 public class Tag {
 
@@ -66,6 +71,23 @@ public class Tag {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+
+    /*
+     * Outside Database Model
+     */
+    private List<TestCaseExecution> executionsNew;
+
+    public List<TestCaseExecution> getExecutions() {
+        return executionsNew;
+    }
+
+    public void setExecutions(List<TestCaseExecution> executions) {
+        this.executionsNew = executions;
+    }
+
+    public void appendExecutions(TestCaseExecution executions) {
+        this.executionsNew.add(executions);
+    }
 
     public String getLambdaTestBuild() {
         return lambdaTestBuild;
@@ -394,6 +416,106 @@ public class Tag {
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            
+            result.put("id", this.id);
+            result.put("tag", this.tag);
+            result.put("campaign", this.campaign);
+            result.put("description", this.description);
+            result.put("comment", this.comment);
+            result.put("DateEndQueue", this.DateEndQueue);
+            result.put("nbExe", this.nbExe);
+            result.put("nbExeUsefull", this.nbExeUsefull);
+            result.put("nbOK", this.nbOK);
+            result.put("nbKO", this.nbKO);
+            result.put("nbFA", this.nbFA);
+            result.put("nbNA", this.nbNA);
+            result.put("nbNE", this.nbNE);
+            result.put("nbWE", this.nbWE);
+            result.put("nbPE", this.nbPE);
+            result.put("nbQU", this.nbQU);
+            result.put("nbQE", this.nbQE);
+            result.put("nbCA", this.nbCA);
+            result.put("ciScore", this.ciScore);
+            result.put("ciScoreThreshold", this.ciScoreThreshold);
+            result.put("ciResult", this.ciResult);
+            result.put("environmentList", this.environmentList);
+            result.put("countryList", this.countryList);
+            result.put("robotDecliList", this.robotDecliList);
+            result.put("systemList", this.systemList);
+            result.put("applicationList", this.applicationList);
+            result.put("reqEnvironmentList", this.reqEnvironmentList);
+            result.put("reqCountryList", this.reqCountryList);
+            result.put("UsrCreated", this.UsrCreated);
+            result.put("DateCreated", this.DateCreated);
+            result.put("UsrModif", this.UsrModif);
+            result.put("DateModif", this.DateModif);
+            result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("lambdaTestBuild", this.lambdaTestBuild);
+            
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
+    }
+    
+    /**
+     *
+     * @param cerberusURL
+     * @param prioritiesList : send the invariant list of priorities to the method (this is to avoid getting value from database for every entries)
+     * @param countriesList : send the invariant list of countries to the method (this is to avoid getting value from database for every entries)
+     * @param environmentsList : send the invariant list of environments to the method (this is to avoid getting value from database for every entries)
+     * @return
+     */
+    public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("JSONVersion", "001");
+            cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
+            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, StandardCharsets.UTF_8));
+            result.put("tag", this.tag);
+            if (this.DateEndQueue != null && this.DateCreated != null) {
+                result.put("tagDurationInMs", (this.DateEndQueue.getTime() - this.DateCreated.getTime()));
+            }
+            result.put("CI", this.ciResult);
+            result.put("start", this.DateCreated);
+            result.put("end", this.DateEndQueue);
+            result.put("campaign", this.campaign);
+            result.put("description", this.description);
+            result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("lambdaTestBuild", this.lambdaTestBuild);
+            JSONObject result1 = new JSONObject();
+            result1.put("OK", this.nbOK);
+            result1.put("KO", this.nbKO);
+            result1.put("FA", this.nbFA);
+            result1.put("NA", this.nbNA);
+            result1.put("PE", this.nbPE);
+            result1.put("CA", this.nbCA);
+            result1.put("QU", this.nbQU);
+            result1.put("WE", this.nbWE);
+            result1.put("NE", this.nbNE);
+            result1.put("QE", this.nbQE);
+            result1.put("total", this.nbExeUsefull);
+            result1.put("totalWithRetry", this.nbExe);
+            result.put("results", result1);
+            JSONArray listOfExecutionsJSON = new JSONArray();
+            for (TestCaseExecution execution : executionsNew) {
+                listOfExecutionsJSON.put(execution.toJsonV001(cerberusURL, prioritiesList, countriesList, environmentsList));
+            }
+            result.put("executions", listOfExecutionsJSON);
+
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);
         } catch (Exception ex) {

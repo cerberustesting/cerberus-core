@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.slack.impl;
+package org.cerberus.service.notifications.webcall.impl;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -42,19 +42,19 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.proxy.IProxyService;
-import org.cerberus.service.slack.ISlackService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.service.notifications.webcall.IWebcallService;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
 @Service
-public class SlackService implements ISlackService {
+public class WebcallService implements IWebcallService {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(SlackService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(WebcallService.class);
 
     @Autowired
     private IParameterService parameterService;
@@ -69,7 +69,7 @@ public class SlackService implements ISlackService {
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     @Override
-    public void sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception {
+    public void sendWebcallMessage(JSONObject cerberusMessage, String webHook) throws Exception {
 
         CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
@@ -129,7 +129,7 @@ public class SlackService implements ISlackService {
         HttpResponse response = httpclient.execute(post);
 
         int rc = response.getStatusLine().getStatusCode();
-        LOG.debug("Slack request http return code : " + rc);
+        LOG.debug("Generic request http return code : " + rc);
 
     }
 

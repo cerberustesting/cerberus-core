@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Robot;
@@ -57,6 +58,9 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.event.IEventService;
+import org.cerberus.util.answer.Answer;
 
 /**
  *
@@ -97,6 +101,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IRobotExecutorService robotExecutorService;
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
+    @Autowired
+    private IEventService eventService;
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -373,6 +379,41 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Environment Information Loaded");
 
         /**
+         * Load Environment object from invariant table.
+         */
+        LOG.debug("Loading Environment Information. " + tCExecution.getEnvironment());
+        try {
+            tCExecution.setEnvironmentObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", tCExecution.getEnvironment())));
+        } catch (CerberusException ex) {
+            if (tCExecution.getManualURL() >= 1) {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                LOG.debug(mes.getDescription());
+                throw new CerberusException(mes);
+            } else {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
+                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                LOG.debug(mes.getDescription());
+                throw new CerberusException(mes);
+            }
+        }
+        LOG.debug("Environment Information Loaded");
+
+        /**
+         * Load Priority object from invariant table.
+         */
+        LOG.debug("Loading Priority Information. " + tCExecution.getTestCaseObj().getPriority());
+        try {
+            tCExecution.setPriorityObj(invariantService.convert(invariantService.readByKey("PRIORITY", String.valueOf(tCExecution.getTestCaseObj().getPriority()))));
+        } catch (CerberusException ex) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_PRIORITY_DOESNOTEXIST);
+            mes.setDescription(mes.getDescription().replace("%PRIO%", String.valueOf(tCExecution.getTestCaseObj().getPriority())));
+            LOG.debug(mes.getDescription());
+            throw new CerberusException(mes);
+        }
+        LOG.debug("Priority Information Loaded");
+
+        /**
          * Load Country/Environment information and set them to the
          * TestCaseExecution object. Environment considered here is the data
          * environment.
@@ -562,6 +603,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 if (tCExecution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(tCExecution.getQueueID(), "", runID);
                 }
+
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, tCExecution, null, null, null);
 
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);

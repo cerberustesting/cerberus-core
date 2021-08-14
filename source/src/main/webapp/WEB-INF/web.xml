@@ -535,10 +535,6 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.BulkRenameDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseFromTestPage</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.testcase.DeleteTestCase</servlet-class>
     </servlet>
@@ -1315,10 +1311,6 @@
     <servlet-mapping>
         <servlet-name>BulkRenameDataLib</servlet-name>
         <url-pattern>/BulkRenameDataLib</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
-        <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestDataLib</servlet-name>

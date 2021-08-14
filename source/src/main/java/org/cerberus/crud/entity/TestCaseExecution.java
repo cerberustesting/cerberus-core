@@ -126,7 +126,9 @@ public class TestCaseExecution {
     private Tag tagObj;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
+    private Invariant environmentObj;
     private Invariant environmentDataObj;
+    private Invariant priorityObj;
     // Host the list of the files stored at execution level
     private List<TestCaseExecutionFile> fileList;
     // Host the list of Steps that will be executed (both pre tests and main test)
@@ -208,6 +210,22 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_LAMBDATEST = "LAMBDATEST";
     public static final String ROBOTPROVIDER_NONE = "NONE";
+
+    public Invariant getEnvironmentObj() {
+        return environmentObj;
+    }
+
+    public void setEnvironmentObj(Invariant environmentObj) {
+        this.environmentObj = environmentObj;
+    }
+
+    public Invariant getPriorityObj() {
+        return priorityObj;
+    }
+
+    public void setPriorityObj(Invariant priorityObj) {
+        this.priorityObj = priorityObj;
+    }
 
     public JSONArray getConditionOptions() {
         return conditionOptions;
@@ -1229,6 +1247,128 @@ public class TestCaseExecution {
                 }
 
             }
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
+    }
+
+    /**
+     * Convert the current TestCaseExecution into a public JSON format.
+     *
+     * @param cerberusURL
+     * @param prioritiesList : send the invariant list of priorities to the
+     * method (this is to avoid getting value from database for every entries)
+     * @param countriesList : send the invariant list of countries to the method
+     * (this is to avoid getting value from database for every entries)
+     * @param environmentsList : send the invariant list of environments to the
+     * method (this is to avoid getting value from database for every entries)
+     * @return TestCaseExecution in JSONObject format
+     */
+    public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("JSONVersion", "001");
+            result.put("link", cerberusURL + "TestCaseExecution.jsp?executionId=" + this.id);
+            result.put("id", this.getId());
+
+            result.put("testcase", this.getTestCaseObj().toJsonV001(cerberusURL, prioritiesList));
+
+            result.put("testcaseVersion", this.getTestCaseVersion());
+
+            result.put("description", this.getDescription());
+            result.put("build", this.getBuild());
+            result.put("revision", this.getRevision());
+
+            // ENVIRONMENT
+            if (this.getEnvironmentObj() != null) {
+                result.put("environment", this.getEnvironmentObj().toJsonV001());
+            } else {
+                result.put("environment", this.getEnvironment());
+            }
+            if (environmentsList != null) {
+                Invariant environmentLocal = environmentsList.stream().filter(inv -> this.getEnvironment().equals(inv.getValue())).findAny().orElse(null);
+                if (environmentLocal != null) {
+                    result.put("environment", environmentLocal.toJsonV001());
+                }
+            }
+            // ENVIRONMENTDATA
+            if (this.getEnvironmentDataObj() != null) {
+                result.put("environmentData", this.getEnvironmentDataObj().toJsonV001());
+            } else {
+                result.put("environmentData", this.getEnvironmentData());
+            }
+            if (environmentsList != null) {
+                Invariant environmentDataLocal = environmentsList.stream().filter(inv -> this.getEnvironmentData().equals(inv.getValue())).findAny().orElse(null);
+                if (environmentDataLocal != null) {
+                    result.put("environmentData", environmentDataLocal.toJsonV001());
+                }
+            }
+
+            // COUNTRY
+            if (this.getCountryObj() != null) {
+                result.put("country", this.getCountryObj().toJsonV001());
+            } else {
+                result.put("country", this.getCountry());
+            }
+            if (countriesList != null) {
+                Invariant countryLocal = countriesList.stream().filter(inv -> this.getCountry().equals(inv.getValue())).findAny().orElse(null);
+                if (countryLocal != null) {
+                    result.put("country", countryLocal.toJsonV001());
+                }
+            }
+
+            // PRIORITY
+            if (this.getTestCaseObj() != null) {
+                if (this.getPriorityObj() != null) {
+                    result.put("priority", this.getPriorityObj().toJsonV001());
+                }
+                if (prioritiesList != null) {
+                    Invariant priorityLocal = prioritiesList.stream().filter(inv -> Integer.toString(this.getTestCaseObj().getPriority()).equals(inv.getValue())).findAny().orElse(null);
+                    if (priorityLocal != null) {
+                        result.put("priority", priorityLocal.toJsonV001());
+                    }
+                }
+            }
+
+            result.put("start", new Timestamp(this.getStart()));
+            result.put("end", new Timestamp(this.getEnd()));
+            result.put("durationInMs", this.getEnd() - this.getStart());
+            result.put("controlStatus", this.getControlStatus());
+            result.put("controlMessage", this.getControlMessage());
+            result.put("application", this.getApplication());
+            JSONObject robotLocal = new JSONObject();
+
+            robotLocal.put("name", this.getRobot());
+            robotLocal.put("executor", this.getRobotExecutor());
+            robotLocal.put("host", this.getRobotHost());
+            robotLocal.put("port", this.getRobotPort());
+            robotLocal.put("declination", this.getRobotDecli());
+            robotLocal.put("provider", this.getRobotProvider());
+            robotLocal.put("sessionId", this.getRobotSessionID());
+            robotLocal.put("providerSessionId", this.getRobotProviderSessionID());
+            robotLocal.put("browser", this.getBrowser());
+            robotLocal.put("version", this.getVersion());
+            robotLocal.put("platform", this.getPlatform());
+            robotLocal.put("screenSize", this.getScreenSize());
+            robotLocal.put("userAgent", this.getUserAgent());
+            result.put("robot", robotLocal);
+
+            result.put("url", this.getUrl());
+            result.put("tag", this.getTag());
+            result.put("status", this.getStatus());
+            result.put("executor", this.getExecutor());
+            result.put("queueId", this.getQueueID());
+            result.put("manualExecution", this.getManualExecution());
+            result.put("system", this.getSystem());
+
+            result.put("usrCreated", this.getUsrCreated());
+            result.put("dateCreated", this.getDateCreated());
+            result.put("usrModif", this.getUsrModif());
+            result.put("dateModif", this.getDateModif());
 
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);

@@ -255,9 +255,9 @@ function viewStatEntryClick(param) {
 
         var array = [];
 
-        $.each(obj.tag, function (e) {
+        $.each(obj.tags, function (e) {
             array.push(
-                    [obj.tag[e], obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e].ciResult, obj.tag[e].ciScore]
+                    [obj.tags[e], obj.tags[e].tag, obj.tags[e].nbExe, obj.tags[e].nbExeUsefull, obj.tags[e].DateCreated, obj.tags[e].DateEndQueue, obj.tags[e].ciResult, obj.tags[e].ciScore]
                     );
         });
 
@@ -306,20 +306,20 @@ function editEntryClick(param) {
 
     showLoader("#testcampaignList");
 
-    var jqxhr = $.getJSON("ReadCampaign?parameter=true&label=true", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?parameters=true&labels=true&eventHooks=true&scheduledEntries=true", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
         var parameters = []
         var criterias = []
-        for (var i = 0; i < obj.parameter.length; i++)
+        for (var i = 0; i < obj.parameters.length; i++)
         {
-            if ((obj.parameter[i].parameter === "BROWSER")
-                    || (obj.parameter[i].parameter === "COUNTRY")
-                    || (obj.parameter[i].parameter === "ENVIRONMENT")
-                    || (obj.parameter[i].parameter === "ROBOT")) {
-                parameters.push(obj.parameter[i])
+            if ((obj.parameters[i].parameter === "BROWSER")
+                    || (obj.parameters[i].parameter === "COUNTRY")
+                    || (obj.parameters[i].parameter === "ENVIRONMENT")
+                    || (obj.parameters[i].parameter === "ROBOT")) {
+                parameters.push(obj.parameters[i])
             } else {
-                criterias.push(obj.parameter[i])
+                criterias.push(obj.parameters[i])
             }
         }
 
@@ -375,9 +375,9 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(obj.label, function (e) {
+        $.each(obj.labels, function (e) {
             array.push(
-                    [obj.label[e].campaign, obj.label[e].campaignLabelID, obj.label[e].LabelId, obj.label[e].label.system, obj.label[e].label.label, obj.label[e].label.color, obj.label[e].label.description, obj.label[e].label.type]
+                    [obj.labels[e].campaign, obj.labels[e].campaignLabelID, obj.labels[e].LabelId, obj.labels[e].label.system, obj.labels[e].label.label, obj.labels[e].label.color, obj.labels[e].label.description, obj.labels[e].label.type]
                     );
         });
 
@@ -432,21 +432,27 @@ function editEntryClick(param) {
 
         renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable")
 
-        hideLoader("#testcampaignList");
-
         /* SCHEDULER */
         var doc = new Doc();
         $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
 
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-        formEdit.modal('show');
         $('#addscheduler').off('click');
         $('#addscheduler').click(addNewSchedulerRow);
+        $('#addScheduleEntry').off('click');
+        $('#addScheduleEntry').click(addNewSchedulerRow);
         $('#schedulerinput').val('0 0 12 1/1 * ? *');
-
         loadCronList();
+        loadSchedulerTable(obj);
 
-        loadSchedulerTable(param);
+        /* EVENTHOOK */
+        $('#addEventHook').off('click');
+        $('#addEventHook').click(addNewEventHookRow);
+        loadEventHookTable(obj);
+
+
+        hideLoader("#testcampaignList");
+        formEdit.modal('show');
 
     });
 
@@ -475,12 +481,17 @@ function editEntryModalSaveHandler() {
     }
 
     // Getting Data from Scheduler TAB
-    var table1 = $("#parameterSchedulerTable tr.dataField");
+    var table1 = $("#schedulerTableBody tr.dataField");
     var table_scheduler = [];
     for (var i = 0; i < table1.length; i++) {
         table_scheduler.push($(table1[i]).data("scheduler"));
     }
-    console.log(table_scheduler);
+    // Getting Data from Notifications TAB
+    var table1 = $("#eventHookTableBody tr");
+    var table_events = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_events.push($(table1[i]).data("eventHook"));
+    }
 
     var labels = null;
     if ($("#labelTestcampaignsTable_wrapper").length > 0) {
@@ -511,13 +522,6 @@ function editEntryModalSaveHandler() {
         data: {
             Campaign: data.campaign,
             CampaignID: data.id,
-            DistribList: data.distriblist,
-            NotifyStart: data.notifystart,
-            NotifyEnd: data.notifyend,
-            NotifySlackStart: data.notifySlackstart,
-            NotifySlackEnd: data.notifySlackend,
-            SlackWebhook: data.webhook,
-            SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
             Group1: data.group1,
@@ -526,18 +530,19 @@ function editEntryModalSaveHandler() {
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
+            ScheduledEntries: JSON.stringify(table_scheduler),
+            EventEntries: JSON.stringify(table_events),
+            Tag: data.tags,
             Screenshot: data.screenshot,
             Video: data.video,
             Verbose: data.verbose,
-            Tag: data.tag,
             PageSource: data.pageSource,
             RobotLog: data.robotLog,
             ConsoleLog: data.consoleLog,
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,
-            ManualExecution: data.manualExecution,
-            SchedulerList: JSON.stringify(table_scheduler)
+            ManualExecution: data.manualExecution
         },
         success: function (data) {
 //            data = JSON.parse(data);
@@ -599,7 +604,6 @@ function addEntryClick() {
     renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
 
     // CRITERIA
-
     if ($("#parameterTestcaseTable_wrapper").length > 0) {
         $("#parameterTestcaseTable").DataTable().clear().draw();
     } else {
@@ -612,13 +616,22 @@ function addEntryClick() {
     $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
     $('#editTestcampaignModal').modal('show');
 
-    $('#parameterScheduler tr').remove();
+    /* SCHEDULER */
+    var doc = new Doc();
+    $('#schedulerTableBody tr').remove();
     $('#addscheduler').off('click');
     $('#addscheduler').click(addNewSchedulerRow);
+    $('#addScheduleEntry').off('click');
+    $('#addScheduleEntry').click(addNewSchedulerRow);
     $('#schedulerinput').val('0 0 12 1/1 * ? *');
     loadCronList();
-
     loadSchedulerTable("");
+
+    /* EVENTHOOK */
+    $('#eventHookTableBody tr').remove();
+    $('#addEventHook').off('click');
+    $('#addEventHook').click(addNewEventHookRow);
+    loadEventHookTable("");
 
 }
 
@@ -627,18 +640,24 @@ function addEntryModalSaveHandler() {
     var formEdit = $('#editTestcampaignModal #editTestcampaignModalForm');
 
     var sa = formEdit.serializeArray();
-    var data = {}
+    var data = {};
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
 
     // Getting Data from Scheduler TAB
-    var table1 = $("#parameterSchedulerTable tr.dataField");
+    var table1 = $("#schedulerTableBody tr.dataField");
     var table_scheduler = [];
     for (var i = 0; i < table1.length; i++) {
         table_scheduler.push($(table1[i]).data("scheduler"));
     }
-    console.log(table_scheduler);
+    // Getting Data from Notifications TAB
+    var table1 = $("#eventHookTableBody tr");
+    var table_events = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_events.push($(table1[i]).data("eventHook"));
+    }
+
 
     var labels = null;
     if ($("#labelTestcampaignsTable_wrapper").length > 0) {
@@ -673,13 +692,6 @@ function addEntryModalSaveHandler() {
         method: "POST",
         data: {
             Campaign: data.campaign,
-            DistribList: data.distriblist,
-            NotifyStart: data.notifystart,
-            NotifyEnd: data.notifyend,
-            NotifySlackStart: data.notifySlackstart,
-            NotifySlackEnd: data.notifySlackend,
-            SlackWebhook: data.webhook,
-            SlackChannel: data.channel,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
             Group1: data.group1,
@@ -688,20 +700,19 @@ function addEntryModalSaveHandler() {
             LongDescription: data.longDescription,
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters),
+            Tag: data.tags,
+            ScheduledEntries: JSON.stringify(table_scheduler),
+            EventEntries: JSON.stringify(table_events),
             Screenshot: data.screenshot,
             Video: data.video,
             Verbose: data.verbose,
-            Tag: data.tag,
             PageSource: data.pageSource,
             RobotLog: data.robotLog,
             ConsoleLog: data.consoleLog,
             Timeout: data.timeout,
             Retries: data.retries,
             Priority: data.priority,
-            ManualExecution: data.manualExecution,
-            SchedulerList: JSON.stringify(table_scheduler)
-
-
+            ManualExecution: data.manualExecution
         },
         success: function (data) {
 //            data = JSON.parse(data);
@@ -810,7 +821,6 @@ function updateSelectParameter(id) {
     } else {
         data = getSelectInvariant(val, false, true);
     }
-    console.info(data);
     $("#" + id + "_wrapper #parameterTestSelect2").empty();
     var optionList = "";
     for (var i = 0; i < data.find("option").length; i++) {
@@ -1071,32 +1081,34 @@ function getDuration(tag) {
 }
 
 function loadSchedulerTable(name) {
-    $('#parameterScheduler tr').remove();
-    var table = $('#parameterSchedulerTable')
-    var deleteBtn = $('<div id="deleteBtnFirst"></div>').addClass("h6").text("Delete");
-    var cronEntry = $('<div id="cronExpression"></div>').addClass("h6").text("Definition");
-    var row = $("<tr></tr>");
-    var td1 = $("<td class='row form-group'></td>").append(deleteBtn);
-    var td2 = $("<td class='row form-group'></td>").append(cronEntry);
+    $('#schedulerTableBody tr').remove();
 
-
-    row.append(td1);
-    row.append(td2);
-    table.append(row);
-
-    var jqxhr = $.getJSON("ReadScheduleEntry", "&name=" + name);
-    $.when(jqxhr).then(function (result) {
-        $.each(result["contentTable"], function (idx, obj) {
+    if (name !== "") {
+        name.scheduledEntries.forEach(function (obj, idx) {
             obj.toDelete = false;
             appendSchedulerRow(obj);
         });
-    }).fail(handleErrorAjaxAfterTimeout);
+    }
+
 }
+
+function loadEventHookTable(name) {
+    $('#eventHookTableBody tr').remove();
+
+    if (name !== "") {
+        name.eventHooks.forEach(function (obj, idx) {
+            obj.toDelete = false;
+            appendEventHookRow(obj);
+        });
+    }
+
+}
+
 
 function appendSchedulerRow(scheduler) {
 
     var activebool = true;
-    if (scheduler.active === "Y") {
+    if (scheduler.isActive === "Y") {
         activebool = true;
     } else {
         activebool = false;
@@ -1108,8 +1120,8 @@ function appendSchedulerRow(scheduler) {
     var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
     var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
     var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(scheduler.lastExecution);
-    var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.UsrCreated);
-    var userModifInput = $("<input name=\"cronUserModifInput\" readonly>").addClass("form-control input-sm").val(scheduler.UsrModif);
+    var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrCreated);
+    var userModifInput = $("<input name=\"cronUserModifInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrModif);
 
     var cron = $("<div class='form-group col-sm-10'></div>").append("<label for='cronDefinition'>" + doc.getDocOnline("scheduleentry", "cronDefinition") + "</label>").append(cronInput);
     var active = $("<div class='form-group col-sm-2'></div>").append("<label for='cronActive'>" + doc.getDocOnline("scheduleentry", "active") + "</label>").append(activeInput);
@@ -1119,7 +1131,7 @@ function appendSchedulerRow(scheduler) {
     var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserModifInput'>" + doc.getDocOnline("transversal", "UsrModif") + "</label>").append(userModifInput);
 
 
-    var table = $('#parameterSchedulerTable')
+    var table = $('#schedulerTableBody');
     var row = $("<tr class='dataField'></tr>");
 
     var drow1 = $("<div class='row'></div>").append(cron).append(active).append(description).append(lastExec).append(userCreate).append(userModif);
@@ -1138,19 +1150,19 @@ function appendSchedulerRow(scheduler) {
 
     cronInput.change(function () {
         scheduler.cronDefinition = $(this).val();
-    })
+    });
 
     descInput.change(function () {
         scheduler.description = $(this).val();
-    })
+    });
 
     activeInput.change(function () {
         if ($(this).prop("checked")) {
-            scheduler.active = "Y";
+            scheduler.isActive = "Y";
         } else {
-            scheduler.active = "N";
+            scheduler.isActive = "N";
         }
-    })
+    });
 
     row.append(td1);
     row.append(td2);
@@ -1158,15 +1170,154 @@ function appendSchedulerRow(scheduler) {
     table.append(row);
 }
 
+function appendEventHookRow(eventHook) {
+
+    var doc = new Doc();
+
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs col-sm-12 marginBottom20").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var eventRefInput = $("<select></select>").addClass("form-control input-sm");
+    eventRefInput.append($("<option></option>").text("CAMPAIGN_START").val("CAMPAIGN_START"));
+    eventRefInput.append($("<option></option>").text("CAMPAIGN_END").val("CAMPAIGN_END"));
+    eventRefInput.append($("<option></option>").text("CAMPAIGN_END_CIKO").val("CAMPAIGN_END_CIKO"));
+    eventRefInput.val(eventHook.eventReference);
+    var activeInput = $("<input name=\"eventActive\" type='checkbox'>").addClass("form-control").prop("checked", eventHook.isActive);
+    var descInput = $("<input name=\"eventDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(eventHook.description);
+    var hookConnectorInput = getSelectInvariant("EVENTCONNECTOR", false);
+    hookConnectorInput.val(eventHook.hookConnector);
+    var hookRecipientInput = $("<input name=\"hookRecipient\">").addClass("form-control input-sm").val(eventHook.hookRecipient);
+    var hookChannelInput = $("<input name=\"hookChannel\">").addClass("form-control input-sm").val(eventHook.hookChannel);
+    var userCreateInput = $("<input name=\"eventUserCreateInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrCreated);
+    var userModifInput = $("<input name=\"eventUserModifInput\" readonly>").addClass("form-control input-sm").val(eventHook.usrModif);
+
+    var eventRef = $("<div class='form-group col-sm-4'></div>").append("<label for='eventReference'>" + doc.getDocOnline("eventhook", "EventReference") + "</label>").append(eventRefInput);
+    var description = $("<div class='form-group col-sm-6'></div>").append("<label for='eventDescription'>" + doc.getDocOnline("eventhook", "Description") + "</label>").append(descInput);
+    var active = $("<div class='form-group col-sm-2'></div>").append("<label for='eventActive'>" + doc.getDocOnline("eventhook", "IsActive") + "</label>").append(activeInput);
+    var hookConnector = $("<div class='form-group col-sm-3'></div>").append("<label for='hookConnector'>" + doc.getDocOnline("eventhook", "HookConnector") + "</label>").append(hookConnectorInput);
+    var hookRecipient = $("<div class='form-group col-sm-5'></div>").append("<label for='hookRecipient'>" + doc.getDocOnline("eventhook", "HookRecipient") + "</label>").append(hookRecipientInput);
+    var hookChannel = $("<div class='form-group col-sm-4'></div>").append("<label for='hookChannel'>" + doc.getDocOnline("eventhook", "HookChannel") + "</label>").append(hookChannelInput);
+    var userCreate = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserCreateInput'>" + doc.getDocOnline("eventhook", "UsrCreated") + "</label>").append(userCreateInput);
+    var userModif = $("<div class='form-group col-sm-4'></div>").append("<label for='cronUserModifInput'>" + doc.getDocOnline("eventhook", "UsrModif") + "</label>").append(userModifInput);
+    var logo = $("<span class='fa fa-fw col-sm-12' style='font-size:50px;'></span>");
+    logo.addClass(getClass(eventHook.hookConnector));
+
+    if (eventHook.hookConnector === "SLACK") {
+        hookChannel.show();
+        hookRecipient.removeClass("col-sm-5 col-sm-9");
+        hookRecipient.addClass("col-sm-5");
+    } else {
+        hookChannel.hide();
+        hookRecipient.removeClass("col-sm-5 col-sm-9");
+        hookRecipient.addClass("col-sm-9");
+    }
+
+//
+    var table = $('#eventHookTableBody');
+    var row = $("<tr></tr>");
+
+    var drow01 = $("<div class='row'></div>").append(deleteBtn);
+    var drow02 = $("<div class='row'></div>").append(logo);
+
+    var drow1 = $("<div class='row'></div>").append(eventRef).append(description).append(active);
+    var drow2 = $("<div class='row'></div>").append(hookConnector).append(hookRecipient).append(hookChannel);
+
+    var td1 = $("<td></td>").append(drow01).append(drow02);
+    var td2 = $("<td></td>").append(drow1).append(drow2);
+
+    deleteBtn.click(function () {
+        eventHook.toDelete = (eventHook.toDelete) ? false : true;
+        if (eventHook.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+
+    hookConnectorInput.change(function () {
+        eventHook.hookConnector = $(this).val();
+
+        logo.removeClass("fa-slack fa-windows fa-at fa-external-link fa-google");
+        logo.addClass(getClass($(this).val()));
+        if ($(this).val() === "SLACK") {
+            hookChannel.show();
+            hookRecipient.removeClass("col-sm-5 col-sm-9");
+            hookRecipient.addClass("col-sm-5");
+        } else {
+            hookChannel.hide();
+            hookRecipient.removeClass("col-sm-5 col-sm-9");
+            hookRecipient.addClass("col-sm-9");
+        }
+
+    });
+
+    eventRefInput.change(function () {
+        eventHook.eventReference = $(this).val();
+    });
+
+    descInput.change(function () {
+        eventHook.description = $(this).val();
+    });
+
+    hookRecipientInput.change(function () {
+        eventHook.hookRecipient = $(this).val();
+    });
+
+    hookChannelInput.change(function () {
+        eventHook.hookChannel = $(this).val();
+    });
+
+    activeInput.change(function () {
+        console.info($(this).prop("checked"));
+        console.info($(this).val());
+        eventHook.isActive = $(this).prop("checked");
+    });
+
+    row.append(td1);
+    row.append(td2);
+    row.data("eventHook", eventHook);
+    table.append(row);
+}
+
+function getClass(connector) {
+    if (connector === "TEAMS") {
+        return "fa-windows";
+    } else if (connector === "SLACK") {
+        return "fa-slack";
+    } else if (connector === "EMAIL") {
+        return "fa-at";
+    } else if (connector === "GOOGLE-CHAT") {
+        return "fa-google";
+    } else if (connector === "GENERIC") {
+        return "fa-external-link";
+    }
+    return "fa-external-link";
+}
+
 function addNewSchedulerRow() {
     var newScheduler = {
         cronDefinition: $('#schedulerinput').val(),
-        active: "Y",
+        isActive: "Y",
         lastExecution: "",
         description: "",
-        ID: "0",
+        id: "0",
         toDelete: false
-    }
-    appendSchedulerRow(newScheduler)
+    };
+    appendSchedulerRow(newScheduler);
+
+}
+
+function addNewEventHookRow() {
+    var newEventHook = {
+        eventReference: "CAMPAIGN_START",
+        isActive: true,
+        hookConnector: "EMAIL",
+        hookRecipient: "",
+        hookChannel: "",
+        objectKey1: "",
+        objectKey2: "",
+        description: "",
+        id: 0,
+        toDelete: false
+    };
+    appendEventHookRow(newEventHook);
 
 }

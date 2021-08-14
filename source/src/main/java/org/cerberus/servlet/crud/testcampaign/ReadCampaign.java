@@ -37,11 +37,15 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.EventHook;
+import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.IEventHookService;
+import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -253,7 +257,7 @@ public class ReadCampaign extends HttpServlet {
             p = (Campaign) answer.getItem();
             JSONObject response = convertCampaigntoJSONObject(p);
 
-            if (request.getParameter("parameter") != null) {
+            if (request.getParameter("parameters") != null) {
                 ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
                 AnswerList resp = campaignParameterService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -262,10 +266,10 @@ public class ReadCampaign extends HttpServlet {
                         CampaignParameter cc = (CampaignParameter) c;
                         a.put(convertCampaignParametertoJSONObject(cc));
                     }
-                    response.put("parameter", a);
+                    response.put("parameters", a);
                 }
             }
-            if (request.getParameter("label") != null) {
+            if (request.getParameter("labels") != null) {
                 ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
                 AnswerList resp = campaignLabelService.readByVarious(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -274,10 +278,10 @@ public class ReadCampaign extends HttpServlet {
                         CampaignLabel cc = (CampaignLabel) c;
                         a.put(convertCampaignLabeltoJSONObject(cc));
                     }
-                    response.put("label", a);
+                    response.put("labels", a);
                 }
             }
-            if (request.getParameter("testcase") != null) {
+            if (request.getParameter("testcases") != null) {
                 ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                 AnswerList<TestCase> resp = testCaseService.findTestCaseByCampaignNameAndCountries(key, null);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -289,7 +293,7 @@ public class ReadCampaign extends HttpServlet {
                     response.put("testcase", a);
                 }
             }
-            if (request.getParameter("tag") != null) {
+            if (request.getParameter("tags") != null) {
                 ITagService tagService = appContext.getBean(ITagService.class);
                 AnswerList<Tag> resp = tagService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -297,7 +301,31 @@ public class ReadCampaign extends HttpServlet {
                     for (Tag c : (List<Tag>) resp.getDataList()) {
                         a.put(convertTagtoJSONObject(c));
                     }
-                    response.put("tag", a);
+                    response.put("tags", a);
+                }
+            }
+            if (request.getParameter("eventHooks") != null) {
+                IEventHookService eventHookService = appContext.getBean(IEventHookService.class);
+                AnswerList<EventHook> resp = eventHookService.readByEventReference(Arrays.asList(EventHook.EVENTREFERENCE_CAMPAIGN_START, EventHook.EVENTREFERENCE_CAMPAIGN_END, EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO),
+                        Arrays.asList(key));
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    JSONArray a = new JSONArray();
+                    for (EventHook c : (List<EventHook>) resp.getDataList()) {
+                        a.put(c.toJson());
+                    }
+                    response.put("eventHooks", a);
+                }
+            }
+
+            if (request.getParameter("scheduledEntries") != null) {
+                IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
+                AnswerList<ScheduleEntry> resp = scheduleEntryService.readByName(key);
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    JSONArray a = new JSONArray();
+                    for (ScheduleEntry c : (List<ScheduleEntry>) resp.getDataList()) {
+                        a.put(c.toJson());
+                    }
+                    response.put("scheduledEntries", a);
                 }
             }
 

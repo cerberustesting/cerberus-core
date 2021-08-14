@@ -29,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;

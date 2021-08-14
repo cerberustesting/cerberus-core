@@ -458,4 +458,47 @@ public class TestCaseStep {
         return stepJson;
     }
 
+    public JSONObject toJsonV001() {
+        JSONObject stepJson = new JSONObject();
+        try {
+            stepJson.put("JSONVersion", "001");
+            stepJson.put("sort", this.getSort());
+            stepJson.put("stepId", this.getStepId());
+            stepJson.put("description", this.getDescription());
+            stepJson.put("isExecutionForced", this.isExecutionForced());
+            stepJson.put("loop", this.getLoop());
+            stepJson.put("conditionOperator", this.getConditionOperator());
+            stepJson.put("conditionValue1", this.getConditionValue1());
+            stepJson.put("conditionValue2", this.getConditionValue2());
+            stepJson.put("conditionValue3", this.getConditionValue3());
+            stepJson.put("conditionOptions", this.getConditionOptions());
+            stepJson.put("isUsingLibraryStep", this.isUsingLibraryStep());
+            stepJson.put("isLibraryStep", this.isLibraryStep());
+            stepJson.put("libraryStepTest", this.getLibraryStepTest());
+            stepJson.put("libraryStepTestCase", this.getLibraryStepTestcase());
+            stepJson.put("libraryStepStepId", this.getLibraryStepStepId());
+            stepJson.put("libraryStepSort", this.getLibraryStepSort());
+            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestcase());
+            stepJson.put("test", this.getTest());
+            stepJson.put("testcase", this.getTestcase());
+//            stepJson.put("initialStep", this.getInitialStep());
+            stepJson.put("usrCreated", this.usrCreated);
+            stepJson.put("dateCreated", this.dateCreated);
+            stepJson.put("usrModif", this.usrModif);
+            stepJson.put("dateModif", this.dateModif);
+
+            JSONArray stepsJson = new JSONArray();
+            if (this.getActions() != null) {
+                for (TestCaseStepAction action : this.getActions()) {
+                    stepsJson.put(action.toJsonV001());
+                }
+            }
+            stepJson.put("actions", stepsJson);
+
+        } catch (JSONException ex) {
+            LOG.warn(ex);
+        }
+        return stepJson;
+    }
+    
 }

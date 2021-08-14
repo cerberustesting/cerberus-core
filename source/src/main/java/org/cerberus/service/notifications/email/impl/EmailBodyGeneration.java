@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email.impl;
+package org.cerberus.service.notifications.email.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,8 +31,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.service.email.IEmailBodyGeneration;
-import org.cerberus.util.SqlUtil;
+import org.cerberus.service.notifications.email.IEmailBodyGeneration;
 import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
 @Service
 public class EmailBodyGeneration implements IEmailBodyGeneration {
@@ -181,163 +180,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         }
         return buildContentTemplate;
-
-    }
-
-    @Override
-    public String GenerateTestRecapTable(String system, String build, String revision, String country) {
-
-        String TestRecapTable;
-
-        try (Connection conn = databaseSpring.connect();
-        		Statement stmtBuildContent = conn.createStatement();
-                Statement stmtCountryList = conn.createStatement();) {
-
-            List<Application> appliList = applicationService.convert(applicationService.readBySystem(Arrays.asList(system)));
-            String inSQL = SqlUtil.getInSQLClause(appliList);
-
-            String contentSQL = "SELECT i.gp1, count(*) nb_exe, OK.c nb_exe_OK, format(OK.c/count(*)*100,0)  per_OK"
-                    + "     , DTC.c nb_dtc, DAPP.c nb_dapp"
-                    + " FROM testcaseexecution t"
-                    + " JOIN invariant i on i.value=t.Environment and i.idname='ENVIRONMENT'"
-                    + " LEFT OUTER JOIN ( "
-                    + " SELECT i.gp1 gp1, count(*) c"
-                    + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
-                    + " WHERE t1.ControlStatus= 'OK' and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
-            if (country.equalsIgnoreCase("ALL") == false) {
-                contentSQL = contentSQL + " and t1.country='" + country + "'";
-            }
-            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
-                    + " and (status='WORKING' or status is null) "
-                    + " and application " + inSQL
-                    + " GROUP BY gp1 "
-                    + " order by gp1) as OK"
-                    + " ON OK.gp1=i.gp1"
-                    + " LEFT OUTER JOIN ( "
-                    + " select toto.gp1 gp1, count(*) c from "
-                    + " (SELECT i.gp1 gp1,t1.test, t1.testcase "
-                    + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
-                    + " WHERE t1.ControlStatus in ('OK','KO') and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
-            if (country.equalsIgnoreCase("ALL") == false) {
-                contentSQL = contentSQL + " and t1.country='" + country + "'";
-            }
-            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
-                    + " and (status='WORKING' or status is null) "
-                    + " and application " + inSQL
-                    + " GROUP BY gp1 , t1.test, t1.testcase"
-                    + " order by gp1 , t1.test, t1.testcase ) AS toto"
-                    + " group by gp1) as DTC"
-                    + " ON DTC.gp1=i.gp1"
-                    + " LEFT OUTER JOIN ( "
-                    + " select toto.gp1 gp1, count(*) c from "
-                    + " (SELECT i.gp1 gp1,t1.application "
-                    + " FROM testcaseexecution t1 "
-                    + " JOIN invariant i on i.value=t1.Environment and i.idname='ENVIRONMENT'"
-                    + " WHERE t1.ControlStatus in ('OK','KO') and t1.Build='" + build + "' and t1.Revision='" + revision + "'";
-            if (country.equalsIgnoreCase("ALL") == false) {
-                contentSQL = contentSQL + " and t1.country='" + country + "'";
-            }
-            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
-                    + " and (status='WORKING' or status is null) "
-                    + " and application " + inSQL
-                    + " GROUP BY gp1 , t1.application"
-                    + " order by gp1 , t1.application ) AS toto"
-                    + " group by gp1) as DAPP"
-                    + " ON DAPP.gp1=i.gp1"
-                    + " where 1=1"
-                    + " and application " + inSQL
-                    + " and t.ControlStatus in ('OK','KO') and t.Build='" + build + "' and t.Revision='" + revision + "' ";
-            if (country.equalsIgnoreCase("ALL") == false) {
-                contentSQL = contentSQL + " and t.country='" + country + "'";
-            }
-            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
-                    + " and (status='WORKING' or status is null) "
-                    + " group by i.gp1 order by i.sort;";
-
-            LOG.debug(Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
-            String CountryListSQL = "SELECT value from invariant where idname='COUNTRY';";
-            try(ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
-            		ResultSet rsCountry = stmtCountryList.executeQuery(CountryListSQL);){
-            	StringBuilder CountryList = new StringBuilder();
-                while (rsCountry.next()) {
-                    CountryList.append(rsCountry.getString("value"));
-                    CountryList.append("&Country=");
-                }
-
-                if (rsBC.first()) {
-
-                    if (country.equalsIgnoreCase("ALL")) {
-                        TestRecapTable = "Here is the Test Execution Recap accross all countries for " + build + "/" + revision + " :";
-                    } else {
-                        TestRecapTable = "Here is the Test Execution Recap for your country for " + build + "/" + revision + " :";
-                    }
-                    TestRecapTable = TestRecapTable + "<table>";
-                    TestRecapTable = TestRecapTable + "<tr style=\"background-color:#cad3f1; font-style:bold\">"
-                            + "<td>Env</td><td>Nb Exe</td><td>% OK</td><td>Distinct TestCases</td><td>Distinct Applications</td></tr>";
-
-                    String bckColor = "#f3f6fa";
-                    int a = 1;
-                    StringBuilder buf = new StringBuilder();
-                    do {
-                        a++;
-                        int b;
-                        b = a % 2;
-                        if (b == 1) {
-                            bckColor = "#e1e7f3";
-                        } else {
-                            bckColor = "White";
-                        }
-
-                        String contentEnv = "";
-                        String contentNBExe = "";
-                        String contentPerOK = "";
-                        String contentNBDTC = "";
-                        String contentNBDAPP = "";
-
-                        if (rsBC.getString("gp1") != null) {
-                            contentEnv = rsBC.getString("gp1");
-                        }
-                        if (rsBC.getString("nb_exe") != null) {
-                            contentNBExe = rsBC.getString("nb_exe");
-                        }
-                        if (rsBC.getString("per_OK") != null) {
-                            contentPerOK = rsBC.getString("per_OK");
-                        }
-                        if (rsBC.getString("nb_dtc") != null) {
-                            contentNBDTC = rsBC.getString("nb_dtc");
-                        }
-                        if (rsBC.getString("nb_dapp") != null) {
-                            contentNBDAPP = rsBC.getString("nb_dapp");
-                        }
-
-//                        TestRecapTable = TestRecapTable + "<tr style=\"background-color:" + bckColor + "; font-size:80%\"><td>"
-                        buf.append("<tr style=\"background-color:").append(bckColor).append("; font-size:80%\"><td>")
-                                .append(contentEnv).append("</td><td>")
-                                .append(contentNBExe).append("</td><td>")
-                                .append(contentPerOK).append("</td><td>")
-                                .append(contentNBDTC).append("</td><td>")
-                                .append(contentNBDAPP).append("</td></tr>");
-                    } while (rsBC.next());
-
-                    TestRecapTable += buf.toString() + "</table><br>";
-
-                } else if (country.equalsIgnoreCase("ALL")) {
-                    TestRecapTable = "Unfortunatly, no test have been executed for any country for " + build + "/" + revision + " :-(<br><br>";
-                } else {
-                    TestRecapTable = "Unfortunatly, no test have been executed for your country for " + build + "/" + revision + " :-(<br><br>";
-                }
-            }catch (Exception e) {
-                LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                TestRecapTable = e.getMessage();
-            }
-        } catch (Exception e) {
-            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-            TestRecapTable = e.getMessage();
-        }
-
-        return TestRecapTable;
 
     }
 

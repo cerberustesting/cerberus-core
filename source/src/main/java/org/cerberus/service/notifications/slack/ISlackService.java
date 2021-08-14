@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email;
+package org.cerberus.service.notifications.slack;
+
+import org.json.JSONObject;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
-public interface IEmailBodyGeneration {
+public interface ISlackService {
 
-    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision);
-
-    public String GenerateTestRecapTable(String system, String build, String revision, String country);
+    public void sendSlackMessage(JSONObject cerberusMessage, String webHook) throws Exception;
 
 }

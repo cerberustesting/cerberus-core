@@ -1,0 +1,567 @@
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.event.impl;
+
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import org.cerberus.crud.entity.EventHook;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IEventHookService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.event.IEventService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.notifications.email.IEmailGenerationService;
+import org.cerberus.service.notifications.email.IEmailService;
+import org.cerberus.service.notifications.email.entity.Email;
+import org.cerberus.service.notifications.googlechat.IChatGenerationService;
+import org.cerberus.service.notifications.googlechat.IChatService;
+import org.cerberus.service.notifications.slack.ISlackGenerationService;
+import org.cerberus.service.notifications.slack.ISlackService;
+import org.cerberus.service.notifications.teams.ITeamsGenerationService;
+import org.cerberus.service.notifications.teams.ITeamsService;
+import org.cerberus.service.notifications.webcall.IWebcallGenerationService;
+import org.cerberus.service.notifications.webcall.IWebcallService;
+import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+/**
+ *
+ * @author vertigo17
+ */
+@Service
+public class EventService implements IEventService {
+
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(EventService.class);
+
+    @Autowired
+    private ITestCaseExecutionService testCaseExecutionService;
+//    @Autowired
+//    private IInvariantService invariantService;
+    @Autowired
+    private IEventHookService eventHookService;
+    @Autowired
+    private IEmailGenerationService emailGenerationService;
+    @Autowired
+    private IEmailService emailService;
+    @Autowired
+    private ISlackGenerationService slackGenerationService;
+    @Autowired
+    private ISlackService slackService;
+    @Autowired
+    private ITeamsGenerationService teamsGenerationService;
+    @Autowired
+    private ITeamsService teamsService;
+    @Autowired
+    private IWebcallGenerationService webCallGenerationService;
+    @Autowired
+    private IWebcallService webcallService;
+    @Autowired
+    private IChatGenerationService chatGenerationService;
+    @Autowired
+    private IChatService chatService;
+
+    /**
+     * This Method gets all Hooks attached to the event triggered and filter
+     * them if active and apply to the correct element (tag, testcase,
+     * execution)
+     *
+     * @param eventReference
+     * @param object1
+     * @return
+     */
+    @Override
+    @Async
+    public MessageEvent triggerEvent(String eventReference, Object object1, Object object2, Object object3, Object object4) {
+
+        LOG.debug("Event '" + eventReference + "' triggered.");
+
+        try {
+
+            JSONObject ceberusEventMessage = getCerberusEventMessage(eventReference);
+            List<TestCaseExecution> executionList = new ArrayList<>();
+            List<Invariant> prioritiesList = new ArrayList<>();
+            List<Invariant> countriesList = new ArrayList<>();
+            List<Invariant> environmentsList = new ArrayList<>();
+
+            List<String> evtList = new ArrayList<>(Arrays.asList(eventReference));
+            List<EventHook> eventHooks = eventHookService.convert(eventHookService.readByEventReference(evtList));
+
+            LOG.debug("EventHooks : " + eventHooks.size());
+
+            for (EventHook eventHook : eventHooks) {
+
+                LOG.debug("EventHook '" + eventHook.toString() + "' analysing.");
+
+                if (eventHook.isActive()) {
+
+                    switch (eventReference) {
+
+                        case EventHook.EVENTREFERENCE_EXECUTION_START:
+                            TestCaseExecution exe1 = (TestCaseExecution) object1;
+                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
+                                    || !StringUtil.isNullOrEmpty(exe1.getTest()) && exe1.getTest().equals(eventHook.getObjectKey1())) {
+                                processEvent_EXECUTION_START(eventHook, exe1, ceberusEventMessage);
+                            }
+                            break;
+                        case EventHook.EVENTREFERENCE_EXECUTION_END:
+                        case EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY:
+                            TestCaseExecution exe2 = (TestCaseExecution) object1;
+                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
+                                    || !StringUtil.isNullOrEmpty(exe2.getTest()) && exe2.getTest().equals(eventHook.getObjectKey1())) {
+                                processEvent_EXECUTION_END(eventHook, exe2, ceberusEventMessage);
+                            }
+                            break;
+
+                        case EventHook.EVENTREFERENCE_CAMPAIGN_START:
+                            Tag tag1 = (Tag) object1;
+                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
+                                    || !StringUtil.isNullOrEmpty(tag1.getCampaign()) && tag1.getCampaign().equals(eventHook.getObjectKey1())) {
+                                processEvent_CAMPAIGN_START(eventHook, tag1, ceberusEventMessage);
+                            }
+                            break;
+                        case EventHook.EVENTREFERENCE_CAMPAIGN_END:
+                        case EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO:
+                            Tag tag2 = (Tag) object1;
+                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
+                                    || !StringUtil.isNullOrEmpty(tag2.getCampaign()) && tag2.getCampaign().equals(eventHook.getObjectKey1())) {
+                                // We load the execution list here so that in case of multiple hook, this is done only once.
+                                if (executionList.size() < 1) {
+                                    executionList = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag2.getTag());
+                                    tag2.setExecutions(executionList);
+                                }
+                                // We load the invariant lists that will be used when converting execution to JSON. This is also done only once per event triggered.
+//                                prioritiesList = invariantService.readByIdName("PRIORITY");
+//                                countriesList = invariantService.readByIdName("COUNTRY");
+//                                environmentsList = invariantService.readByIdName("ENVIRONMENT");
+                                processEvent_CAMPAIGN_END(eventHook, tag2, ceberusEventMessage, prioritiesList, countriesList, environmentsList);
+                            }
+                            break;
+
+                        case EventHook.EVENTREFERENCE_TESTCASE_CREATE:
+                        case EventHook.EVENTREFERENCE_TESTCASE_DELETE:
+                        case EventHook.EVENTREFERENCE_TESTCASE_UPDATE:
+                            TestCase testCase1 = (TestCase) object1;
+                            String originalTest = (String) object2;
+                            String originalTestcase = (String) object3;
+                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
+                                    || !StringUtil.isNullOrEmpty(testCase1.getTest()) && testCase1.getTest().equals(eventHook.getObjectKey1())) {
+                                processEvent_TESTCASE(eventHook, testCase1, originalTest, originalTestcase, ceberusEventMessage);
+                            }
+                            break;
+
+                    }
+                }
+            }
+
+        } catch (CerberusException | JSONException | ParseException ex) {
+            LOG.error(ex, ex);
+        }
+
+        return new MessageEvent(MessageEventEnum.GENERIC_OK);
+    }
+
+    private void processEvent_CAMPAIGN_START(EventHook eventHook, Tag tag, JSONObject ceberusEventMessage) {
+        LOG.debug("EventHook Processing '" + eventHook.getEventReference() + "' with connector '" + eventHook.getHookConnector() + "' to '" + eventHook.getHookRecipient() + "'");
+        switch (eventHook.getHookConnector()) {
+
+            case EventHook.HOOKCONNECTOR_EMAIL:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
+                    Email email = null;
+                    try {
+                        email = emailGenerationService.generateNotifyStartTagExecution(tag, eventHook.getHookRecipient());
+                        emailService.sendHtmlMail(email);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating email for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_SLACK:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject slackMessage = slackGenerationService.generateNotifyStartTagExecution(tag, eventHook.getHookChannel());
+                        slackService.sendSlackMessage(slackMessage, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GENERIC:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = webCallGenerationService.generateNotifyStartTagExecution(tag, ceberusEventMessage);
+                        webcallService.sendWebcallMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Generic notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_TEAMS:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = teamsGenerationService.generateNotifyStartTagExecution(tag);
+                        teamsService.sendTeamsMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GOOGLECHAT:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = chatGenerationService.generateNotifyStartTagExecution(tag);
+                        chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), tag.getTag());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            default:
+                LOG.warn("Event Hook Connector '" + eventHook.getHookConnector() + "' Not implemented for Event '" + eventHook.getEventReference() + "'");
+                break;
+
+        }
+
+    }
+
+    private void processEvent_CAMPAIGN_END(EventHook eventHook, Tag tag, JSONObject ceberusEventMessage, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {
+        LOG.debug("EventHook Processing '" + eventHook.getEventReference() + "' with connector '" + eventHook.getHookConnector() + "' to '" + eventHook.getHookRecipient() + "'");
+        switch (eventHook.getHookConnector()) {
+
+            case EventHook.HOOKCONNECTOR_EMAIL:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
+                    Email email = null;
+                    try {
+                        email = emailGenerationService.generateNotifyEndTagExecution(tag, eventHook.getHookRecipient());
+                        emailService.sendHtmlMail(email);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating email for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_SLACK:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject slackMessage = slackGenerationService.generateNotifyEndTagExecution(tag, eventHook.getHookChannel());
+                        slackService.sendSlackMessage(slackMessage, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GENERIC:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = webCallGenerationService.generateNotifyEndTagExecution(tag, ceberusEventMessage, prioritiesList, countriesList, environmentsList);
+                        webcallService.sendWebcallMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Generic notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_TEAMS:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = teamsGenerationService.generateNotifyEndTagExecution(tag);
+                        teamsService.sendTeamsMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Teams notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GOOGLECHAT:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = chatGenerationService.generateNotifyEndTagExecution(tag);
+                        chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), tag.getTag());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            default:
+                LOG.warn("Event Hook Connector '" + eventHook.getHookConnector() + "' Not implemented for Event '" + eventHook.getEventReference() + "'");
+                break;
+
+        }
+    }
+
+    private void processEvent_EXECUTION_START(EventHook eventHook, TestCaseExecution exe, JSONObject ceberusEventMessage) {
+        LOG.debug("EventHook Processing '" + eventHook.getEventReference() + "' with connector '" + eventHook.getHookConnector() + "' to '" + eventHook.getHookRecipient() + "'");
+        switch (eventHook.getHookConnector()) {
+
+            case EventHook.HOOKCONNECTOR_EMAIL:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
+                    Email email = null;
+                    try {
+                        email = emailGenerationService.generateNotifyStartExecution(exe, eventHook.getHookRecipient());
+                        emailService.sendHtmlMail(email);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating email for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_SLACK:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject slackMessage = slackGenerationService.generateNotifyStartExecution(exe, eventHook.getHookChannel());
+                        slackService.sendSlackMessage(slackMessage, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GENERIC:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = webCallGenerationService.generateNotifyStartExecution(exe, ceberusEventMessage);
+                        webcallService.sendWebcallMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Generic notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_TEAMS:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = teamsGenerationService.generateNotifyStartExecution(exe);
+                        teamsService.sendTeamsMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Teams notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GOOGLECHAT:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = chatGenerationService.generateNotifyStartExecution(exe);
+                        chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), String.valueOf(exe.getId()));
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            default:
+                LOG.warn("Event Hook Connector '" + eventHook.getHookConnector() + "' Not implemented for Event '" + eventHook.getEventReference() + "'");
+                break;
+
+        }
+
+    }
+
+    private void processEvent_EXECUTION_END(EventHook eventHook, TestCaseExecution exe, JSONObject ceberusEventMessage) {
+        LOG.debug("EventHook Processing '" + eventHook.getEventReference() + "' with connector '" + eventHook.getHookConnector() + "' to '" + eventHook.getHookRecipient() + "'");
+        switch (eventHook.getHookConnector()) {
+
+            case EventHook.HOOKCONNECTOR_EMAIL:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
+                    Email email = null;
+                    try {
+                        email = emailGenerationService.generateNotifyEndExecution(exe, eventHook.getHookRecipient());
+                        emailService.sendHtmlMail(email);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating email for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_SLACK:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject slackMessage = slackGenerationService.generateNotifyEndExecution(exe, eventHook.getHookChannel());
+                        slackService.sendSlackMessage(slackMessage, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GENERIC:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = webCallGenerationService.generateNotifyEndExecution(exe, ceberusEventMessage);
+                        webcallService.sendWebcallMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Generic notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_TEAMS:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = teamsGenerationService.generateNotifyEndExecution(exe);
+                        teamsService.sendTeamsMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Teams notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GOOGLECHAT:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Google chat Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = chatGenerationService.generateNotifyEndExecution(exe);
+                        chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), String.valueOf(exe.getId()));
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            default:
+                LOG.warn("Event Hook Connector '" + eventHook.getHookConnector() + "' Not implemented for Event '" + eventHook.getEventReference() + "'");
+                break;
+
+        }
+    }
+
+    private void processEvent_TESTCASE(EventHook eventHook, TestCase testCase, String originalTest, String originalTestcase, JSONObject ceberusEventMessage) {
+        LOG.debug("EventHook Processing '" + eventHook.getEventReference() + "' with connector '" + eventHook.getHookConnector() + "' to '" + eventHook.getHookRecipient() + "'");
+        switch (eventHook.getHookConnector()) {
+
+            case EventHook.HOOKCONNECTOR_EMAIL:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
+                    Email email = null;
+                    try {
+                        email = emailGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getHookRecipient(), eventHook.getEventReference());
+                        emailService.sendHtmlMail(email);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception generating email for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_SLACK:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject slackMessage = slackGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getHookChannel(), eventHook.getEventReference());
+                        slackService.sendSlackMessage(slackMessage, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception slack notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GENERIC:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = webCallGenerationService.generateNotifyTestCaseChange(testCase, originalTest, originalTestcase, eventHook.getEventReference(), ceberusEventMessage);
+                        webcallService.sendWebcallMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Generic notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_TEAMS:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = teamsGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getEventReference());
+                        teamsService.sendTeamsMessage(message, eventHook.getHookRecipient());
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Teams notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            case EventHook.HOOKCONNECTOR_GOOGLECHAT:
+                if (!StringUtil.isNullOrEmpty(eventHook.getHookRecipient())) {
+                    LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
+                    try {
+                        JSONObject message = chatGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getEventReference());
+                        chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), null);
+                    } catch (Exception ex) {
+                        LOG.warn("Exception Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
+                    }
+                }
+                break;
+
+            default:
+                LOG.warn("Event Hook Connector '" + eventHook.getHookConnector() + "' Not implemented for Event '" + eventHook.getEventReference() + "'");
+                break;
+
+        }
+    }
+
+    private JSONObject getCerberusEventMessage(String eventReference) throws JSONException {
+        JSONObject message = new JSONObject();
+
+        JSONObject header = new JSONObject();
+        header.put("eventReference", eventReference);
+        header.put("eventDate", new Timestamp(new Date().getTime()));
+
+        message.put("header", header);
+
+        return message;
+    }
+
+}

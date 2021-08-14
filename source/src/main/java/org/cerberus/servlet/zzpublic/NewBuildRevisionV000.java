@@ -37,7 +37,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.authentification.IAPIKeyService;
-import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.notifications.email.IEmailGenerationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -45,8 +45,8 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.IEmailService;
+import org.cerberus.service.notifications.email.entity.Email;
 
 /**
  * @author vertigo

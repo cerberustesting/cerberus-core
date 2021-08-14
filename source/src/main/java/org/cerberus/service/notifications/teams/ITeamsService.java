@@ -17,18 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email;
+package org.cerberus.service.notifications.teams;
 
-import org.cerberus.service.email.entity.Email;
+import org.json.JSONObject;
 
 /**
  *
- * @author bcivel
+ * @author vertigo17
  */
+public interface ITeamsService {
 
+    public void sendTeamsMessage(JSONObject cerberusMessage, String webHook) throws Exception;
 
-public interface IEmailFactory {
-    
-    public Email create(String host, int smtpPort, String userName, String password, boolean setTls, String subject, String body,
-            String from, String to, String cc);
 }

@@ -277,6 +277,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.name : " + scheduler.getName());
             LOG.debug("SQL.param.crondefinition : " + scheduler.getCronDefinition());
+            LOG.debug("SQL.param.usrCreated : " + scheduler.getUsrCreated());
         }
         Connection connection = this.databaseSpring.connect();
         try {
