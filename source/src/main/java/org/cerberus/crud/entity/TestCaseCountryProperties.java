@@ -460,8 +460,8 @@ public class TestCaseCountryProperties {
         JSONObject testCaseCountryPropertiesJson = new JSONObject();
         try {
             testCaseCountryPropertiesJson.put("JSONVersion", "001");
-            testCaseCountryPropertiesJson.put("fromTest", this.getTest());
-            testCaseCountryPropertiesJson.put("fromTestcase", this.getTestcase());
+            testCaseCountryPropertiesJson.put("testFolder", this.getTest());
+            testCaseCountryPropertiesJson.put("testcase", this.getTestcase());
             testCaseCountryPropertiesJson.put("property", this.getProperty());
             testCaseCountryPropertiesJson.put("description", this.getDescription());
             testCaseCountryPropertiesJson.put("type", this.getType());

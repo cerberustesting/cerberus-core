@@ -79,7 +79,6 @@ public class CampaignDAO implements ICampaignDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (cpg.campaign like ?");
-            searchSQL.append(" or cpg.distriblist like ?");
             searchSQL.append(" or cpg.description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -119,7 +118,6 @@ public class CampaignDAO implements ICampaignDAO {
                 int i = 1;
 
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
@@ -296,7 +294,6 @@ public class CampaignDAO implements ICampaignDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (campaign like ?");
-            searchSQL.append(" or distriblist like ?");
             searchSQL.append(" or description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -322,7 +319,6 @@ public class CampaignDAO implements ICampaignDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }

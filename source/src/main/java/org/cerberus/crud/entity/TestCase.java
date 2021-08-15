@@ -708,7 +708,7 @@ public class TestCase {
                     testCasePropertiesJson.put(testCaseCountryProperties.toJsonV001());
                 }
             }
-            propertiesJson.put("testCaseProperties", testCasePropertiesJson);
+            propertiesJson.put("testcaseProperties", testCasePropertiesJson);
 
             JSONArray testCaseInheritedPropertiesJson = new JSONArray();
             if (this.getTestCaseInheritedProperties() != null) {

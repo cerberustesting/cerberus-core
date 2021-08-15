@@ -474,12 +474,12 @@ public class TestCaseStep {
             stepJson.put("conditionOptions", this.getConditionOptions());
             stepJson.put("isUsingLibraryStep", this.isUsingLibraryStep());
             stepJson.put("isLibraryStep", this.isLibraryStep());
-            stepJson.put("libraryStepTest", this.getLibraryStepTest());
-            stepJson.put("libraryStepTestCase", this.getLibraryStepTestcase());
+            stepJson.put("libraryStepTestFolder", this.getLibraryStepTest());
+            stepJson.put("libraryStepTestcase", this.getLibraryStepTestcase());
             stepJson.put("libraryStepStepId", this.getLibraryStepStepId());
             stepJson.put("libraryStepSort", this.getLibraryStepSort());
-            stepJson.put("isStepInUseByOtherTestCase", this.isIsStepInUseByOtherTestcase());
-            stepJson.put("test", this.getTest());
+            stepJson.put("isStepInUseByOtherTestcase", this.isIsStepInUseByOtherTestcase());
+            stepJson.put("testFolder", this.getTest());
             stepJson.put("testcase", this.getTestcase());
 //            stepJson.put("initialStep", this.getInitialStep());
             stepJson.put("usrCreated", this.usrCreated);

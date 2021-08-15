@@ -194,7 +194,7 @@ public class TestCaseDep {
         try {
             testCaseDependencyJson.put("JSONVersion", "001");
             testCaseDependencyJson.put("id", this.getId());
-            testCaseDependencyJson.put("dependencyTest", this.getDependencyTest());
+            testCaseDependencyJson.put("dependencyTestFolder", this.getDependencyTest());
             testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
             testCaseDependencyJson.put("type", this.getType());
             testCaseDependencyJson.put("isActive", this.isActive());

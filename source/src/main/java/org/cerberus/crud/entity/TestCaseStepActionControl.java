@@ -483,7 +483,7 @@ public class TestCaseStepActionControl {
     public JSONObject toJsonV001() {
         JSONObject result = new JSONObject();
         try {
-            result.put("JSONVersion", "V001");
+            result.put("JSONVersion", "001");
             result.put("sort", this.getSort());
             result.put("stepId", this.getStepId());
             result.put("actionId", this.getActionId());
@@ -501,7 +501,7 @@ public class TestCaseStepActionControl {
             result.put("conditionOptions", this.getConditionOptions());
             result.put("isFatal", this.isFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
-            result.put("test", this.getTest());
+            result.put("testFolder", this.getTest());
             result.put("testcase", this.getTestcase());
 
         } catch (JSONException ex) {
