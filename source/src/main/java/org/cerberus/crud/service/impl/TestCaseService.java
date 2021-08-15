@@ -383,7 +383,7 @@ public class TestCaseService implements ITestCaseService {
                 case CampaignParameter.APPLICATION_PARAMETER:
                     application = valeur.toArray(new String[valeur.size()]);
                     break;
-                case CampaignParameter.TESTCASE_TYPE_PARAMETER:
+                case CampaignParameter.TYPE_PARAMETER:
                     type = valeur.toArray(new String[valeur.size()]);
                     break;
             }

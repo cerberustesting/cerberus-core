@@ -202,7 +202,7 @@ function viewEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?testcase=true&", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?testcases=true&", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
