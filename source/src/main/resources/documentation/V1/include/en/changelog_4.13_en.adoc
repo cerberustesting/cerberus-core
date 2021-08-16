@@ -1,7 +1,9 @@
 *Bug fixes*
 [square]
-* message notification area always appear on top of menu.
+* Message notification area always appear on top of menu (menu sometimes could hide a part of it).
 * Fixed JSON parsing on float values #2282.
+* Fixed Campaign testcase filter using TYPE (automated, manual, private). #2281.
+
 
 *Improvements / New features*
 [square]
@@ -11,4 +13,6 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* All /RunTestCase API are deprecated and should no longuer be used. Please use /AddToExecutionQueueV003 as a replacement. Access to /RunTestCase will soon be removed.
+* All /GetTagExecutions API are deprecated and should no longuer be used.
+

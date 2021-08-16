@@ -128,32 +128,34 @@ public class EventService implements IEventService {
 
                         case EventHook.EVENTREFERENCE_EXECUTION_START:
                             TestCaseExecution exe1 = (TestCaseExecution) object1;
-                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
-                                    || !StringUtil.isNullOrEmpty(exe1.getTest()) && exe1.getTest().equals(eventHook.getObjectKey1())) {
+                            if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
+                                    || eval_TestFolder_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), exe1.getTest())
+                                    || eval_Testcase_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), exe1.getTest(), exe1.getTestCase())) {
                                 processEvent_EXECUTION_START(eventHook, exe1, ceberusEventMessage);
                             }
                             break;
                         case EventHook.EVENTREFERENCE_EXECUTION_END:
                         case EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY:
                             TestCaseExecution exe2 = (TestCaseExecution) object1;
-                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
-                                    || !StringUtil.isNullOrEmpty(exe2.getTest()) && exe2.getTest().equals(eventHook.getObjectKey1())) {
+                            if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
+                                    || eval_TestFolder_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), exe2.getTest())
+                                    || eval_Testcase_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), exe2.getTest(), exe2.getTestCase())) {
                                 processEvent_EXECUTION_END(eventHook, exe2, ceberusEventMessage);
                             }
                             break;
 
                         case EventHook.EVENTREFERENCE_CAMPAIGN_START:
                             Tag tag1 = (Tag) object1;
-                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
-                                    || !StringUtil.isNullOrEmpty(tag1.getCampaign()) && tag1.getCampaign().equals(eventHook.getObjectKey1())) {
+                            if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
+                                    || eval_Campaign_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), tag1.getCampaign())) {
                                 processEvent_CAMPAIGN_START(eventHook, tag1, ceberusEventMessage);
                             }
                             break;
                         case EventHook.EVENTREFERENCE_CAMPAIGN_END:
                         case EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO:
                             Tag tag2 = (Tag) object1;
-                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
-                                    || !StringUtil.isNullOrEmpty(tag2.getCampaign()) && tag2.getCampaign().equals(eventHook.getObjectKey1())) {
+                            if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
+                                    || eval_Campaign_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), tag2.getCampaign())) {
                                 // We load the execution list here so that in case of multiple hook, this is done only once.
                                 if (executionList.size() < 1) {
                                     executionList = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag2.getTag());
@@ -173,8 +175,9 @@ public class EventService implements IEventService {
                             TestCase testCase1 = (TestCase) object1;
                             String originalTest = (String) object2;
                             String originalTestcase = (String) object3;
-                            if ((StringUtil.isNullOrEmpty(eventHook.getObjectKey1()) && StringUtil.isNullOrEmpty(eventHook.getObjectKey2()))
-                                    || !StringUtil.isNullOrEmpty(testCase1.getTest()) && testCase1.getTest().equals(eventHook.getObjectKey1())) {
+                            if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
+                                    || eval_TestFolder_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), testCase1.getTest())
+                                    || eval_Testcase_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), testCase1.getTest(), testCase1.getTestcase())) {
                                 processEvent_TESTCASE(eventHook, testCase1, originalTest, originalTestcase, ceberusEventMessage);
                             }
                             break;
@@ -188,6 +191,43 @@ public class EventService implements IEventService {
         }
 
         return new MessageEvent(MessageEventEnum.GENERIC_OK);
+    }
+
+    private boolean eval_NoFilter(String obj1, String obj2) {
+        if (StringUtil.isNullOrEmpty(obj2) && StringUtil.isNullOrEmpty(obj1)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean eval_TestFolder_Filter(String obj1, String obj2, String testFolder) {
+        if (!StringUtil.isNullOrEmpty(obj2)) {
+            return false;
+        }
+        if (!StringUtil.isNullOrEmpty(obj1) && obj1.equals(testFolder)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean eval_Testcase_Filter(String obj1, String obj2, String testFolder, String testcase) {
+        if (StringUtil.isNullOrEmpty(obj1) || StringUtil.isNullOrEmpty(obj2)) {
+            return false;
+        }
+        if (obj1.equals(testFolder) && obj2.equals(testcase)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean eval_Campaign_Filter(String obj1, String obj2, String campaign) {
+        if (!StringUtil.isNullOrEmpty(obj2)) {
+            return false;
+        }
+        if (!StringUtil.isNullOrEmpty(obj1) && obj1.equals(campaign)) {
+            return true;
+        }
+        return false;
     }
 
     private void processEvent_CAMPAIGN_START(EventHook eventHook, Tag tag, JSONObject ceberusEventMessage) {
