@@ -616,83 +616,84 @@ public class ExecutionRunService implements IExecutionRunService {
                                 boolean descriptionOrConditionStepDecodeError = false;
                                 boolean conditionStepError = false;
                                 AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
+
+                                try {
+                                    answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
+                                    testCaseStepExecution.setConditionValue1((String) answerDecode.getItem());
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                        testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
+                                        testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1").getDescription());
+                                        testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                        testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                        testCaseStepExecution.setEnd(new Date().getTime());
+                                        LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
+                                        descriptionOrConditionStepDecodeError = true;
+                                    }
+                                } catch (CerberusEventException cex) {
+                                    LOG.warn(cex);
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
+                                    try {
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
+                                        testCaseStepExecution.setConditionValue2((String) answerDecode.getItem());
+                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2").getDescription());
+                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                            testCaseStepExecution.setEnd(new Date().getTime());
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
+                                            descriptionOrConditionStepDecodeError = true;
+                                        }
+                                    } catch (CerberusEventException cex) {
+                                        LOG.warn(cex);
+                                    }
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
+                                    try {
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
+                                        testCaseStepExecution.setConditionValue3((String) answerDecode.getItem());
+                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3").getDescription());
+                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                            testCaseStepExecution.setEnd(new Date().getTime());
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value3' Error.");
+                                            descriptionOrConditionStepDecodeError = true;
+                                        }
+                                    } catch (CerberusEventException cex) {
+                                        LOG.warn(cex);
+                                    }
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
+                                    try {
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
+                                        testCaseStepExecution.setDescription((String) answerDecode.getItem());
+                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
+                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                            testCaseStepExecution.setEnd(new Date().getTime());
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
+                                            descriptionOrConditionStepDecodeError = true;
+                                        }
+                                    } catch (CerberusEventException cex) {
+                                        LOG.warn(cex);
+                                    }
+                                }
+
                                 if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
                                         || testCaseStepExecution.getLoop().equals("")
                                         || step_index > 1) {
-                                    // Decode Conditionvalue1 and Conditionvalue2 and Evaluate the condition at the Step level.
-                                    try {
-                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
-                                        testCaseStepExecution.setConditionValue1((String) answerDecode.getItem());
-                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
-                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1").getDescription());
-                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                            testCaseStepExecution.setEnd(new Date().getTime());
-                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
-                                            descriptionOrConditionStepDecodeError = true;
-                                        }
-                                    } catch (CerberusEventException cex) {
-                                        LOG.warn(cex);
-                                    }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionValue2((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
-                                        }
-                                    }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionValue3((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value3' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
-                                        }
-                                    }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
-                                            testCaseStepExecution.setDescription((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
-                                        }
-                                    }
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
                                         conditionAnswer = this.conditionService.evaluateCondition(
