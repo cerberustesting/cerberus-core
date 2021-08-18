@@ -50,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateInvariant extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateInvariant.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -108,6 +108,27 @@ public class CreateInvariant extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
+            ans.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && StringUtil.isNullOrEmpty(value)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value is empty !! COUNTRY, ENVIRONMENT or SYSTEM invariant can't have empty value. "));
+            ans.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && value.length() > 45) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value is too large !! COUNTRY, ENVIRONMENT or SYSTEM invariant can't have more than 45 characters. "));
+            ans.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && (!value.matches("[a-zA-Z0-9-]+"))) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value contains special characters !! COUNTRY, ENVIRONMENT or SYSTEM invariant only allow letter, digits or -. "));
             ans.setResultMessage(msg);
         } else {
             /**
