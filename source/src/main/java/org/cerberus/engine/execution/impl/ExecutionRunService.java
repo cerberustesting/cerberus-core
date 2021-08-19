@@ -768,13 +768,15 @@ public class ExecutionRunService implements IExecutionRunService {
                                 } else if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONFALSE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONTRUE)) {
                                     // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution and activate the next step execution.
+                                    // We also force the condition message to always true with success.
                                     execute_Step = true;
                                     execute_Next_Step = true;
+                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ALWAYS));
                                 } else {
                                     // First Step execution for Unknown Loop --> We force the step execution only once (default behaviour).
                                     execute_Step = true;
                                     execute_Next_Step = false;
-                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
+                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNLOOP).resolveDescription("LOOP", testCaseStepExecution.getLoop()));
                                 }
 
                                 /**
@@ -802,12 +804,14 @@ public class ExecutionRunService implements IExecutionRunService {
                                         testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
                                     }
 
-                                    /*
-                                    TODO : tester si execution manuelle et si la condition doit être vérifier par l'opérateur
-                                    si oui concaténer la description de la step avec le message de execution de la condition
+                                    /**
+                                     * We test here is execution is manual and
+                                     * operator needs to evaluate the condition
+                                     * manually. If this is the case, we add the
+                                     * comment inside the description.
                                      */
                                     if (tCExecution.getManualExecution().equals("Y") && testcaseStepConditionEnum.isOperatorEvaluationRequired()) {
-                                        testCaseStepExecution.setDescription(testCaseStep.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                                        testCaseStepExecution.setDescription(testCaseStepExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
                                     }
 
                                     testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
