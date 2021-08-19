@@ -493,7 +493,8 @@ public class RobotServerService implements IRobotServerService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID) && !caps.getPlatform().equals(Platform.IOS)
                     && !caps.getPlatform().equals(Platform.MAC)) {
-                if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
+                // Maximize is not supported on Opera.
+                if (!caps.getBrowserName().equals(BrowserType.CHROME) && !tCExecution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
                 getIPOfNode(tCExecution);
@@ -513,7 +514,10 @@ public class RobotServerService implements IRobotServerService {
                         LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
                     }
                 }
-                tCExecution.setScreenSize(getScreenSize(driver));
+                // Getting windows size Not supported on Opera.
+                if (!tCExecution.getBrowser().equalsIgnoreCase("opera")) {
+                    tCExecution.setScreenSize(getScreenSize(driver));
+                }
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
 
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
