@@ -5883,7 +5883,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdes
 -- 1628
 ALTER TABLE `robotexecutor` ADD COLUMN `NodeProxyPort` INT NULL DEFAULT 0 AFTER `host_password`;
 
--- 1529
+-- 1629
 CREATE TABLE `eventhook` ( `ID` int(11) NOT NULL AUTO_INCREMENT,  `EventReference` VARCHAR(45) NOT NULL DEFAULT '',  `ObjectKey1` VARCHAR(150) NOT NULL DEFAULT '',  `ObjectKey2` VARCHAR(150) NOT NULL DEFAULT '',  
     `IsActive` BOOLEAN DEFAULT 1, 
     `HookConnector` VARCHAR(150) NOT NULL DEFAULT '', `HookRecipient` VARCHAR(500)  NOT NULL DEFAULT '', `HookChannel` VARCHAR(150) NOT NULL DEFAULT '', 
@@ -5892,7 +5892,7 @@ CREATE TABLE `eventhook` ( `ID` int(11) NOT NULL AUTO_INCREMENT,  `EventReferenc
     PRIMARY KEY (`ID`),  KEY `IX_eventhook_01` (`EventReference`))
   ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- 1530
+-- 1630
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_notification_executionstart_subject', '[Cerberus] Execution %EXECUTIONID% started.', 'Subject of Cerberus start of execution notification email. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER% and %TESTCASE% can be used as variables.')
   ,('', 'cerberus_notification_executionstart_body', 'Hello,<br><br>The Cerberus Execution %EXECUTIONID% of testcase \'%TESTFOLDER% - %TESTCASE%\' just started on %ENVIRONMENT% and %COUNTRY% and on %ROBOT%.<br><br>You can follow its execution <a href="%URLEXECUTION%">here</a>.','Cerberus start of execution notification email body. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER% and %TESTCASE% can be used as variables.')
@@ -5900,7 +5900,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   ,('', 'cerberus_notification_executionend_subject', '[Cerberus] Execution %EXECUTIONID% finished with status %STATUS%.', 'Subject of Cerberus end of execution notification email. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER%, %TESTCASE% and %STATUS% can be used as variables.')
   ,('', 'cerberus_notification_executionend_body', 'Hello,<br><br>The Cerberus Execution %EXECUTIONID% of testcase \'%TESTFOLDER% - %TESTCASE%\' has just finished on %ENVIRONMENT% and %COUNTRY% and on %ROBOT%.<br><br>You can analyse the result <a href="%URLEXECUTION%">here</a>.','Cerberus End of execution notification email body. %TAG%, %URLEXECUTION%, %EXECUTIONID%, %COUNTRY%, %ENVIRONMENT%, %ROBOT%, %ROBOTDECLINATION%, %TESTFOLDER%, %TESTCASE% and %STATUS% can be used as variables.');
 
--- 1531
+-- 1631
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES   ('EVENTHOOK', 'CAMPAIGN_START', 100, 'When a campaign starts.')
   ,('EVENTHOOK', 'CAMPAIGN_END', 200, 'When a campaign ends.')
@@ -5919,31 +5919,34 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   ,('INVARIANTPRIVATE', 'EVENTHOOK', '850', '')
   ,('INVARIANTPRIVATE', 'EVENTCONNECTOR', '900', '');
 
--- 1532
+-- 1632
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
     select "CAMPAIGN_START", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyStartTagExecution = "Y";
 
--- 1533
+-- 1633
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
     select "CAMPAIGN_END", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "Y";
 
--- 1534
+-- 1634
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
     select "CAMPAIGN_END_CIKO", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "CIKO";
 
--- 1535
+-- 1635
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
     select "CAMPAIGN_START", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyStartTagExecution = "Y";
 
--- 1536
+-- 1636
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
   select "CAMPAIGN_END", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "Y";
 
--- 1537
+-- 1637
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
   select "CAMPAIGN_END_CIKO", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "CIKO";
 
--- 1538
+-- 1638
 ALTER TABLE `campaign` 
     DROP COLUMN `SlackChannel`,DROP COLUMN `SlackWebhook`,DROP COLUMN `SlackNotifyEndTagExecution`,DROP COLUMN `SlackNotifyStartTagExecution`,DROP COLUMN `NotifyEndTagExecution`,DROP COLUMN `NotifyStartTagExecution`,DROP COLUMN `DistribList`;
+
+-- 1639
+UPDATE `parameter` set `value`='0' WHERE `system`='' and `param` in ('cerberus_selenium_highlightElement','cerberus_sikuli_highlightElement') and `value` = '';
 

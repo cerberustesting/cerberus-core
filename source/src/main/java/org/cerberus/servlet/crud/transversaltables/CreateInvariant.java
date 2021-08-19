@@ -124,11 +124,11 @@ public class CreateInvariant extends HttpServlet {
                     .replace("%REASON%", "Value is too large !! COUNTRY, ENVIRONMENT or SYSTEM invariant can't have more than 45 characters. "));
             ans.setResultMessage(msg);
         } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
-                && (!value.matches("[a-zA-Z0-9-]+"))) {
+                && (!value.matches("[a-zA-Z0-9-_]+"))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Value contains special characters !! COUNTRY, ENVIRONMENT or SYSTEM invariant only allow letter, digits or -. "));
+                    .replace("%REASON%", "Value contains special characters !! COUNTRY, ENVIRONMENT or SYSTEM invariant only allow letter, digits, - or _. "));
             ans.setResultMessage(msg);
         } else {
             /**
