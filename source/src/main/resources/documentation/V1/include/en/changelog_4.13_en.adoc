@@ -3,7 +3,8 @@
 * Message notification area always appear on top of menu (menu sometimes could hide a part of it).
 * Fixed JSON parsing on float values #2282.
 * Fixed Campaign testcase filter using TYPE (automated, manual, private). #2281.
-* Decode Step description even when using doWhile loop. #2148
+* Decode Step description on 1st iteration even when using doWhile loop. #2148
+* Fixed an issue preventing opera browser to start. 
 
 *Improvements / New features*
 [square]
