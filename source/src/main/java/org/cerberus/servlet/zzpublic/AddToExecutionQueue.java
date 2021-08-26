@@ -59,7 +59,7 @@ import org.cerberus.service.authentification.IAPIKeyService;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueue", urlPatterns = {"/AddToExecutionQueue"})
+@WebServlet(name = "AddToExecutionQueue", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueue"})
 public class AddToExecutionQueue extends HttpServlet {
 
     /**

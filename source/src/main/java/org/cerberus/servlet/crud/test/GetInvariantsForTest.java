@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 19/03/2013
  * @since 2.0.0
  */
-//@WebServlet(value = "/GetInvariantsForTest")
+@WebServlet(name = "GetInvariantsForTest", urlPatterns = {"/GetInvariantsForTest"})
 public class GetInvariantsForTest extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetInvariantsForTest.class);

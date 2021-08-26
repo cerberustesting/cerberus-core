@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.annotation.WebServlet;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.servlet.guipages.FindTestImplementationStatusPerApplication;
@@ -36,6 +38,7 @@ import org.jfree.util.Log;
  *
  * @author bcivel
  */
+@WebServlet(name = "GeneratePerformanceString", urlPatterns = {"/GeneratePerformanceString"}) // TODO to delete ?
 public class GeneratePerformanceString {
 	
 	private static final Logger LOG = LogManager.getLogger(GeneratePerformanceString.class);

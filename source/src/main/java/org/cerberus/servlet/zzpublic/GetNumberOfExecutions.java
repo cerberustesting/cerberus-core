@@ -66,7 +66,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "GetNumberOfExecutions", urlPatterns = {"/GetNumberOfExecutions"})
+@WebServlet(name = "GetNumberOfExecutions", description = "This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.", urlPatterns = {"/GetNumberOfExecutions"})
 public class GetNumberOfExecutions extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetNumberOfExecutions.class);

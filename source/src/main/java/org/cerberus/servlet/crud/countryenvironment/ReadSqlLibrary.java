@@ -45,12 +45,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
+@WebServlet(name = "ReadSqlLibrary", urlPatterns = {"/ReadSqlLibrary"})
 public class ReadSqlLibrary extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadSqlLibrary.class);

@@ -58,7 +58,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author cerberus
  */
-@WebServlet(name = "DeleteTest1", urlPatterns = {"/DeleteTest1"})
+@WebServlet(name = "DeleteTest", urlPatterns = {"/DeleteTest"})
 public class DeleteTest extends HttpServlet {
 
     private static Logger LOGGER = LogManager.getLogger(DeleteTest.class);

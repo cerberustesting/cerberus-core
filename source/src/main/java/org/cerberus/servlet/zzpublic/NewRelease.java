@@ -53,7 +53,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author vertigo
  */
-@WebServlet(name = "NewRelease", urlPatterns = {"/NewRelease"})
+@WebServlet(name = "NewRelease", description = "This Servlet is used to Record a new Release inside the pending sprint.", urlPatterns = {"/NewRelease"})
 public class NewRelease extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger("NewRelease");

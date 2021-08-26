@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author FNogueira
  */
+@WebServlet(name = "ReadTestCaseStep", urlPatterns = {"/ReadTestCaseStep"})
 public class ReadTestCaseStep extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseStep.class);

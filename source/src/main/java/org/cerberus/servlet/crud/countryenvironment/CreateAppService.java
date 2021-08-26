@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +64,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author cte
  */
+@WebServlet(name = "CreateAppService", urlPatterns = {"/CreateAppService"})
 public class CreateAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateAppService.class);

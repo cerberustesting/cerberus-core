@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.*;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author FNogueira
  */
+@WebServlet(name = "ReadInvariant", urlPatterns = {"/ReadInvariant"})
 public class ReadInvariant extends HttpServlet {
 
     private IInvariantService invariantService;

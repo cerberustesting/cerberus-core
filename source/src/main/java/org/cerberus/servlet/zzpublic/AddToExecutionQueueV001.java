@@ -74,7 +74,7 @@ import org.json.JSONObject;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueueV001", urlPatterns = {"/AddToExecutionQueueV001"})
+@WebServlet(name = "AddToExecutionQueueV001", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueueV001"})
 public class AddToExecutionQueueV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(AddToExecutionQueueV001.class);

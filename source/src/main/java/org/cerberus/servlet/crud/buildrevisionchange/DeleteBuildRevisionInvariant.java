@@ -49,7 +49,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "DeleteBuildRevisionInvariant1", urlPatterns = {"/DeleteBuildRevisionInvariant1"})
+@WebServlet(name = "DeleteBuildRevisionInvariant", urlPatterns = {"/DeleteBuildRevisionInvariant"})
 public class DeleteBuildRevisionInvariant extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DeleteBuildRevisionInvariant.class);

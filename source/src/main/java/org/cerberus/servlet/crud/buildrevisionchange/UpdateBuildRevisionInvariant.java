@@ -50,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateBuildRevisionInvariant1", urlPatterns = {"/UpdateBuildRevisionInvariant1"})
+@WebServlet(name = "UpdateBuildRevisionInvariant", urlPatterns = {"/UpdateBuildRevisionInvariant"})
 public class UpdateBuildRevisionInvariant extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateBuildRevisionInvariant.class);

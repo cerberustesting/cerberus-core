@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.IAppServiceService;
@@ -54,6 +55,7 @@ import org.cerberus.crud.service.ITestCaseService;
 /**
  * @author bcivel
  */
+@WebServlet(name = "ReadAppService", urlPatterns = {"/ReadAppService"})
 public class ReadAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadAppService.class);

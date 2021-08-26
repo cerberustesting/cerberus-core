@@ -42,10 +42,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
 
 /**
  * @author bcivel
  */
+@WebServlet(name = "DeleteUser", urlPatterns = {"/DeleteUser"})
 public class DeleteUser extends HttpServlet {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(DeleteUser.class);
