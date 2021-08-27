@@ -174,7 +174,7 @@ public class AndroidAppiumService extends AppiumService {
                 valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }
             if (valueString.endsWith("\n")) {
-                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
+                valueString = valueString.substring(0, valueString.lastIndexOf('\n'));
             }
         }
 
