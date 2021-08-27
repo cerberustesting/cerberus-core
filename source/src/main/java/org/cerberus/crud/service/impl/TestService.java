@@ -169,23 +169,16 @@ public class TestService implements ITestService {
                                     .resolveDescription("OPERATION", "Delete")
                                     .resolveDescription(
                                             "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
-                                            + Collections2.transform(externallyUsedTestCaseSteps, new Function<TestCaseStep, String>() {
-                                                @Override
-                                                @Nullable
-                                                public String apply(@Nullable final TestCaseStep input) {
-                                                    return String.format(
-                                                            "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
-                                                            cerberusUrl,
-                                                            input.getTest(),
-                                                            input.getTestcase(),
-                                                            input.getStepId(),
-                                                            input.getTest(),
-                                                            input.getTestcase(),
-                                                            input.getStepId()
-                                                    );
-                                                }
-                                            }
-                                            )
+                                            + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
+                                                    "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
+                                                    cerberusUrl,
+                                                    input.getTest(),
+                                                    input.getTestcase(),
+                                                    input.getStepId(),
+                                                    input.getTest(),
+                                                    input.getTestcase(),
+                                                    input.getStepId()
+                                            ))
                                     )
                     );
                 } else {

@@ -142,27 +142,21 @@ public class RestService implements IRestService {
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
             // Create a custom response handler
-            ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
-
-                @Override
-                public AppService handleResponse(final HttpResponse response)
-                        throws ClientProtocolException, IOException {
-                    AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
-                    int responseCode = response.getStatusLine().getStatusCode();
-                    myResponse.setResponseHTTPCode(responseCode);
-                    myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
-                    LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
-                    Header[] allHeaderList = response.getAllHeaders();
-                    for (Header header : allHeaderList) {
-                        myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
-                                header.getValue(), "Y", 0, "", "", null, "", null));
-                    }
-                    HttpEntity entity = response.getEntity();
-                    myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
-                    return myResponse;
+            ResponseHandler<AppService> responseHandler = (final HttpResponse response) -> {
+                AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
+                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
+                int responseCode = response.getStatusLine().getStatusCode();
+                myResponse.setResponseHTTPCode(responseCode);
+                myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
+                LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
+                Header[] allHeaderList = response.getAllHeaders();
+                for (Header header : allHeaderList) {
+                    myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
+                            header.getValue(), "Y", 0, "", "", null, "", null));
                 }
-
+                HttpEntity entity = response.getEntity();
+                myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                return myResponse;
             };
             return httpclient.execute(httpget, responseHandler);
 
