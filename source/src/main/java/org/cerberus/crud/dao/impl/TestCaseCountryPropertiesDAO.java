@@ -774,7 +774,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         MessageEvent msg;
         final String query = "DELETE FROM `testcasecountryproperties` WHERE `Test`=? and `TestCase`=? and `Country`=? and `Property`=?";
 
-        loggingQuery(query.toString());
+        loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {

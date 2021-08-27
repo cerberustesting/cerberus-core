@@ -330,7 +330,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getId());
 
             preStat.executeUpdate();
@@ -358,7 +358,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, object.getTest());
             preStat.setString(2, object.getTestcase());
             preStat.setInt(3, object.getLabelId());

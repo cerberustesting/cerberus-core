@@ -396,7 +396,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            PreparedStatement preStat = connection.prepareStatement(sql);
             try {
                 preStat.setString(1, service);
 
@@ -951,7 +951,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL : " + query);
         }
         Connection connection = this.databaseSpring.connect();
         try {

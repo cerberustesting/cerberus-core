@@ -412,8 +412,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
 
-        jsonResponse.put("globalEnd", globalEnd.toString());
-        jsonResponse.put("globalStart", globalStart.toString());
+        jsonResponse.put("globalEnd", globalEnd);
+        jsonResponse.put("globalStart", globalStart);
         jsonResponse.put("globalStatus", globalStatus);
 
         jsonResponse.put("testList", ttc.values());

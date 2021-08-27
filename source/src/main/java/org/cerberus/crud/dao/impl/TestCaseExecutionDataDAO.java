@@ -309,7 +309,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.index : " + String.valueOf(object.getIndex()));
         }
 
-        RequestDbUtils.executeUpdate(databaseSpring, query.toString(),
+        RequestDbUtils.executeUpdate(databaseSpring, query,
                 ps -> {
                     int i = 1;
                     ps.setLong(i++, object.getId());
