@@ -248,7 +248,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
-                if (q == null || q == "") {
+                if (q == null || "".equals(q)) {
                     q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);

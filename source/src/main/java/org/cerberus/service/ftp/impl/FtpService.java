@@ -304,7 +304,7 @@ public class FtpService implements IFtpService {
             result.setResultMessage(message);
             String expectedContent = IOUtils.toString(byteContent, "UTF-8");
             String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
-            if (extension == "JSON" || extension == "XML" || extension == "TXT") {
+            if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
                 myResponse.setResponseHTTPBody(expectedContent);
             }
             myResponse.setResponseHTTPBodyContentType(extension);

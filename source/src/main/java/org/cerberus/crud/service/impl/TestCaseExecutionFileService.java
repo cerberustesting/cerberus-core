@@ -149,7 +149,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     
     @Override
     public String checkExtension(String fileName, String extension) {
-		if(extension.isEmpty() || extension != fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())) {
+		if(extension.isEmpty() || (extension == null ? fileName.substring(fileName.lastIndexOf('.')+1, fileName.length()) != null : !extension.equals(fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())))) {
 			if(fileName.contains(".")) {
 				extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
 				extension = extension.trim().toUpperCase();
