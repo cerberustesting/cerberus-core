@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.notifications.email;
 
-import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;

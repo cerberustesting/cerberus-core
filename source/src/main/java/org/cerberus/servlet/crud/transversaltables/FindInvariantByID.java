@@ -32,7 +32,6 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;

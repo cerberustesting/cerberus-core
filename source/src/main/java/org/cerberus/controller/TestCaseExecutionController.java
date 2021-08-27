@@ -19,7 +19,6 @@
  */
 package org.cerberus.controller;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;

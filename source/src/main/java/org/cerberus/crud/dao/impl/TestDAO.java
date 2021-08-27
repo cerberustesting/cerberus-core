@@ -39,7 +39,6 @@ import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;

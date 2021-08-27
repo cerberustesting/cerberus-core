@@ -20,8 +20,6 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @author bcivel

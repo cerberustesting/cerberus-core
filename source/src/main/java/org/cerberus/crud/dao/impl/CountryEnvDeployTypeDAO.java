@@ -39,7 +39,6 @@ import org.cerberus.crud.factory.impl.FactoryCountryEnvDeployType;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 @Repository

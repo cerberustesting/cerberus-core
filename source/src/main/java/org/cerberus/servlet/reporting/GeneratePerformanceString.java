@@ -31,8 +31,6 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.servlet.guipages.FindTestImplementationStatusPerApplication;
-import org.jfree.util.Log;
 
 /**
  *
