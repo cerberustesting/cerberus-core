@@ -84,6 +84,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     public static class Query {
 
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
+
+        private Query() {
+        }
     }
 
     private static final Logger LOG = LogManager.getLogger(TestCaseDAO.class);

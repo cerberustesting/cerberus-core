@@ -140,4 +140,7 @@ public class UserSecurity {
         }
         return StringUtils.replace(str, "'", "''");
     }
+
+    private UserSecurity() {
+    }
 }
