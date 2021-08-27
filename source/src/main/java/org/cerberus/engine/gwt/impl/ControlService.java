@@ -1450,6 +1450,7 @@ public class ControlService implements IControlService {
                     String value = "";
                     String expectedValue = controlUrl;
 
+                    @Override
                     public Boolean apply(WebDriver driver) {
                         try {
                             this.value = webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
@@ -1509,6 +1510,7 @@ public class ControlService implements IControlService {
                     String value;
                     String expectedValue = title;
 
+                    @Override
                     public Boolean apply(WebDriver driver) {
                         this.value = webdriverService.getTitle(tCExecution.getSession());
                         LOG.debug("Get new title : " + value + " >> Expected title : " + expectedValue);

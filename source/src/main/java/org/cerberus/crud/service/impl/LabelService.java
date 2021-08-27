@@ -75,6 +75,7 @@ public class LabelService implements ILabelService {
         return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
+    @Override
     public HashMap<Integer, Label> readAllToHash() {
         HashMap<Integer, Label> labels = new HashMap<>();
         for (Label label : this.readAll().getDataList()) {

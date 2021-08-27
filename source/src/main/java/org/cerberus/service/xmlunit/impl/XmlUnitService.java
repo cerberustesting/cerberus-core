@@ -194,6 +194,7 @@ public class XmlUnitService implements IXmlUnitService {
         return DEFAULT_GET_FROM_XML_VALUE;
     }
 
+    @Override
     public String getRawFromXml(final String xmlToParse, final String xpath) {
         if (xpath == null) {
             return DEFAULT_GET_FROM_XML_VALUE;

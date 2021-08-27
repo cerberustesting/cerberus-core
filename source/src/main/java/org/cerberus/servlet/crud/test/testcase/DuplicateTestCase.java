@@ -84,6 +84,7 @@ public class DuplicateTestCase extends AbstractCrudTestCase {
     @Autowired
     private ILogEventService logEventService;
 
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException, CerberusException {
         JSONObject jsonResponse = new JSONObject();

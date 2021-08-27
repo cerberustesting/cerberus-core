@@ -50,6 +50,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 //            endRecordVideo();
 //    }
 
+    @Override
     public void beginRecordVideo() {
 
         try {
@@ -89,6 +90,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
     }
 
+    @Override
     public void endRecordVideo() {
 
         AppiumDriver driver = null;

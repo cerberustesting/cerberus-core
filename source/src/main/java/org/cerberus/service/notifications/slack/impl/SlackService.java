@@ -108,6 +108,7 @@ public class SlackService implements ISlackService {
         if (acceptUnsignedSsl) {
             // authorize non valide certificat ssl
             SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
+                @Override
                 public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                     return true;
                 }

@@ -132,6 +132,7 @@ public class FtpService implements IFtpService {
                 DEFAULT_PROXYAUTHENT_ACTIVATE)) {
             Authenticator.setDefault(
                     new Authenticator() {
+                @Override
                 public PasswordAuthentication getPasswordAuthentication() {
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
@@ -147,6 +148,7 @@ public class FtpService implements IFtpService {
         client.setProxy(proxy);
     }
 
+    @Override
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service) {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();

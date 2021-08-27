@@ -119,6 +119,7 @@ public class RestService implements IRestService {
 
         public static final String METHOD_NAME = "DELETE";
 
+        @Override
         public String getMethod() {
             return METHOD_NAME;
         }
@@ -267,6 +268,7 @@ public class RestService implements IRestService {
                 LOG.debug("Trusting all SSL Certificates.");
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
+                    @Override
                     public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                         return true;
                     }
