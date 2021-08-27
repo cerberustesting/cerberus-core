@@ -273,7 +273,6 @@ public class ReadLabel extends HttpServlet {
                 String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
                 String test1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testSelect"), null, charset);
                 String testCase1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testCaseSelect"), null, charset);
-                ;
                 labelList = testCaseLabelService.convert(testCaseLabelService.readByTestTestCase(test1, testCase1, new ArrayList<TestCase>()));
             } catch (CerberusException ex) {
                 LOG.error("Could not get TestCase Label", ex);

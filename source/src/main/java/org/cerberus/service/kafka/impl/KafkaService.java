@@ -111,7 +111,7 @@ public class KafkaService implements IKafkaService {
             String bootstrapServers,
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs) {
 
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);;
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);

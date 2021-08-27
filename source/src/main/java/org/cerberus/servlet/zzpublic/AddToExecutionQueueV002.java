@@ -201,7 +201,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
             JSONArray countryJSONArray = new JSONArray(countries);
             JSONArray envJSONArray = new JSONArray(environments);
 
-            List<String> browsers = new ArrayList<>();;
+            List<String> browsers = new ArrayList<>();
             browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), browsers, charset);
 
             // Execution parameters.
