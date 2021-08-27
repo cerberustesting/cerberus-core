@@ -727,7 +727,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `privateData`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
         query.append("`service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
-        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
@@ -755,7 +755,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getScript()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseUrl()));
-                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
                     preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getService()));
                 }
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
@@ -883,7 +883,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
         String query = "UPDATE testdatalib SET `name`=?, `type`=?, `privateData`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
-        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
             query += " ,`service` = ? ";
         } else {
             query += " ,`service` = null ";
@@ -920,7 +920,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, testDataLib.getSeparator());
                 preStat.setString(i++, testDataLib.getDescription());
                 preStat.setString(i++, testDataLib.getLastModifier());
-                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
                     preStat.setString(i++, testDataLib.getService());
                 }
                 preStat.setInt(i++, testDataLib.getTestDataLibID());

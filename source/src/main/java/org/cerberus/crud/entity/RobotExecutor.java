@@ -402,7 +402,7 @@ public class RobotExecutor {
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {
-                if (this.getHostPassword() != null && !this.getHostPassword().equals("")) {
+                if (this.getHostPassword() != null && !this.getHostPassword().isEmpty()) {
                     result.put("hostPassword", "XXXXXXXXXX");
                 } else {
                     result.put("hostPassword", "");

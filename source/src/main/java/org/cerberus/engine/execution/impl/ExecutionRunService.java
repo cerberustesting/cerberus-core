@@ -315,7 +315,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setResultMessage(mes);
                     updateTCExecution(tCExecution, true);
 
-                    if (tCExecution.getRobotHost().equalsIgnoreCase("")) {
+                    if (tCExecution.getRobotHost().isEmpty()) {
                         mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                         mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
                         LOG.debug(logPrefix + mes.getDescription());
@@ -692,7 +692,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
-                                        || testCaseStepExecution.getLoop().equals("")
+                                        || testCaseStepExecution.getLoop().isEmpty()
                                         || step_index > 1) {
                                     if (!(descriptionOrConditionStepDecodeError)) {
 

@@ -396,15 +396,15 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         gSearch.append(" or `description` like '%");
         gSearch.append("%') ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+        if (!searchTerm.isEmpty() && !individualSearch.isEmpty()) {
             searchSQL.append(gSearch.toString());
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
+        } else if (!individualSearch.isEmpty()) {
             searchSQL.append(" where `");
             searchSQL.append(individualSearch);
             searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL.append(gSearch.toString());
         }
 

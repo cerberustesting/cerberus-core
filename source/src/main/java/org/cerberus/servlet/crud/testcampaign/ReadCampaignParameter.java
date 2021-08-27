@@ -77,7 +77,7 @@ public class ReadCampaignParameter extends HttpServlet {
         AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (!campaign.equals("")) {
+            if (!campaign.isEmpty()) {
                 answer = findParameterListByCampaign(appContext, request, response, campaign);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {

@@ -90,7 +90,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
         try {
 
             List<String> sArray = new ArrayList<>();
-            if (!mySystem.equals("")) {
+            if (!mySystem.isEmpty()) {
                 String smySystem = " `system` like '%" + mySystem + "%'";
                 sArray.add(smySystem);
             }

@@ -96,7 +96,7 @@ public class ReadLogEvent extends HttpServlet {
         long idlog = 0;
         boolean idlog_error = true;
         try {
-            if (request.getParameter("logeventid") != null && !request.getParameter("logeventid").equals("")) {
+            if (request.getParameter("logeventid") != null && !request.getParameter("logeventid").isEmpty()) {
                 idlog = Integer.valueOf(policy.sanitize(request.getParameter("logeventid")));
                 idlog_error = false;
             }

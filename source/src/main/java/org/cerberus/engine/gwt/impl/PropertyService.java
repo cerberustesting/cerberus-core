@@ -417,7 +417,7 @@ public class PropertyService implements IPropertyService {
                                 stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
                                 stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
 
-                                if (key.equals("")) { // If subdata is empty we can omit the () or .
+                                if (key.isEmpty()) { // If subdata is empty we can omit the () or .
                                     variableString1 = tced.getProperty() + "(" + (ind + 1) + ")";
                                     stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);

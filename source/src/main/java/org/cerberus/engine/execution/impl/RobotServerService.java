@@ -634,7 +634,7 @@ public class RobotServerService implements IRobotServerService {
             for (RobotCapability additionalCapability : additionalCapabilities) {
                 LOG.debug("RobotCaps on Robot : " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
                 if ((caps.getCapability(additionalCapability.getCapability()) == null)
-                        || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().equals("")))) { // caps does not already exist so we can set it.
+                        || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().isEmpty()))) { // caps does not already exist so we can set it.
                     if (StringUtil.isBoolean(additionalCapability.getValue())) {
                         caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
                     } else if (StringUtil.isInteger(additionalCapability.getValue())) {
@@ -653,13 +653,13 @@ public class RobotServerService implements IRobotServerService {
          */
         if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
             if ((caps.getCapability("platform") == null)
-                    || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().equals("")))) {
+                    || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().isEmpty()))) {
                 caps.setCapability("platformName", tCExecution.getPlatform());
             }
         }
         if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
             if ((caps.getCapability("version") == null)
-                    || ((caps.getCapability("version") != null) && (caps.getCapability("version").toString().equals("")))) {
+                    || ((caps.getCapability("version") != null) && (caps.getCapability("version").toString().isEmpty()))) {
                 caps.setCapability("version", tCExecution.getVersion());
             }
         }
@@ -668,25 +668,25 @@ public class RobotServerService implements IRobotServerService {
             // Setting deviceUdid and device name from executor.
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
                 if ((caps.getCapability("udid") == null)
-                        || ((caps.getCapability("udid") != null) && (caps.getCapability("udid").toString().equals("")))) {
+                        || ((caps.getCapability("udid") != null) && (caps.getCapability("udid").toString().isEmpty()))) {
                     caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                 if ((caps.getCapability("deviceName") == null)
-                        || ((caps.getCapability("deviceName") != null) && (caps.getCapability("deviceName").toString().equals("")))) {
+                        || ((caps.getCapability("deviceName") != null) && (caps.getCapability("deviceName").toString().isEmpty()))) {
                     caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                 if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                     if ((caps.getCapability("systemPort") == null)
-                            || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
+                            || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().isEmpty()))) {
                         caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                     if ((caps.getCapability("wdaLocalPort") == null)
-                            || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().equals("")))) {
+                            || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().isEmpty()))) {
                         caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 }
@@ -812,7 +812,7 @@ public class RobotServerService implements IRobotServerService {
 
     private boolean isNotAlreadyDefined(MutableCapabilities caps, String capability) {
         return ((caps.getCapability(capability) == null)
-                || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().equals(""))));
+                || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().isEmpty())));
     }
 
     /**

@@ -89,7 +89,7 @@ public class CreateInvariant extends HttpServlet {
         Integer sort = 10;
         boolean sort_error = false;
         try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+            if (request.getParameter("sort") != null && !request.getParameter("sort").isEmpty()) {
                 sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {

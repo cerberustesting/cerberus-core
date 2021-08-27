@@ -482,7 +482,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumnPosition());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }
@@ -515,7 +515,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumn());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }
@@ -550,7 +550,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getParsingAnswer());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }

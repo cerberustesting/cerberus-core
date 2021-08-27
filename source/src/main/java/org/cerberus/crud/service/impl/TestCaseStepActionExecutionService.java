@@ -95,7 +95,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
             for (List<String> listInformation : listOfDuration) {
                 String newserie = listInformation.get(1).concat("-").concat(listInformation.get(2)).concat("-").concat(listInformation.get(3)).concat("-").concat(listInformation.get(7));
                 if (!serie.equals(newserie)) {
-                    if (!serie.equals("")) {
+                    if (!serie.isEmpty()) {
                         result.put(line);
                     }
                     line = new JSONArray();

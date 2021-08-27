@@ -116,7 +116,7 @@ public class DeleteTestCaseLabel extends HttpServlet {
             myIdInt = 0;
             boolean label_error = true;
             try {
-                if (myLabelId != null && !myLabelId.equals("")) {
+                if (myLabelId != null && !myLabelId.isEmpty()) {
                     myIdInt = Integer.valueOf(policy.sanitize(myLabelId));
                     label_error = false;
                 }

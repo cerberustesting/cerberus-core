@@ -129,7 +129,7 @@ public class ParameterService implements IParameterService {
         try {
             LOG.debug("Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
-            if (myParameter != null && myParameter.getValue().equalsIgnoreCase("")) {
+            if (myParameter != null && myParameter.getValue().isEmpty()) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {

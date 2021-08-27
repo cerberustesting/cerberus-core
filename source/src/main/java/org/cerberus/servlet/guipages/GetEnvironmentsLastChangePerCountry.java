@@ -88,7 +88,7 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
         Integer nbDays = 10;
         boolean nbdays_error = false;
         try {
-            if (request.getParameter("nbdays") != null && !request.getParameter("nbdays").equals("")) {
+            if (request.getParameter("nbdays") != null && !request.getParameter("nbdays").isEmpty()) {
                 nbDays = Integer.valueOf(policy.sanitize(request.getParameter("nbdays")));
             }
         } catch (Exception ex) {

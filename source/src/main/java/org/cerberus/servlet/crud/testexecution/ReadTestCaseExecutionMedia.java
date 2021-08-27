@@ -108,7 +108,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         AnswerList al = new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
         TestCaseExecutionFile tceFile = null;
-        if (!(fileName.equals(""))) {
+        if (!(fileName.isEmpty())) {
 
             IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile = appContext.getBean(IFactoryTestCaseExecutionFile.class);
             tceFile = factoryTestCaseExecutionFile.create(0, 0, "", fileDesc, fileName, fileType, "", null, "", null);

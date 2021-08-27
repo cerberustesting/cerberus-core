@@ -89,7 +89,7 @@ public class SqlUtil {
         result.append(" ");
         result.append(search.get(0));
 
-        if (!search.get(0).equals("") || search.get(0) != null) {
+        if (!search.get(0).isEmpty() || search.get(0) != null) {
             if (search.size() == 1) {
                 result.append(" in (");
                 for (Object myObj : obj) {

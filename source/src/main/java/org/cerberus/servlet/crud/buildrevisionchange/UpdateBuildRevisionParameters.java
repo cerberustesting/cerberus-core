@@ -101,7 +101,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
             brpid = 0;
             boolean brpid_error = true;
             try {
-                if (myId1 != null && !myId1.equals("")) {
+                if (myId1 != null && !myId1.isEmpty()) {
                     brpid = Integer.valueOf(policy.sanitize(myId1));
                     brpid_error = false;
                 }

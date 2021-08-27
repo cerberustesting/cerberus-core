@@ -122,15 +122,15 @@ public class ReadTestCaseExecution extends HttpServlet {
                     //If columnName is present, then return the distinct value of this column.
                     answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Tag.equals("") && byColumns) {
+                } else if (!Tag.isEmpty() && byColumns) {
                     //Return the columns to display in the execution table
                     answer = findExecutionColumns(appContext, request, Tag);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Tag.equals("") && !byColumns) {
+                } else if (!Tag.isEmpty() && !byColumns) {
                     //Return the list of execution for the execution table
                     answer = findExecutionListByTag(appContext, request, Tag);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!test.equals("") && !testCase.equals("")) {
+                } else if (!test.isEmpty() && !testCase.isEmpty()) {
                     TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                     JSONObject result = new JSONObject();
                     if (lastExec != null) {

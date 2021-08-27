@@ -139,7 +139,7 @@ public class CreateRobot extends HttpServlet {
         Integer robotid = 0;
         boolean robotid_error = false;
         try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").isEmpty()) {
                 robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
             }
         } catch (Exception ex) {

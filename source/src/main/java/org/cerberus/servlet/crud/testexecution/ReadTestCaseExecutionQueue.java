@@ -103,7 +103,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         boolean queueid_error = false;
         if (request.getParameter("queueid") != null) {
             try {
-                if (request.getParameter("queueid") != null && !request.getParameter("queueid").equals("")) {
+                if (request.getParameter("queueid") != null && !request.getParameter("queueid").isEmpty()) {
                     queueid = Long.valueOf(policy.sanitize(request.getParameter("queueid")));
                     queueid_error = false;
                 }

@@ -329,7 +329,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
             JSONArray countries = propJson.getJSONArray("countries");
-            if (!delete && !property.equals("")) {
+            if (!delete && !property.isEmpty()) {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getJSONObject(j).getString("value");
                     testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(testcase.getTest(), testcase.getTestcase(), country, property, description, type, database, value, value2, length, rowLimit, nature,
@@ -374,7 +374,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     tcStep.setActions(getTestCaseStepActionsFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
-                    if (libraryStepStepId != -1 && !libraryStepTest.equals("") && !libraryStepTestCase.equals("")) {
+                    if (libraryStepStepId != -1 && !libraryStepTest.isEmpty() && !libraryStepTestCase.isEmpty()) {
                         tcs = tcsService.findTestCaseStep(libraryStepTest, libraryStepTestCase, libraryStepStepId);
                         if (tcs != null) {
                             tcStep.setLibraryStepTest(tcs.getTest());

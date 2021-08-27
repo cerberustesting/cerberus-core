@@ -96,7 +96,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         Integer lvlid = -1;
         boolean lvlid_error = true;
         try {
-            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
+            if (request.getParameter("level") != null && !request.getParameter("level").isEmpty()) {
                 lvlid = Integer.valueOf(policy.sanitize(request.getParameter("level")));
                 lvlid_error = false;
             }
@@ -110,7 +110,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         Integer seqid = -1;
         boolean seqid_error = true;
         try {
-            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
+            if (request.getParameter("seq") != null && !request.getParameter("seq").isEmpty()) {
                 seqid = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
                 seqid_error = false;
             }

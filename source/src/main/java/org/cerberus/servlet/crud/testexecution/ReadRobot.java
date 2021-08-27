@@ -98,7 +98,7 @@ public class ReadRobot extends HttpServlet {
         boolean robotid_error = false;
         if (request.getParameter("robotid") != null) {
             try {
-                if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                if (request.getParameter("robotid") != null && !request.getParameter("robotid").isEmpty()) {
                     robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
                     robotid_error = false;
                 }

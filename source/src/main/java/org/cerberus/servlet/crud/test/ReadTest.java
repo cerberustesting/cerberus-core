@@ -106,13 +106,13 @@ public class ReadTest extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (!test.equals("")) {
+            if (!test.isEmpty()) {
                 answer = findTestByKey(test, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!system.equals("")) { // Test Folder
+            } else if (!system.isEmpty()) { // Test Folder
                 answer = findTestBySystem(system, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // TestCaseScript

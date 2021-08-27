@@ -146,7 +146,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         Integer priority = TestCaseExecutionQueue.PRIORITY_DEFAULT;
         boolean prio_error = false;
         try {
-            if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {
+            if (request.getParameter("priority") != null && !request.getParameter("priority").isEmpty()) {
                 priority = Integer.valueOf(policy.sanitize(request.getParameter("priority")));
             }
         } catch (Exception ex) {

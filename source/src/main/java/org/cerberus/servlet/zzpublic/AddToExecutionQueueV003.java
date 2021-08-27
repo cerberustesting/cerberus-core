@@ -537,7 +537,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 || ((envGp1.equals("UAT")) && tc.isActiveUAT())
                                                 || ((envGp1.equals("QA")) && tc.isActiveQA())
                                                 || (envGp1.equals("DEV"))
-                                                || (envGp1.equals(""))) {
+                                                || (envGp1.isEmpty())) {
                                             // Getting Application in order to check application type against browser.
                                             appMap = updateMapWithApplication(tc.getApplication(), appMap);
                                             Application app = appMap.get(tc.getApplication());

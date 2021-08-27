@@ -520,15 +520,15 @@ public class UserDAO implements IUserDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+        if (!searchTerm.isEmpty() && !individualSearch.isEmpty()) {
             searchSQL.append(gSearch.toString());
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
+        } else if (!individualSearch.isEmpty()) {
             searchSQL.append(" where `");
             searchSQL.append(individualSearch);
             searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL.append(gSearch.toString());
         }
 
@@ -612,11 +612,11 @@ public class UserDAO implements IUserDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !inds.equals("")) {
+        if (!searchTerm.isEmpty() && !inds.isEmpty()) {
             searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
+        } else if (!inds.isEmpty()) {
             searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL = gSearch.toString();
         }
 

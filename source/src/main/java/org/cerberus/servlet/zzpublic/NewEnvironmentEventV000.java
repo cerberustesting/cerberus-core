@@ -104,23 +104,23 @@ public class NewEnvironmentEventV000 extends HttpServlet {
             boolean error = false;
 
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (system.equalsIgnoreCase("")) {
+            if (system.isEmpty()) {
                 out.println("Error - Parameter system is mandatory.");
                 error = true;
             }
-            if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
+            if (!system.isEmpty() && !invariantService.isInvariantExist("SYSTEM", system)) {
                 out.println("Error - System does not exist  : " + system);
                 error = true;
             }
-            if (environment.equalsIgnoreCase("")) {
+            if (environment.isEmpty()) {
                 out.println("Error - Parameter environment is mandatory.");
                 error = true;
             }
-            if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
+            if (!environment.isEmpty() && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
                 out.println("Error - Environment does not exist  : " + environment);
                 error = true;
             }
-            if (country.equalsIgnoreCase("")) {
+            if (country.isEmpty()) {
                 out.println("Error - Parameter country is mandatory.");
                 error = true;
             } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
@@ -135,11 +135,11 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                     }
                 }
             }
-            if (event.equalsIgnoreCase("")) {
+            if (event.isEmpty()) {
                 out.println("Error - Parameter event is mandatory.");
                 error = true;
             }
-            if (!event.equalsIgnoreCase("") && !batchInvariantService.exist(event)) {
+            if (!event.isEmpty() && !batchInvariantService.exist(event)) {
                 out.println("Error - Event does not exist  : " + event);
                 error = true;
             }
@@ -179,7 +179,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                         OutputMessage = me.getMessage().getDescription();
                     }
 
-                    if (OutputMessage.equals("")) {
+                    if (OutputMessage.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
                         Answer answerSMTP = new AnswerList<>(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);

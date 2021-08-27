@@ -569,7 +569,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
-        if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+        if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
             query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -586,7 +586,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 int i = 1;
                 preStat.setString(i++, object.getService());
                 preStat.setString(i++, object.getGroup());
-                if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+                if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
                     preStat.setString(i++, object.getApplication());
                 }
                 preStat.setString(i++, object.getType());
@@ -641,7 +641,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg = null;
         String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, KafkaTopic = ?, KafkaKey = ?, KafkaFilterPath = ?, KafkaFilterValue = ?, AttachementURL = ?, "
                 + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
-        if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+        if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
             query += " ,Application = ?";
         } else {
             query += " ,Application = null";
@@ -674,7 +674,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getMethod());
                 preStat.setString(i++, object.getUsrModif());
                 preStat.setString(i++, object.getFileName());
-                if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+                if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
                     preStat.setString(i++, object.getApplication());
                 }
                 preStat.setString(i++, service);

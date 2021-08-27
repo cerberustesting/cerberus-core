@@ -67,7 +67,7 @@ public final class ParameterParserUtil {
      * DAO where LIKE are used.
      */
     public static String wildcardIfEmpty(String inString) {
-        if ((inString == null) || (inString.equalsIgnoreCase(""))) {
+        if ((inString == null) || (inString.isEmpty())) {
             return "%";
         }
         return inString;
@@ -81,7 +81,7 @@ public final class ParameterParserUtil {
      */
     public static String wildcardOrIsNullIfEmpty(String column, String inString) {
         StringBuilder sb = new StringBuilder();
-        if ((inString == null) || (inString.equalsIgnoreCase(""))) {
+        if ((inString == null) || (inString.isEmpty())) {
             sb.append("'%' or ").append(column).append(" is null");
             return sb.toString();
         }
@@ -380,7 +380,7 @@ public final class ParameterParserUtil {
      * @return
      */
     public static int parseIntegerParamAndDecode(String inParam, int defaultVal, String charset) {
-        if ((inParam == null) || (inParam.equals(""))) {
+        if ((inParam == null) || (inParam.isEmpty())) {
             return defaultVal;
         }
 

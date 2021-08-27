@@ -84,7 +84,7 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
         Integer level = -1;
         boolean level_error = false;
         try {
-            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
+            if (request.getParameter("level") != null && !request.getParameter("level").isEmpty()) {
                 level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
             }
         } catch (Exception ex) {
@@ -93,7 +93,7 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
         Integer seq = -1;
         boolean seq_error = false;
         try {
-            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
+            if (request.getParameter("seq") != null && !request.getParameter("seq").isEmpty()) {
                 seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
             }
         } catch (Exception ex) {
