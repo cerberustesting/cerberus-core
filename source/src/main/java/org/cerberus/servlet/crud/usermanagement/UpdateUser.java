@@ -113,13 +113,13 @@ public class UpdateUser extends HttpServlet {
             try {
                 myUser = userService.findUserByKey(id);
 
-                List<String> listGroup = new ArrayList<String>();
+                List<String> listGroup = new ArrayList<>();
                 JSONArray GroupArray = new JSONArray(request.getParameter("groups"));
                 for (int i = 0; i < GroupArray.length(); i++) {
                     listGroup.add(GroupArray.getString(i));
                 }
 
-                newGroups = new ArrayList<UserGroup>();
+                newGroups = new ArrayList<>();
                 for (String group : listGroup) {
                     newGroups.add(factoryGroup.create(group));
                 }
@@ -127,11 +127,11 @@ public class UpdateUser extends HttpServlet {
                 myUser.setLogin(login);
                 myUser.setName(name);
                 myUser.setTeam(team);
-                newSystems = new ArrayList<UserSystem>();
+                newSystems = new ArrayList<>();
 
                 JSONArray SystemArray = new JSONArray(request.getParameter("systems"));
 
-                List<String> listSystem = new ArrayList<String>();
+                List<String> listSystem = new ArrayList<>();
                 for (int i = 0; i < SystemArray.length(); i++) {
                     listSystem.add(SystemArray.getString(i));
                 }

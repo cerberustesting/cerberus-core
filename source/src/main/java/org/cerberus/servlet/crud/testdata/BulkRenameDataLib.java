@@ -68,7 +68,7 @@ public class BulkRenameDataLib extends HttpServlet {
         response.setCharacterEncoding("utf8");
 
         Answer ans = new Answer();
-        List<Answer> ansList = new ArrayList<Answer>();
+        List<Answer> ansList = new ArrayList<>();
 
         boolean error = true;
 

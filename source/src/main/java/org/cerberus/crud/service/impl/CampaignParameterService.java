@@ -69,7 +69,7 @@ public class CampaignParameterService implements ICampaignParameterService {
         final Map<String, List<String>> sortedCampaignParameters = new HashMap<>();
         for (final CampaignParameter campaignParameter : campaignParameters.getDataList()) {
             if (!sortedCampaignParameters.containsKey(campaignParameter.getParameter())) {
-                sortedCampaignParameters.put(campaignParameter.getParameter(), new ArrayList<String>());
+                sortedCampaignParameters.put(campaignParameter.getParameter(), new ArrayList<>());
             }
             sortedCampaignParameters.get(campaignParameter.getParameter()).add(campaignParameter.getValue());
         }

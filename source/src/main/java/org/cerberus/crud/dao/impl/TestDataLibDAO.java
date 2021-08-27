@@ -379,7 +379,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerList<TestDataLib> answer = new AnswerList<>();
         MessageEvent msg;
 
-        List<TestDataLib> list = new ArrayList<TestDataLib>();
+        List<TestDataLib> list = new ArrayList<>();
         final String query = "SELECT * FROM testdatalib tdl"
                 + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata=''; ";
 
@@ -392,7 +392,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestDataLib>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -652,7 +652,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public AnswerList<String> readDistinctGroups() {
         AnswerList<String> answerList = new AnswerList<>();
-        ArrayList<String> listOfGroups = new ArrayList<String>();
+        ArrayList<String> listOfGroups = new ArrayList<>();
         MessageEvent msg;
         String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";
 
@@ -1059,7 +1059,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

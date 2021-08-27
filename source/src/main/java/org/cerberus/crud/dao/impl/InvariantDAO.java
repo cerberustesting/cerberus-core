@@ -117,7 +117,7 @@ public class InvariantDAO implements IInvariantDAO {
         AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 = ? ORDER BY sort";
 
         // Debug message on SQL.

@@ -112,7 +112,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -400,7 +400,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 preStat.setString(1, service);
 
-                HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
+                HashMap<String, TestListDTO> map = new HashMap<>();
 
                 String key, test, testCase;
                 ResultSet resultSet = preStat.executeQuery();
@@ -435,7 +435,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                     }
 
-                    listOfTests = new ArrayList<TestListDTO>(map.values());
+                    listOfTests = new ArrayList<>(map.values());
 
                     if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -658,9 +658,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     public boolean updateTestCaseInformationCountries(TestCase tc) {
         boolean res = false;
         final String sql_count = "SELECT Country FROM testcasecountry WHERE Test = ? AND TestCase = ?";
-        ArrayList<String> countriesDB = new ArrayList<String>();
+        ArrayList<String> countriesDB = new ArrayList<>();
 
-        List<String> countryList = new ArrayList<String>();
+        List<String> countryList = new ArrayList<>();
         for (TestCaseCountry tcCountry : tc.getTestCaseCountries()) {
             countryList.add(tcCountry.getCountry());
         }
@@ -958,7 +958,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCase>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1110,7 +1110,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 PreparedStatement preStat = connection.prepareStatement(query);
                 ResultSet resultSet = preStat.executeQuery();) {
 
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             while (resultSet.next()) {
                 list.add(resultSet.getString(1));
             }
@@ -1414,7 +1414,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1471,7 +1471,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1781,7 +1781,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

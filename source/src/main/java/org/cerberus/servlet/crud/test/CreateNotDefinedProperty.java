@@ -97,14 +97,14 @@ public class CreateNotDefinedProperty extends HttpServlet {
 
             if (toCountriesAll != null && toCountriesAll.size() > 0) {
                 // Variable for the properties list of the destination TestCase
-                List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<TestCaseCountryProperties>();
+                List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<>();
 
                 // Variable for the countries of a property of the destination TestCase
                 List<String> toCountriesProp;
                 IDocumentationService docService = appContext.getBean(DocumentationService.class);
                 String notDefinedProperty = docService.findLabel("page_testcase", "txt_property_not_defined", "** Property not defined **", userLanguage);
                 // List of all country of the destination test for the current property
-                List<String> toCountries = new ArrayList<String>();
+                List<String> toCountries = new ArrayList<>();
                 toCountries.addAll(toCountriesAll);
 
                 // Retrieve the country of the destination TestCase for the property,

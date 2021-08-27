@@ -452,7 +452,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PUT the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }
@@ -505,7 +505,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PATCH the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }

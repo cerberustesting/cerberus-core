@@ -90,7 +90,7 @@ public class FtpService implements IFtpService {
 
     @Override
     public HashMap<String, String> fromFtpStringToHashMap(String ftpChain) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         String tmp;
         Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
         Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);

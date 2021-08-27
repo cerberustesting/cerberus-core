@@ -102,7 +102,7 @@ public class CreateTestDataLib extends HttpServlet {
 
         response.setContentType("application/json");
 
-        Map<String, String> fileData = new HashMap<String, String>();
+        Map<String, String> fileData = new HashMap<>();
         FileItem file = null;
 
         FileItemFactory factory = new DiskFileItemFactory();

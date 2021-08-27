@@ -180,9 +180,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         constrains_current.put(const01_key, poolSizeGeneral);
 
         // Getting RobotHost PoolSize
-        HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+        HashMap<String, Integer> robot_poolsize = new HashMap<>();
         robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
-        HashMap<String, Integer> robotext_poolsize = new HashMap<String, Integer>();
+        HashMap<String, Integer> robotext_poolsize = new HashMap<>();
         robotext_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
 
         // Getting all executions to be treated.
@@ -229,7 +229,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Override
     public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
         AnswerList<TestCaseExecutionQueueToTreat> answer = new AnswerList<>();
-        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+        HashMap<String, Integer> constrains_current = new HashMap<>();
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreat();

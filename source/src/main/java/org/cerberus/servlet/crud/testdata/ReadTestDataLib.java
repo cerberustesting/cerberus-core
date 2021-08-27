@@ -203,7 +203,7 @@ public class ReadTestDataLib extends HttpServlet {
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(request.getParameter("sLike").split(",")));
 
         for (int a = 0; a < columnToSort.length; a++) {

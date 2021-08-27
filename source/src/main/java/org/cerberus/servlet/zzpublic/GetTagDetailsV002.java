@@ -94,7 +94,7 @@ public class GetTagDetailsV002 extends HttpServlet {
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         if (apiKeyService.checkAPIKey(request, response)) {
             List<TestCaseExecution> listOfExecutions;
-            List<JSONObject> listOfExecutionsJSON = new ArrayList<JSONObject>();
+            List<JSONObject> listOfExecutionsJSON = new ArrayList<>();
             try {
                 // get invariants lists (priorities, countries and env)
                 prioritiesList = invariantService.readByIdName("PRIORITY");

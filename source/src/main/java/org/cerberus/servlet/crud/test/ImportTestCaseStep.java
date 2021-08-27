@@ -118,7 +118,7 @@ public class ImportTestCaseStep extends HttpServlet {
         LOG.debug("Rewrite TestCaseStepAction");
         List<TestCaseStepAction> tcsaToImport = new ArrayList<>();
         // retrieve list of property name used in the stepId
-        List<String> propertyNamesOfStep = new ArrayList<String>();
+        List<String> propertyNamesOfStep = new ArrayList<>();
         for (TestCaseStepAction tcsa : fromTcsa) {
             tcsa.setTest(test);
             tcsa.setTestcase(testCase);

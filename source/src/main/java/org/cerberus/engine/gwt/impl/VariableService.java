@@ -190,7 +190,7 @@ public class VariableService implements IVariableService {
     }
 
     private List<String> getVariableListFromString(String str) {
-        List<String> variable = new ArrayList<String>();
+        List<String> variable = new ArrayList<>();
 
         final String regex = "%(property|system|object|service)\\..*?%";
 

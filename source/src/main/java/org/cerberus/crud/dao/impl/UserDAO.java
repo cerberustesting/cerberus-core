@@ -118,7 +118,7 @@ public class UserDAO implements IUserDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<User>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         User user = this.loadFromResultSet(resultSet);
                         list.add(user);
@@ -332,7 +332,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public AnswerItem<User> updateUserPassword(User user, String password, String requestNewPassword) {
-        AnswerItem<User> answer = new AnswerItem<User>();
+        AnswerItem<User> answer = new AnswerItem<>();
         MessageEvent msg;
         boolean res = false;
         final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
@@ -494,7 +494,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<User> result = new ArrayList<User>();
+        List<User> result = new ArrayList<>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -677,7 +677,7 @@ public class UserDAO implements IUserDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<User>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         User user = this.loadFromResultSet(resultSet);
                         list.add(user);

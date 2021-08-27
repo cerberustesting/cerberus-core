@@ -112,7 +112,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-        List<String> systems = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List<String> systems = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String from = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("from"), null, "UTF8");
         String to = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("to"), null, "UTF8");
 

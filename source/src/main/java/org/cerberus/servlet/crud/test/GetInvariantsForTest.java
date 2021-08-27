@@ -60,7 +60,7 @@ public class GetInvariantsForTest extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
         try {
-            List<String> values = new ArrayList<String>();
+            List<String> values = new ArrayList<>();
             values.add("COUNTRY");
             values.add("RUNQA");
             values.add("RUNUAT");
@@ -73,13 +73,13 @@ public class GetInvariantsForTest extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
 
-            HashMap<String, List<String>> invariants = new HashMap<String, List<String>>();
+            HashMap<String, List<String>> invariants = new HashMap<>();
             List<Invariant> l = invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname " + SqlUtil.getInSQLClause(values)).getDataList();
             for (Invariant myInvariant : l) {
                 if (invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     list.add(myInvariant.getValue());
                     invariants.put(myInvariant.getIdName(), list);
                 }
@@ -90,7 +90,7 @@ public class GetInvariantsForTest extends HttpServlet {
                 if (invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     list.add(myInvariant.getValue());
                     invariants.put(myInvariant.getIdName(), list);
                 }

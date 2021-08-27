@@ -92,7 +92,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(2, testcase);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));
@@ -285,7 +285,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testcase, int stepId) throws CerberusException {
-        List<TestCaseStep> list = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> list = new ArrayList<>();
         final String query = "SELECT * FROM testcasestep WHERE isUsingLibraryStep IS true AND libraryStepTest = ? AND libraryStepTestcase = ? AND libraryStepStepId = ?";
 
         // Debug message on SQL.
@@ -346,7 +346,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(2, testcase);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));
@@ -419,7 +419,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(1, application);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("libraryStepTest");
@@ -475,7 +475,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(1, system);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
@@ -549,7 +549,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
@@ -771,7 +771,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         AnswerList<TestCaseStep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestep tcs WHERE tcs.isUsingLibraryStep = true AND tcs.libraryStepTest = ? AND tcs.libraryStepTestcase = ? AND tcs.libraryStepStepId = ?");
 

@@ -501,7 +501,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 invariantEnvMap.put("MANUAL", "");
 
                 // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
-                List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
+                List<TestCaseExecutionQueue> toInserts = new ArrayList<>();
                 try {
 
                     HashMap<String, CountryEnvParam> envMap = new HashMap<>();

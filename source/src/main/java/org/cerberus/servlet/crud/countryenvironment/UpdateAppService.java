@@ -99,7 +99,7 @@ public class UpdateAppService extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
-        Map<String, String> fileData = new HashMap<String, String>();
+        Map<String, String> fileData = new HashMap<>();
         FileItem file = null;
 
         FileItemFactory factory = new DiskFileItemFactory();

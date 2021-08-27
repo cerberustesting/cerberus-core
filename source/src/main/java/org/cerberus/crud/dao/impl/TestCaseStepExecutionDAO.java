@@ -209,7 +209,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(1, String.valueOf(id));
 
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<TestCaseStepExecution>();
+                result = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         result.add(this.loadFromResultSet(resultSet));

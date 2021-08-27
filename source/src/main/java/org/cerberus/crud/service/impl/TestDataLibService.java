@@ -158,7 +158,7 @@ public class TestDataLibService implements ITestDataLibService {
         // Call the 2 DAO updates
         Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName, newName);
         Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName, newName);
-        List<Answer> ansList = new ArrayList<Answer>();
+        List<Answer> ansList = new ArrayList<>();
         ansList.add(answerDataLib);
         ansList.add(answerProperties);
         return ansList;

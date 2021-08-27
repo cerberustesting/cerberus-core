@@ -60,7 +60,7 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
         AnswerList<CountryEnvDeployType> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvDeployType> objectList = new ArrayList<CountryEnvDeployType>();
+        List<CountryEnvDeployType> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

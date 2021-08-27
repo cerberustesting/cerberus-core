@@ -130,7 +130,7 @@ public class CreateRobot extends HttpServlet {
             capability.setRobot(robot);
         }
 
-        Map<String, Object> executorMap = new HashMap<String, Object>();
+        Map<String, Object> executorMap = new HashMap<>();
         for (RobotExecutor executor : executors) {
             executorMap.put(executor.getExecutor(), null);
             executor.setRobot(robot);

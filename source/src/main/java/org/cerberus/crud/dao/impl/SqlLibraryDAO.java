@@ -261,7 +261,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<SqlLibrary>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadSqlLibraryFromResultSet(resultSet));
@@ -292,7 +292,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
     @Override
     public List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<SqlLibrary> sqlLibraryList = new ArrayList<SqlLibrary>();
+        List<SqlLibrary> sqlLibraryList = new ArrayList<>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -507,7 +507,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         try(Connection connection = this.databaseSpring.connect();
         		PreparedStatement preStat = connection.prepareStatement(query);
         		ResultSet resultSet = preStat.executeQuery();) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         	while (resultSet.next()) {
         		list.add(resultSet.getString("Type"));
             }

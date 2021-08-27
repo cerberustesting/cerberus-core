@@ -203,7 +203,7 @@ public class JsonService implements IJsonService {
              */
             LOG.debug("JSON PATH trying ListOfObject : " + jsonPath);
             List<Object> toto = JsonPath.read(document, jsonPath);
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             for (Object obj : toto) {
                 result.add(String.valueOf(obj));
             }
@@ -217,7 +217,7 @@ public class JsonService implements IJsonService {
                  */
                 LOG.debug("JSON PATH trying ListOfInteger : " + jsonPath);
                 List<Integer> toto = JsonPath.read(document, jsonPath);
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 for (Integer inte : toto) {
                     result.add(String.valueOf(inte));
                 }
@@ -231,7 +231,7 @@ public class JsonService implements IJsonService {
                      */
                     LOG.debug("JSON PATH trying String : " + jsonPath);
                     String toto = JsonPath.read(document, jsonPath);
-                    List<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<>();
                     result.add(toto);
                     return result;
 
@@ -243,7 +243,7 @@ public class JsonService implements IJsonService {
                          */
                         LOG.debug("JSON PATH trying Integer : " + jsonPath);
                         int toto = JsonPath.read(document, jsonPath);
-                        List<String> result = new ArrayList<String>();
+                        List<String> result = new ArrayList<>();
                         result.add(String.valueOf(toto));
                         return result;
 
@@ -255,7 +255,7 @@ public class JsonService implements IJsonService {
                              */
                             LOG.debug("JSON PATH trying Boolean : " + jsonPath);
                             Boolean toto = JsonPath.read(document, jsonPath);
-                            List<String> result = new ArrayList<String>();
+                            List<String> result = new ArrayList<>();
                             result.add(toto.toString());
                             return result;
 

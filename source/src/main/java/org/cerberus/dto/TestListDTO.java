@@ -32,7 +32,7 @@ public class TestListDTO {
     
     public List<TestCaseListDTO> testCaseList;
     public TestListDTO(){
-        this.testCaseList = new ArrayList<TestCaseListDTO>();
+        this.testCaseList = new ArrayList<>();
     }
 
     public String getTest() {

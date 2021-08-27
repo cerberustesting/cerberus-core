@@ -462,7 +462,7 @@ public class PropertyService implements IPropertyService {
      * @return a list of properties contained into the given {@link String}
      */
     private List<String> getPropertiesListFromString(String str) {
-        List<String> properties = new ArrayList<String>();
+        List<String> properties = new ArrayList<>();
         LOG.debug("Starting to guess properties from string : " + str);
         if (str == null) {
             LOG.debug("Stoping to guess properties - Empty String ");
@@ -510,7 +510,7 @@ public class PropertyService implements IPropertyService {
      */
     private AnswerItem<TestCaseCountryProperties> findMatchingTestCaseCountryProperty(String property, String country, List<TestCaseCountryProperties> propertieOfTestcase) {
 
-        AnswerItem<TestCaseCountryProperties> item = new AnswerItem<TestCaseCountryProperties>();
+        AnswerItem<TestCaseCountryProperties> item = new AnswerItem<>();
         boolean propertyDefined = false;
         item.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS));
 

@@ -622,7 +622,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     
     private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
         JSONObject jsonResult = new JSONObject();
-        Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+        Map<String, JSONObject> axisMap = new HashMap<>();
         String globalStart = "";
         String globalEnd = "";
         long globalStartL = 0;
@@ -720,7 +720,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         boolean robotDecli = request.getParameter("robotDecli") != null || !splitStats;
         boolean app = request.getParameter("app") != null || !splitStats;
         
-        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on")
@@ -864,7 +864,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         if (splitStats) {
             JSONArray dataArray = new JSONArray();
             //sort keys
-            TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+            TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<>(summaryMap);
             for (String key : sortedKeys.keySet()) {
                 SummaryStatisticsDTO sumStats = summaryMap.get(key);
                 //percentage values

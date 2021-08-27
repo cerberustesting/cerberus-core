@@ -237,9 +237,9 @@ public final class ParameterParserUtil {
             return defaultVal;
         }
 
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> result = new ArrayList<>();
         for (String param : inParam) {
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             Matcher matcher = PARAMETER_PATTERN.matcher(param);
             while (matcher.find()) {
                 try {

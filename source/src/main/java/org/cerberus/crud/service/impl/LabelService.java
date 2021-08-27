@@ -121,7 +121,7 @@ public class LabelService implements ILabelService {
             if (labelsToReturn.containsKey(keyTC)) {
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             } else {
-                labelsToReturn.put(keyTC, new ArrayList<Label>());
+                labelsToReturn.put(keyTC, new ArrayList<>());
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             }
         });

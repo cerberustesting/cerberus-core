@@ -85,7 +85,7 @@ public class XmlUnitService implements IXmlUnitService {
      * </ul>
      */
     private void initInputTranslator() {
-        inputTranslator = new InputTranslatorManager<Document>();
+        inputTranslator = new InputTranslatorManager<>();
         // Add handling on the "url" prefix, to get URL input
         inputTranslator.addTranslator(new AInputTranslator<Document>("url") {
             @Override

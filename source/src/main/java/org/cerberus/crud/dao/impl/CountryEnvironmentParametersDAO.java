@@ -164,7 +164,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String[]>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         String[] array = new String[3];
@@ -200,7 +200,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException {
-        List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
+        List<CountryEnvironmentParameters> result = new ArrayList<>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM countryenvironmentparameters cea ");

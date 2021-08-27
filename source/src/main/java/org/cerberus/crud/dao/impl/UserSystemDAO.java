@@ -149,7 +149,7 @@ public class UserSystemDAO implements IUserSystemDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);
@@ -197,7 +197,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);
@@ -245,7 +245,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);

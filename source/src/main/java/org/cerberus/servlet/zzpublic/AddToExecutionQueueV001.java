@@ -352,7 +352,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
                 // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
                 Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
-                List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
+                List<TestCaseExecutionQueue> toInserts = new ArrayList<>();
                 try {
                     LOG.debug("Nb of TestCase : " + selectedTests.size());
                     for (Map<String, String> selectedTest : selectedTests) {
@@ -413,7 +413,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 }
 
                 // Part 2: Try to insert all these test cases to the execution queue.
-                List<String> errorMessages = new ArrayList<String>();
+                List<String> errorMessages = new ArrayList<>();
                 for (TestCaseExecutionQueue toInsert : toInserts) {
                     try {
                         inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
