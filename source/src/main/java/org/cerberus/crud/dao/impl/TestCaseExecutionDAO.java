@@ -1133,10 +1133,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         if (system != null && !system.isEmpty()) {
-            query.append(" and " + SqlUtil.generateInClause("exe.`system`", system) + " ");
+            query.append(" and ").append(SqlUtil.generateInClause("exe.`system`", system)).append(" ");
         }
 
-        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.`system`"));
+        query.append(" AND ").append(UserSecurity.getSystemAllowForSQL("exe.`system`"));
 
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);

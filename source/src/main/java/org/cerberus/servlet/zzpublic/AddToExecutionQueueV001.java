@@ -278,7 +278,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
             } else if (tag.length() > 255) {
 
-                errorMessage.append("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : " + tag.length());
+                errorMessage.append("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : ").append(tag.length());
                 error = true;
             }
 

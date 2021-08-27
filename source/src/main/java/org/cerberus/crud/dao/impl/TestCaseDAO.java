@@ -167,7 +167,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         searchSQL.append("WHERE 1=1");
 
         // Always filter on system user can view
-        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("app.`system`") + " ");
+        searchSQL.append(" AND ").append(UserSecurity.getSystemAllowForSQL("app.`system`")).append(" ");
 
         if (system != null && !system.isEmpty()) {
             searchSQL.append(" AND ");
@@ -1310,7 +1310,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             String[] valeur = entry.getValue();
             if (valeur != null && valeur.length > 0) {
                 if (!cle.equals("system") && !cle.equals("countries")) {
-                    query.append(" AND tec." + cle + " in (?");
+                    query.append(" AND tec.").append(cle).append(" in (?");
                 } else if (cle.equals("system")) {
                     query.append(" AND app.system in (?");
                 } else {

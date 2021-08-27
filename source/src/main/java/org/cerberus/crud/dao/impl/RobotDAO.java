@@ -139,7 +139,7 @@ public class RobotDAO implements IRobotDAO {
         searchSQL.append(" where 1=1 ");
 
         if ((robotList != null) && (!robotList.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("rbt.`robot`", robotList) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("rbt.`robot`", robotList)).append(")");
         }
         query.append(searchSQL);
 

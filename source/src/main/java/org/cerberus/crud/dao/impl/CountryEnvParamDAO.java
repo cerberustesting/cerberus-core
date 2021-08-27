@@ -445,10 +445,10 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         }
 
         if ((systems != null) && (!systems.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("cev.`System`", systems) + ") ");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("cev.`System`", systems)).append(") ");
         }
 
-        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("cev.`System`") + " ");
+        searchSQL.append(" AND ").append(UserSecurity.getSystemAllowForSQL("cev.`System`")).append(" ");
 
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (cev.`active` = ? )");

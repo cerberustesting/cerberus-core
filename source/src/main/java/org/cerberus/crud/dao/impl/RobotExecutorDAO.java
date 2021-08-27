@@ -168,7 +168,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         }
 
         if ((robot != null) && (!robot.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("rbe.`robot`", robot) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("rbe.`robot`", robot)).append(")");
         }
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (`active` = ? )");

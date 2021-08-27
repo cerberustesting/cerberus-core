@@ -156,13 +156,13 @@ public class LabelDAO implements ILabelDAO {
             if (!strictSystemFilter) {
                 system.add("");
             }
-            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`System`", system) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("lab.`System`", system)).append(")");
         }
 
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("lab.`System`") + " ");
+        query.append(" AND ").append(UserSecurity.getSystemAllowForSQL("lab.`System`")).append(" ");
 
         if ((type != null) && (!type.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`Type`", type) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("lab.`Type`", type)).append(")");
         }
         query.append(searchSQL);
 
