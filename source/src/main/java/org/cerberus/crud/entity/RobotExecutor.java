@@ -393,12 +393,12 @@ public class RobotExecutor {
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
-            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
+            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()));
             result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());
-            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()) ? true : false);
+            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()));
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

@@ -969,7 +969,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
         try {
 //            resultSet.findColumn("isStepInUseByOtherTestCase");
-            boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1 ? true : false;
+            boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1;
             tcs.setIsStepInUseByOtherTestcase(isStepInUseByOtherTestCase);
         } catch (SQLException sqlex) {
             // That means there is not this column, so nothing to do

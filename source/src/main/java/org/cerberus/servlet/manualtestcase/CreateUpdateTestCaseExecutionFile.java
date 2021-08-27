@@ -125,7 +125,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         String fileName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("fileName"), null, charset);
         Integer fileID = ParameterParserUtil.parseIntegerParam(fileData.get("fileID"), 0);
         Integer idex = ParameterParserUtil.parseIntegerParam(fileData.get("idex"), 0);
-        boolean action = fileData.get("action") != null ? true : false;
+        boolean action = fileData.get("action") != null;
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
