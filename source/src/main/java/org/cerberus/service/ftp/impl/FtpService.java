@@ -279,7 +279,7 @@ public class FtpService implements IFtpService {
                     "cerberus_ftpfile_path Parameter not found");
             AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                Parameter p = (Parameter) a.getItem();
+                Parameter p = a.getItem();
                 String uploadPath = p.getValue();
                 Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());
                 byteContent = Files.readAllBytes(path);

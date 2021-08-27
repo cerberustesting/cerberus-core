@@ -185,7 +185,7 @@ public class ReadSqlLibrary extends HttpServlet {
         AnswerItem<SqlLibrary> resp = sqlLibraryService.readByKey(key);
         SqlLibrary p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (SqlLibrary) resp.getItem();
+            p = resp.getItem();
         }
         JSONObject item = convertSqlLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);

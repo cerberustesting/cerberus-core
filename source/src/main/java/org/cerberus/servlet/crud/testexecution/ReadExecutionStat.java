@@ -196,7 +196,7 @@ public class ReadExecutionStat extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
             answer = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, fromD, toD, system, countries, environments, robotDeclis, parties, types, units);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -204,7 +204,7 @@ public class ReadExecutionStat extends HttpServlet {
 
             JSONObject jsonResponse1 = new JSONObject();
             answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
-            jsonResponse1 = (JSONObject) answer.getItem();
+            jsonResponse1 = answer.getItem();
 
             jsonResponse.put("datasetExeTime", jsonResponse1.getJSONArray("curvesTime"));
             jsonResponse.put("datasetExeStatusNb", jsonResponse1.getJSONArray("curvesNb"));

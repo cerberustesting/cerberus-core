@@ -110,7 +110,7 @@ public class ReadScheduleEntry extends HttpServlet {
             IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
             ans = scheduleEntryService.readByName(name);
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (ScheduleEntry sched : (List<ScheduleEntry>) ans.getDataList()) {
+                for (ScheduleEntry sched : ans.getDataList()) {
                     jsonArray.put(convertScheduleEntrytoJSONObject(sched));
                 }
             }

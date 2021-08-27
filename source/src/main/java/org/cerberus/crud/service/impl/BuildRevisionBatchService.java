@@ -92,7 +92,7 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
     public BuildRevisionBatch convert(AnswerItem<BuildRevisionBatch> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (BuildRevisionBatch) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -101,7 +101,7 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
     public List<BuildRevisionBatch> convert(AnswerList<BuildRevisionBatch> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<BuildRevisionBatch>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

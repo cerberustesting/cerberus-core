@@ -251,7 +251,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecutionQueue exec : (List<TestCaseExecutionQueue>) resp.getDataList()) {
+            for (TestCaseExecutionQueue exec : resp.getDataList()) {
                 jsonArray.put(convertTestCaseExecutionInQueueToJSONObject(exec));
             }
         }

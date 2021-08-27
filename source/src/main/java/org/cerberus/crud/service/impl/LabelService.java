@@ -166,7 +166,7 @@ public class LabelService implements ILabelService {
             // Getting parent label.
             AnswerItem<Label> answerLabelParent = readByKey(object.getParentLabelID());
             if ((answerLabelParent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (answerLabelParent.getItem() != null)) {
-                Label parentLabel = (Label) answerLabelParent.getItem();
+                Label parentLabel = answerLabelParent.getItem();
                 if ((!parentLabel.getSystem().equals(object.getSystem())) && (!StringUtil.isNullOrEmpty(parentLabel.getSystem()))) {
                     // Parent Label system is not empty and different from child label system.
                     msg.setDescription(msg.getDescription()
@@ -272,7 +272,7 @@ public class LabelService implements ILabelService {
     public Label convert(AnswerItem<Label> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (Label) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -281,7 +281,7 @@ public class LabelService implements ILabelService {
     public List<Label> convert(AnswerList<Label> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<Label>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

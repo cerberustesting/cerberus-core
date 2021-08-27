@@ -156,7 +156,7 @@ public class CountryEnvironmentParameters {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CountryEnvironmentParameters other = (CountryEnvironmentParameters) obj;
+        final CountryEnvironmentParameters other = obj;
         if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
             return false;
         }

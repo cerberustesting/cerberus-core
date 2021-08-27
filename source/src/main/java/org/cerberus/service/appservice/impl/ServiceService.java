@@ -129,7 +129,7 @@ public class ServiceService implements IServiceService {
 
                     // Decode Service Path
                     answerDecode = variableService.decodeStringCompletly(servicePath, tCExecution, null, false);
-                    servicePath = (String) answerDecode.getItem();
+                    servicePath = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
@@ -234,7 +234,7 @@ public class ServiceService implements IServiceService {
 
                     // Decode Service Path again as the change done by automatic complete of it following application configuration could have inserted some new variables.
                     answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
-                    decodedServicePath = (String) answerDecode.getItem();
+                    decodedServicePath = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
@@ -246,7 +246,7 @@ public class ServiceService implements IServiceService {
 
                     // Decode Request
                     answerDecode = variableService.decodeStringCompletly(decodedRequest, tCExecution, null, false);
-                    decodedRequest = (String) answerDecode.getItem();
+                    decodedRequest = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
@@ -260,7 +260,7 @@ public class ServiceService implements IServiceService {
                     List<AppServiceHeader> objectHeaderList = new ArrayList<>();
                     for (AppServiceHeader object : appService.getHeaderList()) {
                         answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
-                        object.setKey((String) answerDecode.getItem());
+                        object.setKey(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Header Key " + object.getKey();
@@ -272,7 +272,7 @@ public class ServiceService implements IServiceService {
                         }
 
                         answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
-                        object.setValue((String) answerDecode.getItem());
+                        object.setValue(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Header Value " + object.getKey();
@@ -291,7 +291,7 @@ public class ServiceService implements IServiceService {
                     List<AppServiceContent> objectContentList = new ArrayList<>();
                     for (AppServiceContent object : appService.getContentList()) {
                         answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
-                        object.setKey((String) answerDecode.getItem());
+                        object.setKey(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Content Key " + object.getKey();
@@ -303,7 +303,7 @@ public class ServiceService implements IServiceService {
                         }
 
                         answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
-                        object.setValue((String) answerDecode.getItem());
+                        object.setValue(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Content Value " + object.getKey();
@@ -348,7 +348,7 @@ public class ServiceService implements IServiceService {
                         try {
 
                             answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
-                            decodedOperation = (String) answerDecode.getItem();
+                            decodedOperation = answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                                 String field = "Operation";
@@ -360,7 +360,7 @@ public class ServiceService implements IServiceService {
                             }
 
                             answerDecode = variableService.decodeStringCompletly(decodedAttachement, tCExecution, null, false);
-                            decodedAttachement = (String) answerDecode.getItem();
+                            decodedAttachement = answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                                 String field = "Attachement URL";
@@ -427,7 +427,7 @@ public class ServiceService implements IServiceService {
 
                         String decodedKey = appService.getKafkaKey();
                         answerDecode = variableService.decodeStringCompletly(decodedKey, tCExecution, null, false);
-                        decodedKey = (String) answerDecode.getItem();
+                        decodedKey = answerDecode.getItem();
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Kafka Key";
@@ -440,7 +440,7 @@ public class ServiceService implements IServiceService {
 
                         String decodedTopic = appService.getKafkaTopic();
                         answerDecode = variableService.decodeStringCompletly(decodedTopic, tCExecution, null, false);
-                        decodedTopic = (String) answerDecode.getItem();
+                        decodedTopic = answerDecode.getItem();
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
                             String field = "Kafka topic";
@@ -468,7 +468,7 @@ public class ServiceService implements IServiceService {
                                 try {
 
                                     answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
-                                    decodedFilterPath = (String) answerDecode.getItem();
+                                    decodedFilterPath = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Filter Path";
@@ -480,7 +480,7 @@ public class ServiceService implements IServiceService {
                                     }
 
                                     answerDecode = variableService.decodeStringCompletly(decodedFilterValue, tCExecution, null, false);
-                                    decodedFilterValue = (String) answerDecode.getItem();
+                                    decodedFilterValue = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Filter Value";

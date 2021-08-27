@@ -177,7 +177,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     public BuildRevisionParameters convert(AnswerItem<BuildRevisionParameters> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (BuildRevisionParameters) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -186,7 +186,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     public List<BuildRevisionParameters> convert(AnswerList<BuildRevisionParameters> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<BuildRevisionParameters>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

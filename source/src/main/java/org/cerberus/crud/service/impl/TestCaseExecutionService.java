@@ -240,7 +240,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public AnswerItem<TestCaseExecution> readByKeyWithDependency(long executionId) {
         // Get Main Execution.
         AnswerItem<TestCaseExecution> tce = this.readByKey(executionId);
-        TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
+        TestCaseExecution testCaseExecution = tce.getItem();
 
         // Get Execution Tag.
         if (!StringUtil.isNullOrEmpty(testCaseExecution.getTag())) {
@@ -296,7 +296,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
         // Get Execution Files.
         AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, "");
-        testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+        testCaseExecution.setFileList(files.getDataList());
 
         // Get Execution Files.
         AnswerItem<TestCaseExecutionHttpStat> httpStat = testCaseExecutionHttpStatService.readByKey(executionId);
@@ -312,7 +312,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public TestCaseExecution convert(AnswerItem<TestCaseExecution> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCaseExecution) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -321,7 +321,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public List<TestCaseExecution> convert(AnswerList<TestCaseExecution> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseExecution>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

@@ -214,7 +214,7 @@ public class ReadTag extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Tag tagCur : (List<Tag>) resp.getDataList()) {
+            for (Tag tagCur : resp.getDataList()) {
                 jsonArray.put(tagCur.toJson());
             }
         }

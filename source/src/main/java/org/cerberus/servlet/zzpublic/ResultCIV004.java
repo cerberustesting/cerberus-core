@@ -110,7 +110,7 @@ public class ResultCIV004 extends HttpServlet {
                         List<Tag> myList;
                         AnswerList<Tag> myAnswerList = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
                         if (myAnswerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                            for (Tag tagCur : (List<Tag>) myAnswerList.getDataList()) {
+                            for (Tag tagCur : myAnswerList.getDataList()) {
                                 tag = tagCur.getTag();
                             }
                         }

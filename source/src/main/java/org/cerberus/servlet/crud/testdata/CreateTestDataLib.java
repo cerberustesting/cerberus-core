@@ -179,7 +179,7 @@ public class CreateTestDataLib extends HttpServlet {
 
                 //Creates the entries and the subdata list
                 ansItem = libService.create(lib);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ansItem);
 
                 /**
                  * Object created. Adding Log entry.
@@ -245,7 +245,7 @@ public class CreateTestDataLib extends HttpServlet {
                 }
 
                 ans = tdldService.compareListAndUpdateInsertDeleteElements(dataLibWithUploadedFile.getTestDataLibID(), tdldList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
 
             /**

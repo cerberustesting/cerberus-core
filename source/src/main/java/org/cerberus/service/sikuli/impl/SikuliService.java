@@ -642,7 +642,7 @@ public class SikuliService implements ISikuliService {
 
         try {
             AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_CAPTURE, null, "");
-            String screenshotInBase64 = ((JSONObject) actionResult.getItem()).getString("screenshot");
+            String screenshotInBase64 = actionResult.getItem().getString("screenshot");
             byte[] data = Base64.decodeBase64(screenshotInBase64);
 
             image = new File("temp.png");

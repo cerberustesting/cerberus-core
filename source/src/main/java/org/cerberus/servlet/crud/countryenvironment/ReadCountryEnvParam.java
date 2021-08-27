@@ -221,7 +221,7 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
+            for (CountryEnvParam cep : resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
         }
@@ -247,7 +247,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
 
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
+            for (CountryEnvParam cep : resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
 

@@ -111,19 +111,19 @@ public class ReadAppService extends HttpServlet {
 
             if (service == null && Strings.isNullOrEmpty(columnName)) {
                 answer = findAppServiceList(appContext, userHasPermissions, request);
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse = answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse = answer.getItem();
             } else if (service != null && request.getParameter("limit") != null) {
                 answer = findAppServiceByLikeName(service, appContext, Integer.parseInt(request.getParameter("limit")));
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse = answer.getItem();
             } else if (service != null && testcase) {
                 answer = getTestCasesUsingService(service, appContext);
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse = answer.getItem();
             } else {
                 answer = findAppServiceBySystemByKey(service, appContext, userHasPermissions);
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse = answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -174,7 +174,7 @@ public class ReadAppService extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (AppService param : (List<AppService>) resp.getDataList()) {
+            for (AppService param : resp.getDataList()) {
                 jsonArray.put(convertAppServiceToJSONObject(param));
             }
         }
@@ -198,7 +198,7 @@ public class ReadAppService extends HttpServlet {
         AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key, null);
         AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (AppService) resp.getItem();
+            p = resp.getItem();
         }
         JSONObject item = convertAppServiceToJSONObject(p);
         response.put("contentTable", item);
@@ -219,7 +219,7 @@ public class ReadAppService extends HttpServlet {
         AppService p = null;
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (AppService appService : (List<AppService>) resp.getDataList()) {
+            for (AppService appService : resp.getDataList()) {
                 jsonArray.put(convertAppServiceToJSONObject(appService));
             }
         }

@@ -111,7 +111,7 @@ public class Homepage extends HttpServlet {
         AnswerItem<HashMap<String, HashMap<String, Integer>>> resp = applicationService.readTestCaseCountersBySystemByStatus(system);
 
         JSONArray jsonArray = new JSONArray();
-        HashMap<String, HashMap<String, Integer>> totalMap = (HashMap<String, HashMap<String, Integer>>) resp.getItem();
+        HashMap<String, HashMap<String, Integer>> totalMap = resp.getItem();
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);

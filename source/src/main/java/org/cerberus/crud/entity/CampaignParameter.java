@@ -137,7 +137,7 @@ public class CampaignParameter implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CampaignParameter other = (CampaignParameter) obj;
+        final CampaignParameter other = obj;
         if ((this.campaignparameterID == null) ? (other.campaignparameterID != null) : !this.campaignparameterID.equals(other.campaignparameterID)) {
             return false;
         }

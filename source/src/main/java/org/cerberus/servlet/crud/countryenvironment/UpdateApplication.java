@@ -159,7 +159,7 @@ public class UpdateApplication extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 /**
@@ -181,7 +181,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setSort(sort);
                 applicationData.setUsrModif(request.getRemoteUser());
                 ans = applicationService.update(originalApplication, applicationData);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -192,7 +192,7 @@ public class UpdateApplication extends HttpServlet {
 
                     // Update the Database with the new list.
                     ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 }
 

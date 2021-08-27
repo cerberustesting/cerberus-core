@@ -210,7 +210,7 @@ public class ReadBatchInvariant extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BatchInvariant brb : (List<BatchInvariant>) resp.getDataList()) {
+            for (BatchInvariant brb : resp.getDataList()) {
                 jsonArray.put(convertToJSONObject(brb));
             }
         }

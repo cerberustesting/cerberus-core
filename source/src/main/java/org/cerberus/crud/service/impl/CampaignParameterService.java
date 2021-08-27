@@ -165,13 +165,13 @@ public class CampaignParameterService implements ICampaignParameterService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
         return finalAnswer;
     }
@@ -180,7 +180,7 @@ public class CampaignParameterService implements ICampaignParameterService {
     public CampaignParameter convert(AnswerItem<CampaignParameter> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (CampaignParameter) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -189,7 +189,7 @@ public class CampaignParameterService implements ICampaignParameterService {
     public List<CampaignParameter> convert(AnswerList<CampaignParameter> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<CampaignParameter>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

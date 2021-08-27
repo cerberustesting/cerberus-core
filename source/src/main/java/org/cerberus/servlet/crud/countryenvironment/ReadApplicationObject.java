@@ -224,7 +224,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (ApplicationObject applicationObject : (List<ApplicationObject>) resp.getDataList()) {
+            for (ApplicationObject applicationObject : resp.getDataList()) {
                 jsonArray.put(convertApplicationObjectToJSONObject(applicationObject));
             }
         }
@@ -249,7 +249,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (ApplicationObject applicationObject : (List<ApplicationObject>) resp.getDataList()) {
+            for (ApplicationObject applicationObject : resp.getDataList()) {
                 jsonArray.put(convertApplicationObjectToJSONObject(applicationObject));
             }
         }

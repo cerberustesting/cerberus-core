@@ -253,8 +253,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             Campaign mCampaign = null;
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 @SuppressWarnings("unchecked")
-                AnswerItem<Campaign> vCampaign = (AnswerItem<Campaign>) campaignService.readByKey(campaign);
-                mCampaign = (Campaign) vCampaign.getItem();
+                AnswerItem<Campaign> vCampaign = campaignService.readByKey(campaign);
+                mCampaign = vCampaign.getItem();
             }
             if (mCampaign == null) {
                 // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values

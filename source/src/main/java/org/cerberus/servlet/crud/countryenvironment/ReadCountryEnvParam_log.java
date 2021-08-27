@@ -201,7 +201,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvParam_log cepl : (List<CountryEnvParam_log>) resp.getDataList()) {
+            for (CountryEnvParam_log cepl : resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cepl));
             }
         }

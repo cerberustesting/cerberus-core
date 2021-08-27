@@ -196,7 +196,7 @@ public class UpdateTestDataLib extends HttpServlet {
                      * Object could not be found. We stop here and report the
                      * error.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
                 } else {
                     /**
@@ -239,7 +239,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setLastModifier(request.getRemoteUser());
 
                     ans = libService.update(lib);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
@@ -288,7 +288,7 @@ public class UpdateTestDataLib extends HttpServlet {
                         }
                     }
                     ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 }
 
             }

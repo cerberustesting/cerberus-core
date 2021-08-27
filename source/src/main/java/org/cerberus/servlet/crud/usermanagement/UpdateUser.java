@@ -147,7 +147,7 @@ public class UpdateUser extends HttpServlet {
                 try {
 
                     ans = userService.update(myUser);
-                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
@@ -170,8 +170,8 @@ public class UpdateUser extends HttpServlet {
                     /**
                      * Adding Log entry.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                    AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
+                    AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                     jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());

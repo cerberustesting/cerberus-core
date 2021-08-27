@@ -280,7 +280,7 @@ public class RobotExecutor {
             return false;
         }
 
-        final RobotExecutor other = (RobotExecutor) obj;
+        final RobotExecutor other = obj;
         if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
             return false;
         }

@@ -191,7 +191,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                     .replace("%OPERATION%", "Import")
                                     .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
                             ans.setResultMessage(msg);
-                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                         }
 
                     }

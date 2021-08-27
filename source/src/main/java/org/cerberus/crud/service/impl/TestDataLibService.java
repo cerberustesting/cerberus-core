@@ -114,7 +114,7 @@ public class TestDataLibService implements ITestDataLibService {
         }
         answerDataLib = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
         List<TestDataLib> objectList = new ArrayList<>();
-        objectList = (List<TestDataLib>) answerDataLib.getDataList();
+        objectList = answerDataLib.getDataList();
         for (TestDataLib tdl : objectList) {
 
             answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null, null);
@@ -169,7 +169,7 @@ public class TestDataLibService implements ITestDataLibService {
     public TestDataLib convert(AnswerItem<TestDataLib> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestDataLib) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -178,7 +178,7 @@ public class TestDataLibService implements ITestDataLibService {
     public List<TestDataLib> convert(AnswerList<TestDataLib> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestDataLib>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

@@ -218,7 +218,7 @@ public class ReadApplication extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Application application : (List<Application>) resp.getDataList()) {
+            for (Application application : resp.getDataList()) {
                 jsonArray.put(convertApplicationToJSONObject(application));
             }
         }

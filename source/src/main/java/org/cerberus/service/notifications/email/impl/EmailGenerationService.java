@@ -435,7 +435,7 @@ public class EmailGenerationService implements IEmailGenerationService {
                     globalStatus.append("<tr>");
                     globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";text-align: center;\">").append(string).append("</td>");
                     globalStatus.append("<td style=\"text-align: right;\">").append(statNbMap.get(string)).append("</td>");
-                    per = (float) statNbMap.get(string) / (float) tag.getNbExeUsefull();
+                    per = statNbMap.get(string) / (float) tag.getNbExeUsefull();
                     per = per * 100;
                     globalStatus.append("<td style=\"text-align: right;\">").append(String.format("%.2f", per)).append("</td>");
                     globalStatus.append("</tr>");

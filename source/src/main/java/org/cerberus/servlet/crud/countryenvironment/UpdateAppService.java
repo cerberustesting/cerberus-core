@@ -174,7 +174,7 @@ public class UpdateAppService extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 /**
@@ -206,7 +206,7 @@ public class UpdateAppService extends HttpServlet {
                 appService.setKafkaFilterValue(kafkaFilterValue);
                 appService.setFollowRedir(isFollowRedir);
                 ans = appServiceService.update(appService.getService(), appService);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -224,7 +224,7 @@ public class UpdateAppService extends HttpServlet {
 
                     // Update the Database with the new list.
                     ans = appServiceContentService.compareListAndUpdateInsertDeleteElements(service, contentList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 }
 
                 // Update header
@@ -235,7 +235,7 @@ public class UpdateAppService extends HttpServlet {
 
                     // Update the Database with the new list.
                     ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 }
 
             }

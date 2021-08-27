@@ -51,12 +51,12 @@ public class ExecutionUUID {
     }
 
     public long getExecutionID(String uuid) {
-        TestCaseExecution t = (TestCaseExecution) executionHashMap.get(uuid);
+        TestCaseExecution t = executionHashMap.get(uuid);
         return t.getId();
     }
 
     public TestCaseExecution getTestCaseExecution(String uuid) {
-        return (TestCaseExecution) executionHashMap.get(uuid);
+        return executionHashMap.get(uuid);
     }
 
     public int size() {

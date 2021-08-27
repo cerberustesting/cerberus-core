@@ -155,9 +155,9 @@ public class DisableEnvironmentV000 extends HttpServlet {
                     country = null;
                 }
                 answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerList);
 
-                for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
+                for (CountryEnvParam cepData : answerList.getDataList()) {
 
                     /**
                      * For each object, we can update it.

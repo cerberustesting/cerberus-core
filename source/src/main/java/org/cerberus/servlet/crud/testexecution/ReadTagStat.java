@@ -189,7 +189,7 @@ public class ReadTagStat extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findExeStatList(appContext, request, tagExeL, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

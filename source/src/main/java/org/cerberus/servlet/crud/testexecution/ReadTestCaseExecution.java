@@ -390,7 +390,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                          * based on the key Test_TestCase
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
-                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                        for (TestCaseLabel label : testCaseLabelList.getDataList()) {
                             String key = label.getTest() + "_" + label.getTestcase();
 
                             if (testCaseWithLabel.containsKey(key)) {
@@ -461,7 +461,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) resp.getDataList()) {
+            for (TestCaseExecution testCaseExecution : resp.getDataList()) {
                 jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
             }
         }

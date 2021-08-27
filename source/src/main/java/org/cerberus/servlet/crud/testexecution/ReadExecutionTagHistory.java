@@ -148,7 +148,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findTagHistoData(appContext, request, systems, fromD, toD);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -195,7 +195,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
         statList.add("RETRY");
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            List<Tag> tcList = (List<Tag>) resp.getDataList();
+            List<Tag> tcList = resp.getDataList();
             for (Tag tagCur : tcList) {
 
                 /**

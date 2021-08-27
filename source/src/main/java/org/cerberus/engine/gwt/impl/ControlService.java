@@ -108,7 +108,7 @@ public class ControlService implements IControlService {
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
                     tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-            testCaseStepActionControlExecution.setDescription((String) answerDecode.getItem());
+            testCaseStepActionControlExecution.setDescription(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the control result.
@@ -144,7 +144,7 @@ public class ControlService implements IControlService {
 
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(), tCExecution,
                         testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue1((String) answerDecode.getItem());
+                testCaseStepActionControlExecution.setValue1(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
@@ -168,7 +168,7 @@ public class ControlService implements IControlService {
 
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
                         tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue2((String) answerDecode.getItem());
+                testCaseStepActionControlExecution.setValue2(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
@@ -192,7 +192,7 @@ public class ControlService implements IControlService {
 
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue3(),
                         tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue3((String) answerDecode.getItem());
+                testCaseStepActionControlExecution.setValue3(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.

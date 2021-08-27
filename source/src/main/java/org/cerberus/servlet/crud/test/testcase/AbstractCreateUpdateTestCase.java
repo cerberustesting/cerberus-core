@@ -135,7 +135,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                     // Update the Database with the new list.
                     ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), labelList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 }
 
                 // Update Countries
@@ -145,7 +145,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                     // Update the Database with the new list.
                     ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestcase(), tccList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 }
 
                 // Update Countries

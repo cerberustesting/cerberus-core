@@ -173,7 +173,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                     country = null;
                 }
                 answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerList);
 
                 for (CountryEnvParam cepData : answerList.getDataList()) {
 

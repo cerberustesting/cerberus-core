@@ -249,7 +249,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     if (height > image.getHeight()) {
                         minheight = image.getHeight();
                     }
-                    BufferedImage crop = ((BufferedImage) b).getSubimage(0, 0, minwidth, minheight);
+                    BufferedImage crop = b.getSubimage(0, 0, minwidth, minheight);
 
                     b = crop;
                     response.setHeader("Format-Status", "ERROR");

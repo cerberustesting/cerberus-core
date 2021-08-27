@@ -112,7 +112,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 Date d1 = df.parse(date1);
                 Date d2 = df.parse(date2);
-                double diffInMilliseconds = (double) ((int) (((double) (d1.getTime() - d2.getTime()) / 1000) * 100)) / 100;
+                double diffInMilliseconds = (double) ((double) (((double) (d1.getTime() - d2.getTime()) / 1000) * 100)) / 100;
                 data.put(diffInMilliseconds);
 
                 line.put(data);

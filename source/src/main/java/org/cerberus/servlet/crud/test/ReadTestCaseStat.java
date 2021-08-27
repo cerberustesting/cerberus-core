@@ -145,7 +145,7 @@ public class ReadTestCaseStat extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findTCStatList(appContext, request, tescaseL, fromD);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

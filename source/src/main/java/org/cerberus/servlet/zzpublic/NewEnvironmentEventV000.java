@@ -157,9 +157,9 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                     country = null;
                 }
                 AnswerList<CountryEnvParam> answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, "Y");
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerList);
 
-                for (CountryEnvParam cepData : (List<CountryEnvParam>) answerList.getDataList()) {
+                for (CountryEnvParam cepData : answerList.getDataList()) {
 
                     /**
                      * For each object, we can update it.

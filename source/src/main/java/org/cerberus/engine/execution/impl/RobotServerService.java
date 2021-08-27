@@ -79,6 +79,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Platform;
@@ -386,10 +387,10 @@ public class RobotServerService implements IRobotServerService {
                     if (caps.getPlatform() != null && caps.getPlatform().is(Platform.ANDROID)) {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
-                        driver = (WebDriver) appiumDriver;
+                        driver = appiumDriver;
                     } else if (caps.getPlatform() != null && (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
-                        driver = (WebDriver) appiumDriver;
+                        driver = appiumDriver;
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
@@ -421,14 +422,14 @@ public class RobotServerService implements IRobotServerService {
                         apkAlreadyPrepare.put(appUrl, true);
                     }
 
-                    driver = (WebDriver) appiumDriver;
+                    driver = appiumDriver;
                     tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     tCExecution.setRobotSessionID(getSession(driver));
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
-                    driver = (WebDriver) appiumDriver;
+                    driver = appiumDriver;
                     tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     tCExecution.setRobotSessionID(getSession(driver));
                     break;
@@ -459,7 +460,7 @@ public class RobotServerService implements IRobotServerService {
 
                     // Init additionalFinalCapabilities and set it from real caps.
                     List<RobotCapability> serverCapabilities = new ArrayList<>();
-                    for (Map.Entry cap : ((RemoteWebDriver) driver).getCapabilities().asMap().entrySet()) {
+                    for (Map.Entry cap : ((HasCapabilities) driver).getCapabilities().asMap().entrySet()) {
                         serverCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
                     }
 
@@ -567,7 +568,7 @@ public class RobotServerService implements IRobotServerService {
                 session = ((RemoteWebDriver) driver).getSessionId().toString();
                 break;
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
-                session = ((RemoteWebDriver) driver).getCapabilities().getCapability("kobitonSessionId").toString();
+                session = ((HasCapabilities) driver).getCapabilities().getCapability("kobitonSessionId").toString();
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
             // For LambdaTest we get the exeid not here but by service call at the end of the execution.
@@ -1245,7 +1246,7 @@ public class RobotServerService implements IRobotServerService {
 
     @Override
     public Capabilities getUsedCapabilities(Session session) {
-        Capabilities caps = ((RemoteWebDriver) session.getDriver()).getCapabilities();
+        Capabilities caps = ((HasCapabilities) session.getDriver()).getCapabilities();
         return caps;
     }
 

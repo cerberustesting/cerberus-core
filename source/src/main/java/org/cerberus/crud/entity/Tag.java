@@ -369,7 +369,7 @@ public class Tag {
             return false;
         }
 
-        final Tag other = (Tag) obj;
+        final Tag other = obj;
         if ((this.tag == null) ? (other.tag != null) : !this.tag.equals(other.tag)) {
             return false;
         }

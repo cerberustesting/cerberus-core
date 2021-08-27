@@ -172,7 +172,7 @@ public class CreateAppService extends HttpServlet {
 
             AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
             ans = appServiceService.create(appService);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -196,7 +196,7 @@ public class CreateAppService extends HttpServlet {
 
                 // Update the Database with the new list.
                 ans = appServiceContentService.compareListAndUpdateInsertDeleteElements(service, contentList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
             // Update header
             if (fileData.get("headerList") != null) {
@@ -206,7 +206,7 @@ public class CreateAppService extends HttpServlet {
 
                 // Update the Database with the new list.
                 ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
         }
 

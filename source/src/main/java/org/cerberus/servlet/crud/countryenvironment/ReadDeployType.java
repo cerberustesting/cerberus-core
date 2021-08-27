@@ -212,7 +212,7 @@ public class ReadDeployType extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {  //the service was able to perform the query, then we should get all values
-            for (DeployType deploytype : (List<DeployType>) resp.getDataList()) {
+            for (DeployType deploytype : resp.getDataList()) {
                 jsonArray.put(convertDeployTypeToJSONObject(deploytype));
             }
         }

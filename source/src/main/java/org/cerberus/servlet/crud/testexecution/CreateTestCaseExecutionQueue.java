@@ -206,14 +206,14 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert id to an integer value."));
                 ans.setResultMessage(msg);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             } else if (prio_error || priority > 2147483647 || priority < -2147483648) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert priority to an integer value."));
                 ans.setResultMessage(msg);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             } else {
                 try {
                     /**
@@ -250,7 +250,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             }
                         }
 
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED);
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();

@@ -197,7 +197,7 @@ public class ReadTestCaseLabel extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseLabel label : (List<TestCaseLabel>) resp.getDataList()) {
+            for (TestCaseLabel label : resp.getDataList()) {
                 jsonArray.put(convertTestCaseLabelToJSONObject(label));
             }
         }
@@ -253,7 +253,7 @@ public class ReadTestCaseLabel extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseLabel label : (List<TestCaseLabel>) resp.getDataList()) {
+            for (TestCaseLabel label : resp.getDataList()) {
                 jsonArray.put(convertTestCaseLabelToJSONObject(label));
             }
         }

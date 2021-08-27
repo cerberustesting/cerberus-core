@@ -185,7 +185,7 @@ public class ReadInvariant extends HttpServlet {
 
         if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            for (Invariant inv : (List<Invariant>) answerService.getDataList()) {
+            for (Invariant inv : answerService.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }
@@ -258,7 +258,7 @@ public class ReadInvariant extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         //boolean userHasPermissions = request.isUserInRole("Integrator"); //TODO:need to chec
         if (answerInv.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Invariant inv : (List<Invariant>) answerInv.getDataList()) {
+            for (Invariant inv : answerInv.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }

@@ -271,7 +271,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
+            for (Invariant country : invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException | CerberusException ex) {
@@ -407,7 +407,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * based on the key Test_TestCase
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
-                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
+                        for (TestCaseLabel label : testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
                                 
@@ -928,7 +928,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             
             HashMap<Integer, TreeNode> inputList = new HashMap<>();
             
-            for (Label label : (List<Label>) resp.getDataList()) {
+            for (Label label : resp.getDataList()) {
                 
                 String text = "";
                 
@@ -971,7 +971,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
             
             HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap<>();
-            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
+            for (TestCaseLabel label : testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))
                         || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()))) {
