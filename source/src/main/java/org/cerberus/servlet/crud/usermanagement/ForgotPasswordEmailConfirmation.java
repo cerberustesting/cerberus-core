@@ -69,7 +69,7 @@ public class ForgotPasswordEmailConfirmation extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
 
             
-            StringBuffer jb = new StringBuffer();
+            StringBuilder jb = new StringBuilder();
             String line = null;
                 BufferedReader reader = request.getReader();
                 while ((line = reader.readLine()) != null) {
