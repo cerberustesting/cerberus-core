@@ -518,7 +518,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             LOG.error(ex.toString());
         }
 
-        return (countries.size() == 0) ? null : countries;
+        return (countries.isEmpty()) ? null : countries;
     }
 
     @Override
