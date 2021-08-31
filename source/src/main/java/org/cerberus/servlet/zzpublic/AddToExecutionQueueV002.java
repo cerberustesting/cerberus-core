@@ -446,12 +446,12 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 }
                                             } else {
                                                 LOG.debug("Env does not exist or is not active.");
-                                                nbenvnotexist = nbenvnotexist + nbbrowser;
+                                                nbenvnotexist += nbbrowser;
                                             }
 
                                         } else {
                                             LOG.debug("Env group not active for testcase : " + environment);
-                                            nbtestcaseenvgroupnotallowed = nbtestcaseenvgroupnotallowed + nbbrowser;
+                                            nbtestcaseenvgroupnotallowed += nbbrowser;
                                         }
                                     }
                                 } else {
@@ -460,7 +460,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                             }
                         } else {
                             LOG.debug("TestCase not Active.");
-                            nbtestcasenotactive = nbtestcasenotactive + (nbcountries * nbenv * nbbrowser);
+                            nbtestcasenotactive += (nbcountries * nbenv * nbbrowser);
                         }
                     }
                 } catch (CerberusException ex) {

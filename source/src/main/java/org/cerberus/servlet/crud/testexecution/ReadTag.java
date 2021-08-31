@@ -187,7 +187,7 @@ public class ReadTag extends HttpServlet {
         if (request.getParameter("iDisplayStartPage") != null) {
             startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStartPage"), "0"));
             startPosition--;
-            startPosition = startPosition * 30;
+            startPosition *= 30;
         } else {
             startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         }
