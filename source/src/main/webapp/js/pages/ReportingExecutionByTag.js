@@ -1366,14 +1366,14 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline fontFA'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
         contentToAdd += "<label class='checkbox-inline fontKO'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
-        contentToAdd += "<label class='checkbox-inline fontNA'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
-        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
-        contentToAdd += "<div class='btn-group marginRight20 marginLeft20'>";
+        contentToAdd += "<label class='checkbox-inline fontNA marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<div class='btn-group marginRight10'>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
-        contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
+        contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginRight10'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
         contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
