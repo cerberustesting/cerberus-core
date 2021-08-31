@@ -478,7 +478,9 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         String executorProxyHost = rs.getString("rbe.executorproxyhost");
         Integer executorProxyPort = rs.getInt("rbe.executorproxyport");
         String executorProxyActive = rs.getString("rbe.executorproxyactive");
-        if(deviceport == 0) deviceport=null;
+        if(deviceport == 0) {
+            deviceport=null;
+        }
         String description = ParameterParserUtil.parseStringParam(rs.getString("rbe.description"), "");
         long dateLastExe = rs.getLong("rbe.DateLastExeSubmitted");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("rbe.UsrModif"), "");

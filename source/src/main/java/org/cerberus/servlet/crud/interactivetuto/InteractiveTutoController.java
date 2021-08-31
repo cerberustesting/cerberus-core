@@ -46,8 +46,9 @@ public class InteractiveTutoController {
     public ResponseEntity<InteractiveTutoDTO> getInteractiveTuto(final int id, HttpServletRequest request) {
         String lang = (String) request.getSession().getAttribute("MyLang");
 
-        if(lang == null)
+        if(lang == null) {
             lang = "fr";
+        }
 
         InteractiveTuto it = interactiveTutoService.getInteractiveTutorial(id, true, lang);
 
@@ -71,8 +72,9 @@ public class InteractiveTutoController {
     public ResponseEntity<List<InteractiveTutoDTO>> getListInteractiveTuto(HttpServletRequest request) {
         String lang = (String) request.getSession().getAttribute("MyLang");
 
-        if(lang == null)
+        if(lang == null) {
             lang = "en";
+        }
 
         List<InteractiveTuto> it = interactiveTutoService.getListInteractiveTutorial(false, lang);
 
