@@ -60,7 +60,7 @@ public class XMLTestDataLibHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        dataFromFile = new HashMap<TestDataLib, List<TestDataLibData>>();
+        dataFromFile = new HashMap<>();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class XMLTestDataLibHandler extends DefaultHandler {
             dataItem.setTestDataLibID(dataFromFile.size()); //temporary ID
 
         } else if (qName.equalsIgnoreCase(TESTDATALIBDATASET)) {
-            currentList = new ArrayList<TestDataLibData>();
+            currentList = new ArrayList<>();
         } else if (qName.equalsIgnoreCase(TESTDATALIBDATA)) {
             subDataItem = new TestDataLibData();
             subDataItem.setTestDataLibID(dataFromFile.size());

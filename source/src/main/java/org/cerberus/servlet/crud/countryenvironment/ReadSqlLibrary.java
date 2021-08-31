@@ -45,12 +45,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
+@WebServlet(name = "ReadSqlLibrary", urlPatterns = {"/ReadSqlLibrary"})
 public class ReadSqlLibrary extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadSqlLibrary.class);
@@ -183,7 +185,7 @@ public class ReadSqlLibrary extends HttpServlet {
         AnswerItem<SqlLibrary> resp = sqlLibraryService.readByKey(key);
         SqlLibrary p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (SqlLibrary) resp.getItem();
+            p = resp.getItem();
         }
         JSONObject item = convertSqlLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);

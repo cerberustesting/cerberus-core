@@ -39,7 +39,6 @@ import org.cerberus.crud.factory.impl.FactoryCountryEnvDeployType;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 @Repository
@@ -61,7 +60,7 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
         AnswerList<CountryEnvDeployType> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CountryEnvDeployType> objectList = new ArrayList<CountryEnvDeployType>();
+        List<CountryEnvDeployType> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

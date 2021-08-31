@@ -85,7 +85,7 @@ public class UpdateApplicationObject extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        Map<String, String> fileData = new HashMap<String, String>();
+        Map<String, String> fileData = new HashMap<>();
         FileItem file = null;
 
         FileItemFactory factory = new DiskFileItemFactory();
@@ -153,7 +153,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 /**
@@ -175,7 +175,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 applicationData.setUsrModif(usrmodif);
                 applicationData.setDateModif(datemodif);
                 ans = applicationObjectService.update(applicationData.getApplication(), applicationData.getObject(), applicationData);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -184,7 +184,7 @@ public class UpdateApplicationObject extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/UpdateApplicationObject", "UPDATE", "Updated Application Object : ['" + application + "'|'" + object + "']", request);
                 }
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
         }
 

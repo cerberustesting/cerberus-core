@@ -68,6 +68,7 @@ public class ScheduledJob implements Job {
     private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
     public static final String SERVLET_ADDTOEXECUTION = "/AddToExecutionQueueV003";
 
+    @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 

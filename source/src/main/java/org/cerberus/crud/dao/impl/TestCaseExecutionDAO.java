@@ -280,7 +280,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(resultSet.getString("ID"));
@@ -486,7 +486,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 if (!(resultSet.first())) {
                     throwException = true;
                 } else {
-                    myTestCaseExecutions = new ArrayList<TestCaseExecution>();
+                    myTestCaseExecutions = new ArrayList<>();
                     do {
                         Execution = this.loadWithDependenciesFromResultSet(resultSet);
 
@@ -650,7 +650,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(resultSet.getString("tag"));
@@ -1133,10 +1133,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         if (system != null && !system.isEmpty()) {
-            query.append(" and " + SqlUtil.generateInClause("exe.`system`", system) + " ");
+            query.append(" and ").append(SqlUtil.generateInClause("exe.`system`", system)).append(" ");
         }
 
-        query.append(" AND " + UserSecurity.getSystemAllowForSQL("exe.`system`"));
+        query.append(" AND ").append(UserSecurity.getSystemAllowForSQL("exe.`system`"));
 
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
@@ -1280,7 +1280,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1379,7 +1379,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecution> column = new ArrayList<TestCaseExecution>();
+        List<TestCaseExecution> column = new ArrayList<>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());

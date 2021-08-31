@@ -109,7 +109,7 @@ public class ReadExecutionStat extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-        List<String> system = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List<String> system = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String from = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("from"), null, "UTF8");
         String to = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("to"), null, "UTF8");
 
@@ -139,8 +139,8 @@ public class ReadExecutionStat extends HttpServlet {
         LOG.debug("to : " + toD);
 
         List<TestCase> ltc = new ArrayList<>();
-        List<String> test = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tests"), new ArrayList<String>(), "UTF8");
-        List<String> testCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("testcases"), new ArrayList<String>(), "UTF8");
+        List<String> test = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tests"), new ArrayList<>(), "UTF8");
+        List<String> testCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("testcases"), new ArrayList<>(), "UTF8");
         int i = 0;
         for (String string : test) {
             ltc.add(factoryTestCase.create(string, testCase.get(i++)));
@@ -155,13 +155,13 @@ public class ReadExecutionStat extends HttpServlet {
 
         List<String> units = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("units"), Arrays.asList("request", "totalsize"), "UTF8");
 
-        List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("countries"), new ArrayList<String>(), "UTF8");
+        List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("countries"), new ArrayList<>(), "UTF8");
         Boolean countriesDefined = (request.getParameterValues("countries") != null);
 
-        List<String> environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environments"), new ArrayList<String>(), "UTF8");
+        List<String> environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environments"), new ArrayList<>(), "UTF8");
         Boolean environmentsDefined = (request.getParameterValues("environments") != null);
 
-        List<String> robotDeclis = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("robotDeclis"), new ArrayList<String>(), "UTF8");
+        List<String> robotDeclis = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("robotDeclis"), new ArrayList<>(), "UTF8");
         Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
 
         // Init Answer with potencial error from Parsing parameter.
@@ -196,7 +196,7 @@ public class ReadExecutionStat extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             testCaseExecutionHttpStatService = appContext.getBean(ITestCaseExecutionHttpStatService.class);
             answer = testCaseExecutionHttpStatService.readByCriteria("OK", ltc, fromD, toD, system, countries, environments, robotDeclis, parties, types, units);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -204,7 +204,7 @@ public class ReadExecutionStat extends HttpServlet {
 
             JSONObject jsonResponse1 = new JSONObject();
             answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
-            jsonResponse1 = (JSONObject) answer.getItem();
+            jsonResponse1 = answer.getItem();
 
             jsonResponse.put("datasetExeTime", jsonResponse1.getJSONArray("curvesTime"));
             jsonResponse.put("datasetExeStatusNb", jsonResponse1.getJSONArray("curvesNb"));

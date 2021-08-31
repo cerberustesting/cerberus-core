@@ -62,18 +62,23 @@ public class Difference {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+                    return true;
+                }
+		if (obj == null) {
+                    return false;
+                }
+		if (getClass() != obj.getClass()) {
+                    return false;
+                }
 		Difference other = (Difference) obj;
 		if (diff == null) {
-			if (other.diff != null)
-				return false;
-		} else if (!diff.equals(other.diff))
-			return false;
+			if (other.diff != null) {
+                            return false;
+                        }
+		} else if (!diff.equals(other.diff)) {
+                    return false;
+                }
 		return true;
 	}
 

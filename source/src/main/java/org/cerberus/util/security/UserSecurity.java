@@ -110,7 +110,7 @@ public class UserSecurity {
         }
 
         for (String sys : getSystemAllow()) {
-            st.append((!firstSys ? "," : "") + "'" + StringEscapeUtils.escapeHtml4(escapeSql(sys)) + "'");
+            st.append(!firstSys ? "," : "").append("'").append(StringEscapeUtils.escapeHtml4(escapeSql(sys))).append("'");
             firstSys = false;
         }
         return systemAttributeName + " in (''," + st.toString() + ")";
@@ -139,5 +139,8 @@ public class UserSecurity {
             return null;
         }
         return StringUtils.replace(str, "'", "''");
+    }
+
+    private UserSecurity() {
     }
 }

@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +64,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author cte
  */
+@WebServlet(name = "CreateAppService", urlPatterns = {"/CreateAppService"})
 public class CreateAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateAppService.class);
@@ -96,7 +98,7 @@ public class CreateAppService extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
-        Map<String, String> fileData = new HashMap<String, String>();
+        Map<String, String> fileData = new HashMap<>();
         FileItem file = null;
 
         FileItemFactory factory = new DiskFileItemFactory();
@@ -170,7 +172,7 @@ public class CreateAppService extends HttpServlet {
 
             AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
             ans = appServiceService.create(appService);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -194,7 +196,7 @@ public class CreateAppService extends HttpServlet {
 
                 // Update the Database with the new list.
                 ans = appServiceContentService.compareListAndUpdateInsertDeleteElements(service, contentList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
             // Update header
             if (fileData.get("headerList") != null) {
@@ -204,7 +206,7 @@ public class CreateAppService extends HttpServlet {
 
                 // Update the Database with the new list.
                 ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }
         }
 

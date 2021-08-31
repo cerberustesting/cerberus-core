@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "ImportTestCaseFromJson", urlPatterns = {"/ImportTestCaseFromJson"})
 public class ImportTestCaseFromJson extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ImportTestCaseFromJson.class);

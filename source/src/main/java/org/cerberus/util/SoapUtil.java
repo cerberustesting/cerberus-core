@@ -59,4 +59,7 @@ public final class SoapUtil {
         }
         return result;
     }
+
+    private SoapUtil() {
+    }
 }

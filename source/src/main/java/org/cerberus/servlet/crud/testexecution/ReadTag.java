@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,7 +187,7 @@ public class ReadTag extends HttpServlet {
         if (request.getParameter("iDisplayStartPage") != null) {
             startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStartPage"), "0"));
             startPosition--;
-            startPosition = startPosition * 30;
+            startPosition *= 30;
         } else {
             startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         }
@@ -215,7 +214,7 @@ public class ReadTag extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Tag tagCur : (List<Tag>) resp.getDataList()) {
+            for (Tag tagCur : resp.getDataList()) {
                 jsonArray.put(tagCur.toJson());
             }
         }

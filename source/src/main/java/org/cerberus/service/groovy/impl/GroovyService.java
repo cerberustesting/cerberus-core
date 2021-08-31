@@ -66,21 +66,18 @@ public class GroovyService implements IGroovyService {
     @Override
     public String eval(final String script) throws IGroovyServiceException {
         try {
-            Future<String> expression = executorService.submit(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    RestrictiveGroovyInterceptor interceptor = new RestrictiveGroovyInterceptor(
-                            Collections.<Class<?>>emptySet(),
-                            Collections.<Class<?>>emptySet(),
-                            Collections.<RestrictiveGroovyInterceptor.AllowedPrefix>emptyList()
-                    );
-                    try {
-                        interceptor.register();
-                        GroovyShell shell = new GroovyShell(GROOVY_COMPILER_CONFIGURATION);
-                        return shell.evaluate(script).toString();
-                    } finally {
-                        interceptor.unregister();
-                    }
+            Future<String> expression = executorService.submit(() -> {
+                RestrictiveGroovyInterceptor interceptor = new RestrictiveGroovyInterceptor(
+                        Collections.<Class<?>>emptySet(),
+                        Collections.<Class<?>>emptySet(),
+                        Collections.<RestrictiveGroovyInterceptor.AllowedPrefix>emptyList()
+                );
+                try {
+                    interceptor.register();
+                    GroovyShell shell = new GroovyShell(GROOVY_COMPILER_CONFIGURATION);
+                    return shell.evaluate(script).toString();
+                } finally {
+                    interceptor.unregister();
                 }
             });
 

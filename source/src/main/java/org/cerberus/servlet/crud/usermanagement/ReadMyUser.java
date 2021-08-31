@@ -38,7 +38,6 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.service.*;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;

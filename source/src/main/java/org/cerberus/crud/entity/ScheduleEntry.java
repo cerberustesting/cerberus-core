@@ -149,6 +149,7 @@ public class ScheduleEntry {
         return true;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

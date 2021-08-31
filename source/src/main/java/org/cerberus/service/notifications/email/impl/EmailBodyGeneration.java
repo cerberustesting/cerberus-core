@@ -67,7 +67,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             List<Application> appliList = applicationService.convert(applicationService.readBySystem(Arrays.asList(system)));
 
             buildContentTable = "Here are the last modifications since last change (" + lastBuild + "/" + lastRevision + ") :";
-            buildContentTable = buildContentTable + "<table>";
+            buildContentTable += "<table>";
             buildContentTable = buildContentTable + "<thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>"
                     + "Sprint/Rev</td><td>Application</td><td>Project</td><td>Bug</td><td>Ticket</td><td>People in Charge</td><td>Release Documentation</td></tr></thead><tbody>";
 
@@ -171,7 +171,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     } while (rsBC.next());
 
                 }
-                buildContentTable = buildContentTable + "</tbody></table><br>";
+                buildContentTable += "</tbody></table><br>";
                 buildContentTemplate = buildContentTable;
             }catch (Exception e) {
                 LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);

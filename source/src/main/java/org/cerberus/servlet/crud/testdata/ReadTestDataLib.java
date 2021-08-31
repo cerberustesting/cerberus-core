@@ -203,7 +203,7 @@ public class ReadTestDataLib extends HttpServlet {
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(request.getParameter("sLike").split(",")));
 
         for (int a = 0; a < columnToSort.length; a++) {
@@ -222,7 +222,7 @@ public class ReadTestDataLib extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestDataLib testDataLib : (List<TestDataLib>) resp.getDataList()) {
+            for (TestDataLib testDataLib : resp.getDataList()) {
                 jsonArray.put(convertTestDataLibToJSONObject(testDataLib, false));
 
             }
@@ -295,7 +295,7 @@ public class ReadTestDataLib extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestDataLib testDataLib : (List<TestDataLib>) ansList.getDataList()) {
+            for (TestDataLib testDataLib : ansList.getDataList()) {
                 jsonArray.put(convertTestDataLibToJSONObject(testDataLib, false));
 
             }
@@ -391,7 +391,7 @@ public class ReadTestDataLib extends HttpServlet {
 
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the response is success then we can sent the data
-            jsonObject.put("contentTable", ((List<String>) ansList.getDataList()).toArray());
+            jsonObject.put("contentTable", ansList.getDataList().toArray());
         }
         answerItem.setResultMessage(ansList.getResultMessage());
         answerItem.setItem(jsonObject);

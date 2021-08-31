@@ -44,7 +44,7 @@ public class SessionCounterListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent arg0) {
-        String key = (String) arg0.getSession().getId();
+        String key = arg0.getSession().getId();
         cs.destroyUser(key);
     }
 }

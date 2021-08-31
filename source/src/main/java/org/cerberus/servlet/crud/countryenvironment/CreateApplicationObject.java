@@ -92,7 +92,7 @@ public class CreateApplicationObject extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        Map<String, String> fileData = new HashMap<String, String>();
+        Map<String, String> fileData = new HashMap<>();
         FileItem file = null;
 
         FileItemFactory factory = new DiskFileItemFactory();

@@ -87,7 +87,7 @@ public class CountryEnvLink {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CountryEnvLink other = (CountryEnvLink) obj;
+        final CountryEnvLink other = obj;
         if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
             return false;
         }

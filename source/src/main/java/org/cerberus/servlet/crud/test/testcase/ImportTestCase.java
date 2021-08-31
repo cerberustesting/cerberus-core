@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +138,7 @@ public class ImportTestCase extends HttpServlet {
                                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())
                                         .replace("%OPERATION%", "Import"));
                                 ans.setResultMessage(msg);
-                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                             } catch (CerberusException ex) {
                                 LOG.error("Cerberus Exception during testcase import.", ex);
                                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -147,7 +146,7 @@ public class ImportTestCase extends HttpServlet {
                                         .replace("%OPERATION%", "Import")
                                         .replace("%REASON%", ex.getMessageError().getDescription()));
                                 ans.setResultMessage(msg);
-                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                             }
                         } else {
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -155,7 +154,7 @@ public class ImportTestCase extends HttpServlet {
                                     .replace("%OPERATION%", "Import")
                                     .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
                             ans.setResultMessage(msg);
-                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                         }
                     }
                 }

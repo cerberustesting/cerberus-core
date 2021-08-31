@@ -280,7 +280,7 @@ public class RobotExecutor {
             return false;
         }
 
-        final RobotExecutor other = (RobotExecutor) obj;
+        final RobotExecutor other = obj;
         if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
             return false;
         }
@@ -393,16 +393,16 @@ public class RobotExecutor {
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
-            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
+            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()));
             result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());
-            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()) ? true : false);
+            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()));
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {
-                if (this.getHostPassword() != null && !this.getHostPassword().equals("")) {
+                if (this.getHostPassword() != null && !this.getHostPassword().isEmpty()) {
                     result.put("hostPassword", "XXXXXXXXXX");
                 } else {
                     result.put("hostPassword", "");

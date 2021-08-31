@@ -118,7 +118,7 @@ public class UserDAO implements IUserDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<User>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         User user = this.loadFromResultSet(resultSet);
                         list.add(user);
@@ -332,7 +332,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public AnswerItem<User> updateUserPassword(User user, String password, String requestNewPassword) {
-        AnswerItem<User> answer = new AnswerItem<User>();
+        AnswerItem<User> answer = new AnswerItem<>();
         MessageEvent msg;
         boolean res = false;
         final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
@@ -494,7 +494,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<User> result = new ArrayList<User>();
+        List<User> result = new ArrayList<>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -520,15 +520,15 @@ public class UserDAO implements IUserDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+        if (!searchTerm.isEmpty() && !individualSearch.isEmpty()) {
             searchSQL.append(gSearch.toString());
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
+        } else if (!individualSearch.isEmpty()) {
             searchSQL.append(" where `");
             searchSQL.append(individualSearch);
             searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL.append(gSearch.toString());
         }
 
@@ -612,11 +612,11 @@ public class UserDAO implements IUserDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !inds.equals("")) {
+        if (!searchTerm.isEmpty() && !inds.isEmpty()) {
             searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
+        } else if (!inds.isEmpty()) {
             searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL = gSearch.toString();
         }
 
@@ -677,7 +677,7 @@ public class UserDAO implements IUserDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<User>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         User user = this.loadFromResultSet(resultSet);
                         list.add(user);

@@ -169,7 +169,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String description = currentStep.getString("description");
             //String possibly wrote by the user
             String returnMessage = StringUtil.sanitize(currentStep.getString("returnMessage"));
-            if (returnMessage == "Step not executed")//default message unchanged
+            if ("Step not executed".equals(returnMessage))//default message unchanged
             {
                 returnMessage = "Step executed manually";
             }

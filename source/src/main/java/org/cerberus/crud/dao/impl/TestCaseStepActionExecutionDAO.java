@@ -78,7 +78,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<TestCaseStepActionExecution>();
+                    result = new ArrayList<>();
 
                     while (resultSet.next()) {
                         result.add(this.loadFromResultset(resultSet));
@@ -279,10 +279,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
             LOG.warn(query.toString());
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<List<String>>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
-                        List<String> array = new ArrayList<String>();
+                        List<String> array = new ArrayList<>();
                         array.add(resultSet.getString(1));
                         array.add(resultSet.getString(2));
                         array.add(resultSet.getString(3));

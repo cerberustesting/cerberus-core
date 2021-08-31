@@ -190,7 +190,7 @@ public class Application {
             return false;
         }
 
-        final Application other = (Application) obj;
+        final Application other = obj;
         if ((this.application == null) ? (other.application != null) : !this.application.equals(other.application)) {
             return false;
         }

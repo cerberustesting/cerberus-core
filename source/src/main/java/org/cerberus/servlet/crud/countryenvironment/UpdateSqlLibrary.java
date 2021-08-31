@@ -42,12 +42,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
+@WebServlet(name = "UpdateSqlLibrary", urlPatterns = {"/UpdateSqlLibrary"})
 public class UpdateSqlLibrary extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateSqlLibrary.class);
@@ -108,7 +110,7 @@ public class UpdateSqlLibrary extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 /**
@@ -121,7 +123,7 @@ public class UpdateSqlLibrary extends HttpServlet {
                 sqlLib.setDatabase(database);
                 sqlLib.setScript(script);
                 ans = sqlLibraryService.update(sqlLib);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**

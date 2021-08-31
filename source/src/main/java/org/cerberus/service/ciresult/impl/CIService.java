@@ -276,7 +276,7 @@ public class CIService implements ICIService {
 
         JSONArray jsonResult = new JSONArray();
 
-        HashMap<String, String> statMap = new HashMap<String, String>();
+        HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             if (!StringUtil.isNullOrEmpty(testCaseExecution.getEnvironment())) {
                 statMap.put(testCaseExecution.getEnvironment(), null);
@@ -294,7 +294,7 @@ public class CIService implements ICIService {
 
         JSONArray jsonResult = new JSONArray();
 
-        HashMap<String, String> statMap = new HashMap<String, String>();
+        HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             if (!StringUtil.isNullOrEmpty(testCaseExecution.getCountry())) {
                 statMap.put(testCaseExecution.getCountry(), null);
@@ -312,7 +312,7 @@ public class CIService implements ICIService {
 
         JSONArray jsonResult = new JSONArray();
 
-        HashMap<String, String> statMap = new HashMap<String, String>();
+        HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             if (!StringUtil.isNullOrEmpty(testCaseExecution.getRobotDecli())) {
                 statMap.put(testCaseExecution.getRobotDecli(), null);
@@ -330,7 +330,7 @@ public class CIService implements ICIService {
 
         JSONArray jsonResult = new JSONArray();
 
-        HashMap<String, String> statMap = new HashMap<String, String>();
+        HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             if (!StringUtil.isNullOrEmpty(testCaseExecution.getSystem())) {
                 statMap.put(testCaseExecution.getSystem(), null);
@@ -348,7 +348,7 @@ public class CIService implements ICIService {
 
         JSONArray jsonResult = new JSONArray();
 
-        HashMap<String, String> statMap = new HashMap<String, String>();
+        HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             if (!StringUtil.isNullOrEmpty(testCaseExecution.getApplication())) {
                 statMap.put(testCaseExecution.getApplication(), null);
@@ -366,7 +366,7 @@ public class CIService implements ICIService {
 
         JSONObject jsonResult = new JSONObject();
 
-        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             StringBuilder key = new StringBuilder();
             key.append(testCaseExecution.getEnvironment());
@@ -413,7 +413,7 @@ public class CIService implements ICIService {
         Gson gson = new Gson();
         JSONArray dataArray = new JSONArray();
         //sort keys
-        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<>(summaryMap);
         for (String key : sortedKeys.keySet()) {
             SummaryStatisticsDTO sumStats = summaryMap.get(key);
             //percentage values

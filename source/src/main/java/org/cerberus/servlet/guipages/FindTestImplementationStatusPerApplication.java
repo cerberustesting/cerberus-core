@@ -89,8 +89,8 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
 
         try {
 
-            List<String> sArray = new ArrayList<String>();
-            if (!mySystem.equals("")) {
+            List<String> sArray = new ArrayList<>();
+            if (!mySystem.isEmpty()) {
                 String smySystem = " `system` like '%" + mySystem + "%'";
                 sArray.add(smySystem);
             }
@@ -137,7 +137,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
             try(ResultSet rs_teststatus = stmt_teststatus.executeQuery();) {
                 //Integer tot = 0;
                 List<Integer> totLine;
-                totLine = new ArrayList<Integer>();
+                totLine = new ArrayList<>();
                 for (Invariant i : myInvariants) {
                     totLine.add(0);
                 }

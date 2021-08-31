@@ -22,7 +22,6 @@ package org.cerberus.crud.service.impl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionHttpStatDAO;
@@ -127,7 +126,7 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
     public TestCaseExecutionHttpStat convert(AnswerItem<TestCaseExecutionHttpStat> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCaseExecutionHttpStat) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -136,7 +135,7 @@ public class TestCaseExecutionHttpStatService implements ITestCaseExecutionHttpS
     public List<TestCaseExecutionHttpStat> convert(AnswerList<TestCaseExecutionHttpStat> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseExecutionHttpStat>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

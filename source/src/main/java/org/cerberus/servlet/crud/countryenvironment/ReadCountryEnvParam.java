@@ -93,7 +93,7 @@ public class ReadCountryEnvParam extends HttpServlet {
          * Parsing and securing all required parameters.
          */
 //        String systems = policy.sanitize(request.getParameter("system"));
-        List <String> systems = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List <String> systems = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String build = policy.sanitize(request.getParameter("build"));
@@ -205,7 +205,7 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -221,7 +221,7 @@ public class ReadCountryEnvParam extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
+            for (CountryEnvParam cep : resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
         }
@@ -247,7 +247,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
 
-            for (CountryEnvParam cep : (List<CountryEnvParam>) resp.getDataList()) {
+            for (CountryEnvParam cep : resp.getDataList()) {
                 jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
             }
 

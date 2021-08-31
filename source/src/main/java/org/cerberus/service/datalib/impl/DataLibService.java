@@ -259,12 +259,12 @@ public class DataLibService implements IDataLibService {
 
     private List<Integer> getRandomListOfInteger(int inputRange, int nbOfResult) {
         List<Integer> listTempRandom;
-        listTempRandom = new ArrayList<Integer>();
+        listTempRandom = new ArrayList<>();
         for (int i = 0; i < inputRange; i++) {
             listTempRandom.add(i);
         }
         List<Integer> listRandom;
-        listRandom = new ArrayList<Integer>();
+        listRandom = new ArrayList<>();
         for (int i = 0; i < nbOfResult; i++) {
             Random r = new Random();
             int position = r.nextInt(listTempRandom.size());
@@ -301,7 +301,7 @@ public class DataLibService implements IDataLibService {
         String selectedList = "";
 
         List<HashMap<String, String>> resultObject;
-        resultObject = new ArrayList<HashMap<String, String>>();
+        resultObject = new ArrayList<>();
 
         List<Integer> listTempRandom = getRandomListOfInteger(dataObjectList.getDataList().size(), outputRequestedDimention);
 
@@ -324,7 +324,7 @@ public class DataLibService implements IDataLibService {
         List<HashMap<String, String>> list; // Temporary list in order to treat the input list
 
         List<HashMap<String, String>> resultObject;
-        resultObject = new ArrayList<HashMap<String, String>>();
+        resultObject = new ArrayList<>();
 
         int initNB = dataObjectList.getDataList().size();
         // We get the list of values that were already used.
@@ -341,7 +341,7 @@ public class DataLibService implements IDataLibService {
 
         int removedNB = 0;
         // We save all rows that needs to be removed to listToremove.
-        List<Map<String, String>> listToremove = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> listToremove = new ArrayList<>();
         list = dataObjectList.getDataList();
         for (String valueToRemove : pastValues) {
             for (Map<String, String> curentRow : list) {
@@ -397,7 +397,7 @@ public class DataLibService implements IDataLibService {
         List<HashMap<String, String>> list = dataObjectList.getDataList(); // Temporary list in order to treat the input list
 
         List<HashMap<String, String>> resultObject;
-        resultObject = new ArrayList<HashMap<String, String>>();
+        resultObject = new ArrayList<>();
 
         int initNB = dataObjectList.getDataList().size();
         // We get the list of values that are beeing used.
@@ -482,7 +482,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumnPosition());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }
@@ -515,7 +515,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumn());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }
@@ -550,7 +550,7 @@ public class DataLibService implements IDataLibService {
                     boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getParsingAnswer());
-                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                        if (tdld.getSubData().isEmpty()) {
                             missingKey = false;
                         }
                     }
@@ -917,7 +917,7 @@ public class DataLibService implements IDataLibService {
                                  */
                                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
                                     for (int i = 0; i < finalnbRow; i++) { // Loop on all Values that match in XML.
-                                        resultHash = new HashMap<String, String>();
+                                        resultHash = new HashMap<>();
                                         for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all SubData of the TestDataLib.
                                             listTemp1 = hashTemp1.get(entry.getKey());
                                             if (listTemp1 != null) {
@@ -997,7 +997,7 @@ public class DataLibService implements IDataLibService {
                                  */
                                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
                                     for (int i = 0; i < finalnbRow; i++) { // Loop on all Values that match in XML.
-                                        resultHash = new HashMap<String, String>();
+                                        resultHash = new HashMap<>();
                                         for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all SubData of the TestDataLib.
                                             listTemp1 = hashTemp1.get(entry.getKey());
                                             if (listTemp1 != null) {

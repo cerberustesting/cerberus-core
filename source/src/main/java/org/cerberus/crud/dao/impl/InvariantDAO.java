@@ -117,7 +117,7 @@ public class InvariantDAO implements IInvariantDAO {
         AnswerList<Invariant> ansList = new AnswerList<>();
         MessageEvent msg;
 
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 = ? ORDER BY sort";
 
         // Debug message on SQL.
@@ -266,20 +266,20 @@ public class InvariantDAO implements IInvariantDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM invariant ");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+        if (!searchTerm.isEmpty() && !individualSearch.isEmpty()) {
             searchSQL.append(" and ");
             searchSQL.append(getSearchString(searchTerm));
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
+        } else if (!individualSearch.isEmpty()) {
             searchSQL.append(" and `");
             searchSQL.append(individualSearch);
             searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL.append(" and ");
             searchSQL.append(getSearchString(searchTerm));
         }
-        if (!(PublicPrivateFilter.equalsIgnoreCase(""))) {
+        if (!(PublicPrivateFilter.isEmpty())) {
             searchSQL.append(" and ");
             searchSQL.append(PublicPrivateFilter);
         }

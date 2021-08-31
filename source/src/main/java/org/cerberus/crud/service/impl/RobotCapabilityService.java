@@ -186,7 +186,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
     public List<RobotCapability> convert(AnswerList<RobotCapability> capabilityAnswers) throws CerberusException {
         if (capabilityAnswers != null && capabilityAnswers.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             // if the service returns an OK message then we can get the item
-            return (List<RobotCapability>) capabilityAnswers.getDataList();
+            return capabilityAnswers.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

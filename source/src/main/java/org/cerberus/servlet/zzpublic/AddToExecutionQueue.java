@@ -59,7 +59,7 @@ import org.cerberus.service.authentification.IAPIKeyService;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueue", urlPatterns = {"/AddToExecutionQueue"})
+@WebServlet(name = "AddToExecutionQueue", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueue"})
 public class AddToExecutionQueue extends HttpServlet {
 
     /**
@@ -225,7 +225,7 @@ public class AddToExecutionQueue extends HttpServlet {
                 }
 
                 // Part 2: Try to insert all these test cases to the execution queue.
-                List<String> errorMessages = new ArrayList<String>();
+                List<String> errorMessages = new ArrayList<>();
                 for (TestCaseExecutionQueue toInsert : toInserts) {
                     try {
                         inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
@@ -359,7 +359,7 @@ public class AddToExecutionQueue extends HttpServlet {
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
 
-        List<TestCaseExecutionQueue> inQueues = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> inQueues = new ArrayList<>();
         for (Map<String, String> selectedTest : selectedTests) {
             String test = selectedTest.get(PARAMETER_SELECTED_TEST_TEST);
             String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_TEST_CASE);

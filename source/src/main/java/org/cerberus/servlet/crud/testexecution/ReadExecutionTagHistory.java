@@ -112,7 +112,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-        List<String> systems = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List<String> systems = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String from = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("from"), null, "UTF8");
         String to = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("to"), null, "UTF8");
 
@@ -148,7 +148,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findTagHistoData(appContext, request, systems, fromD, toD);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -195,7 +195,7 @@ public class ReadExecutionTagHistory extends HttpServlet {
         statList.add("RETRY");
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            List<Tag> tcList = (List<Tag>) resp.getDataList();
+            List<Tag> tcList = resp.getDataList();
             for (Tag tagCur : tcList) {
 
                 /**

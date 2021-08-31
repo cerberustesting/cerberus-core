@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -84,7 +83,7 @@ public class ReadUserPublic extends HttpServlet {
         Integer brpid = 0;
         boolean brpid_error = true;
         try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+            if (request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
                 brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                 brpid_error = false;
             }

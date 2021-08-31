@@ -85,7 +85,7 @@ public class XmlUnitService implements IXmlUnitService {
      * </ul>
      */
     private void initInputTranslator() {
-        inputTranslator = new InputTranslatorManager<Document>();
+        inputTranslator = new InputTranslatorManager<>();
         // Add handling on the "url" prefix, to get URL input
         inputTranslator.addTranslator(new AInputTranslator<Document>("url") {
             @Override
@@ -194,6 +194,7 @@ public class XmlUnitService implements IXmlUnitService {
         return DEFAULT_GET_FROM_XML_VALUE;
     }
 
+    @Override
     public String getRawFromXml(final String xmlToParse, final String xpath) {
         if (xpath == null) {
             return DEFAULT_GET_FROM_XML_VALUE;

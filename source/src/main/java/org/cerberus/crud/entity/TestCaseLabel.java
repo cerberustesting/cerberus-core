@@ -20,8 +20,6 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -121,7 +119,7 @@ public class TestCaseLabel {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseLabel other = (TestCaseLabel) obj;
+        final TestCaseLabel other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }

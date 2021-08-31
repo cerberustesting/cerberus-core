@@ -125,7 +125,7 @@ public class AppServiceHeader {
             return false;
         }
 
-        final AppServiceHeader other = (AppServiceHeader) obj;
+        final AppServiceHeader other = obj;
         if ((this.service == null) ? (other.service != null) : !this.service.equals(other.service)) {
             return false;
         }

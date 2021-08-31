@@ -30,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IUserSystemDAO;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.User;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -150,7 +149,7 @@ public class UserSystemDAO implements IUserSystemDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);
@@ -198,7 +197,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);
@@ -246,7 +245,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserSystem>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserSystem user = this.loadUserSystemFromResultSet(resultSet);
                         list.add(user);

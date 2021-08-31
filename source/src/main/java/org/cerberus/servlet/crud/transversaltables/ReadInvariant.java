@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.*;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author FNogueira
  */
+@WebServlet(name = "ReadInvariant", urlPatterns = {"/ReadInvariant"})
 public class ReadInvariant extends HttpServlet {
 
     private IInvariantService invariantService;
@@ -183,7 +185,7 @@ public class ReadInvariant extends HttpServlet {
 
         if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            for (Invariant inv : (List<Invariant>) answerService.getDataList()) {
+            for (Invariant inv : answerService.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }
@@ -234,7 +236,7 @@ public class ReadInvariant extends HttpServlet {
         AnswerList<Invariant> answerInv;
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -256,7 +258,7 @@ public class ReadInvariant extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         //boolean userHasPermissions = request.isUserInRole("Integrator"); //TODO:need to chec
         if (answerInv.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Invariant inv : (List<Invariant>) answerInv.getDataList()) {
+            for (Invariant inv : answerInv.getDataList()) {
                 jsonArray.put(convertInvariantToJSONObject(inv));
             }
         }

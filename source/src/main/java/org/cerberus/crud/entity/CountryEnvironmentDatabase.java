@@ -96,7 +96,7 @@ public class CountryEnvironmentDatabase {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CountryEnvironmentDatabase other = (CountryEnvironmentDatabase) obj;
+        final CountryEnvironmentDatabase other = obj;
         if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
             return false;
         }

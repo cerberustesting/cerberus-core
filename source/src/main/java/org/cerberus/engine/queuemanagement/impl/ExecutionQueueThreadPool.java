@@ -42,7 +42,7 @@ public class ExecutionQueueThreadPool {
     private Integer totalNumberOfThread;
     private Integer size;
     private Integer inExecution;
-    Map<String, List<Future<?>>> map = new HashMap<String, List<Future<?>>>();
+    Map<String, List<Future<?>>> map = new HashMap<>();
 
     @PostConstruct
     public void init() {

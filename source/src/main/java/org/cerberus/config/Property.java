@@ -47,4 +47,7 @@ public class Property {
         return ((System.getProperty(Property.SAAS) != null) && (("true".equals(System.getProperty(Property.SAAS))) || ("1".equals(System.getProperty(Property.SAAS)))));
     }
 
+    private Property() {
+    }
+
 }

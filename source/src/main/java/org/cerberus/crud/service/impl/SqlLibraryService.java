@@ -25,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.ISqlLibraryDAO;
-import org.cerberus.crud.dao.impl.SqlLibraryDAO;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ISqlLibraryService;

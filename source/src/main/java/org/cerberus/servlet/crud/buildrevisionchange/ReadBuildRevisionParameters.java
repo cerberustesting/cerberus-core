@@ -104,7 +104,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         Integer brpid = 0;
         boolean brpid_error = true;
         try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+            if (request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
                 brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                 brpid_error = false;
             }
@@ -238,7 +238,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
+            for (BuildRevisionParameters brp : resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
             }
         }
@@ -318,7 +318,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         JSONObject newSubObj = new JSONObject();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
+            for (BuildRevisionParameters brp : resp.getDataList()) {
                 newSubObj = convertBuildRevisionParametersToJSONObject(brp);
 
                 // We get here the links of all corresponding deployTypes.
@@ -363,7 +363,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionParameters brp : (List<BuildRevisionParameters>) resp.getDataList()) {
+            for (BuildRevisionParameters brp : resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionParametersToJSONObject(brp));
             }
         }

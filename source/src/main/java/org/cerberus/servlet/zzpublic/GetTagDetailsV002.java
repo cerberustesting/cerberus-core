@@ -41,12 +41,10 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.ParameterParserUtil;
-import org.json.JSONException;
 import java.text.ParseException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.JavaScriptUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,7 +94,7 @@ public class GetTagDetailsV002 extends HttpServlet {
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         if (apiKeyService.checkAPIKey(request, response)) {
             List<TestCaseExecution> listOfExecutions;
-            List<JSONObject> listOfExecutionsJSON = new ArrayList<JSONObject>();
+            List<JSONObject> listOfExecutionsJSON = new ArrayList<>();
             try {
                 // get invariants lists (priorities, countries and env)
                 prioritiesList = invariantService.readByIdName("PRIORITY");

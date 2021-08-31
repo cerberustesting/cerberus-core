@@ -50,7 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateBuildRevisionInvariant1", urlPatterns = {"/UpdateBuildRevisionInvariant1"})
+@WebServlet(name = "UpdateBuildRevisionInvariant", urlPatterns = {"/UpdateBuildRevisionInvariant"})
 public class UpdateBuildRevisionInvariant extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateBuildRevisionInvariant.class);
@@ -86,7 +86,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         Integer seq = -1;
         boolean seq_error = false;
         try {
-            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
+            if (request.getParameter("seq") != null && !request.getParameter("seq").isEmpty()) {
                 seq = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
             }
         } catch (Exception ex) {
@@ -95,7 +95,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         Integer level = -1;
         boolean level_error = false;
         try {
-            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
+            if (request.getParameter("level") != null && !request.getParameter("level").isEmpty()) {
                 level = Integer.valueOf(policy.sanitize(request.getParameter("level")));
             }
         } catch (Exception ex) {

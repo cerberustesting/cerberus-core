@@ -51,4 +51,7 @@ public final class ObjectMapperUtil {
         return objectMapper;
     }
 
+    private ObjectMapperUtil() {
+    }
+
 }

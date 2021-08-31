@@ -25,9 +25,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,11 +40,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IApplicationService;
-import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -112,7 +106,7 @@ public class ReadTestCaseStat extends HttpServlet {
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
-        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
@@ -151,7 +145,7 @@ public class ReadTestCaseStat extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findTCStatList(appContext, request, tescaseL, fromD);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

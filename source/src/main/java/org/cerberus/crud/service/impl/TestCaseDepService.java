@@ -66,7 +66,7 @@ public class TestCaseDepService implements ITestCaseDepService {
             if (testCaseDependenciesHash.containsKey(key)) {
                 testCaseDependenciesHash.get(key).add(testCaseDependency);
             } else {
-                testCaseDependenciesHash.put(key, new ArrayList<TestCaseDep>());
+                testCaseDependenciesHash.put(key, new ArrayList<>());
                 testCaseDependenciesHash.get(key).add(testCaseDependency);
             }
         }

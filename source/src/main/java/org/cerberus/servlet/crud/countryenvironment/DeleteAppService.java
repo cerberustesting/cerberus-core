@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.IAppServiceService;
@@ -46,6 +47,7 @@ import org.cerberus.crud.service.IAppServiceService;
 /**
  * @author cte
  */
+@WebServlet(name = "DeleteAppService", urlPatterns = {"/DeleteAppService"})
 public class DeleteAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DeleteAppService.class);
