@@ -52,7 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ManageV001", urlPatterns = {"/ManageV001"})
+@WebServlet(name = "ManageV001", urlPatterns = {"/ManageV001", "/manageV001"})
 public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);
