@@ -190,7 +190,7 @@ public class VariableService implements IVariableService {
     }
 
     private List<String> getVariableListFromString(String str) {
-        List<String> variable = new ArrayList<String>();
+        List<String> variable = new ArrayList<>();
 
         final String regex = "%(property|system|object|service)\\..*?%";
 
@@ -309,7 +309,7 @@ public class VariableService implements IVariableService {
 
                     // %SYS_CURRENTSTEP_INDEX%
                     if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
-                        TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                        TestCaseStepExecution currentStep = tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
                         stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
                         stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
                         nowInMS = new Date().getTime();
@@ -317,7 +317,7 @@ public class VariableService implements IVariableService {
 
                     }
                     if (stringToDecode.contains("%system.CURRENTSTEP_")) {
-                        TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                        TestCaseStepExecution currentStep = tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
                         stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
                         stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
                         nowInMS = new Date().getTime();

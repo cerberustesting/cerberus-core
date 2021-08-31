@@ -78,7 +78,7 @@ public class CountryEnvDeployType {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CountryEnvDeployType other = (CountryEnvDeployType) obj;
+        final CountryEnvDeployType other = obj;
         if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
             return false;
         }

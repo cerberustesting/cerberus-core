@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.interactivetuto;
 
-import org.apache.commons.collections.ListUtils;
 import org.cerberus.crud.entity.InteractiveTuto;
 import org.cerberus.crud.entity.InteractiveTutoStep;
 import org.cerberus.crud.service.impl.InteractiveTutoService;
@@ -30,8 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,8 +46,9 @@ public class InteractiveTutoController {
     public ResponseEntity<InteractiveTutoDTO> getInteractiveTuto(final int id, HttpServletRequest request) {
         String lang = (String) request.getSession().getAttribute("MyLang");
 
-        if(lang == null)
+        if(lang == null) {
             lang = "fr";
+        }
 
         InteractiveTuto it = interactiveTutoService.getInteractiveTutorial(id, true, lang);
 
@@ -74,8 +72,9 @@ public class InteractiveTutoController {
     public ResponseEntity<List<InteractiveTutoDTO>> getListInteractiveTuto(HttpServletRequest request) {
         String lang = (String) request.getSession().getAttribute("MyLang");
 
-        if(lang == null)
+        if(lang == null) {
             lang = "en";
+        }
 
         List<InteractiveTuto> it = interactiveTutoService.getListInteractiveTutorial(false, lang);
 

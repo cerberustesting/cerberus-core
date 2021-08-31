@@ -74,5 +74,8 @@ public final class VersionComparator {
 
             return 0;
         }
+
+    private VersionComparator() {
+    }
     
 }

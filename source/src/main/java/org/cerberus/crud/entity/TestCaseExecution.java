@@ -1228,7 +1228,7 @@ public class TestCaseExecution {
                 // Looping on ** Execution Data **
                 array = new JSONArray();
                 for (String key1 : this.getTestCaseExecutionDataMap().keySet()) {
-                    TestCaseExecutionData tced = (TestCaseExecutionData) this.getTestCaseExecutionDataMap().get(key1);
+                    TestCaseExecutionData tced = this.getTestCaseExecutionDataMap().get(key1);
                     array.put((tced).toJson(true, false));
                 }
                 result.put("testCaseExecutionDataList", array);

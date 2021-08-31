@@ -189,7 +189,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
             JSONArray countries = propJson.getJSONArray("country");
-            if (!delete && !property.equals("")) {
+            if (!delete && !property.isEmpty()) {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 

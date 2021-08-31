@@ -91,7 +91,7 @@ public class CreateCountryEnvParam extends HttpServlet {
         String environment = policy.sanitize(request.getParameter("environment"));
         String type = policy.sanitize(request.getParameter("type"));
         boolean active = (request.getParameter("active") != null);
-        boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct"))) ? true : false;
+        boolean maintenanceAct = "Y".equals(policy.sanitize(request.getParameter("maintenanceAct")));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         String maintenanceStr = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("maintenanceStr"), "01:00:00", charset);

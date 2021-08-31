@@ -313,7 +313,7 @@ public class TestCaseStep {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStep other = (TestCaseStep) obj;
+        final TestCaseStep other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }

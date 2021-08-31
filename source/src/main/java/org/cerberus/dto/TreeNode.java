@@ -332,13 +332,13 @@ public class TreeNode {
     }
 
     private float getP(Integer a, Integer b) {
-        float c = ((float) a * (float) 100) / (float) b;
+        float c = (a * (float) 100) / b;
         return c;
     }
 
     private Integer getPI(Integer a, Integer b) {
-        float c = ((float) a * (float) 100) / (float) b;
-        return (Integer) Math.round(c);
+        float c = (a * (float) 100) / b;
+        return Math.round(c);
     }
 
     public JSONObject toJson() {

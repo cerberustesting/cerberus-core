@@ -121,7 +121,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     public AppServiceHeader convert(AnswerItem<AppServiceHeader> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (AppServiceHeader) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -130,7 +130,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     public List<AppServiceHeader> convert(AnswerList<AppServiceHeader> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<AppServiceHeader>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -169,7 +169,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
             for (AppServiceHeader objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference.getService(), objectDifference.getKey(), objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -191,13 +191,13 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         return finalAnswer;

@@ -232,7 +232,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         AnswerList<TestCase> answer = testCaseService.readByVarious(test, app, creator, implementer, system, campaign, labels, priority, type, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            for (TestCase tc : (List<TestCase>) answer.getDataList()) {
+            for (TestCase tc : answer.getDataList()) {
                 JSONObject value = tc.toJson();
                 dataArray.put(value);
             }

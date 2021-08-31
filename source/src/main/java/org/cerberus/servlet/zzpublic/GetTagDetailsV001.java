@@ -65,9 +65,9 @@ public class GetTagDetailsV001 extends HttpServlet {
     private IParameterService parameterService;
     private IInvariantService invariantService;
 
-    private List<Invariant> prioritiesList = new ArrayList<Invariant>();
-    private List<Invariant> countriesList = new ArrayList<Invariant>();
-    private List<Invariant> environmentsList = new ArrayList<Invariant>();
+    private List<Invariant> prioritiesList = new ArrayList<>();
+    private List<Invariant> countriesList = new ArrayList<>();
+    private List<Invariant> environmentsList = new ArrayList<>();
 
     private String cerberusUrlParameter;
 
@@ -95,7 +95,7 @@ public class GetTagDetailsV001 extends HttpServlet {
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         if (apiKeyService.checkAPIKey(request, response)) {
             List<TestCaseExecution> listOfExecutions;
-            List<JSONObject> listOfExecutionsJSON = new ArrayList<JSONObject>();
+            List<JSONObject> listOfExecutionsJSON = new ArrayList<>();
             try {
                 // get invariants lists (priorities, countries and env)
                 prioritiesList = invariantService.readByIdName("PRIORITY");

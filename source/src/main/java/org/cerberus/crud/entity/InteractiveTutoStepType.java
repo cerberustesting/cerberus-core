@@ -34,8 +34,11 @@ public enum InteractiveTutoStepType {
     }
 
     public static InteractiveTutoStepType getEnum(String type) {
-        for(InteractiveTutoStepType v : values())
-            if(v.toString().equalsIgnoreCase(type)) return v;
+        for(InteractiveTutoStepType v : values()) {
+            if(v.toString().equalsIgnoreCase(type)) {
+                return v;
+            }
+        }
         throw new IllegalArgumentException();
     }
 

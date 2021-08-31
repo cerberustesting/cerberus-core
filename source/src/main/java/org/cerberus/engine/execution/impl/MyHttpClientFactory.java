@@ -23,12 +23,6 @@ package org.cerberus.engine.execution.impl;
  *
  * @author vertigo
  */
-import java.net.URL;
-import org.apache.http.impl.client.HttpClientBuilder;
-//import org.apache.http.impl.client.HttpClientBuilder;
-import org.openqa.selenium.remote.internal.OkHttpClient;
-
-//public class MyHttpClientFactory implements org.openqa.selenium.remote.http.HttpClient.Factory {
 //
 //    final HttpClientBuilder builder;
 //

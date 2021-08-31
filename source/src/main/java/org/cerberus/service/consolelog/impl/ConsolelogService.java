@@ -19,28 +19,11 @@
  */
 package org.cerberus.service.consolelog.impl;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.service.consolelog.IConsolelogService;
-import org.cerberus.service.har.entity.HarStat;
-import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

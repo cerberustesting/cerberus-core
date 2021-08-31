@@ -196,7 +196,7 @@ public class NewBuildRev extends HttpServlet {
                         OutputMessage = e.getMessage();
                     }
 
-                    if (OutputMessage.equals("")) {
+                    if (OutputMessage.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment")
                                 .replace("%OPERATION%", OPERATION));

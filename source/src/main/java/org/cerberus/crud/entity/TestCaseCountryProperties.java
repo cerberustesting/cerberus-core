@@ -397,7 +397,7 @@ public class TestCaseCountryProperties {
         if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
             return false;
         }
-        if (this.length != other.length) {
+        if (this.length == null ? other.length != null : !this.length.equals(other.length)) {
             return false;
         }
         if (this.rowLimit != other.rowLimit) {

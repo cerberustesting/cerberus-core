@@ -91,7 +91,7 @@ public class ReadUser extends HttpServlet {
         Integer brpid = 0;
         boolean brpid_error = true;
         try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
+            if (request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
                 brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                 brpid_error = false;
             }

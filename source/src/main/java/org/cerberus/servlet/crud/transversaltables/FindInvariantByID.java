@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.transversaltables;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +32,6 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "FindInvariantByID", urlPatterns = {"/FindInvariantByID"})
 public class FindInvariantByID extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(FindInvariantByID.class);

@@ -90,7 +90,7 @@ public class FtpService implements IFtpService {
 
     @Override
     public HashMap<String, String> fromFtpStringToHashMap(String ftpChain) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         String tmp;
         Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
         Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);
@@ -132,6 +132,7 @@ public class FtpService implements IFtpService {
                 DEFAULT_PROXYAUTHENT_ACTIVATE)) {
             Authenticator.setDefault(
                     new Authenticator() {
+                @Override
                 public PasswordAuthentication getPasswordAuthentication() {
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
@@ -147,6 +148,7 @@ public class FtpService implements IFtpService {
         client.setProxy(proxy);
     }
 
+    @Override
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service) {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
@@ -279,7 +281,7 @@ public class FtpService implements IFtpService {
                     "cerberus_ftpfile_path Parameter not found");
             AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                Parameter p = (Parameter) a.getItem();
+                Parameter p = a.getItem();
                 String uploadPath = p.getValue();
                 Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());
                 byteContent = Files.readAllBytes(path);
@@ -304,7 +306,7 @@ public class FtpService implements IFtpService {
             result.setResultMessage(message);
             String expectedContent = IOUtils.toString(byteContent, "UTF-8");
             String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
-            if (extension == "JSON" || extension == "XML" || extension == "TXT") {
+            if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
                 myResponse.setResponseHTTPBody(expectedContent);
             }
             myResponse.setResponseHTTPBodyContentType(extension);

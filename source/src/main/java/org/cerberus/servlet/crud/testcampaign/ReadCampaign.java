@@ -199,7 +199,7 @@ public class ReadCampaign extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
 
-            for (Campaign campaign : (List<Campaign>) answer.getDataList()) {
+            for (Campaign campaign : answer.getDataList()) {
                 jsonArray.put(convertCampaigntoJSONObject(campaign));
                 if (!StringUtil.isNullOrEmpty(campaign.getGroup1())) {
                     gp1.put(campaign.getGroup1(), true);
@@ -298,7 +298,7 @@ public class ReadCampaign extends HttpServlet {
                 AnswerList<Tag> resp = tagService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (Tag c : (List<Tag>) resp.getDataList()) {
+                    for (Tag c : resp.getDataList()) {
                         a.put(convertTagtoJSONObject(c));
                     }
                     response.put("tags", a);
@@ -310,7 +310,7 @@ public class ReadCampaign extends HttpServlet {
                         Arrays.asList(key));
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (EventHook c : (List<EventHook>) resp.getDataList()) {
+                    for (EventHook c : resp.getDataList()) {
                         a.put(c.toJson());
                     }
                     response.put("eventHooks", a);
@@ -322,7 +322,7 @@ public class ReadCampaign extends HttpServlet {
                 AnswerList<ScheduleEntry> resp = scheduleEntryService.readByName(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (ScheduleEntry c : (List<ScheduleEntry>) resp.getDataList()) {
+                    for (ScheduleEntry c : resp.getDataList()) {
                         a.put(c.toJson());
                     }
                     response.put("scheduledEntries", a);

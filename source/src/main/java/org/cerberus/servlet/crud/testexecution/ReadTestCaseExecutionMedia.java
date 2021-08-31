@@ -24,8 +24,6 @@ import com.mortennobel.imagescaling.DimensionConstrain;
 import com.mortennobel.imagescaling.ResampleOp;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.imageio.ImageIO;
@@ -110,7 +108,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         AnswerList al = new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
         TestCaseExecutionFile tceFile = null;
-        if (!(fileName.equals(""))) {
+        if (!(fileName.isEmpty())) {
 
             IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile = appContext.getBean(IFactoryTestCaseExecutionFile.class);
             tceFile = factoryTestCaseExecutionFile.create(0, 0, "", fileDesc, fileName, fileType, "", null, "", null);
@@ -251,7 +249,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     if (height > image.getHeight()) {
                         minheight = image.getHeight();
                     }
-                    BufferedImage crop = ((BufferedImage) b).getSubimage(0, 0, minwidth, minheight);
+                    BufferedImage crop = b.getSubimage(0, 0, minwidth, minheight);
 
                     b = crop;
                     response.setHeader("Format-Status", "ERROR");

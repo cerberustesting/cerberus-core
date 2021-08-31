@@ -66,7 +66,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "GetNumberOfExecutions", urlPatterns = {"/GetNumberOfExecutions"})
+@WebServlet(name = "GetNumberOfExecutions", description = "This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.", urlPatterns = {"/GetNumberOfExecutions"})
 public class GetNumberOfExecutions extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(GetNumberOfExecutions.class);
@@ -129,20 +129,20 @@ public class GetNumberOfExecutions extends HttpServlet {
                     error = true;
                 }
                 // Checking the parameter validity. If application has been entered, does it exist ?
-                if (!application.equalsIgnoreCase("") && !myApplicationService.exist(application)) {
+                if (!application.isEmpty() && !myApplicationService.exist(application)) {
                     out.println("Error - Application does not exist  : " + application);
                     error = true;
                 }
 
-                if (!country.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("COUNTRY", country)) {
+                if (!country.isEmpty() && !myInvariantService.isInvariantExist("COUNTRY", country)) {
                     out.println("Warning - Country does not exist  : " + country);
                 }
 
-                if (!environment.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("ENVIRONMENT", environment)) {
+                if (!environment.isEmpty() && !myInvariantService.isInvariantExist("ENVIRONMENT", environment)) {
                     out.println("Warning - Environment does not exist  : " + environment);
                 }
 
-                if (!controlStatus.equalsIgnoreCase("") && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
+                if (!controlStatus.isEmpty() && !myInvariantService.isInvariantExist("TCESTATUS", controlStatus)) {
                     out.println("Warning - Control Status does not exist  : " + controlStatus);
                 }
 

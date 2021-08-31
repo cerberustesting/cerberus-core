@@ -98,7 +98,7 @@ public class ReadRobot extends HttpServlet {
         boolean robotid_error = false;
         if (request.getParameter("robotid") != null) {
             try {
-                if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+                if (request.getParameter("robotid") != null && !request.getParameter("robotid").isEmpty()) {
                     robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
                     robotid_error = false;
                 }
@@ -231,7 +231,7 @@ public class ReadRobot extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Robot robot : (List<Robot>) resp.getDataList()) {
+            for (Robot robot : resp.getDataList()) {
                 jsonArray.put(convertRobotToJSONObject(robot));
             }
         }

@@ -115,7 +115,7 @@ public class TestDataLibData {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestDataLibData other = (TestDataLibData) obj;
+        final TestDataLibData other = obj;
         if ((this.testDataLibID == null) ? (other.testDataLibID != null) : !this.testDataLibID.equals(other.testDataLibID)) {
             return false;
         }

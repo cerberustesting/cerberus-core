@@ -19,16 +19,8 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.service.IApplicationObjectService;
-import org.cerberus.crud.service.impl.ApplicationService;
-import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
-import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.crud.service.IApplicationObjectService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -232,7 +224,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (ApplicationObject applicationObject : (List<ApplicationObject>) resp.getDataList()) {
+            for (ApplicationObject applicationObject : resp.getDataList()) {
                 jsonArray.put(convertApplicationObjectToJSONObject(applicationObject));
             }
         }
@@ -257,7 +249,7 @@ public class ReadApplicationObject extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (ApplicationObject applicationObject : (List<ApplicationObject>) resp.getDataList()) {
+            for (ApplicationObject applicationObject : resp.getDataList()) {
                 jsonArray.put(convertApplicationObjectToJSONObject(applicationObject));
             }
         }

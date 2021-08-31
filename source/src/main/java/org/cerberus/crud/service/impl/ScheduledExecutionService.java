@@ -64,7 +64,7 @@ public class ScheduledExecutionService implements IScheduledExecutionService {
     public ScheduledExecution convert(AnswerItem<ScheduledExecution> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (ScheduledExecution) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -73,7 +73,7 @@ public class ScheduledExecutionService implements IScheduledExecutionService {
     public List<ScheduledExecution> convert(AnswerList<ScheduledExecution> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<ScheduledExecution>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

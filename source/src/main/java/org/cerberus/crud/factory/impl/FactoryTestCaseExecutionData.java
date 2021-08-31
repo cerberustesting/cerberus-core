@@ -72,7 +72,7 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setJsonResult(jsonResult);
         testCaseExecutionData.setFromCache(fromCache);
         // List objects
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         testCaseExecutionData.setFileList(objectFileList);
 
         return testCaseExecutionData;

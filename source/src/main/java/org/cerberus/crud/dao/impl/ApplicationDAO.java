@@ -135,9 +135,9 @@ public class ApplicationDAO implements IApplicationDAO {
         AnswerList<Application> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Application> objectList = new ArrayList<Application>();
+        List<Application> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -304,7 +304,7 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("group by isys.sort , a.`system`, a.application, inv.`value` ");
         query.append("order by isys.sort asc, a.`system`, a.application ");
 
-        HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();
+        HashMap<String, HashMap<String, Integer>> result = new HashMap<>();
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -331,7 +331,7 @@ public class ApplicationDAO implements IApplicationDAO {
                         int countStatus = resultSet.getInt("CountStatus");
                         HashMap<String, Integer> totalsMap = result.get(appName);
                         if (totalsMap == null) {
-                            totalsMap = new HashMap<String, Integer>();
+                            totalsMap = new HashMap<>();
                         }
                         totalsMap.put(tcStatus, countStatus);
                         result.put(appName, totalsMap);

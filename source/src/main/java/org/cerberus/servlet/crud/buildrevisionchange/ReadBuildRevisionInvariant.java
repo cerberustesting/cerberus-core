@@ -96,7 +96,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         Integer lvlid = -1;
         boolean lvlid_error = true;
         try {
-            if (request.getParameter("level") != null && !request.getParameter("level").equals("")) {
+            if (request.getParameter("level") != null && !request.getParameter("level").isEmpty()) {
                 lvlid = Integer.valueOf(policy.sanitize(request.getParameter("level")));
                 lvlid_error = false;
             }
@@ -110,7 +110,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         Integer seqid = -1;
         boolean seqid_error = true;
         try {
-            if (request.getParameter("seq") != null && !request.getParameter("seq").equals("")) {
+            if (request.getParameter("seq") != null && !request.getParameter("seq").isEmpty()) {
                 seqid = Integer.valueOf(policy.sanitize(request.getParameter("seq")));
                 seqid_error = false;
             }
@@ -221,7 +221,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -237,7 +237,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BuildRevisionInvariant bri : (List<BuildRevisionInvariant>) resp.getDataList()) {
+            for (BuildRevisionInvariant bri : resp.getDataList()) {
                 jsonArray.put(convertBuildRevisionInvariantToJSONObject(bri));
             }
         }

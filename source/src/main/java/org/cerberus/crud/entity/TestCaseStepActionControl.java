@@ -332,7 +332,7 @@ public class TestCaseStepActionControl {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStepActionControl other = (TestCaseStepActionControl) obj;
+        final TestCaseStepActionControl other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }

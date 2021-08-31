@@ -89,7 +89,7 @@ public class TagSystem {
             return false;
         }
 
-        final TagSystem other = (TagSystem) obj;
+        final TagSystem other = obj;
         if ((this.tag == null) ? (other.tag != null) : !this.tag.equals(other.tag)) {
             return false;
         }

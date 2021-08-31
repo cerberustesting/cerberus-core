@@ -158,8 +158,9 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
         preparedStatement.setTimestamp(i++, testcaseDependency.getDateCreated());
         preparedStatement.setString(i++, testcaseDependency.getUsrModif());
         preparedStatement.setTimestamp(i++, testcaseDependency.getDateModif());
-        if(setId)
+        if(setId) {
             preparedStatement.setLong(i++, testcaseDependency.getId());
+        }
     }
 
     private TestCaseDep loadResult(ResultSet resultSet) throws SQLException {

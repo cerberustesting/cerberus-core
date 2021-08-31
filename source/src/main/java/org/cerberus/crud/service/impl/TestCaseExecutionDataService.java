@@ -139,7 +139,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     public List<TestCaseExecutionData> convert(AnswerList<TestCaseExecutionData> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseExecutionData>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

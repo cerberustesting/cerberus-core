@@ -78,5 +78,8 @@ public class EncryptionService {
  
     return null;
 }
+
+    private EncryptionService() {
+    }
     
 }

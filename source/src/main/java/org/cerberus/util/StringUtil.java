@@ -167,7 +167,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmpty(String str) {
-        if ((str == null) || (str.trim().equalsIgnoreCase(""))) {
+        if ((str == null) || (str.trim().isEmpty())) {
             return true;
         }
         return false;
@@ -180,7 +180,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmptyOrNull(String str) {
-        if ((str == null) || (str.trim().equalsIgnoreCase("")) || (str.trim().equalsIgnoreCase("null"))) {
+        if ((str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"))) {
             return true;
         }
         return false;

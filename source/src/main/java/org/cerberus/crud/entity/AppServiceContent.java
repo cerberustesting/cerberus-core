@@ -125,7 +125,7 @@ public class AppServiceContent {
             return false;
         }
 
-        final AppServiceContent other = (AppServiceContent) obj;
+        final AppServiceContent other = obj;
         if ((this.service == null) ? (other.service != null) : !this.service.equals(other.service)) {
             return false;
         }

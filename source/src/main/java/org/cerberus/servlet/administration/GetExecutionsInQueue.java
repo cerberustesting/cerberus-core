@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author abourdon
  */
-@WebServlet(name = "GetExecutionsInQueue", urlPatterns = {"/GetExecutionsInQueue"})
+@WebServlet(name = "GetExecutionsInQueue", description = "Execute the next record from the execution queue.", urlPatterns = {"/GetExecutionsInQueue"})
 public class GetExecutionsInQueue extends HttpServlet {
 
     /**

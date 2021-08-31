@@ -164,7 +164,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<String[]>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         String[] array = new String[3];
@@ -200,7 +200,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException {
-        List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
+        List<CountryEnvironmentParameters> result = new ArrayList<>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM countryenvironmentparameters cea ");
@@ -602,9 +602,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String var3 = resultSet.getString("cea.Var3");
         String var4 = resultSet.getString("cea.Var4");
         String mobileActivity = resultSet.getString("cea.mobileActivity");
-        if(mobileActivity == null) mobileActivity="";
+        if(mobileActivity == null) {
+            mobileActivity="";
+        }
         String mobilePackage = resultSet.getString("cea.mobilePackage");
-        if(mobilePackage == null) mobilePackage="";
+        if(mobilePackage == null) {
+            mobilePackage="";
+        }
 
         int poolSize = resultSet.getInt("cea.poolSize");
         return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);

@@ -170,7 +170,7 @@ public class ParameterDAO implements IParameterDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<Parameter>();
+                    result = new ArrayList<>();
                     while (resultSet.next()) {
                         String system = resultSet.getString("system");
                         String param = resultSet.getString("param");
@@ -235,7 +235,7 @@ public class ParameterDAO implements IParameterDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    result = new ArrayList<Parameter>();
+                    result = new ArrayList<>();
                     while (resultSet.next()) {
                         String param = resultSet.getString("param");
                         String valueC = resultSet.getString("valC");

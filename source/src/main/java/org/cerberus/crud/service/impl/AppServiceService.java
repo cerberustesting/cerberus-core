@@ -80,16 +80,16 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public AnswerItem<AppService> readByKeyWithDependency(String key, String activedetail) {
         AnswerItem<AppService> answerAppService = this.readByKey(key);
-        AppService appService = (AppService) answerAppService.getItem();
+        AppService appService = answerAppService.getItem();
         try {
             if (appService != null) {
                 AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
                 if (content != null) {
-                    appService.setContentList((List<AppServiceContent>) content.getDataList());
+                    appService.setContentList(content.getDataList());
                 }
                 AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
                 if (header != null) {
-                    appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
+                    appService.setHeaderList(header.getDataList());
                 }
                 answerAppService.setItem(appService);
             }
@@ -123,7 +123,7 @@ public class AppServiceService implements IAppServiceService {
     public AppService convert(AnswerItem<AppService> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (AppService) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -132,7 +132,7 @@ public class AppServiceService implements IAppServiceService {
     public List<AppService> convert(AnswerList<AppService> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<AppService>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
