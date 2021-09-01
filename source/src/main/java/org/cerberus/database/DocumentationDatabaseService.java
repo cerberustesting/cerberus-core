@@ -160,8 +160,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 		b.append(",('appservice','type','','ru','Тип','','_service_library')");
         b.append(",('appservice','type','','fr','Type','','_librairie_de_services')");
         b.append(",('appservicecontent','Sort','','en','Sort','','_service_library')");
+		b.append(",('appservicecontent','Sort','','ru','Сортировать','','_service_library')");
         b.append(",('appservicecontent','Sort','','fr','Tri','','_librairie_de_services')");
         b.append(",('appservicecontent','Key','','en','Key','','_service_library')");
+		b.append(",('appservicecontent','Key','','ru','Ключ','','_service_library')");
         b.append(",('appservicecontent','Key','','fr','Clé','','_librairie_de_services')");
         b.append(",('appservicecontent','Value','','en','Value','','_service_library')");
         b.append(",('appservicecontent','Value','','ru','Значение','','_service_library')");
