@@ -97,7 +97,7 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     public CountryEnvParam_log convert(AnswerItem<CountryEnvParam_log> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (CountryEnvParam_log) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -106,7 +106,7 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
     public List<CountryEnvParam_log> convert(AnswerList<CountryEnvParam_log> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<CountryEnvParam_log>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

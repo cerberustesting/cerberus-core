@@ -83,10 +83,10 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
 
             AnswerList<TestCaseStepActionExecution> actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, tces.getTest(), tces.getTestCase(), tces.getStepId(), tces.getIndex());
-            tces.setTestCaseStepActionExecutionList((List<TestCaseStepActionExecution>) actions.getDataList());
+            tces.setTestCaseStepActionExecutionList(actions.getDataList());
 
             AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tces.getTest() + "-" + tces.getTestCase() + "-" + tces.getStepId() + "-" + tces.getIndex());
-            tces.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+            tces.setFileList(files.getDataList());
 
             tcseList.add(tces);
         }

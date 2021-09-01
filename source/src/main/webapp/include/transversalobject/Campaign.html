@@ -37,7 +37,7 @@
                             <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabEnv">Environments, Countries & Robots List</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Settings</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-8" id="createTab8Text" name="tabsEdit8">Scheduler</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabNotifications">Notifications</a></li>
+                            <li><a data-toggle="tab" href="#tabsNotif" id="notifText" name="tabNotification">Notifications</a></li>
                             <li><a data-toggle="tab" href="#tabs-9" id="createTab9Text" name="tabAdvanced">Advanced</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Traceability</a></li>
                         </ul>
@@ -166,71 +166,20 @@
                                 </div>
                             </div>
 
-                            <div class="center marginTop25 tab-pane fade" id="tabsCreate-2">
+                            <div class="center marginTop25 tab-pane fade" id="tabsNotif">
 
+                                <div id="listPanelEditExecutors">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="eventHookTable">
+                                                <tbody id="eventHookTableBody">
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-default marginTop20" id="addEventHook">Add Notification</button>
+                                        </div>
+                                    </div>  
+                                </div>   
 
-                                <div class="panel panel-default" id="NotifEmailPanel">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NotifEmail">
-                                        <span class="fa fa-envelope fa-fw"></span>
-                                        <label id="bugStatus">Email</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div class="panel-body collapse in" id="NotifEmail">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label for="notifystart" name="notifystartField">Notify start of Execution</label>
-                                                <select class="form-control"  id="notifystart" name="notifystart">
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-sm-6">
-                                                <label for="notifyend" name="notifyendField">Notify end of Execution</label>
-                                                <select class="form-control"  id="notifyend" name="notifyend">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-sm-12">
-                                                <label for="distriblist" name="distriblistField">Distribution List</label>
-                                                <textarea class="form-control" name="distriblist" id="distriblist"
-                                                          aria-describedby="basic-addon1"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                                
-
-                                <div class="panel panel-default" id="NotifSlackPanel">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#NotifSlack">
-                                        <span class="fa fa-slack fa-fw"></span>
-                                        <label id="bugStatus">Slack</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div class="panel-body collapse in" id="NotifSlack">
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label for="notifySlackstart" name="notifySlackstartField">Notify start of Execution</label>
-                                                <select class="form-control"  id="notifySlackstart" name="notifySlackstart">
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-sm-6">
-                                                <label for="notifySlackend" name="notifySlackendField">Notify end of Execution</label>
-                                                <select class="form-control"  id="notifySlackend" name="notifySlackend">
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-sm-12">
-                                                <label for="webhook" name="webhookField">WebHook</label>
-                                                <input class="form-control" name="webhook" id="webhook" aria-describedby="basic-addon1"/>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col-sm-6">
-                                                <label for="channel" name="channelField">Channel</label>
-                                                <input class="form-control" name="channel" id="channel" aria-describedby="basic-addon1"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                                
                             </div>
 
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
@@ -324,14 +273,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="form-group col-sm-12">
-                                            <div id="parameterScheduler">
-                                                <table id="parameterSchedulerTable" class="table table-bordered table-hover display" name="parameterTestcaseTable"></table>
-                                                <div class="marginBottom20"></div>
+
+                                    <div id="listPanelEditScheduler">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <table class="table table-bordered table-hover nomarginbottom" id="schedulerTable">
+                                                    <tbody id="schedulerTableBody">
+                                                    </tbody>
+                                                </table>
+                                                <button type="button" class="btn btn-default marginTop20" id="addScheduleEntry">Add Schedule Entry</button>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </div>  
+                                    </div>   
 
                                 </div>
                             </div>

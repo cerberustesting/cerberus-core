@@ -198,7 +198,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 .append("LEFT JOIN application app ON tec.application = app.application ")
                 .append("GROUP BY exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country ");
 
-        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -296,7 +296,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -468,7 +468,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        List<TestCaseExecutionQueueToTreat> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueueToTreat>();
+        List<TestCaseExecutionQueueToTreat> testCaseExecutionInQueueList = new ArrayList<>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -524,9 +524,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         AnswerList<TestCaseExecutionQueue> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseExecutionQueue> objectList = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
@@ -550,7 +550,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
-                if (q == null || q == "") {
+                if (q == null || "".equals(q)) {
                     q = "(exq." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
@@ -743,7 +743,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecutionQueue> EnvCountryBrowserList = new ArrayList<TestCaseExecutionQueue>();
+        List<TestCaseExecutionQueue> EnvCountryBrowserList = new ArrayList<>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());

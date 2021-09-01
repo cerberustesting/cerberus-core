@@ -120,7 +120,7 @@ public class UpdateParameter extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             } else {
                 /**
                  * Object updated. Adding Log entry.

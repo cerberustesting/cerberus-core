@@ -21,7 +21,7 @@ image:testcaselistpage.png[TestCaseListPage]
 
 | Active | Boolean that defines if the *[red]#Test Case#* can be launched.
 
-| Type | define the technology of the application (Web, IOS, Android, service,...).
+| Type | define if the testcase is targeted for AUTOMATED or only MANUAL. It can also be PRIVATE in case it is not intented to be executed (holds libraries of steps of instance)
 
 | Priority | Defined the priority of the *[red]#Test Case#*. Means importance of the feature covered by the *[red]#Test Case#*.
 
@@ -139,10 +139,40 @@ Usefull with ButtonPress to perform drag & drop but also to draw picture using S
 
 *[blue]#Value1#*	Identifier and name of the element where release will be done in the form of : identifier=html_reference.
 
+==== doubleClick 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Double click on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== rightClick 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Right click on an element inside the current page. 
+
+*[blue]#Value1#*	Identifier and name of the element to double click in the form of : identifier=html_reference. 
+
+==== mouseOver
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Mouse cursor over an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to over in the form of : identifier=html_reference.
+
 ==== mouseMove
 |=== 
 
-| *[red]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+| *[green]#GUI (hybrid)#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
 |=== 
 Allow to move the mouse.
@@ -161,35 +191,30 @@ Allow to move the mouse.
 ====
 absolute 0,0 ; center
 ====
-==== doubleClick 
-|=== 
-
-| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
-
-|=== 
-Double click on an _element_ inside the current page.
-
-*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
-
-==== rightClick 
-Right click on an element inside the current page. 
-
-*[blue]#Value1#*	Identifier and name of the element to double click in the form of : identifier=html_reference. 
-
-==== mouseOver
-Mouse cursor over an _element_ inside the current page.
-
-*[blue]#Value1#*	Identifier and name of the element to over in the form of : identifier=html_reference.
-
 ==== focustoIframe
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Set the focus to a specific frame on the current page.
 
 *[blue]#Value1#*	Identifier and name of the frame to focus in the form of : identifier=html_reference.
 
 ==== focustoDefaultIframe
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Set back the focus to the previous frame on the current page.
 
 ==== switchToWindow
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Switch the focus to another window (like popup dialog).
 
 *[blue]#Value1#*	Title or URL of the other window to switch to.
@@ -205,11 +230,21 @@ url=http://url_of_this_new_window
 ====
 
 ==== manageDialog
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel`
 
 *[blue]#Value1#*	`ok` or `cancel`
 
-==== manageDialogKeypress 
+==== manageDialogKeypress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Keypress inside the browser popup alert windows.
 
 *[blue]#Value1#*	List of characters to type. You can use several special keys into the same action
@@ -231,6 +266,11 @@ Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIF
 ====
 
 ==== OpenUrlWithBase
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 OpenUrl action using the base defined in the application / environment section.
 
 *[blue]#Value1#*	Relative URL to open.
@@ -241,9 +281,19 @@ OpenUrl action using the base defined in the application / environment section.
 ====
 
 ==== OpenUrlLogin
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 OpenUrl action using the login page defined at application / environment level.
 
 ==== OpenUrl
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Open a specified full url.
 
 *[blue]#Value1#*	Complete URL to open.
@@ -254,6 +304,11 @@ https://github.com
 ====
 
 ==== refreshCurrentPage
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
 Reload the current page.
 
 ==== executeJS
@@ -298,7 +353,7 @@ Execute a Command from the Cerberus Server side. The command will be executed us
 ==== openApp
 |=== 
 
-| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+| *[green]#GUI (hybrid)#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
 |=== 
 Open an Application. For *[green]#GUI#* and *[green]#FAT#*, this action require the Cerberus Sikuli extention.
@@ -658,6 +713,14 @@ Force current content of the test case on the last service call in a JSON format
 |=== 
 Force current content of the test case to the console logs in a JSON format. That JSON will allow controls on the all the logs collected between each call to that action (logs contents are reset after each call to get them). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
+==== setContent
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Force current content of the test case to the data provided in value1 parameter. It can be any format you need (JSON, XML). All controls attached to that action will point to that data. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
 ==== doNothing
 |=== 
 
@@ -665,6 +728,9 @@ Force current content of the test case to the console logs in a JSON format. Tha
 
 |=== 
 Just perform no action. No action will be executed and engine will go to the next action or control
+
+==== mouseOverAndWait
+DEPRECATED Action that should no longuer used.
 
 ==== removeDifference
 DEPRECATED Action that should no longuer used.
@@ -680,17 +746,31 @@ identifier=html_reference
 
 identifier can take the various values :
 
- - id= 
+ - *id=*
 
 id of the field will be used.
 
- - name=
+.id= html example
+====
+<ul class="list-group step-list side-item nav nav-pills" *id="steps"* style="max-height: 600px;overflow-y: auto">
+====
+
+ - *name=*
  
- - class=
+.name= html example
+====
+<a *name="menu"* id="menuLabel" href="Label.jsp">Label</a>
+====
+
+ - *class=*
+.class= html example
+====
+<label *class="checkbox"*></label>
+====
  
- - css=
+ - *css=*
  
- - xpath= 
+ - *xpath=*
  
 You can specify an xpath value. Additional documentation on xpath syntax can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
 Xpath can be tested live on Web pages from Chrome Developer extention (accessible via F12).
@@ -715,30 +795,58 @@ And it will report the Element found. [] is returned in case no element are foun
 
 image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
 
- - link=
- 
- - data-cerberus=
-
- - coord=
- 
- - picture=
-
-If no indentifier is defined, Cerberus will either consider that it is an _**id**_ or an _**xpath**_ if it starts by // (most xpath does start by //).
-That behaviour allows to copy/paste from Cerberus to any other tools without being forced to add or remove xpath=.
-
-.by Id
-====
-id=html_reference
-====
-
 .by Path
 ====
 xpath=//*[@id='html_reference']
 ====
 
-.by Picture for FAT Applications (Sikuli)
+
+ - *link=*
+ 
+ - *data-cerberus=*
+ 
+.data-cerberus= html example
 ====
-picture=%object.NameOfYourObject.pictureurl%
+<label *data-cerberus="label-OK"*></label>
+====
+ 
+
+ - *coord=*
+ 
+ - *picture=*
+
+This identifier will use the image recognition engine to find the element pixel by pixel. That will only work for FAT Applications (Sikuli) or GUI in hybrid mode (using Sikuli extention)
+
+.by picture example that will click on application object buttonOK
+====
+picture=%object.buttonOK.pictureurl%
+====
+ 
+ - *text=*
+
+This identifier will use the OCR engine of the image recognition capability to find the element pixel by pixel. That will only work for FAT Applications (Sikuli) or GUI in hybrid mode (using Sikuli extention)
+
+.by text example
+====
+text=save my preferences
+====
+ 
+ - *erratum=*
+
+Use the Erratum feature in order to get the element.
+That works in GUI applications.
+That algorithm guess the correct xpath from pages that could change over time.
+Please see more details on https://github.com/lssol/sftm-csharp[erratum project page].
+In order to collect the erratum syntax, you need to use Cerberus Google Chrome https://chrome.google.com/webstore/detail/cerberus-extension/cfgifhmddmhbdndfceikcigagacjfepl?hl=en[extention].
+
+
+ - *OTHER*
+
+
+[NOTE]
+====
+If no indentifier is defined, Cerberus will either consider that it is an _**id**_ or an _**xpath**_ if it starts by // (most xpath does start by //).
+That behaviour allows to copy/paste from Cerberus to any other tools without being forced to add or remove xpath=.
 ====
 
 ==== FAT client Applications

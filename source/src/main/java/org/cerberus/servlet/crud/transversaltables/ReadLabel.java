@@ -239,7 +239,7 @@ public class ReadLabel extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Label label : (List<Label>) resp.getDataList()) {
+            for (Label label : resp.getDataList()) {
                 JSONObject labelObject = convertLabelToJSONObject(label);
                 if (label.getParentLabelID() > 0) {
                     AnswerItem parentLabel = labelService.readByKey(label.getParentLabelID());
@@ -273,8 +273,7 @@ public class ReadLabel extends HttpServlet {
                 String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
                 String test1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testSelect"), null, charset);
                 String testCase1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("testCaseSelect"), null, charset);
-                ;
-                labelList = (List<TestCaseLabel>) testCaseLabelService.convert(testCaseLabelService.readByTestTestCase(test1, testCase1, new ArrayList<TestCase>()));
+                labelList = testCaseLabelService.convert(testCaseLabelService.readByTestTestCase(test1, testCase1, new ArrayList<>()));
             } catch (CerberusException ex) {
                 LOG.error("Could not get TestCase Label", ex);
             }
@@ -313,7 +312,7 @@ public class ReadLabel extends HttpServlet {
 
             HashMap<Integer, TreeNode> inputList = new HashMap<>();
 
-            for (Label label : (List<Label>) resp.getDataList()) {
+            for (Label label : resp.getDataList()) {
 
                 String text = "";
                 if (hasButtons) {

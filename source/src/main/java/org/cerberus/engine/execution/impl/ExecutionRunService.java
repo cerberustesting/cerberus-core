@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
@@ -80,6 +81,7 @@ import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Video;
+import org.cerberus.event.IEventService;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.executor.IExecutorService;
@@ -183,6 +185,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IAppServiceService appServiceService;
     @Autowired
     private IExecutorService executorService;
+    @Autowired
+    private IEventService eventService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -270,7 +274,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             String capDecoded = "";
                             try {
                                 answerDecode = variableService.decodeStringCompletly(cap.getCapability(), tCExecution, null, false);
-                                capDecoded = (String) answerDecode.getItem();
+                                capDecoded = answerDecode.getItem();
 
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -287,7 +291,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             String valDecoded = "";
                             try {
                                 answerDecode = variableService.decodeStringCompletly(cap.getValue(), tCExecution, null, false);
-                                valDecoded = (String) answerDecode.getItem();
+                                valDecoded = answerDecode.getItem();
 
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -311,7 +315,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setResultMessage(mes);
                     updateTCExecution(tCExecution, true);
 
-                    if (tCExecution.getRobotHost().equalsIgnoreCase("")) {
+                    if (tCExecution.getRobotHost().isEmpty()) {
                         mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                         mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
                         LOG.debug(logPrefix + mes.getDescription());
@@ -503,7 +507,7 @@ public class ExecutionRunService implements IExecutionRunService {
             if (!tCExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal1(), tCExecution, null, false);
-                    tCExecution.setConditionVal1((String) answerDecode.getItem());
+                    tCExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -519,7 +523,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal2(), tCExecution, null, false);
-                    tCExecution.setConditionVal2((String) answerDecode.getItem());
+                    tCExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -535,7 +539,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal3(), tCExecution, null, false);
-                    tCExecution.setConditionVal3((String) answerDecode.getItem());
+                    tCExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -557,7 +561,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(),
                         tCExecution, tCExecution.getConditionOptions());
 
-                boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
+                boolean execute_TestCase = conditionAnswerTc.getItem();
 
                 if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
 
@@ -612,83 +616,84 @@ public class ExecutionRunService implements IExecutionRunService {
                                 boolean descriptionOrConditionStepDecodeError = false;
                                 boolean conditionStepError = false;
                                 AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
-                                if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
-                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
-                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
-                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
-                                        || testCaseStepExecution.getLoop().equals("")
-                                        || step_index > 1) {
-                                    // Decode Conditionvalue1 and Conditionvalue2 and Evaluate the condition at the Step level.
+
+                                try {
+                                    answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
+                                    testCaseStepExecution.setConditionValue1(answerDecode.getItem());
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                        testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
+                                        testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1").getDescription());
+                                        testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                        testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                        testCaseStepExecution.setEnd(new Date().getTime());
+                                        LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
+                                        descriptionOrConditionStepDecodeError = true;
+                                    }
+                                } catch (CerberusEventException cex) {
+                                    LOG.warn(cex);
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
                                     try {
-                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
-                                        testCaseStepExecution.setConditionValue1((String) answerDecode.getItem());
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
+                                        testCaseStepExecution.setConditionValue2(answerDecode.getItem());
                                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                                             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
-                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1").getDescription());
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2").getDescription());
                                             testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
                                             testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                             testCaseStepExecution.setEnd(new Date().getTime());
-                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value1' Error.");
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
                                             descriptionOrConditionStepDecodeError = true;
                                         }
                                     } catch (CerberusEventException cex) {
                                         LOG.warn(cex);
                                     }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionValue2((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value2' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
+                                    try {
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
+                                        testCaseStepExecution.setConditionValue3(answerDecode.getItem());
+                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3").getDescription());
+                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                            testCaseStepExecution.setEnd(new Date().getTime());
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value3' Error.");
+                                            descriptionOrConditionStepDecodeError = true;
                                         }
+                                    } catch (CerberusEventException cex) {
+                                        LOG.warn(cex);
                                     }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
-                                            testCaseStepExecution.setConditionValue3((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Condition Value3' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
+                                }
+                                if (!descriptionOrConditionStepDecodeError) {
+                                    try {
+                                        answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
+                                        testCaseStepExecution.setDescription(answerDecode.getItem());
+                                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                            testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                                            testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
+                                            testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
+                                            testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                                            testCaseStepExecution.setEnd(new Date().getTime());
+                                            LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
+                                            descriptionOrConditionStepDecodeError = true;
                                         }
+                                    } catch (CerberusEventException cex) {
+                                        LOG.warn(cex);
                                     }
-                                    if (!descriptionOrConditionStepDecodeError) {
-                                        try {
-                                            answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
-                                            testCaseStepExecution.setDescription((String) answerDecode.getItem());
-                                            if (!(answerDecode.isCodeStringEquals("OK"))) {
-                                                testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                                                testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
-                                                testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description").getDescription());
-                                                testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
-                                                testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                                                testCaseStepExecution.setEnd(new Date().getTime());
-                                                LOG.debug(logPrefix + "Step interupted due to decode 'Step Description' Error.");
-                                                descriptionOrConditionStepDecodeError = true;
-                                            }
-                                        } catch (CerberusEventException cex) {
-                                            LOG.warn(cex);
-                                        }
-                                    }
+                                }
+
+                                if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
+                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
+                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
+                                        || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
+                                        || testCaseStepExecution.getLoop().isEmpty()
+                                        || step_index > 1) {
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
                                         conditionAnswer = this.conditionService.evaluateCondition(
@@ -696,7 +701,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                                 testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(),
                                                 tCExecution, testCaseStepExecution.getConditionOptions());
 
-                                        execute_Step = (boolean) conditionAnswer.getItem();
+                                        execute_Step = conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
                                             switch (testCaseStepExecution.getLoop()) {
@@ -763,13 +768,15 @@ public class ExecutionRunService implements IExecutionRunService {
                                 } else if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONFALSE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONTRUE)) {
                                     // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution and activate the next step execution.
+                                    // We also force the condition message to always true with success.
                                     execute_Step = true;
                                     execute_Next_Step = true;
+                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ALWAYS));
                                 } else {
                                     // First Step execution for Unknown Loop --> We force the step execution only once (default behaviour).
                                     execute_Step = true;
                                     execute_Next_Step = false;
-                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
+                                    conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNLOOP).resolveDescription("LOOP", testCaseStepExecution.getLoop()));
                                 }
 
                                 /**
@@ -797,12 +804,14 @@ public class ExecutionRunService implements IExecutionRunService {
                                         testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
                                     }
 
-                                    /*
-                                    TODO : tester si execution manuelle et si la condition doit être vérifier par l'opérateur
-                                    si oui concaténer la description de la step avec le message de execution de la condition
+                                    /**
+                                     * We test here is execution is manual and
+                                     * operator needs to evaluate the condition
+                                     * manually. If this is the case, we add the
+                                     * comment inside the description.
                                      */
                                     if (tCExecution.getManualExecution().equals("Y") && testcaseStepConditionEnum.isOperatorEvaluationRequired()) {
-                                        testCaseStepExecution.setDescription(testCaseStep.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                                        testCaseStepExecution.setDescription(testCaseStepExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
                                     }
 
                                     testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
@@ -971,13 +980,22 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry management, in case the result is not (OK or NE), we
              * execute the job again reducing the retry to 1.
              */
-            boolean isRetried = retriesService.manageRetries(tCExecution);
+            boolean willBeRetried = retriesService.manageRetries(tCExecution);
 
             /**
              * Updating queue to done status only for execution from queue
              */
             if (tCExecution.getQueueID() != 0) {
                 executionQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+            }
+
+            /**
+             * Trigger the necessary Event for WebHook and notification
+             * management.
+             */
+            eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END, tCExecution, null, null, null);
+            if (!willBeRetried) {
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY, tCExecution, null, null, null);
             }
 
             /**
@@ -995,7 +1013,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * the corresponding dependencies and put corresponding Queue
              * entries to QUEUED status.
              */
-            if (!isRetried) {
+            if (!willBeRetried) {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
             }
 
@@ -1118,7 +1136,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal1((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1135,7 +1153,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal2(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal2((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1151,7 +1169,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal3(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal3((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1174,7 +1192,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(),
                         testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(),
                         tcExecution, testCaseStepActionExecution.getConditionOptions());
-                boolean execute_Action = (boolean) conditionAnswer.getItem();
+                boolean execute_Action = conditionAnswer.getItem();
 
                 if (tcExecution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
                     testCaseStepActionExecution.setDescription(testCaseStepActionExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
@@ -1398,7 +1416,7 @@ public class ExecutionRunService implements IExecutionRunService {
             if (!exe.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal1(), exe, null, false);
-                    controlExe.setConditionVal1((String) answerDecode.getItem());
+                    controlExe.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1415,7 +1433,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal2(), exe, null, false);
-                    controlExe.setConditionVal2((String) answerDecode.getItem());
+                    controlExe.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1431,7 +1449,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal3(), exe, null, false);
-                    controlExe.setConditionVal3((String) answerDecode.getItem());
+                    controlExe.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1455,7 +1473,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(),
                         exe, controlExe.getConditionOptions());
 
-                boolean execute_Control = (boolean) conditionAnswer.getItem();
+                boolean execute_Control = conditionAnswer.getItem();
 
                 if (exe.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
                     controlExe.setDescription(controlExe.getDescription() + " - " + conditionAnswer.getMessageDescription());

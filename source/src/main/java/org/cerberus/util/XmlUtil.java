@@ -68,6 +68,7 @@ import org.xml.sax.SAXException;
  */
 public final class XmlUtil {
 
+    private static final Logger LOG = LogManager.getLogger(XmlUtil.class);
     /**
      * If xml parsing has to be aware of namespaces
      */
@@ -145,8 +146,8 @@ public final class XmlUtil {
         /**
          * The associated maps between prefixes and URIs
          */
-        private Map<String, String> prefix2Uri = new HashMap<String, String>();
-        private Map<String, String> uri2Prefix = new HashMap<String, String>();
+        private Map<String, String> prefix2Uri = new HashMap<>();
+        private Map<String, String> uri2Prefix = new HashMap<>();
 
         public UniversalNamespaceCache(Document document) {
             this(document, DEFAULT_TOP_LEVEL_ONLY);
@@ -494,7 +495,7 @@ public final class XmlUtil {
      * {@link NodeList} cannot be transforms as a {@link Document} list
      */
     public static List<Document> fromNodeList(NodeList nodeList) throws XmlUtilException {
-        List<Document> result = new ArrayList<Document>();
+        List<Document> result = new ArrayList<>();
         for (Node node : new IterableNodeList(nodeList)) {
             if (node == null) {
                 throw new XmlUtilException("Unable to add null node");

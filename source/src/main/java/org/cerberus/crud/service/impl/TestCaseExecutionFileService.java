@@ -20,7 +20,6 @@
 package org.cerberus.crud.service.impl;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -150,7 +149,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     
     @Override
     public String checkExtension(String fileName, String extension) {
-		if(extension.isEmpty() || extension != fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())) {
+		if(extension.isEmpty() || (extension == null ? fileName.substring(fileName.lastIndexOf('.')+1, fileName.length()) != null : !extension.equals(fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())))) {
 			if(fileName.contains(".")) {
 				extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
 				extension = extension.trim().toUpperCase();
@@ -197,7 +196,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     public TestCaseExecutionFile convert(AnswerItem<TestCaseExecutionFile> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCaseExecutionFile) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -206,7 +205,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     public List<TestCaseExecutionFile> convert(AnswerList<TestCaseExecutionFile> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseExecutionFile>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

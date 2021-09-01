@@ -79,6 +79,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Platform;
@@ -238,11 +239,17 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setCerberus_appium_action_longpress_wait(cerberus_appium_action_longpress_wait);
             session.setHost(tCExecution.getSeleniumIP());
+            session.setPort(tCExecution.getRobotPort());
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
-            session.setPort(tCExecution.getRobotPort());
             session.setNodeHost(tCExecution.getSeleniumIP());
             session.setNodePort(tCExecution.getSeleniumPort());
+            if (tCExecution.getRobotExecutorObj() != null) {
+                LOG.debug("Session node proxy set : " + tCExecution.getRobotExecutorObj().getNodeProxyPort());
+                session.setNodeProxyPort(tCExecution.getRobotExecutorObj().getNodeProxyPort());
+            } else {
+                session.setNodeProxyPort(0);
+            }
             session.setConsoleLogs(new JSONArray());
 
             tCExecution.setSession(session);
@@ -380,10 +387,10 @@ public class RobotServerService implements IRobotServerService {
                     if (caps.getPlatform() != null && caps.getPlatform().is(Platform.ANDROID)) {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
-                        driver = (WebDriver) appiumDriver;
+                        driver = appiumDriver;
                     } else if (caps.getPlatform() != null && (caps.getPlatform().is(Platform.IOS) || caps.getPlatform().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
-                        driver = (WebDriver) appiumDriver;
+                        driver = appiumDriver;
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
@@ -415,14 +422,14 @@ public class RobotServerService implements IRobotServerService {
                         apkAlreadyPrepare.put(appUrl, true);
                     }
 
-                    driver = (WebDriver) appiumDriver;
+                    driver = appiumDriver;
                     tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     tCExecution.setRobotSessionID(getSession(driver));
                     break;
 
                 case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
-                    driver = (WebDriver) appiumDriver;
+                    driver = appiumDriver;
                     tCExecution.setRobotProviderSessionID(getSession(driver, tCExecution.getRobotProvider()));
                     tCExecution.setRobotSessionID(getSession(driver));
                     break;
@@ -453,7 +460,7 @@ public class RobotServerService implements IRobotServerService {
 
                     // Init additionalFinalCapabilities and set it from real caps.
                     List<RobotCapability> serverCapabilities = new ArrayList<>();
-                    for (Map.Entry cap : ((RemoteWebDriver) driver).getCapabilities().asMap().entrySet()) {
+                    for (Map.Entry cap : ((HasCapabilities) driver).getCapabilities().asMap().entrySet()) {
                         serverCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
                     }
 
@@ -487,7 +494,8 @@ public class RobotServerService implements IRobotServerService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID) && !caps.getPlatform().equals(Platform.IOS)
                     && !caps.getPlatform().equals(Platform.MAC)) {
-                if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
+                // Maximize is not supported on Opera.
+                if (!caps.getBrowserName().equals(BrowserType.CHROME) && !tCExecution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
                 getIPOfNode(tCExecution);
@@ -507,7 +515,10 @@ public class RobotServerService implements IRobotServerService {
                         LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
                     }
                 }
-                tCExecution.setScreenSize(getScreenSize(driver));
+                // Getting windows size Not supported on Opera.
+                if (!tCExecution.getBrowser().equalsIgnoreCase("opera")) {
+                    tCExecution.setScreenSize(getScreenSize(driver));
+                }
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
 
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
@@ -557,7 +568,7 @@ public class RobotServerService implements IRobotServerService {
                 session = ((RemoteWebDriver) driver).getSessionId().toString();
                 break;
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
-                session = ((RemoteWebDriver) driver).getCapabilities().getCapability("kobitonSessionId").toString();
+                session = ((HasCapabilities) driver).getCapabilities().getCapability("kobitonSessionId").toString();
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
             // For LambdaTest we get the exeid not here but by service call at the end of the execution.
@@ -623,7 +634,7 @@ public class RobotServerService implements IRobotServerService {
             for (RobotCapability additionalCapability : additionalCapabilities) {
                 LOG.debug("RobotCaps on Robot : " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
                 if ((caps.getCapability(additionalCapability.getCapability()) == null)
-                        || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().equals("")))) { // caps does not already exist so we can set it.
+                        || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().isEmpty()))) { // caps does not already exist so we can set it.
                     if (StringUtil.isBoolean(additionalCapability.getValue())) {
                         caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
                     } else if (StringUtil.isInteger(additionalCapability.getValue())) {
@@ -642,13 +653,13 @@ public class RobotServerService implements IRobotServerService {
          */
         if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
             if ((caps.getCapability("platform") == null)
-                    || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().equals("")))) {
+                    || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().isEmpty()))) {
                 caps.setCapability("platformName", tCExecution.getPlatform());
             }
         }
         if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
             if ((caps.getCapability("version") == null)
-                    || ((caps.getCapability("version") != null) && (caps.getCapability("version").toString().equals("")))) {
+                    || ((caps.getCapability("version") != null) && (caps.getCapability("version").toString().isEmpty()))) {
                 caps.setCapability("version", tCExecution.getVersion());
             }
         }
@@ -657,25 +668,25 @@ public class RobotServerService implements IRobotServerService {
             // Setting deviceUdid and device name from executor.
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
                 if ((caps.getCapability("udid") == null)
-                        || ((caps.getCapability("udid") != null) && (caps.getCapability("udid").toString().equals("")))) {
+                        || ((caps.getCapability("udid") != null) && (caps.getCapability("udid").toString().isEmpty()))) {
                     caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                 if ((caps.getCapability("deviceName") == null)
-                        || ((caps.getCapability("deviceName") != null) && (caps.getCapability("deviceName").toString().equals("")))) {
+                        || ((caps.getCapability("deviceName") != null) && (caps.getCapability("deviceName").toString().isEmpty()))) {
                     caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                 if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                     if ((caps.getCapability("systemPort") == null)
-                            || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
+                            || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().isEmpty()))) {
                         caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                     if ((caps.getCapability("wdaLocalPort") == null)
-                            || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().equals("")))) {
+                            || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().isEmpty()))) {
                         caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 }
@@ -801,7 +812,7 @@ public class RobotServerService implements IRobotServerService {
 
     private boolean isNotAlreadyDefined(MutableCapabilities caps, String capability) {
         return ((caps.getCapability(capability) == null)
-                || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().equals(""))));
+                || ((caps.getCapability(capability) != null) && (caps.getCapability(capability).toString().isEmpty())));
     }
 
     /**
@@ -1235,7 +1246,7 @@ public class RobotServerService implements IRobotServerService {
 
     @Override
     public Capabilities getUsedCapabilities(Session session) {
-        Capabilities caps = ((RemoteWebDriver) session.getDriver()).getCapabilities();
+        Capabilities caps = ((HasCapabilities) session.getDriver()).getCapabilities();
         return caps;
     }
 

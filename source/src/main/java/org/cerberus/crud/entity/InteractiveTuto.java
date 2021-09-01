@@ -32,8 +32,11 @@ public class InteractiveTuto {
         }
 
         public static Level getEnum(int level) {
-            for(Level v : values())
-                if(v.value == level) return v;
+            for(Level v : values()) {
+                if(v.value == level) {
+                    return v;
+                }
+            }
             throw new IllegalArgumentException();
         }
 

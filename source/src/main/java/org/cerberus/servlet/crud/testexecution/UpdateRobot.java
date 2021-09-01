@@ -135,7 +135,7 @@ public class UpdateRobot extends HttpServlet {
         Integer robotid = 0;
         boolean robotid_error = true;
         try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
+            if (request.getParameter("robotid") != null && !request.getParameter("robotid").isEmpty()) {
                 robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
                 robotid_error = false;
             }
@@ -300,7 +300,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, "", null, "", null);
                 reList.add(reo);
             }
         }

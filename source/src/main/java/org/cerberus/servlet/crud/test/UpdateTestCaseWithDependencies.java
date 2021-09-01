@@ -37,12 +37,10 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -331,7 +329,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
             JSONArray countries = propJson.getJSONArray("countries");
-            if (!delete && !property.equals("")) {
+            if (!delete && !property.isEmpty()) {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getJSONObject(j).getString("value");
                     testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(testcase.getTest(), testcase.getTestcase(), country, property, description, type, database, value, value2, length, rowLimit, nature,
@@ -376,7 +374,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     tcStep.setActions(getTestCaseStepActionsFromParameter(request, appContext, test, testCase, stepActions));
                 } else {
                     TestCaseStep tcs = null;
-                    if (libraryStepStepId != -1 && !libraryStepTest.equals("") && !libraryStepTestCase.equals("")) {
+                    if (libraryStepStepId != -1 && !libraryStepTest.isEmpty() && !libraryStepTestCase.isEmpty()) {
                         tcs = tcsService.findTestCaseStep(libraryStepTest, libraryStepTestCase, libraryStepStepId);
                         if (tcs != null) {
                             tcStep.setLibraryStepTest(tcs.getTest());
@@ -406,7 +404,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = tcsaJson.getString("conditionValue1");
             String conditionValue2 = tcsaJson.getString("conditionValue2");
             String conditionValue3 = tcsaJson.getString("conditionValue3");
-            JSONArray condOptionsArray = tcsaJson.getJSONArray("conditionOptions");
+            JSONArray condOptionsArray = ParameterParserUtil.parseJSONArrayParamAndDecode(tcsaJson.getString("conditionOptions"), new JSONArray(), "UTF8");
             String action = tcsaJson.getString("action");
             String value1 = tcsaJson.getString("object");
             String value2 = tcsaJson.getString("property");
@@ -442,13 +440,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = controlJson.isNull("conditionValue1") ? "" : controlJson.getString("conditionValue1");
             String conditionValue2 = controlJson.isNull("conditionValue2") ? "" : controlJson.getString("conditionValue2");
             String conditionValue3 = controlJson.isNull("conditionValue3") ? "" : controlJson.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode("conditionOptions", new JSONArray(), "UTF8");
+            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(controlJson.getString("conditionOptions"), new JSONArray(), "UTF8");
             //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
             String value2 = controlJson.getString("value2");
             String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
-            JSONArray options = ParameterParserUtil.parseJSONArrayParamAndDecode("options", new JSONArray(), "UTF8");
+            JSONArray options = controlJson.getJSONArray("options");
             boolean isFatal = controlJson.getBoolean("isFatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");

@@ -209,6 +209,31 @@ public class Label {
         return labelJson;
     }
 
+    public JSONObject toJsonV001() {
+        JSONObject labelJson = new JSONObject();
+        try {
+            labelJson.put("JSONVersion", "001");
+            labelJson.put("id", this.getId());
+            labelJson.put("system", this.getSystem());
+            labelJson.put("label", this.getLabel());
+            labelJson.put("type", this.getType());
+            labelJson.put("color", this.getColor());
+            labelJson.put("parentLabelID", this.getParentLabelID());
+            labelJson.put("requirementType", this.getRequirementType());
+            labelJson.put("requirementStatus", this.getRequirementStatus());
+            labelJson.put("requirementCriticity", this.getRequirementCriticity());
+            labelJson.put("description", this.getDescription());
+            labelJson.put("longDescription", this.getLongDescription());
+            labelJson.put("usrCreated", this.getUsrCreated());
+            labelJson.put("dateCreated", this.getDateCreated());
+            labelJson.put("usrModif", this.getUsrModif());
+            labelJson.put("dateModif", this.getDateModif());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return labelJson;
+    }
+
     public JSONObject toJsonGUI() {
         JSONObject result = new JSONObject();
         try {

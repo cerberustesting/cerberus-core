@@ -360,7 +360,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
@@ -410,7 +410,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.conditionOperator " + testCaseStepAction.getConditionOperator());
             LOG.debug("SQL.param.conditionValue1 " + testCaseStepAction.getConditionValue1());
             LOG.debug("SQL.param.conditionValue2 " + testCaseStepAction.getConditionValue2());
-            LOG.debug("SQL.param.conditionValue3 " + testCaseStepAction.getConditionValue3());
+            LOG.debug("SQL.param.options " + testCaseStepAction.getOptions().toString());
         }
 
         try (Connection connection = this.databaseSpring.connect();
@@ -426,12 +426,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getOptions() == null ? "[]" : testCaseStepAction.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
@@ -531,12 +531,12 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setString(i++, testCaseStepAction.getConditionValue1());
             preStat.setString(i++, testCaseStepAction.getConditionValue2());
             preStat.setString(i++, testCaseStepAction.getConditionValue3());
-            preStat.setString(i++, testCaseStepAction.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getConditionOptions() == null ? "[]" : testCaseStepAction.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepAction.getAction());
             preStat.setString(i++, testCaseStepAction.getValue1());
             preStat.setString(i++, testCaseStepAction.getValue2());
             preStat.setString(i++, testCaseStepAction.getValue3());
-            preStat.setString(i++, testCaseStepAction.getOptions().toString());
+            preStat.setString(i++, testCaseStepAction.getOptions() == null ? "[]" : testCaseStepAction.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());

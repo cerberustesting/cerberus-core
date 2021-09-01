@@ -149,7 +149,7 @@ public class ReadQueueStat extends HttpServlet {
 
             JSONObject jsonResponse1 = new JSONObject();
             answer = findQueueStatList(appContext, request, queueStatL);
-            jsonResponse1 = (JSONObject) answer.getItem();
+            jsonResponse1 = answer.getItem();
 
             jsonResponse.put("datasetQueueStat", jsonResponse1.getJSONArray("datasetQueueStat"));
 

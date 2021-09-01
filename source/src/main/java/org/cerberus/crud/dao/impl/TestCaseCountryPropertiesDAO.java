@@ -198,7 +198,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, oneproperty);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                testCaseCountryPropertiesList = new ArrayList<TestCaseCountryProperties>();
+                testCaseCountryPropertiesList = new ArrayList<>();
                 while (resultSet.next()) {
                     testCaseCountryPropertiesList.add(loadFromResultSet(resultSet));
                 }
@@ -228,7 +228,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testcase);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                testCaseCountryPropertiesList = new ArrayList<TestCaseCountryProperties>();
+                testCaseCountryPropertiesList = new ArrayList<>();
 
                 while (resultSet.next()) {
                     testCaseCountryPropertiesList.add(loadFromResultSet(resultSet));
@@ -269,7 +269,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getNature());
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                countries = new ArrayList<String>();
+                countries = new ArrayList<>();
                 String countryToAdd;
 
                 while (resultSet.next()) {
@@ -309,7 +309,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, country);
 
             try (ResultSet resultSet = preStat.executeQuery();) {
-                testCaseCountryPropertiesList = new ArrayList<TestCaseCountryProperties>();
+                testCaseCountryPropertiesList = new ArrayList<>();
 
                 while (resultSet.next()) {
                     testCaseCountryPropertiesList.add(loadFromResultSet(resultSet));
@@ -488,7 +488,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
-        List<String> countries = new ArrayList<String>();
+        List<String> countries = new ArrayList<>();
 
         final String query = "SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND hex(`property`) like hex(?)";
 
@@ -518,7 +518,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             LOG.error(ex.toString());
         }
 
-        return (countries.size() == 0) ? null : countries;
+        return (countries.isEmpty()) ? null : countries;
     }
 
     @Override
@@ -575,9 +575,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, name);
             preStat.setString(i++, country);
 
-            HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
+            HashMap<String, TestListDTO> map = new HashMap<>();
 
-            HashMap<String, List<PropertyListDTO>> auxiliaryMap = new HashMap<String, List<PropertyListDTO>>();//the key is the test + ":" +testcasenumber
+            HashMap<String, List<PropertyListDTO>> auxiliaryMap = new HashMap<>();//the key is the test + ":" +testcasenumber
 
             String key, test, testCase;
 
@@ -616,7 +616,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         testCaseDTO.setIsActive(resultSet.getString("isActive"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
-                        propertiesList = new ArrayList<PropertyListDTO>();
+                        propertiesList = new ArrayList<>();
                     } else {
                         propertiesList = auxiliaryMap.get(key);
                     }
@@ -632,7 +632,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 }
 
                 //assigns the testCaseCountryPropertiesList of tests retrieved by the query to the testCaseCountryPropertiesList
-                listOfTests = new ArrayList<TestListDTO>(map.values());
+                listOfTests = new ArrayList<>(map.values());
 
                 //assigns the testCaseCountryPropertiesList of testCaseCountryPropertiesList to the correct testcaselist
                 for (TestListDTO list : listOfTests) {
@@ -774,7 +774,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         MessageEvent msg;
         final String query = "DELETE FROM `testcasecountryproperties` WHERE `Test`=? and `TestCase`=? and `Country`=? and `Property`=?";
 
-        loggingQuery(query.toString());
+        loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {

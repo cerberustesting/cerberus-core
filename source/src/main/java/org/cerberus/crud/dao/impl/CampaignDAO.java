@@ -79,7 +79,6 @@ public class CampaignDAO implements ICampaignDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (cpg.campaign like ?");
-            searchSQL.append(" or cpg.distriblist like ?");
             searchSQL.append(" or cpg.description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -119,7 +118,6 @@ public class CampaignDAO implements ICampaignDAO {
                 int i = 1;
 
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
@@ -296,7 +294,6 @@ public class CampaignDAO implements ICampaignDAO {
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (campaign like ?");
-            searchSQL.append(" or distriblist like ?");
             searchSQL.append(" or description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -322,7 +319,6 @@ public class CampaignDAO implements ICampaignDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
@@ -380,11 +376,10 @@ public class CampaignDAO implements ICampaignDAO {
     public Answer create(Campaign object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO campaign (`campaign`, `DistribList`, `NotifyStartTagExecution`, `NotifyEndTagExecution`"
-                + ", SlackNotifyStartTagExecution, SlackNotifyEndTagExecution, SlackWebhook, SlackChannel"
+        query.append("INSERT INTO campaign (`campaign`"
                 + ", CIScoreThreshold, Tag, Verbose, Screenshot, Video, PageSource, RobotLog, ConsoleLog, Timeout, Retries, Priority, ManualExecution"
                 + ", `Description`, LongDescription, Group1, Group2, Group3, UsrCreated) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -396,13 +391,6 @@ public class CampaignDAO implements ICampaignDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, object.getCampaign());
-                preStat.setString(i++, object.getDistribList());
-                preStat.setString(i++, object.getNotifyStartTagExecution());
-                preStat.setString(i++, object.getNotifyEndTagExecution());
-                preStat.setString(i++, object.getSlackNotifyStartTagExecution());
-                preStat.setString(i++, object.getSlackNotifyEndTagExecution());
-                preStat.setString(i++, object.getSlackWebhook());
-                preStat.setString(i++, object.getSlackChannel());
                 preStat.setString(i++, object.getCIScoreThreshold());
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getVerbose());
@@ -458,8 +446,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public Answer update(Campaign object) {
         MessageEvent msg = null;
-        final String query = "UPDATE campaign cpg SET campaign = ?, DistribList = ?, NotifyStartTagExecution = ?, NotifyEndTagExecution = ?"
-                + ", SlackNotifyStartTagExecution = ?,  SlackNotifyEndTagExecution = ?, SlackWebhook = ?, SlackChannel = ?"
+        final String query = "UPDATE campaign cpg SET campaign = ?"
                 + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, Video = ?, PageSource = ?, RobotLog = ?, ConsoleLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
                 + ", Description = ?, LongDescription = ?, Group1 = ?, Group2 = ?, Group3 = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
 
@@ -473,13 +460,6 @@ public class CampaignDAO implements ICampaignDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, object.getCampaign());
-                preStat.setString(i++, object.getDistribList());
-                preStat.setString(i++, object.getNotifyStartTagExecution());
-                preStat.setString(i++, object.getNotifyEndTagExecution());
-                preStat.setString(i++, object.getSlackNotifyStartTagExecution());
-                preStat.setString(i++, object.getSlackNotifyEndTagExecution());
-                preStat.setString(i++, object.getSlackWebhook());
-                preStat.setString(i++, object.getSlackChannel());
                 preStat.setString(i++, object.getCIScoreThreshold());
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getVerbose());
@@ -571,15 +551,6 @@ public class CampaignDAO implements ICampaignDAO {
     public Campaign loadFromResultSet(ResultSet rs) throws SQLException {
         int campID = ParameterParserUtil.parseIntegerParam(rs.getString("cpg.campaignID"), 0);
         String camp = ParameterParserUtil.parseStringParam(rs.getString("cpg.campaign"), "");
-        String distribList = ParameterParserUtil.parseStringParam(rs.getString("cpg.DistribList"), "");
-        String notifyStartTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.NotifyStartTagExecution"), "N");
-        String notifyEndTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.NotifyEndTagExecution"), "N");
-
-        String slackNotifyStartTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackNotifyStartTagExecution"), "N");
-        String slackNotifyEndTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackNotifyEndTagExecution"), "N");
-        String slackWebhook = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackWebhook"), "");
-        String slackChannel = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackChannel"), "");
-
         String cIScoreThreshold = ParameterParserUtil.parseStringParam(rs.getString("cpg.CIScoreThreshold"), "");
         String tag = ParameterParserUtil.parseStringParam(rs.getString("cpg.Tag"), "");
         String verbose = ParameterParserUtil.parseStringParam(rs.getString("cpg.Verbose"), "");
@@ -604,8 +575,7 @@ public class CampaignDAO implements ICampaignDAO {
         Timestamp dateModif = rs.getTimestamp("cpg.DateModif");
         Timestamp dateCreated = rs.getTimestamp("cpg.DateCreated");
 
-        return factoryCampaign.create(campID, camp, distribList, notifyStartTagExecution, notifyEndTagExecution,
-                slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
+        return factoryCampaign.create(campID, camp,
                 cIScoreThreshold,
                 tag, verbose, screenshot, video, pageSource, robotLog, consoleLog, timeout, retries, priority, manualExecution,
                 desc, longDesc, group1, group2, group3,

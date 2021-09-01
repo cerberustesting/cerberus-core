@@ -39,7 +39,6 @@ import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
-import org.cerberus.servlet.crud.testdata.CreateTestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
@@ -98,7 +97,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                 TestCaseCountryProperties countryProperties;
                 
                 // List of all country of the destination test for the current property
-                List<String> toCountries = new ArrayList<String>();
+                List<String> toCountries = new ArrayList<>();
                 toCountries.addAll(toCountriesAll);
 
                 // Retrieve the country of the destination TestCase for the property,
@@ -116,7 +115,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                     
                     // If countries list is empty do nothing
                     if (toCountries.size() > 0) {
-                        List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<TestCaseCountryProperties>();
+                        List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<>();
                         for (String country : toCountries) {
                             try {
                                 // retrieve the source property for the current country

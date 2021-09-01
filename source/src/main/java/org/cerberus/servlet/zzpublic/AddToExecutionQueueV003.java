@@ -70,7 +70,7 @@ import org.json.JSONObject;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueueV003", urlPatterns = {"/AddToExecutionQueueV003"})
+@WebServlet(name = "AddToExecutionQueueV003", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueueV003"})
 public class AddToExecutionQueueV003 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(AddToExecutionQueueV003.class);
@@ -253,8 +253,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             Campaign mCampaign = null;
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 @SuppressWarnings("unchecked")
-                AnswerItem<Campaign> vCampaign = (AnswerItem<Campaign>) campaignService.readByKey(campaign);
-                mCampaign = (Campaign) vCampaign.getItem();
+                AnswerItem<Campaign> vCampaign = campaignService.readByKey(campaign);
+                mCampaign = vCampaign.getItem();
             }
             if (mCampaign == null) {
                 // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values
@@ -372,11 +372,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             LOG.debug("Executor : " + executor);
             String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
             String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
-            tag = tag
-                    .replace("%TIMESTAMP%", mytimestamp)
-                    .replace("%USER%", myuser)
-                    .replace("%REQCOUNTRYLIST%", reqCountries)
-                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
             if (campaign != null && !campaign.isEmpty()) {
                 final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
@@ -385,9 +380,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     // If parameters are already defined from request, we ignore the campaign values.
                     if (countries == null || countries.isEmpty()) {
                         countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
+                        countryJSONArray = new JSONArray(countries);
+                        reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
                     }
                     if (environments == null || environments.isEmpty()) {
                         environments = parsedCampaignParameters.getItem().get(CampaignParameter.ENVIRONMENT_PARAMETER);
+                        envJSONArray = new JSONArray(environments);
+                        reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
                     }
                     if (robots == null || robots.isEmpty()) {
                         robots = parsedCampaignParameters.getItem().get(CampaignParameter.ROBOT_PARAMETER);
@@ -412,6 +411,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     }
                 }
             }
+            tag = tag
+                    .replace("%TIMESTAMP%", mytimestamp)
+                    .replace("%USER%", myuser)
+                    .replace("%REQCOUNTRYLIST%", reqCountries)
+                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
             if (countries == null || countries.isEmpty()) {
                 errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.\n");
@@ -497,7 +501,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 invariantEnvMap.put("MANUAL", "");
 
                 // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
-                List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
+                List<TestCaseExecutionQueue> toInserts = new ArrayList<>();
                 try {
 
                     HashMap<String, CountryEnvParam> envMap = new HashMap<>();
@@ -533,7 +537,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 || ((envGp1.equals("UAT")) && tc.isActiveUAT())
                                                 || ((envGp1.equals("QA")) && tc.isActiveQA())
                                                 || (envGp1.equals("DEV"))
-                                                || (envGp1.equals(""))) {
+                                                || (envGp1.isEmpty())) {
                                             // Getting Application in order to check application type against browser.
                                             appMap = updateMapWithApplication(tc.getApplication(), appMap);
                                             Application app = appMap.get(tc.getApplication());
@@ -609,12 +613,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 }
                                             } else {
                                                 LOG.debug("Env does not exist or is not active.");
-                                                nbenvnotexist = nbenvnotexist + nbrobot;
+                                                nbenvnotexist += nbrobot;
                                             }
 
                                         } else {
                                             LOG.debug("Env group not active for testcase : " + environment);
-                                            nbtestcaseenvgroupnotallowed = nbtestcaseenvgroupnotallowed + nbrobot;
+                                            nbtestcaseenvgroupnotallowed += nbrobot;
                                         }
                                     }
                                 } else {
@@ -623,7 +627,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                             }
                         } else {
                             LOG.debug("TestCase not Active.");
-                            nbtestcasenotactive = nbtestcasenotactive + (nbcountries * nbenv * nbrobot);
+                            nbtestcasenotactive += (nbcountries * nbenv * nbrobot);
                         }
                     }
                 } catch (CerberusException ex) {

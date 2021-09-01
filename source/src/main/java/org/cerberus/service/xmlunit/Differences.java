@@ -111,7 +111,7 @@ public class Differences implements Iterable<Difference> {
 	 * Creates a new {@link Differences} instance with no differences
 	 */
 	public Differences() {
-		differences = new ArrayList<Difference>();
+		differences = new ArrayList<>();
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class Differences implements Iterable<Difference> {
 	 * @return
 	 */
 	public List<Difference> getDifferences() {
-		return new ArrayList<Difference>(differences);
+		return new ArrayList<>(differences);
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public class Differences implements Iterable<Difference> {
 
 	@Override
 	public Iterator<Difference> iterator() {
-		return new ArrayList<Difference>(differences).iterator();
+		return new ArrayList<>(differences).iterator();
 	}
 
 }

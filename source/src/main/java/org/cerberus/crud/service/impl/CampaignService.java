@@ -29,6 +29,7 @@ import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.IEventHookService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.scheduler.SchedulerInit;
@@ -54,7 +55,8 @@ public class CampaignService implements ICampaignService {
     ICampaignParameterDAO campaignParameterDAO;
     @Autowired
     IMyVersionService myVersionService;
-    
+    @Autowired
+    IEventHookService eventHookService;
 
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException {
@@ -96,6 +98,10 @@ public class CampaignService implements ICampaignService {
         Answer ans = campaignDAO.delete(object);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             /**
+             * Delete corresponding eventHook.
+             */
+            eventHookService.deleteBycampaign(object.getCampaign());
+            /**
              * Updating Scheduler Version.
              */
             myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
@@ -109,7 +115,7 @@ public class CampaignService implements ICampaignService {
     public Campaign convert(AnswerItem<Campaign> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (Campaign) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -118,7 +124,7 @@ public class CampaignService implements ICampaignService {
     public List<Campaign> convert(AnswerList<Campaign> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<Campaign>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

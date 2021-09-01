@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.entity.Email;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +38,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.notifications.email.IEmailGenerationService;
 
 /**
  *

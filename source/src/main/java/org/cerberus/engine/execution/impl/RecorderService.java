@@ -179,7 +179,7 @@ public class RecorderService implements IRecorderService {
                 && ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))
                 || (myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot)))) {
             //Record the Request and Response.
-            AppService se = (AppService) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastServiceCalled();
+            AppService se = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastServiceCalled();
             if (se != null) { // No Calls were performed previously
                 List<TestCaseExecutionFile> objectFileSOAPList = new ArrayList<>();
                 objectFileSOAPList = this.recordServiceCall(myExecution, testCaseStepActionExecution, controlNumber, null, se);

@@ -23,7 +23,6 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.UserService;
-import org.cerberus.util.StringUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

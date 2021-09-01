@@ -166,12 +166,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
-            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions() == null ? "[]" : testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
-            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getOptions() == null ? "[]" : testCaseStepActionControl.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -248,6 +248,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.conditionoptions : " + testCaseStepActionControl.getConditionOptions().toString());
+            LOG.debug("SQL.param.options : " + testCaseStepActionControl.getOptions().toString());
         }
 
         try (Connection connection = this.databaseSpring.connect();
@@ -264,12 +266,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
-            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions() == null ? "[]" : testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
-            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getOptions() == null ? "[]" : testCaseStepActionControl.getOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
@@ -508,12 +510,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setString(i++, testCaseStepActionControl.getConditionValue1());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue2());
             preStat.setString(i++, testCaseStepActionControl.getConditionValue3());
-            preStat.setString(i++, testCaseStepActionControl.getConditionOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getConditionOptions() == null ? "[]" : testCaseStepActionControl.getConditionOptions().toString());
             preStat.setString(i++, testCaseStepActionControl.getControl());
             preStat.setString(i++, testCaseStepActionControl.getValue1());
             preStat.setString(i++, testCaseStepActionControl.getValue2());
             preStat.setString(i++, testCaseStepActionControl.getValue3());
-            preStat.setString(i++, testCaseStepActionControl.getOptions().toString());
+            preStat.setString(i++, testCaseStepActionControl.getOptions() == null ? "[]" : testCaseStepActionControl.getOptions().toString());
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());

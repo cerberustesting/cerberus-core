@@ -119,7 +119,7 @@ public class GetReportData extends HttpServlet {
 
         if (!split) {
 
-            Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+            Map<String, JSONObject> axisMap = new HashMap<>();
 
             for (TestCaseExecution testCaseWithExecution : testCaseExecutions) {
                 String key;
@@ -186,7 +186,7 @@ public class GetReportData extends HttpServlet {
 
             List<TestCaseExecution> res = new ArrayList<>(testCaseExecutionsList.values());
 
-            HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+            HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<>();
             for (TestCaseExecution column : res) {
                 SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
                 stat.setEnvironment(column.getEnvironment());
@@ -285,7 +285,7 @@ public class GetReportData extends HttpServlet {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+        List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
 
         return result;
     }

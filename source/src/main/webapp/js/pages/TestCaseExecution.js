@@ -184,7 +184,7 @@ function loadExecutionInformation(executionId, steps, sockets) {
             updatePage(tce, steps);
 
             // Save history of execution into sessionStorage.
-            saveHistory(getHistoryExecution(tce), "historyExecutions",5);
+            saveHistory(getHistoryExecution(tce), "historyExecutions", 5);
             refreshHistoryMenu();
 
             if (tce.controlStatus === "PE") {
@@ -2130,7 +2130,7 @@ Step.prototype.update = function (idStep) {
     glyphIcon.addClass(glyphiconName);
     //
     $("#stepRC").val(this.returnCode);
-}
+};
 
 
 
@@ -2194,6 +2194,9 @@ Step.prototype.show = function () {
     if (object.conditionOperator === "always") {
         $("#stepRow3").hide();
         $("#stepRow4").hide();
+    } else {
+        $("#stepRow3").show();
+        $("#stepRow4").show();
     }
 
     returnMessageWritableForStep(object, $("#stepMessage"));
@@ -2273,6 +2276,7 @@ function returnMessageWritableForStep(object, field) {
 Step.prototype.getJsonData = function () {
     var json = {};
     json.conditionOperator = this.conditionOperator;
+    json.conditionOptions = this.conditionOptions;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal1Init = this.conditionVal1Init;
     json.conditionVal2 = this.conditionVal2;

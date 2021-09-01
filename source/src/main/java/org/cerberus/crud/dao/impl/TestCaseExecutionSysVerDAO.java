@@ -120,7 +120,7 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
 
 
                 ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<TestCaseExecutionSysVer>();
+                result = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String system = resultSet.getString("system");

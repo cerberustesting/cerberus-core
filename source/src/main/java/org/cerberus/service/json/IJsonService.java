@@ -20,7 +20,6 @@
 package org.cerberus.service.json;
 
 import java.util.List;
-import org.json.JSONObject;
 
 /**
  *

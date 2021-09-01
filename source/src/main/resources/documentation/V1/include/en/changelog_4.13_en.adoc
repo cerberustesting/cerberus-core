@@ -1,0 +1,20 @@
+*Bug fixes*
+[square]
+* Message notification area always appear on top of menu (menu sometimes could hide a part of it).
+* Fixed JSON parsing on float values #2282.
+* Fixed Campaign testcase filter using TYPE (automated, manual, private). #2281.
+* Decode Step description on 1st iteration even when using doWhile loop. #2148
+* Fixed an issue preventing opera browser to start. 
+
+*Improvements / New features*
+[square]
+* Event Hooks implementation allowing to configure any action attached a list of supported events (9) : CAMPAIGN_START, CAMPAIGN_END, CAMPAIGN_END_CIKO, EXECUTION_START, EXECUTION_END, EXECUTION_END_LASTRETRY, TESTCASE_CREATE, TESTCASE_UPDATE, TESTCASE_DELETE
+* 5 connectors can be used to those events : EMAIL, SLACK, TEAMS, GOOGLE-CHAT, GENERIC. When event occurs, Cerberus will notify the chosen associated system in a native format using those connectors. That allow an easier integration of Cerberus to any external tool. New connectors can also be implemented in a much easier way.
+* New version of GetTagDetails (V002) with more information on extracted Tag data (using the same public JSON format than the one used on the GENERIC event hook connector).
+* SYSTEM, COUNTRY and ENVIRONMENT invariants are controlled when created or updated to secure they are have less than 45 digits and don't contains any specific characters. #2265
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* All /RunTestCase API are deprecated and should no longuer be used. Please use /AddToExecutionQueueV003 as a replacement. Access to /RunTestCase will soon be removed.
+* All /GetTagExecutions API are deprecated and should no longuer be used.
+

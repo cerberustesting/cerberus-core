@@ -25,1063 +25,14 @@ var allDelete = false;
 var loadedPropertiesNumber = -1;
 var Tags = [];
 
-var actionUIList = {
-    "fr": [
-        {"type": "Unknown", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "click", "aval1": "Chemin vers l'élement à cliquer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "longPress", "aval1": "Chemin vers l'élement à cliquer", "acol1": "col-lg-7", "aval2": "[opt] Valeur (ms) : 8000 par défaut", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseLeftButtonPress", "aval1": "Chemin vers l'élement à cibler", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseLeftButtonRelease", "aval1": "Chemin vers l'élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "doubleClick", "aval1": "Chemin vers l'élement à double-cliquer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "rightClick", "aval1": "Chemin vers l'élement à clicker avec le bouton droit", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseOver", "aval1": "Chemin vers l'élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseMove", "aval1": "Coordonnées relatives (ex : 50,100 ; 200,50)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "focusToIframe", "aval1": "Chemin vers l'élement de l'iFrame à cibler", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "switchToWindow", "aval1": "Titre ou url de la fenêtre", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "manageDialog", "aval1": "ok ou cancel", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "manageDialogKeypress", "aval1": "Touches à appuyer.", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrlWithBase", "aval1": "URI à appeler (ex : /index.html)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrlLogin", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrl", "aval1": "URL à appeler (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "refreshCurrentPage", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeJS", "aval1": "JavaScript à executer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCommand", "aval1": "Commande Appium (ex : \"mobile:deepLink\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCerberusCommand", "aval1": "Commande (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openApp", "aval1": "Nom ou chemin de l'application, package pour android", "acol1": "col-lg-6", "aval2": "[Optionnel, obligatoire pour Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "closeApp", "aval1": "Nom ou chemin de l'application", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "dragAndDrop", "aval1": "Chemin de l'élement", "acol1": "col-lg-5", "aval2": "Destination de l'élément", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "select", "aval1": "Chemin vers l'élement", "acol1": "col-lg-5", "aval2": "Chemin vers l'option", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "keypress", "aval1": "[opt] Chemin vers l'élement à cibler", "acol1": "col-lg-7", "aval2": "Touche à appuyer", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "type", "aval1": "Chemin vers l'élement", "acol1": "col-lg-5", "aval2": "Texte à entrer", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "clearField", "aval1": "Chemin vers l'élement à effacer", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "wait", "aval1": "Valeur (ms) ou élement", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "waitNetworkTrafficIdle", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "callService", "aval1": "Nom du Service", "acol1": "col-lg-5", "aval2": "Nb Evt à attendre (Kafka)", "acol2": "col-lg-2", "aval3": "Tps d'attente en sec (Kafka)", "acol3": "col-lg-2"},
-        {"type": "executeSqlUpdate", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Script à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeSqlStoredProcedure", "aval1": "Nom de Base de donnée", "acol1": "col-lg-3", "aval2": "Procedure Stoquée à executer", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "calculateProperty", "aval1": "Nom d'une Proprieté", "acol1": "col-lg-5", "aval2": "[opt] Nom d'une autre propriété", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setNetworkTrafficContent", "aval1": "URL à filtrer", "acol1": "col-lg-7", "aval2": "Activation du contenu des reponses http (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "indexNetworkTraffic", "aval1": "[opt] Nom de l'index", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setConsoleContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setContent", "aval1": "Valeur", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "scrollTo", "aval1": "element (id, xpath, ..., et text=)", "acol1": "col-lg-5", "aval2": "Nombre maximum de scroll vers le bas (8 par defaut)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "installApp", "aval1": "Chemin vers l'application (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "removeApp", "aval1": "Package de l'application (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "doNothing", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseOverAndWait", "aval1": "Action Depreciée", "acol1": "col-lg-5", "aval2": "Action Depreciée", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "removeDifference", "aval1": "Action Depreciée", "acol1": "col-lg-5", "aval2": "Action Depreciée", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"}
-    ], "en": [
-        {"type": "Unknown", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "click", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "", "aval3": null, "acol3": ""},
-        {"type": "longPress", "aval1": "Element path", "acol1": "col-lg-7", "aval2": "[opt] Duration (ms) : 8000 by default", "acol2": "col-lg-2", "aval3": null, "acol3": ""},
-        {"type": "mouseLeftButtonPress", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseLeftButtonRelease", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "doubleClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "rightClick", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseOver", "aval1": "Element path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseMove", "aval1": "Relative coord. (ex : 50,100 ; 200,50)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "focusToIframe", "aval1": "Element path of the target iFrame", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "focusDefaultIframe", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "switchToWindow", "aval1": "Window title or url", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "manageDialog", "aval1": "ok or cancel", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "manageDialogKeypress", "aval1": "keys to press.", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrlWithBase", "aval1": "URI to call  (ex : /index.html)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrlLogin", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openUrl", "aval1": "URL to call (ex : http://www.domain.com)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "refreshCurrentPage", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeJS", "aval1": "JavaScript to execute", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCommand", "aval1": "Appium Command (ex : \"mobile:deepLink\")", "acol1": "col-lg-4", "aval2": "Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})", "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeCerberusCommand", "aval1": "Command (ex : \"grep\")", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "openApp", "aval1": "Application name or path or package for Android", "acol1": "col-lg-6", "aval2": "[Optional, required for Android] Activity", "acol2": "col-lg-3", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "closeApp", "aval1": "Application name or path", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "dragAndDrop", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Destination Element Path", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "select", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Option value", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "keypress", "aval1": "[opt] Target element path", "acol1": "col-lg-7", "aval2": "Key to press", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "type", "aval1": "Element path", "acol1": "col-lg-5", "aval2": "Text to type", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "hideKeyboard", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "clearField", "aval1": "Element path to Clear", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "swipe", "aval1": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "acol1": "col-lg-5", "aval2": "Direction x;y;z;y", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "wait", "aval1": "Duration(ms) or Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "waitVanish", "aval1": "Element", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "waitNetworkTrafficIdle", "aval1": null, "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "callService", "aval1": "Service Name", "acol1": "col-lg-5", "aval2": "Nb Evt (Kafka)", "acol2": "col-lg-2", "aval3": "Evt Wait sec (Kafka)", "acol3": "col-lg-2"},
-        {"type": "executeSqlUpdate", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Script", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "executeSqlStoredProcedure", "aval1": "Database Name", "acol1": "col-lg-3", "aval2": "Stored Procedure", "acol2": "col-lg-6", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "calculateProperty", "aval1": "Property Name", "acol1": "col-lg-5", "aval2": "[opt] Name of an other property", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setNetworkTrafficContent", "aval1": "url to filter", "acol1": "col-lg-7", "aval2": "Activate http response content (Y/N)", "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "indexNetworkTraffic", "aval1": "[opt] Index name", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setServiceCallContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setConsoleContent", "aval1": null, "acol1": "col-lg-7", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "setContent", "aval1": "Value to Set", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-2", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "scrollTo", "aval1": "element ('id=ressource-id'. Empty if you want use text)", "acol1": "col-lg-5", "aval2": "text (empty if you want use element)", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "installApp", "aval1": "Application path (ex : /root/toto.apk)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "removeApp", "aval1": "Application package (ex : com.cerberus.appmobile)", "acol1": "col-lg-9", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "doNothing", "aval1": null, "acol1": "col-lg-5", "aval2": null, "acol2": "col-lg-5", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "mouseOverAndWait", "aval1": "[Deprecated]", "acol1": "col-lg-5", "aval2": "[Deprecated]", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"},
-        {"type": "removeDifference", "aval1": "[Deprecated]", "acol1": "col-lg-5", "aval2": "[Deprecated]", "acol2": "col-lg-4", "aval3": null, "acol3": "col-lg-5"}
-    ]
-};
 
-var propertyUIList = {
-    "fr": [
-        {
-            "type": "text",
-            "value1": "Valeur",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": "[opt] Length",
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": "Nature",
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromSql",
-            "value1": "Requete SQL",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/sql",
-            "value2": null,
-            "database": "Database",
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": "Row Limit",
-            "nature": "Nature",
-            "retry": "Number of retry (until non-empty result)",
-            "period": "Retry period (ms)"
-        },
-        {
-            "type": "getFromDataLib",
-            "value1": "Nom de la DataLib",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": "Length (nb of rows)",
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": "[opt] Row Limit",
-            "nature": "Nature",
-            "retry": "Number of retry (until non-empty result)",
-            "period": "Retry period (ms)"
-        },
-        {
-            "type": "getFromHtml",
-            "value1": "Chemin vers l'élément",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromHtmlVisible",
-            "value1": "Chemin vers l'élément",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromJS",
-            "value1": "Commande Javascript",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/javascript",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getAttributeFromHtml",
-            "value1": "Chemin vers l'élément",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "Attribute name",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromCookie",
-            "value1": "Nom du Cookie",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": "Cookie attribute",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromXml",
-            "value1": "Xpath",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] Contenu XML ou URL vers un fichier XML",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getRawFromXml",
-            "value1": "Xpath",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] XML or URL to XML file",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getDifferencesFromXml",
-            "value1": "value1",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "value2",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromJson",
-            "value1": "JSON Path",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/json",
-            "value2": "[opt] Contenu JSON ou URL vers un fichier JSON",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromNetworkTraffic",
-            "value1": "filtre d'URL",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/json",
-            "value2": "JSON Path",
-            "value3": "Activate HTTP response content (Y/N)",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromGroovy",
-            "value1": "Groovy command",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/groovy",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromCommand",
-            "value1": "Commande Appium (ex : \"mobile:deviceInfo\")",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/shell",
-            "value2": "Arguments (ex : {param1: \"val1\", param2: \"val2\"})",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getElementPosition",
-            "value1": "Récupérer la position en Pixel d'un élement (use id=/xpath=/etc syntax - return \"px;py\")",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getOTP",
-            "value1": "Récupérer un code OTP à partir d'une valeur de clé",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "executeSoapFromLib",
-            "value1": "Service lib name",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "executeSqlFromLib",
-            "value1": "SQL Lib name",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        }
-    ], "en": [
-        {
-            "type": "text",
-            "value1": "Value",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": "[opt] Length",
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": "Nature",
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromSql",
-            "value1": "SQL Query",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/sql",
-            "value2": null,
-            "database": "Database",
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": "Row Limit",
-            "nature": "Nature",
-            "retry": "Number of retry (until non-empty result)",
-            "period": "Retry period (ms)",
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromDataLib",
-            "value1": "DataLib name",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": "Length (nb of rows)",
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": "[opt] Row Limit",
-            "nature": "Nature",
-            "retry": "Number of retry (until non-empty result)",
-            "period": "Retry period (ms)",
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromHtml",
-            "value1": "Element path",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromHtmlVisible",
-            "value1": "Element path",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromJS",
-            "value1": "Javascript command",
-            "value1Class": "col-sm-10",
-            "value1EditorMode": "ace/mode/javascript",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getAttributeFromHtml",
-            "value1": "Element path",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "Attribute name",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromCookie",
-            "value1": "Cookie name",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": "Cookie attribute",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromXml",
-            "value1": "Xpath",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] XML or URL to XML file",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getRawFromXml",
-            "value1": "Xpath",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "[opt] XML or URL to XML file",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getDifferencesFromXml",
-            "value1": "value1",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/xquery",
-            "value2": "value2",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromJson",
-            "value1": "JSONPath",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/json",
-            "value2": "[opt] JSON or URL to JSON file",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromNetworkTraffic",
-            "value1": "URL filter",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/json",
-            "value2": "JSON Path",
-            "value3": "Activate HTTP response content (Y/N)",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getFromGroovy",
-            "value1": "Groovy command",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/groovy",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getFromCommand",
-            "value1": "Appium Command (ex : \"mobile:deviceInfo\")",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/shell",
-            "value2": "Arguments (ex : {param1: \"val1\", param2: \"val2\"})",
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "getElementPosition",
-            "value1": "Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "getOTP",
-            "value1": "Get an OTP code from a secret key",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null
-        },
-        {
-            "type": "executeSoapFromLib",
-            "value1": "Service lib name",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        },
-        {
-            "type": "executeSqlFromLib",
-            "value1": "SQL Lib name",
-            "value1Class": "col-sm-8",
-            "value1EditorMode": "ace/mode/cerberus",
-            "value2": null,
-            "database": null,
-            "length": null,
-            "cacheExpire": "[opt] cache Expire (s)",
-            "rowLimit": null,
-            "nature": null,
-            "retry": null,
-            "period": null,
-            "rank": "Rank"
-        }
-    ]
-};
-
-var conditionUIList = {
-    "fr": [
-        {"type": "always", "object": null, "property": null, "condValue3": null},
-        {"type": "ifPropertyExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
-        {"type": "ifPropertyNotExist", "object": "Propriété (ex : PROP1)", "property": null, "condValue3": null},
-        {"type": "ifElementPresent", "object": "Element", "property": null, "condValue3": null},
-        {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-        {"type": "ifElementVisible", "object": "Element", "property": null, "condValue3": null},
-        {"type": "ifElementNotVisible", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-        {"type": "ifTextInElement", "object": "Element", "property": "Texte", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "ifTextNotInElement", "object": "Element", "property": "Texte", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
-        {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
-        {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-        {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-        {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-        {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-        {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
-        {"type": "ifStringMinor", "object": "String2 (ex : AAA)", "property": "String2 (ex : ZZZ)", "condValue3": null},
-        {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "[opt] Sensible à la Casse (Y/N)"},
-        {"type": "Never", "object": null, "property": null, "condValue3": null}
-    ], "en": [
-        {"type": "always", "object": null, "property": null, "condValue3": null},
-        {"type": "ifPropertyExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
-        {"type": "ifPropertyNotExist", "object": "Property name  (ex : PROP1)", "property": null, "condValue3": null},
-        {"type": "ifElementPresent", "object": "Element", "property": null, "condValue3": null},
-        {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-        {"type": "ifElementVisible", "object": "Element", "property": null, "condValue3": null},
-        {"type": "ifElementNotVisible", "object": "Element (ex : data-cerberus=fieldTest)", "property": null, "condValue3": null},
-        {"type": "ifTextInElement", "object": "Element", "property": "Text", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "ifTextNotInElement", "object": "Element", "property": "Text", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "ifNumericEqual", "object": "Integer1", "property": "Integer2", "condValue3": null},
-        {"type": "ifNumericDifferent", "object": "Integer1", "property": "Integer2", "condValue3": null},
-        {"type": "ifNumericGreater", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-        {"type": "ifNumericGreaterOrEqual", "object": "Integer1 (ex : 20)", "property": "Integer2 (ex : 10)", "condValue3": null},
-        {"type": "ifNumericMinor", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-        {"type": "ifNumericMinorOrEqual", "object": "Integer1 (ex : 10)", "property": "Integer2 (ex : 20)", "condValue3": null},
-        {"type": "ifStringEqual", "object": "String1", "property": "String2", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "ifStringDifferent", "object": "String1", "property": "String2", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)", "condValue3": null},
-        {"type": "ifStringMinor", "object": "String1 (ex : AAA)", "property": "String (ex : ZZZ)", "condValue3": null},
-        {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)", "condValue3": "[opt] case sensitive (Y/N)"},
-        {"type": "never", "object": null, "property": null, "condValue3": null}
-    ]
-};
-
-var controlUIList = {
-    "fr": [
-        {
-            "type": "Unknown",
-            "value1": null,
-            "value2": null,
-            "value3": null,
-            "fatal": null
-        },
-        {
-            "type": "verifyStringEqual",
-            "value1": "String1", "acol1": "col-lg-3",
-            "value2": "String2", "acol2": "col-lg-3",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringDifferent",
-            "value1": "String1", "acol1": "col-lg-3",
-            "value2": "String2", "acol2": "col-lg-3",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringGreater",
-            "value1": "String1 (ex: ZZZ)", "acol1": "col-lg-3",
-            "value2": "String2 (ex: AAA)", "acol2": "col-lg-3",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringMinor",
-            "value1": "String1 (ex: AAA)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : ZZZ)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringContains",
-            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : ot)", "acol2": "col-lg-2",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringNotContains",
-            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : zot)", "acol2": "col-lg-2",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericEquals",
-            "value1": "Integer1", "acol1": "col-lg-3",
-            "value2": "Integer2", "acol2": "col-lg-3",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericDifferent",
-            "value1": "Integer1", "acol1": "col-lg-4",
-            "value2": "Integer2", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericGreater",
-            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericGreaterOrEqual",
-            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericMinor",
-            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericMinorOrEqual",
-            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementPresent",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotPresent",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementVisible",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotVisible",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementEquals",
-            "value1": "XPath of the element", "acol1": "col-lg-3",
-            "value2": "Expected element", "acol2": "col-lg-3",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementDifferent",
-            "value1": "XPath of the element", "acol1": "col-lg-3",
-            "value2": "Not Expected element", "acol2": "col-lg-3",
-            "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementInElement",
-            "value1": "Master Element", "acol1": "col-lg-4",
-            "value2": "Sub Element", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementClickable",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotClickable",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {"type": "verifyElementTextEqual", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyUrl", "value2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "acol1": "col-lg-8", "value3": null, "fatal": null},
-        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
-    ], "en": [
-        {
-            "type": "Unknown",
-            "value1": null,
-            "value2": null,
-            "value3": null,
-            "fatal": null
-        },
-        {
-            "type": "verifyStringEqual",
-            "value1": "String1", "acol1": "col-lg-3",
-            "value2": "String2", "acol2": "col-lg-3",
-            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringDifferent",
-            "value1": "String1", "acol1": "col-lg-3",
-            "value2": "String2", "acol2": "col-lg-3",
-            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringGreater",
-            "value1": "String1 (ex: ZZZ)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : AAA)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringMinor",
-            "value1": "String1 (ex: AAA)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : ZZZ)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringContains",
-            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : ot)", "acol2": "col-lg-2",
-            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyStringNotContains",
-            "value1": "String1 (ex : toto)", "acol1": "col-lg-4",
-            "value2": "String2 (ex : zot)", "acol2": "col-lg-2",
-            "value3": "[opt] case sensitive (Y/N)", "acol3": "col-lg-2",
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericEquals",
-            "value1": "Integer1", "acol1": "col-lg-4",
-            "value2": "Integer2", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericDifferent",
-            "value1": "Integer1", "acol1": "col-lg-4",
-            "value2": "Integer2", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericGreater",
-            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericGreaterOrEqual",
-            "value1": "Integer1 (ex : 20)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 10)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericMinor",
-            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyNumericMinorOrEqual",
-            "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
-            "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementPresent",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotPresent",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementVisible",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotVisible",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementEquals",
-            "value1": "XPath of the element", "acol1": "col-lg-4",
-            "value2": "Expected element", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementDifferent",
-            "value1": "XPath of the element", "acol1": "col-lg-4",
-            "value2": "Not Expected element", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementInElement",
-            "value1": "Master Element", "acol1": "col-lg-4",
-            "value2": "Sub Element", "acol2": "col-lg-4",
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementClickable",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {
-            "type": "verifyElementNotClickable",
-            "value1": "Element (ex : data-cerberus=fieldToto)", "acol1": "col-lg-8",
-            "value2": null,
-            "value3": null,
-            "fatal": ""
-        },
-        {"type": "verifyElementTextEqual", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-5", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyUrl", "value2": null, "acol2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Crop values in pixels (left,right,top,bottom)", "acol1": "col-lg-8", "value3": null, "fatal": null},
-        {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
-    ]
-};
-
-$.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function () {
+$.when($.getScript("js/global/global.js")
+        , $.getScript("js/global/autocomplete.js")
+        , $.getScript("js/testcase/action.js")
+        , $.getScript("js/testcase/property.js")
+        , $.getScript("js/testcase/condition.js")
+        , $.getScript("js/testcase/control.js")
+        ).then(function () {
     $(document).ready(function () {
         loadedPropertiesNumber = -1;
         initModalDataLib();
@@ -2516,7 +1467,8 @@ function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrar
     if (stepIndex !== undefined) {
         var find = false;
         for (var i = 0; i < steps.length; i++) {
-            if (steps[i].sort === stepIndex) {
+            // Use == in stead of ===
+            if (steps[i].sort == stepIndex) {
                 find = true;
                 $(steps[i].html[0]).click();
             }
@@ -2959,6 +1911,7 @@ Step.prototype.show = function () {
         $("#addAction").prop("disabled", true);
         $("#addActionBottomBtn").hide();
         $("#isUseStep").show();
+        $("#stepConditionOption").prop("disabled", true);
     } else {
         $("#isLib").show();
         $("#UseStepRow").html("").hide();
@@ -2966,6 +1919,7 @@ Step.prototype.show = function () {
         $("#addAction").prop("disabled", false);
         $("#addActionBottomBtn").show();
         $("#isUseStep").hide();
+        $("#stepConditionOption").prop("disabled", false);
     }
 
     if (object.toDelete) {
@@ -3010,6 +1964,32 @@ Step.prototype.show = function () {
     });
 
 
+    $("#stepConditionOption").removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(object.conditionOptions));
+    $("#stepConditionOption").attr("title", getTitleFromOptionsActive(object.conditionOptions));
+
+    $("#stepConditionOption").off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+        let curButton = $(this);
+
+        initOptionModal();
+
+        setOptionModal(object.conditionOptions);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(object.conditionOptions) !== JSON.stringify(newOpts)) {
+                $(curButton).removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(newOpts));
+                $(curButton).attr("title", getTitleFromOptionsActive(newOpts));
+                $(curButton).val(newOpts);
+                object.conditionOptions = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
     object.stepActionContainer.show();
     $("#stepDescription").unbind("change").change(function () {
         setModif(true);
@@ -3043,7 +2023,7 @@ Step.prototype.show = function () {
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
-    $("#stepHeader").show()
+    $("#stepHeader").show();
     setPlaceholderCondition($("#stepConditionOperator").parent().parent(".row"));
 
     // Disable fields if Permission not allowing.
@@ -3414,6 +2394,64 @@ Action.prototype.generateContent = function () {
         $(actions).parent().parent().find(".input-group-btn").remove();
     });
 
+
+
+    var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.conditionOptions) + "' type='button'></button>")
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
+            .append("<span class='glyphicon glyphicon-list'></span>");
+    conditionOptions.val(JSON.stringify(this.conditionOptions));
+    conditionOptions.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+        let curButton = $(this);
+
+        let valObj = JSON.parse(conditionOptions.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.conditionOptions) !== JSON.stringify(newOpts)) {
+                $(curButton).removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(newOpts));
+                $(curButton).attr("title", getTitleFromOptionsActive(newOpts));
+                $(curButton).val(newOpts);
+                obj.conditionOptions = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+    var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.options) + "' type='button'></button>")
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
+            .append("<span class='glyphicon glyphicon-list'></span>");
+    options.val(JSON.stringify(this.options));
+    options.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+        let curButton = $(this);
+
+        let valObj = JSON.parse(options.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.options) !== JSON.stringify(newOpts)) {
+                $(curButton).removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(newOpts));
+                $(curButton).attr("title", getTitleFromOptionsActive(newOpts));
+                $(curButton).val(newOpts);
+                obj.options = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
     forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, true).css("width", "100%");
     if (this.isFatal) {
         forceExeStatusList.val("true");
@@ -3446,7 +2484,7 @@ Action.prototype.generateContent = function () {
     });
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions).append(options));
     secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
@@ -3454,7 +2492,7 @@ Action.prototype.generateContent = function () {
      */
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator).append(conditionOptions));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval3));
@@ -3473,6 +2511,8 @@ Action.prototype.generateContent = function () {
         actionconditionval1.prop("readonly", true);
         actionconditionval2.prop("readonly", true);
         actionconditionval3.prop("readonly", true);
+        conditionOptions.prop("disabled", "disabled");
+        options.prop("disabled", "disabled");
     }
 
     content.append(firstRow);
@@ -3482,6 +2522,87 @@ Action.prototype.generateContent = function () {
     return content;
 };
 
+function getOptionValuesFromModal() {
+    let newOpts = [];
+    let opt1 = {
+        "act": $("#timeoutAct").prop("checked"),
+        "value": $("#timeoutVal").val(),
+        "option": "timeout"
+    };
+    newOpts.push(opt1);
+    opt1 = {
+        "act": $("#minSimilarityAct").prop("checked"),
+        "value": $("#minSimilarityVal").val(),
+        "option": "minSimilarity"
+    };
+    newOpts.push(opt1);
+    opt1 = {
+        "act": $("#highlightAct").prop("checked"),
+        "value": $("#highlightVal").val(),
+        "option": "highlightElement"
+    };
+    newOpts.push(opt1);
+    return newOpts;
+}
+
+function initOptionModal() {
+    $("#timeoutVal").val("");
+    $("#timeoutAct").prop("checked", false);
+    $("#highlightVal").val("");
+    $("#highlightAct").prop("checked", false);
+    $("#minSimilarityVal").val("");
+    $("#minSimilarityAct").prop("checked", false);
+}
+
+function setOptionModal(valObj) {
+    for (var item in valObj) {
+        switch (valObj[item].option) {
+            case "timeout":
+                $("#timeoutVal").val(valObj[item].value);
+                $("#timeoutAct").prop("checked", valObj[item].act);
+                break;
+            case "highlightElement":
+                $("#highlightVal").val(valObj[item].value);
+                $("#highlightAct").prop("checked", valObj[item].act);
+
+                break;
+            case "minSimilarity":
+                $("#minSimilarityVal").val(valObj[item].value);
+                $("#minSimilarityAct").prop("checked", valObj[item].act);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+function hasOneOptionActive(options) {
+    for (var item in options) {
+        if (options[item].act)
+            return true;
+    }
+    return false;
+}
+
+function getClassFromOptions(options) {
+    if (hasOneOptionActive(options)) {
+        return "btn-primary";
+    } else {
+        return "btn-default";
+    }
+}
+
+function getTitleFromOptionsActive(options) {
+    let result = "";
+    for (var item in options) {
+        if (options[item].act)
+            result = result + options[item].option + "=" + options[item].value + " / ";
+    }
+    if (result === "") {
+        return "Configure Options";
+    }
+    return result.substring(0, result.length - 3);
+}
 
 function cleanErratum(oldValue) {
     if (oldValue.startsWith('erratum=')) {
@@ -3787,6 +2908,64 @@ Control.prototype.generateContent = function () {
         setPlaceholderControl($(this).parents(".control"));
     });
 
+
+    var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.conditionOptions) + "' type='button'></button>")
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
+            .append("<span class='glyphicon glyphicon-list'></span>");
+    conditionOptions.val(JSON.stringify(this.conditionOptions));
+    conditionOptions.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+        let curButton = $(this);
+
+        let valObj = JSON.parse(conditionOptions.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.conditionOptions) !== JSON.stringify(newOpts)) {
+                $(curButton).removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(newOpts));
+                $(curButton).attr("title", getTitleFromOptionsActive(newOpts));
+                $(curButton).val(newOpts);
+                obj.conditionOptions = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+    var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.options) + "' type='button'></button>")
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
+            .append("<span class='glyphicon glyphicon-list'></span>");
+    options.val(JSON.stringify(this.options));
+    options.off("click").on("click", function () {
+
+        $("#modalOptions").find("h5").text("Overwride Option Values");
+        let curButton = $(this);
+
+        let valObj = JSON.parse(options.val());
+        initOptionModal();
+
+        setOptionModal(valObj);
+
+        $("#optionsSave").off("click");
+        $("#optionsSave").click(function () {
+            let newOpts = getOptionValuesFromModal();
+            if (JSON.stringify(obj.options) !== JSON.stringify(newOpts)) {
+                $(curButton).removeClass("btn-default").removeClass("btn-primary").addClass(getClassFromOptions(newOpts));
+                $(curButton).attr("title", getTitleFromOptionsActive(newOpts));
+                $(curButton).val(newOpts);
+                obj.options = newOpts;
+                setModif(true);
+            }
+        });
+
+    });
+
+
     controlValue1Field.val(this.value1);
     controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
@@ -3822,7 +3001,7 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
 
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controls).append(options));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(controlValue3Field));
@@ -3832,7 +3011,7 @@ Control.prototype.generateContent = function () {
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval3));
     thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoperator).append(conditionOptions));
 
 
     if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
@@ -3846,6 +3025,8 @@ Control.prototype.generateContent = function () {
         controlconditionval1.prop("readonly", true);
         controlconditionval2.prop("readonly", true);
         controlconditionval3.prop("readonly", true);
+        conditionOptions.prop("disabled", "disabled");
+        options.prop("disabled", "disabled");
     }
 
     content.append(firstRow);
@@ -4037,7 +3218,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             success: function (data) {
                                 var dataContent = data.contentTable;
                                 if ($(htmlElement).parent().find(".v1").val() !== undefined) {
-                                    if (dataContent !== undefined) {
+                                    if (dataContent.hasPermissions !== undefined) {
                                         var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
         								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
@@ -4065,7 +3246,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                         viewEntry.find("button").off("click").on("click", function () {
                             let firstRow = $('<p style="text-align:center" > Type : ' + data[$(htmlElement).val()].type + '</p>');
                             let secondRow = $('<p style="text-align:center"> Value : ' + data[$(htmlElement).val()].value + '</p>');
-                            $("#modalProperty").find("h5").text("test");
+                            $("#modalProperty").find("h5").text("Property definition");
                             $("#modalProperty").find("#firstRowProperty").find("p").remove();
                             $("#modalProperty").find("#secondRowProperty").find("p").remove();
                             $("#modalProperty").find("#firstRowProperty").append(firstRow);

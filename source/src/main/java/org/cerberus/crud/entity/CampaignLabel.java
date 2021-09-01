@@ -130,7 +130,7 @@ public class CampaignLabel {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CampaignLabel other = (CampaignLabel) obj;
+        final CampaignLabel other = obj;
         if ((this.LabelId == null) ? (other.LabelId != null) : !this.LabelId.equals(other.LabelId)) {
             return false;
         }

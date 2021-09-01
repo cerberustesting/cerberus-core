@@ -271,7 +271,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject countryList = new JSONObject();
         try {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            for (Invariant country : (List<Invariant>) invariantService.readByIdName("COUNTRY")) {
+            for (Invariant country : invariantService.readByIdName("COUNTRY")) {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException | CerberusException ex) {
@@ -407,7 +407,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * based on the key Test_TestCase
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
-                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
+                        for (TestCaseLabel label : testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
                                 
@@ -622,7 +622,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     
     private JSONObject generateTestFolderChart(List<TestCaseExecution> testCaseExecutions, String tag, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
         JSONObject jsonResult = new JSONObject();
-        Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
+        Map<String, JSONObject> axisMap = new HashMap<>();
         String globalStart = "";
         String globalEnd = "";
         long globalStartL = 0;
@@ -720,7 +720,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         boolean robotDecli = request.getParameter("robotDecli") != null || !splitStats;
         boolean app = request.getParameter("app") != null || !splitStats;
         
-        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on")
@@ -864,7 +864,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         if (splitStats) {
             JSONArray dataArray = new JSONArray();
             //sort keys
-            TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+            TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<>(summaryMap);
             for (String key : sortedKeys.keySet()) {
                 SummaryStatisticsDTO sumStats = summaryMap.get(key);
                 //percentage values
@@ -909,9 +909,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     
     private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
         
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(tag));
-        return result;
+        return tag.toJson();
     }
     
     private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) throws JSONException {
@@ -930,7 +928,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             
             HashMap<Integer, TreeNode> inputList = new HashMap<>();
             
-            for (Label label : (List<Label>) resp.getDataList()) {
+            for (Label label : resp.getDataList()) {
                 
                 String text = "";
                 
@@ -973,7 +971,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
             
             HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap<>();
-            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
+            for (TestCaseLabel label : testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))
                         || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()))) {

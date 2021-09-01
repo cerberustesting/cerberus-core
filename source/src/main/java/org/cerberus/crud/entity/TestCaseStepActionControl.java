@@ -33,9 +33,8 @@ import org.json.JSONObject;
  */
 public class TestCaseStepActionControl {
 
-    
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
-    
+
     private String test;
     private String testcase;
     private int stepId;
@@ -325,7 +324,7 @@ public class TestCaseStepActionControl {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public boolean hasSameKey(TestCaseStepActionControl obj) {
         if (obj == null) {
             return false;
@@ -333,7 +332,7 @@ public class TestCaseStepActionControl {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStepActionControl other = (TestCaseStepActionControl) obj;
+        final TestCaseStepActionControl other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
@@ -438,11 +437,14 @@ public class TestCaseStepActionControl {
         if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
             return false;
         }
+        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
+            return false;
+        }
+        if (!Objects.equals(this.options, other.options)) {
+            return false;
+        }
         return true;
     }
-
-
-
 
     @Override
     public String toString() {
@@ -470,6 +472,36 @@ public class TestCaseStepActionControl {
             result.put("isFatal", this.isFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
             result.put("test", this.getTest());
+            result.put("testcase", this.getTestcase());
+
+        } catch (JSONException ex) {
+            LOG.warn(ex);
+        }
+        return result;
+    }
+
+    public JSONObject toJsonV001() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("JSONVersion", "001");
+            result.put("sort", this.getSort());
+            result.put("stepId", this.getStepId());
+            result.put("actionId", this.getActionId());
+            result.put("controlId", this.getControlId());
+            result.put("description", this.getDescription());
+            result.put("control", this.getControl());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
+            result.put("value3", this.getValue3());
+            result.put("options", this.getOptions());
+            result.put("conditionOperator", this.getConditionOperator());
+            result.put("conditionValue1", this.getConditionValue1());
+            result.put("conditionValue2", this.getConditionValue2());
+            result.put("conditionValue3", this.getConditionValue3());
+            result.put("conditionOptions", this.getConditionOptions());
+            result.put("isFatal", this.isFatal());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("testFolder", this.getTest());
             result.put("testcase", this.getTestcase());
 
         } catch (JSONException ex) {

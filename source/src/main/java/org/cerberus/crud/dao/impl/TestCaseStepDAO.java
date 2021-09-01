@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
-import org.cerberus.crud.entity.Test;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -93,7 +92,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(2, testcase);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));
@@ -222,7 +221,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (tcs.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId`=? ");
         }
-        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND testcase = ? AND stepId = ?");
+        query.append(",`isLibraryStep` = ?, `Sort` = ?, `loop` = ?, `conditionOperator` = ?, `conditionOptions` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `isExecutionForced` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND testcase = ? AND stepId = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -249,6 +248,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(i++, tcs.getSort());
                 preStat.setString(i++, tcs.getLoop() == null ? "" : tcs.getLoop());
                 preStat.setString(i++, tcs.getConditionOperator() == null ? "" : tcs.getConditionOperator());
+                preStat.setString(i++, tcs.getConditionOptions() == null ? "[]" : tcs.getConditionOptions().toString());
                 preStat.setString(i++, tcs.getConditionValue1() == null ? "" : tcs.getConditionValue1());
                 preStat.setString(i++, tcs.getConditionValue2() == null ? "" : tcs.getConditionValue2());
                 preStat.setString(i++, tcs.getConditionValue3() == null ? "" : tcs.getConditionValue3());
@@ -285,7 +285,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testcase, int stepId) throws CerberusException {
-        List<TestCaseStep> list = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> list = new ArrayList<>();
         final String query = "SELECT * FROM testcasestep WHERE isUsingLibraryStep IS true AND libraryStepTest = ? AND libraryStepTestcase = ? AND libraryStepStepId = ?";
 
         // Debug message on SQL.
@@ -346,7 +346,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(2, testcase);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(loadFromResultSet(resultSet));
@@ -419,7 +419,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(1, application);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("libraryStepTest");
@@ -475,7 +475,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(1, system);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
@@ -549,7 +549,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 }
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStep>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         String t = resultSet.getString("test");
@@ -672,9 +672,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.*, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
-                + "FROM testcasestep tcs LEFT JOIN testcasestep tcs1 "
-                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId WHERE tcs.test = ? AND tcs.testcase = ? "
+        query.append("SELECT tcs.*, tcs2.sort as libraryStepSort, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL THEN 0 ELSE 1 END as isStepInUseByOtherTestCase "
+                + "FROM testcasestep tcs "
+                + "LEFT JOIN testcasestep tcs1 "
+                + "ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId "
+                + "LEFT OUTER JOIN testcasestep tcs2 "
+                + "ON tcs2.Test = tcs.libraryStepTest AND tcs2.Testcase = tcs.libraryStepTestcase AND tcs2.stepId = tcs.libraryStepStepId "
+                + "WHERE tcs.test = ? AND tcs.testcase = ? "
                 + "GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
 
         // Debug message on SQL.
@@ -767,7 +771,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         AnswerList<TestCaseStep> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestep tcs WHERE tcs.isUsingLibraryStep = true AND tcs.libraryStepTest = ? AND tcs.libraryStepTestcase = ? AND tcs.libraryStepStepId = ?");
 
@@ -864,8 +868,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (testCaseStep.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId` ");
         }
-        query.append(", `isLibraryStep`, `loop`, `conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `isExecutionForced`, `usrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?");
+        query.append(", `isLibraryStep`, `loop`, `conditionOperator`, `conditionOptions`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `isExecutionForced`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?");
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",?");
         }
@@ -907,6 +911,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             preStat.setBoolean(i++, testCaseStep.isLibraryStep());
             preStat.setString(i++, testCaseStep.getLoop() == null ? "" : testCaseStep.getLoop());
             preStat.setString(i++, testCaseStep.getConditionOperator() == null ? "" : testCaseStep.getConditionOperator());
+            preStat.setString(i++, testCaseStep.getConditionOptions() == null ? "[]" : testCaseStep.getConditionOptions().toString());
             preStat.setString(i++, testCaseStep.getConditionValue1() == null ? "" : testCaseStep.getConditionValue1());
             preStat.setString(i++, testCaseStep.getConditionValue2() == null ? "" : testCaseStep.getConditionValue2());
             preStat.setString(i++, testCaseStep.getConditionValue3() == null ? "" : testCaseStep.getConditionValue3());
@@ -917,6 +922,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             // Set the final message
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                     .resolveDescription("OPERATION", "CREATE");
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } catch (Exception e) {
             LOG.warn("Unable to create TestCaseStep: " + e.getMessage(), e);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -958,15 +967,23 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, stepId, sort, loop, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, description, isUsingLibraryStep, libraryStepTest, libraryStepTestcase, libraryStepStepId,
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
 
-        LOG.debug(tcs.toJson());
-
         try {
-            resultSet.findColumn("isStepInUseByOtherTestCase");
-            boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1 ? true : false;
+//            resultSet.findColumn("isStepInUseByOtherTestCase");
+            boolean isStepInUseByOtherTestCase = resultSet.getInt("isStepInUseByOtherTestCase") == 1;
             tcs.setIsStepInUseByOtherTestcase(isStepInUseByOtherTestCase);
         } catch (SQLException sqlex) {
             // That means there is not this column, so nothing to do
         }
+
+        try {
+//            resultSet.findColumn("isStepInUseByOtherTestCase");
+            int libraryStepSort = resultSet.getInt("libraryStepSort");
+            tcs.setLibraryStepSort(libraryStepSort);
+        } catch (SQLException sqlex) {
+            // That means there is not this column, so nothing to do
+        }
+
+        LOG.debug(tcs.toJson());
 
         return tcs;
 

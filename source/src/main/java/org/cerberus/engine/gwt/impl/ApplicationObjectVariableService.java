@@ -131,7 +131,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
      * @return a list of properties contained into the given {@link String}
      */
     private List<String> getApplicationObjectsStringListFromString(String str) {
-        List<String> properties = new ArrayList<String>();
+        List<String> properties = new ArrayList<>();
         if (str == null) {
             return properties;
         }

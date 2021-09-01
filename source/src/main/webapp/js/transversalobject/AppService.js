@@ -583,8 +583,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
         formEdit.find("#application").prop("readonly", "readonly");
         formEdit.find("#type").prop("disabled", "disabled");
+        formEdit.find("#isFollowRedir").prop("disabled", "disabled");
         formEdit.find("#method").prop("disabled", "disabled");
+        formEdit.find("#addContent").prop("disabled", "disabled");
+        formEdit.find("#addHeader").prop("disabled", "disabled");
         formEdit.find("#servicePath").prop("readonly", true);
+        formEdit.find("#group").prop("readonly", true);
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
@@ -599,8 +603,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     } else {
         formEdit.find("#application").removeProp("readonly");
         formEdit.find("#type").removeProp("disabled");
+        formEdit.find("#isFollowRedir").removeProp("disabled");
         formEdit.find("#method").removeProp("disabled");
+        formEdit.find("#addContent").removeProp("disabled");
+        formEdit.find("#addHeader").removeProp("disabled");
         formEdit.find("#servicePath").prop("readonly", false);
+        formEdit.find("#group").prop("readonly", false);
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");

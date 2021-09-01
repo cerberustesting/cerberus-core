@@ -216,7 +216,7 @@ td
     margin-bottom: 20px;
 }
 /**************************************ALERT messages ****************************/
-#messagesArea { position: fixed; top: 40px; left: 0; right: 0; border: none; z-index: 50;}
+#messagesArea { position: fixed; top: 40px; left: 0; right: 0; border: none; z-index: 300;}
 
 /**************************************Page layout ****************************/
 

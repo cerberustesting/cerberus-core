@@ -97,7 +97,7 @@ public class UpdateInvariant extends HttpServlet {
         Integer sort = 10;
         boolean sort_error = false;
         try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+            if (request.getParameter("sort") != null && !request.getParameter("sort").isEmpty()) {
                 sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {
@@ -125,6 +125,27 @@ public class UpdateInvariant extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
             finalAnswer.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && StringUtil.isNullOrEmpty(value)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value is empty !! COUNTRY, ENVIRONMENT or SYSTEM invariant can't have empty value. "));
+            finalAnswer.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && value.length() > 45) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value is too large !! COUNTRY, ENVIRONMENT or SYSTEM invariant can't have more than 45 characters. "));
+            finalAnswer.setResultMessage(msg);
+        } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
+                && (!value.matches("[a-zA-Z0-9-_]+"))) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Value contains special characters !! COUNTRY, ENVIRONMENT or SYSTEM invariant only allow letter, digits, - or _. "));
+            finalAnswer.setResultMessage(msg);
         } else if (!userHasPermissions) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
@@ -144,7 +165,7 @@ public class UpdateInvariant extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 Invariant invariantData = (Invariant) resp.getItem();
@@ -153,7 +174,7 @@ public class UpdateInvariant extends HttpServlet {
                      * Object could not be found. We stop here and report the
                      * error.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
                 } else {
                     if (invariantService.hasPermissionsUpdate(invariantData, request)) {
@@ -173,7 +194,7 @@ public class UpdateInvariant extends HttpServlet {
                         invariantData.setGp9(gp9);
 
                         ans = invariantService.update(oriId, oriValue, invariantData);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
@@ -188,7 +209,7 @@ public class UpdateInvariant extends HttpServlet {
                                 .replace("%OPERATION%", "Update")
                                 .replace("%REASON%", "The Invariant is not Public!"));
                         ans.setResultMessage(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
                 }
             }

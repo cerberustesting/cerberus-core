@@ -38,6 +38,8 @@ public class Session {
     private String nodeHost;
     private String nodePort;
 
+    private Integer nodeProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API.
+    
     private boolean started;
     private WebDriver driver;
     private AppiumDriver appiumDriver;
@@ -71,6 +73,14 @@ public class Session {
     private MutableCapabilities desiredCapabilities;
 
     private JSONArray consoleLogs;
+
+    public Integer getNodeProxyPort() {
+        return nodeProxyPort;
+    }
+
+    public void setNodeProxyPort(Integer nodeProxyPort) {
+        this.nodeProxyPort = nodeProxyPort;
+    }
 
     public Integer getCerberus_selenium_highlightElement_default() {
         return cerberus_selenium_highlightElement_default;

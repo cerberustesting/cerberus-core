@@ -74,7 +74,7 @@ import org.json.JSONObject;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueueV002", urlPatterns = {"/AddToExecutionQueueV002"})
+@WebServlet(name = "AddToExecutionQueueV002", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueueV002"})
 public class AddToExecutionQueueV002 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(AddToExecutionQueueV002.class);
@@ -201,7 +201,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
             JSONArray countryJSONArray = new JSONArray(countries);
             JSONArray envJSONArray = new JSONArray(environments);
 
-            List<String> browsers = new ArrayList<>();;
+            List<String> browsers = new ArrayList<>();
             browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), browsers, charset);
 
             // Execution parameters.
@@ -225,7 +225,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
             int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
             String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
             int priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
-            if (manualExecution.equals("")) {
+            if (manualExecution.isEmpty()) {
                 manualExecution = DEFAULT_VALUE_MANUAL_EXECUTION;
             }
             String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
@@ -377,7 +377,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
 
                 // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
                 Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
-                List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
+                List<TestCaseExecutionQueue> toInserts = new ArrayList<>();
                 try {
                     HashMap<String, CountryEnvParam> envMap = new HashMap<>();
                     LOG.debug("Loading all environments.");
@@ -446,12 +446,12 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 }
                                             } else {
                                                 LOG.debug("Env does not exist or is not active.");
-                                                nbenvnotexist = nbenvnotexist + nbbrowser;
+                                                nbenvnotexist += nbbrowser;
                                             }
 
                                         } else {
                                             LOG.debug("Env group not active for testcase : " + environment);
-                                            nbtestcaseenvgroupnotallowed = nbtestcaseenvgroupnotallowed + nbbrowser;
+                                            nbtestcaseenvgroupnotallowed += nbbrowser;
                                         }
                                     }
                                 } else {
@@ -460,7 +460,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                             }
                         } else {
                             LOG.debug("TestCase not Active.");
-                            nbtestcasenotactive = nbtestcasenotactive + (nbcountries * nbenv * nbbrowser);
+                            nbtestcasenotactive += (nbcountries * nbenv * nbbrowser);
                         }
                     }
                 } catch (CerberusException ex) {
@@ -468,7 +468,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                 }
 
                 // Part 2: Try to insert all these test cases to the execution queue.
-                List<String> errorMessages = new ArrayList<String>();
+                List<String> errorMessages = new ArrayList<>();
                 for (TestCaseExecutionQueue toInsert : toInserts) {
                     try {
                         inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));

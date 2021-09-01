@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;

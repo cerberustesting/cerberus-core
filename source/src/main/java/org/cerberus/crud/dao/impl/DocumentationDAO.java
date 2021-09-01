@@ -98,7 +98,7 @@ public class DocumentationDAO implements IDocumentationDAO {
 
     @Override
     public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField, String lang) {
-        List<Documentation> result = new ArrayList<Documentation>();
+        List<Documentation> result = new ArrayList<>();
         final String query = "SELECT DocValue, DocDesc, DocLabel, DocAnchor FROM documentation where DocTable = ? and docfield = ? and Lang = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
@@ -146,7 +146,7 @@ public class DocumentationDAO implements IDocumentationDAO {
 
     @Override
     public List<Documentation> findDocumentationsWithEmptyValueAndNotEmptyDescription(String docTable, String docField, String lang) {
-        List<Documentation> result = new ArrayList<Documentation>();
+        List<Documentation> result = new ArrayList<>();
         final String query = "SELECT DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and length(docvalue)=0 and length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
@@ -251,7 +251,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     @Override
     public List<Documentation> findAll(String lang) {
 
-        List<Documentation> result = new ArrayList<Documentation>();
+        List<Documentation> result = new ArrayList<>();
         final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -298,7 +298,7 @@ public class DocumentationDAO implements IDocumentationDAO {
 
     @Override
     public List<Documentation> findAllWithEmptyDocValue(String lang) {
-        List<Documentation> result = new ArrayList<Documentation>();
+        List<Documentation> result = new ArrayList<>();
         final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
 
         Connection connection = this.databaseSpring.connect();

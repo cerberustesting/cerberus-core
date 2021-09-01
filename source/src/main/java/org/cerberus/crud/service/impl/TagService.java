@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITagDAO;
+import org.cerberus.crud.entity.EventHook;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTag;
@@ -38,6 +39,7 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.event.IEventService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.service.notification.INotificationService;
@@ -76,6 +78,8 @@ public class TagService implements ITagService {
     private ILambdaTestService lambdatestService;
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
+    @Autowired
+    private IEventService eventService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -169,11 +173,12 @@ public class TagService implements ITagService {
         try {
             Tag mytag = convert(readByKey(tag));
 
-            // Total execution.
-            mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
-
             // End of queue is now.
             mytag.setDateEndQueue(new Timestamp(new Date().getTime()));
+            tagDAO.updateDateEndQueue(mytag);
+
+            // Total execution.
+            mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
 
             // All the rest of the data are coming from ResultCI Servlet.
             JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign());
@@ -205,6 +210,14 @@ public class TagService implements ITagService {
             mytag.setNbCA(jsonResponse.getInt("status_CA_nbOfExecution"));
             mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
 
+            if (!StringUtil.isNullOrEmpty(mytag.getCampaign())) {
+                // We get the campaig here and potencially trigger the event.
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END, mytag, null, null, null);
+                if (mytag.getCiResult().equalsIgnoreCase("KO")) {
+                    eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO, mytag, null, null, null);
+                }
+            }
+
             return tagDAO.updateDateEndQueue(mytag);
 
         } catch (CerberusException ex) {
@@ -234,12 +247,12 @@ public class TagService implements ITagService {
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            LOG.debug("toto service : " + reqEnvironmentList.toString());
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", user, null, user, null));
+            Tag newTag = factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", user, null, user, null);
+            Answer ans = tagDAO.create(newTag);
             // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isNullOrEmpty(campaign)) {
-                notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_START, newTag, null, null, null);
             }
             return ans;
         } else {
@@ -286,7 +299,7 @@ public class TagService implements ITagService {
     public Tag convert(AnswerItem<Tag> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (Tag) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -295,7 +308,7 @@ public class TagService implements ITagService {
     public List<Tag> convert(AnswerList<Tag> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<Tag>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -327,10 +340,6 @@ public class TagService implements ITagService {
                         if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
                             LOG.debug("No More executions (in queue or running) on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
                             this.updateEndOfQueueData(tag);
-                            if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
-                                // We get the campaig here and potencially send the notification.
-                                notificationService.generateAndSendNotifyEndTagExecution(tag, currentTag.getCampaign());
-                            }
                         } else {
                             LOG.debug("Still executions in queue on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
                         }
@@ -344,6 +353,60 @@ public class TagService implements ITagService {
             LOG.error(e, e);
         }
 
+    }
+
+    @Override
+    public String formatResult(Tag tag) {
+        StringBuilder result = new StringBuilder();
+        result.append(tag.getNbExeUsefull());
+        result.append(" Execution(s) - ");
+        if (tag.getNbOK() > 0) {
+            result.append(tag.getNbOK());
+            result.append(" OK - ");
+        }
+        if (tag.getNbKO() > 0) {
+            result.append(tag.getNbKO());
+            result.append(" KO - ");
+        }
+        if (tag.getNbFA() > 0) {
+            result.append(tag.getNbFA());
+            result.append(" FA - ");
+        }
+        if (tag.getNbNA() > 0) {
+            result.append(tag.getNbNA());
+            result.append(" NA - ");
+        }
+        if (tag.getNbNE() > 0) {
+            result.append(tag.getNbNE());
+            result.append(" NE - ");
+        }
+        if (tag.getNbWE() > 0) {
+            result.append(tag.getNbWE());
+            result.append(" WE - ");
+        }
+        if (tag.getNbPE() > 0) {
+            result.append(tag.getNbPE());
+            result.append(" PE - ");
+        }
+        if (tag.getNbCA() > 0) {
+            result.append(tag.getNbCA());
+            result.append(" CA - ");
+        }
+        if (tag.getNbQU() > 0) {
+            result.append(tag.getNbQU());
+            result.append(" QU - ");
+        }
+        if (tag.getNbQE() > 0) {
+            result.append(tag.getNbQE());
+            result.append(" QE - ");
+        }
+        result.delete(result.length() - 3, result.length());
+        return result.toString();
+    }
+
+    JSONObject getJSONEnriched() {
+        JSONObject result = new JSONObject();
+        return result;
     }
 
 }

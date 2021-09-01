@@ -19,8 +19,6 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -91,7 +89,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -311,7 +309,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.index : " + String.valueOf(object.getIndex()));
         }
 
-        RequestDbUtils.executeUpdate(databaseSpring, query.toString(),
+        RequestDbUtils.executeUpdate(databaseSpring, query,
                 ps -> {
                     int i = 1;
                     ps.setLong(i++, object.getId());

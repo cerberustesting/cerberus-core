@@ -29,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -303,7 +302,7 @@ public class InvariantService implements IInvariantService {
     public Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (Invariant) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -312,7 +311,7 @@ public class InvariantService implements IInvariantService {
     public List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<Invariant>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

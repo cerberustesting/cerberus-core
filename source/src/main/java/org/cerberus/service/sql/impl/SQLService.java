@@ -208,7 +208,7 @@ public class SQLService implements ISQLService {
             try {
                 LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql.replaceAll("(\\r|\\n)", " ") + "'");
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String>();
+                list = new ArrayList<>();
                 try {
                     while ((resultSet.next()) && (nbFetch < maxSecurityFetch)) {
                         list.add(resultSet.getString(1));
@@ -431,11 +431,11 @@ public class SQLService implements ISQLService {
 
                 int nrColumns = resultSet.getMetaData().getColumnCount();
 
-                list = new ArrayList<HashMap<String, String>>();
+                list = new ArrayList<>();
                 try {
                     while ((resultSet.next()) && (nbFetch < maxFetch)) {
                         nbColMatch = 0;
-                        HashMap<String, String> row = new HashMap<String, String>();
+                        HashMap<String, String> row = new HashMap<>();
 
                         for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
                             String column = entry.getValue();

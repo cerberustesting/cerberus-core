@@ -170,7 +170,7 @@ public class UserGroupDAO implements IUserGroupDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<UserGroup>();
+                    list = new ArrayList<>();
                     while (resultSet.next()) {
                         UserGroup group = factoryGroup.create(resultSet.getString("groupname"));
                         list.add(group);

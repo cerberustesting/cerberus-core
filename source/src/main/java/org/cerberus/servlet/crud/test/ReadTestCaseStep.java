@@ -19,10 +19,9 @@
  */
 package org.cerberus.servlet.crud.test;
 
-import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,13 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.service.ITestCaseStepActionControlService;
-import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
-import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.crud.service.impl.TestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -53,6 +46,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author FNogueira
  */
+@WebServlet(name = "ReadTestCaseStep", urlPatterns = {"/ReadTestCaseStep"})
 public class ReadTestCaseStep extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseStep.class);

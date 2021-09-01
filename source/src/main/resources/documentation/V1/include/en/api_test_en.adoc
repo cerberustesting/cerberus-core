@@ -15,14 +15,11 @@ This is the APi that can be used on the test perimeter (getting testcase informa
 
 **/AddToExecutionQueueV003**
 
-| /RunTestCase | Trigger a single testcase excution either in a synchronous or asynchronous way.
-| /RunTestCase
+| /GetTagDetails
+| Provide all the information about a tag (with executions)
+| /GetTagDetailsV001
 
-/RunTestCaseV001
-
-**/RunTestCaseV002**
-
-| /GetTagExecutions | TBD. | **/GetTagExecutions**
+**/GetTagDetailsV002**
 
 | /GetTestCases 
 | Provide a list of test cases filtered by some criteria. 
@@ -44,6 +41,15 @@ v| /ResultCI
 /ResultCIV003
 
 **/ResultCIV004**
+
+| *DEPRECATED* /RunTestCase | Trigger a single testcase excution either in a synchronous or asynchronous way.
+| /RunTestCase
+
+/RunTestCaseV001
+
+**/RunTestCaseV002**
+
+| *DEPRECATED* /GetTagExecutions | TBD. | **/GetTagExecutions**
 
 |=== 
 

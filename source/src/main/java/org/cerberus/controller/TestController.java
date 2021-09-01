@@ -200,7 +200,7 @@ public class TestController {
             if (answerTest.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if the service returns an OK message then we can get the item and convert it to JSONformat
                 Gson gson = new Gson();
-                Test testObj = (Test) answerTest.getItem();
+                Test testObj = answerTest.getItem();
                 object.put("contentTable", new JSONObject(gson.toJson(testObj)));
             }
 
@@ -235,7 +235,7 @@ public class TestController {
 
             JSONArray jsonArray = new JSONArray();
             if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (Test test : (List<Test>) testList.getDataList()) {
+                for (Test test : testList.getDataList()) {
                     Gson gson = new Gson();
                     jsonArray.put(new JSONObject(gson.toJson(test)).put("hasPermissions", userHasPermissions));
                 }
@@ -277,7 +277,7 @@ public class TestController {
 
             JSONArray jsonArray = new JSONArray();
             if (testList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (Test test : (List<Test>) testList.getDataList()) {
+                for (Test test : testList.getDataList()) {
                     Gson gson = new Gson();
                     jsonArray.put(new JSONObject(gson.toJson(test)));
                 }

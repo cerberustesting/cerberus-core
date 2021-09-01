@@ -39,7 +39,6 @@ import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -374,7 +373,6 @@ public class TestDAO implements ITestDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `isActive` like ?");
             searchSQL.append(" or `datecreated` like ?) ");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -408,7 +406,6 @@ public class TestDAO implements ITestDAO {
             try {
                 int i = 1;
                 if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -494,7 +491,7 @@ public class TestDAO implements ITestDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

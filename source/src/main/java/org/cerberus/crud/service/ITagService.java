@@ -179,7 +179,8 @@ public interface ITagService {
     /**
      * will enrich the tag with any external cloud service provider buildId.
      *
-     * @param provider cloud provider taken from TestCaseExecution.ROBOTPROVIDER_* value 
+     * @param provider cloud provider taken from
+     * TestCaseExecution.ROBOTPROVIDER_* value
      * @param system
      * @param tagS
      * @param user
@@ -234,4 +235,13 @@ public interface ITagService {
      */
     void manageCampaignEndOfExecution(String tag) throws CerberusException;
 
+    /**
+     * Format in a nice way the various Control Status values. <br>
+     * ex : 10 Executions(s) - 5 KO - 2 FA - 3 NE<br>
+     * All 0 control status are omitted.
+     *
+     * @param taag
+     * @return
+     */
+    String formatResult(Tag taag);
 }

@@ -49,6 +49,11 @@ public class Invariant {
      */
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
+    public static final String IDNAME_COUNTRY = "COUNTRY";
+    public static final String IDNAME_PRIORITY = "PRIORITY";
+    public static final String IDNAME_ENVIRONMENT = "ENVIRONMENT";
+    public static final String IDNAME_SYSTEM = "SYSTEM";
+
     public String getDescription() {
         return description;
     }
@@ -189,5 +194,27 @@ public class Invariant {
             LOG.error(ex.toString(), ex);
         }
         return invariantJson;
+    }
+
+    public JSONObject toJsonV001() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("JSONVersion", "001");
+            result.put("value", this.getValue());
+            result.put("description", this.getDescription());
+            result.put("shortDescription", this.getVeryShortDesc());
+            result.put("attribute1", this.getGp1());
+            result.put("attribute2", this.getGp2());
+            result.put("attribute3", this.getGp3());
+            result.put("attribute4", this.getGp4());
+            result.put("attribute5", this.getGp5());
+            result.put("attribute6", this.getGp6());
+            result.put("attribute7", this.getGp7());
+            result.put("attribute8", this.getGp8());
+            result.put("attribute9", this.getGp9());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return result;
     }
 }

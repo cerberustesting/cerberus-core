@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
+import javax.servlet.annotation.WebServlet;
 import org.cerberus.crud.factory.IFactoryUserGroup;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.service.notification.INotificationService;
@@ -56,6 +57,7 @@ import org.cerberus.service.notification.INotificationService;
 /**
  * @author bcivel
  */
+@WebServlet(name = "CreateUser", urlPatterns = {"/CreateUser"})
 public class CreateUser extends HttpServlet {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CreateUser.class);

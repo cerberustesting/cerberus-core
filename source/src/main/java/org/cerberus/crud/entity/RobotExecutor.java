@@ -43,21 +43,30 @@ public class RobotExecutor {
     private String port;
     private String hostUser;
     private String hostPassword;
+    private Integer nodeProxyPort; // In case the node has a private IP, we can use that proxy in order to access it.
     private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
     private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
+    private String executorProxyActive;
     private String executorExtensionHost;
     private Integer executorExtensionPort;
     private String executorProxyHost;
     private Integer executorProxyPort;
-    private String executorProxyActive;       
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+
+    public Integer getNodeProxyPort() {
+        return nodeProxyPort;
+    }
+
+    public void setNodeProxyPort(Integer nodeProxyPort) {
+        this.nodeProxyPort = nodeProxyPort;
+    }
 
     public Integer getID() {
         return ID;
@@ -206,7 +215,7 @@ public class RobotExecutor {
     public void setExecutorExtensionHost(String executorExtensionHost) {
         this.executorExtensionHost = executorExtensionHost;
     }
-    
+
     public Integer getExecutorExtensionPort() {
         return executorExtensionPort;
     }
@@ -238,8 +247,6 @@ public class RobotExecutor {
     public void setExecutorProxyActive(String executorProxyActive) {
         this.executorProxyActive = executorProxyActive;
     }
-    
-    
 
     /**
      * From here are data outside database model.
@@ -273,7 +280,7 @@ public class RobotExecutor {
             return false;
         }
 
-        final RobotExecutor other = (RobotExecutor) obj;
+        final RobotExecutor other = obj;
         if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
             return false;
         }
@@ -386,16 +393,16 @@ public class RobotExecutor {
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
-            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
+            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()));
             result.put("executorExtensionHost", this.getExecutorExtensionHost());
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());
-            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()) ? true : false);
+            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()));
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {
-                if (this.getHostPassword() != null && !this.getHostPassword().equals("")) {
+                if (this.getHostPassword() != null && !this.getHostPassword().isEmpty()) {
                     result.put("hostPassword", "XXXXXXXXXX");
                 } else {
                     result.put("hostPassword", "");

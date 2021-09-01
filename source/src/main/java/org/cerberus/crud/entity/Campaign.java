@@ -31,13 +31,6 @@ public class Campaign implements Serializable {
 
     private Integer campaignID;
     private String campaign;
-    private String distribList;
-    private String notifyStartTagExecution;
-    private String notifyEndTagExecution;
-    private String SlackNotifyStartTagExecution;
-    private String SlackNotifyEndTagExecution;
-    private String SlackWebhook;
-    private String SlackChannel;
     private String CIScoreThreshold;
     private String Tag;
     private String Verbose;
@@ -62,12 +55,6 @@ public class Campaign implements Serializable {
 
     private List<CampaignParameter> campaignParameterList;
 
-    /**
-     * Invariant PROPERTY TYPE String.
-     */
-    public static final String NOTIFYSTARTTAGEXECUTION_Y = "Y";
-    public static final String NOTIFYSTARTTAGEXECUTION_N = "N";
-    public static final String NOTIFYSTARTTAGEXECUTION_CIKO = "CIKO";
 
     public Campaign() {
     }
@@ -120,38 +107,6 @@ public class Campaign implements Serializable {
 
     public void setGroup3(String group3) {
         this.group3 = group3;
-    }
-
-    public String getSlackNotifyStartTagExecution() {
-        return SlackNotifyStartTagExecution;
-    }
-
-    public void setSlackNotifyStartTagExecution(String SlackNotifyStartTagExecution) {
-        this.SlackNotifyStartTagExecution = SlackNotifyStartTagExecution;
-    }
-
-    public String getSlackNotifyEndTagExecution() {
-        return SlackNotifyEndTagExecution;
-    }
-
-    public void setSlackNotifyEndTagExecution(String SlackNotifyEndTagExecution) {
-        this.SlackNotifyEndTagExecution = SlackNotifyEndTagExecution;
-    }
-
-    public String getSlackWebhook() {
-        return SlackWebhook;
-    }
-
-    public void setSlackWebhook(String SlackWebhook) {
-        this.SlackWebhook = SlackWebhook;
-    }
-
-    public String getSlackChannel() {
-        return SlackChannel;
-    }
-
-    public void setSlackChannel(String SlackChannel) {
-        this.SlackChannel = SlackChannel;
     }
 
     public String getCIScoreThreshold() {
@@ -280,30 +235,6 @@ public class Campaign implements Serializable {
 
     public void setCampaign(String campaign) {
         this.campaign = campaign;
-    }
-
-    public String getDistribList() {
-        return distribList;
-    }
-
-    public void setDistribList(String distribList) {
-        this.distribList = distribList;
-    }
-
-    public String getNotifyStartTagExecution() {
-        return notifyStartTagExecution;
-    }
-
-    public void setNotifyStartTagExecution(String notifyStartTagExecution) {
-        this.notifyStartTagExecution = notifyStartTagExecution;
-    }
-
-    public String getNotifyEndTagExecution() {
-        return notifyEndTagExecution;
-    }
-
-    public void setNotifyEndTagExecution(String notifyEndTagExecution) {
-        this.notifyEndTagExecution = notifyEndTagExecution;
     }
 
     public String getLongDescription() {

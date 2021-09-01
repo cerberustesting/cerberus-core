@@ -39,7 +39,7 @@ public class InputTranslatorManager<T> {
 	 * Creates a new {@link InputTranslatorManager}
 	 */
 	public InputTranslatorManager() {
-		translators = new ArrayList<InputTranslator<T>>();
+		translators = new ArrayList<>();
 	}
 
 	/**

@@ -269,7 +269,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             //These if/else instructions are done because of the way how the propertyService verifies if
             //the properties exist for the country.
             for (TestCaseCountryProperties tccp : tccpList) {
-                TestCaseCountryProperties p = (TestCaseCountryProperties) tccpMap.get(tccp.getProperty());
+                TestCaseCountryProperties p = tccpMap.get(tccp.getProperty());
                 if (p == null) {
                     tccpMap.put(tccp.getProperty(), tccp);
                 } else if (p.getCountry().compareTo(country) != 0 && tccp.getCountry().compareTo(country) == 0) {
@@ -305,7 +305,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             List<TestCaseCountryProperties> result = new ArrayList<>();
             for (TestCaseCountryProperties tccp : tccpList) {
                 if (tccp.getCountry().equals(country)) {
-                    TestCaseCountryProperties tccp_level = (TestCaseCountryProperties) tccpMap1.get(tccp.getProperty());
+                    TestCaseCountryProperties tccp_level = tccpMap1.get(tccp.getProperty());
                     if ((tccp_level != null)
                             && (((tccp.getTest().equals("Pre Testing")) && (tccp_level.getTest().equals("Pre Testing")))
                             || ((tccp.getTest().equals(test)) && (tccp.getTestcase().equals(testcase)) && (tccp_level.getTest().equals(test)) && (tccp_level.getTestcase().equals(testcase)))
@@ -394,7 +394,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             for (TestCaseCountryProperties objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -418,13 +418,13 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
         return finalAnswer;
     }

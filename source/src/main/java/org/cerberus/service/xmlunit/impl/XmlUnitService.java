@@ -85,7 +85,7 @@ public class XmlUnitService implements IXmlUnitService {
      * </ul>
      */
     private void initInputTranslator() {
-        inputTranslator = new InputTranslatorManager<Document>();
+        inputTranslator = new InputTranslatorManager<>();
         // Add handling on the "url" prefix, to get URL input
         inputTranslator.addTranslator(new AInputTranslator<Document>("url") {
             @Override
@@ -177,19 +177,24 @@ public class XmlUnitService implements IXmlUnitService {
         }
 
         try {
+            
             final Document document = StringUtil.isURL(xmlToParse) ? XmlUtil.fromURL(new URL(xmlToParse)) : XmlUtil.fromString(xmlToParse);
             final String result = XmlUtil.evaluateString(document, xpath);
+            
             // Not that in case of multiple values then send the first one
             return result != null && result.length() > 0 ? result : DEFAULT_GET_FROM_XML_VALUE;
         } catch (XmlUtilException e) {
             LOG.warn("Unable to get from xml", e);
         } catch (MalformedURLException e) {
             LOG.warn("Unable to get from xml", e);
+        } catch (Exception e) {
+            LOG.warn("Unable to get from xml", e);
         }
 
         return DEFAULT_GET_FROM_XML_VALUE;
     }
 
+    @Override
     public String getRawFromXml(final String xmlToParse, final String xpath) {
         if (xpath == null) {
             return DEFAULT_GET_FROM_XML_VALUE;

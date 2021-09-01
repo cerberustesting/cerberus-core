@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,7 +38,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -113,7 +111,7 @@ public class KafkaService implements IKafkaService {
             String bootstrapServers,
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs) {
 
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);;
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);
@@ -462,7 +460,7 @@ public class KafkaService implements IKafkaService {
 
                                 String decodedTopic = localService.getItem().getKafkaTopic();
                                 AnswerItem<String> answerDecode = variableService.decodeStringCompletly(decodedTopic, tCExecution, null, false);
-                                decodedTopic = (String) answerDecode.getItem();
+                                decodedTopic = answerDecode.getItem();
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
                                     String field = "Kafka Topic of Service '" + localService.getItem().getService() + "'";
@@ -476,7 +474,7 @@ public class KafkaService implements IKafkaService {
 
                                 String decodedServicePath = localService.getItem().getServicePath();
                                 answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
-                                decodedServicePath = (String) answerDecode.getItem();
+                                decodedServicePath = answerDecode.getItem();
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
                                     String field = "Kafka Service Path of Service '" + localService.getItem().getService() + "'";
@@ -493,7 +491,7 @@ public class KafkaService implements IKafkaService {
                                 List<AppServiceHeader> decodedHeaders = new ArrayList<>();
                                 for (AppServiceHeader object : headers) {
                                     answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
-                                    object.setKey((String) answerDecode.getItem());
+                                    object.setKey(answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Header Key " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
@@ -506,7 +504,7 @@ public class KafkaService implements IKafkaService {
                                     }
 
                                     answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
-                                    object.setValue((String) answerDecode.getItem());
+                                    object.setValue(answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Header Value " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
@@ -525,7 +523,7 @@ public class KafkaService implements IKafkaService {
                                 List<AppServiceContent> decodedContent = new ArrayList<>();
                                 for (AppServiceContent object : props) {
                                     answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
-                                    object.setKey((String) answerDecode.getItem());
+                                    object.setKey(answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Header Key " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
@@ -538,7 +536,7 @@ public class KafkaService implements IKafkaService {
                                     }
 
                                     answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
-                                    object.setValue((String) answerDecode.getItem());
+                                    object.setValue(answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Header Value " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";

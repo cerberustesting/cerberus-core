@@ -47,6 +47,7 @@ public interface IRobotExecutorService {
      *
      * @param robot
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     RobotExecutor readBestByKey(String robot) throws CerberusException ;
 

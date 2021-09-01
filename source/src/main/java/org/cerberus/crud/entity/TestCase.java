@@ -20,6 +20,8 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
@@ -28,11 +30,14 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.List;
+import org.cerberus.util.StringUtil;
 
 /**
  * @author bcivel
  */
 public class TestCase {
+
+    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     private String test;
     private String testcase;
@@ -89,8 +94,6 @@ public class TestCase {
     public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
-
-    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     public String getScreenSize() {
         return screenSize;
@@ -525,8 +528,6 @@ public class TestCase {
         return "TestCase{" + "test=" + test + ", testcase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", testCaseInheritedProperties=" + testCaseInheritedProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
     }
 
-
-
     public JSONObject toJson() {
         JSONObject testCaseJson = new JSONObject();
         try {
@@ -619,6 +620,106 @@ public class TestCase {
             }
             propertiesJson.put("inheritedProperties", testCaseInheritedPropertiesJson);
             testCaseJson.put("properties", propertiesJson);
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return testCaseJson;
+    }
+
+    public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList) {
+        JSONObject testCaseJson = new JSONObject();
+        try {
+            testCaseJson.put("JSONVersion", "001");
+            cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
+            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + URLEncoder.encode(this.getTest(), StandardCharsets.UTF_8) + "&testcase=" + URLEncoder.encode(this.getTestcase(), StandardCharsets.UTF_8));
+            testCaseJson.put("testFolder", this.getTest());
+            testCaseJson.put("testcase", this.getTestcase());
+            testCaseJson.put("application", this.getApplication());
+            testCaseJson.put("system", this.getSystem());
+            testCaseJson.put("status", this.getStatus());
+            testCaseJson.put("type", this.getType());
+
+//            testCaseJson.put("priority", factoryInvariant.create(Invariant.IDNAME_PRIORITY, String.valueOf(this.getPriority()), 10, "", "", "", "", "", "", "", "", "", "", "").toJsonV001());
+            testCaseJson.put("priority", this.getPriority());
+            if (prioritiesList != null) {
+                Invariant priorityLocal = prioritiesList.stream().filter(inv -> Integer.toString(this.getPriority()).equals(inv.getValue())).findAny().orElse(null);
+                if (priorityLocal != null) {
+                    testCaseJson.put("priority", priorityLocal.toJsonV001());
+                }
+            }
+
+            testCaseJson.put("description", this.getDescription());
+            testCaseJson.put("detailedDescription", this.getDetailedDescription());
+            testCaseJson.put("isActive", this.isActive());
+            testCaseJson.put("isActiveQA", this.isActiveQA());
+            testCaseJson.put("isActiveUAT", this.isActiveUAT());
+            testCaseJson.put("isActivePROD", this.isActivePROD());
+            testCaseJson.put("bugs", this.getBugs());
+            testCaseJson.put("comment", this.getComment());
+            testCaseJson.put("implementer", this.getImplementer());
+            testCaseJson.put("executor", this.getExecutor());
+            testCaseJson.put("version", this.getVersion());
+            testCaseJson.put("dateCreated", this.getDateCreated());
+            testCaseJson.put("usrCreated", this.getUsrCreated());
+            testCaseJson.put("dateModif", this.getDateModif());
+            testCaseJson.put("usrModif", this.getUsrModif());
+            testCaseJson.put("externalProvider", this.getOrigine());
+            testCaseJson.put("externalReference", this.getRefOrigine());
+            
+            JSONArray stepsJson = new JSONArray();
+            if (this.getSteps() != null) {
+                for (TestCaseStep step : this.getSteps()) {
+                    stepsJson.put(step.toJsonV001());
+                }
+            }
+            testCaseJson.put("steps", stepsJson);
+
+            JSONArray countriesJson = new JSONArray();
+            if (this.getInvariantCountries() != null) {
+                for (Invariant country : this.getInvariantCountries()) {
+                    if (country != null) {
+                        countriesJson.put(country.toJsonV001());
+                    }
+                }
+            }
+            testCaseJson.put("countries", countriesJson);
+
+            JSONArray dependenciesJson = new JSONArray();
+            if (this.getDependencies() != null) {
+                for (TestCaseDep testCaseDependecy : this.getDependencies()) {
+                    dependenciesJson.put(testCaseDependecy.toJsonV001());
+                }
+            }
+            testCaseJson.put("dependencies", dependenciesJson);
+
+            JSONArray labelsJson = new JSONArray();
+            if (this.getLabels() != null) {
+                for (Label label : this.getLabels()) {
+                    labelsJson.put(label.toJsonV001());
+                }
+            }
+            testCaseJson.put("labels", labelsJson);
+
+            JSONObject propertiesJson = new JSONObject();
+            JSONArray testCasePropertiesJson = new JSONArray();
+            if (this.getTestCaseCountryProperties() != null) {
+                for (TestCaseCountryProperties testCaseCountryProperties : this.getTestCaseCountryProperties()) {
+                    testCasePropertiesJson.put(testCaseCountryProperties.toJsonV001());
+                }
+            }
+            propertiesJson.put("testcaseProperties", testCasePropertiesJson);
+
+            JSONArray testCaseInheritedPropertiesJson = new JSONArray();
+            if (this.getTestCaseInheritedProperties() != null) {
+                for (TestCaseCountryProperties testCaseCountryProperties : this.getTestCaseInheritedProperties()) {
+                    testCaseInheritedPropertiesJson.put(testCaseCountryProperties.toJsonV001());
+                }
+            }
+            propertiesJson.put("inheritedProperties", testCaseInheritedPropertiesJson);
+            testCaseJson.put("properties", propertiesJson);
+            
+            
 
         } catch (JSONException ex) {
             LOG.error(ex.toString(), ex);

@@ -21,7 +21,6 @@ package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,7 +36,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.authentification.IAPIKeyService;
-import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.notifications.email.IEmailGenerationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -45,8 +44,8 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
-import org.cerberus.service.email.entity.Email;
+import org.cerberus.service.notifications.email.IEmailService;
+import org.cerberus.service.notifications.email.entity.Email;
 
 /**
  * @author vertigo
@@ -111,23 +110,23 @@ public class NewBuildRevisionV000 extends HttpServlet {
             boolean error = false;
 
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (system.equalsIgnoreCase("")) {
+            if (system.isEmpty()) {
                 out.println("Error - Parameter system is mandatory.");
                 error = true;
             }
-            if (!system.equalsIgnoreCase("") && !invariantService.isInvariantExist("SYSTEM", system)) {
+            if (!system.isEmpty() && !invariantService.isInvariantExist("SYSTEM", system)) {
                 out.println("Error - System does not exist  : " + system);
                 error = true;
             }
-            if (environment.equalsIgnoreCase("")) {
+            if (environment.isEmpty()) {
                 out.println("Error - Parameter environment is mandatory.");
                 error = true;
             }
-            if (!environment.equalsIgnoreCase("") && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
+            if (!environment.isEmpty() && !invariantService.isInvariantExist("ENVIRONMENT", environment)) {
                 out.println("Error - Environment does not exist  : " + environment);
                 error = true;
             }
-            if (country.equalsIgnoreCase("")) {
+            if (country.isEmpty()) {
                 out.println("Error - Parameter country is mandatory.");
                 error = true;
             } else if (!country.equalsIgnoreCase(PARAMETERALL)) {
@@ -142,19 +141,19 @@ public class NewBuildRevisionV000 extends HttpServlet {
                     }
                 }
             }
-            if (build.equalsIgnoreCase("")) {
+            if (build.isEmpty()) {
                 out.println("Error - Parameter build is mandatory.");
                 error = true;
             }
-            if (!build.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 1, build)) {
+            if (!build.isEmpty() && !buildRevisionInvariantService.exist(system, 1, build)) {
                 out.println("Error - Build does not exist : " + build);
                 error = true;
             }
-            if (revision.equalsIgnoreCase("")) {
+            if (revision.isEmpty()) {
                 out.println("Error - Parameter revision is mandatory.");
                 error = true;
             }
-            if (!revision.equalsIgnoreCase("") && !buildRevisionInvariantService.exist(system, 2, revision)) {
+            if (!revision.isEmpty() && !buildRevisionInvariantService.exist(system, 2, revision)) {
                 out.println("Error - Revision does not exist : " + revision);
                 error = true;
             }
@@ -174,7 +173,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                     country = null;
                 }
                 answerList = countryEnvParamService.readByVarious(system, country, environment, null, null, null);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) answerList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerList);
 
                 for (CountryEnvParam cepData : answerList.getDataList()) {
 
@@ -226,7 +225,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                             OutputMessage = e.getMessage();
                         }
 
-                        if (OutputMessage.equals("")) {
+                        if (OutputMessage.isEmpty()) {
                             msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
                             Answer answerSMTP = new AnswerList<>(msg);
                             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);

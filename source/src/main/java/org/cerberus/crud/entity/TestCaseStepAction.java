@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  * @author bcivel
  */
 public class TestCaseStepAction {
-    
+
     private static final Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
 
     private String test;
@@ -377,7 +377,7 @@ public class TestCaseStepAction {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStepAction other = (TestCaseStepAction) obj;
+        final TestCaseStepAction other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }
@@ -475,6 +475,12 @@ public class TestCaseStepAction {
         if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
             return false;
         }
+        if (!Objects.equals(this.options, other.options)) {
+            return false;
+        }
+        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
+            return false;
+        }
         return true;
     }
 
@@ -509,6 +515,44 @@ public class TestCaseStepAction {
             if (this.getControls() != null) {
                 for (TestCaseStepActionControl control : this.getControls()) {
                     controlsJson.put(control.toJson());
+                }
+            }
+            result.put("controls", controlsJson);
+
+        } catch (JSONException ex) {
+            Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
+            LOG.warn(ex);
+        }
+        return result;
+    }
+
+    public JSONObject toJsonV001() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("JSONVersion", "001");
+            result.put("sort", this.getSort());
+            result.put("stepId", this.getStepId());
+            result.put("actionId", this.getActionId());
+            result.put("description", this.getDescription());
+            result.put("action", this.getAction());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
+            result.put("value3", this.getValue3());
+            result.put("options", this.getOptions());
+            result.put("conditionOperator", this.getConditionOperator());
+            result.put("conditionValue1", this.getConditionValue1());
+            result.put("conditionValue2", this.getConditionValue2());
+            result.put("conditionValue3", this.getConditionValue3());
+            result.put("conditionOptions", this.getConditionOptions());
+            result.put("isFatal", this.isFatal());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("testFolder", this.getTest());
+            result.put("testcase", this.getTestcase());
+
+            JSONArray controlsJson = new JSONArray();
+            if (this.getControls() != null) {
+                for (TestCaseStepActionControl control : this.getControls()) {
+                    controlsJson.put(control.toJsonV001());
                 }
             }
             result.put("controls", controlsJson);

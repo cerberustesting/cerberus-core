@@ -22,7 +22,6 @@ package org.cerberus.servlet.zzpublic;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,7 +43,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -54,7 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
-@WebServlet(name = "ManageV001", urlPatterns = {"/ManageV001"})
+@WebServlet(name = "ManageV001", urlPatterns = {"/ManageV001", "/manageV001"})
 public class ManageV001 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ManageV001.class);

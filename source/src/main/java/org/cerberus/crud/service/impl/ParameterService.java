@@ -129,7 +129,7 @@ public class ParameterService implements IParameterService {
         try {
             LOG.debug("Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
-            if (myParameter != null && myParameter.getValue().equalsIgnoreCase("")) {
+            if (myParameter != null && myParameter.getValue().isEmpty()) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {
@@ -337,11 +337,11 @@ public class ParameterService implements IParameterService {
             /**
              * Object could not be found. We stop here and report the error.
              */
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
-        } else if (!((object.getValue()).equals(((Parameter) resp.getItem()).getValue()))) {
+        } else if (!((object.getValue()).equals(resp.getItem().getValue()))) {
             finalAnswer = update(object);
         } else {
             /**

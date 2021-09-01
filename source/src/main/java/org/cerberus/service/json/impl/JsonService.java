@@ -30,8 +30,6 @@ import java.util.List;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONStyle;
 import org.cerberus.service.json.IJsonService;
-import org.cerberus.util.StringUtil;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -149,7 +147,19 @@ public class JsonService implements IJsonService {
                         return tryJSONArray.toString(JSONStyle.LT_COMPRESS);
 
                     } catch (Exception exArray) {
-                        return DEFAULT_GET_FROM_JSON_VALUE;
+                        try {
+                            LOG.debug("JSON PATH trying float : " + jsonPath);
+                            double tryFloat = JsonPath.read(document, jsonPath);
+                            return String.valueOf(tryFloat);
+                        } catch (Exception exFloat) {
+                            try {
+                                LOG.debug("JSON PATH trying Object : " + jsonPath);
+                                Object tryObject = JsonPath.read(document, jsonPath);
+                                return tryObject.toString();
+                            } catch (Exception exObject) {
+                                return DEFAULT_GET_FROM_JSON_VALUE;
+                            }  
+                        }   
                     }
                 }
             }
@@ -193,7 +203,7 @@ public class JsonService implements IJsonService {
              */
             LOG.debug("JSON PATH trying ListOfObject : " + jsonPath);
             List<Object> toto = JsonPath.read(document, jsonPath);
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             for (Object obj : toto) {
                 result.add(String.valueOf(obj));
             }
@@ -207,7 +217,7 @@ public class JsonService implements IJsonService {
                  */
                 LOG.debug("JSON PATH trying ListOfInteger : " + jsonPath);
                 List<Integer> toto = JsonPath.read(document, jsonPath);
-                List<String> result = new ArrayList<String>();
+                List<String> result = new ArrayList<>();
                 for (Integer inte : toto) {
                     result.add(String.valueOf(inte));
                 }
@@ -221,7 +231,7 @@ public class JsonService implements IJsonService {
                      */
                     LOG.debug("JSON PATH trying String : " + jsonPath);
                     String toto = JsonPath.read(document, jsonPath);
-                    List<String> result = new ArrayList<String>();
+                    List<String> result = new ArrayList<>();
                     result.add(toto);
                     return result;
 
@@ -233,7 +243,7 @@ public class JsonService implements IJsonService {
                          */
                         LOG.debug("JSON PATH trying Integer : " + jsonPath);
                         int toto = JsonPath.read(document, jsonPath);
-                        List<String> result = new ArrayList<String>();
+                        List<String> result = new ArrayList<>();
                         result.add(String.valueOf(toto));
                         return result;
 
@@ -245,7 +255,7 @@ public class JsonService implements IJsonService {
                              */
                             LOG.debug("JSON PATH trying Boolean : " + jsonPath);
                             Boolean toto = JsonPath.read(document, jsonPath);
-                            List<String> result = new ArrayList<String>();
+                            List<String> result = new ArrayList<>();
                             result.add(toto.toString());
                             return result;
 

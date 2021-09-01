@@ -72,20 +72,4 @@ public interface INotificationService {
      */
     public MessageEvent generateAndSendNewChainEmail(String system, String country, String env, String chain);
 
-    /**
-     *
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    public MessageEvent generateAndSendNotifyStartTagExecution(String tag, String campaign);
-
-    /**
-     *
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    public MessageEvent generateAndSendNotifyEndTagExecution(String tag, String campaign);
-
 }

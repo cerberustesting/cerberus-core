@@ -95,7 +95,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public List<CampaignParameter> findAll() throws CerberusException {
         boolean throwEx = false;
         final String query = "SELECT * FROM campaignparameter c";
-        List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
+        List<CampaignParameter> campaignParameterList = new ArrayList<>();
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
             try (ResultSet resultSet = preStat.executeQuery();) {
@@ -148,7 +148,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         boolean throwEx = false;
         final String query = "SELECT * FROM campaignparameter c WHERE c.campaign = ?";
 
-        List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
+        List<CampaignParameter> campaignParameterList = new ArrayList<>();
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query);) {
@@ -225,7 +225,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         }
 
         // " c.campaignID = ? AND c.campaign LIKE ? AND c.description LIKE ?";
-        List<CampaignParameter> campaignParametersList = new ArrayList<CampaignParameter>();
+        List<CampaignParameter> campaignParametersList = new ArrayList<>();
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());) {
@@ -285,7 +285,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         AnswerList<CampaignParameter> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CampaignParameter> campaignParameterList = new ArrayList<CampaignParameter>();
+        List<CampaignParameter> campaignParameterList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -387,7 +387,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public AnswerList<CampaignParameter> readByCampaign(String campaign) {
         AnswerList<CampaignParameter> answer = new AnswerList<>();
         MessageEvent msg;
-        List<CampaignParameter> result = new ArrayList<CampaignParameter>();
+        List<CampaignParameter> result = new ArrayList<>();
 
         final String query = "SELECT * FROM campaignparameter  WHERE campaign = ?";
 

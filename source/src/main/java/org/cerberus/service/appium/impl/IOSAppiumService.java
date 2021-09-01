@@ -20,10 +20,7 @@
 package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.ios.IOSTouchAction;
 import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import java.time.Duration;
 import java.util.HashMap;
@@ -39,7 +36,6 @@ import org.cerberus.util.JSONUtil;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -216,7 +212,7 @@ public class IOSAppiumService extends AppiumService {
                 valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }
             if (valueString.endsWith("\n")) {
-                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
+                valueString = valueString.substring(0, valueString.lastIndexOf('\n'));
             }
         }
 

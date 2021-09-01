@@ -150,7 +150,7 @@ public class NewChain extends HttpServlet {
                     OutputMessage = me.getMessage().getDescription();
                 }
 
-                if (OutputMessage.equals("")) {
+                if (OutputMessage.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", ITEM)
                             .replace("%OPERATION%", OPERATION));

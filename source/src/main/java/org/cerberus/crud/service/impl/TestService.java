@@ -32,7 +32,6 @@ import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.exception.CerberusException;
@@ -43,9 +42,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * {Insert class description here}
@@ -89,24 +86,27 @@ public class TestService implements ITestService {
 
     @Override
     public Answer create(Test test) {
-        return testDao.create(test);
+        Answer ans = testDao.create(test);
+        return ans;
     }
 
     @Override
     public Answer update(String keyTest, Test test) {
-        return testDao.update(keyTest, test);
+        Answer ans = testDao.update(keyTest, test);
+        return ans;
     }
 
     @Override
     public Answer delete(Test test) {
-        return testDao.delete(test);
+        Answer ans = testDao.delete(test);
+        return ans;
     }
 
     @Override
     public Test convert(AnswerItem<Test> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (Test) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -115,7 +115,7 @@ public class TestService implements ITestService {
     public List<Test> convert(AnswerList<Test> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<Test>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -169,23 +169,16 @@ public class TestService implements ITestService {
                                     .resolveDescription("OPERATION", "Delete")
                                     .resolveDescription(
                                             "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
-                                            + Collections2.transform(externallyUsedTestCaseSteps, new Function<TestCaseStep, String>() {
-                                                @Override
-                                                @Nullable
-                                                public String apply(@Nullable final TestCaseStep input) {
-                                                    return String.format(
-                                                            "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
-                                                            cerberusUrl,
-                                                            input.getTest(),
-                                                            input.getTestcase(),
-                                                            input.getStepId(),
-                                                            input.getTest(),
-                                                            input.getTestcase(),
-                                                            input.getStepId()
-                                                    );
-                                                }
-                                            }
-                                            )
+                                            + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
+                                                    "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
+                                                    cerberusUrl,
+                                                    input.getTest(),
+                                                    input.getTestcase(),
+                                                    input.getStepId(),
+                                                    input.getTest(),
+                                                    input.getTestcase(),
+                                                    input.getStepId()
+                                            ))
                                     )
                     );
                 } else {
@@ -233,7 +226,6 @@ public class TestService implements ITestService {
         });
     }
 
-    
     @Override
     public Answer updateIfExists(String originalTest, Test test) {
         Answer ans = new Answer();

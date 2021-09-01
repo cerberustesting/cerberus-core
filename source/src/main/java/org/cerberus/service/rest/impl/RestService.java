@@ -19,9 +19,7 @@
  */
 package org.cerberus.service.rest.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +49,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -122,6 +119,7 @@ public class RestService implements IRestService {
 
         public static final String METHOD_NAME = "DELETE";
 
+        @Override
         public String getMethod() {
             return METHOD_NAME;
         }
@@ -144,27 +142,21 @@ public class RestService implements IRestService {
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
             // Create a custom response handler
-            ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
-
-                @Override
-                public AppService handleResponse(final HttpResponse response)
-                        throws ClientProtocolException, IOException {
-                    AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
-                    int responseCode = response.getStatusLine().getStatusCode();
-                    myResponse.setResponseHTTPCode(responseCode);
-                    myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
-                    LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
-                    Header[] allHeaderList = response.getAllHeaders();
-                    for (Header header : allHeaderList) {
-                        myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
-                                header.getValue(), "Y", 0, "", "", null, "", null));
-                    }
-                    HttpEntity entity = response.getEntity();
-                    myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
-                    return myResponse;
+            ResponseHandler<AppService> responseHandler = (final HttpResponse response) -> {
+                AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
+                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
+                int responseCode = response.getStatusLine().getStatusCode();
+                myResponse.setResponseHTTPCode(responseCode);
+                myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
+                LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
+                Header[] allHeaderList = response.getAllHeaders();
+                for (Header header : allHeaderList) {
+                    myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
+                            header.getValue(), "Y", 0, "", "", null, "", null));
                 }
-
+                HttpEntity entity = response.getEntity();
+                myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                return myResponse;
             };
             return httpclient.execute(httpget, responseHandler);
 
@@ -270,6 +262,7 @@ public class RestService implements IRestService {
                 LOG.debug("Trusting all SSL Certificates.");
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
+                    @Override
                     public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                         return true;
                     }
@@ -453,7 +446,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PUT the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }
@@ -506,7 +499,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we PATCH the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }

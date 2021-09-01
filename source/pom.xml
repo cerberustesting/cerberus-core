@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>4.12-SNAPSHOT</version>
+    <version>4.13-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -40,8 +40,8 @@
 
         <!-- Version management -->
         <!-- Spring Version -->
-        <spring.version>5.2.10.RELEASE</spring.version>
-        <spring-webmvc.version>5.2.3.RELEASE</spring-webmvc.version>
+        <spring.version>5.2.11.RELEASE</spring.version>
+        <spring-webmvc.version>5.2.4.RELEASE</spring-webmvc.version>
         
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>

@@ -254,7 +254,15 @@ function aoColumnsFunc() {
             "sName": "isActive",
             "sWidth": "30px",
             "title": doc.getDocOnline("test", "isActive"),
-            "className": "center"
+            "className": "center",
+            "mRender": function (data, type, obj) {
+                    if (data) {
+                        return '<input type="checkbox" checked disabled />';
+                    } else {
+//                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
+                        return '<input type="checkbox" disabled />';
+                    }
+            }
         },
         {
             "data": "dateCreated",
