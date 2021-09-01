@@ -20,6 +20,8 @@
 package org.cerberus.service.sikuli;
 
 import java.io.File;
+
+import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.util.answer.AnswerItem;
@@ -60,11 +62,11 @@ public interface ISikuliService {
     /**
      *
      * @param session
-     * @param locator
-     * @param locator2
+     * @param locatorDrag
+     * @param locatorDrop
      * @return
      */
-    public MessageEvent doSikuliActionDragAndDrop(Session session, String locator, String locator2);
+    public MessageEvent doSikuliActionDragAndDrop(Session session, Identifier locatorDrag, Identifier locatorDrop);
 
     /**
      *

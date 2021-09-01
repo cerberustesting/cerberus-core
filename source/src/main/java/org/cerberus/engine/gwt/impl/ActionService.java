@@ -1424,20 +1424,26 @@ public class ActionService implements IActionService {
             }
             Identifier identifierDrag = identifierService.convertStringToIdentifier(value1);
             Identifier identifierDrop = identifierService.convertStringToIdentifier(value2);
-            identifierService.checkWebElementIdentifier(identifierDrag.getIdentifier());
-            identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
+
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
 
+                identifierService.checkWebElementIdentifier(identifierDrag.getIdentifier());
+                identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
+
                 if (identifierDrag.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)&&
                         identifierDrop.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag.getLocator(), identifierDrop.getLocator());
+                    return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
                 } else {
                     return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
                 }
             }
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag.getLocator(), identifierDrop.getLocator());
+
+                identifierService.checkSikuliIdentifier(identifierDrag.getIdentifier());
+                identifierService.checkSikuliIdentifier(identifierDrop.getIdentifier());
+
+                return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));

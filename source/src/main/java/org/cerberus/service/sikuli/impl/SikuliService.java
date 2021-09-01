@@ -42,6 +42,7 @@ import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
@@ -398,30 +399,33 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliActionDragAndDrop(Session session, String locator, String locator2, String text, String text2) {
+    public MessageEvent doSikuliActionDragAndDrop(Session session, Identifier identifierDrag, Identifier identifierDrop) {
 
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.isEmpty()&&!locator2.isEmpty()) {
-            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, locator, locator2, "", "");
-        } else if (!locator.isEmpty()&&locator2.isEmpty()) {
-            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, locator, null, "", text2);
-        } else if (locator.isEmpty()&&!locator2.isEmpty()) {
-            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, locator2, text, "");
+        if (SIKULI_IDENTIFIER_PICTURE.equals(identifierDrag.getIdentifier())
+                && SIKULI_IDENTIFIER_PICTURE.equals(identifierDrop.getIdentifier())) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, identifierDrag.getLocator(), identifierDrop.getLocator(), "", "");
+        } else if (SIKULI_IDENTIFIER_PICTURE.equals(identifierDrag.getIdentifier())
+                && SIKULI_IDENTIFIER_TEXT.equals(identifierDrop.getIdentifier())) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, identifierDrag.getLocator(), null, "", identifierDrop.getLocator());
+        } else if (SIKULI_IDENTIFIER_TEXT.equals(identifierDrag.getIdentifier())
+                && SIKULI_IDENTIFIER_PICTURE.equals(identifierDrop.getIdentifier())) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, identifierDrop.getLocator(), identifierDrag.getLocator(), "");
         } else {
-            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, null, text, text2);
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, null, identifierDrag.getLocator(), identifierDrop.getLocator());
         }
 
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
-            message.setDescription(message.getDescription().replace("%SOURCE%", locator));
-            message.setDescription(message.getDescription().replace("%TARGET%", locator2));
+            message.setDescription(message.getDescription().replace("%SOURCE%", identifierDrag.getLocator()));
+            message.setDescription(message.getDescription().replace("%TARGET%", identifierDrop.getLocator()));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROPSIKULI_NO_SUCH_ELEMENT);
+            mes.setDescription(mes.getDescription() + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
