@@ -19,8 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -484,7 +484,7 @@ public class Tag {
         try {
             result.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, StandardCharsets.UTF_8));
+            result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, "UTF-8"));
             result.put("tag", this.tag);
             if (this.DateEndQueue != null && this.DateCreated != null) {
                 result.put("tagDurationInMs", (this.DateEndQueue.getTime() - this.DateCreated.getTime()));
@@ -516,7 +516,7 @@ public class Tag {
             }
             result.put("executions", listOfExecutionsJSON);
 
-        } catch (JSONException ex) {
+        } catch (JSONException | UnsupportedEncodingException ex) {
             LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);

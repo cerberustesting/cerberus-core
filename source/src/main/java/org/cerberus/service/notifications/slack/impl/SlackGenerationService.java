@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.notifications.slack.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import org.cerberus.crud.entity.EventHook;
@@ -48,7 +49,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     private ITagService tagService;
 
     @Override
-    public JSONObject generateNotifyStartTagExecution(Tag tag, String channel) throws Exception {
+    public JSONObject generateNotifyStartTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         JSONObject slackMessage = new JSONObject();
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
@@ -56,7 +57,7 @@ public class SlackGenerationService implements ISlackGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
         slackMessage.put("text", "Execution Tag '" + tag.getTag() + "' Started. <" + cerberusUrl + "|Click here> for details.");
         if (!StringUtil.isNullOrEmpty(channel)) {
             slackMessage.put("channel", channel);
@@ -69,14 +70,14 @@ public class SlackGenerationService implements ISlackGenerationService {
     }
 
     @Override
-    public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws Exception {
+    public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
 
         JSONObject slackMessage = new JSONObject();
         JSONObject attachementObj = new JSONObject();
@@ -171,7 +172,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     }
 
     @Override
-    public JSONObject generateNotifyTestCaseChange(TestCase testCase, String channel, String eventReference) throws Exception {
+    public JSONObject generateNotifyTestCaseChange(TestCase testCase, String channel, String eventReference) throws UnsupportedEncodingException, Exception {
 
         JSONObject slackMessage = new JSONObject();
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
@@ -179,7 +180,7 @@ public class SlackGenerationService implements ISlackGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "TestCaseScript.jsp?test=" + URLEncoder.encode(testCase.getTest(), StandardCharsets.UTF_8) + "&testcase=" + URLEncoder.encode(testCase.getTestcase(), StandardCharsets.UTF_8);
+        cerberusUrl += "TestCaseScript.jsp?test=" + URLEncoder.encode(testCase.getTest(), "UTF-8") + "&testcase=" + URLEncoder.encode(testCase.getTestcase(), "UTF-8");
         switch (eventReference) {
             case EventHook.EVENTREFERENCE_TESTCASE_CREATE:
                 slackMessage.put("text", "Testcase '" + testCase.getTest() + " - " + testCase.getTestcase() + "' was Created. <" + cerberusUrl + "|Click here> for details.");

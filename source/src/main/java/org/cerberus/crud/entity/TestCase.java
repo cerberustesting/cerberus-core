@@ -20,8 +20,8 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
@@ -632,7 +632,7 @@ public class TestCase {
         try {
             testCaseJson.put("JSONVersion", "001");
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
-            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + URLEncoder.encode(this.getTest(), StandardCharsets.UTF_8) + "&testcase=" + URLEncoder.encode(this.getTestcase(), StandardCharsets.UTF_8));
+            testCaseJson.put("link", cerberusURL + "TestCaseScript.jsp?test=" + URLEncoder.encode(this.getTest(), "UTF-8") + "&testcase=" + URLEncoder.encode(this.getTestcase(), "UTF-8"));
             testCaseJson.put("testFolder", this.getTest());
             testCaseJson.put("testcase", this.getTestcase());
             testCaseJson.put("application", this.getApplication());
@@ -721,7 +721,7 @@ public class TestCase {
             
             
 
-        } catch (JSONException ex) {
+        } catch (JSONException | UnsupportedEncodingException ex) {
             LOG.error(ex.toString(), ex);
         }
         return testCaseJson;
