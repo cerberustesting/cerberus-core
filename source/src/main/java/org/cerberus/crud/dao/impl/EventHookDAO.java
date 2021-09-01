@@ -308,7 +308,7 @@ public class EventHookDAO implements IEventHookDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getId());
 
             preStat.executeUpdate();
@@ -337,7 +337,7 @@ public class EventHookDAO implements IEventHookDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getEventReference());
             preStat.setString(i++, object.getObjectKey1());
@@ -390,7 +390,7 @@ public class EventHookDAO implements IEventHookDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

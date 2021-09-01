@@ -148,7 +148,7 @@ public class DateUtil {
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
             Date dS = df.parse(dateStart);
             Date dE = df.parse(dateEnd);
-            double elap = ((double) (dE.getTime() - dS.getTime()));
+            double elap = (dE.getTime() - dS.getTime());
 
             if (elap >= 0) {
                 if (elap > 60000) {

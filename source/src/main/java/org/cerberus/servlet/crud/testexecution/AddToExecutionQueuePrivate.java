@@ -27,6 +27,6 @@ import org.cerberus.servlet.zzpublic.AddToExecutionQueueV003;
  *
  * @author abourdon
  */
-@WebServlet(name = "AddToExecutionQueuePrivate", urlPatterns = {"/AddToExecutionQueuePrivate"})
+@WebServlet(name = "AddToExecutionQueuePrivate", description = "Add a test case to the execution queue.", urlPatterns = {"/AddToExecutionQueuePrivate"})
 public class AddToExecutionQueuePrivate extends AddToExecutionQueueV003 {
 }

@@ -125,7 +125,7 @@ public class EventHookService implements IEventHookService {
     public EventHook convert(AnswerItem<EventHook> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (EventHook) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -134,7 +134,7 @@ public class EventHookService implements IEventHookService {
     public List<EventHook> convert(AnswerList<EventHook> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<EventHook>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -202,7 +202,7 @@ public class EventHookService implements IEventHookService {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
                     LOG.debug(objectDifference);
                     ans = this.update(objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -224,13 +224,13 @@ public class EventHookService implements IEventHookService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         return finalAnswer;

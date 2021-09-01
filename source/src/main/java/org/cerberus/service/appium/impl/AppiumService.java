@@ -23,7 +23,6 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
@@ -460,7 +459,7 @@ public abstract class AppiumService implements IAppiumService {
                 //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
                 //element.clear();
                 // WebElement elmt = this.getElement(session, identifier, false, false);
-                ((MobileElement) this.getElement(session, identifier, false, false)).clear();
+                this.getElement(session, identifier, false, false).clear();
 
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLEAR).resolveDescription("ELEMENT", identifier.toString());

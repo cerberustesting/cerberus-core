@@ -156,13 +156,13 @@ public class LabelDAO implements ILabelDAO {
             if (!strictSystemFilter) {
                 system.add("");
             }
-            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`System`", system) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("lab.`System`", system)).append(")");
         }
 
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("lab.`System`") + " ");
+        query.append(" AND ").append(UserSecurity.getSystemAllowForSQL("lab.`System`")).append(" ");
 
         if ((type != null) && (!type.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`Type`", type) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("lab.`Type`", type)).append(")");
         }
         query.append(searchSQL);
 
@@ -389,7 +389,7 @@ public class LabelDAO implements ILabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getId());
 
             preStat.executeUpdate();
@@ -418,7 +418,7 @@ public class LabelDAO implements ILabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getLabel());
@@ -489,7 +489,7 @@ public class LabelDAO implements ILabelDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

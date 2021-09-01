@@ -97,7 +97,7 @@ public class UpdateInvariant extends HttpServlet {
         Integer sort = 10;
         boolean sort_error = false;
         try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+            if (request.getParameter("sort") != null && !request.getParameter("sort").isEmpty()) {
                 sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {
@@ -165,7 +165,7 @@ public class UpdateInvariant extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 Invariant invariantData = (Invariant) resp.getItem();
@@ -174,7 +174,7 @@ public class UpdateInvariant extends HttpServlet {
                      * Object could not be found. We stop here and report the
                      * error.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
                 } else {
                     if (invariantService.hasPermissionsUpdate(invariantData, request)) {
@@ -194,7 +194,7 @@ public class UpdateInvariant extends HttpServlet {
                         invariantData.setGp9(gp9);
 
                         ans = invariantService.update(oriId, oriValue, invariantData);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
@@ -209,7 +209,7 @@ public class UpdateInvariant extends HttpServlet {
                                 .replace("%OPERATION%", "Update")
                                 .replace("%REASON%", "The Invariant is not Public!"));
                         ans.setResultMessage(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
                 }
             }

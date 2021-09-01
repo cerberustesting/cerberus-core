@@ -160,21 +160,21 @@ public class UpdateCountryEnvParam extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "System is missing"));
             ans.setResultMessage(msg);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         } else if (StringUtil.isNullOrEmpty(country)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Country is missing"));
             ans.setResultMessage(msg);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         } else if (StringUtil.isNullOrEmpty(environment)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Environment is missing"));
             ans.setResultMessage(msg);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         } else {
             /**
              * All data seems cleans so we can call the services.
@@ -186,7 +186,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
             } else {
                 /**
@@ -208,7 +208,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
                 cepData.setChain(chain);
 
                 ans = cepService.update(cepData);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -220,16 +220,16 @@ public class UpdateCountryEnvParam extends HttpServlet {
 
                 // Update the Database with the new list.
                 ans = cebService.compareListAndUpdateInsertDeleteElements(system, country, environment, cebList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 // Update the Database with the new list.
                 ans = ceaService.compareListAndUpdateInsertDeleteElements(system, country, environment, ceaList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 // Update the Database with the new list.
                 ans = cedService.compareListAndUpdateInsertDeleteElements(system, country, environment, cedList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                 // Update the Database with the new list.
                 ans = celService.compareListAndUpdateInsertDeleteElements(system, country, environment, celList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
             }
         }

@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +41,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "findEnvironmentByCriteria", urlPatterns = {"/findEnvironmentByCriteria"})
 public class findEnvironmentByCriteria extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(findEnvironmentByCriteria.class);

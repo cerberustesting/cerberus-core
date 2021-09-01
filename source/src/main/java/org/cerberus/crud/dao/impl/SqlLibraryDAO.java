@@ -261,7 +261,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<SqlLibrary>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadSqlLibraryFromResultSet(resultSet));
@@ -292,7 +292,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
     @Override
     public List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<SqlLibrary> sqlLibraryList = new ArrayList<SqlLibrary>();
+        List<SqlLibrary> sqlLibraryList = new ArrayList<>();
         StringBuilder gSearch = new StringBuilder();
         StringBuilder searchSQL = new StringBuilder();
 
@@ -315,15 +315,15 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
+        if (!searchTerm.isEmpty() && !individualSearch.isEmpty()) {
             searchSQL.append(gSearch.toString());
             searchSQL.append(" and ");
             searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
+        } else if (!individualSearch.isEmpty()) {
             searchSQL.append(" where `");
             searchSQL.append(individualSearch);
             searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL.append(gSearch.toString());
         }
 
@@ -451,11 +451,11 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         gSearch.append(searchTerm);
         gSearch.append("%')");
 
-        if (!searchTerm.equals("") && !inds.equals("")) {
+        if (!searchTerm.isEmpty() && !inds.isEmpty()) {
             searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
+        } else if (!inds.isEmpty()) {
             searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
+        } else if (!searchTerm.isEmpty()) {
             searchSQL = gSearch.toString();
         }
 
@@ -507,7 +507,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         try(Connection connection = this.databaseSpring.connect();
         		PreparedStatement preStat = connection.prepareStatement(query);
         		ResultSet resultSet = preStat.executeQuery();) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         	while (resultSet.next()) {
         		list.add(resultSet.getString("Type"));
             }
@@ -546,7 +546,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
-                if (q == null || q == "") {
+                if (q == null || "".equals(q)) {
                     q = "(`sql`." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);

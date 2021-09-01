@@ -168,7 +168,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         }
 
         if ((robot != null) && (!robot.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("rbe.`robot`", robot) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("rbe.`robot`", robot)).append(")");
         }
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (`active` = ? )");
@@ -478,7 +478,9 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         String executorProxyHost = rs.getString("rbe.executorproxyhost");
         Integer executorProxyPort = rs.getInt("rbe.executorproxyport");
         String executorProxyActive = rs.getString("rbe.executorproxyactive");
-        if(deviceport == 0) deviceport=null;
+        if(deviceport == 0) {
+            deviceport=null;
+        }
         String description = ParameterParserUtil.parseStringParam(rs.getString("rbe.description"), "");
         long dateLastExe = rs.getLong("rbe.DateLastExeSubmitted");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("rbe.UsrModif"), "");
@@ -498,7 +500,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

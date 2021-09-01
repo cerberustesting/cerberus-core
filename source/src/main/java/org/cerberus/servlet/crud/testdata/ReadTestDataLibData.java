@@ -194,7 +194,7 @@ public class ReadTestDataLibData extends HttpServlet {
         //retrieves the data for the entry
         JSONArray jsonArray = new JSONArray();
 
-        for (TestDataLibData subdata : (List<TestDataLibData>) answer.getDataList()) {
+        for (TestDataLibData subdata : answer.getDataList()) {
             if (!hasPermissionToSeePrivateValue && "Y".equals(subdata.getEncrypt())){
                 subdata.setValue("XXXXXXXX");
             }

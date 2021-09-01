@@ -19,9 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryApplicationObject;
 import org.springframework.stereotype.Service;
 

@@ -377,7 +377,7 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionClick(Session session, String locator, String text) {
 
         AnswerItem<JSONObject> actionResult = null;
-        if (!locator.equals("")) {
+        if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_CLICK, locator, null, "", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_CLICK, null, null,  text, "");
@@ -398,10 +398,20 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliActionDragAndDrop(Session session, String locator, String locator2) {
+    public MessageEvent doSikuliActionDragAndDrop(Session session, String locator, String locator2, String text, String text2) {
 
         AnswerItem<JSONObject> actionResult = null;
-        actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, locator, locator2, "", "");
+
+        if (!locator.isEmpty()&&!locator2.isEmpty()) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, locator, locator2, "", "");
+        } else if (!locator.isEmpty()&&locator2.isEmpty()) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, locator, null, "", text2);
+        } else if (locator.isEmpty()&&!locator2.isEmpty()) {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, locator2, text, "");
+        } else {
+            actionResult = doSikuliAction(session, this.SIKULI_DRAGANDDROP, null, null, text, text2);
+        }
+
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
@@ -422,7 +432,7 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionRightClick(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.equals("")) {
+        if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_RIGHTCLICK, locator, null, "", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_RIGHTCLICK, null, null, text, "");
@@ -473,7 +483,7 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionDoubleClick(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.equals("")) {
+        if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_DOUBLECLICK, locator, null,"", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_DOUBLECLICK, null, null, text, "");
@@ -516,8 +526,8 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.equals("")) {
-            actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, locator, null,"", "");
+        if (!locator.isEmpty()) {
+            actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, locator, null, "", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, null, null,  text, "");
         }
@@ -540,7 +550,7 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionWait(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.equals("")) {
+        if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_WAIT, locator, null, "", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_WAIT, null, null, text, "");
@@ -564,7 +574,7 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionWaitVanish(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = null;
 
-        if (!locator.equals("")) {
+        if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_WAITVANISH, locator, null, "", "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_WAITVANISH, null, null,  text, "");
@@ -691,7 +701,7 @@ public class SikuliService implements ISikuliService {
 
         try {
             AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_CAPTURE, null, null, "", "");
-            String screenshotInBase64 = ((JSONObject) actionResult.getItem()).getString("screenshot");
+            String screenshotInBase64 = actionResult.getItem().getString("screenshot");
             byte[] data = Base64.decodeBase64(screenshotInBase64);
 
             image = new File("temp.png");

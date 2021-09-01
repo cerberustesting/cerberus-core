@@ -417,7 +417,7 @@ public class PropertyService implements IPropertyService {
                                 stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
                                 stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
 
-                                if (key.equals("")) { // If subdata is empty we can omit the () or .
+                                if (key.isEmpty()) { // If subdata is empty we can omit the () or .
                                     variableString1 = tced.getProperty() + "(" + (ind + 1) + ")";
                                     stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
@@ -462,7 +462,7 @@ public class PropertyService implements IPropertyService {
      * @return a list of properties contained into the given {@link String}
      */
     private List<String> getPropertiesListFromString(String str) {
-        List<String> properties = new ArrayList<String>();
+        List<String> properties = new ArrayList<>();
         LOG.debug("Starting to guess properties from string : " + str);
         if (str == null) {
             LOG.debug("Stoping to guess properties - Empty String ");
@@ -510,7 +510,7 @@ public class PropertyService implements IPropertyService {
      */
     private AnswerItem<TestCaseCountryProperties> findMatchingTestCaseCountryProperty(String property, String country, List<TestCaseCountryProperties> propertieOfTestcase) {
 
-        AnswerItem<TestCaseCountryProperties> item = new AnswerItem<TestCaseCountryProperties>();
+        AnswerItem<TestCaseCountryProperties> item = new AnswerItem<>();
         boolean propertyDefined = false;
         item.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS));
 
@@ -607,7 +607,7 @@ public class PropertyService implements IPropertyService {
                 if (testCaseCountryProperty.getValue1().contains("%")) {
 
                     answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue1(), tCExecution, null, false);
-                    testCaseExecutionData.setValue1((String) answerDecode.getItem());
+                    testCaseExecutionData.setValue1(answerDecode.getItem());
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the property result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value1"));
@@ -622,7 +622,7 @@ public class PropertyService implements IPropertyService {
                 if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
 
                     answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue2(), tCExecution, null, false);
-                    testCaseExecutionData.setValue2((String) answerDecode.getItem());
+                    testCaseExecutionData.setValue2(answerDecode.getItem());
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the property result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value2"));
@@ -662,7 +662,7 @@ public class PropertyService implements IPropertyService {
                         forced_retry = true;
                     }
                     if (retries * periodms > maxtotalduration) {
-                        retries = (int) maxtotalduration / periodms;
+                        retries = maxtotalduration / periodms;
                         forced_retry = true;
                     }
                     if (forced_retry) {
@@ -1259,7 +1259,7 @@ public class PropertyService implements IPropertyService {
 
                 if (appService.getServiceRequest().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
-                    decodedEnveloppe = (String) answerDecode.getItem();
+                    decodedEnveloppe = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Request"));
@@ -1270,7 +1270,7 @@ public class PropertyService implements IPropertyService {
                 }
                 if (appService.getServicePath().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getServicePath(), tCExecution, testCaseStepActionExecution, false);
-                    decodedServicePath = (String) answerDecode.getItem();
+                    decodedServicePath = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Path"));
@@ -1281,7 +1281,7 @@ public class PropertyService implements IPropertyService {
                 }
                 if (appService.getOperation().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getOperation(), tCExecution, testCaseStepActionExecution, false);
-                    decodedMethod = (String) answerDecode.getItem();
+                    decodedMethod = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Operation"));
@@ -1292,7 +1292,7 @@ public class PropertyService implements IPropertyService {
                 }
                 if (appService.getAttachementURL().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getAttachementURL(), tCExecution, testCaseStepActionExecution, false);
-                    decodedAttachement = (String) answerDecode.getItem();
+                    decodedAttachement = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action r
                         // If anything wrong with the decode --> we stop here with decode message in the acesult.
@@ -1584,7 +1584,7 @@ public class PropertyService implements IPropertyService {
                 tCExecution.getCountry());
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
-            testDataLib = (TestDataLib) answer.getItem();
+            testDataLib = answer.getItem();
 
             AnswerList<HashMap<String, String>> serviceAnswer;
 
@@ -1593,7 +1593,7 @@ public class PropertyService implements IPropertyService {
                 if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
                     answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), tCExecution, testCaseStepActionExecution, false);
-                    String decodedScript = (String) answerDecode.getItem();
+                    String decodedScript = answerDecode.getItem();
                     testDataLib.setScript(decodedScript);
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1612,7 +1612,7 @@ public class PropertyService implements IPropertyService {
             // Here, we try to decode testCaseCountryProperty field `length` to get the value of property if needed
             try {
                 answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), tCExecution, testCaseStepActionExecution, false);
-                decodedLength = (String) answerDecode.getItem();
+                decodedLength = answerDecode.getItem();
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "length"));
                     testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
@@ -1647,14 +1647,14 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setDataLib(testDataLib.getName());
 
             res = serviceAnswer.getResultMessage();
-            result = (List<HashMap<String, String>>) serviceAnswer.getDataList(); //test data library returned by the service
+            result = serviceAnswer.getDataList(); //test data library returned by the service
 
             if (result != null) {
                 // Keeping raw data to testCaseExecutionData object.
                 testCaseExecutionData.setDataLibRawData(result);
 
                 // Value of testCaseExecutionData object takes the master subdata entry "".
-                String value = (String) result.get(0).get("");
+                String value = result.get(0).get("");
                 if (value == null) {
                     testCaseExecutionData.setValue(VALUE_NULL);
                 } else {

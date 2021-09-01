@@ -117,7 +117,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
             for (CountryEnvDeployType objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -141,13 +141,13 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
         return finalAnswer;
     }
@@ -156,7 +156,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     public CountryEnvDeployType convert(AnswerItem<CountryEnvDeployType> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (CountryEnvDeployType) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -165,7 +165,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     public List<CountryEnvDeployType> convert(AnswerList<CountryEnvDeployType> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<CountryEnvDeployType>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

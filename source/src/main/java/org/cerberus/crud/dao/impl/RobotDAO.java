@@ -35,11 +35,9 @@ import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.factory.impl.FactoryRobot;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -130,7 +128,7 @@ public class RobotDAO implements IRobotDAO {
         AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Robot> robotListResult = new ArrayList<Robot>();
+        List<Robot> robotListResult = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -141,7 +139,7 @@ public class RobotDAO implements IRobotDAO {
         searchSQL.append(" where 1=1 ");
 
         if ((robotList != null) && (!robotList.isEmpty())) {
-            searchSQL.append(" and (" + SqlUtil.generateInClause("rbt.`robot`", robotList) + ")");
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("rbt.`robot`", robotList)).append(")");
         }
         query.append(searchSQL);
 
@@ -187,14 +185,14 @@ public class RobotDAO implements IRobotDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                        response = new AnswerList<>(robotListResult, nrTotalRows);
                     } else if (robotListResult.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                        response = new AnswerList<>(robotListResult, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                        response = new AnswerList<>(robotListResult, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -244,9 +242,9 @@ public class RobotDAO implements IRobotDAO {
         AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<Robot> robotList = new ArrayList<Robot>();
+        List<Robot> robotList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
@@ -327,14 +325,14 @@ public class RobotDAO implements IRobotDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<Robot>(robotList, nrTotalRows);
+                        response = new AnswerList<>(robotList, nrTotalRows);
                     } else if (robotList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<Robot>(robotList, nrTotalRows);
+                        response = new AnswerList<>(robotList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<Robot>(robotList, nrTotalRows);
+                        response = new AnswerList<>(robotList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -568,7 +566,7 @@ public class RobotDAO implements IRobotDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

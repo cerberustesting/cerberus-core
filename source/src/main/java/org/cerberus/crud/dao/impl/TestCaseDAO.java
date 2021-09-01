@@ -56,7 +56,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.security.UserSecurity;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -85,6 +84,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     public static class Query {
 
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
+
+        private Query() {
+        }
     }
 
     private static final Logger LOG = LogManager.getLogger(TestCaseDAO.class);
@@ -110,7 +112,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -165,7 +167,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         searchSQL.append("WHERE 1=1");
 
         // Always filter on system user can view
-        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("app.`system`") + " ");
+        searchSQL.append(" AND ").append(UserSecurity.getSystemAllowForSQL("app.`system`")).append(" ");
 
         if (system != null && !system.isEmpty()) {
             searchSQL.append(" AND ");
@@ -394,11 +396,11 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            PreparedStatement preStat = connection.prepareStatement(sql);
             try {
                 preStat.setString(1, service);
 
-                HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
+                HashMap<String, TestListDTO> map = new HashMap<>();
 
                 String key, test, testCase;
                 ResultSet resultSet = preStat.executeQuery();
@@ -433,7 +435,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                     }
 
-                    listOfTests = new ArrayList<TestListDTO>(map.values());
+                    listOfTests = new ArrayList<>(map.values());
 
                     if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -656,9 +658,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     public boolean updateTestCaseInformationCountries(TestCase tc) {
         boolean res = false;
         final String sql_count = "SELECT Country FROM testcasecountry WHERE Test = ? AND TestCase = ?";
-        ArrayList<String> countriesDB = new ArrayList<String>();
+        ArrayList<String> countriesDB = new ArrayList<>();
 
-        List<String> countryList = new ArrayList<String>();
+        List<String> countryList = new ArrayList<>();
         for (TestCaseCountry tcCountry : tc.getTestCaseCountries()) {
             countryList.add(tcCountry.getCountry());
         }
@@ -949,14 +951,14 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL : " + query);
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCase>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1108,7 +1110,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 PreparedStatement preStat = connection.prepareStatement(query);
                 ResultSet resultSet = preStat.executeQuery();) {
 
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             while (resultSet.next()) {
                 list.add(resultSet.getString(1));
             }
@@ -1308,7 +1310,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             String[] valeur = entry.getValue();
             if (valeur != null && valeur.length > 0) {
                 if (!cle.equals("system") && !cle.equals("countries")) {
-                    query.append(" AND tec." + cle + " in (?");
+                    query.append(" AND tec.").append(cle).append(" in (?");
                 } else if (cle.equals("system")) {
                     query.append(" AND app.system in (?");
                 } else {
@@ -1412,7 +1414,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1469,7 +1471,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    list = new ArrayList<TestCase>();
+                    list = new ArrayList<>();
 
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1779,7 +1781,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

@@ -379,7 +379,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         AnswerList<TestDataLib> answer = new AnswerList<>();
         MessageEvent msg;
 
-        List<TestDataLib> list = new ArrayList<TestDataLib>();
+        List<TestDataLib> list = new ArrayList<>();
         final String query = "SELECT * FROM testdatalib tdl"
                 + " LEFT OUTER JOIN testdatalibdata tdd ON tdl.TestDataLibID = tdd.TestDataLibID and tdd.Subdata=''; ";
 
@@ -392,7 +392,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestDataLib>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -652,7 +652,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public AnswerList<String> readDistinctGroups() {
         AnswerList<String> answerList = new AnswerList<>();
-        ArrayList<String> listOfGroups = new ArrayList<String>();
+        ArrayList<String> listOfGroups = new ArrayList<>();
         MessageEvent msg;
         String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";
 
@@ -727,7 +727,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `privateData`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
         query.append("`service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
-        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
@@ -755,7 +755,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getScript()));
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseUrl()));
-                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
                     preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getService()));
                 }
                 preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
@@ -883,7 +883,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         MessageEvent msg;
         String query = "UPDATE testdatalib SET `name`=?, `type`=?, `privateData`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
-        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
             query += " ,`service` = ? ";
         } else {
             query += " ,`service` = null ";
@@ -920,7 +920,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(i++, testDataLib.getSeparator());
                 preStat.setString(i++, testDataLib.getDescription());
                 preStat.setString(i++, testDataLib.getLastModifier());
-                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().isEmpty())) {
                     preStat.setString(i++, testDataLib.getService());
                 }
                 preStat.setInt(i++, testDataLib.getTestDataLibID());
@@ -1059,7 +1059,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 

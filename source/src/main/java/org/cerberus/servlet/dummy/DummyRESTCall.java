@@ -42,7 +42,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "DummyRESTCall", urlPatterns = {"/DummyRESTCall"})
+@WebServlet(name = "DummyRESTCall", urlPatterns = {"/DummyRESTCall", "/DummyRESTCall/*"})
 public class DummyRESTCall extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DummyRESTCall.class);

@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author bcivel
  */
+@WebServlet(name = "CreateInvariant", urlPatterns = {"/CreateInvariant"})
 public class CreateInvariant extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateInvariant.class);
@@ -87,7 +89,7 @@ public class CreateInvariant extends HttpServlet {
         Integer sort = 10;
         boolean sort_error = false;
         try {
-            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+            if (request.getParameter("sort") != null && !request.getParameter("sort").isEmpty()) {
                 sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {

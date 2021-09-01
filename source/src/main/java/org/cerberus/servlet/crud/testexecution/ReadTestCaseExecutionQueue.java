@@ -103,7 +103,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         boolean queueid_error = false;
         if (request.getParameter("queueid") != null) {
             try {
-                if (request.getParameter("queueid") != null && !request.getParameter("queueid").equals("")) {
+                if (request.getParameter("queueid") != null && !request.getParameter("queueid").isEmpty()) {
                     queueid = Long.valueOf(policy.sanitize(request.getParameter("queueid")));
                     queueid_error = false;
                 }
@@ -251,7 +251,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecutionQueue exec : (List<TestCaseExecutionQueue>) resp.getDataList()) {
+            for (TestCaseExecutionQueue exec : resp.getDataList()) {
                 jsonArray.put(convertTestCaseExecutionInQueueToJSONObject(exec));
             }
         }

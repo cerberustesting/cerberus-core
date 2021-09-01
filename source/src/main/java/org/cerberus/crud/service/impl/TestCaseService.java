@@ -48,7 +48,6 @@ import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
-import org.cerberus.crud.service.IEventHookService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.IParameterService;
@@ -73,7 +72,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -497,7 +495,7 @@ public class TestCaseService implements ITestCaseService {
         AnswerItem<TestCase> answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerItem<TestCase> ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
-            TestCase tc = (TestCase) ai.getItem();
+            TestCase tc = ai.getItem();
             AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseStepsWithDependencies(tc.getTest(), tc.getTestcase());
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setSteps(al.getDataList());
@@ -561,7 +559,7 @@ public class TestCaseService implements ITestCaseService {
     public TestCase convert(AnswerItem<TestCase> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCase) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -570,7 +568,7 @@ public class TestCaseService implements ITestCaseService {
     public List<TestCase> convert(AnswerList<TestCase> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCase>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

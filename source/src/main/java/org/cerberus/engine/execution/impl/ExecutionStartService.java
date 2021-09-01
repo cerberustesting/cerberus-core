@@ -19,10 +19,7 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
@@ -58,9 +55,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.event.IEventService;
-import org.cerberus.util.answer.Answer;
 
 /**
  *

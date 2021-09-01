@@ -142,7 +142,7 @@ public class UpdateCampaign extends HttpServlet {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
             } else {
                 Campaign camp = (Campaign) resp.getItem();
                 camp.setDescription(desc);

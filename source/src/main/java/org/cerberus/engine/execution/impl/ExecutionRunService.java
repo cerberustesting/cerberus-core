@@ -274,7 +274,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             String capDecoded = "";
                             try {
                                 answerDecode = variableService.decodeStringCompletly(cap.getCapability(), tCExecution, null, false);
-                                capDecoded = (String) answerDecode.getItem();
+                                capDecoded = answerDecode.getItem();
 
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -291,7 +291,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             String valDecoded = "";
                             try {
                                 answerDecode = variableService.decodeStringCompletly(cap.getValue(), tCExecution, null, false);
-                                valDecoded = (String) answerDecode.getItem();
+                                valDecoded = answerDecode.getItem();
 
                                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                                     // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -315,7 +315,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setResultMessage(mes);
                     updateTCExecution(tCExecution, true);
 
-                    if (tCExecution.getRobotHost().equalsIgnoreCase("")) {
+                    if (tCExecution.getRobotHost().isEmpty()) {
                         mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                         mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getRobotHost()));
                         LOG.debug(logPrefix + mes.getDescription());
@@ -507,7 +507,7 @@ public class ExecutionRunService implements IExecutionRunService {
             if (!tCExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal1(), tCExecution, null, false);
-                    tCExecution.setConditionVal1((String) answerDecode.getItem());
+                    tCExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -523,7 +523,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal2(), tCExecution, null, false);
-                    tCExecution.setConditionVal2((String) answerDecode.getItem());
+                    tCExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -539,7 +539,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal3(), tCExecution, null, false);
-                    tCExecution.setConditionVal3((String) answerDecode.getItem());
+                    tCExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -561,7 +561,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution.getConditionVal3(),
                         tCExecution, tCExecution.getConditionOptions());
 
-                boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
+                boolean execute_TestCase = conditionAnswerTc.getItem();
 
                 if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
 
@@ -619,7 +619,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                                 try {
                                     answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue1(), tCExecution, null, false);
-                                    testCaseStepExecution.setConditionValue1((String) answerDecode.getItem());
+                                    testCaseStepExecution.setConditionValue1(answerDecode.getItem());
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                         testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
@@ -636,7 +636,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 if (!descriptionOrConditionStepDecodeError) {
                                     try {
                                         answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue2(), tCExecution, null, false);
-                                        testCaseStepExecution.setConditionValue2((String) answerDecode.getItem());
+                                        testCaseStepExecution.setConditionValue2(answerDecode.getItem());
                                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                                             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                             testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
@@ -654,7 +654,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 if (!descriptionOrConditionStepDecodeError) {
                                     try {
                                         answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getConditionValue3(), tCExecution, null, false);
-                                        testCaseStepExecution.setConditionValue3((String) answerDecode.getItem());
+                                        testCaseStepExecution.setConditionValue3(answerDecode.getItem());
                                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                                             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                             testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value3"));
@@ -672,7 +672,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 if (!descriptionOrConditionStepDecodeError) {
                                     try {
                                         answerDecode = variableService.decodeStringCompletly(testCaseStepExecution.getDescription(), tCExecution, null, false);
-                                        testCaseStepExecution.setDescription((String) answerDecode.getItem());
+                                        testCaseStepExecution.setDescription(answerDecode.getItem());
                                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                                             testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
                                             testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Description"));
@@ -692,7 +692,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
-                                        || testCaseStepExecution.getLoop().equals("")
+                                        || testCaseStepExecution.getLoop().isEmpty()
                                         || step_index > 1) {
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
@@ -701,7 +701,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                                 testCaseStepExecution.getConditionValue1(), testCaseStepExecution.getConditionValue2(), testCaseStepExecution.getConditionValue3(),
                                                 tCExecution, testCaseStepExecution.getConditionOptions());
 
-                                        execute_Step = (boolean) conditionAnswer.getItem();
+                                        execute_Step = conditionAnswer.getItem();
                                         if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")) {
                                             // There were no error when performing the condition evaluation.
                                             switch (testCaseStepExecution.getLoop()) {
@@ -1136,7 +1136,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal1((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1153,7 +1153,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal2(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal2((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1169,7 +1169,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal3(), tcExecution, null, false);
-                    testCaseStepActionExecution.setConditionVal3((String) answerDecode.getItem());
+                    testCaseStepActionExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1192,7 +1192,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(),
                         testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(),
                         tcExecution, testCaseStepActionExecution.getConditionOptions());
-                boolean execute_Action = (boolean) conditionAnswer.getItem();
+                boolean execute_Action = conditionAnswer.getItem();
 
                 if (tcExecution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
                     testCaseStepActionExecution.setDescription(testCaseStepActionExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
@@ -1416,7 +1416,7 @@ public class ExecutionRunService implements IExecutionRunService {
             if (!exe.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal1(), exe, null, false);
-                    controlExe.setConditionVal1((String) answerDecode.getItem());
+                    controlExe.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1433,7 +1433,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal2(), exe, null, false);
-                    controlExe.setConditionVal2((String) answerDecode.getItem());
+                    controlExe.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1449,7 +1449,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 try {
                     answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal3(), exe, null, false);
-                    controlExe.setConditionVal3((String) answerDecode.getItem());
+                    controlExe.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -1473,7 +1473,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(),
                         exe, controlExe.getConditionOptions());
 
-                boolean execute_Control = (boolean) conditionAnswer.getItem();
+                boolean execute_Control = conditionAnswer.getItem();
 
                 if (exe.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
                     controlExe.setDescription(controlExe.getDescription() + " - " + conditionAnswer.getMessageDescription());

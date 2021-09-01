@@ -242,7 +242,7 @@ public class UserService implements IUserService {
     public User convert(AnswerItem<User> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (User) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -251,7 +251,7 @@ public class UserService implements IUserService {
     public List<User> convert(AnswerList<User> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<User>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

@@ -22,18 +22,14 @@ package org.cerberus.service.cerberuscommand.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.gwt.impl.ActionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
-import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -204,7 +204,7 @@ public class ScheduleEntryService implements IScheduleEntryService {
             for (ScheduleEntry objectInDatabase : oldList) {
                 if (objectDifference.schedHasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -226,13 +226,13 @@ public class ScheduleEntryService implements IScheduleEntryService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteListSched(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createListSched(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

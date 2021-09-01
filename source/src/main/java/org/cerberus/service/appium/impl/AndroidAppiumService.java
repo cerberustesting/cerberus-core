@@ -23,6 +23,7 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
+import io.appium.java_client.android.nativekey.PressesKey;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import java.time.Duration;
@@ -81,7 +82,7 @@ public class AndroidAppiumService extends AppiumService {
 
         // Then press the key
         try {
-            ((AndroidDriver) session.getAppiumDriver()).pressKey(new KeyEvent(AndroidKey.valueOf(keyName)));
+            ((PressesKey) session.getAppiumDriver()).pressKey(new KeyEvent(AndroidKey.valueOf(keyName)));
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
 
         } catch (IllegalArgumentException e) {
@@ -173,7 +174,7 @@ public class AndroidAppiumService extends AppiumService {
                 valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }
             if (valueString.endsWith("\n")) {
-                valueString = valueString.substring(0, valueString.lastIndexOf("\n"));
+                valueString = valueString.substring(0, valueString.lastIndexOf('\n'));
             }
         }
 

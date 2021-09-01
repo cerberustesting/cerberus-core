@@ -53,7 +53,7 @@ public class ReadDocumentation extends HttpServlet {
         IDocumentationService docService = appContext.getBean(IDocumentationService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         JSONObject jsonResponse = new JSONObject();
-        List<Documentation> result = new ArrayList<Documentation>();
+        List<Documentation> result = new ArrayList<>();
         JSONObject format = new JSONObject();
 
         response.setContentType("application/json");

@@ -194,7 +194,7 @@ public class ReadBatchInvariant extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -210,7 +210,7 @@ public class ReadBatchInvariant extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (BatchInvariant brb : (List<BatchInvariant>) resp.getDataList()) {
+            for (BatchInvariant brb : resp.getDataList()) {
                 jsonArray.put(convertToJSONObject(brb));
             }
         }

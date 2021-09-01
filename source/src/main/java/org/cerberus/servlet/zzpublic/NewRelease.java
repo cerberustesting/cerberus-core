@@ -53,7 +53,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author vertigo
  */
-@WebServlet(name = "NewRelease", urlPatterns = {"/NewRelease"})
+@WebServlet(name = "NewRelease", description = "This Servlet is used to Record a new Release inside the pending sprint.", urlPatterns = {"/NewRelease"})
 public class NewRelease extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger("NewRelease");
@@ -130,17 +130,17 @@ public class NewRelease extends HttpServlet {
             boolean error = false;
 
             // Checking the parameter validity. If application has been entered, does it exist ?
-            if (!application.equalsIgnoreCase("") && !MyApplicationService.exist(application)) {
+            if (!application.isEmpty() && !MyApplicationService.exist(application)) {
                 out.println("Error - Application does not exist  : " + application);
                 error = true;
             }
-            if (application.equalsIgnoreCase("")) {
+            if (application.isEmpty()) {
                 out.println("Error - Parameter application is mandatory.");
                 error = true;
             }
 
             // Checking the parameter validity. If owner has been entered, does it exist ?
-            if (!owner.equalsIgnoreCase("")) {
+            if (!owner.isEmpty()) {
                 if (MyUserService.isUserExist(owner)) {
                     owner = MyUserService.findUserByKey(owner).getLogin(); // We get the exact name from Cerberus.
                 } else {

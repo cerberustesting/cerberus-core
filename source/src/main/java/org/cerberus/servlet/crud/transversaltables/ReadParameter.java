@@ -205,7 +205,7 @@ public class ReadParameter extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Parameter param : (List<Parameter>) resp.getDataList()) {
+            for (Parameter param : resp.getDataList()) {
                 param = parameterService.secureParameter(param);
                 JSONObject localParam = new JSONObject();
                 localParam = convertParameterToJSONObject(param);

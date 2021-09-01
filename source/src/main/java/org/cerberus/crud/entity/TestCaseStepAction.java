@@ -377,7 +377,7 @@ public class TestCaseStepAction {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStepAction other = (TestCaseStepAction) obj;
+        final TestCaseStepAction other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }

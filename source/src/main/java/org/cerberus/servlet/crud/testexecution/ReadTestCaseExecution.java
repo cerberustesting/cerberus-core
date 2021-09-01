@@ -122,15 +122,15 @@ public class ReadTestCaseExecution extends HttpServlet {
                     //If columnName is present, then return the distinct value of this column.
                     answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Tag.equals("") && byColumns) {
+                } else if (!Tag.isEmpty() && byColumns) {
                     //Return the columns to display in the execution table
                     answer = findExecutionColumns(appContext, request, Tag);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Tag.equals("") && !byColumns) {
+                } else if (!Tag.isEmpty() && !byColumns) {
                     //Return the list of execution for the execution table
                     answer = findExecutionListByTag(appContext, request, Tag);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!test.equals("") && !testCase.equals("")) {
+                } else if (!test.isEmpty() && !testCase.isEmpty()) {
                     TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                     JSONObject result = new JSONObject();
                     if (lastExec != null) {
@@ -320,7 +320,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -390,7 +390,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                          * based on the key Test_TestCase
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap<>();
-                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                        for (TestCaseLabel label : testCaseLabelList.getDataList()) {
                             String key = label.getTest() + "_" + label.getTestcase();
 
                             if (testCaseWithLabel.containsKey(key)) {
@@ -412,8 +412,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
 
-        jsonResponse.put("globalEnd", globalEnd.toString());
-        jsonResponse.put("globalStart", globalStart.toString());
+        jsonResponse.put("globalEnd", globalEnd);
+        jsonResponse.put("globalStart", globalStart);
         jsonResponse.put("globalStatus", globalStatus);
 
         jsonResponse.put("testList", ttc.values());
@@ -461,7 +461,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) resp.getDataList()) {
+            for (TestCaseExecution testCaseExecution : resp.getDataList()) {
                 jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
             }
         }

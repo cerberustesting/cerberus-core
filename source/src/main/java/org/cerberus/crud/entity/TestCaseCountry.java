@@ -125,7 +125,7 @@ public class TestCaseCountry {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseCountry other = (TestCaseCountry) obj;
+        final TestCaseCountry other = obj;
         if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
             return false;
         }

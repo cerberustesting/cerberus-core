@@ -125,4 +125,7 @@ public class RequestDbUtils {
         
         return res;
     }
+
+    private RequestDbUtils() {
+    }
 }

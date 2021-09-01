@@ -148,6 +148,7 @@ public class SoapService implements ISoapService {
         SOAPConnection connection = factory.createConnection();
 
         URL endpoint = new URL(null, url, new URLStreamHandler() {
+            @Override
             protected URLConnection openConnection(URL url) throws IOException {
                 // The url is the parent of this stream handler, so must
                 // create clone

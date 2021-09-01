@@ -126,7 +126,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         Integer priority = TestCaseExecutionQueue.PRIORITY_DEFAULT;
         boolean prio_error = false;
         try {
-            if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {
+            if (request.getParameter("priority") != null && !request.getParameter("priority").isEmpty()) {
                 priority = Integer.valueOf(policy.sanitize(request.getParameter("priority")));
             }
         } catch (Exception ex) {
@@ -171,14 +171,14 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert id to an integer value."));
                 ans.setResultMessage(msg);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             } else if (prio_error || priority > 2147483647 || priority < -2147483648) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert priority to an integer value."));
                 ans.setResultMessage(msg);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             } else {
                 /**
                  * All data seems cleans so we can call the services.
@@ -192,7 +192,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                      * Object could not be found. We stop here and report the
                      * error.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
 
                 } else {
 
@@ -232,7 +232,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         executionQueueData.setPriority(priority);
                         executionQueueData.setUsrModif(request.getRemoteUser());
                         ans = executionQueueService.update(executionQueueData);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
@@ -248,7 +248,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                     if (actionState.equals("toQUEUED")) {
                         LOG.debug("toQUEUED");
                         ans = executionQueueService.updateToQueued(id, "Trigered by user " + request.getRemoteUser() + ".");
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                         executionThreadPoolService.executeNextInQueueAsynchroneously(false);
                     }
 
@@ -256,28 +256,28 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                     if (actionSave.equals("priority")) {
                         executionQueueData.setPriority(priority);
                         ans = executionQueueService.update(executionQueueData);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
 
                     // Update is done, we now check what action needs to be performed.
                     if (actionState.equals("toCANCELLED")) {
                         LOG.debug("toCANCELLED");
                         ans = executionQueueService.updateToCancelled(id, "Cancelled by user " + request.getRemoteUser() + ".");
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
 
                     // Update is done, we now check what action needs to be performed.
                     if (actionState.equals("toCANCELLEDForce")) {
                         LOG.debug("toCANCELLEDForce");
                         ans = executionQueueService.updateToCancelledForce(id, "Forced Cancelled by user " + request.getRemoteUser() + ".");
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
 
                     // Update is done, we now check what action needs to be performed.
                     if (actionState.equals("toERRORForce")) {
                         LOG.debug("toERRORForce");
                         ans = executionQueueService.updateToErrorForce(id, "Forced Eroor by user " + request.getRemoteUser() + ".");
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
                 }
             }

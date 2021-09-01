@@ -127,7 +127,7 @@ public class CampaignLabelService implements ICampaignLabelService {
     public CampaignLabel convert(AnswerItem<CampaignLabel> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (CampaignLabel) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -136,7 +136,7 @@ public class CampaignLabelService implements ICampaignLabelService {
     public List<CampaignLabel> convert(AnswerList<CampaignLabel> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<CampaignLabel>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -175,7 +175,7 @@ public class CampaignLabelService implements ICampaignLabelService {
             for (CampaignLabel objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
@@ -197,13 +197,13 @@ public class CampaignLabelService implements ICampaignLabelService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         return finalAnswer;

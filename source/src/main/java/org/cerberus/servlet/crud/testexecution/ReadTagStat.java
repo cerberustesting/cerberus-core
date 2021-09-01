@@ -107,7 +107,7 @@ public class ReadTagStat extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<String>(), "UTF8");
+        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String from = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("from"), "2020-01-01T01:01:01.001Z", "UTF8");
         String to = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("to"), "2020-06-01T01:01:01.001Z", "UTF8");
 
@@ -136,9 +136,9 @@ public class ReadTagStat extends HttpServlet {
         LOG.debug("from : " + fromD);
         LOG.debug("to : " + toD);
 
-        List<String> gp1 = ParameterParserUtil.parseListParam(request.getParameterValues("group1s"), new ArrayList<String>(), "UTF8");
-        List<String> gp2 = ParameterParserUtil.parseListParam(request.getParameterValues("group2s"), new ArrayList<String>(), "UTF8");
-        List<String> gp3 = ParameterParserUtil.parseListParam(request.getParameterValues("group3s"), new ArrayList<String>(), "UTF8");
+        List<String> gp1 = ParameterParserUtil.parseListParam(request.getParameterValues("group1s"), new ArrayList<>(), "UTF8");
+        List<String> gp2 = ParameterParserUtil.parseListParam(request.getParameterValues("group2s"), new ArrayList<>(), "UTF8");
+        List<String> gp3 = ParameterParserUtil.parseListParam(request.getParameterValues("group3s"), new ArrayList<>(), "UTF8");
 
         List<String> defaultCampaigns = new ArrayList<>();
         if (gp1.isEmpty() && gp2.isEmpty() && gp3.isEmpty()) {
@@ -147,15 +147,15 @@ public class ReadTagStat extends HttpServlet {
         }
         List<String> campaigns = ParameterParserUtil.parseListParam(request.getParameterValues("campaigns"), defaultCampaigns, "UTF8");
 
-        List<String> countries = ParameterParserUtil.parseListParam(request.getParameterValues("countries"), new ArrayList<String>(), "UTF8");
+        List<String> countries = ParameterParserUtil.parseListParam(request.getParameterValues("countries"), new ArrayList<>(), "UTF8");
         Boolean countriesDefined = (request.getParameterValues("countries") != null);
         LOG.debug("countries : " + countries);
 
-        List<String> environments = ParameterParserUtil.parseListParam(request.getParameterValues("environments"), new ArrayList<String>(), "UTF8");
+        List<String> environments = ParameterParserUtil.parseListParam(request.getParameterValues("environments"), new ArrayList<>(), "UTF8");
         Boolean environmentsDefined = (request.getParameterValues("environments") != null);
         LOG.debug("environments : " + environments);
 
-        List<String> robotDeclis = ParameterParserUtil.parseListParam(request.getParameterValues("robotDeclis"), new ArrayList<String>(), "UTF8");
+        List<String> robotDeclis = ParameterParserUtil.parseListParam(request.getParameterValues("robotDeclis"), new ArrayList<>(), "UTF8");
         Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
         LOG.debug("robotDeclis : " + robotDeclis);
 
@@ -169,7 +169,7 @@ public class ReadTagStat extends HttpServlet {
         tagService = appContext.getBean(ITagService.class);
 
 //        List<TestCaseExecution> exeL = testCaseExecutionService.readByCriteria(null, null, null, null, ltc, fromD, toD);
-        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns, gp1, gp2, gp3, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), fromD, toD));
+        List<Tag> tagExeL = tagService.convert(tagService.readByVarious(campaigns, gp1, gp2, gp3, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), fromD, toD));
         for (Tag tagExe : tagExeL) {
             if (tagExe.getCountryList() != null) {
                 countryMap.put(tagExe.getCountryList(), countries.contains(formatedJSONArray(tagExe.getCountryList())));
@@ -189,7 +189,7 @@ public class ReadTagStat extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
             answer = findExeStatList(appContext, request, tagExeL, countryMap, countries, countriesDefined, environmentMap, environments, environmentsDefined, robotDecliMap, robotDeclis, robotDeclisDefined);
-            jsonResponse = (JSONObject) answer.getItem();
+            jsonResponse = answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

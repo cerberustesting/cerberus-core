@@ -78,10 +78,10 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep) {
         AnswerItem<TestCaseExecutionQueue> result = testCaseExecutionInQueueDAO.readByKey(queueId);
         if (withDep && result.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getItem() != null) {
-            TestCaseExecutionQueue obj = (TestCaseExecutionQueue) result.getItem();
+            TestCaseExecutionQueue obj = result.getItem();
             AnswerList<TestCaseExecutionQueueDep> depAnsList = testCaseExecutionQueueDepService.readByExeQueueId(queueId);
             if (depAnsList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                List<TestCaseExecutionQueueDep> depList = (List<TestCaseExecutionQueueDep>) depAnsList.getDataList();
+                List<TestCaseExecutionQueueDep> depList = depAnsList.getDataList();
                 obj.setTestcaseExecutionQueueDepList(depList);
                 result.setItem(obj);
             }
@@ -360,7 +360,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (TestCaseExecutionQueue) answerItem.getItem();
+            return answerItem.getItem();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
@@ -369,7 +369,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public List<TestCaseExecutionQueue> convert(AnswerList<TestCaseExecutionQueue> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
-            return (List<TestCaseExecutionQueue>) answerList.getDataList();
+            return answerList.getDataList();
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }

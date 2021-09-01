@@ -37,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.util.servlet.ServletUtil;
 
 /**
  *

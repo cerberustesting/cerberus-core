@@ -21,7 +21,6 @@ package org.cerberus.service.notifications.googlechat.impl;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import org.cerberus.crud.entity.EventHook;

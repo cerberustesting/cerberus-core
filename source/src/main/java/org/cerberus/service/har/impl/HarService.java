@@ -353,10 +353,10 @@ public class HarService implements IHarService {
 
             int reqSize = 0;
             if (entry.getJSONObject("response").getInt("headersSize") > 0) {
-                reqSize = reqSize + entry.getJSONObject("response").getInt("headersSize");
+                reqSize += entry.getJSONObject("response").getInt("headersSize");
             }
             if (entry.getJSONObject("response").getInt("bodySize") > 0) {
-                reqSize = reqSize + entry.getJSONObject("response").getInt("bodySize");
+                reqSize += entry.getJSONObject("response").getInt("bodySize");
             }
             int reqTime = entry.getInt("time");
             URL curUrl = new URL(url);

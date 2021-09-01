@@ -63,13 +63,21 @@ public class Country {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
 
         Country country1 = (Country) object;
 
-        if (!this.country.equals(country1.country)) return false;
-        if (!this.countryCode.equals(country1.countryCode)) return false;
+        if (!this.country.equals(country1.country)) {
+            return false;
+        }
+        if (!this.countryCode.equals(country1.countryCode)) {
+            return false;
+        }
 
         return true;
     }

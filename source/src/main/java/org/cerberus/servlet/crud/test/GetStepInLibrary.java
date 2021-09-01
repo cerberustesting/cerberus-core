@@ -76,9 +76,9 @@ public class GetStepInLibrary extends HttpServlet {
         JSONObject jsonObject = new JSONObject();
         try {
             List<TestCaseStep> tcsList;
-            if (test.equals("") && testCase.equals("")) {
+            if (test.isEmpty() && testCase.isEmpty()) {
                 tcsList = testCaseStepService.getStepLibraryBySystem(system);
-            } else if (testCase.equals("")) {
+            } else if (testCase.isEmpty()) {
                 tcsList = testCaseStepService.getStepLibraryBySystemTest(system, test);
             } else {
                 tcsList = testCaseStepService.getStepLibraryBySystemTestTestCase(system, test, testCase);

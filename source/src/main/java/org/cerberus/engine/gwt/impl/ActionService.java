@@ -154,7 +154,7 @@ public class ActionService implements IActionService {
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getDescription(),
                     tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setDescription((String) answerDecode.getItem());
+            testCaseStepActionExecution.setDescription(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -182,7 +182,7 @@ public class ActionService implements IActionService {
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
                     tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setValue1((String) answerDecode.getItem());
+            testCaseStepActionExecution.setValue1(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -207,7 +207,7 @@ public class ActionService implements IActionService {
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
                     tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setValue2((String) answerDecode.getItem());
+            testCaseStepActionExecution.setValue2(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.

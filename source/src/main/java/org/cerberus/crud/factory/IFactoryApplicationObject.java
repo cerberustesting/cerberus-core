@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 
 /**
