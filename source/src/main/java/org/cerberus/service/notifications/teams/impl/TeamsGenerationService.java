@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.notifications.teams.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -51,14 +52,14 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     private ITagService tagService;
 
     @Override
-    public JSONObject generateNotifyStartTagExecution(Tag tag) throws Exception {
+    public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
 
         JSONObject teamsMessage = new JSONObject();
 
@@ -92,14 +93,14 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     }
 
     @Override
-    public JSONObject generateNotifyEndTagExecution(Tag tag) throws Exception {
+    public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
 
         JSONObject teamsMessage = new JSONObject();
 

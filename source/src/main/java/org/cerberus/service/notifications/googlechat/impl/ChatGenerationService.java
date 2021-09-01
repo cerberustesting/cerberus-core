@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.notifications.googlechat.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -52,14 +53,15 @@ public class ChatGenerationService implements IChatGenerationService {
     private ITagService tagService;
 
     @Override
-    public JSONObject generateNotifyStartTagExecution(Tag tag) throws Exception {
+    public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
 
         JSONObject chatMessage = new JSONObject();
 
@@ -90,14 +92,15 @@ public class ChatGenerationService implements IChatGenerationService {
     }
 
     @Override
-    public JSONObject generateNotifyEndTagExecution(Tag tag) throws Exception {
+    public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
-        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), StandardCharsets.UTF_8);
+
+        cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
 
         JSONObject chatMessage = new JSONObject();
 
