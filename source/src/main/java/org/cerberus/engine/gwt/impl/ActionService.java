@@ -1428,7 +1428,16 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+
+                if (identifierDrag.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)&&
+                        identifierDrop.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag.getLocator(), identifierDrop.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                }
+            }
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag.getLocator(), identifierDrop.getLocator());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1440,7 +1449,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String value3) {
+        private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String value3) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();

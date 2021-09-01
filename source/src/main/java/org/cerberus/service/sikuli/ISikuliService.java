@@ -46,7 +46,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String locator2, String text, String text2);
 
     /**
      *
@@ -56,6 +56,15 @@ public interface ISikuliService {
      * @return
      */
     public MessageEvent doSikuliActionClick(Session session, String locator, String text);
+
+    /**
+     *
+     * @param session
+     * @param locator
+     * @param locator2
+     * @return
+     */
+    public MessageEvent doSikuliActionDragAndDrop(Session session, String locator, String locator2);
 
     /**
      *
