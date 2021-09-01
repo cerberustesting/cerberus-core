@@ -134,6 +134,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
      * @throws IOException
      */
     String updateTestCaseStepExecutionFromJsonArray(JSONArray stepArray, ApplicationContext appContext) throws JSONException, IOException {
+
         String returnCodeOfTestCase = "OK";
 
         for (int i = 0; i < stepArray.length(); i++) {
@@ -144,7 +145,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String testCase = currentStep.getString("testcase");
             int stepId = currentStep.getInt("step");
             int index = currentStep.getInt("index");
-            int sort = 0;
+            int sort = currentStep.getInt("sort");
             String loop = currentStep.getString("loop");
             String conditionOperator = currentStep.getString("conditionOperator");
             String conditionVal1Init = currentStep.getString("conditionVal1Init");
