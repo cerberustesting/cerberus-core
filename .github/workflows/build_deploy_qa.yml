@@ -6,8 +6,9 @@ name: Deploy on QA
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  # temporary disabled due to qa deployements during unmerged pull requests
+  # pull_request:
+  #  branches: [ master ]
 
 jobs:
   build:
