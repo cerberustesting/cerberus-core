@@ -376,7 +376,7 @@ Close an application.
 ==== dragAndDrop
 |=== 
 
-| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
 |=== 
 Will Drag from an _Element_ to another __Element__.
