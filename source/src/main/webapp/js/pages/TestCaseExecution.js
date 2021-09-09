@@ -1956,8 +1956,17 @@ function createStepList(data, steps) {
     $("#steps").empty;
     
     data.sort((a, b) => (a.start > b.start) ? 1 : -1);
-    console.log(data);
-    for (const [i, stepData] of data.entries()) {
+    
+    const PRE_TESTING = "Pre Testing";
+    const POST_TESTING = "Post Testing";
+    
+    const preTests = data.filter(step => step.test === PRE_TESTING);
+    const regularStep = data.filter(step => (step.test !== PRE_TESTING && step.test !== POST_TESTING));
+    const postTests = data.filter(step => step.test === POST_TESTING);
+    
+    const orderedStepDataList = [...preTests, ...regularStep, ...postTests];
+
+    for (const [i, stepData] of orderedStepDataList.entries()) {
             let step = new Step(stepData, steps, i);
             $(step).data("id", {stepId: i, actionId: -1, controlId: -1});
             step.addElements();
