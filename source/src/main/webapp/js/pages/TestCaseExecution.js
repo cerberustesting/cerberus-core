@@ -1953,41 +1953,17 @@ function createPropertiesOld(propList) {
 
 function createStepList(data, steps) {
     $("#actionContainer").empty();
-    $("#steps").empty();
-
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].test === "Pre Testing") {
-            var step = data[i];
-            var stepObj = new Step(step, steps, i);
-            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
-            stepObj.addElements();
-            stepObj.draw();
-            steps.push(stepObj);
-        }
+    $("#steps").empty;
+    
+    data.sort((a, b) => (a.start > b.start) ? 1 : -1);
+    console.log(data);
+    for (const [i, stepData] of data.entries()) {
+            let step = new Step(stepData, steps, i);
+            $(step).data("id", {stepId: i, actionId: -1, controlId: -1});
+            step.addElements();
+            step.draw();
+            steps.push(step);
     }
-
-    for (var i = 0; i < data.length; i++) {
-        if ((data[i].test !== "Pre Testing") && (data[i].test !== "Post Testing")) {
-            var step = data[i];
-            var stepObj = new Step(step, steps, i);
-            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
-            stepObj.addElements();
-            stepObj.draw();
-            steps.push(stepObj);
-        }
-    }
-
-    for (var i = 0; i < data.length; i++) {
-        if (data[i].test === "Post Testing") {
-            var step = data[i];
-            var stepObj = new Step(step, steps, i);
-            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
-            stepObj.addElements();
-            stepObj.draw();
-            steps.push(stepObj);
-        }
-    }
-
 
     if (steps.length > 0) {
         $("#steps a:last-child").trigger("click");
