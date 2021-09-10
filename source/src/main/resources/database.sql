@@ -5950,3 +5950,7 @@ ALTER TABLE `campaign`
 -- 1639
 UPDATE `parameter` set `value`='0' WHERE `system`='' and `param` in ('cerberus_selenium_highlightElement','cerberus_sikuli_highlightElement') and `value` = '';
 
+-- 1640
+ALTER TABLE `testcasestepexecution` 
+    MODIFY COLUMN `Start` TIMESTAMP(3) NOT NULL DEFAULT NOW(3), 
+    MODIFY COLUMN `End` TIMESTAMP(3) NOT NULL DEFAULT NOW(3);
