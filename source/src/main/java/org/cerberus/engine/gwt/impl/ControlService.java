@@ -538,7 +538,7 @@ public class ControlService implements IControlService {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString().replace("%STRING3%", ""))
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString()).replace("%STRING3%", "")
                     );
                 }
                 break;
@@ -1662,9 +1662,9 @@ public class ControlService implements IControlService {
     private String caseSensitiveMessageValue(String isCaseSensitive) {
 
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
-            return "case sensitive";
+            return "(case sensitive)";
         } else {
-            return "case insensitive";
+            return "(case insensitive)";
         }
     }
 
