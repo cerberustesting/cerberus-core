@@ -1953,7 +1953,7 @@ function createPropertiesOld(propList) {
 
 function createStepList(data, steps) {
     $("#actionContainer").empty();
-    $("#steps").empty;
+    $("#steps").empty();
     
     data.sort((a, b) => (a.start > b.start) ? 1 : -1);
     
@@ -1961,10 +1961,10 @@ function createStepList(data, steps) {
     const POST_TESTING = "Post Testing";
     
     const preTests = data.filter(step => step.test === PRE_TESTING);
-    const regularStep = data.filter(step => (step.test !== PRE_TESTING && step.test !== POST_TESTING));
+    const regularSteps = data.filter(step => (step.test !== PRE_TESTING && step.test !== POST_TESTING));
     const postTests = data.filter(step => step.test === POST_TESTING);
     
-    const orderedStepDataList = [...preTests, ...regularStep, ...postTests];
+    const orderedStepDataList = [...preTests, ...regularSteps, ...postTests];
 
     for (const [i, stepData] of orderedStepDataList.entries()) {
             let step = new Step(stepData, steps, i);
