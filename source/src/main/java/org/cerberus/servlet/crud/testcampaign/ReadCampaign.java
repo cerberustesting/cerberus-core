@@ -200,7 +200,7 @@ public class ReadCampaign extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
 
             for (Campaign campaign : answer.getDataList()) {
-                jsonArray.put(convertCampaigntoJSONObject(campaign));
+                jsonArray.put(convertToJSONObject(campaign));
                 if (!StringUtil.isNullOrEmpty(campaign.getGroup1())) {
                     gp1.put(campaign.getGroup1(), true);
                 }
@@ -251,32 +251,29 @@ public class ReadCampaign extends HttpServlet {
 
         campaignService = appContext.getBean(ICampaignService.class);
 
-        AnswerItem answer = campaignService.readByKey(key);
-        Campaign p;
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (Campaign) answer.getItem();
-            JSONObject response = convertCampaigntoJSONObject(p);
+        AnswerItem<Campaign> campaignAnswerItem = campaignService.readByKey(key);
+        if (campaignAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+
+            JSONObject response = this.<Campaign>convertToJSONObject(campaignAnswerItem.getItem());
 
             if (request.getParameter("parameters") != null) {
                 ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
-                AnswerList resp = campaignParameterService.readByCampaign(key);
+                AnswerList<CampaignParameter> resp = campaignParameterService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (Object c : resp.getDataList()) {
-                        CampaignParameter cc = (CampaignParameter) c;
-                        a.put(convertCampaignParametertoJSONObject(cc));
+                    for (CampaignParameter c : resp.getDataList()) {
+                        a.put(this.<CampaignParameter>convertToJSONObject(c));
                     }
                     response.put("parameters", a);
                 }
             }
             if (request.getParameter("labels") != null) {
                 ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
-                AnswerList resp = campaignLabelService.readByVarious(key);
+                AnswerList<CampaignLabel> resp = campaignLabelService.readByVarious(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (Object c : resp.getDataList()) {
-                        CampaignLabel cc = (CampaignLabel) c;
-                        a.put(convertCampaignLabeltoJSONObject(cc));
+                    for (CampaignLabel c : resp.getDataList()) {
+                        a.put(this.<CampaignLabel>convertToJSONObject(c));
                     }
                     response.put("labels", a);
                 }
@@ -286,9 +283,8 @@ public class ReadCampaign extends HttpServlet {
                 AnswerList<TestCase> resp = testCaseService.findTestCaseByCampaignNameAndCountries(key, null);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for (Object c : resp.getDataList()) {
-                        TestCase cc = (TestCase) c;
-                        a.put(convertTestCasetoJSONObject(cc));
+                    for (TestCase c : resp.getDataList()) {
+                        a.put(convertTestCasetoJSONObject(c));
                     }
                     response.put("testcase", a);
                 }
@@ -299,9 +295,10 @@ public class ReadCampaign extends HttpServlet {
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
                     for (Tag c : resp.getDataList()) {
-                        a.put(convertTagtoJSONObject(c));
+                        a.put(c.toJson());
                     }
                     response.put("tags", a);
+                   
                 }
             }
             if (request.getParameter("eventHooks") != null) {
@@ -333,7 +330,7 @@ public class ReadCampaign extends HttpServlet {
         }
         object.put("hasPermissions", userHasPermissions);
         item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
+        item.setResultMessage(campaignAnswerItem.getResultMessage());
 
         return item;
     }
@@ -346,7 +343,7 @@ public class ReadCampaign extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
-        String columnToSort[] = sColumns.split(",");
+        String[] columnToSort = sColumns.split(",");
 
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
@@ -371,28 +368,9 @@ public class ReadCampaign extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertCampaigntoJSONObject(Campaign campaign) throws JSONException {
+    private <T> JSONObject convertToJSONObject(T object) throws JSONException {
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
-    private JSONObject convertCampaignParametertoJSONObject(CampaignParameter campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
-    private JSONObject convertCampaignLabeltoJSONObject(CampaignLabel campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
-    private JSONObject convertTagtoJSONObject(Tag tag) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(tag));
-        return result;
+        return new JSONObject(gson.toJson(object));
     }
 
     private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {

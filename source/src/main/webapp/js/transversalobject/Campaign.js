@@ -247,7 +247,7 @@ function viewStatEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?tag=true&", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?tags=true&", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -309,17 +309,17 @@ function editEntryClick(param) {
     var jqxhr = $.getJSON("ReadCampaign?parameters=true&labels=true&eventHooks=true&scheduledEntries=true", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
-        var parameters = []
-        var criterias = []
+        var parameters = [];
+        var criterias = [];
         for (var i = 0; i < obj.parameters.length; i++)
         {
             if ((obj.parameters[i].parameter === "BROWSER")
                     || (obj.parameters[i].parameter === "COUNTRY")
                     || (obj.parameters[i].parameter === "ENVIRONMENT")
                     || (obj.parameters[i].parameter === "ROBOT")) {
-                parameters.push(obj.parameters[i])
+                parameters.push(obj.parameters[i]);
             } else {
-                criterias.push(obj.parameters[i])
+                criterias.push(obj.parameters[i]);
             }
         }
 
@@ -396,7 +396,7 @@ function editEntryClick(param) {
         var array = [];
 
         $.each(parameters, function (e) {
-            array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value])
+            array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value]);
         });
 
         if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
@@ -418,7 +418,7 @@ function editEntryClick(param) {
         var array = [];
 
         $.each(criterias, function (e) {
-            array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value])
+            array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value]);
         });
 
         if ($("#editTestcampaignModal #parameterTestcaseTable_wrapper").length > 0) {
@@ -430,7 +430,7 @@ function editEntryClick(param) {
             createDataTableWithPermissions(configurations, null, "#parameterTestcaseTable", undefined, true);
         }
 
-        renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable")
+        renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable");
 
         /* SCHEDULER */
         var doc = new Doc();
@@ -475,7 +475,7 @@ function editEntryModalSaveHandler() {
     tinyMCE.triggerSave();
 
     var sa = formEdit.serializeArray();
-    var data = {}
+    var data = {};
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
@@ -503,11 +503,11 @@ function editEntryModalSaveHandler() {
         parameters = $("#parameterTestcampaignsTable").DataTable().data().toArray();
     }
 
-    var criterias = null
+    var criterias = null;
     if ($("#parameterTestcaseTable_wrapper").length > 0) {
-        criterias = $("#parameterTestcaseTable").DataTable().data()
+        criterias = $("#parameterTestcaseTable").DataTable().data();
         for (let i = 0; i < criterias.length; i++) {
-            parameters.push(criterias[i])
+            parameters.push(criterias[i]);
         }
     }
 
@@ -672,11 +672,11 @@ function addEntryModalSaveHandler() {
         parameters = $("#parameterTestcampaignsTable").DataTable().data().toArray();
     }
 
-    var criterias = null
+    var criterias = null;
     if ($("#parameterTestcaseTable").length > 0) {
-        criterias = $("#parameterTestcaseTable").DataTable().data()
+        criterias = $("#parameterTestcaseTable").DataTable().data();
         for (let i = 0; i < criterias.length; i++) {
-            parameters.push(criterias[i])
+            parameters.push(criterias[i]);
         }
     }
     for (var i = 0; i < parameters.length; i++) {
@@ -760,10 +760,10 @@ function addLabelEntryClick(tableId) {
 
 function removeLabelEntryClick(tableId, key) {
     $('#' + tableId + '_wrapper #removeLabel').filter(function (i, e) {
-        return $(e).attr("key") == key;
+        return $(e).attr("key") === key;
     }).off().prop("disabled", true);
     $("#" + tableId).DataTable().rows(function (i, d, n) {
-        return d[2] == key;
+        return d[2] === key;
     }).remove().draw();
     updateSelectLabel(tableId);
 }
@@ -798,11 +798,11 @@ function addCriteriaEntryClick(tableId) {
 
 function removeParameterEntryClick(tableId, key, key1) {
     $('#' + tableId + '_wrapper #removeTestbattery').filter(function (i, e) {
-        return $(e).attr("key") == key && $(e).attr("key1") == key1;
+        return $(e).attr("key") == key && $(e).attr("key1") === key1;
     }).off().prop("disabled", true);
     $("#" + tableId).DataTable().rows(function (i, d, n) {
-        return d[2] == key && d[3] == key1;
-    }).remove().draw()
+        return d[2] === key && d[3] === key1;
+    }).remove().draw();
     updateSelectParameter(tableId);
 }
 
@@ -814,7 +814,7 @@ function getSys() {
 
 function updateSelectParameter(id) {
     var val = $("#" + id + '_wrapper #parameterTestSelect').find(":selected").val();
-    var data = []
+    var data = [];
 
     if (val === "ROBOT") {
         data = getSelectRobot(true, true);
@@ -841,7 +841,7 @@ function updateSelectParameter(id) {
 
 function updateSelectCriteria(id) {
     var val = $("#" + id + '_wrapper #criteriaTestSelect').find(":selected").val();
-    var data = []
+    var data = [];
     if (val === "STATUS") {
         data = getSelectInvariant("TCSTATUS", false, true);
     } else if (val === "TYPE") {
@@ -875,7 +875,7 @@ function findValueTableDataByCol(tableId, colIndex, value) {
     var result = false;
     //Iterate all td's in second column
     $.each($("#" + tableId).DataTable().rows().data(), function (i, v) {
-        if (v[colIndex] == value) {
+        if (v[colIndex] === value) {
             result = true;
         }
     });
