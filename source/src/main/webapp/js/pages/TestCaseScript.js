@@ -2181,7 +2181,7 @@ function Action(json, parentStep, canUpdate) {
          this.object = "";
          this.property = "";
          */
-        this.isFatal = false;
+        this.isFatal = true;
         this.conditionOperator = "always";
         this.conditionValue1 = "";
         this.conditionValue2 = "";
