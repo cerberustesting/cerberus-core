@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestcaseStepController {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "API_KEY";
+    private static final String API_KEY = "apikey";
     private final ITestCaseStepService testCaseStepService;
 
     @Autowired
@@ -53,7 +53,7 @@ public class TestcaseStepController {
     @ApiOperation("Get all TestcaseSteps")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV1.class, responseContainer = "List")
     @GetMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseStepDTOV1> findAllTestcaseSteps(@RequestParam("libraryStep") Boolean isLibraryStep) {
+    public List<TestcaseStepDTOV1> findAllTestcaseSteps(@RequestParam("isLibraryStep") Boolean isLibraryStep) {
         return null;
     }
 

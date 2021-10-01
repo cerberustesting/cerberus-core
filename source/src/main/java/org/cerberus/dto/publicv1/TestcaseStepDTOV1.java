@@ -68,10 +68,10 @@ public class TestcaseStepDTOV1 {
     private boolean isUsingLibraryStep;
     
     @ApiModelProperty(position = 12)
-    private String libraryStepTest;
+    private String libraryStepTestFolderId;
     
     @ApiModelProperty(position = 13)
-    private String libraryStepTestcase;
+    private String libraryStepTestcaseId;
     
     @ApiModelProperty(position = 14)
     private Integer libraryStepStepId;
@@ -125,8 +125,8 @@ public class TestcaseStepDTOV1 {
         this.conditionOptions = conditionOptions;
         this.description = description;
         this.isUsingLibraryStep = isUsingLibraryStep;
-        this.libraryStepTest = libraryStepTest;
-        this.libraryStepTestcase = libraryStepTestcase;
+        this.libraryStepTestFolderId = libraryStepTest;
+        this.libraryStepTestcaseId = libraryStepTestcase;
         this.libraryStepStepId = libraryStepStepId;
         this.isStepInUseByOtherTestcase = isStepInUseByOtherTestcase;
         this.libraryStepSort = libraryStepSort;
@@ -235,20 +235,20 @@ public class TestcaseStepDTOV1 {
         this.isUsingLibraryStep = isUsingLibraryStep;
     }
 
-    public String getLibraryStepTest() {
-        return libraryStepTest;
+    public String getLibraryStepTestFolderId() {
+        return libraryStepTestFolderId;
     }
 
-    public void setLibraryStepTest(String libraryStepTest) {
-        this.libraryStepTest = libraryStepTest;
+    public void setLibraryStepTestFolderId(String libraryStepTestFolderId) {
+        this.libraryStepTestFolderId = libraryStepTestFolderId;
     }
 
-    public String getLibraryStepTestcase() {
-        return libraryStepTestcase;
+    public String getLibraryStepTestcaseId() {
+        return libraryStepTestcaseId;
     }
 
-    public void setLibraryStepTestcase(String libraryStepTestcase) {
-        this.libraryStepTestcase = libraryStepTestcase;
+    public void setLibraryStepTestcaseId(String libraryStepTestcaseId) {
+        this.libraryStepTestcaseId = libraryStepTestcaseId;
     }
 
     public Integer getLibraryStepStepId() {
