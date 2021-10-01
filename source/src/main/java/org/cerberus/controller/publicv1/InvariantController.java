@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class InvariantController {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "API_KEY";
+    private static final String API_KEY = "apikey";
     private final IInvariantService invariantService;
 
     @Autowired
