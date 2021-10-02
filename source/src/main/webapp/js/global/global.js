@@ -1935,10 +1935,18 @@ function displayFooter(doc) {
  */
 function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
-    if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD") && (myenv !== "demo")) {
+    
+    isProduction = true;
+    isProduction = ((myenv === "prd") || (myenv === "prod") || (myenv === "PROD") || (myenv === "demo"));
+    isDev = ((window.location.hostname.includes('localhost')) || (window.location.hostname.includes('gravity')));
+    
+    if (!isProduction) {
         document.body.style.background = "#FFFFCC";
+    }
+    
+    if ((isProduction) && (!isDev)) {
         document.getElementById("menuDocumentationV2").style.display = "none";
-    } else {
+        document.getElementById("menuSwagger").style.display = "none";
     }
 }
 
