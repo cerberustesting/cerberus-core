@@ -30,11 +30,19 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.cerberus.util.StringUtil;
 
 /**
  * @author bcivel
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class TestCase {
 
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
@@ -95,70 +103,6 @@ public class TestCase {
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
 
-    public String getScreenSize() {
-        return screenSize;
-    }
-
-    public void setScreenSize(String screenSize) {
-        this.screenSize = screenSize;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public String getConditionOperator() {
-        return conditionOperator;
-    }
-
-    public void setConditionOperator(String conditionOperator) {
-        this.conditionOperator = conditionOperator;
-    }
-
-    public String getConditionValue1() {
-        return conditionValue1;
-    }
-
-    public void setConditionValue1(String conditionValue1) {
-        this.conditionValue1 = conditionValue1;
-    }
-
-    public String getConditionValue2() {
-        return conditionValue2;
-    }
-
-    public void setConditionValue2(String conditionValue2) {
-        this.conditionValue2 = conditionValue2;
-    }
-
-    public String getConditionValue3() {
-        return conditionValue3;
-    }
-
-    public void setConditionValue3(String conditionValue3) {
-        this.conditionValue3 = conditionValue3;
-    }
-
     @JsonIgnore
     public JSONArray getConditionOptions() {
         return conditionOptions;
@@ -178,26 +122,6 @@ public class TestCase {
             }
         }
         return res;
-    }
-
-    public void setConditionOptions(JSONArray conditionOptions) {
-        this.conditionOptions = conditionOptions;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(String executor) {
-        this.executor = executor;
     }
 
     @JsonIgnore
@@ -221,296 +145,12 @@ public class TestCase {
         return res;
     }
 
-    public void setBugs(JSONArray bugs) {
-        this.bugs = bugs;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String creator) {
-        this.usrCreated = creator;
-    }
-
-    public String getDetailedDescription() {
-        return detailedDescription;
-    }
-
-    public void setDetailedDescription(String detailedDescription) {
-        this.detailedDescription = detailedDescription;
-    }
-
-    public String getFromMinor() {
-        return fromMinor;
-    }
-
-    public void setFromMinor(String fromMinor) {
-        this.fromMinor = fromMinor;
-    }
-
-    public String getFromMajor() {
-        return fromMajor;
-    }
-
-    public void setFromMajor(String fromMajor) {
-        this.fromMajor = fromMajor;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getImplementer() {
-        return implementer;
-    }
-
-    public void setImplementer(String implementer) {
-        this.implementer = implementer;
-    }
-
-    public String getLastExecutionStatus() {
-        return lastExecutionStatus;
-    }
-
-    public void setLastExecutionStatus(String lastExecutionStatus) {
-        this.lastExecutionStatus = lastExecutionStatus;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String lastModifier) {
-        this.usrModif = lastModifier;
-    }
-
-    public String getOrigine() {
-        return origine;
-    }
-
-    public void setOrigine(String origin) {
-        this.origine = origin;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public String getRefOrigine() {
-        return refOrigine;
-    }
-
-    public void setRefOrigine(String refOrigin) {
-        this.refOrigine = refOrigin;
-    }
-
-    public boolean isActiveQA() {
-        return isActiveQA;
-    }
-
-    public void setActiveQA(boolean isActiveQA) {
-        this.isActiveQA = isActiveQA;
-    }
-
-    public boolean isActiveUAT() {
-        return isActiveUAT;
-    }
-
-    public void setActiveUAT(boolean isActiveUAT) {
-        this.isActiveUAT = isActiveUAT;
-    }
-
-    public boolean isActivePROD() {
-        return isActivePROD;
-    }
-
-    public void setActivePROD(boolean isActivePROD) {
-        this.isActivePROD = isActivePROD;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getTargetMinor() {
-        return targetMinor;
-    }
-
-    public void setTargetMinor(String targetMinor) {
-        this.targetMinor = targetMinor;
-    }
-
-    public String getTargetMajor() {
-        return targetMajor;
-    }
-
-    public void setTargetMajor(String targetMajor) {
-        this.targetMajor = targetMajor;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTestcase() {
-        return testcase;
-    }
-
-    public void setTestcase(String testcase) {
-        this.testcase = testcase;
-    }
-
-    public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
-        return testCaseCountryProperties;
-    }
-
-    public void setTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryProperties) {
-        this.testCaseCountryProperties = testCaseCountryProperties;
-    }
-
-    public List<TestCaseCountryProperties> getTestCaseInheritedProperties() {
-        return testCaseInheritedProperties;
-    }
-
-    public void setTestCaseInheritedProperties(List<TestCaseCountryProperties> testCaseInheritedProperties) {
-        this.testCaseInheritedProperties = testCaseInheritedProperties;
-    }
-
-    public List<TestCaseCountry> getTestCaseCountries() {
-        return testCaseCountries;
-    }
-
-    public void setTestCaseCountries(List<TestCaseCountry> testCaseCountries) {
-        this.testCaseCountries = testCaseCountries;
-    }
-
     public void appendTestCaseCountries(TestCaseCountry testCaseCountry) {
         this.testCaseCountries.add(testCaseCountry);
     }
 
-    public List<Invariant> getInvariantCountries() {
-        return invariantCountries;
-    }
-
-    public void setInvariantCountries(List<Invariant> invariantCountries) {
-        this.invariantCountries = invariantCountries;
-    }
-
-    public List<TestCaseStep> getSteps() {
-        return steps;
-    }
-
-    public void setSteps(List<TestCaseStep> steps) {
-        this.steps = steps;
-    }
-
     public void appendSteps(TestCaseStep step) {
         this.steps.add(step);
-    }
-
-    public String getTicket() {
-        return ticket;
-    }
-
-    public void setTicket(String ticket) {
-        this.ticket = ticket;
-    }
-
-    public String getToMinor() {
-        return toMinor;
-    }
-
-    public void setToMinor(String toMinor) {
-        this.toMinor = toMinor;
-    }
-
-    public String getToMajor() {
-        return toMajor;
-    }
-
-    public void setToMajor(String toMajor) {
-        this.toMajor = toMajor;
-    }
-
-    public List<TestCaseLabel> getTestCaseLabels() {
-        return testCaseLabels;
-    }
-
-    public void setTestCaseLabels(List<TestCaseLabel> testCaseLabels) {
-        this.testCaseLabels = testCaseLabels;
-    }
-
-    public List<Label> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(List<Label> labels) {
-        this.labels = labels;
-    }
-
-    public List<TestCaseDep> getDependencies() {
-        return dependencies;
-    }
-
-    public void setDependencies(List<TestCaseDep> dependencies) {
-        this.dependencies = dependencies;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     /**
@@ -521,11 +161,6 @@ public class TestCase {
     @JsonIgnore
     public String getKey() {
         return this.test + "##" + this.testcase;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCase{" + "test=" + test + ", testcase=" + testcase + ", application=" + application + ", ticket=" + ticket + ", description=" + description + ", detailedDescription=" + detailedDescription + ", priority=" + priority + ", version=" + version + ", status=" + status + ", isActive=" + isActive + ", isActiveQA=" + isActiveQA + ", isActiveUAT=" + isActiveUAT + ", isActivePROD=" + isActivePROD + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", type=" + type + ", origine=" + origine + ", refOrigine=" + refOrigine + ", comment=" + comment + ", fromMajor=" + fromMajor + ", fromMinor=" + fromMinor + ", toMajor=" + toMajor + ", toMinor=" + toMinor + ", bugs=" + bugs + ", targetMajor=" + targetMajor + ", targetMinor=" + targetMinor + ", implementer=" + implementer + ", executor=" + executor + ", userAgent=" + userAgent + ", screenSize=" + screenSize + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", system=" + system + ", lastExecutionStatus=" + lastExecutionStatus + ", testCaseCountryProperties=" + testCaseCountryProperties + ", testCaseInheritedProperties=" + testCaseInheritedProperties + ", invariantCountries=" + invariantCountries + ", testCaseCountries=" + testCaseCountries + ", steps=" + steps + ", testCaseLabels=" + testCaseLabels + ", labels=" + labels + ", dependencies=" + dependencies + '}';
     }
 
     public JSONObject toJson() {
