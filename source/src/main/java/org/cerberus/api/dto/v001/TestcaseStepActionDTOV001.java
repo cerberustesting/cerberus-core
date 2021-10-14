@@ -17,18 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dto.publicv1;
+package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
 /**
  *
  * @author mlombard
  */
 
-@ApiModel(value = "TestcaseStepActionControl")
-public class TestcaseStepActionControlDTOV1 {
+@ApiModel(value = "TestcaseStepAction")
+public class TestcaseStepActionDTOV001 {
     
     @ApiModelProperty(position = 0)
     private String testFolderId;
@@ -43,84 +45,74 @@ public class TestcaseStepActionControlDTOV1 {
     private int actionId;
     
     @ApiModelProperty(position = 4)
-    private int controlId;
-    
-    @ApiModelProperty(position = 5)
     private int sort;
     
-    @ApiModelProperty(position = 6)
+    @ApiModelProperty(position = 5)
     private String conditionOperator;
     
-    @ApiModelProperty(position = 7)
+    @ApiModelProperty(position = 6)
     private String conditionValue1;
     
-    @ApiModelProperty(position = 8)
+    @ApiModelProperty(position = 7)
     private String conditionValue2;
     
-    @ApiModelProperty(position = 9)
+    @ApiModelProperty(position = 8)
     private String conditionValue3;
     
+    @ApiModelProperty(position = 9)
+    private JsonNode conditionOptions;
+    
     @ApiModelProperty(position = 10)
-    private String conditionOptions;
+    private String action;
     
     @ApiModelProperty(position = 11)
-    private String control;
-    
-    @ApiModelProperty(position = 12)
     private String value1;
     
-    @ApiModelProperty(position = 16)
+    @ApiModelProperty(position = 12)
     private String value2;
     
-    @ApiModelProperty(position = 14)
+    @ApiModelProperty(position = 13)
     private String value3;
     
-    @ApiModelProperty(position = 15)
-    private String options;
+    @ApiModelProperty(position = 14)
+    private JsonNode options;
     
-    @ApiModelProperty(position = 16)
+    @ApiModelProperty(position = 15)
     private boolean isFatal;
     
-    @ApiModelProperty(position = 17)
+    @ApiModelProperty(position = 16)
     private String description;
     
-    @ApiModelProperty(position = 18)
+    @ApiModelProperty(position = 17)
     private String screenshotFilename;
     
-    @ApiModelProperty(position = 19)
+    @ApiModelProperty(position = 18)
     private String usrCreated;
     
-    @ApiModelProperty(position = 20)
+    @ApiModelProperty(position = 19)
     private String dateCreated;
     
-    @ApiModelProperty(position = 21)
+    @ApiModelProperty(position = 20)
     private String usrModif;
     
-    @ApiModelProperty(position = 22)
+    @ApiModelProperty(position = 21)
     private String dateModif;
 
-    public TestcaseStepActionControlDTOV1() {
-    }
+    @ApiModelProperty(position = 22)
+    List<TestcaseStepActionControlDTOV001> controls;
 
-    public TestcaseStepActionControlDTOV1(String test, String testcase, 
-            int stepId, int actionId, int controlId, int sort, 
-            String conditionOperator, String conditionValue1, String conditionValue2, 
-            String conditionValue3, String conditionOptions, String control, 
-            String value1, String value2, String value3, String options, 
-            boolean isFatal, String description, String screenshotFilename, 
-            String usrCreated, String dateCreated, String usrModif, String dateModif) {
-        this.testFolderId = test;
-        this.testcaseId = testcase;
+    public TestcaseStepActionDTOV001(String testFolderId, String testcaseId, int stepId, int actionId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JsonNode conditionOptions, String action, String value1, String value2, String value3, JsonNode options, boolean isFatal, String description, String screenshotFilename, String usrCreated, String dateCreated, String usrModif, String dateModif, List<TestcaseStepActionControlDTOV001> controls) {
+        this.testFolderId = testFolderId;
+        this.testcaseId = testcaseId;
         this.stepId = stepId;
         this.actionId = actionId;
-        this.controlId = controlId;
         this.sort = sort;
         this.conditionOperator = conditionOperator;
         this.conditionValue1 = conditionValue1;
         this.conditionValue2 = conditionValue2;
         this.conditionValue3 = conditionValue3;
         this.conditionOptions = conditionOptions;
-        this.control = control;
+        this.action = action;
         this.value1 = value1;
         this.value2 = value2;
         this.value3 = value3;
@@ -132,6 +124,7 @@ public class TestcaseStepActionControlDTOV1 {
         this.dateCreated = dateCreated;
         this.usrModif = usrModif;
         this.dateModif = dateModif;
+        this.controls = controls;
     }
 
     public String getTestFolderId() {
@@ -164,14 +157,6 @@ public class TestcaseStepActionControlDTOV1 {
 
     public void setActionId(int actionId) {
         this.actionId = actionId;
-    }
-
-    public int getControlId() {
-        return controlId;
-    }
-
-    public void setControlId(int controlId) {
-        this.controlId = controlId;
     }
 
     public int getSort() {
@@ -214,20 +199,20 @@ public class TestcaseStepActionControlDTOV1 {
         this.conditionValue3 = conditionValue3;
     }
 
-    public String getConditionOptions() {
+    public JsonNode getConditionOptions() {
         return conditionOptions;
     }
 
-    public void setConditionOptions(String conditionOptions) {
+    public void setConditionOptions(JsonNode conditionOptions) {
         this.conditionOptions = conditionOptions;
     }
 
-    public String getControl() {
-        return control;
+    public String getAction() {
+        return action;
     }
 
-    public void setControl(String control) {
-        this.control = control;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getValue1() {
@@ -254,11 +239,11 @@ public class TestcaseStepActionControlDTOV1 {
         this.value3 = value3;
     }
 
-    public String getOptions() {
+    public JsonNode getOptions() {
         return options;
     }
 
-    public void setOptions(String options) {
+    public void setOptions(JsonNode options) {
         this.options = options;
     }
 
@@ -317,7 +302,14 @@ public class TestcaseStepActionControlDTOV1 {
     public void setDateModif(String dateModif) {
         this.dateModif = dateModif;
     }
-    
-    
+
+    public List<TestcaseStepActionControlDTOV001> getControls() {
+        return controls;
+    }
+
+    public void setControls(List<TestcaseStepActionControlDTOV001> controls) {
+        this.controls = controls;
+    }
+
     
 }

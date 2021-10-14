@@ -58,7 +58,7 @@ public interface IInvariantService {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    HashMap<String, Invariant> readByIdNameToHash(String idName) throws CerberusException;
+    Map<String, Invariant> readByIdNameToHash(String idName) throws CerberusException;
 
     /**
      *

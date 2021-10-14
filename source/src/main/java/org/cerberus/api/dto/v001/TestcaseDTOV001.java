@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dto.publicv1;
+package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 
 @ApiModel(value = "Testcase")
-public class TestcaseDTOV1 {
+public class TestcaseDTOV001 {
     
     @ApiModelProperty(example = "Examples", position = 0)
     private String testFolderId;
@@ -80,7 +81,7 @@ public class TestcaseDTOV1 {
     private String conditionValue3;
     
     @ApiModelProperty(example = "", position = 16)
-    private String conditionOptions;
+    private JsonNode conditionOptions;
     
     @ApiModelProperty(example = "AUTOMATED", position = 17)
     private String type;
@@ -107,7 +108,7 @@ public class TestcaseDTOV1 {
     private String toMinor;
     
     @ApiModelProperty(example = "", position = 25)
-    private String bugs;
+    private JsonNode bugs;
     
     @ApiModelProperty(example = "", position = 26)
     private String targetMajor;
@@ -139,22 +140,13 @@ public class TestcaseDTOV1 {
     @ApiModelProperty(example = "2019-04-06 10:15:09.0", position = 35)
     private String dateModif;
 
-    @ApiModelProperty(position = 36)
-    private List<TestcaseStepDTOV1> steps;
+    @ApiModelProperty(position = 36, required = false)
+    private List<TestcaseStepDTOV001> steps;
 
-    public TestcaseDTOV1() {
+    public TestcaseDTOV001() {
     }
 
-    public TestcaseDTOV1(String testFolderId, String testcaseId, String application, 
-            String description, String detailedDescription, int priority, int version, 
-            String status, boolean isActive, boolean isActiveQA, boolean isActiveUAT, 
-            boolean isActivePROD, String conditionOperator, String conditionValue1, 
-            String conditionValue2, String conditionValue3, String conditionOptions, 
-            String type, String origine, String refOrigine, String comment, 
-            String fromMajor, String fromMinor, String toMajor, String toMinor, 
-            String bugs, String targetMajor, String targetMinor, String implementer, 
-            String executor, String userAgent, String screenSize, String usrCreated, 
-            String dateCreated, String usrModif, String dateModif, List<TestcaseStepDTOV1> steps) {
+    public TestcaseDTOV001(String testFolderId, String testcaseId, String application, String description, String detailedDescription, int priority, int version, String status, boolean isActive, boolean isActiveQA, boolean isActiveUAT, boolean isActivePROD, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JsonNode conditionOptions, String type, String origine, String refOrigine, String comment, String fromMajor, String fromMinor, String toMajor, String toMinor, JsonNode bugs, String targetMajor, String targetMinor, String implementer, String executor, String userAgent, String screenSize, String usrCreated, String dateCreated, String usrModif, String dateModif, List<TestcaseStepDTOV001> steps) {
         this.testFolderId = testFolderId;
         this.testcaseId = testcaseId;
         this.application = application;
@@ -322,11 +314,11 @@ public class TestcaseDTOV1 {
         this.conditionValue3 = conditionValue3;
     }
 
-    public String getConditionOptions() {
+    public JsonNode getConditionOptions() {
         return conditionOptions;
     }
 
-    public void setConditionOptions(String conditionOptions) {
+    public void setConditionOptions(JsonNode conditionOptions) {
         this.conditionOptions = conditionOptions;
     }
 
@@ -394,11 +386,11 @@ public class TestcaseDTOV1 {
         this.toMinor = toMinor;
     }
 
-    public String getBugs() {
+    public JsonNode getBugs() {
         return bugs;
     }
 
-    public void setBugs(String bugs) {
+    public void setBugs(JsonNode bugs) {
         this.bugs = bugs;
     }
 
@@ -482,15 +474,13 @@ public class TestcaseDTOV1 {
         this.dateModif = dateModif;
     }
 
-    public List<TestcaseStepDTOV1> getSteps() {
+    public List<TestcaseStepDTOV001> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<TestcaseStepDTOV1> steps) {
+    public void setSteps(List<TestcaseStepDTOV001> steps) {
         this.steps = steps;
     }
-    
-    
-    
+
     
 }

@@ -79,6 +79,9 @@
         <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
+        <!-- Mappers -->
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>  
+              
         <!-- Test scope -->
         <junit.version>4.12</junit.version>
         <powermock.version>1.5.2</powermock.version>
@@ -158,10 +161,11 @@
             <scope>test</scope>
         </dependency>
         
+        <!-- Mappers -->
         <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>2.4.4</version>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
         </dependency>
                 
         <!-- JSON Lib -->
@@ -533,6 +537,13 @@
                         <arg>-Xmaxwarns</arg>
                         <arg>9999</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             
