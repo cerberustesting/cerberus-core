@@ -17,56 +17,59 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.controller.publicv1;
+package org.cerberus.api.controller.v001;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.dto.publicv1.InvariantDTOV1;
+import org.cerberus.api.dto.v001.InvariantDTOV001;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.mapper.InvariantMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.cerberus.api.mapper.v001.InvariantMapperV001;
+import org.cerberus.api.service.InvariantApiService;
+import org.springframework.http.MediaType;
 
 /**
  *
  * @author mlombard
  */
+@Api(tags = "Invariant endpoint")
 @RestController
 @RequestMapping(path = "/public/invariants")
-public class InvariantController {
+public class InvariantControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "apikey";
-    private final IInvariantService invariantService;
+    private final InvariantApiService invariantApiService;
+    private final InvariantMapperV001 invariantMapper;
 
     @Autowired
-    public InvariantController(IInvariantService invariantService) {
-        this.invariantService = invariantService;
+    public InvariantControllerV001(InvariantApiService invariantApiService, InvariantMapperV001 invariantMapper) {
+        this.invariantApiService = invariantApiService;
+        this.invariantMapper = invariantMapper;
     }
-
+    
+    
     @ApiOperation("Get all invariants filtered by idName")
-    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV1.class, responseContainer = "List")
-    @GetMapping(path = "/{idName}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<InvariantDTOV1> findInvariantByIdName(@PathVariable("idName") String idName) throws CerberusException {
-        return this.invariantService.readByIdName(idName)
+    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
+    @GetMapping(path = "/{idName}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<InvariantDTOV001> findInvariantByIdName(@PathVariable("idName") String idName) throws CerberusException {
+        return this.invariantApiService.readyByIdName(idName)
                 .stream()
-                .map(InvariantMapper::convertToDto)
+                .map(this.invariantMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @ApiOperation("Get all invariants filtered by idName and value")
-    @ApiResponse(code = 200, message = "ok", response = InvariantDTOV1.class)
-    @GetMapping(path = "/{idName}/{value}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public InvariantDTOV1 findInvariantByIdNameAndValue(@PathVariable("idName") String idName, @PathVariable("value") String value) {
-        return InvariantMapper.convertToDto(
-                this.invariantService.readByKey(idName, value)
-                        .getItem()
-        );
+    @ApiResponse(code = 200, message = "ok", response = InvariantDTOV001.class)
+    @GetMapping(path = "/{idName}/{value}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public InvariantDTOV001 findInvariantByIdNameAndValue(@PathVariable("idName") String idName, @PathVariable("value") String value) throws CerberusException {
+        return this.invariantMapper.toDTO(this.invariantApiService.readByKey(idName, value));
     }
 }

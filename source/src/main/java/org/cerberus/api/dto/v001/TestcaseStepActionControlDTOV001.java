@@ -17,126 +17,115 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dto.publicv1;
+package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
 
 /**
  *
  * @author mlombard
  */
+@ApiModel(value = "TestcaseStepActionControl")
+public class TestcaseStepActionControlDTOV001 {
 
-@ApiModel(value = "TestcaseStep")
-public class TestcaseStepDTOV1 {
-    
     @ApiModelProperty(position = 0)
     private String testFolderId;
-    
+
     @ApiModelProperty(position = 1)
     private String testcaseId;
-    
+
     @ApiModelProperty(position = 2)
     private int stepId;
-    
+
     @ApiModelProperty(position = 3)
-    private int sort;
-    
+    private int actionId;
+
     @ApiModelProperty(position = 4)
-    private String loop;
-    
+    private int controlId;
+
     @ApiModelProperty(position = 5)
-    private String conditionOperator;
-    
+    private int sort;
+
     @ApiModelProperty(position = 6)
-    private String conditionValue1;
-    
+    private String conditionOperator;
+
     @ApiModelProperty(position = 7)
-    private String conditionValue2;
-    
+    private String conditionValue1;
+
     @ApiModelProperty(position = 8)
-    private String conditionValue3;
-    
+    private String conditionValue2;
+
     @ApiModelProperty(position = 9)
-    private String conditionOptions;
-    
+    private String conditionValue3;
+
     @ApiModelProperty(position = 10)
-    private String description;
-    
+    private JsonNode conditionOptions;
+
     @ApiModelProperty(position = 11)
-    private boolean isUsingLibraryStep;
-    
+    private String control;
+
     @ApiModelProperty(position = 12)
-    private String libraryStepTestFolderId;
-    
-    @ApiModelProperty(position = 13)
-    private String libraryStepTestcaseId;
-    
-    @ApiModelProperty(position = 14)
-    private Integer libraryStepStepId;
-    
-    @ApiModelProperty(position = 15)
-    private boolean isStepInUseByOtherTestcase;
-    
+    private String value1;
+
     @ApiModelProperty(position = 16)
-    private int libraryStepSort;
-    
+    private String value2;
+
+    @ApiModelProperty(position = 14)
+    private String value3;
+
+    @ApiModelProperty(position = 15)
+    private JsonNode options;
+
+    @ApiModelProperty(position = 16)
+    private boolean isFatal;
+
     @ApiModelProperty(position = 17)
-    private boolean isLibraryStep;
-    
+    private String description;
+
     @ApiModelProperty(position = 18)
-    private boolean isExecutionForced;
-    
+    private String screenshotFilename;
+
     @ApiModelProperty(position = 19)
     private String usrCreated;
-    
+
     @ApiModelProperty(position = 20)
     private String dateCreated;
-    
+
     @ApiModelProperty(position = 21)
     private String usrModif;
-    
+
     @ApiModelProperty(position = 22)
     private String dateModif;
 
-    @ApiModelProperty(position = 23)
-    private List<TestcaseStepActionDTOV1> actions;
-
-    public TestcaseStepDTOV1() {
+    public TestcaseStepActionControlDTOV001() {
     }
 
-    public TestcaseStepDTOV1(String testFolderId, String testcaseId, int stepId, int sort, 
-            String loop, String conditionOperator, String conditionValue1, String conditionValue2, 
-            String conditionValue3, String conditionOptions, String description, 
-            boolean isUsingLibraryStep, String libraryStepTest, String libraryStepTestcase, 
-            Integer libraryStepStepId, boolean isStepInUseByOtherTestcase, int libraryStepSort, 
-            boolean isLibraryStep, boolean isExecutionForced, String usrCreated, String dateCreated, 
-            String usrModif, String dateModif, List<TestcaseStepActionDTOV1> actions) {
+    public TestcaseStepActionControlDTOV001(String testFolderId, String testcaseId, int stepId, int actionId, int controlId, int sort, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JsonNode conditionOptions, String control, String value1, String value2, String value3, JsonNode options, boolean isFatal, String description, String screenshotFilename, String usrCreated, String dateCreated, String usrModif, String dateModif) {
         this.testFolderId = testFolderId;
         this.testcaseId = testcaseId;
         this.stepId = stepId;
+        this.actionId = actionId;
+        this.controlId = controlId;
         this.sort = sort;
-        this.loop = loop;
         this.conditionOperator = conditionOperator;
         this.conditionValue1 = conditionValue1;
         this.conditionValue2 = conditionValue2;
         this.conditionValue3 = conditionValue3;
         this.conditionOptions = conditionOptions;
+        this.control = control;
+        this.value1 = value1;
+        this.value2 = value2;
+        this.value3 = value3;
+        this.options = options;
+        this.isFatal = isFatal;
         this.description = description;
-        this.isUsingLibraryStep = isUsingLibraryStep;
-        this.libraryStepTestFolderId = libraryStepTest;
-        this.libraryStepTestcaseId = libraryStepTestcase;
-        this.libraryStepStepId = libraryStepStepId;
-        this.isStepInUseByOtherTestcase = isStepInUseByOtherTestcase;
-        this.libraryStepSort = libraryStepSort;
-        this.isLibraryStep = isLibraryStep;
-        this.isExecutionForced = isExecutionForced;
+        this.screenshotFilename = screenshotFilename;
         this.usrCreated = usrCreated;
         this.dateCreated = dateCreated;
         this.usrModif = usrModif;
         this.dateModif = dateModif;
-        this.actions = actions;
     }
 
     public String getTestFolderId() {
@@ -163,20 +152,28 @@ public class TestcaseStepDTOV1 {
         this.stepId = stepId;
     }
 
+    public int getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(int actionId) {
+        this.actionId = actionId;
+    }
+
+    public int getControlId() {
+        return controlId;
+    }
+
+    public void setControlId(int controlId) {
+        this.controlId = controlId;
+    }
+
     public int getSort() {
         return sort;
     }
 
     public void setSort(int sort) {
         this.sort = sort;
-    }
-
-    public String getLoop() {
-        return loop;
-    }
-
-    public void setLoop(String loop) {
-        this.loop = loop;
     }
 
     public String getConditionOperator() {
@@ -211,12 +208,60 @@ public class TestcaseStepDTOV1 {
         this.conditionValue3 = conditionValue3;
     }
 
-    public String getConditionOptions() {
+    public JsonNode getConditionOptions() {
         return conditionOptions;
     }
 
-    public void setConditionOptions(String conditionOptions) {
+    public void setConditionOptions(JsonNode conditionOptions) {
         this.conditionOptions = conditionOptions;
+    }
+
+    public String getControl() {
+        return control;
+    }
+
+    public void setControl(String control) {
+        this.control = control;
+    }
+
+    public String getValue1() {
+        return value1;
+    }
+
+    public void setValue1(String value1) {
+        this.value1 = value1;
+    }
+
+    public String getValue2() {
+        return value2;
+    }
+
+    public void setValue2(String value2) {
+        this.value2 = value2;
+    }
+
+    public String getValue3() {
+        return value3;
+    }
+
+    public void setValue3(String value3) {
+        this.value3 = value3;
+    }
+
+    public JsonNode getOptions() {
+        return options;
+    }
+
+    public void setOptions(JsonNode options) {
+        this.options = options;
+    }
+
+    public boolean isIsFatal() {
+        return isFatal;
+    }
+
+    public void setIsFatal(boolean isFatal) {
+        this.isFatal = isFatal;
     }
 
     public String getDescription() {
@@ -227,68 +272,12 @@ public class TestcaseStepDTOV1 {
         this.description = description;
     }
 
-    public boolean isIsUsingLibraryStep() {
-        return isUsingLibraryStep;
+    public String getScreenshotFilename() {
+        return screenshotFilename;
     }
 
-    public void setIsUsingLibraryStep(boolean isUsingLibraryStep) {
-        this.isUsingLibraryStep = isUsingLibraryStep;
-    }
-
-    public String getLibraryStepTestFolderId() {
-        return libraryStepTestFolderId;
-    }
-
-    public void setLibraryStepTestFolderId(String libraryStepTestFolderId) {
-        this.libraryStepTestFolderId = libraryStepTestFolderId;
-    }
-
-    public String getLibraryStepTestcaseId() {
-        return libraryStepTestcaseId;
-    }
-
-    public void setLibraryStepTestcaseId(String libraryStepTestcaseId) {
-        this.libraryStepTestcaseId = libraryStepTestcaseId;
-    }
-
-    public Integer getLibraryStepStepId() {
-        return libraryStepStepId;
-    }
-
-    public void setLibraryStepStepId(Integer libraryStepStepId) {
-        this.libraryStepStepId = libraryStepStepId;
-    }
-
-    public boolean isIsStepInUseByOtherTestcase() {
-        return isStepInUseByOtherTestcase;
-    }
-
-    public void setIsStepInUseByOtherTestcase(boolean isStepInUseByOtherTestcase) {
-        this.isStepInUseByOtherTestcase = isStepInUseByOtherTestcase;
-    }
-
-    public int getLibraryStepSort() {
-        return libraryStepSort;
-    }
-
-    public void setLibraryStepSort(int libraryStepSort) {
-        this.libraryStepSort = libraryStepSort;
-    }
-
-    public boolean isIsLibraryStep() {
-        return isLibraryStep;
-    }
-
-    public void setIsLibraryStep(boolean isLibraryStep) {
-        this.isLibraryStep = isLibraryStep;
-    }
-
-    public boolean isIsExecutionForced() {
-        return isExecutionForced;
-    }
-
-    public void setIsExecutionForced(boolean isExecutionForced) {
-        this.isExecutionForced = isExecutionForced;
+    public void setScreenshotFilename(String screenshotFilename) {
+        this.screenshotFilename = screenshotFilename;
     }
 
     public String getUsrCreated() {
@@ -323,13 +312,5 @@ public class TestcaseStepDTOV1 {
         this.dateModif = dateModif;
     }
 
-    public List<TestcaseStepActionDTOV1> getActions() {
-        return actions;
-    }
-
-    public void setActions(List<TestcaseStepActionDTOV1> actions) {
-        this.actions = actions;
-    }
-    
     
 }

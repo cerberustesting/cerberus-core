@@ -62,7 +62,7 @@ public class CerberusConfiguration {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.cerberus.controller.publicv1"))
+                .apis(RequestHandlerSelectors.basePackage("org.cerberus.api.controllers"))
                 .paths(PathSelectors.any())
                 .build();
     }

@@ -17,16 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.controller.publicv1;
+package org.cerberus.api.controller.v001;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.dto.publicv1.TestcaseDTOV1;
+import org.cerberus.api.dto.v001.TestcaseDTOV001;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.mapper.TestcaseMapper;
+import org.cerberus.api.mapper.v001.TestcaseMapperV001;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,39 +41,42 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = "/public/testcases")
-public class TestcaseController {
+public class TestcaseControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "apikey";
     private final ITestCaseService testCaseService;
+    private final TestcaseMapperV001 testcaseMapper;
 
     @Autowired
-    public TestcaseController(ITestCaseService testCaseService) {
+    public TestcaseControllerV001(ITestCaseService testCaseService, TestcaseMapperV001 testcaseMapper) {
         this.testCaseService = testCaseService;
+        this.testcaseMapper = testcaseMapper;
     }
 
     @ApiOperation("Get all testcases filtered by test")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV1.class, responseContainer = "List")
+    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseDTOV1> findTestcasesByTest(@PathVariable("testFolderId") String testFolderId) throws CerberusException {
+    public List<TestcaseDTOV001> findTestcasesByTest(@PathVariable("testFolderId") String testFolderId) throws CerberusException {
         return this.testCaseService.findTestCaseByTest(testFolderId)
                 .stream()
-                .map(TestcaseMapper::convertToDto)
+                .map(this.testcaseMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
+
     @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV1.class)
+    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public TestcaseDTOV1 findTestcasesByTestAndTestcase(@PathVariable("testFolderId") String testFolderId, @PathVariable("testcaseId") String testcaseId) throws CerberusException {
-        return TestcaseMapper.convertToDto(this.testCaseService.findTestCaseByKey(testFolderId, testcaseId));
+    public TestcaseDTOV001 findTestcasesByTestAndTestcase(@PathVariable("testFolderId") String testFolderId, @PathVariable("testcaseId") String testcaseId) throws CerberusException {
+        return this.testcaseMapper.toDTO(this.testCaseService.findTestCaseByKey(testFolderId, testcaseId));
     }
 
     @ApiOperation("Create a new Testcase")
     @ApiResponse(code = 200, message = "ok")
     @PostMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public void createTestcase(@RequestBody TestcaseDTOV1 newTestcase) {
-        this.testCaseService.create(TestcaseMapper.convertToEntity(newTestcase));
+    public void createTestcase(@RequestBody TestcaseDTOV001 newTestcase) {
+        this.testCaseService.create(this.testcaseMapper.toEntity(newTestcase));
     }
 
 }

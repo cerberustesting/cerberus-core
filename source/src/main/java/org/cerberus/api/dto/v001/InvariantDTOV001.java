@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.dto.publicv1;
+package org.cerberus.api.dto.v001;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author mlombard
  */
 @ApiModel(value = "Invariant") 
-public class InvariantDTOV1 {
+public class InvariantDTOV001 {
 
     @ApiModelProperty(example = "ACTION", position = 0)
     private String idName;
@@ -71,10 +71,10 @@ public class InvariantDTOV1 {
     @ApiModelProperty(example = "null", position = 13)
     private String attribute9;
 
-    public InvariantDTOV1() {
+    public InvariantDTOV001() {
     }
 
-    public InvariantDTOV1(String idName, String value, Integer sort, String description,
+    public InvariantDTOV001(String idName, String value, Integer sort, String description,
             String veryShortDesc, String gp1, String gp2,
             String gp3, String gp4, String gp5, String gp6,
             String gp7, String gp8, String gp9) {

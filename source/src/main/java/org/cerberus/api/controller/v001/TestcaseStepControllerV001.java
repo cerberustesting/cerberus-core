@@ -17,15 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.controller.publicv1;
+package org.cerberus.api.controller.v001;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.dto.publicv1.TestcaseDTOV1;
-import org.cerberus.dto.publicv1.TestcaseStepDTOV1;
-import org.cerberus.mapper.TestcaseStepMapper;
+import org.cerberus.api.dto.v001.TestcaseStepDTOV001;
+import org.cerberus.api.mapper.v001.TestcaseStepMapperV001;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,45 +38,48 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = "/public/testcasesteps")
-public class TestcaseStepController {
+public class TestcaseStepControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "apikey";
     private final ITestCaseStepService testCaseStepService;
+    private final TestcaseStepMapperV001 stepMapper;
 
     @Autowired
-    public TestcaseStepController(ITestCaseStepService testCaseStepService) {
+    public TestcaseStepControllerV001(ITestCaseStepService testCaseStepService, TestcaseStepMapperV001 stepMapper) {
         this.testCaseStepService = testCaseStepService;
+        this.stepMapper = stepMapper;
     }
 
+
     @ApiOperation("Get all TestcaseSteps")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV1.class, responseContainer = "List")
+    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @GetMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseStepDTOV1> findAllTestcaseSteps(@RequestParam("isLibraryStep") Boolean isLibraryStep) {
+    public List<TestcaseStepDTOV001> findAllTestcaseSteps(@RequestParam("islibrarystep") Boolean isLibraryStep) {
         return null;
     }
 
     @ApiOperation("Get all testcase steps from a test folder")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV1.class, responseContainer = "List")
+    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseStepDTOV1> findTestcaseStepsByTestFolderId(@PathVariable("testFolderId") String testFolderId) {
+    public List<TestcaseStepDTOV001> findTestcaseStepsByTestFolderId(@PathVariable("testFolderId") String testFolderId) {
         return null;
     }
 
     @ApiOperation("Get a TestcaseStep filtered by testFolderId and testcaseId")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV1.class)
+    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public TestcaseStepDTOV1 findTestcaseStepByTestFolderIdAndTestcaseIdAndStepId(
+    public TestcaseStepDTOV001 findTestcaseStepByTestFolderIdAndTestcaseIdAndStepId(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
-            @PathVariable("stepId") String stepId,
-            @RequestParam("libraryStep") Boolean isLibraryStep) {
+            @PathVariable("stepId") int stepId,
+            @RequestParam("islibrarystep") Boolean isLibraryStep) {
 
-        return TestcaseStepMapper.convertToDto(
+        return this.stepMapper.toDTO(
                 this.testCaseStepService.readTestcaseStepWithDependencies(
                         testFolderId,
                         testcaseId,
-                        Integer.parseInt(stepId)
+                        stepId
                 )
         );
     }
