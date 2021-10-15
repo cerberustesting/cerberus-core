@@ -67,7 +67,7 @@ public class InvariantControllerV001 {
     }
 
     @ApiOperation("Get all invariants filtered by idName and value")
-    @ApiResponse(code = 200, message = "ok", response = InvariantDTOV001.class)
+    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
     @GetMapping(path = "/{idName}/{value}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
     public InvariantDTOV001 findInvariantByIdNameAndValue(@PathVariable("idName") String idName, @PathVariable("value") String value) throws CerberusException {
         return this.invariantMapper.toDTO(this.invariantApiService.readByKey(idName, value));
