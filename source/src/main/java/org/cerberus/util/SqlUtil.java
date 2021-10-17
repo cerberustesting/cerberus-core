@@ -20,6 +20,7 @@
 package org.cerberus.util;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,5 +242,16 @@ public class SqlUtil {
             LOG.error("Could not convert '" + colValueString + "' to JSONArray.", ex);
         }
         return colValue;
+    }
+
+    public static boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columns = rsmd.getColumnCount();
+        for (int i = 1; i <= columns; i++) {
+            if (columnName.equals(rsmd.getColumnName(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
