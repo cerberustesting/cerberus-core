@@ -1,0 +1,135 @@
+
+=== Network Traffic JSON format
+
+Standard JSON format can by found in  https://w3c.github.io/web-performance/specs/HAR/Overview.html[w3c repo].
+
+In addition to standard HAR structure, Cerberus will add a `stat` json entry in top level containing some agregated data in order to make controls easier. That `stat` section will be feed by checking every hit performed by the tested application. Every hit will enrish the `total` section (excepted ingnored entries that will feed `ignore` section). They will also feed one of the following section : either `internal`, either  `thirdparty` (each will then be spread per thirdparty `ThirdPartyN`) or `unknown` if the hit cannot match one of the application domain or one of the Third Party domain.
+
+    "stat": {
+        "total":{
+            "hosts": [
+                "www.laredoute.fr",
+                "fonts.googleapis.com",
+                "laredoutemobile.commander1.com",
+                "privacy.trustcommander.net"
+            ],
+            "size":{
+                "sum": 2286467,
+                "max": 125109,
+                "urlMax": "https://www.laredoute.com/mar/toto.jpg"
+            },
+            "requests":{
+                "nb": 117,
+                "nb100": 0,
+                "nb101": 0,
+                "nb1xx": 0,
+                "nb200": 111,
+                "nb201": 0,
+                "nb2xx": 111,
+                "nb300": 0,
+                "nb301": 2,
+                "nb302": 2,
+                "nb307": 0,
+                "nb3xx": 4,
+                "nb400": 0,
+                "nb403": 0,
+                "nb404": 1,
+                "nb4xx": 1,
+                "nb500": 0,
+                "nb5xx": 0,
+                "nbError": 1,
+                "urlError": [ "https://www.lrd.co/mar/to.jpg"]
+            },
+            "time":{
+                "totalDuration": 18062,
+                "max": 4512,
+                "urlMax": "https://latem.commander1.com/dc3/?chn=D",
+                "avg": 455,
+                "sum": 53249,
+                "firstURL": "http://www.laredoute.fr/",
+                "firstStart": "2020-02-25T20:15:16.048Z",
+                "firstStartR": 0,
+                "firstEnd": "2020-02-25T20:15:16.95Z",
+                "firstEndR": 47,
+                "firstDuration": 47,
+                "lastURL": "https://p.trust.net/p-c/?id=1&site=12",
+                "lastStart": "2020-02-25T20:15:29.655Z",
+                "lastStartR": 13607,
+                "lastEnd": "2020-02-25T20:15:34.110Z",
+                "lastEndR": 18062,
+                "lastDuration": 4455
+            },
+            "type":{
+                "css":{
+                    "requests": 2,
+                    "sizeSum": 125109,
+                    "sizeMax": 2286467,
+                    "urlMax": "https://www.laredoute.com/mar/12.css"
+                },
+                "img":{...},
+                "other":{...},
+                "js":{...},
+                "html":{...},
+                "content":{...},
+                "media":{...},
+                "font":{...}
+            }
+        },
+        "internal":{...},
+        "nbThirdParty":2,
+        "thirdparty":{
+            "ThirdParty1":{...},
+            "ThirdParty2":{...}
+        },
+        "ignore":{...},
+        "unknown":{...},
+        "requests": [
+            {
+                "size": 79565,
+                "provider": "internal",
+                "indexName": "n/a",
+                "domain": "www.domain.com",
+                "httpStatus": 200,
+                "start": 0,
+                "index": 0,
+                "time": 325,
+                "queryString": {
+                    "txn_id": "o2hke",
+                    "tw_sale_amount": "0",
+                    "p_user_id": "0",
+                    "tw_order_quantity": "0"
+                },
+                "contentType": "html",
+                "url": "https://www.domain.com/"
+            },
+            {...}
+        ]
+    }
+
+Detail explanation on `time` section :
+|===
+| `totalDuration` | duration in ms between the start of the first request and the end of the last request. |
+| `sum` | sum of duration in ms spent in all requests. |
+| `max` | duration in ms of the longuest request (that correspond to `urlMax`) |
+| `avg` | average duration in ms of all requests. |
+| `firstXXX` | first request definition |
+| `lastXXX` | last request definition |
+|===
+
+
+Cerberus will determine if a hit must be ignored (and appear in *[blue]`ignore`* section) by feeding parameter `cerberus_webperf_ignoredomainlist` with coma separated domains to ignore.
+
+Cerberus will get and guess the `ThirdPartyN` from *[blue]`thirdparty`* section from a json file that can be retrieve from the following https://github.com/patrickhulce/third-party-web/blob/master/data/entities.json5[repo].
+
+The file should be available from Cerberus from the location provided by the parameter `cerberus_webperf_thirdpartyfilepath`.
+
+If parameter is empty or file not found by Cerberus, no third party will be guess.
+
+You can also add extra third party from the Cerberus GUI by adding a public invariant `WEBPERFTHIRDPARTY` with first attribute with the list of domain with coma separated format.
+
+*[blue]`internal`* section is populated from the URL domain list defined on the corresponding application / environment. all hosts should be defined on the domain field with coma separated format. In case the domain field is empty, Cerberus will guess it from the application URL.
+
+Any host URL that does not match either the `cerberus_webperf_ignoredomainlist` parameter, the ThirdParty definition file from parameter `cerberus_webperf_thirdpartyfilepath`, the `WEBPERFTHIRDPARTY` public invariant or list of application domain will appear in the *[blue]`unknown`* section.
+
+At the end of the execution, Cerberus will automatically execute 'waitNetworkTrafficIdle' action in order to secure that requests are no longer performed. This is used in order to secure that the collected stats are complete and does not miss some important hits. 
+

@@ -1,0 +1,107 @@
+:imagesdir: ./images/
+:toc: left
+:toc-title: Table of contents
+:sectnums:
+:lang: en
+:repo-url: https://github.com/cerberustesting/cerberus-source/tree/master/source/src/main/resources/documentation/D3/include/{lang}
+:contribution-message: Something is incorrect/missing in this section? Feel free to submit modification.
+
+// = image:logo.png[Logo] Cerberus : User Manual    link:./documentation_fr.html[image:fr.png[FR,20,20]] link:./documentation_en.html[image:en.png[EN,20,20]]
+
+
+[NOTE]
+.This document is under active development!
+=================================================
+If you find errors or missing information in this document, please don’t hesitate to submit an issue or open a pull request with a fix. 
+We encourage you to submit questions and discuss any aspects of the project on link:https://github.com/vertigo17/Cerberus[github].
+
+We are happy to welcome new contributors!
+=================================================
+
+---
+= Execution Use Case
+:file-to-include: howto_exe_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/doc/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to execute from SaaS Instance to my local Selenium/Appium installation
+:file-to-include: howto_exe_localexecution_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Test Data
+:file-to-include: howto_data_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to connect Cerberus to a SQL data source
+:file-to-include: howto_data_sql_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to connect Cerberus to a CSV file data source
+:file-to-include: howto_data_csv_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= CICD
+:file-to-include: howto_cicd_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to integrate Cerberus to a Jenkins CICD
+:file-to-include: howto_cicd_jenkins_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to integrate Cerberus to Github actions
+:file-to-include: howto_cicd_github_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to integrate Cerberus to Gitlab CICD
+:file-to-include: howto_cicd_gitlab_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+= Notifications
+:file-to-include: howto_notif_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to send Cerberus notifications via email 
+:file-to-include: howto_notif_email_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to send Cerberus notifications to Slack 
+:file-to-include: howto_notif_slack_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to send Cerberus notifications to Google Chat 
+:file-to-include: howto_notif_googlechat_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== How to send Cerberus notifications to Microsoft Teams 
+:file-to-include: howto_notif_teams_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/D3/include/en/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+

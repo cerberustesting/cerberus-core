@@ -1,0 +1,240 @@
+
+=== Test Case Property
+
+When clicking on Tab image:buttonmanageproperties.png[buttonManageProperties], the Property menu will appear.
+From there you can manage your TestCase properties or see your Inherited Properties - coming from the step libraries of your use steps.
+
+image:windowmanageproperties.png[windowManageProperties]
+
+Properties are the key element of your Test Case to manage different variables in the same scenario. A property is identified by its name and the country for which it's defined (e.g. you cannot have two properties defined for the same country with the same name).
+
+Properties can be called by their name using the following syntaxes:
+
+- `%property.property_name%` : the execution will **stop** if any problem in the property calculation
+- `%property_name_here%` : the execution will **not stop** if any problem in the property calculation
+
+When handling Datalib, the syntaxes to call the subdata are :
+
+- `%property.property_name.sub_data_name%` or `%property_name.sub_data_name%`
+- `%property.property_name(sub_data_name)%` or `%property_name(sub_data_name)%`
+
+Properties can be called in action or control values field or in another property.
+
+|=== 
+
+| *Field* | *Description*  
+
+| Property | Name of the property.
+
+| Description | Description of the property.
+
+| Countries | Countries for which the property will be calculated (environment parameter).
+
+| Type | The way the property is going to be calculated.
+
+| Value | Value of the property.
+
+| DB | DataBase in which the property will be calculated. Used by "executeSql" Property type.
+
+| Length | When calculating a list of values, defines the number of rows the property will return.
+
+| Row Limit | When returning a list of values, limits the number of rows the property will consider for random purposes.
+
+| Nature | Defines the unique value that will be used in the execution. By default, STATIC has no rules defined : it will take the first result it finds. RANDOM will pick a random value if several rows are available. RANDOMNEW will pick a random value that was never selected before in any older execution. NOTINUSE will pick a value that is not currently used by a running execution.
+
+| Nb of retry | When the property fail to retrieve any data, it can retry several times to get the data. That data define the nb of retry after which it will stop trying and report a NA status.
+
+| Retry Period | Defines the period in millisecond between every retry.
+
+| Cache Expire | Defines the amount of time in second during which the property can be kept in cache. 0 value disable the cache mecanisme.
+
+| Rank | If 1 the property is considered as a primary property and will always be displayed on execution detail. From 2 to higher value, the property will be considered as secondary and will be hidden by default from execution report.
+
+|=== 
+
+==== Property Types
+
+|=== 
+
+| *Field* | *Description* | *Example*  
+
+| text | assign the property an alphanumeric value. Can invoke other properties | `%system.EXECUTIONID%_test`
+
+| getFromDataLib | query the corresponding datalib (identified by its name) | `Datalib_Name`
+
+| getFromSQL | run a specific query an get the first, and only the first, result. The DB must be specified | `select TestCase from testcasestepactioncontrol where Control = 'verifyElementInElement'`
+
+| getFromHtml |  | 
+
+| getFromHtmlVisible |  | 
+
+| getElementPosition |  | 
+
+| getFromJS | Execute the specified JavaScript script without getting any output | `var xPathRes = document.evaluate ("//*[@data-cerberus='button_basket_ProductBloc_modifyProduct1']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null); xPathRes.singleNodeValue.click();`
+
+| getAttributeFromHtml |  | 
+
+| getFromCookie |  | 
+
+| getFromXml | Xpath to get a certain element from an XML service call | `//OrderId/text()`
+
+| getDifferencesFromXml |  | 
+
+| getRawFromXml | Xpath to get a certain element from an XML service call | `//OrderId/text()`
+
+| getFromJson | JSON path to get a certain element from a service call | `$.status`
+
+| getFromCommand |  | 
+
+| getFromGroovy | Execute the specified Groovy script and get the last defined variable | `'%property.date%'.replace('\','-').substring(0,10)`
+
+|===
+
+===== SQL queries management:
+
+- queries can be stored inside the test case and launched using getFromSQL. Only one value of the first row can be retrieved.
+
+- queries can be stored inside a Datalib, according to its DB. Several values of the first row can be retrieved.
+
+We recommend to use the Datalib since it allow SQL to be dynamically reused from one test case to another.
+
+=== Test Case Variables
+
+You can use variables in many area of Cerberus. Those variable are used in order to perform some actions of controls in a dynamic way.
+3 types of variables can be created :
+
+- Variables defined from **properties** inside Test Cases.
+- Variables defined from **application object**.
+- **System** Variables
+
+Properties and Application Object are defined by the users while system variable are provided by Cerberus.
+
+The global syntax of a variable is :
+%[property|object|system].nameOfTheVariable%
+
+This is the list of fields in Cerberus where you can use those variables.
+
+- All Test Cases, Steps, Actions and Control descriptions.
+- Condition Value1 and Value2 at Test Case level.
+- Condition Value1 and Value2 at Step Test Case level.
+- Condition Value1 and Value2 at Action Test Case level.
+- Condition Value1 and Value2 at Control Test Case level.
+- Test Case Action Value 1, Value 2 and Value 3.
+- Test Case Control Value 1, Value 2 and Value 3.
+- Test Case Properties Value 1, Value 2 and Value 3.
+- Path, Envelope and Method at Test Data Library (SOAP) level.
+- SQL Script at Test Data Library (SQL) level
+- Column, Parsing Answer and Column Position at Test Data Library Subdata definition level
+- Path, Request, Operation and Attachment URL at Service level.
+- Request detail (all keys and values) and Header (all keys and values) at Service level.
+
+When a variable is detected in one of those field, Cerberus will replace it by the value during the execution.
+
+- If the variable is an object, the value (that never change) is just replaced.
+- If the variable is a system variable, the value is calculated and replaced at the same time (for ex : time defined by %system.TODAY-doy% will be the day and time of the replacement).
+- If the variable is a property, it gets automatically calculated at the time of the replacement. If it was already calculated before, the same value (already calculated) is replaced.
+NOTE: In order to force the calculation of a property at a certain timing, _calculateProperty_ Action can be inserted just before the action is used in a field.
+
+Variables can be defined in a recursive way.
+That means that the following syntax :
+
+%property.%system.country%% will be first replaced by
+
+%property.FR% and then by FR property value (if it exist).
+
+Please note also that, if at the end of the decode operation, there are still references to %property.???% or %system.???% or %object.%%% in the field, the corresponding test case will report an error and generate an FA status.
+
+==== Property Variables
+
+Property variable allow to have multi row content.
+As a consequence the full syntax will look like this :
+
+%property.NameOfTheVariable.rowNb.SubData%
+
+If rowNb is not defined, the 1st row will be used. As a consequence, the syntax %property.rowNb.nameOfTheVariable% is the same as %property.1.nameOfTheVariable%
+
+If SubData is not defined, the key value subdata will be used.
+
+==== Object Variables
+
+- %object.myobject.value% : Get the application object myobject's value
+- %object.myobject.picturepath% : Get the application object myobject's picture path
+- %object.myobject.pictureurl% : Get the application object myobject's picure url
+
+==== System Variables
+
+|=== 
+
+| *Value* | *Description*   
+| %system.SYSTEM% | System value 
+| %system.APPLI% |	Application name
+| %system.BROWSER% |	Browser name of the current execution.
+| %system.ROBOT% |	Robot name of the current execution.
+| %system.ROBOTDECLI% |	Robot declination name of the current execution.
+| %system.ROBOTHOST% |	current robot host.
+| %system.SCREENSIZE% |	Robot screensize of the current execution.
+| %system.APP_DOMAIN% |	Domain of the Application (defined at application level)
+| %system.APP_HOST% |	Host of the tested Application
+| %system.APP_CONTEXTROOT% |	Context Root of the tested Application
+| %system.EXEURL% |	Full Url of the tested Application
+| %system.APP_VAR1% |	VAR1 of the application on the environment.
+| %system.APP_VAR2% |	VAR2 of the application on the environment.
+| %system.APP_VAR3% |	VAR3 of the application on the environment.
+| %system.APP_VAR4% |	VAR4 of the application on the environment.
+| %system.ENV% |	Environment value
+| %system.ENVGP% |	Environment group code
+| %system.COUNTRY% |	Country code
+| %system.COUNTRYGP1% |	Country group1 value
+| %system.COUNTRYGP2% |	Country group2 value
+| %system.COUNTRYGP3% |	Country group3 value
+| %system.COUNTRYGP4% |	Country group4 value
+| %system.COUNTRYGP5% |	Country group5 value
+| %system.COUNTRYGP6% |	Country group6 value
+| %system.COUNTRYGP7% |	Country group7 value
+| %system.COUNTRYGP8% |	Country group8 value
+| %system.COUNTRYGP9% |	Country group9 value
+| %system.TEST% |	Test.
+| %system.TESTCASE% |	TestCase
+| %system.TESTCASEDESCRIPTION% |	TestCaseDescription
+| %system.SSIP% |	Selenium server IP
+| %system.SSPORT% |	Selenium server port
+| %system.TAG% |	Execution tag
+| %system.EXECUTIONID% |	Execution ID
+| %system.EXESTART% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
+| %system.EXESTORAGEURL% |	Path where media are stored (based from the exeid).
+| %system.EXEELAPSEDMS% |	Elapsed time in ms since the beginning of the execution (can be used to perform timing controls).
+| %system.CURRENTSTEP_INDEX% |	Index number of the current step execution. Can be used when looping over a step.
+| %system.CURRENTSTEP_STARTISO% |	ISO Timestamp of the beginning of the step execution.
+| %system.CURRENTSTEP_ELAPSEDMS% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
+| %system.STEP.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
+| %system.LASTSERVICE_HTTPCODE% |	Http return code of the last service called.
+| %system.TODAY-yyyy% |	Year of today
+| %system.TODAY-MM% |	Month of today
+| %system.TODAY-dd% |	Day of today
+| %system.TODAY-doy% |	Day of today from the beginning of the year
+| %system.TODAY-HH% |	Hour of today
+| %system.TODAY-mm% |	Minute of today
+| %system.TODAY-ss% |	Second of today
+| %system.YESTERDAY-yyyy% |	Year of yesterday
+| %system.YESTERDAY-MM% |	Month of yesterday
+| %system.YESTERDAY-dd% |	Day of yesterday
+| %system.YESTERDAY-doy% |	Day of yesterday from the beginning of the year
+| %system.YESTERDAY-HH% |	Hour of yesterday
+| %system.YESTERDAY-mm% |	Minute of yesterday
+| %system.YESTERDAY-ss% |	Second of yesterday
+| %system.TOMORROW-yyyy% |	Year of tomorrow
+| %system.TOMORROW-MM% |	Month of tomorrw
+| %system.TOMORROW-dd% |	Day of tomorrw
+| %system.TOMORROW-doy% |	Day of tomorrw from the beginning of the year
+| %system.ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
+| %system.ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
+
+|=== 
+
+==== Tricks
+
+You will find below some tricks which help you to implement specific test cases.
+
+NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
+image:testcaserandomproperty.png[TestCaseRandomProperty]
+

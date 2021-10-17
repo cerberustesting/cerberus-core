@@ -601,27 +601,40 @@
                 <version>${asciidoctor-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>outputv1-html</id>
+                        <id>outputd1-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/documentation/V1</sourceDirectory>
-                            <outputDirectory>${basedir}/src/main/webapp/documentation/V1</outputDirectory>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D1</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D1</outputDirectory>
                             <backend>html</backend>
                             <doctype>book</doctype>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>outputv2-html</id>
+                        <id>outputd2-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/documentation/V2</sourceDirectory>
-                            <outputDirectory>${basedir}/src/main/webapp/documentation/V2</outputDirectory>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D2</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D2</outputDirectory>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>outputd3-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D3</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D3</outputDirectory>
                             <backend>html</backend>
                             <doctype>book</doctype>
                         </configuration>

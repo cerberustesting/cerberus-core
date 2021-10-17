@@ -1,0 +1,45 @@
+
+=== Test Case Control
+
+|===
+| *Control* | *Description* |  *Example* 
+| Unknown |  Default control when creating a new control | 
+| getPageSource | Force the page source to be retrieved and stored to be checked for detailed analysis. | 
+| takeScreenshot | Force to take a screenshot. Image can be automatically crop when taking the screenshot allowing to automatize clean application or web site screenshot (without Operating system header or footer elements). | 
+| verifyElementClickable | *[green]#OK#* if *[red]#Element#* is clickable. | 
+| verifyElementDifferent | TBD | 
+| verifyElementEquals | TBD | 
+| verifyElementinElement | *[green]#OK#* if *[red]#Sub Element#* is inside *[red]#Master Element#*. That can be used to check if an option is available inside a select box. | 
+| verifyElementNotClickable | *[green]#OK#* if *[red]#Element#* is not clickable. | 
+| verifyElementNotPresent | *[green]#OK#* if *[red]#Element#* is not found (from the page source code) on the current page. in case of a Web application, that control will wait for the timeout until it confirm that element is not present on page. | 
+| verifyElementNotVisible | *[green]#OK#* if *[red]#Element#* is found but not visible (according to rendering) on the current page. | 
+| verifyElementNumericDifferent | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is different from *[red]#Numeric Value#* indicated. | 
+| verifyElementNumericEqual | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is equal to *[red]#Numeric Value#* indicated. | 
+| verifyElementNumericGreater | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is greater than the *[red]#Numeric Value#* indicated. | 
+| verifyElementNumericGreaterOrEqual | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is greater or equal to *[red]#Numeric Value#* indicated. | 
+| verifyElementNumericMinor | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is lower than the *[red]#Numeric Value#* indicated. | 
+| verifyElementNumericMinorOrEqual | *[green]#OK#* if *[red]#Element#* is found on the current page and its content has a numeric value that is lower or equal than *[red]#Numeric Value#* indicated. | 
+| verifyElementPresent | *[green]#OK#* if *[red]#Element#* is found on the current page. | 
+| verifyElementTextDifferent | *[green]#OK#* if the text found in *[red]#Element#* is not equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : KO
+| verifyElementTextEqual | *[green]#OK#* if the text found in *[red]#Element#* is equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : OK
+| VerifyElementTextMatchRegex | *[green]#OK#* if a *[red]#Regex#* match the content of an *[red]#Element#*. | 
+| verifyElementVisible | *[green]#OK#* if *[red]#Element#* is visible on the current page. | 
+| verifyNumericDifferent | *[green]#OK#* if the *[red]#Integer1#* is different from the *[red]#Integer2#*. | 
+| verifyNumericEquals | *[green]#OK#* if the *[red]#Integer1#* is equal to the *[red]#Integer2#*. | 
+| verifyNumericGreater | *[green]#OK#* if the *[red]#Integer1#* is greater than the *[red]#Integer2#*. | 
+| verifyNumericGreaterOrEqual | *[green]#OK#* if the *[red]#Integer1#* is greater than the *[red]#Integer2#*. | 
+| verifyNumericMinor | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*. | 
+| verifyNumericMinorOrEqual | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*. | 
+| verifyStringContains | *[green]#OK#* if *[red]#String1#* contains the *[red]#String2#*. | 
+| verifyStringDifferent | *[green]#OK#* if *[red]#String1#* is different from *[red]#String2#*. | 
+| verifyStringEqual | *[green]#OK#* if *[red]#String1#* is equal to *[red]#String2#*. | 
+| verifyStringGreater | *[green]#OK#* if *[red]#String1#* is greater than *[red]#String2#* (using alphabetical order) | *[red]#String1#* : ZZZ  *[red]#String2#* : AAA
+| verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (using alphabetical order) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ 
+| verifyStringNotContains | *[green]#OK#* if *[red]#String1#* does not contains the *[red]#String2#*. | 
+| verifyTextInDialog | *[green]#OK#* if *[red]#Text#* is inside the browser dialog box | 
+| verifyTextInPage | TBD | 
+| verifyTextNotInPage | TBD | 
+| verifyTitle | TBD | 
+| verifyUrl | *[green]#OK#* if the *[red]#URL#* of the current page equal to the *[red]#URL#* indicated . | 
+| verifyXmlTreeStructure | TBD | 
+|===
