@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
@@ -106,30 +107,51 @@ public class WebDriverService implements IWebDriverService {
 
         LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
 
-        if (identifier.getIdentifier().equalsIgnoreCase("id")) {
-            return By.id(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("name")) {
-            return By.name(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("class")) {
-            return By.className(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("css")) {
-            return By.cssSelector(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("xpath")) {
-            return By.xpath(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("link")) {
-            return By.linkText(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("data-cerberus")) {
-            return By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
-
-        } else {
-            throw new NoSuchElementException(identifier.getIdentifier());
+        By by;
+        switch (identifier.getIdentifier()) {
+            case Identifier.IDENTIFIER_ID:
+                by = By.id(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_NAME:
+                by = By.name(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_CLASS:
+                by = By.className(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_CSS:
+                by = By.cssSelector(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_XPATH:
+                by = By.xpath(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_LINK:
+                by = By.linkText(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_DATACERBERUS:
+                by = By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
+                break;
+            default:
+                throw new NoSuchElementException(identifier.getIdentifier());
         }
+        return by;
+    }
+
+    private WebElement getWebElementUsingQuerySelector(WebDriver driver, String querySelector){
+
+        String structure[] = querySelector.split(">>");
+
+        String script = "document";
+        for(int index = 0; index < structure.length-1; index++){
+            script += ".querySelector('"+structure[index]+"').shadowRoot";
+        }
+        script +=".querySelector('"+structure[structure.length-1]+"')";
+
+        //Scroll to element
+        ((JavascriptExecutor) driver).executeScript(script+".scrollIntoView()");
+
+        //Get element
+        WebElement finalElement = (WebElement)((JavascriptExecutor) driver).executeScript("return "+script);
+        return finalElement;
     }
 
     @Override
@@ -226,6 +248,12 @@ public class WebDriverService implements IWebDriverService {
                 answer.setResultMessage(msg);
                 return answer;
             }
+        } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_QUERYSELECTOR)) {
+            answer.setItem(getWebElementUsingQuerySelector(session.getDriver(), identifier.getLocator()));
+            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
+            answer.setResultMessage(msg);
+            return answer;
         } else {
             locator = this.getBy(identifier);
         }
