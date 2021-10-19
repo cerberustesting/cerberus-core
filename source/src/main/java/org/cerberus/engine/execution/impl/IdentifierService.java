@@ -86,7 +86,7 @@ public class IdentifierService implements IIdentifierService {
 
     @Override
     public void checkWebElementIdentifier(String identifier) throws CerberusEventException {
-        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "coord", "picture", "erratum"};
+        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "coord", "picture","querySelector", "erratum"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SELENIUM);
