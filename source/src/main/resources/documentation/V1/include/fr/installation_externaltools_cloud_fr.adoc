@@ -1,2 +1,0 @@
-For Web and Mobile testing, Cerberus can be interfaced with cloud-based testing tool to avoid to manage complexity of robot farm management. 
-Multiple combination of operating system, browser and version are available.

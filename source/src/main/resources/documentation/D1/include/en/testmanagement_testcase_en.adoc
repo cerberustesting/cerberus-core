@@ -1,0 +1,91 @@
+=== Test Case
+
+==== Test Case List
+
+image:testcaselistpage.png[TestCaseListPage]
+
+==== Test Case attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Test Folder | *[red]#Test Folder#* name on which test case belong.
+
+| Test case | An ID (alphanumeric character) that identify the *[red]#Test Case#* inside the *[red]#Test Folder#*.
+
+| Short Description | Provide a brief description of the *[red]#Test Case#*.
+
+| Application | The application for which the test case is defined.
+
+| Status | Used to implement a workflow and gives way to filter *[red]#Test Case#* depending on its implementation status.
+
+| Active | Boolean that defines if the *[red]#Test Case#* can be launched.
+
+| Type | define if the testcase is targeted for AUTOMATED or only MANUAL. It can also be PRIVATE in case it is not intented to be executed (holds libraries of steps of instance)
+
+| Priority | Defined the priority of the *[red]#Test Case#*. Means importance of the feature covered by the *[red]#Test Case#*.
+
+| Detailed Description | Provide more detailed information about the *[red]#Test Case#*.
+
+|=== 
+
+The Activation Criterias defines condition to enable/block the Testcase to be launched in specific context (countries, environment...). This level of specification is the most important (override all the others conditions)
+
+A Test case can be linked to multiple Labels depending on their assigned system (see labels section)
+
+You can define Robot constrains at test case level in order to force the execution a specific test case with a specific UserAgent or ScreenSize.
+This is used to test some specific behavior of a website for a given UserAgent or ScreenSize.
+You can tune the list of UserAgent and ScreenSize proposed in autocomplete mode (on the GUI) by modifying the respective public invariant USERAGENT and SCREENSIZE.
+
+UserAgent and ScreenSize will be defined at execution level following the rule :
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *UserAgent Result*   
+| UserAgent1 |	| UserAgent1
+|  | UserAgent2 | UserAgent2
+|  |	| user Agent unchanged
+| UserAgent1 | UserAgent2 | UserAgent1
+
+|=== 
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *ScreenSize Result*   
+| 1024*768 |	| 1024*768
+|  | 640*360 | 640*360
+|  |	| Fullscreen
+| 1024*768 | 640*360 | 1024*768
+
+|=== 
+
+
+=== Test Case Step
+
+==== Step
+
+. Click on *[red]#Add step#* to display the following window.  image:testcasepage.png[TestCasePage,250,250,float="right",align="center"] 
+. Feed a *[red]#Description#* and click on *[red]#Add#* for a new step. 
+. Or search for a step in library then click on *[red]#Add#*.
+
+image:testcaseaddstep.png[testcaseaddstep]
+
+Your step is created. if you want to put it in library, just click on the book on the right side.
+A step in library will be available to add it in all test cases of your current system.
+
+image:testcasesteplibrary.png[testcasesteplibrary]
+
+In the following screenshot you can see a use step. This step is imported from the previous library step.
+You are not able to modify it (all fields are grey). But you can find a link at the top to open the library if you want to modify your step. All use steps from this library will be impacted by your modification.
+
+To modify only this use step, you have to click on the padlock icon but it will not be a use step anymore. (modification on library step will not affect it)
+
+image:testcaseusestep.png[testcaseusestep]
+
+NOTE: You have the possibility to switch the position of your steps by drag and drop the 3 dots.
+
+image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcaseusestep]
+
+NOTE: It is possible to loop over a step using the following configuration.
+image:testlooptep.png[TestCaseLoopStep]
+

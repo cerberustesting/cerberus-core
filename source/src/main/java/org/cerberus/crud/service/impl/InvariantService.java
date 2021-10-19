@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -80,12 +82,10 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public HashMap<String, Invariant> readByIdNameToHash(String idName) throws CerberusException {
-        HashMap<String, Invariant> invariants = new HashMap<>();
-        for (Invariant invariant : this.readByIdName(idName)) {
-            invariants.put(invariant.getValue(), invariant);
-        }
-        return invariants;
+    public Map<String, Invariant> readByIdNameToHash(String idName) throws CerberusException {       
+        return this.readByIdName(idName)
+                .stream()
+                .collect(Collectors.toMap(Invariant::getValue, Function.identity()));
     }
 
     @Override

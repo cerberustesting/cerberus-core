@@ -1,0 +1,24 @@
+=== Parameter
+
+In this section, you will find information about Cerberus parameters.
+
+WARNING: The tunning of the parameters is necessary to unlock all the features, 
+as described in the <<Cerberus configuration>> section.
+
+image:parameter.png[Logo]
+
+=== Parameter attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Parameter | The parameter recognized by Cerberus.
+
+| Value | The default *[red]#value#* used in case the *[red]#system value#* is empty.
+
+| System Value | The specific *[red]#value#* for the system.
+
+| Description | A *[red]#description#* on the parameter.
+
+|=== 
+

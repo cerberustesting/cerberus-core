@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -576,8 +577,15 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String description = resultSet.getString("tca.description");
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
         boolean isFatal = resultSet.getBoolean("tca.isFatal");
+        String usrCreated = resultSet.getString("tca.UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tca.DateCreated");
+        String usrModif = resultSet.getString("tca.UsrModif");
+        Timestamp dateModif = resultSet.getTimestamp("tca.DateModif");
 
-        return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, action, value1, value2, value3, options, isFatal, description, screenshotFilename);
+        return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator, 
+                conditionValue1, conditionValue2, conditionValue3, conditionOptions, action, value1, 
+                value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated, 
+                usrModif, dateModif);
     }
 
 }

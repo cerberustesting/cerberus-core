@@ -79,6 +79,9 @@
         <apache.tika>1.22</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
+        <!-- Mappers -->
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>  
+              
         <!-- Test scope -->
         <junit.version>4.12</junit.version>
         <powermock.version>1.5.2</powermock.version>
@@ -158,6 +161,13 @@
             <scope>test</scope>
         </dependency>
         
+        <!-- Mappers -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+                
         <!-- JSON Lib -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -527,6 +537,13 @@
                         <arg>-Xmaxwarns</arg>
                         <arg>9999</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             
@@ -584,27 +601,40 @@
                 <version>${asciidoctor-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>outputv1-html</id>
+                        <id>outputd1-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/documentation/V1</sourceDirectory>
-                            <outputDirectory>${basedir}/src/main/webapp/documentation/V1</outputDirectory>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D1</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D1</outputDirectory>
                             <backend>html</backend>
                             <doctype>book</doctype>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>outputv2-html</id>
+                        <id>outputd2-html</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/documentation/V2</sourceDirectory>
-                            <outputDirectory>${basedir}/src/main/webapp/documentation/V2</outputDirectory>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D2</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D2</outputDirectory>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>outputd3-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/resources/documentation/D3</sourceDirectory>
+                            <outputDirectory>${basedir}/src/main/webapp/documentation/D3</outputDirectory>
                             <backend>html</backend>
                             <doctype>book</doctype>
                         </configuration>

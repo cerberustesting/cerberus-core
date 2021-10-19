@@ -1577,10 +1577,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuDatabaseMaintenance','','fr','Maintenance de la base de données','',NULL)");
         b.append(",('page_header','menuDeployType','','en','Deployment Type','',NULL)");
         b.append(",('page_header','menuDeployType','','fr','Type de Déploiement','',NULL)");
-        b.append(",('page_header','menuDocumentation','','en','Documentation',NULL,NULL)");
-        b.append(",('page_header','menuDocumentation','','fr','Documentation',NULL,NULL)");
-        b.append(",('page_header','menuDocumentationV2','','en','Documentation',NULL,NULL)");
-        b.append(",('page_header','menuDocumentationV2','','fr','Documentation',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD1','','en','User Documentation',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD1','','fr','Documentation Utilisateur',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD2','','en','Administrator Documentation',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD2','','fr','Documentation Administrateur',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD3','','en','Usecase Documentation',NULL,NULL)");
+        b.append(",('page_header','menuDocumentationD3','','fr','Documentation Cas d\\'usages',NULL,NULL)");
+        b.append(",('page_header','menuSwagger','','en','Swagger API',NULL,NULL)");
+        b.append(",('page_header','menuSwagger','','fr','Swagger API',NULL,NULL)");
         b.append(",('page_header','menuEditTest','','en','Test Folder','',NULL)");
         b.append(",('page_header','menuEditTest','','fr','Dossier de Test','',NULL)");
         b.append(",('page_header','menuEditTestCase','','en','Edit TestCase','',NULL)");

@@ -47,7 +47,7 @@ public class Invariant {
     /**
      * Not included in table.
      */
-    private static final Logger LOG = LogManager.getLogger(TestCase.class);
+    private static final Logger LOG = LogManager.getLogger(Invariant.class);
 
     public static final String IDNAME_COUNTRY = "COUNTRY";
     public static final String IDNAME_PRIORITY = "PRIORITY";
@@ -200,6 +200,7 @@ public class Invariant {
         JSONObject result = new JSONObject();
         try {
             result.put("JSONVersion", "001");
+            result.put("idName", this.getIdName());
             result.put("value", this.getValue());
             result.put("description", this.getDescription());
             result.put("shortDescription", this.getVeryShortDesc());
