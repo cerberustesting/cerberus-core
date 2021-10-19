@@ -1,1 +1,8 @@
-Blabla
+> **You can easily be notified by Email whenever the execution of your campaign starts and/or ends**
+
+* Go to the menu ```Run``` > ```Campaign``` > ```Notifications``` > ```Email```
+- Set _**Y - Yes**_ to **Email Notify Start of execution** if you want to receive an email everytime the execution of your campaign starts
+- Set _**Y - Yes**_ to **Email Notify End of execution** if you want to receive an email everytime the execution of your campaign ends
+- Fill the **Distribution List** field with the email adresses that will receive the notifications set previously (example: test0@example.com; test1@example.com; test2@example.com)
+
+image:campaign_email_notifications.png[FR,800,800]
