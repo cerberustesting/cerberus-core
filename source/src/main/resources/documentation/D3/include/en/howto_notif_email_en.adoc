@@ -5,4 +5,6 @@
 - Set _**Y - Yes**_ to **Email Notify End of execution** if you want to receive an email everytime the execution of your campaign ends
 - Fill the **Distribution List** field with the email adresses that will receive the notifications set previously (example: test0@example.com; test1@example.com; test2@example.com)
 
+_N.B. : If the campaign is empty (no test execution set in the campaign), the email notification won't be sent_
+
 image:campaign_email_notifications.png[FR,800,800]
