@@ -21,11 +21,15 @@ package org.cerberus.api.dto.v001;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
+import lombok.Data;
 
 /**
  *
  * @author mlombard
  */
+@Data
+@Builder
 @ApiModel(value = "Invariant") 
 public class InvariantDTOV001 {
 
@@ -70,140 +74,4 @@ public class InvariantDTOV001 {
     
     @ApiModelProperty(example = "null", position = 13)
     private String attribute9;
-
-    public InvariantDTOV001() {
-    }
-
-    public InvariantDTOV001(String idName, String value, Integer sort, String description,
-            String veryShortDesc, String gp1, String gp2,
-            String gp3, String gp4, String gp5, String gp6,
-            String gp7, String gp8, String gp9) {
-        this.idName = idName;
-        this.value = value;
-        this.sort = sort;
-        this.description = description;
-        this.shortDescription = veryShortDesc;
-        this.attribute1 = gp1;
-        this.attribute2 = gp2;
-        this.attribute3 = gp3;
-        this.attribute4 = gp4;
-        this.attribute5 = gp5;
-        this.attribute6 = gp6;
-        this.attribute7 = gp7;
-        this.attribute8 = gp8;
-        this.attribute9 = gp9;
-    }
-
-    public String getIdName() {
-        return idName;
-    }
-
-    public void setIdName(String idName) {
-        this.idName = idName;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getAttribute1() {
-        return attribute1;
-    }
-
-    public void setAttribute1(String attribute1) {
-        this.attribute1 = attribute1;
-    }
-
-    public String getAttribute2() {
-        return attribute2;
-    }
-
-    public void setAttribute2(String attribute2) {
-        this.attribute2 = attribute2;
-    }
-
-    public String getAttribute3() {
-        return attribute3;
-    }
-
-    public void setAttribute3(String attribute3) {
-        this.attribute3 = attribute3;
-    }
-
-    public String getAttribute4() {
-        return attribute4;
-    }
-
-    public void setAttribute4(String attribute4) {
-        this.attribute4 = attribute4;
-    }
-
-    public String getAttribute5() {
-        return attribute5;
-    }
-
-    public void setAttribute5(String attribute5) {
-        this.attribute5 = attribute5;
-    }
-
-    public String getAttribute6() {
-        return attribute6;
-    }
-
-    public void setAttribute6(String attribute6) {
-        this.attribute6 = attribute6;
-    }
-
-    public String getAttribute7() {
-        return attribute7;
-    }
-
-    public void setAttribute7(String attribute7) {
-        this.attribute7 = attribute7;
-    }
-
-    public String getAttribute8() {
-        return attribute8;
-    }
-
-    public void setAttribute8(String attribute8) {
-        this.attribute8 = attribute8;
-    }
-
-    public String getAttribute9() {
-        return attribute9;
-    }
-
-    public void setAttribute9(String attribute9) {
-        this.attribute9 = attribute9;
-    }
-
 }
