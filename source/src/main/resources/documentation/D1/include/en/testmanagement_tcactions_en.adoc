@@ -1,0 +1,648 @@
+
+=== Test Case Action
+
+==== Unknown 
+Unknown action. Should be used when the action is not yet known. 
+Warning: make the execution fail. 
+ 
+==== click 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Click on the left mouse button on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== longPress 
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Click during a specific duration on the left mouse button on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Duration of the click in milliseconds.
+
+==== mouseLeftButtonPress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Press and keep the left mouse button pressed on an _element_ until the action 'mouseLeftButtonRelease' is executed.
+If _element_ not defined, Sikuli engine will be used and mouse button will be pressed on the current pocsition of the mouse pointer.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== mouseLeftButtonRelease
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Release the mouse button on an __element__. 
+Usefull with ButtonPress to perform drag & drop but also to draw picture using Sikuli engine.
+
+*[blue]#Value1#*	Identifier and name of the element where release will be done in the form of : identifier=html_reference.
+
+==== doubleClick 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Double click on an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference.
+
+==== rightClick 
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Right click on an element inside the current page. 
+
+*[blue]#Value1#*	Identifier and name of the element to double click in the form of : identifier=html_reference. 
+
+==== mouseOver
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Mouse cursor over an _element_ inside the current page.
+
+*[blue]#Value1#*	Identifier and name of the element to over in the form of : identifier=html_reference.
+
+==== mouseMove
+|=== 
+
+| *[green]#GUI (hybrid)#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Allow to move the mouse.
+
+*[blue]#Value1#*	List of x and y relative position to move the mouse pointer. Several move positions can be specified separated by semi comma. Top Left position of the screen correspond to 0,0 coords. You can specify absolute coords by using keywork `absolute` before the coords. `center` keyword can be used to move pointer to center of the screen.
+
+.Move pointer following a square of 50px on the right/bottom side of the pointer
+====
+50,0 ; 0,50 ; -50,0 ; 0,-50
+====
+.Move pointer following a line down the current pointer position.
+====
+0,50
+====
+.Move pointer to top left corner and then to center of the screen.
+====
+absolute 0,0 ; center
+====
+==== focustoIframe
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Set the focus to a specific frame on the current page.
+
+*[blue]#Value1#*	Identifier and name of the frame to focus in the form of : identifier=html_reference.
+
+==== focustoDefaultIframe
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Set back the focus to the previous frame on the current page.
+
+==== switchToWindow
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Switch the focus to another window (like popup dialog).
+
+*[blue]#Value1#*	Title or URL of the other window to switch to.
+
+.By Tittle
+====
+title=titleOfThisNewWindow
+====
+
+.By Tittle
+====
+url=http://url_of_this_new_window
+====
+
+==== manageDialog
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel`
+
+*[blue]#Value1#*	`ok` or `cancel`
+
+==== manageDialogKeypress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Keypress inside the browser popup alert windows.
+
+*[blue]#Value1#*	List of characters to type. You can use several special keys into the same action
+
+.Normal test
+====
+texttoenter[ENTER]
+====
+
+.Normal test and special keys
+====
+user[TAB]password[ENTER]
+====
+    
+
+[NOTE]
+====
+Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIFT], [CONTROL], [LEFT_CONTROL], [ALT], [LEFT_ALT], [ESCAPE], [SPACE], [PAGE_UP], [PAGE_DOWN], [LEFT], [ARROW_LEFT], [UP], [ARROW_UP], [RIGHT], [ARROW_RIGHT], [DOWN], [ARROW_DOWN], [DELETE], [SEMICOLON], [EQUALS], [NUMPAD0], [NUMPAD1], [NUMPAD2], [NUMPAD3], [NUMPAD4], [NUMPAD5], [NUMPAD6], [NUMPAD7], [NUMPAD8], [NUMPAD9], [MULTIPLY], [ADD], [SEPARATOR], [SUBTRACT], [DECIMAL], [DIVIDE], [F1], [F2], [F3], [F4], [F5], [F6], [F7], [F8], [F9], [F10], [F11], [F12]
+====
+
+==== OpenUrlWithBase
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+OpenUrl action using the base defined in the application / environment section.
+
+*[blue]#Value1#*	Relative URL to open.
+
+.relative URL
+====
+/cerberustesting/page.html
+====
+
+==== OpenUrlLogin
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+OpenUrl action using the login page defined at application / environment level.
+
+==== OpenUrl
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Open a specified full url.
+
+*[blue]#Value1#*	Complete URL to open.
+
+.Title
+====
+https://github.com
+====
+
+==== refreshCurrentPage
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Reload the current page.
+
+==== executeJS
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Execute a JS script (no output can be retrieved).
+
+
+*[blue]#Value1#*	Javascript to execute.
+
+.Javascript
+====
+    var newOption = new Option('%property.ApplicationName%', '%property.ApplicationName%', true, true);
+    $('#application').append(newOption).trigger('change');
+====
+
+==== executeCommand
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Execute a Command on the robot side. You can follow the Appium instructions http://appium.io/docs/en/commands/mobile-command/[here].
+
+*[blue]#Value1#*	Command to execute. Ex : mobile:deepLink
+
+*[blue]#Value2#*	Arguments of the command. Ex : {url: "https://www.site.com/", package: "com.site.SomeAndroidPackage"}
+
+==== executeCerberusCommand
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Execute a Command from the Cerberus Server side. The command will be executed using the user defined in the parameter `cerberus_executeCerberusCommand_user`, password defined in `cerberus_executeCerberusCommand_password` and script from the path `cerberus_executeCerberusCommand_path` 
+
+*[blue]#Value1#*	Command to execute.
+
+==== openApp
+|=== 
+
+| *[green]#GUI (hybrid)#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Open an Application. For *[green]#GUI#* and *[green]#FAT#*, this action require the Cerberus Sikuli extention.
+
+*[blue]#Value1#*	Application to Open. BundleId for *[green]#IPA#* (activateApp() method is used), if empty, launchApp() method is used). App Package for *[green]#APK#* ('am start' command is used).  
+
+*[blue]#Value2#*	App Activity for *[green]#APK#*.
+
+
+==== closeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Close an application.
+
+*[blue]#Value1#*	Application to Open.
+
+==== dragAndDrop
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Will Drag from an _Element_ to another __Element__.
+
+*[blue]#Value1#*	Identifier and name of the element to drag in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Identifier and name of the element where to drop in the form of : identifier=html_reference..
+
+==== select
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Select an option in a <select> Element. this 'text' must be defined : <option value="text">. For APK and IPA, action only works in a web mode.
+
+*[blue]#Value1#*	Identifier and name of the element of the select in the form of : identifier=html_reference.
+
+*[blue]#Value2#*	Element to select.
+
+.Title
+====
+<option value="text">
+====
+
+==== keypress
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+will allow you to press any key in the current web page.
+
+*[blue]#Value1#* : Identifier and name of the element where the key is pressed in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : Keycode of the key to press.
+
+.for a GUI application
+====
+ENTER
+====
+.for a FAT application
+====
+Key.ENTER
+====
+
+The keycodes (see. keypress action) also changes depending on the application type (GUI, IPA, APK or FAT). The syntaxes are:
+
+- for GUI : `KEYNAME`
+
+Following Selenium `KEYNAME` can be used : NULL, CANCEL, HELP, BACK_SPACE, TAB, CLEAR, RETURN, ENTER, SHIFT, LEFT_SHIFT, CONTROL, LEFT_CONTROL, ALT, LEFT_ALT, PAUSE, ESCAPE, SPACE, PAGE_UP, PAGE_DOWN, END, HOME, LEFT, ARROW_LEFT, UP, ARROW_UP, RIGHT, ARROW_RIGHT, DOWN, ARROW_DOWN, INSERT, DELETE, SEMICOLON, EQUALS, NUMPAD0, NUMPAD1, NUMPAD2, NUMPAD3, NUMPAD4, NUMPAD5, NUMPAD6, NUMPAD7, NUMPAD8, NUMPAD9, MULTIPLY, ADD, SEPARATOR, SUBTRACT, DECIMAL, DIVIDE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, META, COMMAND, ZENKAKU_HANKAKU
+
+- for APK : `KEYNAME`
+
+Following Appium Android `KEYNAME` can be used : UNKNOWN, SOFT_LEFT, SOFT_RIGHT, HOME, BACK, CALL, ENDCALL, DIGIT_0, DIGIT_1, DIGIT_2, DIGIT_3, DIGIT_4, DIGIT_5, DIGIT_6, DIGIT_7, DIGIT_8, DIGIT_9, STAR, POUND, DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT, DPAD_CENTER, VOLUME_UP, VOLUME_DOWN, POWER, CAMERA, CLEAR, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, COMMA, PERIOD, ALT_LEFT, ALT_RIGHT, SHIFT_LEFT, SHIFT_RIGHT, TAB, SPACE, SYM, EXPLORER, ENVELOPE, ENTER, DEL, GRAVE, MINUS, EQUALS, LEFT_BRACKET, RIGHT_BRACKET, BACKSLASH, SEMICOLON, APOSTROPHE, SLASH, AT, NUM, HEADSETHOOK, FOCUS, PLUS, MENU, NOTIFICATION, SEARCH, MEDIA_PLAY_PAUSE, MEDIA_STOP, MEDIA_NEXT, MEDIA_PREVIOUS, MEDIA_REWIND, MEDIA_FAST_FORWARD, MUTE, PAGE_UP, PAGE_DOWN, PICTSYMBOLS, SWITCH_CHARSET, BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_X, BUTTON_Y, BUTTON_Z, BUTTON_L1, BUTTON_R1, BUTTON_L2, BUTTON_R2, BUTTON_THUMBL, BUTTON_THUMBR, BUTTON_START, BUTTON_SELECT, BUTTON_MODE, ESCAPE, FORWARD_DEL, CTRL_LEFT, CTRL_RIGHT, CAPS_LOCK, SCROLL_LOCK, META_LEFT, META_RIGHT, FUNCTION, SYSRQ, BREAK, MOVE_HOME, MOVE_END, INSERT, FORWARD, MEDIA_PLAY, MEDIA_PAUSE, MEDIA_CLOSE, MEDIA_EJECT, MEDIA_RECORD, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, NUM_LOCK, NUMPAD_0, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9, NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_SUBTRACT, NUMPAD_ADD, NUMPAD_DOT, NUMPAD_COMMA, NUMPAD_ENTER, NUMPAD_EQUALS, NUMPAD_LEFT_PAREN, NUMPAD_RIGHT_PAREN, VOLUME_MUTE, INFO, CHANNEL_UP, CHANNEL_DOWN, KEYCODE_ZOOM_IN, KEYCODE_ZOOM_OUT, TV, WINDOW, GUIDE, DVR, BOOKMARK, CAPTIONS, SETTINGS, TV_POWER, TV_INPUT, STB_POWER, STB_INPUT, AVR_POWER, AVR_INPUT, PROG_RED, PROG_GREEN, PROG_YELLOW, PROG_BLUE, APP_SWITCH, BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4, BUTTON_5, BUTTON_6, BUTTON_7, BUTTON_8, BUTTON_9, BUTTON_10, BUTTON_11, BUTTON_12, BUTTON_13, BUTTON_14, BUTTON_15, BUTTON_16, LANGUAGE_SWITCH, MANNER_MODE, MODE_3D, CONTACTS, CALENDAR, MUSIC, CALCULATOR, ZENKAKU_HANKAKU, EISU, MUHENKAN, HENKAN, KATAKANA_HIRAGANA, YEN, RO, KANA, ASSIST, BRIGHTNESS_DOWN, BRIGHTNESS_UP, MEDIA_AUDIO_TRACK, SLEEP, WAKEUP, PAIRING, _MEDIA_TOP_MENU, KEY_11, KEY_12, LAST_CHANNEL, TV_DATA_SERVICE, VOICE_ASSIST, TV_RADIO_SERVICE, TV_TELETEXT, TV_NUMBER_ENTRY, TV_TERRESTRIAL_ANALOG, TV_TERRESTRIAL_DIGITAL, TV_SATELLITE, TV_SATELLITE_BS, TV_SATELLITE_CS, TV_SATELLITE_SERVICE, TV_NETWORK, TV_ANTENNA_CABLE, TV_INPUT_HDMI_1, TV_INPUT_HDMI_2, TV_INPUT_HDMI_3, TV_INPUT_HDMI_4, TV_INPUT_COMPOSITE_1, TV_INPUT_COMPOSITE_2, TV_INPUT_COMPONENT_1, TV_INPUT_COMPONENT_2, TV_INPUT_VGA_1, TV_AUDIO_DESCRIPTION, TV_AUDIO_DESCRIPTION_MIX_UP, TV_AUDIO_DESCRIPTION_MIX_DOWN, TV_ZOOM_MODE, TV_CONTENTS_MENU, _TV_MEDIA_CONTEXT_MENU, TV_TIMER_PROGRAMMING, HELP, NAVIGATE_PREVIOUS, NAVIGATE_NEXT, NAVIGATE_IN, NAVIGATE_OUT, STEM_PRIMARY, STEM_1, STEM_2, STEM_3, DPAD_UP_LEFT, DPAD_DOWN_LEFT, DPAD_UP_RIGHT, DPAD_DOWN_RIGHT, MEDIA_SKIP_FORWARD, MEDIA_SKIP_BACKWARD, MEDIA_STEP_FORWARD, MEDIA_STEP_BACKWARD, SOFT_SLEEP, CUT, COPY, PASTE
+
+- for IPA : `KEYNAME`
+
+Following Appium IOS `KEYNAME` can be used : RETURN, ENTER, SEARCH, BACKSPACE
+
+- for FAT : `Key.KEYNAME`
+
+Following KEYNAME values can be used : ENTER, TAB, ESC, BACKSPACE, DELETE, INSERT, SPACE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, HOME, END, LEFT, RIGHT, DOWN, UP, PAGE_DOWN, PAGE_UP, PRINTSCREEN, PAUSE, CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, NUM0, NUM1, NUM2, NUM3, NUM4, NUM5, NUM6, NUM7, NUM8, NUM9, SEPARATOR, ADD, MINUS, MULTIPLY, DIVIDE, ALT, CMD, CTRL, META, SHIFT, WIN
+
+
+==== type
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Type a data in an Element.
+
+*[blue]#Value1#* : Identifier and name of the element where the data is entered in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : data to enter in the field.
+
+==== clearField
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Clear (Empty) an Element.
+
+*[blue]#Value1#* : Identifier and name of the element to be cleared in the form of : identifier=html_reference.
+
+==== hidekeyboard
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Hide the currently visible keyboard
+
+==== swipe
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#* or *[red]#RIGHT#* or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and *relatives* coordinates of destination point (x2;y2)
+
+*[blue]#Value1#* : *[red]#UP#*, *[red]#DOWN#*, *[red]#LEFT#*, *[red]#RIGHT#* or *[red]#CUSTOM#*.
+
+*[blue]#Value2#* : *[red]#x1;y1;x2;y2#* (only used if *Value1* is *[red]#CUSTOM#*)
+
+.Swipe Up
+====
+*[blue]#Value1#* UP
+
+*[blue]#Value2#* 
+
+will swipe from the 2/3 to the 1/3 of the screen.
+====
+
+
+.Custom Swipe
+====
+*[blue]#Value1#* CUSTOM
+
+*[blue]#Value2#* 100;100;0;100
+
+Will swipe from the point (100;100) to the point (100;200)
+====
+
+==== scrollTo
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Scroll to either an element or a text.
+
+*[blue]#Value1#* : Identifier and name of the element where the scroll will move the screen to in the form of : identifier=html_reference.
+
+*[blue]#Value2#* : text in the screen where the scroll will move.
+
+[NOTE]
+====
+Use either Value1 or Value2. If both are feed, the Value2 scroll will be used first.
+====
+
+==== installApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Install an application on the mobile.
+
+*[blue]#Value1#* : Path to the application to install.
+
+.Title
+====
+/root/toto.apk
+====
+
+==== removeApp
+|=== 
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Remove an application from the mobile.
+
+*[blue]#Value1#* : Application package name to remove.
+
+.Title
+====
+com.cerberus.appmobile
+====
+
+
+==== wait
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Wait for a certain amount of time or for an element to be present on a page.
+
+*[blue]#Value1#* : Either an integer that represent a duration in ms, either an Element that we will wait to exist in the form of : identifier=html_reference.
+
+.Title
+====
+10000
+
+Will wait 10 seconds
+====
+
+.Title
+====
+id=userName
+
+Will wait that element with id equal to userName is loaded on the current screen.
+====
+
+
+==== waitVanish
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Wait that an element is removed from the page.
+
+*[blue]#Value1#* : Element that we will wait to be removed from the screen in the form of : identifier=html_reference.
+
+.Title
+====
+id=userName
+
+Will wait that Element with id equal to userName is removed from the current screen.
+====
+
+
+==== waitNetworkTrafficIdle
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Wait that network traffic idle. Cerberus will wait until requests are no longer performed. That can be used in order to secure that all page components are fully loaded and does not miss some important resource hits. In order to do so, Cerberus will check periodically the number of hits generated from the application since the beginning of the test case. When the number of hits stops to grow during that period, Cerberus stop waiting and continue the test case.
+
+Parameter 'cerberus_networkstatsave_idleperiod_ms' can be used to change the period in millisecond and 'cerberus_networkstatsave_idlemaxloop_nb' can be used in order to limit those checks after a maximum of iteration.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+
+==== callService
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Call a service (REST, FTP, KAFKA,...) defined on the Service Library and provide the output within the execution.
+
+*[blue]#Value1#* : Name of the service to call.
+
+*[blue]#Value2#* : Nb of Event until the action finish. It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to the nb of event the action will wait until it resume to the following controls or actions.
+
+*[blue]#Value3#* : Time in second until the action finish.It is only used if the Service is a KAFKA service with a SEARCH method. It correspond to maximum time in second the action will wait until it resume to the following controls or actions.
+
+==== executeSqlUpdate
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Will allow you to execute SQL update (insert,delete,update).
+
+*[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
+
+*[blue]#Value2#* : SQL to be executed.
+
+==== executeSqlStoredProcedure
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Will allow you to execute SQL stored procedure.
+
+*[blue]#Value1#* : Name of the database where the SQL will be executed. Database needs to be created into the invariant `PROPERTYDATABASE` and configured on the corresponding environment.
+
+*[blue]#Value2#* : SQL to be executed.
+
+==== calculateProperty
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionally update the content with another property. That action should only be used if you need to force a calculation at a precise timing or if you want to recalculate it with the latest value. A property calculation is automatically triggered when using a property without being forced to use that action.
+
+*[blue]#Value1#* : Name of the property to calculate. If the property is already calculated, it will be forced to be calculated again.
+
+*[blue]#Value2#* : [Optional] Name of a second property that will affect the property in *Value1*.
+
+==== setNetworkTrafficContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Retrieve the network traffic from Cerberus Executor (when activated at robot level) and calculate a json message that can be used for direct controls on all attached controls. If Robot Executor is not activated, Action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+*[blue]#Value1#* : URL to filter. Network requests will be filtered based on that value. Any url that contain the value1 will be included in the network traffic.
+
+*[blue]#Value2#* : [Optional] Flag in order to include the response content of every requests. For speed and performance reason, Cerberus by default will not retrieve the content of every requests. If you want to get them in order to perform some controls on them, you can use that flag.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+==== indexNetworkTrafficContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Allow to index the network traffic content into pieces. This action allows, during a testcase, to define some checkpoint that will isolate the traffic statistics done before and after the index. When the action is triggered, Cerberus save the number of requests performed since the beginning of the testcase in order to index them. When at least an index exist on a testcase, the 'Network' tab displayed inside the testcase execution report allow to filter the various dashboard on a selection of indexes.
+When that action is performed, the 'setNetworkTrafficContent' action and 'getFromNetworkTraffic' default to the content that occured since that last index created.
+That action is handy in order to perform a full end user scenario (ex : a customer going through a checkout) and perform control on traffic done only on some isolated part of the scenario. Thanks to that action I can validate that a certain hit has been done on a specific part of the testcase (ex : no hits perfomed during the payment page loading.)
+
+*[blue]#Value1#* : Name of the index.
+
+[NOTE]
+====
+This action is only possible when Robot has the Cerberus executor activated and fully working.
+It also require at least version 1.1 of the executor.
+====
+
+==== setServiceCallContent
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Force current content of the test case on the last service call in a JSON format. That JSON will allow controls on the structure of the last call for both Request and Response including information such as http header, http protocol version, or return code. Any control attached to that action will take json path as element syntax for direct controls. If no calls were performed before that action, action will end in NE Status and all attached controls ignored. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+==== setConsoleContent
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|=== 
+Force current content of the test case to the console logs in a JSON format. That JSON will allow controls on the all the logs collected between each call to that action (logs contents are reset after each call to get them). Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+==== setContent
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Force current content of the test case to the data provided in value1 parameter. It can be any format you need (JSON, XML). All controls attached to that action will point to that data. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
+
+==== doNothing
+|=== 
+
+| *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
+
+|=== 
+Just perform no action. No action will be executed and engine will go to the next action or control
+
+==== mouseOverAndWait
+DEPRECATED Action that should no longuer used.
+
+==== removeDifference
+DEPRECATED Action that should no longuer used.
+
+

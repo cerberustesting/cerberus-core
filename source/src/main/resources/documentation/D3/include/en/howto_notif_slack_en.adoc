@@ -1,0 +1,11 @@
+> **You can easily be notified in Slack whenever the execution of your campaign starts and/or ends**
+
+* Go to the menu ```Run``` > ```Campaign``` > ```Notifications``` > ```Slack```
+- Set _**Y - Yes**_ to **Slack Notify Start of execution** if you want to receive a notification in Slack everytime the execution of your campaign starts
+- Set _**Y - Yes**_ to **Slack Notify End of execution** if you want to receive a notification in Slack everytime the execution of your campaign ends
+- Fill the **Slack Webhook URL** field with the webhook linked to your slack application
+- Fill the **Slack Channel** field with the name of the slack channel you want to receive the notifications set previously
+
+_**/!\ To generate the webhook, we recommend you to follow https://www.youtube.com/watch?v=meHI6aSu894[this tutorial] we created**_
+
+image:campaign_slack_notifications.png[Campaign configuration for slack notifications,800,800]

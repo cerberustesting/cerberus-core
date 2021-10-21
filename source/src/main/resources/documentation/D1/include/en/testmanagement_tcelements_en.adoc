@@ -1,0 +1,117 @@
+
+=== Test Case Elements Indentifiers
+
+Syntax in order to identify a field or element inside a page has the form :
+
+identifier=html_reference
+
+identifier can take the various values :
+
+ - *id=*
+
+id of the field will be used.
+
+.id= html example
+====
+<ul class="list-group step-list side-item nav nav-pills" *id="steps"* style="max-height: 600px;overflow-y: auto">
+====
+
+ - *name=*
+ 
+.name= html example
+====
+<a *name="menu"* id="menuLabel" href="Label.jsp">Label</a>
+====
+
+ - *class=*
+.class= html example
+====
+<label *class="checkbox"*></label>
+====
+ 
+ - *css=*
+ 
+ - *xpath=*
+ 
+You can specify an xpath value. Additional documentation on xpath syntax can be found https://www.w3schools.com/xml/xpath_syntax.asp[here].
+Xpath can be tested live on Web pages from Chrome Developer extention (accessible via F12).
+
+Via Element tab, you just have to hit CTRL+F in order to find inside the DOM.
+
+image:chromeXPathElement1.png[XPath Chrome Console,align="center"] 
+
+In the search field, typing the xpath will point you to the element.
+
+image:chromeXPathElement2.png[XPath Chrome Console,align="center"]
+
+XPath can also be tested from the console tab.
+
+image:chromeXPathConsole1.png[XPath Chrome Console,align="center"]
+
+Just type 
+
+    $x("//div");
+
+And it will report the Element found. [] is returned in case no element are found.
+
+image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
+
+.by Path
+====
+xpath=//*[@id='html_reference']
+====
+
+
+ - *link=*
+ 
+ - *data-cerberus=*
+ 
+.data-cerberus= html example
+====
+<label *data-cerberus="label-OK"*></label>
+====
+ 
+
+ - *coord=*
+ 
+ - *picture=*
+
+This identifier will use the image recognition engine to find the element pixel by pixel. That will only work for FAT Applications (Sikuli) or GUI in hybrid mode (using Sikuli extention)
+
+.by picture example that will click on application object buttonOK
+====
+picture=%object.buttonOK.pictureurl%
+====
+
+In order to perform any action/control (e.g. 'click', 'verifyElementPresent'), Application Object must be used to reference picture.
+Keep in mind that for click action, it will be performed in the center of the picture:
+image:sikuliclick1.png[SikuliClick1]
+
+
+ - *text=*
+
+This identifier will use the OCR engine of the image recognition capability to find the element pixel by pixel. That will only work for FAT Applications (Sikuli) or GUI in hybrid mode (using Sikuli extention)
+
+.by text example
+====
+text=save my preferences
+====
+ 
+ - *erratum=*
+
+Use the Erratum feature in order to get the element.
+That works in GUI applications.
+That algorithm guess the correct xpath from pages that could change over time.
+Please see more details on https://github.com/lssol/sftm-csharp[erratum project page].
+In order to collect the erratum syntax, you need to use Cerberus Google Chrome https://chrome.google.com/webstore/detail/cerberus-extension/cfgifhmddmhbdndfceikcigagacjfepl?hl=en[extention].
+
+
+ - *OTHER*
+
+
+[NOTE]
+====
+If no indentifier is defined, Cerberus will either consider that it is an _**id**_ or an _**xpath**_ if it starts by // (most xpath does start by //).
+That behaviour allows to copy/paste from Cerberus to any other tools without being forced to add or remove xpath=.
+====
+

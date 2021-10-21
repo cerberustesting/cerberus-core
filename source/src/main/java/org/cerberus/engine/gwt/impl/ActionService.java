@@ -586,7 +586,7 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
             LOG.debug("Click : " + identifier.toString());
-
+            
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());

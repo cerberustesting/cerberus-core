@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
@@ -106,30 +107,97 @@ public class WebDriverService implements IWebDriverService {
 
         LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
 
-        if (identifier.getIdentifier().equalsIgnoreCase("id")) {
-            return By.id(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("name")) {
-            return By.name(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("class")) {
-            return By.className(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("css")) {
-            return By.cssSelector(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("xpath")) {
-            return By.xpath(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("link")) {
-            return By.linkText(identifier.getLocator());
-
-        } else if (identifier.getIdentifier().equalsIgnoreCase("data-cerberus")) {
-            return By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
-
-        } else {
-            throw new NoSuchElementException(identifier.getIdentifier());
+        By by;
+        switch (identifier.getIdentifier()) {
+            case Identifier.IDENTIFIER_ID:
+                by = By.id(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_NAME:
+                by = By.name(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_CLASS:
+                by = By.className(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_CSS:
+                by = By.cssSelector(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_XPATH:
+                by = By.xpath(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_LINK:
+                by = By.linkText(identifier.getLocator());
+                break;
+            case Identifier.IDENTIFIER_DATACERBERUS:
+                by = By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
+                break;
+            default:
+                throw new NoSuchElementException(identifier.getIdentifier());
         }
+        return by;
+    }
+
+    private WebElement getWebElementUsingQuerySelector(Session session, String querySelector){
+
+        WebDriver driver = session.getDriver();
+
+        /**
+         * Build the query splitting the querySelector
+         */
+        String structure[] = querySelector.split(">>");
+
+        StringBuilder script = new StringBuilder();
+        script.append("document");
+        for(int index = 0; index < structure.length-1; index++){
+            script.append(".querySelector('"+structure[index]+"').shadowRoot");
+        }
+        script.append(".querySelector('"+structure[structure.length-1]+"')");
+
+        /**
+         * Loop until timeout is reached to scroll to the element and retrieve it
+         */
+        WebElement finalElement = null;
+        long start = new Date().getTime();
+
+        int i = 0;
+        long elapsedSinceStart = new Date().getTime() - start;
+        boolean scrolled = false;
+        while ((elapsedSinceStart < session.getCerberus_selenium_wait_element())) {
+
+            elapsedSinceStart = new Date().getTime() - start;
+            i++;
+            LOG.debug("SHADOW_ROOT ATTEMPT #" + i + " / Elapsed time from beginning : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
+
+            try {
+                Thread.sleep(500);
+
+                //Scroll to element
+                if(!scrolled) {
+                    ((JavascriptExecutor) driver).executeScript(script.toString()+".scrollIntoView()");
+                    LOG.debug("Scrolled into View : ");
+                    scrolled=true;
+                }
+
+
+                //Get element
+                finalElement = (WebElement)((JavascriptExecutor) driver).executeScript("return "+script);
+
+                //If element retrieved is on the visible part of the page, break
+                if(finalElement.getLocation().getX() < driver.manage().window().getSize().getWidth() &&
+                        finalElement.getLocation().getY() < driver.manage().window().getSize().getHeight()){
+                    LOG.debug("FOUND : "+finalElement);
+                    return finalElement;
+                } else {
+                    scrolled=false;
+                    LOG.debug("Element '"+querySelector+"' "+finalElement.getLocation()+" is out of the visible screen "+driver.manage().window().getSize()+" >> Retrying to scroll");
+                }
+
+            } catch (Exception ex){
+                LOG.debug("NOT FOUND : " +querySelector);
+            }
+
+        }
+
+        return null;
     }
 
     @Override
@@ -226,6 +294,18 @@ public class WebDriverService implements IWebDriverService {
                 answer.setResultMessage(msg);
                 return answer;
             }
+        } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_QUERYSELECTOR)) {
+            WebElement element = getWebElementUsingQuerySelector(session, identifier.getLocator());
+            if(element !=null){
+                answer.setItem(getWebElementUsingQuerySelector(session, identifier.getLocator()));
+                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+                msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
+            } else {
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+                msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
+            }
+            answer.setResultMessage(msg);
+            return answer;
         } else {
             locator = this.getBy(identifier);
         }

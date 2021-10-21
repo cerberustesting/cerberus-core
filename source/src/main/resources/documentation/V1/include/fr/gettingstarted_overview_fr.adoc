@@ -1,2 +1,0 @@
-In this section, you will find general information on Cerberus.
-How it is organized, How the tables are Customizable...etc.

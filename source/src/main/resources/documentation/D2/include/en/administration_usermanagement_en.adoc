@@ -1,0 +1,20 @@
+=== User creation
+
+. Go to *[red]#Administration -> User Management#*.
+. Click on *[red]#Create User#*.
+.. Feed the *[red]#Login#* field.
+.. Feed the *[red]#Name#* field.
+.. Select the *[red]#Team#* (optional).
+.. Select the *[red]#Default Sytem#* field.
+.. Set the Request to 'Y' for a new user. User will have to modify his password at the first connection.
+.. Feed the *[red]#Email#*.
+.. Affect user rights in groups tab.
+.. Click on *[red]#Save#*.
+
+=== User rights
+
+Select the groups to affect the rights wanted.
+
+image:usermanagementgroup.png[usermanagementgroup]
+
+=== Access by system

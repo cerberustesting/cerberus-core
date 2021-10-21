@@ -37,6 +37,12 @@ public interface ITestCaseStepDAO {
 
 
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
+    
+    List<TestCaseStep> findAllTestcaseSteps();
+    
+    List<TestCaseStep> findAllLibrarySteps();
+    
+    List<TestCaseStep> findTestcaseStepsByTestFolderId(String testFolderId);
 
     /**
      *

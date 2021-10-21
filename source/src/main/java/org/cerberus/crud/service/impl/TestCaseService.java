@@ -184,7 +184,7 @@ public class TestCaseService implements ITestCaseService {
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
 
             testCaseCountries = testCaseCountryService.readByTestTestCaseToHashCountryAsKey(test, testCase);
-            countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
+            countryInvariants = (HashMap<String, Invariant>) invariantService.readByIdNameToHash("COUNTRY");
 
             answerTestCase.getItem().setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(testCaseCountries, countryInvariants));
             answerTestCase.getItem().setDependencies(testCaseDepService.readByTestAndTestcase(answerTestCase.getItem().getTest(), answerTestCase.getItem().getTestcase()));
@@ -213,7 +213,7 @@ public class TestCaseService implements ITestCaseService {
 
         if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testCases.getDataList().size() > 0 && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
 
-            HashMap<String, Invariant> countryInvariants = invariantService.readByIdNameToHash("COUNTRY");
+            HashMap<String, Invariant> countryInvariants = (HashMap<String, Invariant>) invariantService.readByIdNameToHash("COUNTRY");
             List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
             HashMap<String, HashMap<String, TestCaseCountry>> testCaseCountryHash = testCaseCountryService.convertListToHashMapTestTestCaseAsKey(testCaseCountries);
             List<TestCaseDep> testCaseDependencies = testCaseDepService.readByTestAndTestcase(testCases.getDataList());

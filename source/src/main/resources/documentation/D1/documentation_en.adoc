@@ -1,0 +1,245 @@
+:imagesdir: ./images/
+:toc: left
+:toc-title: Table of contents
+:sectnums:
+:lang: en
+:repo-url: https://github.com/cerberustesting/cerberus-source/tree/master/source/src/main/resources/documentation/D1/include/{lang}
+:contribution-message: Something is incorrect/missing in this section? Feel free to submit modification.
+
+// = image:logo.png[Logo] Cerberus : User Manual    link:./documentation_fr.html[image:fr.png[FR,20,20]] link:./documentation_en.html[image:en.png[EN,20,20]]
+
+
+[NOTE]
+.This document is under active development!
+=================================================
+If you find errors or missing information in this document, please don’t hesitate to submit an issue or open a pull request with a fix. 
+We encourage you to submit questions and discuss any aspects of the project on link:https://github.com/cerberustesting/cerberus-source[github].
+
+We are happy to welcome new contributors!
+=================================================
+
+= Introduction to Cerberus
+:file-to-include: introduction_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== What is Cerberus?
+:file-to-include: introduction_whatiscerberus_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Getting started
+:file-to-include: gettingstarted_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Welcome to Cerberus application
+:file-to-include: gettingstarted_welcome_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Overview
+:file-to-include: gettingstarted_overview_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Test Management
+:file-to-include: testmanagement_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Test Folder
+:file-to-include: testmanagement_test_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Test Case
+:file-to-include: testmanagement_testcase_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+:file-to-include: testmanagement_tcactions_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+:file-to-include: testmanagement_tccontrols_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+:file-to-include: testmanagement_tcproperties_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+:file-to-include: testmanagement_tcelements_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+:file-to-include: testmanagement_tcnetworktraffic_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+
+== Import / Export
+:file-to-include: testmanagement_importexport_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Label
+:file-to-include: testmanagement_label_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== TestCase execution
+:file-to-include: testmanagement_runtestcase_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Execution Queuing system
+:file-to-include: testmanagement_queue_system_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Campaign management
+:file-to-include: testmanagement_managecampaign_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Test Data Management
+:file-to-include: library_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Data library
+:file-to-include: library_datalibrary_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Application and Environment Management
+:file-to-include: integration_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Environment
+:file-to-include: integration_environment_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Application configuration
+:file-to-include: integration_applicationconfiguration_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Application Object
+:file-to-include: integration_applicationobject_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Service Library
+:file-to-include: integration_servicelibrary_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== SQL Library
+:file-to-include: integration_sqllibrary_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Deploy type
+:file-to-include: integration_deploytype_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Batch
+:file-to-include: integration_batch_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Build content
+:file-to-include: integration_buildcontent_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Build / Revision
+:file-to-include: integration_buildrevision_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+= Administration
+:file-to-include: administration_introduction_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== User management
+:file-to-include: administration_usermanagement_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Log viewer
+:file-to-include: administration_logviewer_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Database maintenance
+:file-to-include: administration_databasemaintenance_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Parameters
+:file-to-include: administration_parameters_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Invariants
+:file-to-include: administration_invariants_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Cerberus Monitoring 
+:file-to-include: administration_cerberusmonitoring_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
+

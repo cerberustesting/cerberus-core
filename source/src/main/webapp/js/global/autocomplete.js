@@ -362,6 +362,7 @@ function initTags(configs, context) {
         ];
         var availableIdentifiers = [
             "data-cerberus",
+            "querySelector",
             "id",
             "name",
             "class",
