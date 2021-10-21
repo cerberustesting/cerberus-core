@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.api.dto.v001.TestcaseStepDTOV001;
 import org.cerberus.api.mapper.v001.TestcaseStepMapperV001;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @Api(tags = "TestcaseStep endpoint")
 @RestController
 @RequestMapping(path = "/public/testcasesteps")
@@ -50,13 +52,6 @@ public class TestcaseStepControllerV001 {
     private final ITestCaseStepService testCaseStepService;
     private final TestcaseStepApiService testcaseStepApiService;
     private final TestcaseStepMapperV001 stepMapper;
-
-    @Autowired
-    public TestcaseStepControllerV001(ITestCaseStepService testCaseStepService, TestcaseStepApiService testcaseStepApiService, TestcaseStepMapperV001 stepMapper) {
-        this.testCaseStepService = testCaseStepService;
-        this.testcaseStepApiService = testcaseStepApiService;
-        this.stepMapper = stepMapper;
-    }
 
     @ApiOperation("Get all TestcaseSteps")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")

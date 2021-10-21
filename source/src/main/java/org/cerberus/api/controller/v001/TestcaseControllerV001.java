@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.api.dto.v001.TestcaseDTOV001;
 import org.cerberus.exception.CerberusException;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @RestController
 @RequestMapping(path = "/public/testcases")
 public class TestcaseControllerV001 {
@@ -47,12 +49,6 @@ public class TestcaseControllerV001 {
     private static final String API_KEY = "apikey";
     private final ITestCaseService testCaseService;
     private final TestcaseMapperV001 testcaseMapper;
-
-    @Autowired
-    public TestcaseControllerV001(ITestCaseService testCaseService, TestcaseMapperV001 testcaseMapper) {
-        this.testCaseService = testCaseService;
-        this.testcaseMapper = testcaseMapper;
-    }
 
     @ApiOperation("Get all testcases filtered by test")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")

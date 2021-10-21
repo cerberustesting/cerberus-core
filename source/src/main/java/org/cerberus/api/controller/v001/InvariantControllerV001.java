@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.cerberus.api.dto.v001.InvariantDTOV001;
 import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import org.springframework.http.MediaType;
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @Api(tags = "Invariant endpoint")
 @RestController
 @RequestMapping(path = "/public/invariants")
@@ -48,13 +50,6 @@ public class InvariantControllerV001 {
     private static final String API_KEY = "apikey";
     private final InvariantApiService invariantApiService;
     private final InvariantMapperV001 invariantMapper;
-
-    @Autowired
-    public InvariantControllerV001(InvariantApiService invariantApiService, InvariantMapperV001 invariantMapper) {
-        this.invariantApiService = invariantApiService;
-        this.invariantMapper = invariantMapper;
-    }
-    
     
     @ApiOperation("Get all invariants filtered by idName")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")

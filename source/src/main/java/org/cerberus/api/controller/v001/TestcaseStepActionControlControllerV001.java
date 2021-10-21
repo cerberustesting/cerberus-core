@@ -22,6 +22,7 @@ package org.cerberus.api.controller.v001;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.api.dto.v001.TestcaseStepActionControlDTOV001;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @Api(tags = "Testcase Step Action Controls endpoint")
 @RestController
 @RequestMapping(path = "/public/testcasestepactioncontrols")
@@ -53,12 +55,6 @@ public class TestcaseStepActionControlControllerV001 {
     private final TestcaseStepActionControlMapperV001 controlMapper;
     private final ITestCaseStepActionControlService controlService;
 
-    @Autowired
-    public TestcaseStepActionControlControllerV001(TestcaseStepActionControlMapperV001 controlMapperV001, ITestCaseStepActionControlService controlService) {
-        this.controlMapper = controlMapperV001;
-        this.controlService = controlService;
-    }
-    
     @ApiOperation("Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
     @GetMapping(path ="/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
