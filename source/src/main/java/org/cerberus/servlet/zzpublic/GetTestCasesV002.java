@@ -20,8 +20,13 @@
 package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,38 +48,42 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.service.ILabelService;
 
 /**
  *
  * @author Nouxx
- * 
+ *
  */
-@WebServlet(name = "GetTestCasesV002", urlPatterns = { "/GetTestCasesV002" })
+@WebServlet(name = "GetTestCasesV002", urlPatterns = {"/GetTestCasesV002"})
 public class GetTestCasesV002 extends HttpServlet {
 
     private ITestCaseService testCaseService;
     private IAPIKeyService apiKeyService;
+    private ILabelService labelService;
 
-    private static final Logger LOG = LogManager.getLogger("GetTestCasesV002");
+    private static final Logger LOG = LogManager.getLogger(GetTestCasesV002.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("text/html;charset=UTF-8");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        // currently, the servlet only supports filtering on a single Application
-        String Application = ParameterParserUtil.parseStringParam(request.getParameter("Application"), "");
-        // currently, the servlet only supports filtering on a single Type
-        String Type = ParameterParserUtil.parseStringParam(request.getParameter("Type"), "");
-        // currently, the servlet only supports filtering on a single Priority
-        String Priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
+        // currently, the servlet only supports filtering on a single applicationParam
+        String applicationParam = ParameterParserUtil.parseStringParam(request.getParameter("Application"), "");
+        // currently, the servlet only supports filtering on a single typeParam
+        String typeParam = ParameterParserUtil.parseStringParam(request.getParameter("Type"), "");
+        // currently, the servlet only supports filtering on a single priorityParam
+        String priorityParam = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
         // the servlet supports filtering on several labels id (AND operator)
-        String LabelsId = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), "");
+        String labelsIdParam = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), "");
         // the servlet supports filtering on several status (OR operator)
-        String Statuses = ParameterParserUtil.parseStringParam(request.getParameter("Statuses"), "");
+        String statusesParam = ParameterParserUtil.parseStringParam(request.getParameter("Statuses"), "");
+        String testsParam = ParameterParserUtil.parseStringParam(request.getParameter("Tests"), "");
 
         /**
          * Adding Log entry.
@@ -85,48 +94,67 @@ public class GetTestCasesV002 extends HttpServlet {
 
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
+        labelService = appContext.getBean(ILabelService.class);
 
         if (apiKeyService.authenticate(request, response)) {
-            AnswerList<TestCase> AnswerlistOfTestCases;
+            List<TestCase> testcaseList;
             List<JSONObject> listOfTestCasesJSON = new ArrayList<>();
             try {
                 // build JSON response object
                 JSONObject jsonResponse = new JSONObject();
 
                 // ignored parameters
-                String[] searchTerm_Test = null;
-                String[] searchTerm_creator = null;
-                String[] searchTerm_implementer = null;
-                String[] searchTerm_system = null;
-                String[] searchTerm_campaign = null;
+                String[] searchTermTest = parseSingleValueFilter(testsParam);
+                String[] searchTermCreator = null;
+                String[] searchTermImplementer = null;
+                String[] searchTermSystem = null;
+                String[] searchTermCampaign = null;
 
-                // currently only handling a single application
-                String[] searchTerm_Application = parseSingleValueFilter(Application);
-                // currently handling a single priority
-                String[] searchTerm_priority = parseSingleValueFilter(Priority);
-                // currently handling a single type
-                String[] searchTerm_type = parseSingleValueFilter(Type);
+                // currently only handling a single applicationParam
+                String[] searchTermApplication = parseSingleValueFilter(applicationParam);
+                // currently handling a single priorityParam
+                String[] searchTermPriority = parseSingleValueFilter(priorityParam);
+                // currently handling a single typeParam
+                String[] searchTermType = parseSingleValueFilter(typeParam);
+                List<Integer> searchTermLabelids = stringstoIntegerList(parseMultipleValuesFilter(labelsIdParam));
+                String[] searchTermStatus = parseMultipleValuesFilter(statusesParam);
 
-                List<Integer> searchTerm_labelids = StringstoIntegerList(parseMultipleValuesFilter(LabelsId));
+                // Get all testcases filtered by parameters
+                testcaseList = testCaseService.readByVarious(searchTermTest, searchTermApplication,
+                        searchTermCreator, searchTermImplementer, searchTermSystem, searchTermCampaign,
+                        searchTermLabelids, searchTermPriority, searchTermType, searchTermStatus, -1).getDataList();
 
-                String[] searchTerm_status = parseMultipleValuesFilter(Statuses);
+                // Create a Map of List of Testcase with the test as key
+                Map<String, List<TestCase>> testcasesMapByTest = testcaseList
+                        .stream()
+                        .flatMap(testcase -> Stream.of(new SimpleEntry<>(testcase.getTest(), testcase)))
+                        .collect(
+                                Collectors.groupingBy(
+                                        Map.Entry::getKey,
+                                        Collectors.mapping(
+                                                Map.Entry::getValue,
+                                                Collectors.toList()
+                                        )
+                                )
+                        );
 
-                AnswerlistOfTestCases = testCaseService.readByVarious(searchTerm_Test, searchTerm_Application,
-                        searchTerm_creator, searchTerm_implementer, searchTerm_system, searchTerm_campaign,
-                        searchTerm_labelids, searchTerm_priority, searchTerm_type, searchTerm_status, -1);
+                // We use the previous hashmap to get a list of Label
+                // Then we iterate over each Testcase to add all its labels
+                testcasesMapByTest
+                        .forEach((test, testcases) -> {
+                            HashMap<String, List<Label>> labelsMap = labelService.findLabelsFromTestCase(test, null, testcases);
+                            testcases.forEach(testcase -> testcase.setLabels(labelsMap.get(testcase.getTest() + "##" + testcase.getTestcase())));
+                        });
 
-                List<TestCase> listOfTestCases = AnswerlistOfTestCases.getDataList();
-
-                for (int i = 0; i < listOfTestCases.size(); i++) {
-                    TestCase testcase = listOfTestCases.get(i);
-                    JSONObject testcaseJSON = testcase.toJson();
-                    listOfTestCasesJSON.add(testcaseJSON);
-                }
-
-                //TODO: filter out the results on labels (AND instead of OR)
+                // We filter the list of testcases to only keep those that have all the labels passed by parameters
+                // Then we convert to json
+                testcaseList
+                        .stream()
+                        .filter(testcase -> isTestcaseContainingAllLabelsParam(testcase, searchTermLabelids))
+                        .forEach(testcase -> listOfTestCasesJSON.add(testcase.toJson()));
 
                 jsonResponse.put("testcases", listOfTestCasesJSON);
-                jsonResponse.put("size", listOfTestCases.size());
+                jsonResponse.put("size", listOfTestCasesJSON.size());
                 response.setContentType("application/json");
                 response.getWriter().print(jsonResponse.toString());
 
@@ -136,9 +164,28 @@ public class GetTestCasesV002 extends HttpServlet {
         }
     }
 
+    private boolean isTestcaseContainingAllLabelsParam(TestCase testcase, List<Integer> labelIds) {
+        for (Integer labelId : labelIds) {
+            if(!isLabelIdPresentInListOfLabel(labelId, testcase.getLabels())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isLabelIdPresentInListOfLabel(Integer labelId, List<Label> labels) {
+        boolean isPresent = false;
+        for (Label label : labels) {
+            if (label.getId().equals(labelId)) {
+                isPresent = true;
+            }
+        }
+        return isPresent;
+    }
+
     /**
      * return a single value filter into the format of readByVarious() function
-     * 
+     *
      * @param param String to format
      * @return String[] with 1 element if param is defined, null otherwise
      */
@@ -154,7 +201,7 @@ public class GetTestCasesV002 extends HttpServlet {
 
     /**
      * return a single value filter into the format of readByVarious() function
-     * 
+     *
      * @param param String to format
      * @return String[] with 1 element if param is defined, null otherwise
      */
@@ -168,17 +215,17 @@ public class GetTestCasesV002 extends HttpServlet {
 
     /**
      * convert a String[] to List<Integer>
-     * 
+     *
      * @param strings String[]
      * @return List<Integer>
      */
-    private List<Integer> StringstoIntegerList(String[] strings) {
+    private List<Integer> stringstoIntegerList(String[] strings) {
         if (strings == null || strings.length == 0) {
             return null;
         } else {
-            List<Integer> res = new ArrayList<Integer>();
-            for (int i = 0; i < strings.length; i++) {
-                res.add(Integer.parseInt(strings[i]));
+            List<Integer> res = new ArrayList<>();
+            for (String str : strings) {
+                res.add(Integer.parseInt(str));
             }
             return res;
         }
