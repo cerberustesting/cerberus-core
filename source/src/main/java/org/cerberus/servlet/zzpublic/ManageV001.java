@@ -105,7 +105,7 @@ public class ManageV001 extends HttpServlet {
             String message = "";
             String returnCode = "OK";
 
-            if (apiKeyService.checkAPIKey(request, response)) {
+            if (apiKeyService.authenticate(request, response)) {
 
                 int maxIteration = parameterService.getParameterIntegerByKey("cerberus_manage_timeout", "", 300);
                 int cntIteration = 0;

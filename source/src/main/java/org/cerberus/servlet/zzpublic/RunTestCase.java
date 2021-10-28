@@ -129,7 +129,7 @@ public class RunTestCase extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/RunTestCase", "CALL", "RunTestCase called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             //Tool
             String robotHost = ""; // Selenium IP

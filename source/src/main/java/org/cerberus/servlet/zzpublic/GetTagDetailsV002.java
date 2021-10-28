@@ -92,7 +92,7 @@ public class GetTagDetailsV002 extends HttpServlet {
 
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
             List<TestCaseExecution> listOfExecutions;
             List<JSONObject> listOfExecutionsJSON = new ArrayList<>();
             try {

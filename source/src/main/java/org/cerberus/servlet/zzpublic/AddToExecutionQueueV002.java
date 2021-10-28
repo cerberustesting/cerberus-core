@@ -183,7 +183,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/AddToExecutionQueueV002", "CALL", "AddToExecutionQueueV002 called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             // Parsing all parameters.
             // Execution scope parameters : Campaign, TestCases, Countries, Environment, Browser.

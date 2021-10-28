@@ -191,7 +191,7 @@ public class AddToExecutionQueue extends HttpServlet {
                 + "- " + PARAMETER_TAG + " [mandatory] : Tag that will be used for every execution triggered. [" + tag + "]\n";
         // TO BE IMPLEMENTED...
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             // Checking the parameter validity.
             boolean error = false;

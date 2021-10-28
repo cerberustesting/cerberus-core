@@ -86,7 +86,7 @@ public class GetTestCasesV002 extends HttpServlet {
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
             AnswerList<TestCase> AnswerlistOfTestCases;
             List<JSONObject> listOfTestCasesJSON = new ArrayList<>();
             try {

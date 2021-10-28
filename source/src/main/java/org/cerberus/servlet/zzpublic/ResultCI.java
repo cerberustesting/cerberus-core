@@ -66,7 +66,7 @@ public class ResultCI extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/ResultCI", "CALL", "ResultCI called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             String tag = policy.sanitize(request.getParameter("tag"));
 

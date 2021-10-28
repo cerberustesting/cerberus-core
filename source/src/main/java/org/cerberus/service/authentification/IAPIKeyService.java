@@ -35,6 +35,7 @@ public interface IAPIKeyService {
      * @param request
      * @param response
      */
-    public boolean checkAPIKey(HttpServletRequest request, HttpServletResponse response);
+    public boolean authenticate(HttpServletRequest request, HttpServletResponse response);
+    public boolean authenticate(String apiKey);
 
 }

@@ -46,37 +46,27 @@ public class APIKeyService implements IAPIKeyService {
     private IParameterService parameterService;
 
     @Override
-    public boolean checkAPIKey(HttpServletRequest request, HttpServletResponse response) {
+    public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
         try {
             LOG.debug("Checking API Call.");
 
-            boolean toSecure = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", false);
-
-            if (toSecure) {
+            if (this.isApiKeyAuthEnabled()) {
 
                 // If already aauthorised, we don't need to check the api key.
-                LOG.info(request.getUserPrincipal());
+                LOG.debug(request.getUserPrincipal());
                 if ((request.getUserPrincipal() != null) && (!StringUtil.isNullOrEmpty(request.getUserPrincipal().getName()))) {
                     LOG.debug("User connected with : '" + request.getUserPrincipal().getName() + "'");
                     return true;
                 }
 
-                String accessKey = request.getHeader("apikey");
+                String apiKey = request.getHeader("apikey");
 
-                String message = "";
-                String returnCode = "OK";
-                if ((!StringUtil.isNullOrEmpty(accessKey)) && ((accessKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", "")))
-                        || (accessKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value2, "", "")))
-                        || (accessKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value3, "", "")))
-                        || (accessKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value4, "", "")))
-                        || (accessKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value5, "", ""))))) {
+                if (isApiKeyValid(apiKey)) {
                     return true;
                 } else {
                     JSONObject data = new JSONObject();
-                    message = "Invalid API Key (please feed a valid apikey value inside HTTP Headers) !!";
-                    returnCode = "KO";
-                    data.put("message", message);
-                    data.put("returnCode", returnCode);
+                    data.put("message", "Invalid API Key (please feed a valid apikey value inside HTTP Headers) !!");
+                    data.put("returnCode", "KO");
                     response.getWriter().print(data.toString(1));
                     response.setStatus(401);
                     return false;
@@ -91,6 +81,24 @@ public class APIKeyService implements IAPIKeyService {
         }
         return false;
 
+    }
+
+    @Override
+    public boolean authenticate(String apiKey) {
+       return isApiKeyAuthEnabled() && isApiKeyValid(apiKey);
+    }
+
+    public boolean isApiKeyAuthEnabled() {
+        return parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", true);
+    }
+
+    private boolean isApiKeyValid(String apiKey) {
+        return (!StringUtil.isNullOrEmpty(apiKey))
+                && ((apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", "")))
+                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value2, "", "")))
+                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value3, "", "")))
+                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value4, "", "")))
+                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value5, "", ""))));
     }
 
 }

@@ -76,7 +76,7 @@ public class ResultCIV001 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/ResultCIV001", "CALL", "ResultCIV001 called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             try {
                 JSONObject jsonResponse = new JSONObject();

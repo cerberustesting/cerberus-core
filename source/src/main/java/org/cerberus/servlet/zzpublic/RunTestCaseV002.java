@@ -129,7 +129,7 @@ public class RunTestCaseV002 extends HttpServlet {
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
             logEventService.createForPublicCalls("/RunTestCaseV002", "CALL", "RunTestCaseV002 called : " + request.getRequestURL(), request);
 
-            if (apiKeyService.checkAPIKey(request, response)) {
+            if (apiKeyService.authenticate(request, response)) {
 
                 //Tool
                 String robot = "";
