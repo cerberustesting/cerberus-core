@@ -150,7 +150,7 @@ public class TestCaseStepService implements ITestCaseStepService {
 
 //    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
 //        for (TestCaseStep tcsDifference : testCaseStepList) {
-//            if (tcsDifference.isIsStepInUseByOtherTestcase()) {
+//            if (tcsDifference.isStepInUseByOtherTestcase()) {
 //                List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestcase(), tcsDifference.getInitialStep());
 //                for (TestCaseStep tcsUS : tcsUsingStep) {
 //                    tcsUS.setLibraryStepStepId(tcsDifference.getStepId());

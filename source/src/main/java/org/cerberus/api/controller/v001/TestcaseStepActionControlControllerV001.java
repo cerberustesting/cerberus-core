@@ -29,7 +29,6 @@ import org.cerberus.api.dto.v001.TestcaseStepActionControlDTOV001;
 import org.cerberus.api.mapper.v001.TestcaseStepActionControlMapperV001;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,13 +36,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  *
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Step Action Controls endpoint")
+@Api(tags = "Testcase Control")
+@ApiIgnore
 @RestController
 @RequestMapping(path = "/public/testcasestepactioncontrols")
 public class TestcaseStepActionControlControllerV001 {
@@ -51,7 +52,7 @@ public class TestcaseStepActionControlControllerV001 {
     private static final Logger LOG = LogManager.getLogger(TestcaseStepActionControlControllerV001.class);
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "apikey";
+    private static final String API_KEY = "X-API-KEY";
     private final TestcaseStepActionControlMapperV001 controlMapper;
     private final ITestCaseStepActionControlService controlService;
 

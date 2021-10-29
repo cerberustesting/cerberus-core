@@ -35,10 +35,10 @@ import org.mapstruct.Mapper;
 public interface JSONArrayMapper {
     
     public default JsonNode toJsonNode(JSONArray jsonArray) throws JsonProcessingException {      
-        return ObjectMapperUtil.newDefaultInstance().readTree(jsonArray.toString());
+        return jsonArray == null ? null : ObjectMapperUtil.newDefaultInstance().readTree(jsonArray.toString());
     }
     
     public default JSONArray toJSONArray(JsonNode jsonNode) throws JSONException {
-        return new JSONArray(jsonNode.toString());
+        return jsonNode == null ? null : new JSONArray(jsonNode.toString());
     }
 }

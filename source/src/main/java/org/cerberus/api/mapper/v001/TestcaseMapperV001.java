@@ -30,21 +30,24 @@ import org.mapstruct.Mapping;
  *
  * @author mlombard
  */
-
 @Mapper(
-        componentModel = "spring", 
+        componentModel = "spring",
         uses = {
-            TestcaseStepMapperV001.class, 
-            TestcaseStepActionMapperV001.class, 
-            TestcaseStepActionControlMapperV001.class, 
-            JSONArrayMapper.class, 
+            TestcaseStepMapperV001.class,
+            TestcaseStepActionMapperV001.class,
+            TestcaseStepActionControlMapperV001.class,
+            JSONArrayMapper.class,
             TimestampMapper.class
         }
 )
 public interface TestcaseMapperV001 {
-    
+
     @Mapping(source = "testcase.test", target = "testFolderId")
     @Mapping(source = "testcase.testcase", target = "testcaseId")
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "activeQA", target = "isActiveQA")
+    @Mapping(source = "activeUAT", target = "isActiveUAT")
+    @Mapping(source = "activePROD", target = "isActivePROD")
     TestcaseDTOV001 toDTO(TestCase testcase);
 
     @Mapping(source = "testcaseDTO.testFolderId", target = "test")

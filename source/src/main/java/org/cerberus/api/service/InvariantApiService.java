@@ -20,27 +20,23 @@
 package org.cerberus.api.service;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.cerberus.api.dto.v001.InvariantDTOV001;
 import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @Service
 public class InvariantApiService {
-
+    
     IInvariantDAO invariantDao;
-
-    @Autowired
-    public InvariantApiService(IInvariantDAO invariantDao) {
-        this.invariantDao = invariantDao;
-    }
 
     public Invariant readByKey(String idName, String value) throws CerberusException {
         Invariant invariant = this.invariantDao.readByKey(idName, value);

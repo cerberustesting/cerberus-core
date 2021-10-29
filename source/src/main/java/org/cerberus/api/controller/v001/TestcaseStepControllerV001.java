@@ -31,7 +31,6 @@ import org.cerberus.api.mapper.v001.TestcaseStepMapperV001;
 import org.cerberus.api.service.PublicApiAuthenticationService;
 import org.cerberus.api.service.TestcaseStepApiService;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -44,13 +43,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "TestcaseStep endpoint")
+@Api(tags = "Testcase Step")
 @RestController
 @RequestMapping(path = "/public/testcasesteps")
 public class TestcaseStepControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "apikey";
+    private static final String API_KEY = "X-API-KEY";
     private final ITestCaseStepService testCaseStepService;
     private final TestcaseStepApiService testcaseStepApiService;
     private final TestcaseStepMapperV001 stepMapper;
@@ -59,7 +58,9 @@ public class TestcaseStepControllerV001 {
     @ApiOperation("Get all TestcaseSteps")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @GetMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseStepDTOV001> findAllTestcaseSteps(@RequestParam("islibrarystep") boolean isLibraryStep, @RequestHeader(API_KEY) String apiKey) {
+    public List<TestcaseStepDTOV001> findAllTestcaseSteps(
+            @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
+            @RequestHeader(API_KEY) String apiKey) {
         this.apiAuthenticationService.authenticate(apiKey);
         List<TestCaseStep> steps
                 = isLibraryStep
@@ -105,7 +106,7 @@ public class TestcaseStepControllerV001 {
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
-            @RequestParam("islibrarystep") boolean isLibraryStep,
+            @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
             @RequestHeader(API_KEY) String apiKey) {
         this.apiAuthenticationService.authenticate(apiKey);
         return this.stepMapper.toDTO(

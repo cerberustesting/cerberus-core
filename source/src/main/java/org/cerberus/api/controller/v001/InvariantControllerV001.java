@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Invariant endpoint")
+@Api(tags = "Invariant")
 @RestController
 @RequestMapping(path = "/public/invariants")
 public class InvariantControllerV001 {
@@ -51,7 +51,7 @@ public class InvariantControllerV001 {
     private static final String API_KEY = "X-API-KEY";
     private final InvariantApiService invariantApiService;
     private final InvariantMapperV001 invariantMapper;
-    private final PublicApiAuthenticationService apiAuthenticationService;
+    private final PublicApiAuthenticationService apiAuthenticationService;    
     
     @ApiOperation("Get all invariants filtered by idName")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")

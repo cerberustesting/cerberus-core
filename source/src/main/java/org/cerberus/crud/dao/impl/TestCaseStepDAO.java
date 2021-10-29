@@ -818,7 +818,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 isLibraryStep, isExecutionForced, usrCreated, dateCreated, usrModif, dateModif);
 
         if (SqlUtil.hasColumn(resultSet, "isStepInUseByOtherTestCase")) {
-            tcs.setIsStepInUseByOtherTestcase(resultSet.getInt("isStepInUseByOtherTestCase") == 1);
+            tcs.setStepInUseByOtherTestcase(resultSet.getInt("isStepInUseByOtherTestCase") == 1);
         }
 
         if (SqlUtil.hasColumn(resultSet, "libraryStepSort")) {
