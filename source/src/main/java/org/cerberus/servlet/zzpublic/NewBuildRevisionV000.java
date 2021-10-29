@@ -83,7 +83,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/NewBuildRevisionV000", "CALL", "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);

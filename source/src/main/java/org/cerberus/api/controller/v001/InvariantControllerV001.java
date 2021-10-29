@@ -24,42 +24,40 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import org.cerberus.api.dto.v001.InvariantDTOV001;
 import org.cerberus.exception.CerberusException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.cerberus.api.mapper.v001.InvariantMapperV001;
 import org.cerberus.api.service.InvariantApiService;
+import org.cerberus.api.service.PublicApiAuthenticationService;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  *
  * @author mlombard
  */
+@AllArgsConstructor
 @Api(tags = "Invariant endpoint")
 @RestController
 @RequestMapping(path = "/public/invariants")
 public class InvariantControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "apikey";
+    private static final String API_KEY = "X-API-KEY";
     private final InvariantApiService invariantApiService;
     private final InvariantMapperV001 invariantMapper;
-
-    @Autowired
-    public InvariantControllerV001(InvariantApiService invariantApiService, InvariantMapperV001 invariantMapper) {
-        this.invariantApiService = invariantApiService;
-        this.invariantMapper = invariantMapper;
-    }
-    
+    private final PublicApiAuthenticationService apiAuthenticationService;
     
     @ApiOperation("Get all invariants filtered by idName")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
     @GetMapping(path = "/{idName}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<InvariantDTOV001> findInvariantByIdName(@PathVariable("idName") String idName) throws CerberusException {
+    public List<InvariantDTOV001> findInvariantByIdName(@PathVariable("idName") String idName, @RequestHeader(API_KEY) String apiKey) throws CerberusException {
+        this.apiAuthenticationService.authenticate(apiKey);
         return this.invariantApiService.readyByIdName(idName)
                 .stream()
                 .map(this.invariantMapper::toDTO)
@@ -69,7 +67,10 @@ public class InvariantControllerV001 {
     @ApiOperation("Get all invariants filtered by idName and value")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
     @GetMapping(path = "/{idName}/{value}", headers = {API_VERSION_1, API_KEY}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public InvariantDTOV001 findInvariantByIdNameAndValue(@PathVariable("idName") String idName, @PathVariable("value") String value) throws CerberusException {
+    public InvariantDTOV001 findInvariantByIdNameAndValue(@PathVariable("idName") String idName, @PathVariable("value") String value, @RequestHeader(API_KEY) String apiKey) throws CerberusException {
+        this.apiAuthenticationService.authenticate(apiKey);
         return this.invariantMapper.toDTO(this.invariantApiService.readByKey(idName, value));
     }
+    
+    
 }

@@ -81,7 +81,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/NewEnvironmentEventV000", "CALL", "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);

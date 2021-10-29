@@ -64,7 +64,7 @@ public class GetTagExecutions extends HttpServlet {
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             String withUUID = policy.sanitize(request.getParameter("withUUID"));
 

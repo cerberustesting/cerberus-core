@@ -17,25 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.authentification;
+package org.cerberus.api.service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import org.cerberus.service.authentification.IAPIKeyService;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Service;
 
 /**
  *
- * @author bcivel
+ * @author mlombard
  */
-public interface IAPIKeyService {
-
-    /**
-     * Method that checks every Public API calls and generate an error message
-     * in case the token does not match 1 of the API key value.
-     *
-     * @param request
-     * @param response
-     */
-    public boolean authenticate(HttpServletRequest request, HttpServletResponse response);
-    public boolean authenticate(String apiKey);
-
+@AllArgsConstructor
+@Service
+public class PublicApiAuthenticationService {
+    
+    private final IAPIKeyService apiKeyService;
+    
+    public void authenticate(String apiKey) {
+        if (!this.apiKeyService.authenticate(apiKey)) {
+            throw new BadCredentialsException("authentication failed");
+        }
+    }
 }

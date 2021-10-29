@@ -94,7 +94,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             // Parsing all parameters.
             String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);

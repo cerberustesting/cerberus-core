@@ -101,7 +101,7 @@ public class GetNumberOfExecutions extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutions called : " + request.getRequestURL(), request);
 
-        if (apiKeyService.checkAPIKey(request, response)) {
+        if (apiKeyService.authenticate(request, response)) {
 
             // Parsing all parameters.
             String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
