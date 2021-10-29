@@ -29,7 +29,6 @@ import org.cerberus.api.dto.v001.TestcaseStepActionDTOV001;
 import org.cerberus.api.mapper.v001.TestcaseStepActionMapperV001;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.service.ITestCaseStepActionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Step Actions endpoint")
+@Api(tags = "Testcase Action")
 @RestController
 @RequestMapping(path = "/public/testcasestepactions")
 public class TestcaseStepActionControllerV001 {
@@ -51,7 +50,7 @@ public class TestcaseStepActionControllerV001 {
     private static final Logger LOG = LogManager.getLogger(TestcaseStepActionControllerV001.class);
     
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "apikey";
+    private static final String API_KEY = "X-API-KEY";
     private final TestcaseStepActionMapperV001 actionMapper;
     private final ITestCaseStepActionService actionService;
     

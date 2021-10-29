@@ -19,16 +19,21 @@
  */
 package org.cerberus.api.controller.v001;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.api.dto.v001.TestcaseDTOV001;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.api.mapper.v001.TestcaseMapperV001;
 import org.cerberus.api.service.PublicApiAuthenticationService;
+import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,16 +46,20 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author mlombard
  */
+@Slf4j
 @AllArgsConstructor
 @RestController
+@Api(tags = "Testcase")
 @RequestMapping(path = "/public/testcases")
 public class TestcaseControllerV001 {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
-    private static final String API_KEY = "apikey";
+    private static final String API_KEY = "X-API-KEY";
     private final ITestCaseService testCaseService;
     private final TestcaseMapperV001 testcaseMapper;
     private final PublicApiAuthenticationService apiAuthenticationService;
+        private static final Logger LOG = LogManager.getLogger(TestcaseControllerV001.class);
+
 
     @ApiOperation("Get all testcases filtered by test")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
@@ -76,7 +85,10 @@ public class TestcaseControllerV001 {
     @PostMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
     public void createTestcase(@RequestBody TestcaseDTOV001 newTestcase, @RequestHeader(API_KEY) String apiKey) {
         this.apiAuthenticationService.authenticate(apiKey);
-        this.testCaseService.create(this.testcaseMapper.toEntity(newTestcase));
+        
+        LOG.debug("CONVERT TESTCASE");
+        LOG.debug(this.testcaseMapper.toEntity(newTestcase).toString());
+        //this.testCaseService.create(this.testcaseMapper.toEntity(newTestcase));
     }
 
 }
