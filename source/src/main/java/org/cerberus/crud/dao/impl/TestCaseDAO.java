@@ -104,39 +104,23 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<>();
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            preStat.setString(1, test);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+
+                list = new ArrayList<>();
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn(exception.toString());
-            }
         }
 
         return list;
@@ -225,84 +209,73 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
 
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            if (system != null && !system.isEmpty()) {
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
+            }
+            if (!StringUtil.isNullOrEmpty(test)) {
+                preStat.setString(i++, test);
+            }
+            if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            ResultSet resultSet = preStat.executeQuery();
             try {
-                int i = 1;
-                if (system != null && !system.isEmpty()) {
-                    for (String string : system) {
-                        preStat.setString(i++, string);
-                    }
-                }
-                if (!StringUtil.isNullOrEmpty(test)) {
-                    preStat.setString(i++, test);
-                }
-                if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
-                for (String individualColumnSearchValue : individalColumnSearchValues) {
-                    preStat.setString(i++, individualColumnSearchValue);
+                //gets the data
+                while (resultSet.next()) {
+                    testCaseList.add(this.loadFromResultSet(resultSet));
                 }
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        testCaseList.add(this.loadFromResultSet(resultSet));
-                    }
+                //get the total number of rows
+                resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                int nrTotalRows = 0;
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        answer = new AnswerList<>(testCaseList, nrTotalRows);
-                    } else if (testCaseList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer = new AnswerList<>(testCaseList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer = new AnswerList<>(testCaseList, nrTotalRows);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                if (resultSet != null && resultSet.next()) {
+                    nrTotalRows = resultSet.getInt(1);
                 }
 
+                if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    answer = new AnswerList<>(testCaseList, nrTotalRows);
+                } else if (testCaseList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer = new AnswerList<>(testCaseList, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList<>(testCaseList, nrTotalRows);
+                }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
             } finally {
-                if (preStat != null) {
-                    preStat.close();
+                if (resultSet != null) {
+                    resultSet.close();
                 }
             }
 
@@ -310,16 +283,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         answer.setResultMessage(msg);
@@ -329,7 +292,6 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
-        boolean throwExcep = false;
         TestCase result = null;
         final String query = "SELECT * FROM testcase tec  LEFT OUTER JOIN application app on app.application = tec.application WHERE test = ? AND testcase = ?";
 
@@ -337,55 +299,33 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testCase);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.next()) {
-                        result = this.loadFromResultSet(resultSet);
-                    } else {
-                        result = null;
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            preStat.setString(1, test);
+            preStat.setString(2, testCase);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.next()) {
+                    result = this.loadFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
     }
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByService(String service) {
-        AnswerList<TestListDTO> ansList = new AnswerList<>();
-        MessageEvent rs;
+        AnswerList<TestListDTO> testListAnswerList = new AnswerList<>();
+        MessageEvent messageEvent;
         List<TestListDTO> listOfTests = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<>();
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
                 + "tc.isActive, tc.`Type`, tc.UsrCreated, tc.`Status` "
                 + " from testcase tc INNER JOIN test t ON t.test = tc.test "
@@ -394,101 +334,76 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " WHERE ser.Service = ? "
                 + " group by tc.test, tc.TestCase";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, service);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
 
-                HashMap<String, TestListDTO> map = new HashMap<>();
+            preStat.setString(1, service);
+            HashMap<String, TestListDTO> map = new HashMap<>();
+            String test, testCase;
 
-                String key, test, testCase;
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        TestListDTO testList;
-                        TestCaseListDTO testCaseDTO;
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    TestListDTO testList;
+                    TestCaseListDTO testCaseDTO;
 
-                        test = resultSet.getString("Test");
-                        testCase = resultSet.getString("TestCase");
+                    test = resultSet.getString("Test");
+                    testCase = resultSet.getString("TestCase");
 
-                        if (map.containsKey(test)) {
-                            testList = map.get(test);
-                        } else {
-                            testList = new TestListDTO();
-
-                            testList.setDescription(resultSet.getString("testDescription"));
-                            testList.setTest(test);
-                        }
-
-                        testCaseDTO = new TestCaseListDTO();
-                        testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
-                        testCaseDTO.setTestCaseNumber(testCase);
-                        testCaseDTO.setApplication(resultSet.getString("Application"));
-                        testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
-                        testCaseDTO.setStatus(resultSet.getString("Status"));
-
-                        testCaseDTO.setGroup(resultSet.getString("Type"));
-                        testCaseDTO.setIsActive(resultSet.getString("isActive"));
-                        testList.getTestCaseList().add(testCaseDTO);
-                        map.put(test, testList);
-
-                    }
-
-                    listOfTests = new ArrayList<>(map.values());
-
-                    if (listOfTests.isEmpty()) {
-                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    if (map.containsKey(test)) {
+                        testList = map.get(test);
                     } else {
-                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
+                        testList = new TestListDTO();
+
+                        testList.setDescription(resultSet.getString("testDescription"));
+                        testList.setTest(test);
                     }
 
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                    testCaseDTO = new TestCaseListDTO();
+                    testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
+                    testCaseDTO.setTestCaseNumber(testCase);
+                    testCaseDTO.setApplication(resultSet.getString("Application"));
+                    testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
+                    testCaseDTO.setStatus(resultSet.getString("Status"));
+
+                    testCaseDTO.setGroup(resultSet.getString("Type"));
+                    testCaseDTO.setIsActive(resultSet.getString("isActive"));
+                    testList.getTestCaseList().add(testCaseDTO);
+                    map.put(test, testList);
+
                 }
+
+                listOfTests = new ArrayList<>(map.values());
+
+                if (listOfTests.isEmpty()) {
+                    messageEvent = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    messageEvent = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    messageEvent.setDescription(messageEvent.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
+                }
+
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
+                messageEvent = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                messageEvent.setDescription(messageEvent.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
+            messageEvent = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            messageEvent.setDescription(messageEvent.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
         }
-        ansList.setResultMessage(rs);
-        ansList.setDataList(listOfTests);
+        testListAnswerList.setResultMessage(messageEvent);
+        testListAnswerList.setDataList(listOfTests);
 
-        return ansList;
+        return testListAnswerList;
     }
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service) {
-        AnswerList<TestListDTO> ansList = new AnswerList<>();
+        AnswerList<TestListDTO> testListAnswerList = new AnswerList<>();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCase> testCaseList = new ArrayList<>();
 
         final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
                 + "tc.isActive, tc.`Type`, tc.UsrCreated, tc.`Status` "
@@ -499,91 +414,69 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " WHERE ser.Service = ?"
                 + " group by tc.test, tc.TestCase";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, service);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
 
-                HashMap<String, TestListDTO> map = new HashMap<>();
+            preStat.setString(1, service);
 
-                String key, test, testCase;
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        TestListDTO testList;
-                        TestCaseListDTO testCaseDTO;
+            HashMap<String, TestListDTO> map = new HashMap<>();
 
-                        test = resultSet.getString("Test");
-                        testCase = resultSet.getString("TestCase");
+            String test, testCase;
 
-                        if (map.containsKey(test)) {
-                            testList = map.get(test);
-                        } else {
-                            testList = new TestListDTO();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    TestListDTO testList;
+                    TestCaseListDTO testCaseDTO;
 
-                            testList.setDescription(resultSet.getString("testDescription"));
-                            testList.setTest(test);
-                        }
+                    test = resultSet.getString("Test");
+                    testCase = resultSet.getString("TestCase");
 
-                        testCaseDTO = new TestCaseListDTO();
-                        testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
-                        testCaseDTO.setTestCaseNumber(testCase);
-                        testCaseDTO.setApplication(resultSet.getString("Application"));
-                        testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
-                        testCaseDTO.setStatus(resultSet.getString("Status"));
-
-                        testCaseDTO.setGroup(resultSet.getString("Type"));
-                        testCaseDTO.setIsActive(resultSet.getString("isActive"));
-                        testList.getTestCaseList().add(testCaseDTO);
-                        map.put(test, testList);
-
-                    }
-
-                    listOfTests = new ArrayList<>(map.values());
-
-                    if (listOfTests.isEmpty()) {
-                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    if (map.containsKey(test)) {
+                        testList = map.get(test);
                     } else {
-                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
+                        testList = new TestListDTO();
+
+                        testList.setDescription(resultSet.getString("testDescription"));
+                        testList.setTest(test);
                     }
 
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                    testCaseDTO = new TestCaseListDTO();
+                    testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
+                    testCaseDTO.setTestCaseNumber(testCase);
+                    testCaseDTO.setApplication(resultSet.getString("Application"));
+                    testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
+                    testCaseDTO.setStatus(resultSet.getString("Status"));
+
+                    testCaseDTO.setGroup(resultSet.getString("Type"));
+                    testCaseDTO.setIsActive(resultSet.getString("isActive"));
+                    testList.getTestCaseList().add(testCaseDTO);
+                    map.put(test, testList);
+
                 }
+
+                listOfTests = new ArrayList<>(map.values());
+
+                if (listOfTests.isEmpty()) {
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
+                }
+
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
-        ansList.setResultMessage(rs);
-        ansList.setDataList(listOfTests);
+        testListAnswerList.setResultMessage(rs);
+        testListAnswerList.setDataList(listOfTests);
 
-        return ansList;
+        return testListAnswerList;
     }
 
     @Override
@@ -599,58 +492,45 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                int i = 1;
-                preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setBoolean(i++, testCase.isActiveQA());
-                preStat.setBoolean(i++, testCase.isActiveUAT());
-                preStat.setBoolean(i++, testCase.isActivePROD());
-                preStat.setString(i++, Integer.toString(testCase.getPriority()));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setBoolean(i++, testCase.isActive());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
 
-                res = preStat.executeUpdate() > 0;
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
+
+            int i = 1;
+            preStat.setString(i++, testCase.getApplication());
+            preStat.setString(i++, testCase.getDetailedDescription());
+            preStat.setBoolean(i++, testCase.isActiveQA());
+            preStat.setBoolean(i++, testCase.isActiveUAT());
+            preStat.setBoolean(i++, testCase.isActivePROD());
+            preStat.setString(i++, Integer.toString(testCase.getPriority()));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+            preStat.setBoolean(i++, testCase.isActive());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
+
+            res = preStat.executeUpdate() > 0;
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
-
         return res;
     }
 
@@ -668,42 +548,32 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql_count);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql_count);
-            try {
-                preStat.setString(1, tc.getTest());
-                preStat.setString(2, tc.getTestcase());
-                ResultSet rsCount = preStat.executeQuery();
-                try {
-                    while (rsCount.next()) {
-                        countriesDB.add(rsCount.getString("Country"));
-                        if (!countryList.contains(rsCount.getString("Country"))) {
-                            final String sql_delete = "DELETE FROM testcasecountry WHERE Test = ? AND TestCase = ? AND Country = ?";
 
-                            PreparedStatement preStat2 = connection.prepareStatement(sql_delete);
-                            try {
-                                preStat2.setString(1, tc.getTest());
-                                preStat2.setString(2, tc.getTestcase());
-                                preStat2.setString(3, rsCount.getString("Country"));
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql_count);) {
 
-                                preStat2.executeUpdate();
-                            } catch (SQLException exception) {
-                                LOG.error("Unable to execute query : " + exception.toString());
-                            } finally {
-                                preStat2.close();
-                            }
+            preStat.setString(1, tc.getTest());
+            preStat.setString(2, tc.getTestcase());
+
+            try (ResultSet rsCount = preStat.executeQuery();) {
+                while (rsCount.next()) {
+                    countriesDB.add(rsCount.getString("Country"));
+                    if (!countryList.contains(rsCount.getString("Country"))) {
+                        final String sql_delete = "DELETE FROM testcasecountry WHERE Test = ? AND TestCase = ? AND Country = ?";
+
+                        try (PreparedStatement preStat2 = connection.prepareStatement(sql_delete);) {
+                            preStat2.setString(1, tc.getTest());
+                            preStat2.setString(2, tc.getTestcase());
+                            preStat2.setString(3, rsCount.getString("Country"));
+
+                            preStat2.executeUpdate();
+                        } catch (SQLException exception) {
+                            LOG.error("Unable to execute query : " + exception.toString());
                         }
                     }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    rsCount.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
 
             res = true;
@@ -711,8 +581,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 if (!countriesDB.contains(countryList.get(i))) {
                     final String sql_insert = "INSERT INTO testcasecountry (test, testcase, country) VALUES (?, ?, ?)";
 
-                    PreparedStatement preStat2 = connection.prepareStatement(sql_insert);
-                    try {
+                    try (PreparedStatement preStat2 = connection.prepareStatement(sql_insert);) {
                         preStat2.setString(1, tc.getTest());
                         preStat2.setString(2, tc.getTestcase());
                         preStat2.setString(3, countryList.get(i));
@@ -720,21 +589,11 @@ public class TestCaseDAO implements ITestCaseDAO {
                         res = preStat2.executeUpdate() > 0;
                     } catch (SQLException exception) {
                         LOG.error("Unable to execute query : " + exception.toString());
-                    } finally {
-                        preStat2.close();
                     }
                 }
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
 
         return res;
@@ -744,7 +603,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public boolean createTestCase(TestCase testCase) {
         boolean res = false;
 
-        final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
+        final StringBuilder sql = new StringBuilder("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
                 .append("`Description`, `DetailedDescription`, ")
                 .append("`Priority`, `Status`, `isActive`, ")
@@ -760,65 +619,51 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
-                preStat.setString(i++, Integer.toString(testCase.getPriority()));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setBoolean(i++, testCase.isActive());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
-                preStat.setBoolean(i++, testCase.isActiveQA());
-                preStat.setBoolean(i++, testCase.isActiveUAT());
-                preStat.setBoolean(i++, testCase.isActivePROD());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
 
-                res = preStat.executeUpdate() > 0;
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
+
+            int i = 1;
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
+            preStat.setString(i++, Integer.toString(testCase.getPriority()));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+            preStat.setBoolean(i++, testCase.isActive());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
+            preStat.setBoolean(i++, testCase.isActiveQA());
+            preStat.setBoolean(i++, testCase.isActiveUAT());
+            preStat.setBoolean(i++, testCase.isActivePROD());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+
+            res = preStat.executeUpdate() > 0;
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
 
         return res;
-        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -853,41 +698,25 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, application);
-                preStat.setString(3, country);
-                preStat.setBoolean(4, ParameterParserUtil.parseBooleanParam(isActive, false));
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<>();
-                try {
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            preStat.setString(1, test);
+            preStat.setString(2, application);
+            preStat.setString(3, country);
+            preStat.setBoolean(4, ParameterParserUtil.parseBooleanParam(isActive, false));
+
+            list = new ArrayList<>();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
 
         return list;
@@ -953,36 +782,20 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<>();
-                try {
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            list = new ArrayList<>();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return list;
     }
@@ -1025,70 +838,43 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
             if (length != -1) {
                 preStat.setInt(1, length);
             }
 
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        testCaseList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                    if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        answer = new AnswerList<>(testCaseList, testCaseList.size());
-                    } else if (testCaseList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer = new AnswerList<>(testCaseList, testCaseList.size());
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer = new AnswerList<>(testCaseList, testCaseList.size());
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //gets the data
+                while (resultSet.next()) {
+                    testCaseList.add(this.loadFromResultSet(resultSet));
                 }
 
+                if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    answer = new AnswerList<>(testCaseList, testCaseList.size());
+                } else if (testCaseList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer = new AnswerList<>(testCaseList, testCaseList.size());
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList<>(testCaseList, testCaseList.size());
+                }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         answer.setResultMessage(msg);
@@ -1125,36 +911,19 @@ public class TestCaseDAO implements ITestCaseDAO {
         boolean bool = false;
         final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, testCase.getTest());
-                preStat.setString(2, testCase.getTestcase());
 
-                bool = preStat.executeUpdate() > 0;
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
+            preStat.setString(1, testCase.getTest());
+            preStat.setString(2, testCase.getTestcase());
 
-            }
+            bool = preStat.executeUpdate() > 0;
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return bool;
     }
@@ -1167,63 +936,50 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " `conditionOperator` = ?, `conditionValue1` = ?, `conditionValue2` = ?, `conditionValue3` = ?, `ConditionOptions` = ?, `useragent` = ?, `screensize` = ?, `version` = ?, dateModif = CURRENT_TIMESTAMP "
                 + "WHERE tc.Test = ? AND tc.Testcase = ?";
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                int i = 1;
-                preStat.setString(i++, testCase.getApplication());
-                preStat.setString(i++, testCase.getDetailedDescription());
-                preStat.setBoolean(i++, testCase.isActiveQA());
-                preStat.setBoolean(i++, testCase.isActiveUAT());
-                preStat.setBoolean(i++, testCase.isActivePROD());
-                preStat.setString(i++, Integer.toString(testCase.getPriority()));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setBoolean(i++, testCase.isActive());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
-                preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
 
-                preStat.executeUpdate();
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
+
+            int i = 1;
+            preStat.setString(i++, testCase.getApplication());
+            preStat.setString(i++, testCase.getDetailedDescription());
+            preStat.setBoolean(i++, testCase.isActiveQA());
+            preStat.setBoolean(i++, testCase.isActiveUAT());
+            preStat.setBoolean(i++, testCase.isActivePROD());
+            preStat.setString(i++, Integer.toString(testCase.getPriority()));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+            preStat.setBoolean(i++, testCase.isActive());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
+            preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
+
+            preStat.executeUpdate();
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
     }
 
@@ -1232,40 +988,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         String max = "";
         final String sql = "SELECT  Max( CAST(Testcase AS UNSIGNED) ) as MAXTC FROM testcase where test = ?";
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, test);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.next()) {
-                        max = resultSet.getString("MAXTC");
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
+
+            preStat.setString(1, test);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.next()) {
+                    max = resultSet.getString("MAXTC");
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return max;
     }
@@ -1331,65 +1071,48 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
 
-                for (Entry<String, String[]> entry : tcParameters.entrySet()) {
-                    String[] valeur = entry.getValue();
-                    if (valeur != null && valeur.length > 0) {
-                        for (String c : valeur) {
-                            preStat.setString(i++, c);
-                            LOG.debug("SQL.param : " + c);
-                        }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+
+            for (Entry<String, String[]> entry : tcParameters.entrySet()) {
+                String[] valeur = entry.getValue();
+                if (valeur != null && valeur.length > 0) {
+                    for (String c : valeur) {
+                        preStat.setString(i++, c);
+                        LOG.debug("SQL.param : " + c);
                     }
                 }
+            }
 
-                preStat.setInt(i++, maxReturn);
-                LOG.debug("SQL.param : " + maxReturn);
+            preStat.setInt(i++, maxReturn);
+            LOG.debug("SQL.param : " + maxReturn);
 
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<>();
-                try {
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                    if (list.size() >= maxReturn) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + maxReturn));
-                        answer.setDataList(list);
-                    } else if (list.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer.setDataList(list);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer.setDataList(list);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    answer.setResultMessage(msg);
-                    resultSet.close();
+            list = new ArrayList<>();
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
+                }
+                if (list.size() >= maxReturn) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + maxReturn));
+                    answer.setDataList(list);
+                } else if (list.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer.setDataList(list);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer.setDataList(list);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return answer;
     }
@@ -1401,46 +1124,28 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append("SELECT * FROM testcase tec join application app on tec.application = app.application ");
         sb.append(" WHERE tec.test = ? and app.system = ? ");
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sb.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sb.toString());
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, system);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<>();
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
 
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            preStat.setString(1, test);
+            preStat.setString(2, system);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                list = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
-
         return list;
     }
 
@@ -1465,39 +1170,22 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sb.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sb.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<>();
 
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                list = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    list.add(this.loadFromResultSet(resultSet));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
-
         return list;
     }
 
@@ -1506,41 +1194,25 @@ public class TestCaseDAO implements ITestCaseDAO {
         String result = "";
         final String sql = "SELECT system from application app join testcase tec on tec.application=app.Application where tec.test= ? and tec.testcase= ?";
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.next()) {
-                        result = resultSet.getString("app.system");
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql);) {
+
+            preStat.setString(1, test);
+            preStat.setString(2, testcase);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.next()) {
+                    result = resultSet.getString("app.system");
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return result;
     }
@@ -1560,64 +1232,42 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, test);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<>();
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-                    while (resultSet.next()) {
-                        list.add(loadFromResultSet(resultSet));
-                    }
+            preStat.setString(1, test);
 
-                    if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(list, list.size());
-                    } else if (list.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(list, list.size());
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(list, list.size());
-                    }
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                list = new ArrayList<>();
 
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                while (resultSet.next()) {
+                    list.add(loadFromResultSet(resultSet));
                 }
+
+                if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(list, list.size());
+                } else if (list.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(list, list.size());
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(list, list.size());
+                }
+
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         response.setDataList(list);
         response.setResultMessage(msg);
@@ -1655,71 +1305,49 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                t1 = new Timestamp(to.getTime());
-                preStat.setTimestamp(i++, t1);
-                if (systems != null && !systems.isEmpty()) {
-                    for (String string : systems) {
-                        preStat.setString(i++, string);
-                    }
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i++, t1);
+            if (systems != null && !systems.isEmpty()) {
+                for (String string : systems) {
+                    preStat.setString(i++, string);
+                }
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                list = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    list.add(loadStatsFromResultSet(resultSet));
                 }
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<>();
-
-                    while (resultSet.next()) {
-                        list.add(loadStatsFromResultSet(resultSet));
-                    }
-
-                    if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(list, list.size());
-                    } else if (list.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(list, list.size());
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(list, list.size());
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(list, list.size());
+                } else if (list.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(list, list.size());
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(list, list.size());
                 }
+
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         response.setDataList(list);
         response.setResultMessage(msg);
@@ -1970,72 +1598,57 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" DateModif = CURRENT_TIMESTAMP");
         query.append(" WHERE test = ? AND testcase = ?;");
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, tc.getTest());
-                preStat.setString(i++, tc.getTestcase());
-                preStat.setString(i++, tc.getImplementer());
-                preStat.setString(i++, tc.getExecutor());
-                preStat.setString(i++, tc.getApplication());
-                preStat.setBoolean(i++, tc.isActiveQA());
-                preStat.setBoolean(i++, tc.isActiveUAT());
-                preStat.setBoolean(i++, tc.isActivePROD());
-                preStat.setString(i++, tc.getStatus());
-                preStat.setString(i++, tc.getDescription());
-                preStat.setString(i++, tc.getDetailedDescription());
-                preStat.setBoolean(i++, tc.isActive());
-                preStat.setString(i++, tc.getFromMajor());
-                preStat.setString(i++, tc.getFromMinor());
-                preStat.setString(i++, tc.getToMajor());
-                preStat.setString(i++, tc.getToMinor());
-                preStat.setString(i++, tc.getBugs().toString());
-                preStat.setString(i++, tc.getTargetMajor());
-                preStat.setString(i++, tc.getTargetMinor());
-                preStat.setString(i++, tc.getComment());
-                preStat.setString(i++, Integer.toString(tc.getPriority()));
-                preStat.setString(i++, tc.getType());
-                preStat.setString(i++, tc.getOrigine());
-                preStat.setString(i++, tc.getUserAgent());
-                preStat.setString(i++, tc.getScreenSize());
-                preStat.setString(i++, tc.getUsrModif());
-                preStat.setString(i++, tc.getConditionOperator());
-                preStat.setString(i++, tc.getConditionValue1());
-                preStat.setString(i++, tc.getConditionValue2());
-                preStat.setString(i++, tc.getConditionValue3());
-                preStat.setString(i++, tc.getConditionOptions().toString());
-                preStat.setInt(i++, tc.getVersion());
-                preStat.setString(i++, keyTest);
-                preStat.setString(i++, keyTestCase);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            preStat.setString(i++, tc.getTest());
+            preStat.setString(i++, tc.getTestcase());
+            preStat.setString(i++, tc.getImplementer());
+            preStat.setString(i++, tc.getExecutor());
+            preStat.setString(i++, tc.getApplication());
+            preStat.setBoolean(i++, tc.isActiveQA());
+            preStat.setBoolean(i++, tc.isActiveUAT());
+            preStat.setBoolean(i++, tc.isActivePROD());
+            preStat.setString(i++, tc.getStatus());
+            preStat.setString(i++, tc.getDescription());
+            preStat.setString(i++, tc.getDetailedDescription());
+            preStat.setBoolean(i++, tc.isActive());
+            preStat.setString(i++, tc.getFromMajor());
+            preStat.setString(i++, tc.getFromMinor());
+            preStat.setString(i++, tc.getToMajor());
+            preStat.setString(i++, tc.getToMinor());
+            preStat.setString(i++, tc.getBugs().toString());
+            preStat.setString(i++, tc.getTargetMajor());
+            preStat.setString(i++, tc.getTargetMinor());
+            preStat.setString(i++, tc.getComment());
+            preStat.setString(i++, Integer.toString(tc.getPriority()));
+            preStat.setString(i++, tc.getType());
+            preStat.setString(i++, tc.getOrigine());
+            preStat.setString(i++, tc.getUserAgent());
+            preStat.setString(i++, tc.getScreenSize());
+            preStat.setString(i++, tc.getUsrModif());
+            preStat.setString(i++, tc.getConditionOperator());
+            preStat.setString(i++, tc.getConditionValue1());
+            preStat.setString(i++, tc.getConditionValue2());
+            preStat.setString(i++, tc.getConditionValue3());
+            preStat.setString(i++, tc.getConditionOptions().toString());
+            preStat.setInt(i++, tc.getVersion());
+            preStat.setString(i++, keyTest);
+            preStat.setString(i++, keyTestCase);
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
@@ -2044,7 +1657,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public Answer create(TestCase testCase) {
         MessageEvent msg = null;
 
-        final StringBuffer sql = new StringBuffer("INSERT INTO `testcase` ")
+        final StringBuilder sql = new StringBuilder("INSERT INTO `testcase` ")
                 .append(" ( `Test`, `TestCase`, `Application`, ")
                 .append("`Description`, `DetailedDescription`, ")
                 .append("`Priority`, `Status`, `isActive`, ")
@@ -2060,83 +1673,69 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
-                preStat.setString(i++, Integer.toString(testCase.getPriority()));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
-                preStat.setBoolean(i++, testCase.isActive());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
-                if (testCase.getBugs() != null) {
-                    preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
-                } else {
-                    preStat.setString(i++, "[]");
-                }
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
-                preStat.setBoolean(i++, testCase.isActiveQA());
-                preStat.setBoolean(i++, testCase.isActiveUAT());
-                preStat.setBoolean(i++, testCase.isActivePROD());
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
-                if (testCase.getConditionOptions() != null) {
-                    preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
-                } else {
-                    preStat.setString(i++, "[]");
-                }
-                preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString(), exception);
-
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
+            int i = 1;
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestcase(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDescription(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getDetailedDescription(), ""));
+            preStat.setString(i++, Integer.toString(testCase.getPriority()));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getStatus(), ""));
+            preStat.setBoolean(i++, testCase.isActive());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getType(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getOrigine(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getRefOrigine(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getComment(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFromMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getToMinor(), ""));
+            if (testCase.getBugs() != null) {
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getBugs().toString(), ""));
+            } else {
+                preStat.setString(i++, "[]");
             }
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMajor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetMinor(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getExecutor(), ""));
+            preStat.setBoolean(i++, testCase.isActiveQA());
+            preStat.setBoolean(i++, testCase.isActiveUAT());
+            preStat.setBoolean(i++, testCase.isActivePROD());
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getScreenSize(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOperator(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue1(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue2(), ""));
+            preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionValue3(), ""));
+            if (testCase.getConditionOptions() != null) {
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOptions().toString(), ""));
+            } else {
+                preStat.setString(i++, "[]");
+            }
+            preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getVersion(), 0));
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
+
         return new Answer(msg);
     }
 
@@ -2145,39 +1744,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM testcase WHERE test = ? AND testcase = ?";
 
-        // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, testCase.getTest());
-                preStat.setString(2, testCase.getTestcase());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            preStat.setString(1, testCase.getTest());
+            preStat.setString(2, testCase.getTestcase());
+
+            preStat.executeUpdate();
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
