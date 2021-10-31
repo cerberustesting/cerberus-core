@@ -131,19 +131,18 @@ function editEntryClick(param) {
         formEdit.find("#login").prop("value", obj["login"]);
         formEdit.find("#name").prop("value", obj["name"]);
         formEdit.find("#email").prop("value", obj["email"]);
+        formEdit.find("#defaultSystem").prop("value", obj["defaultSystem"]);
+        formEdit.find("#defaultSystem").prop("readonly", "readonly");
 
         formEdit.find("#systems").empty();
-        formEdit.find("#defaultSystem").empty();
         formEdit.find("#groups").empty();
         formEdit.find("#team").empty();
 
         displayInvariantList("systems", "SYSTEM", false, undefined, undefined, false);
-        displayInvariantList("defaultSystem", "SYSTEM", false, undefined, undefined, false);
         displayInvariantList("team", "TEAM", false, "", "", false);
         displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
 
         formEdit.find("#team option[value='" + obj["team"] + "']").attr('selected', true);
-        formEdit.find("#defaultSystem option[value='" + obj["defaultSystem"] + "']").attr('selected', true);
         formEdit.find("#request").val(obj["request"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -331,7 +330,6 @@ function editEntryModalSaveHandler() {
 
     data["groups"] = JSON.stringify(groups);
 
-    data["defaultSystem"] = $('#editUserModal #defaultSystem :selected').val();
     data["request"] = $('#editUserModal #request :selected').val();
     data["team"] = $('#editUserModal #team :selected').val();
     // Get the header data from the form.
