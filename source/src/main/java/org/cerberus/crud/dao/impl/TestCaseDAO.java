@@ -1082,7 +1082,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 if (valeur != null && valeur.length > 0) {
                     for (String c : valeur) {
                         preStat.setString(i++, c);
-                        LOG.debug("SQL.param : " + c);
+                        LOG.debug("SQL.param : " + entry.getValue().toString() + " | " + c);
                     }
                 }
             }
@@ -1099,13 +1099,16 @@ public class TestCaseDAO implements ITestCaseDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + maxReturn));
+                    answer.setResultMessage(msg);
                     answer.setDataList(list);
                 } else if (list.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer.setResultMessage(msg);
                     answer.setDataList(list);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer.setResultMessage(msg);
                     answer.setDataList(list);
                 }
             } catch (SQLException exception) {
