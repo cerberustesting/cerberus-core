@@ -5954,3 +5954,53 @@ UPDATE `parameter` set `value`='0' WHERE `system`='' and `param` in ('cerberus_s
 ALTER TABLE `testcasestepexecution` 
     MODIFY COLUMN `Start` TIMESTAMP(3) NOT NULL DEFAULT NOW(3), 
     MODIFY COLUMN `End` TIMESTAMP(3) NOT NULL DEFAULT NOW(3);
+
+-- 1641 to 1688
+UPDATE `invariant` SET `gp1` = 'Property Name', `gp2` = '[opt] Name of an other property', `gp3` = '' WHERE idname = 'ACTION' AND value = 'calculateProperty'; 
+UPDATE `invariant` SET `gp1` = 'Service Name', `gp2` = 'Nb Evt (Kafka)', `gp3` = 'Evt Wait sec (Kafka)' WHERE idname = 'ACTION' AND value = 'callService'; 
+UPDATE `invariant` SET `gp1` = 'Element path to Clear', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'clearField'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'click'; 
+UPDATE `invariant` SET `gp1` = 'Application name or path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'closeApp'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'doNothing'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'doubleClick'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = 'Destination Element Path', `gp3` = '' WHERE idname = 'ACTION' AND value = 'dragAndDrop'; 
+UPDATE `invariant` SET `gp1` = 'Command (ex : "grep")', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'executeCerberusCommand'; 
+UPDATE `invariant` SET `gp1` = 'Appium Command (ex : "mobile:deepLink")', `gp2` = 'Arguments (ex : {url: "www.site.com", package: "com.Package"})', `gp3` = '' WHERE idname = 'ACTION' AND value = 'executeCommand'; 
+UPDATE `invariant` SET `gp1` = 'JavaScript to execute', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'executeJS'; 
+UPDATE `invariant` SET `gp1` = 'Database Name', `gp2` = 'Stored Procedure', `gp3` = '' WHERE idname = 'ACTION' AND value = 'executeSqlStoredProcedure'; 
+UPDATE `invariant` SET `gp1` = 'Database Name', `gp2` = 'Script', `gp3` = '' WHERE idname = 'ACTION' AND value = 'executeSqlUpdate'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'focusDefaultIframe'; 
+UPDATE `invariant` SET `gp1` = 'Element path of the target iFrame', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'focusToIframe'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'hideKeyboard'; 
+UPDATE `invariant` SET `gp1` = '[opt] Index name', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'indexNetworkTraffic'; 
+UPDATE `invariant` SET `gp1` = 'Application path (ex : /root/toto.apk)', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'installApp'; 
+UPDATE `invariant` SET `gp1` = '[opt] Target element path', `gp2` = 'Key to press', `gp3` = '' WHERE idname = 'ACTION' AND value = 'keypress'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '[opt] Duration (ms) : 8000 by default', `gp3` = '' WHERE idname = 'ACTION' AND value = 'longPress'; 
+UPDATE `invariant` SET `gp1` = 'ok or cancel', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'manageDialog'; 
+UPDATE `invariant` SET `gp1` = 'keys to press.', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'manageDialogKeypress'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'mouseLeftButtonPress'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'mouseLeftButtonRelease'; 
+UPDATE `invariant` SET `gp1` = 'Relative coord. (ex : 50,100 ; 200,50)', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'mouseMove'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'mouseOver'; 
+UPDATE `invariant` SET `gp1` = '[Deprecated]', `gp2` = '[Deprecated]', `gp3` = '' WHERE idname = 'ACTION' AND value = 'mouseOverAndWait'; 
+UPDATE `invariant` SET `gp1` = 'Application name or path or package for Android', `gp2` = '[Optional, required for Android] Activity', `gp3` = '' WHERE idname = 'ACTION' AND value = 'openApp'; 
+UPDATE `invariant` SET `gp1` = 'URL to call (ex : http://www.domain.com)', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'openUrl'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'openUrlLogin'; 
+UPDATE `invariant` SET `gp1` = 'URI to call  (ex : /index.html)', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'openUrlWithBase'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'refreshCurrentPage'; 
+UPDATE `invariant` SET `gp1` = 'Application package (ex : com.appmobile)', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'removeApp'; 
+UPDATE `invariant` SET `gp1` = '[Deprecated]', `gp2` = '[Deprecated]', `gp3` = '' WHERE idname = 'ACTION' AND value = 'removeDifference'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'rightClick'; 
+UPDATE `invariant` SET `gp1` = 'element (''id=ressource-id''. Empty if you want use text)', `gp2` = 'text (empty if you want use element)', `gp3` = '' WHERE idname = 'ACTION' AND value = 'scrollTo'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'select'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'setConsoleContent'; 
+UPDATE `invariant` SET `gp1` = 'Value to Set', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'setContent'; 
+UPDATE `invariant` SET `gp1` = 'url to filter', `gp2` = 'Activate http response content (Y/N)', `gp3` = '' WHERE idname = 'ACTION' AND value = 'setNetworkTrafficContent'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'setServiceCallContent'; 
+UPDATE `invariant` SET `gp1` = 'Action (UP DOWN LEFT RIGHT CUSTOM...)', `gp2` = 'Direction x;y;z;y', `gp3` = '' WHERE idname = 'ACTION' AND value = 'swipe'; 
+UPDATE `invariant` SET `gp1` = 'Window title or url', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'switchToWindow'; 
+UPDATE `invariant` SET `gp1` = 'Element path', `gp2` = 'Text to type', `gp3` = '' WHERE idname = 'ACTION' AND value = 'type'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'Unknown'; 
+UPDATE `invariant` SET `gp1` = 'Duration(ms) or Element', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'wait'; 
+UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'waitNetworkTrafficIdle'; 
+UPDATE `invariant` SET `gp1` = 'Element', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'waitVanish';
