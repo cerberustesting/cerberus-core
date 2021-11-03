@@ -38,7 +38,7 @@ public class Session {
     private String nodeHost;
     private String nodePort;
 
-    private Integer nodeProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API.
+    private Integer nodeProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
     
     private boolean started;
     private WebDriver driver;

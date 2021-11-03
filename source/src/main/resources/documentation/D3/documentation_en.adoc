@@ -75,6 +75,12 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== How to configure CICD campaign result
+:file-to-include: howto_cicd_score_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
 = Notifications
 :file-to-include: howto_notif_{lang}.adoc
 include::include/{lang}/{file-to-include}[]

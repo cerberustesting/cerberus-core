@@ -1,1 +1,1 @@
-Blabla
+This section document how Cerberus can be integrated with various continuous integration and continuous delivery systems (CICD) such as GitLab, Github or Jenkins.
