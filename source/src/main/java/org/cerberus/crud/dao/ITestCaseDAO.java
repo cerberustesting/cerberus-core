@@ -95,7 +95,7 @@ public interface ITestCaseDAO {
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 
-    String getMaxNumberTestCase(String test);
+    String getMaxTestcaseIdByTestFolder(String test);
 
     public List<TestCase> findTestCaseByTestSystem(String test, String system);
 

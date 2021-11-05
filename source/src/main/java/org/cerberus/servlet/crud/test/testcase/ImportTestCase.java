@@ -121,7 +121,7 @@ public class ImportTestCase extends HttpServlet {
                             tcJson.remove("conditionOptions");
 
                             if ("2".equalsIgnoreCase(importOption)) {
-                                String targetTestcase = testcaseService.getMaxNumberTestCase(tcJson.getString("test"));
+                                String targetTestcase = testcaseService.getNextAvailableTestcaseId(tcJson.getString("test"));
                                 tcJson.put("testcase", targetTestcase);
                             }
 
@@ -132,7 +132,7 @@ public class ImportTestCase extends HttpServlet {
                             tcInfo.setConditionOptions(condOpts);
                             LOG.debug(tcInfo.toJson().toString(1));
                             try {
-                                testcaseService.importWithDependency(tcInfo);
+                                testcaseService.createTestcaseWithDependencies(tcInfo);
 
                                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase " + tcInfo.getTest() + " - " + tcInfo.getTestcase())

@@ -41,7 +41,7 @@ public class InvariantApiService {
     public Invariant readByKey(String idName, String value) throws CerberusException {
         Invariant invariant = this.invariantDao.readByKey(idName, value);
         if (invariant == null) {
-            throw new EntityNotFoundException(InvariantDTOV001.class, "idName", idName, "value", value);
+            throw new EntityNotFoundException(Invariant.class, "idName", idName, "value", value);
         }
         return invariant;
     }
@@ -49,7 +49,7 @@ public class InvariantApiService {
     public List<Invariant> readyByIdName(String idName) throws CerberusException {
         List<Invariant> invariants = this.invariantDao.readByIdname(idName);
         if (invariants == null || invariants.isEmpty()) {
-            throw new EntityNotFoundException(InvariantDTOV001.class, "idName", idName);
+            throw new EntityNotFoundException(Invariant.class, "idName", idName);
         }
         return invariants;
     }

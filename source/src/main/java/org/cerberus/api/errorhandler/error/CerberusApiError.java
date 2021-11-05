@@ -19,12 +19,13 @@
  */
 package org.cerberus.api.errorhandler.error;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.cerberus.api.errorhandler.LowerCaseClassNameResolver;
+import org.cerberus.util.DateUtil;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -36,14 +37,13 @@ import org.springframework.http.HttpStatus;
 public class CerberusApiError {
 
     private HttpStatus httpStatus;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-    private LocalDateTime timestamp;
+    private String timestamp;
     private String message;
     private String debugMessage;
     private List<CerberusApiSubError> subErrors;
 
     private CerberusApiError() {
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT_DISPLAY));
     }
 
     public CerberusApiError(HttpStatus httpStatus) {
@@ -73,12 +73,12 @@ public class CerberusApiError {
         this.httpStatus = httpStatus;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+        this.timestamp = timestamp.format(DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT_DISPLAY));
     }
 
     public String getMessage() {

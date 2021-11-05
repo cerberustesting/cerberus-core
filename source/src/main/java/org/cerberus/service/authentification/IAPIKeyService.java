@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.authentification;
 
+import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +37,7 @@ public interface IAPIKeyService {
      * @param response
      */
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response);
+    public boolean authenticate(Principal principal, String apiKey);
     public boolean authenticate(String apiKey);
 
 }
