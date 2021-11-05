@@ -22,8 +22,7 @@ package org.cerberus.api.mapper;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.cerberus.util.DateUtil;
 import org.mapstruct.Mapper;
 
 /**
@@ -34,13 +33,11 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface TimestampMapper {
     
-    static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSZ";
-    
     public default Timestamp toTimestamp(String timestampStr) throws ParseException {
-        return timestampStr == null ? null : new Timestamp(new SimpleDateFormat(TIMESTAMP_PATTERN).parse(timestampStr).getTime());
+        return timestampStr == null ? null : new Timestamp(new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).parse(timestampStr).getTime());
     }
     
     public default String toFormattedString(Timestamp timestamp) {
-        return timestamp == null ? null : new SimpleDateFormat(TIMESTAMP_PATTERN).format(timestamp);
+        return timestamp == null ? null : new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).format(timestamp);
     }
 }

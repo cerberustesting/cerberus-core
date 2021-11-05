@@ -154,7 +154,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                 LOG.debug("importing :" + i + " : " + test.toString());
 
                                 // Dynamically get a new testcase ID.
-                                String targetTestcase = testcaseService.getMaxNumberTestCase(targetFolder);
+                                String targetTestcase = testcaseService.getNextAvailableTestcaseId(targetFolder);
                                 TestCase newTC = testcaseFactory.create(targetFolder, targetTestcase, test.getString("name"));
                                 newTC.setComment("Imported from Selenium IDE. Test ID : " + test.getString("id"));
                                 newTC.setApplication(targetApplication);
@@ -182,7 +182,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
 
                                 newTC.appendSteps(newStep);
 
-                                testcaseService.importWithDependency(newTC);
+                                testcaseService.createTestcaseWithDependencies(newTC);
 
                             }
                         } else {

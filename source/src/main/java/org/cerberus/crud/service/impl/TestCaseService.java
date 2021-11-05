@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -321,8 +323,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public String getMaxNumberTestCase(String test) {
-        String result = testCaseDao.getMaxNumberTestCase(test);
+    public String getNextAvailableTestcaseId(String test) {
+        String result = testCaseDao.getMaxTestcaseIdByTestFolder(test);
         if (result == null) {
             return "0001A";
         }
@@ -534,15 +536,25 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public Answer create(TestCase testCase) {
         // We first create the corresponding test if it doesn,'t exist.
-        if (testCase.getTest() != null) {
-            if (!testService.exist(testCase.getTest())) {
-                testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
-            }
+        if (testCase.getTest() != null && !testService.exist(testCase.getTest())) {
+            testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
+
         }
         Answer ans = testCaseDao.create(testCase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_CREATE, testCase, null, null, null);
         }
+        return ans;
+    }
+
+    @Override
+    public Answer createAPI(TestCase testCase) {
+        // We first create the corresponding test if it doesn,'t exist.
+        if (testCase.getTest() != null && !testService.exist(testCase.getTest())) {
+            testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
+
+        }
+        Answer ans = testCaseDao.create(testCase);
         return ans;
     }
 
@@ -611,16 +623,17 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void importWithDependency(TestCase testCase) throws CerberusException {
+    public void createTestcaseWithDependencies(TestCase testCase) throws CerberusException {
 
         //TODO ------------------------
         //Check Cerberus version compatibility. If not stop
         //-------------------------------
         //insert testcase
-        Answer testCaseImported = this.create(testCase);
-        if (!testCaseImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+        Answer newTestcase = this.create(testCase);
+
+        if (!newTestcase.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
             MessageGeneral msg = new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR);
-            msg.setDescription(testCaseImported.getResultMessage().getDescription());
+            msg.setDescription(newTestcase.getResultMessage().getDescription());
             throw new CerberusException(msg);
         }
 
@@ -628,25 +641,25 @@ public class TestCaseService implements ITestCaseService {
         for (TestCaseStep tcs : testCase.getSteps()) {
             tcs.setTest(testCase.getTest());
             tcs.setTestcase(testCase.getTestcase());
-            Answer testCaseStepImported = testCaseStepService.create(tcs);
-            if (!testCaseStepImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                throw new CerberusException(new MessageGeneral(testCaseStepImported.getResultMessage().getMessage()));
+            Answer newTestcaseStep = testCaseStepService.create(tcs);
+            if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                throw new CerberusException(new MessageGeneral(newTestcaseStep.getResultMessage().getMessage()));
             }
 
             for (TestCaseStepAction tcsa : tcs.getActions()) {
                 tcsa.setTest(testCase.getTest());
                 tcsa.setTestcase(testCase.getTestcase());
-                Answer testCaseStepActionImported = testCaseStepActionService.create(tcsa);
-                if (!testCaseStepActionImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new CerberusException(new MessageGeneral(testCaseStepActionImported.getResultMessage().getMessage()));
+                Answer newTestcaseStepAction = testCaseStepActionService.create(tcsa);
+                if (!newTestcaseStepAction.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new CerberusException(new MessageGeneral(newTestcaseStepAction.getResultMessage().getMessage()));
                 }
 
                 for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
                     tcsac.setTest(testCase.getTest());
                     tcsac.setTestcase(testCase.getTestcase());
-                    Answer testCaseStepActionControlImported = testCaseStepActionControlService.create(tcsac);
-                    if (!testCaseStepActionControlImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                        throw new CerberusException(new MessageGeneral(testCaseStepActionControlImported.getResultMessage().getMessage()));
+                    Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(tcsac);
+                    if (!newTestcaseStepActionControl.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                        throw new CerberusException(new MessageGeneral(newTestcaseStepActionControl.getResultMessage().getMessage()));
                     }
                 }
             }
@@ -656,17 +669,17 @@ public class TestCaseService implements ITestCaseService {
         for (TestCaseCountry tcc : testCase.getTestCaseCountries()) {
             tcc.setTest(testCase.getTest());
             tcc.setTestcase(testCase.getTestcase());
-            Answer testCaseCountryImported = testCaseCountryService.create(tcc);
-            if (!testCaseCountryImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                throw new CerberusException(new MessageGeneral(testCaseCountryImported.getResultMessage().getMessage()));
+            Answer newTestcaseCountry = testCaseCountryService.create(tcc);
+            if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                throw new CerberusException(new MessageGeneral(newTestcaseCountry.getResultMessage().getMessage()));
             }
 
             for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
                 tccp.setTest(testCase.getTest());
                 tccp.setTestcase(testCase.getTestcase());
-                Answer testCaseCountryPropertiesImported = testCaseCountryPropertiesService.create(tccp);
-                if (!testCaseCountryPropertiesImported.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new CerberusException(new MessageGeneral(testCaseCountryPropertiesImported.getResultMessage().getMessage()));
+                Answer newTestcaseCountryProperties = testCaseCountryPropertiesService.create(tccp);
+                if (!newTestcaseCountryProperties.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new CerberusException(new MessageGeneral(newTestcaseCountryProperties.getResultMessage().getMessage()));
                 }
             }
         }
@@ -684,6 +697,96 @@ public class TestCaseService implements ITestCaseService {
             tcl.setTestcase(testCase.getTestcase());
             testCaseLabelService.create(tcl);
         }
+
+    }
+
+    @Override
+    public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) throws SQLException, CerberusException {
+
+        testcase.setTestcase(this.getNextAvailableTestcaseId(testcase.getTest()));
+        Answer testcaseCreationAnswer = this.create(testcase);
+
+        if (!testcaseCreationAnswer.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+            throw new SQLException("Failed to insert the testcase in the database");
+        }
+
+        //for tcstep, insert steps
+        if (testcase.getSteps() != null) {
+            for (TestCaseStep tcs : testcase.getSteps()) {
+                tcs.setTest(testcase.getTest());
+                tcs.setTestcase(testcase.getTestcase());
+                Answer newTestcaseStep = testCaseStepService.create(tcs);
+                if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new SQLException("Failed to insert the testcase in the database");
+                }
+
+                if (tcs.getActions() != null) {
+                    for (TestCaseStepAction tcsa : tcs.getActions()) {
+                        tcsa.setTest(testcase.getTest());
+                        tcsa.setTestcase(testcase.getTestcase());
+                        Answer newTestcaseStepAction = testCaseStepActionService.create(tcsa);
+                        if (!newTestcaseStepAction.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                            throw new SQLException("Failed to insert the testcase in the databse");
+                        }
+
+                        if (tcsa.getControls() != null) {
+                            for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
+                                tcsac.setTest(testcase.getTest());
+                                tcsac.setTestcase(testcase.getTestcase());
+                                Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(tcsac);
+                                if (!newTestcaseStepActionControl.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                                    throw new SQLException("Failed to insert the testcase in the databse");
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        //insert tccountry, insert countries
+        if (testcase.getTestCaseCountries() != null) {
+            for (TestCaseCountry tcc : testcase.getTestCaseCountries()) {
+                tcc.setTest(testcase.getTest());
+                tcc.setTestcase(testcase.getTestcase());
+                Answer newTestcaseCountry = testCaseCountryService.create(tcc);
+                if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                    throw new SQLException("Failed to insert the testcase in the databse");
+                }
+
+                if (tcc.getTestCaseCountryProperty() != null) {
+                    for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
+                        tccp.setTest(testcase.getTest());
+                        tccp.setTestcase(testcase.getTestcase());
+                        Answer newTestcaseCountryProperties = testCaseCountryPropertiesService.create(tccp);
+                        if (!newTestcaseCountryProperties.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                            throw new SQLException("Failed to insert the testcase in the databse");
+                        }
+                    }
+                }
+            }
+        }
+
+        //insert testcasedependencies
+        if (testcase.getDependencies() != null) {
+            for (TestCaseDep tcd : testcase.getDependencies()) {
+                tcd.setTest(testcase.getTest());
+                tcd.setTestcase(testcase.getTestcase());
+                testCaseDepService.create(tcd);
+            }
+        }
+
+        //insert testcaselabel
+        if (testcase.getTestCaseLabels() != null) {
+            for (TestCaseLabel tcl : testcase.getTestCaseLabels()) {
+                tcl.setTest(testcase.getTest());
+                tcl.setTestcase(testcase.getTestcase());
+                testCaseLabelService.create(tcl);
+            }
+        }
+
+        return testcase;
 
     }
 

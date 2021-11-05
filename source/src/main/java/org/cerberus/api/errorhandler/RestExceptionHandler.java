@@ -19,10 +19,14 @@
  */
 package org.cerberus.api.errorhandler;
 
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.api.errorhandler.error.CerberusApiError;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,8 +71,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         CerberusApiError apiError = new CerberusApiError(HttpStatus.UNAUTHORIZED);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
-    }
+    }    
 
+            
+    @ExceptionHandler({DataAccessException.class, SQLException.class})
+    protected ResponseEntity<Object> handleDatabaseException(final RuntimeException ex, final WebRequest request) {
+        CerberusApiError apiError = new CerberusApiError(HttpStatus.INTERNAL_SERVER_ERROR);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+    
     private ResponseEntity<Object> buildResponseEntity(CerberusApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getHttpStatus());
     }

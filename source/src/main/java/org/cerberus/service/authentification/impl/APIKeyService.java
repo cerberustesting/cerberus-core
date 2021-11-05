@@ -20,6 +20,7 @@
 package org.cerberus.service.authentification.impl;
 
 import java.io.IOException;
+import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Parameter;
@@ -85,7 +86,12 @@ public class APIKeyService implements IAPIKeyService {
 
     @Override
     public boolean authenticate(String apiKey) {
-       return isApiKeyAuthEnabled() && isApiKeyValid(apiKey);
+        return isApiKeyAuthEnabled() && isApiKeyValid(apiKey);
+    }
+
+    @Override
+    public boolean authenticate(Principal principal, String apiKey) {
+        return (principal != null && !StringUtil.isNullOrEmpty(principal.getName())) || this.authenticate(apiKey);
     }
 
     public boolean isApiKeyAuthEnabled() {
