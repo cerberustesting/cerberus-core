@@ -159,7 +159,7 @@ public class EventHookDAO implements IEventHookDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by `").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -396,26 +396,23 @@ public class EventHookDAO implements IEventHookDAO {
 
         query.append("SELECT distinct ");
         query.append(columnName);
-        query.append(" as distinctValues FROM label ");
+        query.append(" as distinctValues FROM eventhook evh ");
 
         searchSQL.append("WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`id` like ?");
-            searchSQL.append(" or `system` like ?");
-            searchSQL.append(" or `label` like ?");
-            searchSQL.append(" or `type` like ?");
-            searchSQL.append(" or `color` like ?");
-            searchSQL.append(" or `parentLabelid` like ?");
-            searchSQL.append(" or `RequirementType` like ?");
-            searchSQL.append(" or `RequirementStatus` like ?");
-            searchSQL.append(" or `RequirementCriticity` like ?");
-            searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `LongDescription` like ?");
-            searchSQL.append(" or `usrCreated` like ?");
-            searchSQL.append(" or `dateCreated` like ?");
-            searchSQL.append(" or `usrModif` like ?");
-            searchSQL.append(" or `dateModif` like ?)");
+            searchSQL.append(" and (evh.`id` like ?");
+            searchSQL.append(" or evh.`ObjectKey1` like ?");
+            searchSQL.append(" or evh.`ObjectKey2` like ?");
+            searchSQL.append(" or evh.`EventReference` like ?");
+            searchSQL.append(" or evh.`HookConnector` like ?");
+            searchSQL.append(" or evh.`HookRecipient` like ?");
+            searchSQL.append(" or lab.`HookChannel` like ?");
+            searchSQL.append(" or lab.`description` like ?");
+            searchSQL.append(" or evh.`usrCreated` like ?");
+            searchSQL.append(" or evh.`dateCreated` like ?");
+            searchSQL.append(" or evh.`usrModif` like ?");
+            searchSQL.append(" or evh.`dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -441,9 +438,6 @@ public class EventHookDAO implements IEventHookDAO {
             int i = 1;
 
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

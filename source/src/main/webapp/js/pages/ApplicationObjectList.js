@@ -88,11 +88,8 @@ function renderOptionsForApplicationObject(data) {
                     .getDocLabel("page_applicationObject",
                             "button_create") + "</button></div>";
 
-            $(
-                    "#applicationObjectsTable_wrapper div#applicationObjectsTable_length")
-                    .before(contentToAdd);
-            $("#applicationObjectList #createApplicationObjectButton").off(
-                    "click");
+            $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
+            $("#applicationObjectList #createApplicationObjectButton").off("click");
             $('#applicationObjectList #createApplicationObjectButton').click(
                     function () {
                         openModalApplicationObject(undefined, undefined, "ADD",

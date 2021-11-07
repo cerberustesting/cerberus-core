@@ -1,0 +1,142 @@
+<!--addEventHook custom css-->
+<!--<link rel="stylesheet" type="text/css" href="css/pages/EventHook.css">-->
+<!--Add an eventHook -->
+<div data-backdrop="static" class="modal fade center" id="editEventHookModal" role="dialog" aria-labelledby="editEventHookModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editEntryModalEventHook" name="editEventHookField">Create Event Hook</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="editEventHookModalForm" name="editEventHookModalForm"  title="Edit Application Object" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsEH-1" id="ehTab1Text" name="tabEH1">Event Hook</a></li>
+                            <li><a data-toggle="tab" href="#tabsEH-2" id="ehTab2Text" name="tabsEH25">Traceability</a></li>
+                        </ul>
+
+
+
+                        <div class="tab-content">
+
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEH-1">
+
+
+                                <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
+                                    <input type="text" class="form-control" name="id" id="id" style="display: none;">
+
+                                    <div class="row">
+                                        <div class="form-group col-xs-10">
+                                            <label for="eventReference" name="eventReferenceField">Event Reference</label>
+                                            <select class="form-control" name="eventReference" id="eventReference"></select>
+                                        </div>
+                                        <div class="form-group col-xs-2">
+                                            <label for="isActive" name="isActiveField">Active</label>
+                                            <input type="checkbox" class="form-control" name="isActive" id="isActive">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-6">
+                                            <label for="objectKey1" name="objectKey1Field">Object Key 1</label>
+                                            <input type="text" class="form-control" name="objectKey1" id="objectKey1" maxlength="150">
+                                        </div>
+                                        <div class="form-group col-xs-6">
+                                            <label for="objectKey2" name="objectKey2Field">Object Key 2</label>
+                                            <input type="text" class="form-control" name="objectKey2" id="objectKey2" maxlength="150">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
+
+                                    <div class="row">
+                                        <div class="form-group col-xs-6">
+                                            <label for="hookConnector" name="hookConnectorField">Connector</label>
+                                            <select class="form-control" name="hookConnector" id="hookConnector"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-xs-12">
+                                            <label for="hookRecipient" name="hookRecipientField">Recipient</label>
+                                            <input type="text" class="form-control" name="hookRecipient" id="hookRecipient" maxlength="500">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-8">
+                                            <label for="hookChannel" name="hookChannelField">Channel</label>
+                                            <input type="text" class="form-control" name="hookChannel" id="hookChannel" maxlength="150">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <input type="text" class="form-control" name="description" id="description" maxlength="500">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEH-2">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_created" for="created">Created</label>
+                                                <div>
+                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_creator" for="creator">Creator</label>
+                                                <div>
+                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div> 
+                                        <div class="row">
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
+                                                <div>
+                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
+                                                <div>
+                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>  
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editEventHookButton" class="btn btn-primary" name="buttonEdit">Save</button>
+                <button type="button" id="duplicateEventHookButton" class="btn btn-primary" name="buttonDuplicate">Duplicate</button>
+                <button type="button" id="addEventHookButton" class="btn btn-primary" name="buttonAdd">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

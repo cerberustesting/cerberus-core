@@ -1396,8 +1396,8 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
     } else {
         message = "ERROR - An unexpected error occured, the servlet may not be available. Please check if your session is still active";
     }
-
     showMessageMainPage(type, message, false);
+    return message;
 }
 
 /***
