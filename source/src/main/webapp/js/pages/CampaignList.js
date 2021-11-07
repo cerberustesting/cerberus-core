@@ -52,6 +52,8 @@ function initPage() {
     displayInvariantList("consoleLog", "CONSOLELOG", false, undefined, "");
     displayInvariantList("retries", "RETRIES", false, undefined, "");
     displayInvariantList("manualExecution", "MANUALEXECUTION", false, undefined, "");
+    // Pre load eventconnector invariant.
+    getSelectInvariant("EVENTCONNECTOR", false);
     
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
@@ -95,10 +97,10 @@ function displayPageLabel() {
     $("[name='addTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "addtestcampaign_field"));
     $("[name='campaignField']").html(doc.getDocLabel("page_testcampaign", "campaign_field"));
     $("[name='tagField']").html(doc.getDocOnline("campaign", "tag"));
-    
+
     $("[name='cIScoreThresholdField']").html(doc.getDocOnline("campaign", "CIScoreThreshold"));
     $("[name='longDescriptionField']").html(doc.getDocOnline("campaign", "longDescription"));
-    
+
     $("[name='descriptionField']").html(doc.getDocOnline("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
     $("[name='tabLabels']").html(doc.getDocLabel("label", "label"));
@@ -193,9 +195,9 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "campaign", 
-            "sName": "campaign", 
-            "sWidth": "80px", 
+            "data": "campaign",
+            "sName": "campaign",
+            "sWidth": "80px",
             "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")
         },
         {
