@@ -118,6 +118,8 @@ function autocompleteWithTags(identifier, Tags) {
                     }
                 },
                 focus: function () {
+                    // Hide that 'ui-helper-hidden-accessible' span. It appears for an unknown reason
+                    $(".ui-helper-hidden-accessible").hide();
                     $('a[data-toggle="tooltip"]').each(function (idx, data) {
                         var direction = "top";
                         if (idx < 4)
