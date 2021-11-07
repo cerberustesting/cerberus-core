@@ -984,7 +984,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public String getMaxNumberTestCase(String test) {
+    public String getMaxTestcaseIdByTestFolder(String test) {
         String max = "";
         final String sql = "SELECT  Max( CAST(Testcase AS UNSIGNED) ) as MAXTC FROM testcase where test = ?";
 

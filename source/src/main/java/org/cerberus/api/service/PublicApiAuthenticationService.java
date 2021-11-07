@@ -19,6 +19,7 @@
  */
 package org.cerberus.api.service;
 
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,11 +32,17 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class PublicApiAuthenticationService {
-    
+
     private final IAPIKeyService apiKeyService;
-    
+
     public void authenticate(String apiKey) {
         if (!this.apiKeyService.authenticate(apiKey)) {
+            throw new BadCredentialsException("authentication failed");
+        }
+    }
+
+    public void authenticate(Principal principal, String apiKey) {
+        if (!this.apiKeyService.authenticate(principal, apiKey)) {
             throw new BadCredentialsException("authentication failed");
         }
     }

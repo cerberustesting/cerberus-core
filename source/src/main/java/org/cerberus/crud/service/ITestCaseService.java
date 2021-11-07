@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -123,8 +124,6 @@ public interface ITestCaseService {
      */
     boolean updateTestCaseInformation(TestCase testCase);
 
-
-
     /**
      *
      * @param tCase
@@ -156,7 +155,6 @@ public interface ITestCaseService {
      */
     List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system);
 
-
     /**
      * @param campaign
      * @return return list of testCases using
@@ -178,7 +176,7 @@ public interface ITestCaseService {
      * @return
      * @since 1.0.2
      */
-    String getMaxNumberTestCase(String test);
+    String getNextAvailableTestcaseId(String test);
 
     /**
      *
@@ -318,6 +316,13 @@ public interface ITestCaseService {
      * @param testCase
      * @return
      */
+    public Answer createAPI(TestCase testCase);
+
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer delete(TestCase testCase);
 
     /**
@@ -399,6 +404,15 @@ public interface ITestCaseService {
      * @param testCase
      * @throws org.cerberus.exception.CerberusException
      */
-    public void importWithDependency(TestCase testCase) throws CerberusException;
+    public void createTestcaseWithDependencies(TestCase testCase) throws CerberusException;
+
+    /**
+     *
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     * @throws java.sql.SQLException
+     */
+    public TestCase createTestcaseWithDependenciesAPI(TestCase testCase) throws CerberusException, SQLException;
 
 }

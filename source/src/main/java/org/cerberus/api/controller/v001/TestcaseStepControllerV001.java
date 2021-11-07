@@ -22,6 +22,7 @@ package org.cerberus.api.controller.v001;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -57,11 +58,12 @@ public class TestcaseStepControllerV001 {
 
     @ApiOperation("Get all TestcaseSteps")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
-    @GetMapping(headers = {API_VERSION_1, API_KEY}, produces = "application/json")
+    @GetMapping(headers = {API_VERSION_1}, produces = "application/json")
     public List<TestcaseStepDTOV001> findAllTestcaseSteps(
             @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
-            @RequestHeader(API_KEY) String apiKey) {
-        this.apiAuthenticationService.authenticate(apiKey);
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) {
+        this.apiAuthenticationService.authenticate(principal, apiKey);
         List<TestCaseStep> steps
                 = isLibraryStep
                         ? this.testcaseStepApiService.findAllLibrarySteps()
@@ -75,9 +77,12 @@ public class TestcaseStepControllerV001 {
 
     @ApiOperation("Get all testcase steps from a test folder")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
-    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
-    public List<TestcaseStepDTOV001> findTestcaseStepsByTestFolderId(@PathVariable("testFolderId") String testFolderId, @RequestHeader(API_KEY) String apiKey) {
-        this.apiAuthenticationService.authenticate(apiKey);
+    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = "application/json")
+    public List<TestcaseStepDTOV001> findTestcaseStepsByTestFolderId(
+            @PathVariable("testFolderId") String testFolderId, 
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) {
+        this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.testcaseStepApiService.findTestcaseStepsByTestFolderId(testFolderId)
                 .stream()
                 .map(this.stepMapper::toDTO)
@@ -86,12 +91,13 @@ public class TestcaseStepControllerV001 {
 
     @ApiOperation("Get all steps of a testcase")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
-    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
+    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = "application/json")
     public List<TestcaseStepDTOV001> findTestcaseStepsByTestFolderIdTestcaseId(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
-            @RequestHeader(API_KEY) String apiKey) {
-        this.apiAuthenticationService.authenticate(apiKey);
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) {
+        this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.testCaseStepService.readByTestTestCase(testFolderId, testcaseId)
                 .getDataList()
                 .stream()
@@ -101,14 +107,15 @@ public class TestcaseStepControllerV001 {
 
     @ApiOperation("Get a TestcaseStep filtered by testFolderId and testcaseId")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1, API_KEY}, produces = "application/json")
+    @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = "application/json")
     public TestcaseStepDTOV001 findTestcaseStepByTestFolderIdAndTestcaseIdAndStepId(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
             @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
-            @RequestHeader(API_KEY) String apiKey) {
-        this.apiAuthenticationService.authenticate(apiKey);
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) {
+        this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.stepMapper.toDTO(
                 this.testCaseStepService.readTestcaseStepWithDependencies(
                         testFolderId,
@@ -117,5 +124,4 @@ public class TestcaseStepControllerV001 {
                 )
         );
     }
-
 }
