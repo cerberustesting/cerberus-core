@@ -1621,6 +1621,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuEnvironments','','fr','Environnement','',NULL)");
         b.append(",('page_header','menuHelp','','en','Help',NULL,NULL)");
         b.append(",('page_header','menuHelp','','fr','Aide',NULL,NULL)");
+        b.append(",('page_header','menuDev','','en','Developer',NULL,NULL)");
+        b.append(",('page_header','menuDev','','fr','Developpeur',NULL,NULL)");
         b.append(",('page_header','menuIntegration','','en','Integration','',NULL)");
         b.append(",('page_header','menuIntegration','','fr','Intégration','',NULL)");
         b.append(",('page_header','menuIntegrationStatus','','en','Integration Status','',NULL)");
