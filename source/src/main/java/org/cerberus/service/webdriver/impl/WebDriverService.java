@@ -147,10 +147,15 @@ public class WebDriverService implements IWebDriverService {
 
         StringBuilder script = new StringBuilder();
         script.append("document");
-        for(int index = 0; index < structure.length-1; index++){
-            script.append(".querySelector('"+structure[index]+"').shadowRoot");
+
+        if (structure.length == 1){
+            script.append(".querySelector('"+structure[0]+"')");
+        } else {
+            for (int index = 0; index < structure.length - 1; index++) {
+                script.append(".querySelector('" + structure[index] + "').shadowRoot");
+            }
+            script.append(".querySelector('" + structure[structure.length - 1] + "')");
         }
-        script.append(".querySelector('"+structure[structure.length-1]+"')");
 
         /**
          * Loop until timeout is reached to scroll to the element and retrieve it
@@ -165,7 +170,7 @@ public class WebDriverService implements IWebDriverService {
 
             elapsedSinceStart = new Date().getTime() - start;
             i++;
-            LOG.debug("SHADOW_ROOT ATTEMPT #" + i + " / Elapsed time from beginning : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
+            LOG.debug("QUERY_SELECTOR ATTEMPT #" + i + " / Elapsed time from beginning : " + elapsedSinceStart + " (timeout : " + session.getCerberus_selenium_wait_element() + ")");
 
             try {
                 Thread.sleep(500);
