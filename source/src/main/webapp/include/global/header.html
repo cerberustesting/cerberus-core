@@ -110,9 +110,21 @@
                     <li><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
                     <li><a name="menu" id="menuParameter" href="ParameterList.jsp">Parameters</a></li>
                     <li><a name="menu" id="menuInvariants" href="InvariantList.jsp">Invariants</a></li>
-                    <li><a name="menu" id="menuEventhooks" href="EventHookList.jsp">Event Hooks</a></li>
                     <li><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp">Monitoring</a></li>
                 </ul>
+            </li>
+            <li class ="navbar-side-choice TestRO navlist" id="navMenuDev" style="display:none">
+                <a href="#">
+                    <i class="fa fa-question-circle"></i>
+                    <span name="menu" id="menuDev" class="nav-text">Developer</span>
+                    <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a name="menu" id="menuSwagger" target="_blank" href="./api/swagger-ui.html#">API Documentation</a></li> 
+                    <li><a name="menu" id="menuEventhooks" href="EventHookList.jsp">Event Hooks</a></li>
+                </ul>
+
             </li>
             <li class ="navbar-side-choice TestRO navlist" id="navMenuHelp" style="display:none">
                 <a href="#">
@@ -125,9 +137,7 @@
                     <li><a name="menu" id="menuDocumentationD1" target="_blank" href="./documentation/D1/documentation_en.html">Documentation</a></li>
                     <li><a name="menu" id="menuDocumentationD2" target="_blank" href="./documentation/D2/documentation_en.html">Documentation</a></li>
                     <li><a name="menu" id="menuDocumentationD3" target="_blank" href="./documentation/D3/documentation_en.html">Documentation</a></li>
-                    <li><a name="menu" id="menuSwagger" target="_blank" href="./api/swagger-ui.html#">API Documentation</a></li> 
                     <li><a class="btn btn-primary" role="button" style="text-align:left" id="openInteractiveTutoModal" >Interactive Tutorials</a></li>
-
                 </ul>
 
             </li>

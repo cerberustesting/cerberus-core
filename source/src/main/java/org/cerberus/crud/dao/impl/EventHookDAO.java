@@ -129,8 +129,8 @@ public class EventHookDAO implements IEventHookDAO {
             searchSQL.append(" or evh.`EventReference` like ?");
             searchSQL.append(" or evh.`HookConnector` like ?");
             searchSQL.append(" or evh.`HookRecipient` like ?");
-            searchSQL.append(" or lab.`HookChannel` like ?");
-            searchSQL.append(" or lab.`description` like ?");
+            searchSQL.append(" or evh.`HookChannel` like ?");
+            searchSQL.append(" or evh.`description` like ?");
             searchSQL.append(" or evh.`usrCreated` like ?");
             searchSQL.append(" or evh.`dateCreated` like ?");
             searchSQL.append(" or evh.`usrModif` like ?");
@@ -315,7 +315,7 @@ public class EventHookDAO implements IEventHookDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (Exception e) {
-            LOG.warn("Unable to delete label: " + e.getMessage());
+            LOG.warn("Unable to delete Event Hook: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {
@@ -354,7 +354,7 @@ public class EventHookDAO implements IEventHookDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (Exception e) {
-            LOG.warn("Unable to update label: " + e.getMessage());
+            LOG.warn("Unable to update Event Hook: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {
@@ -407,8 +407,8 @@ public class EventHookDAO implements IEventHookDAO {
             searchSQL.append(" or evh.`EventReference` like ?");
             searchSQL.append(" or evh.`HookConnector` like ?");
             searchSQL.append(" or evh.`HookRecipient` like ?");
-            searchSQL.append(" or lab.`HookChannel` like ?");
-            searchSQL.append(" or lab.`description` like ?");
+            searchSQL.append(" or evh.`HookChannel` like ?");
+            searchSQL.append(" or evh.`description` like ?");
             searchSQL.append(" or evh.`usrCreated` like ?");
             searchSQL.append(" or evh.`dateCreated` like ?");
             searchSQL.append(" or evh.`usrModif` like ?");
