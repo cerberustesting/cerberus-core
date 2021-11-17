@@ -749,6 +749,15 @@ public class RobotServerService implements IRobotServerService {
                         caps.setCapability("browserstack.networkLogs", true);
                     }
                 }
+
+                //Create or override these capabilities if proxy required.
+                if (StringUtil.parseBoolean(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    caps.setCapability("browserstack.local", true);
+                    caps.setCapability("browserstack.user", tCExecution.getRobotExecutorObj().getHostUser());
+                    caps.setCapability("browserstack.key", tCExecution.getRobotExecutorObj().getHostPassword());
+                    caps.setCapability("browserstack.localIdentifier", tCExecution.getExecutionUUID());
+                }
+
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
                 if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {

@@ -46,7 +46,7 @@ services:
       - database
   # Selenium-related services
   selenium-hub:
-    image: selenium/hub:latest
+    image: selenium/hub:3.141.59
     expose:
       - "4444"
     ports:
@@ -55,7 +55,7 @@ services:
 #      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-firefox:
-    image: selenium/node-firefox-debug:latest
+    image: selenium/node-firefox-debug:3.141.59-zirconium
     environment:
       HUB_HOST: selenium-hub
     expose:
@@ -68,7 +68,7 @@ services:
 #      - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-chrome:
-    image: selenium/node-chrome-debug:latest
+    image: selenium/node-chrome-debug:3.141.59-zirconium
     environment:
       HUB_HOST: selenium-hub
     expose:

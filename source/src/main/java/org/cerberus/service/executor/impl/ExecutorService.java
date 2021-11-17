@@ -65,6 +65,13 @@ public class ExecutorService implements IExecutorService {
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
             url += "&port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
         }
+
+        if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tce.getRobotProvider())){
+            url += "&bsLocalProxyActive=true";
+            url += "&bsLocalProxyHost=" + tce.getRobotExecutorObj().getExecutorExtensionHost();
+            url += "&bsKey=" + tce.getRobotExecutorObj().getHostPassword();
+            url += "&bsLocalIdentifier=" + tce.getExecutionUUID();
+        }
         LOG.debug("Starting Proxy on Cerberus Executor calling : " + url);
 
         try (InputStream is = new URL(url).openStream()) {
