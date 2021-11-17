@@ -44,7 +44,7 @@ function initModalEventHook() {
 
     $("[name='tabEH1']").html(doc.getDocLabel("page_eventhook", "title"));
     $("[name='tabsEH25']").html(doc.getDocLabel("page_global", "traca"));
-    
+
     $("[name='eventReferenceField']").html(doc.getDocLabel("page_eventhook", "eventReference"));
     $("[name='isActiveField']").html(doc.getDocLabel("page_eventhook", "isActive"));
     $("[name='objectKey1Field']").html(doc.getDocLabel("page_eventhook", "objectKey1"));
@@ -53,7 +53,7 @@ function initModalEventHook() {
     $("[name='hookRecipientField']").html(doc.getDocLabel("page_eventhook", "hookRecipient"));
     $("[name='hookChannelField']").html(doc.getDocLabel("page_eventhook", "hookChannel"));
     $("[name='descriptionField']").html(doc.getDocLabel("page_eventhook", "description"));
-    
+
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
@@ -165,18 +165,28 @@ function confirmEventHookModalHandler(mode) {
 //    }
 
 //    var temp = data.service;
-    console.info(data);
+
+    data.isActive = (data.isActive === "on");
     $.ajax({
         url: myServlet,
         async: true,
         method: "POST",
-        data: data,
-        processData: false,
-        contentType: false,
+        data: {
+            description: data.description,
+            eventReference: data.eventReference,
+            hookChannel: data.hookChannel,
+            hookConnector: data.hookConnector,
+            hookRecipient: data.hookRecipient,
+            id: data.id,
+            isActive: data.isActive,
+            objectKey1: data.objectKey1,
+            objectKey2: data.objectKey2
+        },
         success: function (data) {
-            data = JSON.parse(data);
 
             if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#eventHooksTable").dataTable();
+                oTable.fnDraw(false);
                 $('#editEventHookModal').data("Saved", true);
                 $('#editEventHookModal').modal('hide');
                 showMessage(data);
@@ -204,7 +214,7 @@ function confirmEventHookModalHandler(mode) {
 function feedEventHookModal(eventid, modalId, mode) {
     clearResponseMessageMainPage();
     var formEdit = $('#' + modalId);
-    console.info(mode);
+
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({
             url: "ReadEventHook",
@@ -260,10 +270,7 @@ function feedEventHookModal(eventid, modalId, mode) {
 function feedEventHookModalData(eventhookid, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    console.info(eventhookid);
-    console.info(modalId);
-    console.info(mode);
-    console.info(hasPermissionsUpdate);
+
     // Data Feed.
     if (mode === "EDIT") {
         formEdit.find("#id").prop("value", eventhookid.id);

@@ -65,7 +65,7 @@ function renderOptionsForEventHook(data) {
         $("#eventHookList #createEventHookButton").off("click");
         $('#eventHookList #createEventHookButton').click(
                 function () {
-                    openModalEventHook(0,"ADD");
+                    openModalEventHook(0, "ADD");
                 });
     }
 
@@ -78,14 +78,8 @@ function deleteEventHookHandlerClick() {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
             // Redraw the datatable
-            var oTable = $("#labelsTable").dataTable();
+            var oTable = $("#eventHooksTable").dataTable();
             oTable.fnDraw(false);
-            generateLabelTree();
-            var info = oTable.fnGetData().length;
-            if (info === 1) {//page has only one row, then returns to the previous page
-                oTable.fnPageChange('previous');
-            }
-
         }
         // Show message in the main page
         showMessageMainPage(messageType, data.message, false);

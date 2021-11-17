@@ -455,6 +455,7 @@
             <url-pattern>/LogEvent.jsp</url-pattern>
             <url-pattern>/ParameterList.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
+            <url-pattern>/EventHookList.jsp</url-pattern>
             <url-pattern>/InvariantList.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
@@ -472,6 +473,9 @@
             <url-pattern>/CreateInvariant</url-pattern>
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
+            <url-pattern>/CreateEventHook</url-pattern>
+            <url-pattern>/UpdateEventHook</url-pattern>
+            <url-pattern>/DeleteEventHook</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
             <url-pattern>/ChangeUserPasswordAdmin</url-pattern>
