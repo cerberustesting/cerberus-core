@@ -39,7 +39,6 @@ import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -111,8 +110,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCaseExecutionQueue factoryTestCaseExecutionInQueue;
-    @Autowired
-    private IFactoryApplication factoryApplication;
     @Autowired
     private ITestCaseDAO testCaseDAO;
     @Autowired
@@ -878,8 +875,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                             tmp.setBrowser("");
                         }
                         if (app) {
-                            Application application = factoryApplication.create(resultSet.getString("Application"));
-                            tmp.setApplicationObj(application);
+                            tmp.setApplicationObj(Application.builder().application(resultSet.getString("Application")).build());
                         }
                         column.add(tmp);
                     }

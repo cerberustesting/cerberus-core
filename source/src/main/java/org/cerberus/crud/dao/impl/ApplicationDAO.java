@@ -33,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.factory.IFactoryApplication;
-import org.cerberus.crud.factory.impl.FactoryApplication;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -59,8 +57,6 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryApplication factoryApplication;
 
     private static final Logger LOG = LogManager.getLogger(ApplicationDAO.class);
 
@@ -626,7 +622,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public Application loadFromResultSet(ResultSet rs) throws SQLException {
-        String application = ParameterParserUtil.parseStringParam(rs.getString("app.application"), "");
+        String app = ParameterParserUtil.parseStringParam(rs.getString("app.application"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("app.description"), "");
         int sort = ParameterParserUtil.parseIntegerParam(rs.getString("app.sort"), 0);
         String type = ParameterParserUtil.parseStringParam(rs.getString("app.type"), "");
@@ -643,10 +639,24 @@ public class ApplicationDAO implements IApplicationDAO {
         Timestamp dateModif = rs.getTimestamp("app.DateModif");
         Timestamp dateCreated = rs.getTimestamp("app.DateCreated");
 
-        //TODO remove when working in test with mockito and autowired
-        factoryApplication = new FactoryApplication();
-        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, poolSize, deployType, mavenGroupId,
-                bugTrackerUrl, bugTrackerNewUrl, usrCreated, dateCreated, usrModif, dateModif);
+        return Application.builder()
+                .application(app)
+                .sort(sort)
+                .type(type)
+                .system(system)
+                .subsystem(subsystem)
+                .svnurl(svnUrl)
+                .bugTrackerUrl(bugTrackerUrl)
+                .bugTrackerNewUrl(bugTrackerNewUrl)
+                .poolSize(poolSize)
+                .deploytype(deployType)
+                .mavengroupid(mavenGroupId)
+                .description(description)
+                .UsrCreated(usrCreated)
+                .DateCreated(dateCreated)
+                .UsrModif(usrModif)
+                .DateModif(dateModif)
+                .build();
     }
 
     @Override

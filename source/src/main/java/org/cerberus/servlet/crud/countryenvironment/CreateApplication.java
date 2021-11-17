@@ -31,7 +31,6 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -135,11 +134,23 @@ public class CreateApplication extends HttpServlet {
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
-            IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
 
-            Application applicationData = factoryApplication.create(application, description, sort, type, system, 
-                    subSystem, svnURL, poolSize, deployType, mavenGpID, bugTrackerURL, newBugURL, request.getRemoteUser(), null, null, null);
-            ans = applicationService.create(applicationData);
+            Application app = Application.builder()
+                    .application(application)
+                    .sort(sort)
+                    .type(type)
+                    .system(system)
+                    .subsystem(subSystem)
+                    .svnurl(svnURL)
+                    .bugTrackerUrl(bugTrackerURL)
+                    .bugTrackerNewUrl(newBugURL)
+                    .poolSize(poolSize)
+                    .deploytype(deployType)
+                    .mavengroupid(mavenGpID)
+                    .description(description)
+                    .UsrCreated(request.getRemoteUser())
+                    .build();
+            ans = applicationService.create(app);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
