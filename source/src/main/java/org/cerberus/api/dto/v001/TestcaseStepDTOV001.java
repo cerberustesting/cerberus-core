@@ -19,15 +19,14 @@
  */
 package org.cerberus.api.dto.v001;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  *
@@ -35,6 +34,7 @@ import lombok.Data;
  */
 @Data
 @Builder
+@Jacksonized
 @ApiModel(value = "TestcaseStep")
 public class TestcaseStepDTOV001 {
 
@@ -113,46 +113,4 @@ public class TestcaseStepDTOV001 {
 
     @ApiModelProperty(position = 23, required = false)
     private List<TestcaseStepActionDTOV001> actions;
-
-    @JsonGetter("isUsingLibraryStep")
-    public boolean isUsingLibraryStep() {
-        return isUsingLibraryStep;
-    }
-
-    @JsonGetter("isStepInUseByOtherTestcase")
-    public boolean isStepInUseByOtherTestcase() {
-        return isStepInUseByOtherTestcase;
-    }
-
-    @JsonGetter("isLibraryStep")
-    public boolean isLibraryStep() {
-        return isLibraryStep;
-    }
-
-    @JsonGetter("isExecutionForced")
-    public boolean isExecutionForced() {
-        return isExecutionForced;
-    }
-
-    @JsonSetter("setUsingLibraryStep")
-    public void setUsingLibraryStep(boolean isUsingLibraryStep) {
-        this.isUsingLibraryStep = isUsingLibraryStep;
-    }
-
-    @JsonSetter("setStepInUseByOtherTestcase")
-    public void setStepInUseByOtherTestcase(boolean isStepInUseByOtherTestcase) {
-        this.isStepInUseByOtherTestcase = isStepInUseByOtherTestcase;
-    }
-
-    @JsonSetter("setLibraryStep")
-    public void setLibraryStep(boolean isLibraryStep) {
-        this.isLibraryStep = isLibraryStep;
-    }
-
-    @JsonSetter("setExecutionForced")
-    public void setExecutionForced(boolean isExecutionForced) {
-        this.isExecutionForced = isExecutionForced;
-    }
-
-    
 }
