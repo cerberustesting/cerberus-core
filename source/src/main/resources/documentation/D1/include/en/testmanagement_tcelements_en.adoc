@@ -14,6 +14,10 @@ id of the field will be used.
 .id= html example
 ====
 <ul class="list-group step-list side-item nav nav-pills" *id="steps"* style="max-height: 600px;overflow-y: auto">
+
+
+    id=steps
+
 ====
 
  - *name=*
@@ -21,12 +25,16 @@ id of the field will be used.
 .name= html example
 ====
 <a *name="menu"* id="menuLabel" href="Label.jsp">Label</a>
+
+    name=menu
 ====
 
  - *class=*
 .class= html example
 ====
 <label *class="checkbox"*></label>
+
+    class=checkbox
 ====
  
  - *css=*
@@ -58,7 +66,7 @@ image:chromeXPathConsole2.png[XPath Chrome Console,align="center"]
 
 .by Path
 ====
-xpath=//*[@id='html_reference']
+    xpath=//*[@id='html_reference']
 ====
 
 
@@ -69,6 +77,8 @@ xpath=//*[@id='html_reference']
 .data-cerberus= html example
 ====
 <label *data-cerberus="label-OK"*></label>
+
+    data-cerberus=label-OK
 ====
  
 
@@ -80,7 +90,7 @@ This identifier will use the image recognition engine to find the element pixel 
 
 .by picture example that will click on application object buttonOK
 ====
-picture=%object.buttonOK.pictureurl%
+    picture=%object.buttonOK.pictureurl%
 ====
 
 In order to perform any action/control (e.g. 'click', 'verifyElementPresent'), Application Object must be used to reference picture.
@@ -94,7 +104,7 @@ This identifier will use the OCR engine of the image recognition capability to f
 
 .by text example
 ====
-text=save my preferences
+    text=save my preferences
 ====
  
  - *erratum=*
@@ -103,7 +113,26 @@ Use the Erratum feature in order to get the element.
 That works in GUI applications.
 That algorithm guess the correct xpath from pages that could change over time.
 Please see more details on https://github.com/lssol/sftm-csharp[erratum project page].
+Erratum syntax is :
+
+    erratum=<full xpath>,<html page full content>
+
+
+.erratum= example
+====
+    erratum=/html/body/button,   <!DOCTYPE html> <html>     <head>         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">         <title>JSP Page</title>         <script type="text/javascript" src="../dependencies/jQuery-2.2.3/jquery-2.2.3.min.js"></script>              </head>     <body>                  <button id="erratumButton">Errratum</button>     </body> </html>
+====
+
 In order to collect the erratum syntax, you need to use Cerberus Google Chrome https://chrome.google.com/webstore/detail/cerberus-extension/cfgifhmddmhbdndfceikcigagacjfepl?hl=en[extention].
+
+ - *querySelector=*
+
+This identifier is used on websites that use shadowDOM pages (eg : Salesforce).
+
+.querySelector= example
+====
+    querySelector=iron-component-page>>iron-doc-viewer>>a
+====
 
 
  - *OTHER*

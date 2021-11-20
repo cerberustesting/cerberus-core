@@ -14,6 +14,9 @@
 * SYSTEM, COUNTRY and ENVIRONMENT invariants are controlled when created or updated to secure they are have less than 45 digits and don't contains any specific characters. #2265
 * Support dragAndDrop action for FAT applications (and hybrid web testing).
 * Documentation split into 3 sections : *General documentation* on GUI and main Cerberus concepts, *Administration documentation* on installation, API and Events, *Use Case documentation* that contains how to on main use cases.
+* New element identifier : querySelector that allow testing of webpages using shadowDOM technics (such as Salesforce).
+* New Developer section on menu that point to API swagger documentation and EventHook configuration
+* First set of public API available in Swagger section (still experimental - use it with care as signatures are not yet fully stable)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
