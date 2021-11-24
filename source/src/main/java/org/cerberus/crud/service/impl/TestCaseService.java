@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,9 +28,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.errorhandler.exception.FailedInsertOperationException;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
@@ -701,13 +702,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) throws SQLException, CerberusException {
+    public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) {
 
         testcase.setTestcase(this.getNextAvailableTestcaseId(testcase.getTest()));
         Answer testcaseCreationAnswer = this.create(testcase);
 
         if (!testcaseCreationAnswer.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-            throw new SQLException("Failed to insert the testcase in the database");
+            throw new FailedInsertOperationException("Failed to insert the testcase in the database");
         }
 
         //for tcstep, insert steps
@@ -717,7 +718,7 @@ public class TestCaseService implements ITestCaseService {
                 tcs.setTestcase(testcase.getTestcase());
                 Answer newTestcaseStep = testCaseStepService.create(tcs);
                 if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new SQLException("Failed to insert the testcase in the database");
+                    throw new FailedInsertOperationException("Failed to insert the testcase in the database");
                 }
 
                 if (tcs.getActions() != null) {
@@ -726,7 +727,7 @@ public class TestCaseService implements ITestCaseService {
                         tcsa.setTestcase(testcase.getTestcase());
                         Answer newTestcaseStepAction = testCaseStepActionService.create(tcsa);
                         if (!newTestcaseStepAction.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                            throw new SQLException("Failed to insert the testcase in the databse");
+                            throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
                         }
 
                         if (tcsa.getControls() != null) {
@@ -735,7 +736,7 @@ public class TestCaseService implements ITestCaseService {
                                 tcsac.setTestcase(testcase.getTestcase());
                                 Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(tcsac);
                                 if (!newTestcaseStepActionControl.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                                    throw new SQLException("Failed to insert the testcase in the databse");
+                                    throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
                                 }
                             }
                         }
@@ -752,7 +753,7 @@ public class TestCaseService implements ITestCaseService {
                 tcc.setTestcase(testcase.getTestcase());
                 Answer newTestcaseCountry = testCaseCountryService.create(tcc);
                 if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new SQLException("Failed to insert the testcase in the databse");
+                    throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
                 }
 
                 if (tcc.getTestCaseCountryProperty() != null) {
@@ -761,7 +762,7 @@ public class TestCaseService implements ITestCaseService {
                         tccp.setTestcase(testcase.getTestcase());
                         Answer newTestcaseCountryProperties = testCaseCountryPropertiesService.create(tccp);
                         if (!newTestcaseCountryProperties.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                            throw new SQLException("Failed to insert the testcase in the databse");
+                            throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
                         }
                     }
                 }
@@ -773,7 +774,11 @@ public class TestCaseService implements ITestCaseService {
             for (TestCaseDep tcd : testcase.getDependencies()) {
                 tcd.setTest(testcase.getTest());
                 tcd.setTestcase(testcase.getTestcase());
-                testCaseDepService.create(tcd);
+                try {
+                    testCaseDepService.create(tcd);
+                } catch (CerberusException ex) {
+                    throw new FailedInsertOperationException(ex.getMessage());
+                }
             }
         }
 

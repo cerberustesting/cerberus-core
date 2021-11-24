@@ -54,7 +54,7 @@ public interface ITestCaseStepActionService {
 
     public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
 
-    public AnswerList readByVarious1WithDependency(String test, String testcase, int stepId);
+    public AnswerList<TestCaseStepAction> readByVarious1WithDependency(String test, String testcase, int stepId);
 
     Answer create(TestCaseStepAction object);
     
