@@ -147,11 +147,18 @@ public class GetTestCasesV002 extends HttpServlet {
                         });
 
                 // We filter the list of testcases to only keep those that have all the labels passed by parameters
+                // only if the list of labels from query string is not null
                 // Then we convert to json
-                testcaseList
+                if(searchTermLabelids == null){
+                    testcaseList
+                        .stream()
+                        .forEach(testcase -> listOfTestCasesJSON.add(testcase.toJson()));
+                } else {
+                    testcaseList
                         .stream()
                         .filter(testcase -> isTestcaseContainingAllLabelsParam(testcase, searchTermLabelids))
                         .forEach(testcase -> listOfTestCasesJSON.add(testcase.toJson()));
+                }
 
                 jsonResponse.put("testcases", listOfTestCasesJSON);
                 jsonResponse.put("size", listOfTestCasesJSON.size());
