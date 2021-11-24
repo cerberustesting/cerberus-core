@@ -19,26 +19,22 @@
  */
 package org.cerberus.api.dto.v001;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  *
  * @author mlombard
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@Jacksonized
 @ApiModel(value = "Testcase")
 public class TestcaseDTOV001 {
 
@@ -101,9 +97,11 @@ public class TestcaseDTOV001 {
     private String type;
 
     @ApiModelProperty(name = "externalProvider", example = "RX", position = 18)
+    @JsonProperty("externalProvider")
     private String origine;
 
     @ApiModelProperty(name = "externalReference", example = "", position = 19)
+    @JsonProperty("externalReference")
     private String refOrigine;
 
     @ApiModelProperty(example = "", position = 20)
@@ -155,47 +153,5 @@ public class TestcaseDTOV001 {
     private String dateModif;
 
     @ApiModelProperty(position = 36, required = false)
-    private List<TestcaseStepDTOV001> steps;
-
-    @JsonGetter("isActive")
-    public boolean isActive() {
-        return isActive;
-    }
-
-    @JsonGetter("isActiveQA")
-    public boolean isActiveQA() {
-        return isActiveQA;
-    }
-
-    @JsonGetter("isActiveUAT")
-    public boolean isActiveUAT() {
-        return isActiveUAT;
-    }
-
-    @JsonGetter("isActivePROD")
-    public boolean isActivePROD() {
-        return isActivePROD;
-    }
-
-    @JsonSetter("setActive")
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    @JsonSetter("setActiveQA")
-    public void setActiveQA(boolean isActiveQA) {
-        this.isActiveQA = isActiveQA;
-    }
-
-    @JsonSetter("setActiveUAT")
-    public void setActiveUAT(boolean isActiveUAT) {
-        this.isActiveUAT = isActiveUAT;
-    }
-
-    @JsonSetter("setActivePROD")
-    public void setActivePROD(boolean isActivePROD) {
-        this.isActivePROD = isActivePROD;
-    }
-    
-    
+    private List<TestcaseStepDTOV001> steps;  
 }

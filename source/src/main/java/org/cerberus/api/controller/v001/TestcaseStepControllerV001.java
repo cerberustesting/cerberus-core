@@ -79,7 +79,7 @@ public class TestcaseStepControllerV001 {
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = "application/json")
     public List<TestcaseStepDTOV001> findTestcaseStepsByTestFolderId(
-            @PathVariable("testFolderId") String testFolderId, 
+            @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
@@ -98,8 +98,7 @@ public class TestcaseStepControllerV001 {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.testCaseStepService.readByTestTestCase(testFolderId, testcaseId)
-                .getDataList()
+        return this.testCaseStepService.readByTestTestCaseAPI(testFolderId, testcaseId)
                 .stream()
                 .map(this.stepMapper::toDTO)
                 .collect(Collectors.toList());
@@ -117,7 +116,7 @@ public class TestcaseStepControllerV001 {
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.stepMapper.toDTO(
-                this.testCaseStepService.readTestcaseStepWithDependencies(
+                this.testCaseStepService.readTestcaseStepWithDependenciesAPI(
                         testFolderId,
                         testcaseId,
                         stepId

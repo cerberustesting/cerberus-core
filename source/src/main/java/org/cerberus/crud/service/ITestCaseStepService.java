@@ -84,6 +84,8 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
+    
+    List<TestCaseStep> readByTestTestCaseAPI(String test, String testcase);
 
     AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
@@ -94,8 +96,10 @@ public interface ITestCaseStepService {
      * @return
      */
     AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase);
-    
+
     TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId);
+
+    TestCaseStep readTestcaseStepWithDependenciesAPI(String test, String testcase, int stepId);
 
     /**
      *

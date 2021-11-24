@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  *
@@ -30,6 +31,7 @@ import lombok.Data;
  */
 @Data
 @Builder
+@Jacksonized
 @ApiModel(value = "Invariant") 
 public class InvariantDTOV001 {
 
@@ -75,3 +77,4 @@ public class InvariantDTOV001 {
     @ApiModelProperty(example = "null", position = 13)
     private String attribute9;
 }
+ 
