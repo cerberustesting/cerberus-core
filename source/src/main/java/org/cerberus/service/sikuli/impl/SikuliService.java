@@ -171,7 +171,8 @@ public class SikuliService implements ISikuliService {
         PrintStream os = null;
 
         URL url;
-        String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        String host = StringUtil.cleanHostURL(session.getHost());
+        String urlToConnect = host + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
@@ -212,7 +213,8 @@ public class SikuliService implements ISikuliService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String urlToConnect = "http://" + session.getNodeHost() + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        String host = StringUtil.cleanHostURL(session.getHost());
+        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
