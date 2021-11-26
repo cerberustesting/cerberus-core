@@ -413,6 +413,6 @@ public interface ITestCaseService {
      * @throws CerberusException
      * @throws java.sql.SQLException
      */
-    public TestCase createTestcaseWithDependenciesAPI(TestCase testCase) throws CerberusException, SQLException;
+    public TestCase createTestcaseWithDependenciesAPI(TestCase testCase);
 
 }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -192,6 +193,16 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase) {
         return testCaseStepDAO.readByTestTestCase(test, testcase);
+
+    }
+
+    @Override
+    public List<TestCaseStep> readByTestTestCaseAPI(String test, String testcase) {
+        AnswerList<TestCaseStep> stepsAnswer = testCaseStepDAO.readByTestTestCase(test, testcase);
+        if (stepsAnswer.getDataList() == null || stepsAnswer.getDataList().isEmpty()) {
+            throw new EntityNotFoundException(TestCaseStep.class, "testFolderId", test, "testcaseId", testcase);
+        }
+        return stepsAnswer.getDataList();
     }
 
     @Override
@@ -226,6 +237,17 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId) {
         TestCaseStep testcaseStep = this.findTestCaseStep(test, testcase, stepId);
+        AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, testcaseStep.getStepId());
+        testcaseStep.setActions(actions.getDataList());
+        return testcaseStep;
+    }
+
+    @Override
+    public TestCaseStep readTestcaseStepWithDependenciesAPI(String test, String testcase, int stepId) {
+        TestCaseStep testcaseStep = this.findTestCaseStep(test, testcase, stepId);
+        if (testcaseStep == null) {
+            throw new EntityNotFoundException(TestCaseStep.class, "testFolderId", test, "testcaseId", testcase, "stepId", String.valueOf(stepId));
+        }
         AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, testcaseStep.getStepId());
         testcaseStep.setActions(actions.getDataList());
         return testcaseStep;

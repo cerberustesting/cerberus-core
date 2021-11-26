@@ -93,7 +93,7 @@ public class TestcaseControllerV001 {
     public TestcaseDTOV001 createTestcase(
             @RequestBody TestcaseDTOV001 newTestcase, 
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal) throws CerberusException, SQLException {
+            Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
 
         return this.testcaseMapper.toDTO(
@@ -102,5 +102,4 @@ public class TestcaseControllerV001 {
                 )
         );
     }
-
 }

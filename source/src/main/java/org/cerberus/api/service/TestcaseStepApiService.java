@@ -61,7 +61,7 @@ public class TestcaseStepApiService {
     public List<TestCaseStep> findTestcaseStepsByTestFolderId(String testFolderId) {
         List<TestCaseStep> testcaseSteps = this.testCaseStepDAO.findTestcaseStepsByTestFolderId(testFolderId);
         if (testcaseSteps == null || testcaseSteps.isEmpty()) {
-            throw new EntityNotFoundException(TestcaseStepDTOV001.class);
+            throw new EntityNotFoundException(TestcaseStepDTOV001.class, "testFolderId", testFolderId);
         }
         return testcaseSteps;
     }

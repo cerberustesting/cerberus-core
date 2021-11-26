@@ -19,11 +19,13 @@
  */
 package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  *
@@ -31,6 +33,7 @@ import lombok.Data;
  */
 @Data
 @Builder
+@Jacksonized
 @ApiModel(value = "TestcaseStepActionControl")
 public class TestcaseStepActionControlDTOV001 {
 
@@ -83,6 +86,7 @@ public class TestcaseStepActionControlDTOV001 {
     private JsonNode options;
 
     @ApiModelProperty(position = 16)
+    @JsonProperty("isFatal")
     private boolean isFatal;
 
     @ApiModelProperty(position = 17)
@@ -101,5 +105,5 @@ public class TestcaseStepActionControlDTOV001 {
     private String usrModif;
 
     @ApiModelProperty(position = 22)
-    private String dateModif;
+    private String dateModif;    
 }
