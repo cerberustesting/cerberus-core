@@ -33,11 +33,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {JSONArrayMapper.class, TimestampMapper.class})
 public interface TestcaseStepActionControlMapperV001 {
 
-    @Mapping(source = "control.test", target = "testFolderId")
-    @Mapping(source = "control.testcase", target = "testcaseId")
+    @Mapping(source = "test", target = "testFolderId")
+    @Mapping(source = "testcase", target = "testcaseId")
+    @Mapping(source = "fatal", target = "isFatal")
     TestcaseStepActionControlDTOV001 toDTO(TestCaseStepActionControl control);
 
-    @Mapping(source = "controlDTO.testFolderId", target = "test")
-    @Mapping(source = "controlDTO.testcaseId", target = "testcase")
+    @Mapping(source = "testFolderId", target = "test")
+    @Mapping(source = "testcaseId", target = "testcase")
     TestCaseStepActionControl toEntity(TestcaseStepActionControlDTOV001 controlDTO);
 }

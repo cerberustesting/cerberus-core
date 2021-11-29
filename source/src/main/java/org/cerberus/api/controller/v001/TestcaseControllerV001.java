@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
@@ -78,7 +79,7 @@ public class TestcaseControllerV001 {
     @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = "application/json")
-    public TestcaseDTOV001 findTestcasesByTestAndTestcase(
+    public TestcaseDTOV001 findTestcaseByTestAndTestcase(
             @PathVariable("testFolderId") String testFolderId, 
             @PathVariable("testcaseId") String testcaseId, 
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -91,7 +92,7 @@ public class TestcaseControllerV001 {
     @ApiResponse(code = 200, message = "ok")
     @PostMapping(headers = {API_VERSION_1}, produces = "application/json")
     public TestcaseDTOV001 createTestcase(
-            @RequestBody TestcaseDTOV001 newTestcase, 
+            @Valid @RequestBody TestcaseDTOV001 newTestcase, 
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);

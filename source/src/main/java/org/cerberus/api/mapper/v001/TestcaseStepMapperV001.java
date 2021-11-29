@@ -35,6 +35,8 @@ public interface TestcaseStepMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")
     @Mapping(source = "testcase", target = "testcaseId")
+    @Mapping(source = "libraryStepTest", target = "libraryStepTestFolderId")
+    @Mapping(source = "libraryStepTestcase", target = "libraryStepTestcaseId")
     @Mapping(source = "usingLibraryStep", target = "isUsingLibraryStep")
     @Mapping(source = "stepInUseByOtherTestcase", target = "isStepInUseByOtherTestcase")
     @Mapping(source = "libraryStep", target = "isLibraryStep")
@@ -43,6 +45,8 @@ public interface TestcaseStepMapperV001 {
 
     @Mapping(source = "testFolderId", target = "test")
     @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "libraryStepTestFolderId", target = "libraryStepTest")
+    @Mapping(source = "libraryStepTestcaseId", target = "libraryStepTestcase")
     TestCaseStep toEntity(TestcaseStepDTOV001 stepDTO);
 
 }

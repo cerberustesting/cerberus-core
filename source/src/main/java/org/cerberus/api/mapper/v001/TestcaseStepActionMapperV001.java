@@ -34,12 +34,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {TestcaseStepActionControlMapperV001.class, JSONArrayMapper.class, TimestampMapper.class})
 public interface TestcaseStepActionMapperV001 {
     
-    @Mapping(source = "action.test", target = "testFolderId")
-    @Mapping(source = "action.testcase", target = "testcaseId")
+    @Mapping(source = "test", target = "testFolderId")
+    @Mapping(source = "testcase", target = "testcaseId")
+    @Mapping(source = "fatal", target = "isFatal")
     TestcaseStepActionDTOV001 toDTO(TestCaseStepAction action);
 
-    @Mapping(source = "actionDTO.testFolderId", target = "test")
-    @Mapping(source = "actionDTO.testcaseId", target = "testcase")
+    @Mapping(source = "testFolderId", target = "test")
+    @Mapping(source = "testcaseId", target = "testcase")
     TestCaseStepAction toEntity(TestcaseStepActionDTOV001 actionDTO);
     
 }
