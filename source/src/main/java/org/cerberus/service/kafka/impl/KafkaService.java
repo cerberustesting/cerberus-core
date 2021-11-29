@@ -20,6 +20,7 @@
 package org.cerberus.service.kafka.impl;
 
 import com.jayway.jsonpath.PathNotFoundException;
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -70,6 +71,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
 
 /**
  * Producer is a one shot producer in that it writes a single record then closes
@@ -121,11 +124,21 @@ public class KafkaService implements IKafkaService {
             serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
+        // Do we activate Avro feature ?
+        boolean activateAvro = false;
+        for (AppServiceContent object : serviceContent) {
+            if (!StringUtil.parseBoolean(object.getActive()) && object.getKey().contains("enable_avro")) {
+                activateAvro = true;
+            }
+        }
+
         Properties props = new Properties();
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, "Y", 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", "Y", 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", "Y", 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", "Y", 0, "", "", null, "", null));
+        if (!activateAvro) {
+            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", "Y", 0, "", "", null, "", null));
+        }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
@@ -134,6 +147,14 @@ public class KafkaService implements IKafkaService {
             if (StringUtil.parseBoolean(object.getActive())) {
                 props.put(object.getKey(), object.getValue());
             }
+        }
+
+        if (activateAvro) {
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+//        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, applicationProducer.getSchemaRegistryUrl());
+//        props.put(AbstractKafkaAvroSerDeConfig.AUTO_REGISTER_SCHEMAS, applicationProducer.getAutoRegisterSchema());
+            props.put(AbstractKafkaAvroSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY, TopicRecordNameStrategy.class.getName());
+//        props.put(AbstractKafkaAvroSerDeConfig.USER_INFO_CONFIG, applicationProducer.getUserInfoConfig());
         }
 
         serviceREST.setServicePath(bootstrapServers);
@@ -166,7 +187,7 @@ public class KafkaService implements IKafkaService {
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
             message.setDescription(message.getDescription().replace("%EX%", ex.toString() + " " + StringUtil.getExceptionCauseFromString(ex)));
-            LOG.debug(ex, ex);
+            LOG.error(ex, ex);
         } finally {
             if (producer != null) {
                 producer.flush();
@@ -341,10 +362,10 @@ public class KafkaService implements IKafkaService {
                         try {
                             LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
                             LOG.debug("  " + record.key() + " | " + record.value());
-                            
+
                             // Parsing message.
                             JSONObject recordJSON = new JSONObject(record.value());
-                            
+
                             // Parsing header.
                             JSONObject headerJSON = new JSONObject();
                             for (Header header : record.headers()) {

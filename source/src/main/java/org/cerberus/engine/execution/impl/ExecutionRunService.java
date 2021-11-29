@@ -851,7 +851,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 /**
                                  * Log TestCaseStepExecution
                                  */
-                                if (tCExecution.getVerbose() > 0) {
+                                if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey(tCExecution.getSystem(), "cerberus_executionlog_enable", false)) {
                                     LOG.info(testCaseStepExecution.toJson(false, true));
                                 }
 
@@ -1308,7 +1308,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Log TestCaseStepActionExecution
              */
-            if (tcExecution.getVerbose() > 0) {
+            if ((tcExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey(tcExecution.getSystem(), "cerberus_executionlog_enable", false)) {
                 LOG.info(testCaseStepActionExecution.toJson(false, true));
             }
 
@@ -1588,7 +1588,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Log TestCaseStepActionControlExecution
              */
-            if (exe.getVerbose() > 0) {
+            if ((exe.getVerbose() > 0) && parameterService.getParameterBooleanByKey(exe.getSystem(), "cerberus_executionlog_enable", false)) {
                 LOG.info(controlExe.toJson(false, true));
             }
 

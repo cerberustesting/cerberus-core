@@ -263,7 +263,7 @@ public class PropertyService implements IPropertyService {
             /**
              * Log TestCaseExecutionData
              */
-            if (tCExecution.getVerbose() > 0) {
+            if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey(tCExecution.getSystem(), "cerberus_executionlog_enable", false)) {
                 LOG.info(tcExeData.toJson(false, true));
             }
         }

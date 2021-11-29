@@ -6004,3 +6004,8 @@ UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION
 UPDATE `invariant` SET `gp1` = 'Duration(ms) or Element', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'wait'; 
 UPDATE `invariant` SET `gp1` = '', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'waitNetworkTrafficIdle'; 
 UPDATE `invariant` SET `gp1` = 'Element', `gp2` = '', `gp3` = '' WHERE idname = 'ACTION' AND value = 'waitVanish';
+
+-- 1689
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_executionlog_enable', 'true','Enable (true) or disable (false) the execution json log messages inside application server logs. If false, no json log messages will never be logged. If true, json message will be logged only if verbose level is at the correct level.');
+
