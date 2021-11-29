@@ -851,7 +851,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 /**
                                  * Log TestCaseStepExecution
                                  */
-                                if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey(tCExecution.getSystem(), "cerberus_executionlog_enable", false)) {
+                                if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", tCExecution.getSystem(), false)) {
                                     LOG.info(testCaseStepExecution.toJson(false, true));
                                 }
 
@@ -946,7 +946,9 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Log Execution
              */
-            LOG.info(tCExecution.toJson(false));
+            if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", tCExecution.getSystem(), false)) {
+                LOG.info(tCExecution.toJson(false));
+            }
 
             /**
              * Clean memory
@@ -1308,7 +1310,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Log TestCaseStepActionExecution
              */
-            if ((tcExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey(tcExecution.getSystem(), "cerberus_executionlog_enable", false)) {
+            if ((tcExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", tcExecution.getSystem(), false)) {
                 LOG.info(testCaseStepActionExecution.toJson(false, true));
             }
 
@@ -1588,7 +1590,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Log TestCaseStepActionControlExecution
              */
-            if ((exe.getVerbose() > 0) && parameterService.getParameterBooleanByKey(exe.getSystem(), "cerberus_executionlog_enable", false)) {
+            if ((exe.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", exe.getSystem(), false)) {
                 LOG.info(controlExe.toJson(false, true));
             }
 
