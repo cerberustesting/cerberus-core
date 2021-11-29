@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.api.errorhandler.exception.FailedInsertOperationException;
+import org.cerberus.api.errorhandler.exception.InvalidRequestException;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
@@ -77,6 +78,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * @author bcivel
@@ -704,6 +706,14 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) {
 
+        if (testcase.getTest() == null) {
+            throw new InvalidRequestException("testFolderId required to create Testcase");
+        }
+
+        if (testcase.getTestcase() != null) {
+            throw new InvalidRequestException("testcaseId forbidden to create Testcase");
+        }
+
         testcase.setTestcase(this.getNextAvailableTestcaseId(testcase.getTest()));
         Answer testcaseCreationAnswer = this.create(testcase);
 
@@ -716,6 +726,7 @@ public class TestCaseService implements ITestCaseService {
             for (TestCaseStep tcs : testcase.getSteps()) {
                 tcs.setTest(testcase.getTest());
                 tcs.setTestcase(testcase.getTestcase());
+                LOG.debug(tcs.toString());
                 Answer newTestcaseStep = testCaseStepService.create(tcs);
                 if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new FailedInsertOperationException("Failed to insert the testcase in the database");
@@ -746,14 +757,24 @@ public class TestCaseService implements ITestCaseService {
             }
         }
 
-        //insert tccountry, insert countries
-        if (testcase.getTestCaseCountries() != null) {
+        if (testcase.getInvariantCountries() != null && !testcase.getInvariantCountries().isEmpty()) {
+            testcase.getInvariantCountries()
+                    .forEach(invariantCountry -> {
+                        testcase.appendTestCaseCountries(
+                                TestCaseCountry.builder()
+                                        .test(testcase.getTest())
+                                        .testcase(testcase.getTestcase())
+                                        .country(invariantCountry.getValue())
+                                        .build()
+                        );
+                    });
+
             for (TestCaseCountry tcc : testcase.getTestCaseCountries()) {
                 tcc.setTest(testcase.getTest());
                 tcc.setTestcase(testcase.getTestcase());
                 Answer newTestcaseCountry = testCaseCountryService.create(tcc);
                 if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
+                    throw new FailedInsertOperationException("Failed to insert the testcase in the database");
                 }
 
                 if (tcc.getTestCaseCountryProperty() != null) {

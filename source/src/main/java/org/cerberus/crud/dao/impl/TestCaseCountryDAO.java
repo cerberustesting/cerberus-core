@@ -316,8 +316,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     public Answer update(TestCaseCountry testCaseCountry) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("UPDATE testcasecountry SET");
-        query.append("1 = 1,");
+        query.append("UPDATE testcasecountry SET ");
         query.append("`UsrModif` = ?, ");
         query.append("`DateModif` = CURRENT_TIMESTAMP ");
         query.append("WHERE Test = ? and TestCase = ? and Country = ? ");

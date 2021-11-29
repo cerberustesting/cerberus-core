@@ -42,15 +42,21 @@ import org.mapstruct.Mapping;
 )
 public interface TestcaseMapperV001 {
 
-    @Mapping(source = "testcase.test", target = "testFolderId")
-    @Mapping(source = "testcase.testcase", target = "testcaseId")
+    @Mapping(source = "test", target = "testFolderId")
+    @Mapping(source = "testcase", target = "testcaseId")
     @Mapping(source = "active", target = "isActive")
     @Mapping(source = "activeQA", target = "isActiveQA")
     @Mapping(source = "activeUAT", target = "isActiveUAT")
     @Mapping(source = "activePROD", target = "isActivePROD")
+    @Mapping(source = "origine", target = "externalProvider")
+    @Mapping(source = "refOrigine", target = "externalReference")
+    @Mapping(source = "invariantCountries", target = "countries")
     TestcaseDTOV001 toDTO(TestCase testcase);
 
-    @Mapping(source = "testcaseDTO.testFolderId", target = "test")
-    @Mapping(source = "testcaseDTO.testcaseId", target = "testcase")
+    @Mapping(source = "testFolderId", target = "test")
+    @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "externalProvider", target = "origine")
+    @Mapping(source = "externalReference", target = "refOrigine")
+    @Mapping(source = "countries", target = "invariantCountries")
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
 }
