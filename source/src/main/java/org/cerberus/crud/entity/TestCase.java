@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -146,6 +147,7 @@ public class TestCase {
     }
 
     public void appendTestCaseCountries(TestCaseCountry testCaseCountry) {
+        if (this.testCaseCountries == null) this.testCaseCountries = new ArrayList<>();
         this.testCaseCountries.add(testCaseCountry);
     }
 

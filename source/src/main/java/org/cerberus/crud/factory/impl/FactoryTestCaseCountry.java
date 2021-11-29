@@ -30,32 +30,28 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseCountry implements IFactoryTestCaseCountry {
-    
+
     @Override
     public TestCaseCountry create(String test, String testCase, String country) {
-        TestCaseCountry testCaseCountry = new TestCaseCountry();
-        testCaseCountry.setTest(test);
-        testCaseCountry.setTestcase(testCase);
-        testCaseCountry.setCountry(country);
-        testCaseCountry.setTestCaseCountryProperty(new ArrayList<>());
-        return testCaseCountry;
+        return TestCaseCountry.builder()
+                .test(test)
+                .testcase(testCase)
+                .country(country)
+                .testCaseCountryProperty(new ArrayList<>())
+                .build();
     }
 
     @Override
     public TestCaseCountry create(String test, String testCase, String country, Timestamp dateCreated, String usrCreated, Timestamp dateModif, String usrModif) {
-        TestCaseCountry testCaseCountry = new TestCaseCountry();
-        testCaseCountry.setTest(test);
-        testCaseCountry.setTestcase(testCase);
-        testCaseCountry.setCountry(country);
-        testCaseCountry.setTestCaseCountryProperty(new ArrayList<>());
-        testCaseCountry.setDateCreated(dateCreated);
-        testCaseCountry.setUsrCreated(usrCreated == null ? "" : usrCreated);
-        testCaseCountry.setDateModif(dateModif);
-        testCaseCountry.setUsrModif(usrModif == null ? "" : usrModif);
-
-        return testCaseCountry;
+        return TestCaseCountry.builder()
+                .test(test)
+                .testcase(testCase)
+                .country(country)
+                .testCaseCountryProperty(new ArrayList<>())
+                .dateCreated(dateCreated)
+                .usrCreated(usrCreated == null ? "" : usrCreated)
+                .dateModif(dateModif)
+                .usrModif(usrModif == null ? "" : usrModif)
+                .build();
     }
-    
-    
-    
 }

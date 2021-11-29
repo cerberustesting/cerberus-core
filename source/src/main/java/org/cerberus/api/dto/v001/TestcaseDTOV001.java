@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -42,6 +43,7 @@ public class TestcaseDTOV001 {
     private String testFolderId;
 
     @ApiModelProperty(example = "0001A", position = 1)
+    @Pattern(regexp = "^[0-9]{4}[AB]$")
     private String testcaseId;
 
     @ApiModelProperty(example = "Google", position = 2)
@@ -96,13 +98,11 @@ public class TestcaseDTOV001 {
     @ApiModelProperty(example = "AUTOMATED", position = 17)
     private String type;
 
-    @ApiModelProperty(name = "externalProvider", example = "RX", position = 18)
-    @JsonProperty("externalProvider")
-    private String origine;
+    @ApiModelProperty( example = "RX", position = 18)
+    private String externalProvider;
 
-    @ApiModelProperty(name = "externalReference", example = "", position = 19)
-    @JsonProperty("externalReference")
-    private String refOrigine;
+    @ApiModelProperty(example = "", position = 19)
+    private String externalReference;
 
     @ApiModelProperty(example = "", position = 20)
     private String comment;
@@ -153,5 +153,8 @@ public class TestcaseDTOV001 {
     private String dateModif;
 
     @ApiModelProperty(position = 36, required = false)
-    private List<TestcaseStepDTOV001> steps;  
+    private List<TestcaseStepDTOV001> steps;
+    
+    @ApiModelProperty(position = 37, required = false)
+    private List<InvariantDTOV001> countries;
 }

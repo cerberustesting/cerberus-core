@@ -22,6 +22,7 @@ package org.cerberus.api.errorhandler;
 import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.api.errorhandler.error.CerberusApiError;
 import org.cerberus.api.errorhandler.exception.FailedInsertOperationException;
+import org.cerberus.api.errorhandler.exception.InvalidRequestException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -64,24 +66,39 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Object> handleInvalidRequestException(
+            InvalidRequestException ex, WebRequest request) {
+        CerberusApiError apiError = new CerberusApiError(HttpStatus.UNPROCESSABLE_ENTITY);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, 
+            HttpHeaders headers, 
+            HttpStatus status, 
+            WebRequest request) {
+        return this.buildResponseEntity(new CerberusApiError(HttpStatus.BAD_REQUEST, ex));
+    }
+    
     @ExceptionHandler({BadCredentialsException.class})
     protected ResponseEntity<Object> handleAccessDeniedException(final BadCredentialsException ex, final WebRequest request) {
         CerberusApiError apiError = new CerberusApiError(HttpStatus.UNAUTHORIZED);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
-    }    
+    }
 
-            
     @ExceptionHandler({DataAccessException.class, FailedInsertOperationException.class})
     protected ResponseEntity<Object> handleDatabaseException(final RuntimeException ex, final WebRequest request) {
         CerberusApiError apiError = new CerberusApiError(HttpStatus.INTERNAL_SERVER_ERROR);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
-    
+
     private ResponseEntity<Object> buildResponseEntity(CerberusApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getHttpStatus());
     }
-    
-    
+
 }

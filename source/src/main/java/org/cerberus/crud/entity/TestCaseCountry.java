@@ -22,11 +22,22 @@ package org.cerberus.crud.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  *
  * @author bcivel
  */
+@Builder
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class TestCaseCountry {
 
     private String test;
@@ -42,81 +53,12 @@ public class TestCaseCountry {
      */
     private List<TestCaseCountryProperties> testCaseCountryProperty;
     private TestCase testCaseObj;
+    
 
     @JsonIgnore
     public TestCase getTestCaseObj() {
         return testCaseObj;
     }
-
-    public void setTestCaseObj(TestCase testCase) {
-        this.testCaseObj = testCase;
-    }
-
-    public List<TestCaseCountryProperties> getTestCaseCountryProperty() {
-        return testCaseCountryProperty;
-    }
-
-    public void setTestCaseCountryProperty(List<TestCaseCountryProperties> testCaseCountryProperty) {
-        this.testCaseCountryProperty = testCaseCountryProperty;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTestcase() {
-        return testcase;
-    }
-
-    public void setTestcase(String testcase) {
-        this.testcase = testcase;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String usrModif) {
-        this.usrModif = usrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
-    }
-    
-    
 
     public boolean hasSameKey(TestCaseCountry obj) {
         if (obj == null) {
@@ -132,45 +74,6 @@ public class TestCaseCountry {
         if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
             return false;
         }
-        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
-            return false;
-        }
-        return true;
+        return !((this.country == null) ? (other.country != null) : !this.country.equals(other.country));
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + (this.test != null ? this.test.hashCode() : 0);
-        hash = 41 * hash + (this.testcase != null ? this.testcase.hashCode() : 0);
-        hash = 41 * hash + (this.country != null ? this.country.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TestCaseCountry other = (TestCaseCountry) obj;
-        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
-            return false;
-        }
-        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
-            return false;
-        }
-        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCaseCountry{" + "test=" + test + ", testcase=" + testcase + ", country=" + country + '}';
-    }
-
 }
