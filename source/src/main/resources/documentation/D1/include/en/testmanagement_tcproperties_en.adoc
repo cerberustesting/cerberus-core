@@ -74,13 +74,13 @@ Properties can be called in action or control values field or in another propert
 
 | getAttributeFromHtml |  | 
 
-| getFromCookie |  | 
+| getFromCookie | Get a cookie information from a cookie name and a given parameter. | Cookie name = JSESSIONID / Gookie parameter = (name,value,expiry,domain,path,isHttpOnly,isSecure)
 
-| getFromXml | Xpath to get a certain element from an XML service call | `//OrderId/text()`
+| getFromXml | Get a certain element from an XML service call from an XPath | `//OrderId/text()`
 
 | getDifferencesFromXml |  | 
 
-| getRawFromXml | Xpath to get a certain element from an XML service call | `//OrderId/text()`
+| getRawFromXml | Get a raw XML element from an XML service call from an XPath | `//OrderId/text()`
 
 | getFromJson | JSON path to get a certain element from a service call | `$.status`
 

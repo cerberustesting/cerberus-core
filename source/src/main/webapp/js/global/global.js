@@ -1947,9 +1947,9 @@ function envTuning(myenv) {
     }
     
     if ((isProduction) && (!isDev)) {
-        document.getElementById("menuDocumentationD3").style.display = "none";
 //        document.getElementById("menuDocumentationD3").style.display = "none";
-        document.getElementById("menuSwagger").style.display = "none";
+//        document.getElementById("menuDocumentationD3").style.display = "none";
+//        document.getElementById("menuSwagger").style.display = "none";
     }
 }
 
