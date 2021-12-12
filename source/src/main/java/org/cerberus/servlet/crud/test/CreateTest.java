@@ -85,7 +85,7 @@ public class CreateTest extends HttpServlet {
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("isActive"), false);
         String parentTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ParentTest"), null);
-        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("isActive"), "");
+        String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("description"), "");
 
         /**
          * Checking all constrains before calling the services.
