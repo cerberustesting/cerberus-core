@@ -1319,10 +1319,11 @@ function changeLib() {
 
 function generateImportInfoId(stepInfo) {
     var hash = 0;
-    if (stepInfo.description.length === 0)
+    let strval = stepInfo.description + stepInfo.test + "-" + stepInfo.testCase + "-" + stepInfo.sort;
+    if (strval.length === 0)
         return hash;
-    for (i = 0; i < stepInfo.description.length; i++) {
-        char = stepInfo.description.charCodeAt(i);
+    for (i = 0; i < strval.length; i++) {
+        char = strval.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
