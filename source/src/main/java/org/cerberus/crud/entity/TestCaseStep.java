@@ -65,7 +65,7 @@ public class TestCaseStep {
     private boolean isStepInUseByOtherTestcase;
 //    private int initialStep;
     private TestCase testcaseObj;
-    private int libraryStepSort;
+    private int libraryStepSort; // Contain the sort information of the library.
 
     /**
      * Invariant PROPERTY TYPE String.
