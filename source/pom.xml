@@ -57,7 +57,7 @@
         <!-- quaartz -->
         <quartz.version>2.3.2</quartz.version>
         <!-- Log4J Version -->
-        <log4j.version>2.13.3</log4j.version>
+        <log4j.version>2.15.0</log4j.version>
         <!-- jsonpath -->
         <jsonxpath.version>2.5.0</jsonxpath.version>
         <!-- Compile scope -->
