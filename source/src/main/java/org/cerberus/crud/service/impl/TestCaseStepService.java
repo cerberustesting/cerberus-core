@@ -71,6 +71,7 @@ public class TestCaseStepService implements ITestCaseStepService {
                 masterStep.setConditionValue1(usedStep.getConditionValue1());
                 masterStep.setConditionValue2(usedStep.getConditionValue2());
                 masterStep.setConditionValue3(usedStep.getConditionValue3());
+                masterStep.setLibraryStepSort(usedStep.getSort());
             }
         }
 
@@ -222,7 +223,6 @@ public class TestCaseStepService implements ITestCaseStepService {
                 //TODO changer pour readByLibraryUsed
                 TestCaseStep usedStep = this.modifyTestCaseStepDataFromUsedStep(step);
                 step = usedStep;
-                step.setLibraryStepSort(usedStep.getSort());
                 actions = testCaseStepActionService.readByVarious1WithDependency(step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId());
             } else {
                 actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, step.getStepId());
