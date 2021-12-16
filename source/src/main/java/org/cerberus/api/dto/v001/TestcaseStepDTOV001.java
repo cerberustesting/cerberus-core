@@ -23,14 +23,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 /**
- *
- * @author mlombard
+ * @author MorganLmd
  */
 @Data
 @Builder
@@ -113,4 +113,7 @@ public class TestcaseStepDTOV001 {
 
     @ApiModelProperty(position = 23, required = false)
     private List<TestcaseStepActionDTOV001> actions;
+
+    @ApiModelProperty(position = 24)
+    private List<TestcaseCountryPropertiesDTOV001> properties;
 }
