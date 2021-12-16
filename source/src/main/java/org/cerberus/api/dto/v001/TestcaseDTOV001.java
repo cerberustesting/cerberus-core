@@ -30,8 +30,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- *
- * @author mlombard
+ * @author MorganLmd
  */
 @Data
 @Builder
@@ -157,4 +156,17 @@ public class TestcaseDTOV001 {
     
     @ApiModelProperty(position = 37, required = false)
     private List<InvariantDTOV001> countries;
+
+    @ApiModelProperty(position = 38)
+    private List<TestcaseCountryPropertiesDTOV001> properties;
+
+    @ApiModelProperty(position = 39)
+    private List<TestcaseCountryPropertiesDTOV001> inheritedProperties;
+
+    @ApiModelProperty(position = 40)
+    private List<LabelDTOV001> labels;
+
+    @ApiModelProperty(position = 41)
+    private List<TestcaseDepDTOV001> dependencies;
+
 }

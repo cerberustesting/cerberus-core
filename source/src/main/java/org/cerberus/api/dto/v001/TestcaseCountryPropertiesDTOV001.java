@@ -17,15 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.cerberus.api.dto.v001;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.cerberus.crud.entity.Invariant;
 
 import java.util.List;
 
@@ -35,8 +35,8 @@ import java.util.List;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseStep")
-public class TestcaseStepDTOV001 {
+@ApiModel(value = "TestcaseCountryProperties")
+public class TestcaseCountryPropertiesDTOV001 {
 
     @ApiModelProperty(position = 0)
     private String testFolderId;
@@ -45,75 +45,47 @@ public class TestcaseStepDTOV001 {
     private String testcaseId;
 
     @ApiModelProperty(position = 2)
-    private int stepId;
+    private String property;
 
     @ApiModelProperty(position = 3)
-    private int sort;
-
-    @ApiModelProperty(position = 4)
-    private String loop;
-
-    @ApiModelProperty(position = 5)
-    private String conditionOperator;
-
-    @ApiModelProperty(position = 6)
-    private String conditionValue1;
-
-    @ApiModelProperty(position = 7)
-    private String conditionValue2;
-
-    @ApiModelProperty(position = 8)
-    private String conditionValue3;
-
-    @ApiModelProperty(position = 9)
-    private JsonNode conditionOptions;
-
-    @ApiModelProperty(position = 10)
     private String description;
 
+    @ApiModelProperty(position = 4)
+    private String type;
+
+    @ApiModelProperty(position = 5)
+    private String database;
+
+    @ApiModelProperty(position = 6)
+    private String value1;
+
+    @ApiModelProperty(position = 7)
+    private String value2;
+
+    @ApiModelProperty(position = 8)
+    private String length;
+
+    @ApiModelProperty(position = 9)
+    private int rowLimit;
+
+    @ApiModelProperty(position = 10)
+    private String nature;
+
     @ApiModelProperty(position = 11)
-    @JsonProperty("isUsingLibraryStep")
-    private boolean isUsingLibraryStep;
+    private int rank;
 
     @ApiModelProperty(position = 12)
-    private String libraryStepTestFolderId;
-
-    @ApiModelProperty(position = 13)
-    private String libraryStepTestcaseId;
-
-    @ApiModelProperty(position = 14)
-    private Integer libraryStepStepId;
-
-    @ApiModelProperty(position = 15)
-    @JsonProperty("isStepInUseByOtherTestcase")
-    private boolean isStepInUseByOtherTestcase;
-
-    @ApiModelProperty(position = 16)
-    private int libraryStepSort;
-
-    @ApiModelProperty(name = "isLibraryStep", position = 17)
-    @JsonProperty("isLibraryStep")
-    private boolean isLibraryStep;
-
-    @ApiModelProperty(position = 18)
-    @JsonProperty("isExecutionForced")
-    private boolean isExecutionForced;
-
-    @ApiModelProperty(position = 19)
     private String usrCreated;
 
-    @ApiModelProperty(position = 20)
+    @ApiModelProperty(position = 13)
     private String dateCreated;
 
-    @ApiModelProperty(position = 21)
+    @ApiModelProperty(position = 14)
     private String usrModif;
 
-    @ApiModelProperty(position = 22)
+    @ApiModelProperty(position = 15)
     private String dateModif;
 
-    @ApiModelProperty(position = 23, required = false)
-    private List<TestcaseStepActionDTOV001> actions;
-
-    @ApiModelProperty(position = 24)
-    private List<TestcaseCountryPropertiesDTOV001> properties;
+    @ApiModelProperty(position = 16)
+    private List<Invariant> countries;
 }

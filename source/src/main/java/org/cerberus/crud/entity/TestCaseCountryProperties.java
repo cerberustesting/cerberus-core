@@ -21,8 +21,15 @@ package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
+import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -32,6 +39,10 @@ import org.json.JSONObject;
 /**
  * @author bcivel
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class TestCaseCountryProperties {
 
     private String test;
@@ -49,7 +60,7 @@ public class TestCaseCountryProperties {
     private int cacheExpire;
     private int retryNb;
     private int retryPeriod;
-    private int Rank;
+    private int rank;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -62,7 +73,8 @@ public class TestCaseCountryProperties {
     private TestCaseCountry testcaseCountry;
     private List<Invariant> invariantCountries;
     private List<TestCaseCountry> testcaseCountries;
-    private static final Logger LOG = LogManager.getLogger(TestCase.class);
+
+    private static final Logger LOG = LogManager.getLogger(TestCaseCountryProperties.class);
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -86,7 +98,16 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETOTP = "getOTP";
 
     // DEPRECATED
+    /**
+     * @deprecated
+     */
+    @Deprecated
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
+
+    /**
+     * @deprecated
+     */
+    @Deprecated
     public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
     /**
      * Invariant PROPERTY NATURE String.
@@ -122,62 +143,14 @@ public class TestCaseCountryProperties {
     public static final String DB_USRMODIF = "UsrModif";
     public static final String DB_DATEMODIF = "DateModif";
 
-    public int getCacheExpire() {
-        return cacheExpire;
-    }
-
-    public void setCacheExpire(int cacheExpire) {
-        this.cacheExpire = cacheExpire;
-    }
-
     @JsonIgnore
     public List<TestCaseCountry> getTestcaseCountries() {
         return testcaseCountries;
     }
 
-    public void setTestcaseCountries(List<TestCaseCountry> testcaseCountries) {
-        this.testcaseCountries = testcaseCountries;
-    }
-
-    public int getRetryNb() {
-        return retryNb;
-    }
-
-    public void setRetryNb(int retrynb) {
-        this.retryNb = retrynb;
-    }
-
-    public int getRetryPeriod() {
-        return retryPeriod;
-    }
-
-    public void setRetryPeriod(int retryperiod) {
-        this.retryPeriod = retryperiod;
-    }
-
-    public String getValue2() {
-        return value2;
-    }
-
-    public void setValue2(String value2) {
-        this.value2 = value2;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
     @JsonIgnore
     public TestCaseCountry getTestcaseCountry() {
         return testcaseCountry;
-    }
-
-    public void setTestcaseCountry(TestCaseCountry testcaseCountry) {
-        this.testcaseCountry = testcaseCountry;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     @JsonIgnore
@@ -189,125 +162,9 @@ public class TestCaseCountryProperties {
         this.invariantCountries = invariantCountries;
     }
 
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public String getLength() {
-        return length;
-    }
-
-    public void setLength(String length) {
-        this.length = length;
-    }
-
-    public String getNature() {
-        return nature;
-    }
-
-    public void setNature(String nature) {
-        this.nature = nature;
-    }
-
-    public String getProperty() {
-        return property;
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getRowLimit() {
-        return rowLimit;
-    }
-
-    public void setRowLimit(int rowLimit) {
-        this.rowLimit = rowLimit;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTestcase() {
-        return testcase;
-    }
-
-    public void setTestcase(String testcase) {
-        this.testcase = testcase;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getValue1() {
-        return value1;
-    }
-
-    public void setValue1(String value1) {
-        this.value1 = value1;
-    }
-
     @JsonIgnore
     public MessageEvent getResult() {
         return result;
-    }
-
-    public void setResult(MessageEvent result) {
-        this.result = result;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String usrModif) {
-        this.usrModif = usrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
     }
 
     public boolean hasSameKey(TestCaseCountryProperties obj) {
@@ -318,106 +175,16 @@ public class TestCaseCountryProperties {
             return false;
         }
 
-        if ((this.test == null) ? (obj.test != null) : !this.test.equals(obj.test)) {
+        if (!Objects.equals(this.test, obj.test)) {
             return false;
         }
-        if ((this.testcase == null) ? (obj.testcase != null) : !this.testcase.equals(obj.testcase)) {
+        if (!Objects.equals(this.testcase, obj.testcase)) {
             return false;
         }
-        if ((this.country == null) ? (obj.country != null) : !this.country.equals(obj.country)) {
+        if (!Objects.equals(this.country, obj.country)) {
             return false;
         }
-        if ((this.property == null) ? (obj.property != null) : !this.property.equals(obj.property)) {
-            return false;
-        }
-        return true;
-    }
-
-    public int getRank() {
-        return Rank;
-    }
-
-    public void setRank(int Rank) {
-        this.Rank = Rank;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 83 * hash + (this.test != null ? this.test.hashCode() : 0);
-        hash = 83 * hash + (this.testcase != null ? this.testcase.hashCode() : 0);
-        hash = 83 * hash + (this.country != null ? this.country.hashCode() : 0);
-        hash = 83 * hash + (this.property != null ? this.property.hashCode() : 0);
-        hash = 83 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 83 * hash + (this.database != null ? this.database.hashCode() : 0);
-        hash = 83 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
-        hash = 83 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
-        hash = 83 * hash + (this.length != null ? this.length.hashCode() : 0);
-        hash = 83 * hash + this.rowLimit;
-        hash = 83 * hash + this.retryNb;
-        hash = 83 * hash + this.retryPeriod;
-        hash = 83 * hash + (this.nature != null ? this.nature.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TestCaseCountryProperties other = (TestCaseCountryProperties) obj;
-        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
-            return false;
-        }
-        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
-            return false;
-        }
-        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
-            return false;
-        }
-        if ((this.property == null) ? (other.property != null) : !this.property.equals(other.property)) {
-            return false;
-        }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
-            return false;
-        }
-        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
-            return false;
-        }
-        if ((this.database == null) ? (other.database != null) : !this.database.equals(other.database)) {
-            return false;
-        }
-        if ((this.value1 == null) ? (other.value1 != null) : !this.value1.equals(other.value1)) {
-            return false;
-        }
-        if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
-            return false;
-        }
-        if (this.length == null ? other.length != null : !this.length.equals(other.length)) {
-            return false;
-        }
-        if (this.rowLimit != other.rowLimit) {
-            return false;
-        }
-        if (this.retryNb != other.retryNb) {
-            return false;
-        }
-        if (this.retryPeriod != other.retryPeriod) {
-            return false;
-        }
-        if ((this.nature == null) ? (other.nature != null) : !this.nature.equals(other.nature)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCaseCountryProperties{" + "test=" + test + ", testcase=" + testcase + ", country=" + country + ", property=" + property + ", description=" + description + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + ", cacheExpire=" + cacheExpire + ", retryNb=" + retryNb + ", retryPeriod=" + retryPeriod + ", Rank=" + Rank + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", result=" + result + ", testcaseCountry=" + testcaseCountry + ", invariantCountries=" + invariantCountries + ", testcaseCountries=" + testcaseCountries + '}';
+        return Objects.equals(this.property, obj.property);
     }
 
     public JSONObject toJson() {

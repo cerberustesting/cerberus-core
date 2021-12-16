@@ -19,7 +19,8 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +32,6 @@
     <name>Cerberus</name>
 
     <properties>
-        
         <!-- Project properties -->
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,11 +42,12 @@
         <!-- Spring Version -->
         <spring.version>5.2.11.RELEASE</spring.version>
         <spring-webmvc.version>5.2.4.RELEASE</spring-webmvc.version>
-        
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
         <jackson-databind.version>2.11.0</jackson-databind.version>
+        <!-- jsonpath -->
+        <jsonxpath.version>2.5.0</jsonxpath.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.21</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
@@ -54,12 +55,13 @@
         <appium.version>7.2.0</appium.version>
         <selenium.version>3.141.59</selenium.version>
         <jna.version>4.1.0</jna.version>
-        <!-- quaartz -->
+        <!-- quartz -->
         <quartz.version>2.3.2</quartz.version>
-        <!-- Log4J Version -->
+        <!-- Erratum API -->
+        <sftm-tree-matching.version>1.1.0</sftm-tree-matching.version>
+        <!-- Loggers -->
         <log4j.version>2.16.0</log4j.version>
-        <!-- jsonpath -->
-        <jsonxpath.version>2.5.0</jsonxpath.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <!-- Compile scope -->
         <javaee-web-api>8.0</javaee-web-api>
         <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
@@ -76,21 +78,31 @@
         <commons-text.version>1.3</commons-text.version>
         <poi.version>4.1.2</poi.version>
         <asciidoctor.version>2.1.0</asciidoctor.version>
-        <apache.tika>1.22</apache.tika>
+        <apache.tika.version>1.22</apache.tika.version>
         <fluent-hc.version>4.5.3</fluent-hc.version>
-        
+        <!-- 2FA -->
+        <jboss.aerogear.version>1.0.0</jboss.aerogear.version>
+        <!-- SOAP -->
+        <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
+        <jaxb.version>2.3.0</jaxb.version>
+        <saaj.version>1.5.1</saaj.version>
+        <jaxws.version>2.2.6</jaxws.version>
         <!-- Kafka -->
         <kafka-clients.version>2.3.0</kafka-clients.version>
         <kafka-avro-serializer.version>6.2.1</kafka-avro-serializer.version>
-        
+        <!-- Lombok -->
+        <lombok.version>1.18.22</lombok.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <!-- Mappers -->
-        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>  
-              
+        <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <!-- Swagger generator -->
+        <springfox.version>2.9.2</springfox.version>
+
         <!-- Test scope -->
         <junit.version>4.12</junit.version>
         <powermock.version>1.5.2</powermock.version>
         <mockito-all.version>1.9.5</mockito-all.version>
-        
+
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
@@ -101,22 +113,23 @@
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-site-plugin.version>3.3</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
-        
+
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
-        
+
         <!-- Maven properties -->
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMdd'-'HHmmss</maven.build.timestamp.format>
-        
     </properties>
 
     <dependencies>
-        
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -164,22 +177,22 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        
+
+        <!-- Mappers -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
+            <version>${mapstruct.version}</version>
         </dependency>
-                
+
         <!-- JSON Lib -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -196,7 +209,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
-        
+
         <!-- Groovy -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -208,7 +221,7 @@
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
         </dependency>
-        
+
         <!-- Appium/Selenium scope -->
         <dependency>
             <groupId>io.appium</groupId>
@@ -229,7 +242,7 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>${jna.version}</version>
-            <classifier />
+            <classifier/>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -243,7 +256,7 @@
             <version>0.0.4</version>
         </dependency>
         -->
-        
+
         <!-- Log4J -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -260,14 +273,14 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
-        
+
         <!-- jsonpath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
         </dependency>
-        
+
         <!-- Kafka -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -279,61 +292,61 @@
             <artifactId>kafka-avro-serializer</artifactId>
             <version>${kafka-avro-serializer.version}</version>
             <scope>compile</scope>
-        </dependency>        
+        </dependency>
         <!-- TOPTP support for 2 factor authentification support (getFromOtp property) -->
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-otp-java</artifactId>
-            <version>1.0.0</version>
+            <version>${jboss.aerogear.version}</version>
             <scope>compile</scope>
         </dependency>
-        
+
         <!-- Compile scope -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.26</version>
+            <version>${slf4j.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.26</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.soap</groupId>
             <artifactId>javax.xml.soap-api</artifactId>
-            <version>1.4.0</version>
+            <version>${javax.xml.soap.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.messaging.saaj</groupId>
             <artifactId>saaj-impl</artifactId>
-            <version>1.5.1</version>
+            <version>${saaj.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
-            <version>2.2.6</version>
+            <version>${jaxws.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.amaris</groupId>
             <artifactId>sftm-tree-matching</artifactId>
-            <version>1.1.0</version>
+            <version>${sftm-tree-matching.version}</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
@@ -428,14 +441,14 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>${apache.tika}</version>
+            <version>${apache.tika.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>${fluent-hc.version}</version>
         </dependency>
-        
+
         <!-- Quartz -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -445,14 +458,14 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <version>${springfox.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
+            <version>${springfox.version}</version>
         </dependency>
-        
+
         <!-- Test scope -->
         <!--        <dependency>
             <groupId>junit</groupId>
@@ -478,8 +491,8 @@
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>-->
-        
-        <!-- Comment temporary the dependency --> 
+
+        <!-- Comment temporary the dependency -->
         <!-- Jax-RS Scope-->
         <!-- 
     <dependency>
@@ -505,17 +518,17 @@
         <artifactId>jersey-media-jaxb</artifactId>
         <version>2.28</version>
     </dependency>
-        --> 
-        
+        -->
+
     </dependencies>
-    
+
     <repositories>
         <repository>
             <id>confluent</id>
             <url>https://packages.confluent.io/maven/</url>
         </repository>
     </repositories>
-    
+
     <build>
         <finalName>${project.name}-${project.version}</finalName>
 
@@ -550,7 +563,7 @@
         </pluginManagement>
 
         <plugins>
-            
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
@@ -572,37 +585,37 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.22</version>
+                            <version>${lombok.version}</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>0.2.0</version>
+                            <version>${lombok-mapstruct-binding.version}</version>
                         </path>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
+                            <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-            
+
             <!-- Fix jenkins build issue  -->
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.3</version>
+                <version>${maven-site-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
+                <version>${maven-project-info-reports-plugin.version}</version>
             </plugin>
 
             <!-- end -->
-          
+
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
@@ -610,7 +623,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
@@ -635,7 +648,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -682,7 +695,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -714,7 +727,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>${maven-assembly-plugin.version}</version>
@@ -734,7 +747,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven-deploy-plugin.version}</version>
@@ -742,12 +755,12 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 
     <profiles>
-        
+
         <!-- Disable java8 Doclint -->
         <profile>
             <id>doclint-java8-disable</id>
@@ -766,9 +779,8 @@
                 </plugins>
             </build>
         </profile>
-        
-        
-        
+
+
         <!--
             Additional configuration for deployment process on the qualification server
 
@@ -800,16 +812,20 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to QA server..." />
-                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}" password="${cerberus.demo.qa.password}" trust="yes" />
+                                        <echo message="Uploading artifact to QA server..."/>
+                                        <scp file="${project.build.directory}/${project.build.finalName}.zip"
+                                             todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}"
+                                             password="${cerberus.demo.qa.password}" trust="yes"/>
                                         <!--
                                             Deploy artifact by:
                                                 1. Extracting distribution package to the server's upload path;
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
+                                        <echo message="Deploying..."/>
+                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}"
+                                                 password="${cerberus.demo.qa.password}" trust="yes"
+                                                 command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )"/>
                                     </target>
                                 </configuration>
                             </execution>
@@ -825,6 +841,6 @@
                 </plugins>
             </build>
         </profile>
-        
+
     </profiles>
 </project>

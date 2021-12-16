@@ -20,34 +20,31 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import org.apache.logging.log4j.Logger;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.cerberus.util.StringUtil;
 
 /**
  * @author bcivel
  */
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TestCase {
-
-    private static final Logger LOG = LogManager.getLogger(TestCase.class);
-
     private String test;
     private String testcase;
     private String application;
@@ -85,7 +82,6 @@ public class TestCase {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
-
     /**
      * Not included in table.
      */
@@ -103,6 +99,8 @@ public class TestCase {
     public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
+    
+    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     @JsonIgnore
     public JSONArray getConditionOptions() {
@@ -303,7 +301,7 @@ public class TestCase {
             testCaseJson.put("usrModif", this.getUsrModif());
             testCaseJson.put("externalProvider", this.getOrigine());
             testCaseJson.put("externalReference", this.getRefOrigine());
-            
+
             JSONArray stepsJson = new JSONArray();
             if (this.getSteps() != null) {
                 for (TestCaseStep step : this.getSteps()) {
@@ -355,8 +353,7 @@ public class TestCase {
             }
             propertiesJson.put("inheritedProperties", testCaseInheritedPropertiesJson);
             testCaseJson.put("properties", propertiesJson);
-            
-            
+
 
         } catch (JSONException | UnsupportedEncodingException ex) {
             LOG.error(ex.toString(), ex);
