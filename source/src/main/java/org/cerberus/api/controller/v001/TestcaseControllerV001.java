@@ -22,11 +22,12 @@ package org.cerberus.api.controller.v001;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+
 import java.security.Principal;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
@@ -45,8 +46,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
- * @author mlombard
+ * @author MorganLmd
  */
 @Slf4j
 @AllArgsConstructor
@@ -66,9 +66,9 @@ public class TestcaseControllerV001 {
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = "application/json")
     public List<TestcaseDTOV001> findTestcasesByTest(
-            @PathVariable("testFolderId") String testFolderId, 
+            @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal) throws CerberusException {
+            Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.testCaseService.findTestCaseByTest(testFolderId)
                 .stream()
@@ -80,19 +80,19 @@ public class TestcaseControllerV001 {
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = "application/json")
     public TestcaseDTOV001 findTestcaseByTestAndTestcase(
-            @PathVariable("testFolderId") String testFolderId, 
-            @PathVariable("testcaseId") String testcaseId, 
+            @PathVariable("testFolderId") String testFolderId,
+            @PathVariable("testcaseId") String testcaseId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.testcaseMapper.toDTO(this.testCaseService.findTestCaseByKey(testFolderId, testcaseId));
+        return this.testcaseMapper.toDTO(this.testCaseService.findTestCaseByKeyWithDependencies(testFolderId, testcaseId, true).getItem());
     }
 
     @ApiOperation("Create a new Testcase")
     @ApiResponse(code = 200, message = "ok")
     @PostMapping(headers = {API_VERSION_1}, produces = "application/json")
     public TestcaseDTOV001 createTestcase(
-            @Valid @RequestBody TestcaseDTOV001 newTestcase, 
+            @Valid @RequestBody TestcaseDTOV001 newTestcase,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
