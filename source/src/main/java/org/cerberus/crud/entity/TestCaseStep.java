@@ -20,23 +20,21 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.sql.Timestamp;
+import lombok.Data;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
-import lombok.Data;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
 @Data
 public class TestCaseStep {
-
     private String test;
     private String testcase;
     private int stepId;
@@ -58,12 +56,17 @@ public class TestCaseStep {
     private String dateCreated;
     private String usrModif;
     private Timestamp dateModif;
+
     /**
      * Not included in table.
      */
     private List<TestCaseStepAction> actions;
     private boolean isStepInUseByOtherTestcase;
-//    private int initialStep;
+
+    // Properties belonging to the testcase owning the step. Used by the public API
+    private List<TestCaseCountryProperties> properties;
+
+    //    private int initialStep;
     private TestCase testcaseObj;
     private int libraryStepSort; // Contain the sort information of the library.
 
@@ -78,7 +81,6 @@ public class TestCaseStep {
     public static final String LOOP_WHILECONDITIONFALSEDO = "whileConditionFalseDo";
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStep.class);
-
 
     public void appendActions(TestCaseStepAction action) {
         this.actions.add(action);
@@ -209,5 +211,5 @@ public class TestCaseStep {
         }
         return stepJson;
     }
-    
+
 }
