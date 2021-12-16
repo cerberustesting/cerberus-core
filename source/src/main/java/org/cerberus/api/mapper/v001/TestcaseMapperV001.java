@@ -27,17 +27,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 /**
- *
  * @author mlombard
  */
 @Mapper(
         componentModel = "spring",
         uses = {
-            TestcaseStepMapperV001.class,
-            TestcaseStepActionMapperV001.class,
-            TestcaseStepActionControlMapperV001.class,
-            JSONArrayMapper.class,
-            TimestampMapper.class
+                TestcaseStepMapperV001.class,
+                TestcaseStepActionMapperV001.class,
+                TestcaseStepActionControlMapperV001.class,
+                TestcaseCountryPropertiesMapperV001.class,
+                TestcaseDepMapperV001.class,
+                JSONArrayMapper.class,
+                TimestampMapper.class
         }
 )
 public interface TestcaseMapperV001 {
@@ -51,6 +52,8 @@ public interface TestcaseMapperV001 {
     @Mapping(source = "origine", target = "externalProvider")
     @Mapping(source = "refOrigine", target = "externalReference")
     @Mapping(source = "invariantCountries", target = "countries")
+    @Mapping(source = "testCaseCountryProperties", target = "properties")
+    @Mapping(source = "testCaseInheritedProperties", target = "inheritedProperties")
     TestcaseDTOV001 toDTO(TestCase testcase);
 
     @Mapping(source = "testFolderId", target = "test")
@@ -58,5 +61,7 @@ public interface TestcaseMapperV001 {
     @Mapping(source = "externalProvider", target = "origine")
     @Mapping(source = "externalReference", target = "refOrigine")
     @Mapping(source = "countries", target = "invariantCountries")
+    @Mapping(source = "properties", target = "testCaseCountryProperties")
+    @Mapping(source = "inheritedProperties", target = "testCaseInheritedProperties")
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
 }
