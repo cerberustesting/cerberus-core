@@ -19,51 +19,15 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.api.errorhandler.exception.FailedInsertOperationException;
 import org.cerberus.api.errorhandler.exception.InvalidRequestException;
 import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.crud.entity.CampaignLabel;
-import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.EventHook;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.Label;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseDep;
-import org.cerberus.crud.entity.TestCaseLabel;
-import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.service.ICampaignLabelService;
-import org.cerberus.crud.service.ICampaignParameterService;
-import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ILabelService;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseCountryService;
-import org.cerberus.crud.service.ITestCaseDepService;
-import org.cerberus.crud.service.ITestCaseLabelService;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestCaseStepActionControlService;
-import org.cerberus.crud.service.ITestCaseStepActionService;
-import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.ITestService;
+import org.cerberus.crud.service.*;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
@@ -78,7 +42,9 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 /**
  * @author bcivel
@@ -275,7 +241,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
+                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
         return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, type, status, length);
     }
 
@@ -706,7 +672,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) {
 
-        if (testcase.getTest() == null) {
+        if (testcase.getTest() == null || testcase.getTest().isEmpty()) {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
@@ -726,7 +692,6 @@ public class TestCaseService implements ITestCaseService {
             for (TestCaseStep tcs : testcase.getSteps()) {
                 tcs.setTest(testcase.getTest());
                 tcs.setTestcase(testcase.getTestcase());
-                LOG.debug(tcs.toString());
                 Answer newTestcaseStep = testCaseStepService.create(tcs);
                 if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                     throw new FailedInsertOperationException("Failed to insert the testcase in the database");
@@ -736,6 +701,7 @@ public class TestCaseService implements ITestCaseService {
                     for (TestCaseStepAction tcsa : tcs.getActions()) {
                         tcsa.setTest(testcase.getTest());
                         tcsa.setTestcase(testcase.getTestcase());
+                        tcsa.setStepId(tcs.getStepId());
                         Answer newTestcaseStepAction = testCaseStepActionService.create(tcsa);
                         if (!newTestcaseStepAction.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                             throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
@@ -745,6 +711,8 @@ public class TestCaseService implements ITestCaseService {
                             for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
                                 tcsac.setTest(testcase.getTest());
                                 tcsac.setTestcase(testcase.getTestcase());
+                                tcsac.setStepId(tcs.getStepId());
+                                tcsac.setActionId(tcsa.getActionId());
                                 Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(tcsac);
                                 if (!newTestcaseStepActionControl.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
                                     throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
@@ -813,7 +781,5 @@ public class TestCaseService implements ITestCaseService {
         }
 
         return testcase;
-
     }
-
 }
