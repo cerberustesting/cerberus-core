@@ -1,0 +1,15 @@
+*Bug fixes*
+[square]
+* LOG4J Security Fix to 2.17.0
+* Handle Exception when no labels on GetTestCasesV002 Public API
+* Description not saved when creating a test folder. #2330
+* Library Step Sort information was not fed with the right sort information. #2329
+
+*Improvements / New features*
+[square]
+* Allow to specify full URL on Robot Executor host.
+* New Parameter 'cerberus_executionlog_enable' in order to disable globally the verbose JSON application logs.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none
