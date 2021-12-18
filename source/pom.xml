@@ -60,7 +60,7 @@
         <!-- Erratum API -->
         <sftm-tree-matching.version>1.1.0</sftm-tree-matching.version>
         <!-- Loggers -->
-        <log4j.version>2.16.0</log4j.version>
+        <log4j.version>2.17.0</log4j.version>
         <slf4j.version>1.7.26</slf4j.version>
         <!-- Compile scope -->
         <javaee-web-api>8.0</javaee-web-api>
