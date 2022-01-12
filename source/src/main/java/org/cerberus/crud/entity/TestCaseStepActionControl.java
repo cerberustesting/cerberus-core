@@ -86,6 +86,7 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYELEMENTNOTCLICKABLE = "verifyElementNotClickable";
     public static final String CONTROL_VERIFYELEMENTTEXTEQUAL = "verifyElementTextEqual";
     public static final String CONTROL_VERIFYELEMENTTEXTDIFFERENT = "verifyElementTextDifferent";
+    public static final String CONTROL_VERIFYELEMENTTEXTCONTAINS = "verifyElementTextContains";
     public static final String CONTROL_VERIFYELEMENTTEXTMATCHREGEX = "verifyElementTextMatchRegex";
     public static final String CONTROL_VERIFYELEMENTNUMERICEQUAL = "verifyElementNumericEqual";
     public static final String CONTROL_VERIFYELEMENTNUMERICDIFFERENT = "verifyElementNumericDifferent";

@@ -303,6 +303,9 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT:
                     res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
                     res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
                     break;
@@ -1109,6 +1112,9 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT:
                 mes = verifyElementTextDifferentCaseSensitiveCheck(actual, expected, isCaseSensitive);
                 break;
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
+                mes = verifyElementTextContainsCaseSensitiveCheck(actual, expected, isCaseSensitive);
+                break;
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER:
@@ -1159,6 +1165,16 @@ public class ControlService implements IControlService {
             mes = actual.equals(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTDIFFERENT);
         } else {
             mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTDIFFERENT);
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyElementTextContainsCaseSensitiveCheck(String text, String textToSearch, String isCaseSensitive) {
+        MessageEvent mes;
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            mes = text.contains(textToSearch) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
+        } else {
+            mes = text.toLowerCase().contains(textToSearch.toLowerCase()) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
         }
         return mes;
     }

@@ -6009,3 +6009,6 @@ UPDATE `invariant` SET `gp1` = 'Element', `gp2` = '', `gp3` = '' WHERE idname = 
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_executionlog_enable', 'true','Enable (true) or disable (false) the execution json log messages inside application server logs. If false, no json log messages will never be logged. If true, json message will be logged only if verbose level is at the correct level.');
 
+--1690
+INSERT INTO `invariant` (idname, value, sort, description)
+  VALUES ('CONTROL', 'verifyElementTextContains', 4200, 'verifyElementTextContains');
