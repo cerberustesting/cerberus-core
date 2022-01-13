@@ -1172,9 +1172,9 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementTextContainsCaseSensitiveCheck(String text, String textToSearch, String isCaseSensitive) {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
-            mes = text.contains(textToSearch) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
+            mes = text.contains(textToSearch) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTCONTAINS);
         } else {
-            mes = text.toLowerCase().contains(textToSearch.toLowerCase()) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
+            mes = text.toLowerCase().contains(textToSearch.toLowerCase()) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTCONTAINS);
         }
         return mes;
     }
