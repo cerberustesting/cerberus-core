@@ -22,7 +22,8 @@
 | verifyElementPresent | *[green]#OK#* if *[red]#Element#* is found on the current page. | 
 | verifyElementTextDifferent | *[green]#OK#* if the text found in *[red]#Element#* is not equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : KO
 | verifyElementTextEqual | *[green]#OK#* if the text found in *[red]#Element#* is equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : OK
-| VerifyElementTextMatchRegex | *[green]#OK#* if a *[red]#Regex#* match the content of an *[red]#Element#*. | 
+| verifyElementTextContains | *[green]#OK#* if the text found in *[red]#Element#* contains the *[red]#Text#* indicated. |
+| VerifyElementTextMatchRegex | *[green]#OK#* if a *[red]#Regex#* match the content of an *[red]#Element#*. |
 | verifyElementVisible | *[green]#OK#* if *[red]#Element#* is visible on the current page. | 
 | verifyNumericDifferent | *[green]#OK#* if the *[red]#Integer1#* is different from the *[red]#Integer2#*. | 
 | verifyNumericEquals | *[green]#OK#* if the *[red]#Integer1#* is equal to the *[red]#Integer2#*. | 
