@@ -46,6 +46,8 @@ Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting
 * [TF1](https://www.tf1.fr/)
 * [atale.io](https://atale.io/)
 * [sarahaccp.com](https://sarahaccp.com/)
+* [Leroy Merlin France](https://www.leroymerlin.fr/)
+* [Adeo](https://www.adeo.com/)
 * ...
 
 # Talks and Conferences
