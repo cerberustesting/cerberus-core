@@ -23,10 +23,10 @@ package org.cerberus.crud.entity;
  *
  * @author vertigo
  */
-public class UserGroup {
+public class UserRole {
 
-    private String groupName;
     private String login;
+    private String role;
 
     public String getLogin() {
         return login;
@@ -36,11 +36,11 @@ public class UserGroup {
         this.login = login;
     }
 
-    public String getGroup() {
-        return groupName;
+    public String getRole() {
+        return role;
     }
 
-    public void setGroup(String groupName) {
-        this.groupName = groupName;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

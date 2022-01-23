@@ -58,7 +58,7 @@ function initPage() {
     });
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&groups=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&roles=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList", undefined, true);
 }
 
@@ -90,21 +90,22 @@ function displayPageLabel() {
 
 function renderOptionsForUser(data) {
     var doc = new Doc();
+    var contentToAdd = "<div class='marginBottom10'><button id='createUserButton' type='button' class='btn btn-default'>\n\
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "button_create") + "</button>";
+
     if (data.isKeycloakManaged) {
         if ($("#manageUserButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='manageUserButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "manage_user") + "</button></div>";
-            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd);
-            console.info(data);
+            var contentToAdd = contentToAdd + "<button id='manageUserButton' type='button' class='btn btn-default'>\n\
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "manage_user") + "</button>";
+            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd + "</div>");
             kcRealm = data.keycloakRealm;
             kcUrl = data.keycloakUrl;
             $('#userList #manageUserButton').click(manageUserClick);
+            $('#userList #createUserButton').click(addEntryClick);
         }
     } else {
         if ($("#createUserButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createUserButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "button_create") + "</button></div>";
-            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd);
+            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd + "</div>");
             $('#userList #createUserButton').click(addEntryClick);
         }
     }
@@ -123,7 +124,7 @@ function editEntryClick(param) {
 
     var formEdit = $('#editUserModal');
 
-    var jqxhr = $.getJSON("ReadUser?systems=true&groups=true", "login=" + param);
+    var jqxhr = $.getJSON("ReadUser?systems=true&roles=true", "login=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -131,6 +132,19 @@ function editEntryClick(param) {
         formEdit.find("#login").prop("value", obj["login"]);
         formEdit.find("#name").prop("value", obj["name"]);
         formEdit.find("#email").prop("value", obj["email"]);
+
+        formEdit.find("#attribute01").prop("value", obj["attribute01"]);
+        formEdit.find("#attribute02").prop("value", obj["attribute02"]);
+        formEdit.find("#attribute03").prop("value", obj["attribute03"]);
+        formEdit.find("#attribute04").prop("value", obj["attribute04"]);
+        formEdit.find("#attribute05").prop("value", obj["attribute05"]);
+        formEdit.find("#apiKey").prop("value", obj["apiKey"]);
+
+        formEdit.find("#usrcreated").prop("value", obj.usrCreated);
+        formEdit.find("#datecreated").prop("value", obj.dateCreated);
+        formEdit.find("#usrmodif").prop("value", obj.usrModif);
+        formEdit.find("#datemodif").prop("value", obj.dateModif);
+
         formEdit.find("#defaultSystem").prop("value", obj["defaultSystem"]);
         formEdit.find("#defaultSystem").prop("readonly", "readonly");
 
@@ -154,6 +168,14 @@ function editEntryClick(param) {
             formEdit.find("#email").prop("readonly", "readonly");
             formEdit.find("#systems").prop("readonly", "readonly");
             formEdit.find("#groups").prop("readonly", "readonly");
+
+            formEdit.find("#attribute01").prop("readonly", "readonly");
+            formEdit.find("#attribute02").prop("readonly", "readonly");
+            formEdit.find("#attribute03").prop("readonly", "readonly");
+            formEdit.find("#attribute04").prop("readonly", "readonly");
+            formEdit.find("#attribute05").prop("readonly", "readonly");
+
+            formEdit.find("#apiKey").prop("readonly", "readonly");
 
             $('#editUserButton').attr('class', '');
             $('#editUserButton').attr('hidden', 'hidden');
@@ -181,8 +203,8 @@ function editEntryClick(param) {
         // GROUPS
         // Selecting the values from the current user loaded.
         formEdit.find("#groups option").each(function (i, e) {
-            for (var i = 0; i < obj.groups.length; i++) {
-                if (obj.groups[i].groupName == $(e).val()) {
+            for (var i = 0; i < obj.roles.length; i++) {
+                if (obj.roles[i].role == $(e).val()) {
                     $(e).attr('selected', 'selected');
                 }
             }
@@ -203,9 +225,9 @@ function editEntryClick(param) {
             formEdit.find("#login").prop("readonly", "readonly");
             formEdit.find("#request").hide();
             $("[name='requestField']").hide();
-            formEdit.find("#email").hide();
-            $("[name='emailField']").hide();
-            $("#createTab3Text").hide();
+//            formEdit.find("#email").hide();
+//            $("[name='emailField']").hide();
+//            $("#createTab3Text").hide();
         }
 
     });
@@ -328,7 +350,7 @@ function editEntryModalSaveHandler() {
         groups[i] = $(selected).val();
     });
 
-    data["groups"] = JSON.stringify(groups);
+    data["roles"] = JSON.stringify(groups);
 
     data["request"] = $('#editUserModal #request :selected').val();
     data["team"] = $('#editUserModal #team :selected').val();
@@ -464,6 +486,9 @@ function addEntryClick() {
         return false;
     });
 
+    $("#addUserModal").find("#request").show();
+    $("[name='requestField']").show();
+
     $('#addUserModal').modal('show');
 }
 
@@ -472,7 +497,7 @@ function addEntryModalSaveHandler() {
     var formEdit = $('#addUserModal #addUserModalForm');
 
     var sa = formEdit.serializeArray();
-    var data = {}
+    var data = {};
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
@@ -489,7 +514,7 @@ function addEntryModalSaveHandler() {
         groups[i] = $(selected).val();
     });
 
-    data["groups"] = JSON.stringify(groups);
+    data["roles"] = JSON.stringify(groups);
 
     data["defaultSystem"] = $('#addUserModal #defaultSystem :selected').val();
     data["request"] = $('#addUserModal #request :selected').val();
@@ -536,6 +561,7 @@ function removeEntryClick(key) {
             async: true,
             method: "GET",
             success: function (data) {
+                data = JSON.parse(data);
                 hideLoaderInModal('#removeTestampaignModal');
                 var oTable = $("#usersTable").dataTable();
                 oTable.fnDraw(false);
@@ -546,7 +572,7 @@ function removeEntryClick(key) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, undefined, doc.getDocLabel("page_user", "title_remove"), doc.getDocLabel("page_user", "message_remove"), id, undefined, undefined, undefined);
+    }, undefined, doc.getDocLabel("page_user", "title_remove"), doc.getDocLabel("page_user", "message_remove").replace('%USER%', key), key, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {
@@ -603,11 +629,11 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "groups_col"),
             "mRender": function (data, type, obj) {
                 var systems = "";
-                for (var i = 0; i < obj["groups"].length; i++) {
+                for (var i = 0; i < obj["roles"].length; i++) {
                     if (i > 0) {
                         systems += ", ";
                     }
-                    systems += obj["groups"][i].groupName;
+                    systems += obj["roles"][i].role;
                 }
 
                 return '<div class="center btn-group width150">' + systems + '</div>';
@@ -634,6 +660,14 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
+            "data": "email",
+            "visible": false,
+            "like": true,
+            "sName": "email",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_user", "email_col")
+        },
+        {
             "data": "team",
             "visible": false,
             "sName": "team",
@@ -641,11 +675,46 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "team_col")
         },
         {
-            "data": "defaultSystem",
+            "data": "attribute01",
             "visible": false,
-            "sName": "defaultSystem",
+            "sName": "attribute01",
             "sWidth": "50px",
-            "title": doc.getDocLabel("page_user", "defaultsystem_col")
+            "title": doc.getDocLabel("user", "attribute01")
+        },
+        {
+            "data": "attribute02",
+            "visible": false,
+            "sName": "attribute02",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("user", "attribute02")
+        },
+        {
+            "data": "attribute03",
+            "visible": false,
+            "sName": "attribute03",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("user", "attribute03")
+        },
+        {
+            "data": "attribute04",
+            "visible": false,
+            "sName": "attribute04",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("user", "attribute04")
+        },
+        {
+            "data": "attribute05",
+            "visible": false,
+            "sName": "attribute05",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("user", "attribute05")
+        },
+        {
+            "data": "apiKey",
+            "visible": false,
+            "sName": "apiKey",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("user", "apiKey")
         },
         {
             "data": "request",
@@ -653,14 +722,6 @@ function aoColumnsFunc(tableId) {
             "sName": "reqest",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "request_col")
-        },
-        {
-            "data": "email",
-            "visible": false,
-            "like": true,
-            "sName": "email",
-            "sWidth": "80px",
-            "title": doc.getDocLabel("page_user", "email_col")
         }
     ];
     return aoColumns;

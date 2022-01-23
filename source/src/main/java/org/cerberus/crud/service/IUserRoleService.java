@@ -21,7 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -35,34 +35,34 @@ import org.cerberus.util.answer.AnswerList;
  * @version 1.0, 14/08/2013
  * @since 2.0.0
  */
-public interface IUserGroupService {
+public interface IUserRoleService {
 
     /**
-     * @param user the user to update the group
-     * @param newGroups the user list of Groups
+     * @param user the user to update the role
+     * @param newRoles the user list of Roles
      * @throws CerberusException
      */
-    void updateUserGroups(User user, List<UserGroup> newGroups) throws CerberusException;
+    void updateUserRoles(User user, List<UserRole> newRoles) throws CerberusException;
 
     /**
      * @param login the login of user
-     * @return the user groups that match the login
+     * @return the user roles that match the login
      * @throws CerberusException
      */
-    List<UserGroup> findGroupByKey(String login) throws CerberusException;
+    List<UserRole> findRoleByKey(String login) throws CerberusException;
 
     /**
      * @param login
      * @return a list of all the userSystem of a user
      */
-    AnswerList<UserGroup> readByUser(String login);
+    AnswerList<UserRole> readByUser(String login);
 
     /**
-     * @param user the user to update the group
-     * @param newGroups the user list of Groups
+     * @param user the user to update the role
+     * @param newRoles the user list of Groups
      * @return 
      */
-    Answer updateGroupsByUser(User user, List<UserGroup> newGroups);
+    Answer updateRolesByUser(User user, List<UserRole> newRoles);
 
     /**
      *
@@ -70,7 +70,7 @@ public interface IUserGroupService {
      * @return
      * @throws CerberusException
      */
-    UserGroup convert(AnswerItem<UserGroup> answerItem) throws CerberusException;
+    UserRole convert(AnswerItem<UserRole> answerItem) throws CerberusException;
 
     /**
      *
@@ -78,7 +78,7 @@ public interface IUserGroupService {
      * @return
      * @throws CerberusException
      */
-    List<UserGroup> convert(AnswerList<UserGroup> answerList) throws CerberusException;
+    List<UserRole> convert(AnswerList<UserRole> answerList) throws CerberusException;
 
     /**
      *

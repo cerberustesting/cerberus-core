@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* User refactor adding posibility to create local user even with Keycloak activated (in order to support service account with APIKey).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

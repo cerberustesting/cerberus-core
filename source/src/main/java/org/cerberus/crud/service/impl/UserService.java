@@ -26,7 +26,6 @@ import org.cerberus.crud.dao.IUserDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.enums.MessageEventEnum;
@@ -38,6 +37,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.IUserRoleService;
 
 /**
  * @author vertigo
@@ -48,7 +48,7 @@ public class UserService implements IUserService {
     @Autowired
     private IUserDAO userDAO;
     @Autowired
-    private IUserGroupService userGroupService;
+    private IUserRoleService userGroupService;
     @Autowired
     private IUserSystemService userSystemService;
 
@@ -192,7 +192,7 @@ public class UserService implements IUserService {
     @Override
     public User findUserByKeyWithDependencies(String login) throws CerberusException {
         User result = this.findUserByKey(login);
-        result.setUserGroups(userGroupService.findGroupByKey(login));
+        result.setUserRoles(userGroupService.findRoleByKey(login));
         result.setUserSystems(userSystemService.findUserSystemByUser(login));
         return result;
     }

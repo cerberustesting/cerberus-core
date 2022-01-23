@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -28,12 +29,23 @@ public class User {
 
     private int userID;
     private String login;
+    private String name;
+    private String email;
+    private String team;
+    private String language;
+    
     private String password;
     private String resetPasswordToken;
     private String request;
-    private String name;
-    private String team;
-    private String language;
+    
+    private String attribute01;
+    private String attribute02;
+    private String attribute03;
+    private String attribute04;
+    private String attribute05;
+    private String apiKey;
+    private String comment;
+    
     private String reportingFavorite;
     private String robotHost;
     private String robotPort;
@@ -42,10 +54,15 @@ public class User {
     private String robotVersion;
     private String robot;
     private String defaultSystem;
-    private String email;
     private String userPreferences;
+    
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
+    
     private List<UserSystem> userSystems;
-    private List<UserGroup> userGroups;
+    private List<UserRole> userRoles;
 
     public String getUserPreferences() {
         return userPreferences;
@@ -53,6 +70,94 @@ public class User {
 
     public void setUserPreferences(String userPreferences) {
         this.userPreferences = userPreferences;
+    }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+
+    public String getAttribute01() {
+        return attribute01;
+    }
+
+    public void setAttribute01(String attribute01) {
+        this.attribute01 = attribute01;
+    }
+
+    public String getAttribute02() {
+        return attribute02;
+    }
+
+    public void setAttribute02(String attribute02) {
+        this.attribute02 = attribute02;
+    }
+
+    public String getAttribute03() {
+        return attribute03;
+    }
+
+    public void setAttribute03(String attribute03) {
+        this.attribute03 = attribute03;
+    }
+
+    public String getAttribute04() {
+        return attribute04;
+    }
+
+    public void setAttribute04(String attribute04) {
+        this.attribute04 = attribute04;
+    }
+
+    public String getAttribute05() {
+        return attribute05;
+    }
+
+    public void setAttribute05(String attribute05) {
+        this.attribute05 = attribute05;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getResetPasswordToken() {
@@ -63,12 +168,12 @@ public class User {
         this.resetPasswordToken = resetPasswordToken;
     }
 
-    public List<UserGroup> getUserGroups() {
-        return userGroups;
+    public List<UserRole> getUserRoles() {
+        return userRoles;
     }
 
-    public void setUserGroups(List<UserGroup> userGroups) {
-        this.userGroups = userGroups;
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public List<UserSystem> getUserSystems() {

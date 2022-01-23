@@ -54,6 +54,7 @@ public interface IFactoryTestCaseStep {
      * @return 
      */
     TestCaseStep create(String test, String testCase, int stepId, int sort, String loop, String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String description,
-            boolean isUsingLibraryStep , String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryTest, boolean isExecutionForced, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            boolean isUsingLibraryStep , String libraryStepTest, String libraryStepTestcase, Integer libraryStepStepId, boolean isLibraryTest, boolean isExecutionForced, 
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

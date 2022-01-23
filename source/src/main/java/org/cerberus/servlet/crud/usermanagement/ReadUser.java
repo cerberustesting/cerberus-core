@@ -32,12 +32,11 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.config.Property;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.UserSystem;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
-import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserRoleService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -51,6 +50,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.IUserRoleService;
 
 /**
  *
@@ -220,16 +220,16 @@ public class ReadUser extends HttpServlet {
                         res.put("systems", JSONsystems);
                     }
                 }
-                if (request.getParameter("groups") != null) {
-                    IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                    AnswerList<UserGroup> a = userGroupService.readByUser(user.getLogin());
+                if (request.getParameter("roles") != null) {
+                    IUserRoleService userGroupService = appContext.getBean(UserRoleService.class);
+                    AnswerList<UserRole> a = userGroupService.readByUser(user.getLogin());
                     if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
-                        JSONArray JSONgroups = new JSONArray();
-                        List<UserGroup> groups = a.getDataList();
-                        for (UserGroup u : groups) {
-                            JSONgroups.put(convertUserGroupToJSONObject(u));
+                        JSONArray JSONroless = new JSONArray();
+                        List<UserRole> roles = a.getDataList();
+                        for (UserRole u : roles) {
+                            JSONroless.put(convertUserRoleToJSONObject(u));
                         }
-                        res.put("groups", JSONgroups);
+                        res.put("roles", JSONroless);
                     }
                 }
                 jsonArray.put(res);
@@ -278,16 +278,16 @@ public class ReadUser extends HttpServlet {
                     response.put("systems", JSONsystems);
                 }
             }
-            if (request.getParameter("groups") != null) {
-                IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
-                AnswerList<UserGroup> a = userGroupService.readByUser(login);
+            if (request.getParameter("roles") != null) {
+                IUserRoleService userGroupService = appContext.getBean(UserRoleService.class);
+                AnswerList<UserRole> a = userGroupService.readByUser(login);
                 if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null) {
-                    JSONArray JSONgroups = new JSONArray();
-                    List<UserGroup> groups = a.getDataList();
-                    for (UserGroup u : groups) {
-                        JSONgroups.put(convertUserGroupToJSONObject(u));
+                    JSONArray JSONroless = new JSONArray();
+                    List<UserRole> roless = a.getDataList();
+                    for (UserRole u : roless) {
+                        JSONroless.put(convertUserRoleToJSONObject(u));
                     }
-                    response.put("groups", JSONgroups);
+                    response.put("roles", JSONroless);
                 }
             }
             jsonResponse.put("contentTable", response);
@@ -314,7 +314,7 @@ public class ReadUser extends HttpServlet {
         return result;
     }
 
-    private JSONObject convertUserGroupToJSONObject(UserGroup user) throws JSONException {
+    private JSONObject convertUserRoleToJSONObject(UserRole user) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(user));
         return result;

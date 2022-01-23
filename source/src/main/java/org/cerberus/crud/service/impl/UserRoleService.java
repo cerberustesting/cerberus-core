@@ -21,20 +21,20 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 
-import org.cerberus.crud.dao.IUserGroupDAO;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.IUserRoleService;
+import org.cerberus.crud.dao.IUserRoleDAO;
 
 /**
  * {Insert class description here}
@@ -44,81 +44,81 @@ import org.springframework.stereotype.Service;
  * @since 2.0.0
  */
 @Service
-public class UserGroupService implements IUserGroupService {
+public class UserRoleService implements IUserRoleService {
 
     @Autowired
-    private IUserGroupDAO userGroupDAO;
+    private IUserRoleDAO userRoleDAO;
 
-    private final String OBJECT_NAME = "UserGroup";
+    private final String OBJECT_NAME = "UserRole";
 
     @Override
-    public void updateUserGroups(User user, List<UserGroup> newGroups) throws CerberusException {
+    public void updateUserRoles(User user, List<UserRole> newRoles) throws CerberusException {
 
-        List<UserGroup> oldGroups = this.findGroupByKey(user.getLogin());
+        List<UserRole> oldRoles = this.findRoleByKey(user.getLogin());
 
         //delete if don't exist in new
-        for (UserGroup old : oldGroups) {
-            if (!newGroups.contains(old)) {
-                this.removeGroupFromUser(old, user);
+        for (UserRole old : oldRoles) {
+            if (!newRoles.contains(old)) {
+                this.removeRoleFromUser(old, user);
             }
         }
         //insert if don't exist in old
-        for (UserGroup group : newGroups) {
-            if (!oldGroups.contains(group)) {
-                this.addGroupToUser(group, user);
+        for (UserRole role : newRoles) {
+            if (!oldRoles.contains(role)) {
+                this.addRoleToUser(role, user);
             }
         }
     }
 
-    private void addGroupToUser(UserGroup group, User user) throws CerberusException {
-        if (!userGroupDAO.addGroupToUser(group, user)) {
-            //TODO define message => error occur trying to add group user
+    private void addRoleToUser(UserRole role, User user) throws CerberusException {
+        if (!userRoleDAO.addRoleToUser(role, user)) {
+            //TODO define message => error occur trying to add role user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
     }
 
-    private void removeGroupFromUser(UserGroup group, User user) throws CerberusException {
-        if (!userGroupDAO.removeGroupFromUser(group, user)) {
-            //TODO define message => error occur trying to delete group user
+    private void removeRoleFromUser(UserRole role, User user) throws CerberusException {
+        if (!userRoleDAO.removeRoleFromUser(role, user)) {
+            //TODO define message => error occur trying to delete role user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
     }
 
     @Override
-    public List<UserGroup> findGroupByKey(String login) throws CerberusException {
-        List<UserGroup> list = userGroupDAO.findGroupByKey(login);
+    public List<UserRole> findRoleByKey(String login) throws CerberusException {
+        List<UserRole> list = userRoleDAO.findRoleByKey(login);
         if (list == null) {
-            //TODO define message => error occur trying to find group user
+            //TODO define message => error occur trying to find role user
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return list;
     }
 
     @Override
-    public AnswerList<UserGroup> readByUser(String login) {
-        return userGroupDAO.readByUser(login);
+    public AnswerList<UserRole> readByUser(String login) {
+        return userRoleDAO.readByUser(login);
     }
 
     @Override
-    public Answer updateGroupsByUser(User user, List<UserGroup> newGroups) {
+    public Answer updateRolesByUser(User user, List<UserRole> newRoles) {
         Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                 .resolveDescription("OPERATION", "UPDATE"));
-        AnswerList<UserGroup> an = this.readByUser(user.getLogin());
+        AnswerList<UserRole> an = this.readByUser(user.getLogin());
         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            List<UserGroup> oldGroups = an.getDataList();
+            List<UserRole> oldRoles = an.getDataList();
             //delete if don't exist in new
-            for (UserGroup old : oldGroups) {
-                if (!newGroups.contains(old)) {
-                    Answer del = userGroupDAO.remove(old);
+            for (UserRole old : oldRoles) {
+                if (!newRoles.contains(old)) {
+                    Answer del = userRoleDAO.remove(old);
                     if (!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = del;
                     }
                 }
             }
             //insert if don't exist in old
-            for (UserGroup group : newGroups) {
-                if (!oldGroups.contains(group)) {
-                    Answer add = userGroupDAO.create(group);
+            for (UserRole role : newRoles) {
+                if (!oldRoles.contains(role)) {
+                    Answer add = userRoleDAO.create(role);
                     if (!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = add;
                     }
@@ -129,7 +129,7 @@ public class UserGroupService implements IUserGroupService {
     }
 
     @Override
-    public UserGroup convert(AnswerItem<UserGroup> answerItem) throws CerberusException {
+    public UserRole convert(AnswerItem<UserRole> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return answerItem.getItem();
@@ -138,7 +138,7 @@ public class UserGroupService implements IUserGroupService {
     }
 
     @Override
-    public List<UserGroup> convert(AnswerList<UserGroup> answerList) throws CerberusException {
+    public List<UserRole> convert(AnswerList<UserRole> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return answerList.getDataList();

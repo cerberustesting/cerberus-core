@@ -19,21 +19,21 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 
 /**
  *
  * @author vertigo
  */
-public interface IFactoryUserGroup {
+public interface IFactoryUserRole {
 
     /**
      *
-     * @param group
+     * @param role
      * @return
      */
-    UserGroup create(String group);
+    UserRole create(String role);
 
-    UserGroup create(String login, String group);
+    UserRole create(String login, String role);
 
 }

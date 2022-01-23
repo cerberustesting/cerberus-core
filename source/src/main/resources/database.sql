@@ -6012,3 +6012,39 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 --1690
 INSERT INTO `invariant` (idname, value, sort, description)
   VALUES ('CONTROL', 'verifyElementTextContains', 4200, 'verifyElementTextContains');
+
+-- 1691
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('EXTERNALPROVIDER', 'SID', 100, 'Selenium IDE.')
+  ,('EXTERNALPROVIDER', 'XRAY', 200, 'JIRA XRay.')
+  ,('INVARIANTPUBLIC', 'EXTERNALPROVIDER', '950', '');
+
+-- 1692
+ALTER TABLE `usergroup` 
+    CHANGE COLUMN `GroupName` `Role` VARCHAR(45) NOT NULL , RENAME TO  `userrole` ;
+
+-- 1693
+ALTER TABLE `user` 
+    ADD COLUMN `Attribute01` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Language`,
+    ADD COLUMN `Attribute02` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Attribute01`,
+    ADD COLUMN `Attribute03` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Attribute02`,
+    ADD COLUMN `Attribute04` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Attribute03`,
+    ADD COLUMN `Attribute05` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Attribute04`,
+    ADD COLUMN `APIKey` VARCHAR(1000) NULL AFTER `Attribute04`,
+    ADD COLUMN `Comment` VARCHAR(255) NOT NULL DEFAULT ''   AFTER `APIKey`,
+    CHANGE COLUMN `Name` `Name` VARCHAR(25) NOT NULL AFTER `Login`,
+    CHANGE COLUMN `Email` `Email` VARCHAR(100) NULL DEFAULT NULL AFTER `Name`,
+    CHANGE COLUMN `Team` `Team` VARCHAR(45) NULL DEFAULT NULL AFTER `Email`,
+    CHANGE COLUMN `Language` `Language` VARCHAR(45) NULL DEFAULT 'en' AFTER `Team`;
+
+-- 1694
+ALTER TABLE `user` 
+    ADD UNIQUE INDEX `IX_user_02` (`APIKey`);
+
+-- 1695
+ALTER TABLE `user` 
+    ADD COLUMN `UsrCreated` varchar(45) NOT NULL DEFAULT '',
+    ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN `UsrModif` varchar(45) NOT NULL DEFAULT '',
+    ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';
+

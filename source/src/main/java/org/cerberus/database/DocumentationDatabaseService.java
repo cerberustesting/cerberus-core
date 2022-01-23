@@ -609,10 +609,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','Executor','','fr','Executeur Manuel','Nom de l\\'utilisateur Cerberus qui executera le cas de test en mode manuel.','_testcase')");
         b.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
-        b.append(",('testcase','Origin','','en','Origin','This from where the test case come from in case it was imported.','_testcase')");
-        b.append(",('testcase','Origin','','fr','Origine','Origine du cas de test quand celui-ci a été importé','_cas_de_test')");
-        b.append(",('testcase','RefOrigin','','en','RefOrigin','This is the external reference of the test case when coming from outside Cerberus.','_testcase')");
-        b.append(",('testcase','RefOrigin','','fr','RefOrigine','Reference externe du cas de test en cas d\\'importation','_cas_de_test')");
+        b.append(",('testcase','Origin','','en','External Provider','This the external tool name that the test case is linked with.','_testcase')");
+        b.append(",('testcase','Origin','','fr','Origine Externe','Outil externe en lien avec ce cas de test.','_cas_de_test')");
+        b.append(",('testcase','RefOrigin','','en','External Reference','This is the external reference of the test case when existing outside Cerberus.','_testcase')");
+        b.append(",('testcase','RefOrigin','','fr','Reference Externe','Reference externe du cas de test dans un outil tier.','_cas_de_test')");
         b.append(",('testcase','Status','','en','Status','It is the workflow status of the <code class=\\'doc-crbvvoca\\'>test case</code> used to follow-up the implementation of the tests.<br>It can take any values depending on the workflow that manage the <code class=\\'doc-crbvvoca\\'>test case</code> life cycle.<br><br>The first status defined on the invariant table (based on the sequence) will be the default value for any new <code class=\\'doc-crbvvoca\\'>test case</code>.<br>The only status that is mandatory to define and create is the WORKING status that correspond to fully working and stable <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Status','','fr','Status','','_cas_de_test')");
         b.append(",('testcase','TargetMajor','','en','Target Major','This is the Major build that should fix the bug. Until we reach that Major, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");
@@ -954,8 +954,20 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('user','DefaultSystem','','fr','Système par defaut','Système par defaut','_management_des_utilisateurs')");
         b.append(",('user','Team','','en','Team','This is the team of the user.','_user_management')");
         b.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
-        b.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
-        b.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
+        b.append(",('user','attribute01','','en','Attribute 1','','_user_management')");
+        b.append(",('user','attribute01','','fr','Attribut 1','','_management_des_utilisateurs')");
+        b.append(",('user','attribute02','','en','Attribute 2','','_user_management')");
+        b.append(",('user','attribute02','','fr','Attribut 2','','_management_des_utilisateurs')");
+        b.append(",('user','attribute03','','en','Attribute 3','','_user_management')");
+        b.append(",('user','attribute03','','fr','Attribut 3','','_management_des_utilisateurs')");
+        b.append(",('user','attribute04','','en','Attribute 4','','_user_management')");
+        b.append(",('user','attribute04','','fr','Attribut 4','','_management_des_utilisateurs')");
+        b.append(",('user','attribute05','','en','Attribute 5','','_user_management')");
+        b.append(",('user','attribute05','','fr','Attribut 5','','_management_des_utilisateurs')");
+        b.append(",('user','apiKey','','en','API Key','','_user_management')");
+        b.append(",('user','apiKey','','fr','API Key','','_management_des_utilisateurs')");
+        b.append(",('usergroup','GroupName','','en','Role','Authorities are managed by role. In order to be granted to a set of feature, you must belong to the corresponding role.<br>Every user can of course belong to as many role as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every role.<br>Some roles are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum role you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> role on top of <code class=\\'doc-fixed\\'>TestRO</code> role.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> role.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum role you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> role on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> role.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
+        b.append(",('usergroup','GroupName','','fr','Role',NULL,'_management_des_utilisateurs')");
         /**
          * Cerberus Pages Documentation.
          */
@@ -2665,10 +2677,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','allUsers','','fr','Utilisateurs','',NULL)");
         b.append(",('page_user','button_col','','en','Actions','',NULL)");
         b.append(",('page_user','button_col','','fr','Actions','',NULL)");
-        b.append(",('page_user','manage_user','','en','Manage User','',NULL)");
+        b.append(",('page_user','manage_user','','en','Manage Users','',NULL)");
         b.append(",('page_user','manage_user','','fr','Gerer les Utilisateurs','',NULL)");
-        b.append(",('page_user','button_create','','en','Create User','',NULL)");
-        b.append(",('page_user','button_create','','fr','Créer un Utilisateur','',NULL)");
+        b.append(",('page_user','button_create','','en','Create Local User','',NULL)");
+        b.append(",('page_user','button_create','','fr','Créer un Utilisateur Local','',NULL)");
         b.append(",('page_user','button_edit','','en','Edit User','',NULL)");
         b.append(",('page_user','button_edit','','fr','Editer l\\'Utilisateur','',NULL)");
         b.append(",('page_user','button_password_edit','','en','Edit Password','',NULL)");
@@ -2687,18 +2699,18 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','email_col','','fr','Email','',NULL)");
         b.append(",('page_user','email_field','','en','Email','',NULL)");
         b.append(",('page_user','email_field','','fr','Email','',NULL)");
-        b.append(",('page_user','groups_col','','en','Groups','',NULL)");
-        b.append(",('page_user','groups_col','','fr','Groupes','',NULL)");
-        b.append(",('page_user','groups_field','','en','Groups','',NULL)");
-        b.append(",('page_user','groups_field','','fr','Groupes','',NULL)");
+        b.append(",('page_user','groups_col','','en','Roles','',NULL)");
+        b.append(",('page_user','groups_col','','fr','Roles','',NULL)");
+        b.append(",('page_user','groups_field','','en','Roles','',NULL)");
+        b.append(",('page_user','groups_field','','fr','Roles','',NULL)");
         b.append(",('page_user','information_tab','','en','Information','',NULL)");
         b.append(",('page_user','information_tab','','fr','Information','',NULL)");
         b.append(",('page_user','login_col','','en','Login','',NULL)");
         b.append(",('page_user','login_col','','fr','Identifiant','',NULL)");
         b.append(",('page_user','login_field','','en','Login','',NULL)");
         b.append(",('page_user','login_field','','fr','Identifiant','',NULL)");
-        b.append(",('page_user','message_remove','','en','Are you sure?','',NULL)");
-        b.append(",('page_user','message_remove','','fr','Êtes-vous sûrs?','',NULL)");
+        b.append(",('page_user','message_remove','','en','Are you sure you want to remove \\'%USER%\\' User?','',NULL)");
+        b.append(",('page_user','message_remove','','fr','Êtes-vous sûrs de supprimer l\\'Utilisateur \\'%USER%\\' ?','',NULL)");
         b.append(",('page_user','name_col','','en','Name','',NULL)");
         b.append(",('page_user','name_col','','fr','Nom','',NULL)");
         b.append(",('page_user','name_field','','en','Name','',NULL)");

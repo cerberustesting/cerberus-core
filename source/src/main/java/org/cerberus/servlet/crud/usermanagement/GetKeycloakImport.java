@@ -27,10 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.util.StringUtil;
@@ -39,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.IUserRoleService;
 
 /**
  * @author ip100003
@@ -63,7 +63,7 @@ public class GetKeycloakImport extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(IUserService.class);
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-        IUserGroupService userGroupService = appContext.getBean(IUserGroupService.class);
+        IUserRoleService userGroupService = appContext.getBean(IUserRoleService.class);
         try {
             finalJSON.put("id", realm);
             finalJSON.put("realm", realm);
@@ -155,8 +155,8 @@ public class GetKeycloakImport extends HttpServlet {
                     JSONArray roles = new JSONArray();
                     roles.put("uma_authorization");
                     roles.put("offline_access");
-                    for (UserGroup myUserGroup : userGroupService.findGroupByKey(myUser.getLogin())) {
-                        roles.put(myUserGroup.getGroup());
+                    for (UserRole myUserGroup : userGroupService.findRoleByKey(myUser.getLogin())) {
+                        roles.put(myUserGroup.getRole());
                     }
 
                     JSONObject u = new JSONObject();

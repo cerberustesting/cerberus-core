@@ -21,15 +21,15 @@ package org.cerberus.servlet.crud.usermanagement;
 
 import org.cerberus.crud.entity.User;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryUserGroup;
+import org.cerberus.crud.factory.impl.FactoryUserRole;
 import org.cerberus.crud.service.*;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.ParameterService;
-import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserRoleService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -50,9 +50,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.servlet.annotation.WebServlet;
-import org.cerberus.crud.factory.IFactoryUserGroup;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.service.notification.INotificationService;
+import org.cerberus.crud.factory.IFactoryUserRole;
 
 /**
  * @author bcivel
@@ -93,9 +93,16 @@ public class CreateUser extends HttpServlet {
         String defaultSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("defaultSystem"), "", charset);
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset);
         String team = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("team"), "", charset);
+        String att01 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attribute01"), "", charset);
+        String att02 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attribute02"), "", charset);
+        String att03 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attribute03"), "", charset);
+        String att04 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attribute04"), "", charset);
+        String att05 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attribute05"), "", charset);
+        String apiKey = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("apiKey"), "", charset);
+        String comment = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), "", charset);
 
         JSONArray JSONSystems = new JSONArray(ParameterParserUtil.parseStringParam(request.getParameter("systems"), null));
-        JSONArray JSONGroups = new JSONArray(ParameterParserUtil.parseStringParam(request.getParameter("groups"), null));
+        JSONArray JSONRoles = new JSONArray(ParameterParserUtil.parseStringParam(request.getParameter("roles"), null));
 
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
@@ -121,20 +128,21 @@ public class CreateUser extends HttpServlet {
 
             IUserService userService = appContext.getBean(IUserService.class);
             IFactoryUser factoryUser = appContext.getBean(IFactoryUser.class);
-            IFactoryUserGroup factoryGroup = new FactoryUserGroup();
+            IFactoryUserRole factoryRole = new FactoryUserRole();
             IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
-            IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+            IUserRoleService userRoleService = appContext.getBean(UserRoleService.class);
             IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
 
-            LinkedList<UserGroup> newGroups = new LinkedList<>();
-            for (int i = 0; i < JSONGroups.length(); i++) {
-                newGroups.add(factoryGroup.create(login, JSONGroups.getString(i)));
+            LinkedList<UserRole> newRoles = new LinkedList<>();
+            for (int i = 0; i < JSONRoles.length(); i++) {
+                newRoles.add(factoryRole.create(login, JSONRoles.getString(i)));
             }
             LinkedList<UserSystem> newSystems = new LinkedList<>();
             for (int i = 0; i < JSONSystems.length(); i++) {
                 newSystems.add(userSystemFactory.create(login, JSONSystems.getString(i)));
             }
-            User userData = factoryUser.create(0, login, password, "", newPassword, name, team, "en", "", "", "", "", "", "", "", defaultSystem, email, null, null);
+            User userData = factoryUser.create(0, login, password, "", newPassword, name, team, "en", "", "", "", "", "", "", "", defaultSystem, email, "",
+            att01, att02, att03, att04, att05, comment, apiKey, request.getRemoteUser(), null, request.getRemoteUser(), null);
 
             ans = userService.create(userData);
 
@@ -155,7 +163,7 @@ public class CreateUser extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateUser", "CREATE", "Create User : ['" + login + "']", request);
 
-                ans = AnswerUtil.agregateAnswer(ans, userGroupService.updateGroupsByUser(userData, newGroups));
+                ans = AnswerUtil.agregateAnswer(ans, userRoleService.updateRolesByUser(userData, newRoles));
                 ans = AnswerUtil.agregateAnswer(ans, userSystemService.updateSystemsByUser(userData, newSystems));
             }
         }

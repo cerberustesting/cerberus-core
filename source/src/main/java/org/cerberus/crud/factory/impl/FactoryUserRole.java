@@ -19,28 +19,28 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.springframework.stereotype.Service;
-import org.cerberus.crud.factory.IFactoryUserGroup;
+import org.cerberus.crud.factory.IFactoryUserRole;
 
 /**
  * @author vertigo
  */
 @Service
-public class FactoryUserGroup implements IFactoryUserGroup {
+public class FactoryUserRole implements IFactoryUserRole {
 
     @Override
-    public UserGroup create(String group) {
-        UserGroup newGroup = new UserGroup();
-        newGroup.setGroup(group);
-        return newGroup;
+    public UserRole create(String role) {
+        UserRole newRole = new UserRole();
+        newRole.setRole(role);
+        return newRole;
     }
 
     @Override
-    public UserGroup create(String login, String group) {
-        UserGroup newGroup = new UserGroup();
-        newGroup.setGroup(group);
-        newGroup.setLogin(login);
-        return newGroup;
+    public UserRole create(String login, String role) {
+        UserRole newRole = new UserRole();
+        newRole.setRole(role);
+        newRole.setLogin(login);
+        return newRole;
     }
 }

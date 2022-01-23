@@ -19,8 +19,9 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
@@ -35,7 +36,7 @@ public class FactoryUser implements IFactoryUser {
     @Override
     public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team, String language,
             String reportingFavorite, String robotHost, String robotPort,
-            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<UserGroup> userGroups) {
+            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, List<UserSystem> userSystems, List<UserRole> userGroups) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);
@@ -54,7 +55,7 @@ public class FactoryUser implements IFactoryUser {
         newUser.setRobotVersion(robotVersion);
         newUser.setRobot(robot);
         newUser.setUserSystems(userSystems);
-        newUser.setUserGroups(userGroups);
+        newUser.setUserRoles(userGroups);
         newUser.setResetPasswordToken(resetPasswordToken);
         return newUser;
     }
@@ -62,7 +63,11 @@ public class FactoryUser implements IFactoryUser {
     @Override
     public User create(int userID, String login, String password, String resetPasswordToken, String request, String name, String team, String language,
             String reportingFavorite, String robotHost, String robotPort,
-            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, String userPreferences) {
+            String robotPlatform, String robotBrowser, String robotVersion, String robot, String defaultSystem, String email, String userPreferences,
+            String attribute01, String attribute02, String attribute03, String attribute04, String attribute05,
+            String comment, String apiKey,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif
+    ) {
         User newUser = new User();
         newUser.setUserID(userID);
         newUser.setLogin(login);
@@ -82,6 +87,19 @@ public class FactoryUser implements IFactoryUser {
         newUser.setRobot(robot);
         newUser.setUserPreferences(userPreferences);
         newUser.setResetPasswordToken(resetPasswordToken);
+
+        newUser.setAttribute01(attribute01);
+        newUser.setAttribute02(attribute02);
+        newUser.setAttribute03(attribute03);
+        newUser.setAttribute04(attribute04);
+        newUser.setAttribute05(attribute05);
+        newUser.setComment(comment);
+        newUser.setApiKey(apiKey);
+        newUser.setUsrCreated(usrCreated);
+        newUser.setDateCreated(dateCreated);
+        newUser.setUsrModif(usrModif);
+        newUser.setDateModif(dateModif);
+
         return newUser;
     }
 }

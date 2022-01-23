@@ -21,7 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -33,7 +33,7 @@ import org.cerberus.util.answer.AnswerList;
  * @version 1.0, 09/08/2013
  * @since 2.0.0
  */
-public interface IUserGroupDAO {
+public interface IUserRoleDAO {
 
     /**
      * Adding the group to the user
@@ -42,7 +42,7 @@ public interface IUserGroupDAO {
      * @param user
      * @return true if remove successfully amd false if an error occur
      */
-    public boolean addGroupToUser(UserGroup group, User user);
+    public boolean addRoleToUser(UserRole group, User user);
 
     /**
      * Remove the group from the user.
@@ -51,20 +51,20 @@ public interface IUserGroupDAO {
      * @param user
      * @return true if remove successfully amd false if an error occur
      */
-    public boolean removeGroupFromUser(UserGroup group, User user);
+    public boolean removeRoleFromUser(UserRole group, User user);
 
     /**
      * @param login
      * @return a list of group user that correspond to the login.
      */
-    public List<UserGroup> findGroupByKey(String login);
+    public List<UserRole> findRoleByKey(String login);
 
 
     /**
      * @param login
      * @return a list of all the userSystem of a user
      */
-    AnswerList<UserGroup> readByUser(String login);
+    AnswerList<UserRole> readByUser(String login);
 
     /**
      * Adding the group
@@ -72,7 +72,7 @@ public interface IUserGroupDAO {
      * @param group
      * @return
      */
-    Answer create(UserGroup group);
+    Answer create(UserRole group);
 
     /**
      * Remove the group
@@ -80,7 +80,7 @@ public interface IUserGroupDAO {
      * @param group
      * @return
      */
-    Answer remove(UserGroup group);
+    Answer remove(UserRole group);
 
     /**
      * Remove the group from the user.
@@ -89,5 +89,5 @@ public interface IUserGroupDAO {
      * @param user
      * @return true if remove successfully amd false if an error occur
      */
-    Answer removeGroupByUser(UserGroup group, User user);
+    Answer removeRoleByUser(UserRole group, User user);
 }

@@ -28,10 +28,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.dao.IUserGroupDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -39,7 +38,8 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.cerberus.crud.factory.IFactoryUserGroup;
+import org.cerberus.crud.factory.IFactoryUserRole;
+import org.cerberus.crud.dao.IUserRoleDAO;
 
 /**
  * {Insert class description here}
@@ -49,35 +49,35 @@ import org.cerberus.crud.factory.IFactoryUserGroup;
  * @since 2.0.0
  */
 @Repository
-public class UserGroupDAO implements IUserGroupDAO {
+public class UserRoleDAO implements IUserRoleDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryUserGroup factoryGroup;
+    private IFactoryUserRole factoryGroup;
 
     /**
-     * Declare SQL queries used by this {@link UserGroup}
+     * Declare SQL queries used by this {@link UserRole}
      *
      * @author Aurelien Bourdon
      */
     private static interface Query {
 
         /**
-         * Get list of {@link UserGroup} associated with the given
+         * Get list of {@link UserRole} associated with the given
          * {@link User}'s name
          */
-        String READ_BY_USER = "SELECT * FROM usergroup usg WHERE usg.`login` = ? ";
+        String READ_BY_USER = "SELECT * FROM userrole usg WHERE usg.`login` = ? ";
 
         /**
-         * Create a new {@link UserGroup}
+         * Create a new {@link UserRole}
          */
-        String CREATE = "INSERT INTO `usergroup` (`login`, `groupName`) VALUES (?, ?)";
+        String CREATE = "INSERT INTO `userrole` (`login`, `Role`) VALUES (?, ?)";
 
         /**
-         * Remove an existing {@link UserGroup}
+         * Remove an existing {@link UserRole}
          */
-        String DELETE = "DELETE FROM `usergroup` WHERE `login` = ? AND `groupName` = ?";
+        String DELETE = "DELETE FROM `userrole` WHERE `login` = ? AND `Role` = ?";
 
     }
 
@@ -89,19 +89,19 @@ public class UserGroupDAO implements IUserGroupDAO {
     /**
      * The associated entity name to this DAO
      */
-    private static final String OBJECT_NAME = UserGroup.class.getSimpleName();
+    private static final String OBJECT_NAME = UserRole.class.getSimpleName();
 
     @Override
-    public boolean addGroupToUser(UserGroup group, User user) {
+    public boolean addRoleToUser(UserRole role, User user) {
         boolean bool = false;
-        final String query = "INSERT INTO usergroup (Login, GroupName) VALUES (?, ?)";
+        final String query = "INSERT INTO userrole (Login, Role) VALUES (?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, user.getLogin());
-                preStat.setString(2, group.getGroup());
+                preStat.setString(2, role.getRole());
 
                 int res = preStat.executeUpdate();
                 bool = res > 0;
@@ -125,16 +125,16 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public boolean removeGroupFromUser(UserGroup group, User user) {
+    public boolean removeRoleFromUser(UserRole role, User user) {
         boolean bool = false;
-        final String query = "DELETE FROM usergroup WHERE login = ? AND groupname = ?";
+        final String query = "DELETE FROM userrole WHERE login = ? AND Role = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, user.getLogin());
-                preStat.setString(2, group.getGroup());
+                preStat.setString(2, role.getRole());
 
                 int res = preStat.executeUpdate();
                 bool = res > 0;
@@ -158,9 +158,9 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public List<UserGroup> findGroupByKey(String login) {
-        List<UserGroup> list = null;
-        final String query = "SELECT groupname FROM usergroup WHERE login = ? ORDER BY groupname";
+    public List<UserRole> findRoleByKey(String login) {
+        List<UserRole> list = null;
+        final String query = "SELECT Role FROM userrole WHERE login = ? ORDER BY Role";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -172,8 +172,8 @@ public class UserGroupDAO implements IUserGroupDAO {
                 try {
                     list = new ArrayList<>();
                     while (resultSet.next()) {
-                        UserGroup group = factoryGroup.create(resultSet.getString("groupname"));
-                        list.add(group);
+                        UserRole role = factoryGroup.create(resultSet.getString("Role"));
+                        list.add(role);
                     }
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : "+exception.toString());
@@ -200,8 +200,8 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public AnswerList<UserGroup> readByUser(String login) {
-        AnswerList<UserGroup> ans = new AnswerList<>();
+    public AnswerList<UserRole> readByUser(String login) {
+        AnswerList<UserRole> ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
@@ -209,7 +209,7 @@ public class UserGroupDAO implements IUserGroupDAO {
             // Prepare and execute query
             preStat.setString(1, login);
             try(ResultSet resultSet = preStat.executeQuery();){
-            	List<UserGroup> result = new ArrayList<>();
+            	List<UserRole> result = new ArrayList<>();
                 while (resultSet.next()) {
                     result.add(loadUserGroupFromResultSet(resultSet));
                 }
@@ -234,15 +234,15 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public Answer create(UserGroup group) {
+    public Answer create(UserRole role) {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
-            preStat.setString(1, group.getLogin());
-            preStat.setString(2, group.getGroup());
+            preStat.setString(1, role.getLogin());
+            preStat.setString(2, role.getRole());
             preStat.executeUpdate();
 
             // Set the final message
@@ -260,15 +260,15 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public Answer remove(UserGroup group) {
+    public Answer remove(UserRole role) {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
-            preStat.setString(1, group.getLogin());
-            preStat.setString(2, group.getGroup());
+            preStat.setString(1, role.getLogin());
+            preStat.setString(2, role.getRole());
             preStat.executeUpdate();
 
             // Set the final message
@@ -286,13 +286,13 @@ public class UserGroupDAO implements IUserGroupDAO {
     }
 
     @Override
-    public Answer removeGroupByUser(UserGroup group, User user) {
+    public Answer removeRoleByUser(UserRole role, User user) {
         return null;
     }
 
-    private UserGroup loadUserGroupFromResultSet(ResultSet rs) throws SQLException {
+    private UserRole loadUserGroupFromResultSet(ResultSet rs) throws SQLException {
         String login = ParameterParserUtil.parseStringParam(rs.getString("login"), "");
-        String groupName = ParameterParserUtil.parseStringParam(rs.getString("groupName"), "");
-        return factoryGroup.create(login, groupName);
+        String role = ParameterParserUtil.parseStringParam(rs.getString("Role"), "");
+        return factoryGroup.create(login, role);
     }
 }

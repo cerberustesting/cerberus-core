@@ -27,20 +27,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
-import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserRoleService;
 import org.cerberus.crud.service.impl.UserService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.IUserRoleService;
 
 /**
  * @author ip100003
@@ -64,7 +64,7 @@ public class GetUsers extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-        IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+        IUserRoleService userGroupService = appContext.getBean(UserRoleService.class);
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
@@ -78,8 +78,8 @@ public class GetUsers extends HttpServlet {
                     u.put("email", myUser.getEmail());
 
                     JSONArray groups = new JSONArray();
-                    for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
-                        groups.put(group.getGroup());
+                    for (UserRole group : userGroupService.findRoleByKey(myUser.getLogin())) {
+                        groups.put(group.getRole());
                     }
                     u.put("group", groups);
                     

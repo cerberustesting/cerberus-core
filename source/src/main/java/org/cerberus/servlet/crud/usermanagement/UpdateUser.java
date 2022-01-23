@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryUserGroup;
+import org.cerberus.crud.factory.impl.FactoryUserRole;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
@@ -42,31 +42,31 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserRoleService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.factory.IFactoryUserGroup;
+import org.cerberus.crud.factory.IFactoryUserRole;
+import org.cerberus.crud.service.IUserRoleService;
 
 /**
  * @author ryltar
  */
 @WebServlet(name = "UpdateUser", urlPatterns = {"/UpdateUser"})
 public class UpdateUser extends HttpServlet {
-
+    
     private static final Logger LOG = LogManager.getLogger(UpdateUser.class);
-
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, IndexOutOfBoundsException {
         //TODO create class Validator to validate all parameter from page
@@ -78,7 +78,7 @@ public class UpdateUser extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-
+        
         String id = request.getParameter("id");
         String login = request.getParameter("login");
         String name = request.getParameter("name");
@@ -86,80 +86,95 @@ public class UpdateUser extends HttpServlet {
         String team = request.getParameter("team");
         String systems = request.getParameter("systems");
         String requests = request.getParameter("request");
-        String groups = request.getParameter("groups");
+        String roles = request.getParameter("roles");
+        String apiKey = request.getParameter("apiKey");
+        String att01 = request.getParameter("attribute01");
+        String att02 = request.getParameter("attribute02");
+        String att03 = request.getParameter("attribute03");
+        String att04 = request.getParameter("attribute04");
+        String att05 = request.getParameter("attribute05");
+        String comment = request.getParameter("comment");
         String defaultSystem = request.getParameter("defaultSystem");
-
+        
         if (StringUtil.isNullOrEmpty(login) || StringUtil.isNullOrEmpty(id)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "User login is missing."));
             ans.setResultMessage(msg);
-
+            
         } else {
             LOG.info("Updating user " + login);
-
+            
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IUserService userService = appContext.getBean(UserService.class);
-            IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+            IUserRoleService userRoleService = appContext.getBean(UserRoleService.class);
             IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
             IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
-
-            IFactoryUserGroup factoryGroup = new FactoryUserGroup();
-
+            
+            IFactoryUserRole factoryRole = new FactoryUserRole();
+            
             User myUser;
-            List<UserGroup> newGroups = null;
+            List<UserRole> newRoles = null;
             List<UserSystem> newSystems = null;
             try {
                 myUser = userService.findUserByKey(id);
-
-                List<String> listGroup = new ArrayList<>();
-                JSONArray GroupArray = new JSONArray(request.getParameter("groups"));
+                
+                List<String> listRole = new ArrayList<>();
+                JSONArray GroupArray = new JSONArray(request.getParameter("roles"));
                 for (int i = 0; i < GroupArray.length(); i++) {
-                    listGroup.add(GroupArray.getString(i));
+                    listRole.add(GroupArray.getString(i));
                 }
-
-                newGroups = new ArrayList<>();
-                for (String group : listGroup) {
-                    newGroups.add(factoryGroup.create(group));
+                
+                newRoles = new ArrayList<>();
+                for (String role : listRole) {
+                    newRoles.add(factoryRole.create(role));
                 }
-
+                
                 myUser.setLogin(login);
                 myUser.setName(name);
                 myUser.setTeam(team);
+                myUser.setAttribute01(att01);
+                myUser.setAttribute02(att02);
+                myUser.setAttribute03(att03);
+                myUser.setAttribute04(att04);
+                myUser.setAttribute05(att05);
+                myUser.setApiKey(apiKey);
+                myUser.setComment(comment);
+                myUser.setUsrModif(request.getRemoteUser());
                 newSystems = new ArrayList<>();
-
+                
                 JSONArray SystemArray = new JSONArray(request.getParameter("systems"));
-
+                
                 List<String> listSystem = new ArrayList<>();
                 for (int i = 0; i < SystemArray.length(); i++) {
                     listSystem.add(SystemArray.getString(i));
                 }
-
+                
                 for (String system : listSystem) {
                     newSystems.add(userSystemFactory.create(login, system));
                 }
-
+                
                 myUser.setDefaultSystem(defaultSystem);
                 myUser.setRequest(requests);
                 myUser.setEmail(email);
-
+                
                 try {
-
+                    
                     ans = userService.update(myUser);
                     AnswerUtil.agregateAnswer(finalAnswer, ans);
-
+                    
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
                         logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : ['" + login + "']", request);
-
-                        if (!newGroups.isEmpty()) {
-
-                            userGroupService.updateUserGroups(myUser, newGroups);
-
+                        
+                        if (!newRoles.isEmpty()) {
+                            
+                            userRoleService.updateUserRoles(myUser, newRoles);
+                            
                         }
                         if (!newSystems.isEmpty()) {
                             request.getSession().setAttribute("MySystem", newSystems.get(0).getSystem());
@@ -172,12 +187,12 @@ public class UpdateUser extends HttpServlet {
                      */
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     AnswerUtil.agregateAnswer(finalAnswer, ans);
-
+                    
                     jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-
+                    
                     response.getWriter().print(jsonResponse);
-
+                    
                 } catch (CerberusException ex) {
                     response.getWriter().print(ex.getMessageError().getDescription());
                 }

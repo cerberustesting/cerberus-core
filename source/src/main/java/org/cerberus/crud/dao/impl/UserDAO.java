@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -914,7 +915,7 @@ public class UserDAO implements IUserDAO {
         query.append("SELECT DISTINCT SQL_CALC_FOUND_ROWS usr.* FROM user usr ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            query.append("LEFT JOIN usergroup usg ON usg.`Login` = usr.`Login`");
+            query.append("LEFT JOIN userrole usg ON usg.`Login` = usr.`Login`");
         }
 
         searchSQL.append(" where 1=1 ");
@@ -933,7 +934,7 @@ public class UserDAO implements IUserDAO {
             searchSQL.append(" or usr.`robot` like ?");
             searchSQL.append(" or usr.`DefaultSystem` like ?");
             searchSQL.append(" or usr.`Email` like ?");
-            searchSQL.append(" or usg.`GroupName` like ?)");
+            searchSQL.append(" or usg.`Role` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -1056,8 +1057,8 @@ public class UserDAO implements IUserDAO {
     public Answer create(User user) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences)");
-        query.append("  VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '')");
+        query.append("INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences, usrCreated)");
+        query.append("  VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '', ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1077,6 +1078,7 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(8, user.getTeam());
                 preStat.setString(9, user.getLanguage());
                 preStat.setString(10, user.getEmail());
+                preStat.setString(11, user.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1159,7 +1161,10 @@ public class UserDAO implements IUserDAO {
         query.append("UPDATE user SET Login = ?, Name = ?, Request = ?, ReportingFavorite = ?, RobotHost = ?,");
         query.append(" Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?,");
         query.append(" robotPlatform = ?, robotBrowser = ?, robotVersion = ? , robot = ?, resetPasswordToken = SHA(?), ");
-        query.append(" userPreferences = ?   WHERE userid = ?");
+        query.append(" userPreferences = ?, ");
+        query.append(" attribute01 = ?, attribute02 = ?, attribute03 = ?, attribute04 = ?, attribute05 = ?, ");
+        query.append(" apiKey = ?, comment = ?, usrModif = ?, DateModif =  NOW() ");
+        query.append(" WHERE userid = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1185,7 +1190,15 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(14, user.getRobot());
                 preStat.setString(15, user.getResetPasswordToken());
                 preStat.setString(16, user.getUserPreferences());
-                preStat.setInt(17, user.getUserID());
+                preStat.setString(17, user.getAttribute01());
+                preStat.setString(18, user.getAttribute02());
+                preStat.setString(19, user.getAttribute03());
+                preStat.setString(20, user.getAttribute04());
+                preStat.setString(21, user.getAttribute05());
+                preStat.setString(22, user.getApiKey());
+                preStat.setString(23, user.getComment());
+                preStat.setString(24, user.getUsrModif());
+                preStat.setInt(25, user.getUserID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1232,9 +1245,28 @@ public class UserDAO implements IUserDAO {
         String robotVersion = ParameterParserUtil.parseStringParam(rs.getString("usr.robotVersion"), "");
         String robot = ParameterParserUtil.parseStringParam(rs.getString("usr.robot"), "");
         String userPreferences = ParameterParserUtil.parseStringParam(rs.getString("usr.userPreferences"), "");
+
+        String attribute01 = ParameterParserUtil.parseStringParam(rs.getString("usr.attribute01"), "");
+        String attribute02 = ParameterParserUtil.parseStringParam(rs.getString("usr.attribute02"), "");
+        String attribute03 = ParameterParserUtil.parseStringParam(rs.getString("usr.attribute03"), "");
+        String attribute04 = ParameterParserUtil.parseStringParam(rs.getString("usr.attribute04"), "");
+        String attribute05 = ParameterParserUtil.parseStringParam(rs.getString("usr.attribute05"), "");
+        String apikey = ParameterParserUtil.parseStringParam(rs.getString("usr.apikey"), "");
+        String comment = ParameterParserUtil.parseStringParam(rs.getString("usr.comment"), "");
+
+        String usrModif = rs.getString("usr.UsrModif");
+        String usrCreated = rs.getString("usr.UsrCreated");
+        Timestamp dateCreated = rs.getTimestamp("usr.DateCreated");
+        Timestamp dateModif = rs.getTimestamp("usr.DateModif");
+
         //TODO remove when working in test with mockito and autowired
         factoryUser = new FactoryUser();
-        return factoryUser.create(userID, login, password, resetPasswordToken, request, name, team, language, reportingFavorite, robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, userPreferences);
+        return factoryUser.create(userID, login, password, resetPasswordToken, request, name, team, language, reportingFavorite,
+                robotHost, robotPort, robotPlatform, robotBrowser, robotVersion, robot, defaultSystem, email, userPreferences,
+                attribute01, attribute02, attribute03, attribute04, attribute05,
+                comment, apikey,
+                usrCreated, dateCreated, usrModif, dateModif
+        );
     }
 
 }

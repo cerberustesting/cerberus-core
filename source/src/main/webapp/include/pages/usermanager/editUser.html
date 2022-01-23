@@ -32,7 +32,9 @@
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabInformations">Informations</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabSystem">Systems</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabGroups">Groups</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabGroups">Roles</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-4" id="createTab4Text" name="tabAdvanced">Advanced</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-5" id="createTab5Text" name="tabTraca">Traceability</a></li>
                         </ul>
 
                         <div class="tab-content">
@@ -52,6 +54,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
+                                        <label for="email" name="emailField">Email</label>
+                                        <input type="text" class="form-control" name="email" id="email" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
                                         <label for="defaultSystem" name="defaultSystemField">Default System</label>
                                         <input type="text" class="form-control"  name="defaultSystem" id="defaultSystem" aria-describedby="basic-editon1"></input>
                                     </div>
@@ -67,8 +75,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="email" name="emailField">Email</label>
-                                        <input type="text" class="form-control" name="email" id="email" aria-describedby="basic-editon1"></input>
+                                        <label for="apiKey" name="apiKeyField">API Key</label>
+                                        <input type="text" class="form-control"  name="apiKey" id="apiKey" aria-describedby="basic-editon1"></input>
                                     </div>
                                 </div>
                             </div>
@@ -83,15 +91,88 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="center tab-pane fade marginTop25" id="tabsCreate-3">
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="groups" name="groupsField">Groups</label>
+                                        <label for="groups" name="groupsField">Roles</label>
                                         <select style="width:100%;" class="form-control" multiple="multiple" name="groups" id="groups" aria-describedby="basic-editon1" size=12>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="center marginTop25 tab-pane fade" id="tabsCreate-4">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="attribute01" name="att01Field">Attribute 1</label>
+                                        <input type="text" class="form-control" name="attribute01" id="attribute01" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="attribute02" name="att02Field">Attribute 2</label>
+                                        <input type="text" class="form-control" name="attribute02" id="attribute02" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="attribute03" name="att03Field">Attribute 3</label>
+                                        <input type="text" class="form-control" name="attribute03" id="attribute03" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="attribute04" name="att04Field">Attribute 4</label>
+                                        <input type="text" class="form-control" name="attribute04" id="attribute04" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="attribute05" name="att05Field">Attribute 5</label>
+                                        <input type="text" class="form-control" name="attribute05" id="attribute05" aria-describedby="basic-editon1"></input>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="center marginTop25 tab-pane fade in" id="tabsCreate-5">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_created" for="created">Created</label>
+                                                <div>
+                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_creator" for="creator">Creator</label>
+                                                <div>
+                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div> 
+                                        <div class="row">
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
+                                                <div>
+                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-sm-6">
+                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
+                                                <div>
+                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>   
+
+
+
                         </div>
                     </div>
                 </form>

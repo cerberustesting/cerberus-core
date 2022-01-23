@@ -33,13 +33,13 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.config.Property;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserRole;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.service.*;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.impl.UserGroupService;
+import org.cerberus.crud.service.impl.UserRoleService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.StringUtil;
@@ -60,7 +60,7 @@ public class ReadMyUser extends HttpServlet {
     private IUserService userService;
     private IFactoryUser userFactory;
     private IUserSystemService userSystemService;
-    private IUserGroupService userGroupService;
+    private IUserRoleService userGroupService;
     private ILogEventService logEventService;
     private IParameterService parameterService;
 
@@ -82,7 +82,7 @@ public class ReadMyUser extends HttpServlet {
         userFactory = appContext.getBean(IFactoryUser.class);
         invariantService = appContext.getBean(IInvariantService.class);
         userSystemService = appContext.getBean(IUserSystemService.class);
-        userGroupService = appContext.getBean(UserGroupService.class);
+        userGroupService = appContext.getBean(UserRoleService.class);
         logEventService = appContext.getBean(ILogEventService.class);
         parameterService = appContext.getBean(IParameterService.class);
         SessionCounter sc = appContext.getBean(SessionCounter.class);
@@ -104,7 +104,10 @@ public class ReadMyUser extends HttpServlet {
                 LOG.debug("Authentification JAVA parameter " + Property.AUTHENTIFICATION + " for keycloak value : '" + authMode + "'");
                 if (authMode.equals(Property.AUTHENTIFICATION_VALUE_KEYCLOAK)) {
                     if (!userService.isUserExist(user)) {
-                        User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
+                        User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "",
+                                "", "", "", "", "",
+                                "", "",
+                                "", null, "", null);
                         LOG.debug("Create User.");
                         userService.insertUserNoAuth(myUser);
                         userSystemService.createSystemAutomatic(user);
@@ -185,8 +188,8 @@ public class ReadMyUser extends HttpServlet {
                     }
                 }
             } else {
-                for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
-                    groups.put(group.getGroup());
+                for (UserRole group : userGroupService.findRoleByKey(myUser.getLogin())) {
+                    groups.put(group.getRole());
                 }
             }
             data.put("group", groups);
