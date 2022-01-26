@@ -6050,10 +6050,10 @@ ALTER TABLE `user`
 
 -- 1696
 INSERT INTO user (login, name, email, team, language, attribute01, attribute02, attribute03, attribute04, attribute05, apikey, password, userpreferences, usrcreated) 
-    SELECT concat("srvaccount",right(param,1)), concat("Service Account ",right(param,1)), "", "", 'en', null, null, null, null, null, value, "", "" , "DatabaseVersioningService" 
+    SELECT concat("srvaccount",right(param,1)), concat("Service Account ",right(param,1)), "", "", 'en', '', '', '', '', '', value, "", "" , "DatabaseVersioningService" 
     FROM parameter where param like 'cerberus_apikey_value%' and `system` = '' and value is not null and value !='';
 
 -- 1697
 INSERT INTO user (login, name, email, team, language, attribute01, attribute02, attribute03, attribute04, attribute05, apikey, password, userpreferences, usrcreated, comment) 
-    SELECT "srvaccount", "Cerberus Service Account", "", "", 'en', null, null, null, null, null, LEFT(MD5(RAND()), 90), "", "" , "DatabaseVersioningService", "DO NOT REMOVE !! Service Account for internal use by Cerberus." 
+    SELECT "srvaccount", "Cerberus Service Account", "", "", 'en', '', '', '', '', '', LEFT(MD5(RAND()), 90), "", "" , "DatabaseVersioningService", "DO NOT REMOVE !! Service Account for internal use by Cerberus." 
     FROM dual;
