@@ -32,7 +32,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
 import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
@@ -40,6 +39,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.IScheduledExecutionService;
 import org.cerberus.crud.service.impl.ScheduledExecutionService;
+import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
@@ -61,6 +61,8 @@ public class ScheduledJob implements Job {
     private IScheduledExecutionService scheduledExecutionService = new ScheduledExecutionService();
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private IAPIKeyService apiKeyService;
     @Autowired
     private IScheduleEntryService scheduleEntryService;
 
@@ -110,7 +112,7 @@ public class ScheduledJob implements Job {
                                 String encodeName = URLEncoder.encode(scheduleName, "UTF-8");
                                 request = parameterService.getParameterStringByKey("cerberus_url", "", "") + SERVLET_ADDTOEXECUTION + "?campaign=" + encodeName + "&outputformat=json";
                                 HttpGet requesthttp = new HttpGet(request);
-                                requesthttp.setHeader("apikey", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", ""));
+                                requesthttp.setHeader("apikey", apiKeyService.getServiceAccountAPIKey());
                                 HttpResponse responsehttp = httpclient.execute(requesthttp);
                                 int statusCode = responsehttp.getStatusLine().getStatusCode();
 

@@ -35,9 +35,29 @@ public interface IAPIKeyService {
      *
      * @param request
      * @param response
+     * @return
      */
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     *
+     * @param principal
+     * @param apiKey
+     * @return
+     */
     public boolean authenticate(Principal principal, String apiKey);
+
+    /**
+     *
+     * @return
+     */
+    public String getServiceAccountAPIKey();
+
+    /**
+     *
+     * @param apiKey
+     * @return
+     */
     public boolean authenticate(String apiKey);
 
 }

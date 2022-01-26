@@ -41,6 +41,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.impl.APIKeyService;
 import org.cerberus.servlet.zzpublic.RunTestCaseV002;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.ParamRequestMaker;
@@ -59,6 +60,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private ITestCaseExecutionQueueDepService queueDepService;
     private IParameterService parameterService;
     private ITagService tagService;
+    private APIKeyService apiKeyService;
 
     private ExecutionQueueThreadPool execThreadPool;
 
@@ -215,6 +217,14 @@ public class ExecutionQueueWorkerThread implements Runnable {
         this.retriesService = retriesService;
     }
 
+    public APIKeyService getApiKeyService() {
+        return apiKeyService;
+    }
+
+    public void setApiKeyService(APIKeyService apiKeyService) {
+        this.apiKeyService = apiKeyService;
+    }
+
     public ITagService getTagService() {
         return tagService;
     }
@@ -365,7 +375,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
             HttpGet httpGet = new HttpGet(url.toString());
             httpGet.setConfig(requestConfig);
 
-            httpGet.setHeader("apikey", parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", ""));
+            httpGet.setHeader("apikey", apiKeyService.getServiceAccountAPIKey());
             CloseableHttpResponse response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             String responseContent = EntityUtils.toString(entity);

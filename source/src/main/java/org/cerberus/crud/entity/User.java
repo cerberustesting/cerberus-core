@@ -64,6 +64,12 @@ public class User {
     private List<UserSystem> userSystems;
     private List<UserRole> userRoles;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String USER_SERVICEACCOUNT = "srvaccount";
+    
+    
     public String getUserPreferences() {
         return userPreferences;
     }

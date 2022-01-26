@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import javax.servlet.annotation.WebServlet;
+import org.cerberus.config.Property;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.service.notification.INotificationService;
 import org.cerberus.crud.factory.IFactoryUserRole;
@@ -61,6 +62,7 @@ import org.cerberus.crud.factory.IFactoryUserRole;
 public class CreateUser extends HttpServlet {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CreateUser.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -142,7 +144,7 @@ public class CreateUser extends HttpServlet {
                 newSystems.add(userSystemFactory.create(login, JSONSystems.getString(i)));
             }
             User userData = factoryUser.create(0, login, password, "", newPassword, name, team, "en", "", "", "", "", "", "", "", defaultSystem, email, "",
-            att01, att02, att03, att04, att05, comment, apiKey, request.getRemoteUser(), null, request.getRemoteUser(), null);
+                    att01, att02, att03, att04, att05, comment, apiKey, request.getRemoteUser(), null, request.getRemoteUser(), null);
 
             ans = userService.create(userData);
 
@@ -151,11 +153,11 @@ public class CreateUser extends HttpServlet {
                  * Send Email to explain how to connect Cerberus if
                  * activateNotification is set to Y
                  */
-                String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
-
-                if (sendNotification.equalsIgnoreCase("Y")) {
-                    Answer msgSent = new Answer(notificationService.generateAndSendAccountCreationEmail(userData));
-                    ans = AnswerUtil.agregateAnswer(ans, msgSent);
+                if (!Property.isKeycloak()) {
+                    if (parameterService.getParameterBooleanByKey("cerberus_notification_accountcreation_activatenotification", system, false)) {
+                        Answer msgSent = new Answer(notificationService.generateAndSendAccountCreationEmail(userData));
+                        ans = AnswerUtil.agregateAnswer(ans, msgSent);
+                    }
                 }
                 /**
                  * Object updated. Adding Log entry.

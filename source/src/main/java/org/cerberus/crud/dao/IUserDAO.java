@@ -70,6 +70,7 @@ public interface IUserDAO {
      * delete user from the database.
      *
      * @param user
+     * @return 
      */
     public boolean deleteUser(User user);
 
@@ -109,6 +110,12 @@ public interface IUserDAO {
      */
     boolean verifyResetPasswordToken(User user, String password);
 
+    /**
+     * @param apiKey
+     * @return true if password match and false if password does not match.
+     */
+    boolean verifyAPIKey(String apiKey);
+    
     /**
      *
      * @param start first row of the resultSet

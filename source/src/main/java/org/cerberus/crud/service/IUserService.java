@@ -102,6 +102,12 @@ public interface IUserService {
     boolean verifyResetPasswordToken(User user, String password);
 
     /**
+     * @param apiKey
+     * @return
+     */
+    boolean verifyAPIKey(String apiKey);
+    
+    /**
      *
      * @param user
      * @return true if user exist. false if not.

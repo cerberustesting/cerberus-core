@@ -170,6 +170,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean verifyAPIKey(String apiKey) {
+        return userDAO.verifyAPIKey(apiKey);
+    }
+
+    @Override
     public boolean isUserExist(String user) {
         try {
             findUserByKey(user);

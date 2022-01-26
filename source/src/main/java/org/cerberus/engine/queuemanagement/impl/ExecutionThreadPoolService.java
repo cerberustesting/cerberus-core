@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.factory.IFactoryQueueStat;
@@ -46,6 +45,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.authentification.impl.APIKeyService;
 import org.cerberus.servlet.zzpublic.ManageV001;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.ParameterParserUtil;
@@ -85,6 +85,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     ExecutionQueueThreadPool threadQueuePool;
     @Autowired
     private ITestCaseExecutionQueueService queueService;
+    @Autowired
+    private APIKeyService apiKeyService;
     @Autowired
     private ITestCaseExecutionQueueDepService queueDepService;
     @Autowired
@@ -576,7 +578,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                                         task.setCerberusExecutionUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/"));
                                         task.setCerberusTriggerQueueJobUrl(StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""), "/")
-                                                + ManageV001.SERVLETNAME + "?apikey=" + parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", "") + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
+                                                + ManageV001.SERVLETNAME + "?apikey=" + apiKeyService.getServiceAccountAPIKey() + "&action=" + ManageV001.ACTIONRUNQUEUEJOB);
 
                                         task.setQueueId(exe.getId());
                                         task.setRobotExecutor(robotExecutor);
@@ -586,6 +588,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                         task.setQueueService(queueService);
                                         task.setQueueService(queueService);
                                         task.setParameterService(parameterService);
+                                        task.setApiKeyService(apiKeyService);
                                         task.setSessionCounter(sessionCounter);
                                         task.setRetriesService(retriesService);
                                         task.setTagService(tagService);

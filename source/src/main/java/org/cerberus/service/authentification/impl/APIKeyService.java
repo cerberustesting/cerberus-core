@@ -24,7 +24,10 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IUserService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.service.authentification.IAPIKeyService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
@@ -45,6 +48,9 @@ public class APIKeyService implements IAPIKeyService {
 
     @Autowired
     private IParameterService parameterService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
@@ -94,17 +100,23 @@ public class APIKeyService implements IAPIKeyService {
         return (principal != null && !StringUtil.isNullOrEmpty(principal.getName())) || this.authenticate(apiKey);
     }
 
-    public boolean isApiKeyAuthEnabled() {
+    private boolean isApiKeyAuthEnabled() {
         return parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", true);
+    }
+
+    @Override
+    public String getServiceAccountAPIKey() {
+        try {
+            return userService.findUserByKey(User.USER_SERVICEACCOUNT).getApiKey();
+        } catch (CerberusException ex) {
+            LOG.error("Error when trying to get APIKey of service account : " + User.USER_SERVICEACCOUNT);
+        }
+        return null;
     }
 
     private boolean isApiKeyValid(String apiKey) {
         return (!StringUtil.isNullOrEmpty(apiKey))
-                && ((apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value1, "", "")))
-                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value2, "", "")))
-                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value3, "", "")))
-                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value4, "", "")))
-                || (apiKey.equals(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_apikey_value5, "", ""))));
+                && (userService.verifyAPIKey(apiKey));
     }
 
 }

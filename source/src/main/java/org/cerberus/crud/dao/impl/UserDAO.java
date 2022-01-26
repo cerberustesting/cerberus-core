@@ -494,6 +494,46 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
+    public boolean verifyAPIKey(String apiKey) {
+        boolean bool = false;
+        final String sql = "SELECT login FROM user WHERE apiKey = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            try {
+                preStat.setString(1, apiKey);
+                ResultSet rs = preStat.executeQuery();
+                try {
+                    if (rs.first()) {
+                        bool = true;
+                    }
+                } catch (SQLException ex) {
+                    LOG.warn(ex.toString());
+                } finally {
+                    rs.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+
+        return bool;
+    }
+
+    @Override
     public List<User> findTestDataListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         List<User> result = new ArrayList<>();
         StringBuilder gSearch = new StringBuilder();
@@ -1195,7 +1235,7 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(19, user.getAttribute03());
                 preStat.setString(20, user.getAttribute04());
                 preStat.setString(21, user.getAttribute05());
-                preStat.setString(22, user.getApiKey());
+                preStat.setString(22, StringUtil.isNullOrEmpty(user.getApiKey()) ? null : user.getApiKey());
                 preStat.setString(23, user.getComment());
                 preStat.setString(24, user.getUsrModif());
                 preStat.setInt(25, user.getUserID());
