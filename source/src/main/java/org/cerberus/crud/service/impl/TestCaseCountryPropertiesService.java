@@ -19,38 +19,30 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.service.ITestCaseDepService;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.*;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.TestListDTO;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author bcivel
  * @author FNogueira
  */
@@ -75,9 +67,9 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     IFactoryTestCase factoryTestCase;
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
-    private final String SEPARATOR = "%#/";
+    private static final String SEPARATOR = "%#/";
 
-    private static final Logger LOG = LogManager.getLogger(CountryEnvironmentDatabaseService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseCountryPropertiesService.class);
 
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
@@ -115,7 +107,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // Getting all properties in the scope of the testcase list.
         List<TestCaseCountryProperties> allProperties = testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseList(testCaseList);
         // Now building the distinct values based on distinct information.
-        HashMap<String, TestCaseCountryProperties> testCasePropHash = new HashMap<>();
+        Map<String, TestCaseCountryProperties> testCasePropHash = new HashMap<>();
         for (TestCaseCountryProperties property : allProperties) {
             String key = getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature());
             testCasePropHash.put(key, property);
@@ -130,7 +122,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             List<String> countries = new ArrayList<>();
             for (TestCaseCountryProperties property : allProperties) {
                 if (key.equals(getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature()))) {
-                    countries.add(val.getCountry());
+                    countries.add(property.getCountry());
                 }
             }
             val.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(countries, countryInvariants));
@@ -170,7 +162,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         }
 
         inheritedProperties.addAll(findDistinctPropertiesOfTestCaseFromTestcaseList(testCaseList, countryInvariants));
-        
+
         return inheritedProperties;
     }
 
