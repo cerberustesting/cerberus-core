@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -750,14 +751,14 @@ public class SikuliService implements ISikuliService {
             String screenshotInBase64 = actionResult.getItem().getString("screenshot");
             byte[] data = Base64.decodeBase64(screenshotInBase64);
 
-            image = new File("temp.png");
+            image = new File("screenshotsikuli" + UUID.randomUUID().toString().subSequence(0, 14) + ".png");
             FileUtils.writeByteArrayToFile(image, data);
 
             if (image != null) {
                 //logs for debug purposes
-                LOG.info("screen-shot taken with succes: " + image.getName() + " (size : " + image.length() + " b)");
+                LOG.info("Screenshot taken with succes: " + image.getName() + " (size : " + image.length() + " b)");
             } else {
-                LOG.warn("screen-shot returned null: ");
+                LOG.warn("Screenshot returned null: ");
             }
 
         } catch (JSONException ex) {

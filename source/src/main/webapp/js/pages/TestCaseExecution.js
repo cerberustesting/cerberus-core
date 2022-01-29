@@ -1313,6 +1313,9 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
+    if (data.controlStatus !== "PE") {
+        configPanel.find("#duration").text("("+(data.end - data.start) / 1000 + " s)");
+    }
 
     if (isTheExecutionManual) {
         var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnMessageEx' placeholder='Execution Result Message'>");
@@ -1327,8 +1330,8 @@ function setConfigPanel(data) {
     }
 
     $("#editTcHeader").unbind("click").click(function () {
-        openModalTestCase(data.test, data.testcase, "EDIT")
-    })
+        openModalTestCase(data.test, data.testcase, "EDIT");
+    });
 
     configPanel.find("#environment").text(data.environment);
     configPanel.find("#country").text(data.country);
@@ -1954,24 +1957,24 @@ function createPropertiesOld(propList) {
 function createStepList(data, steps) {
     $("#actionContainer").empty();
     $("#steps").empty();
-    
+
     data.sort((a, b) => (a.start > b.start) ? 1 : -1);
-    
+
     const PRE_TESTING = "Pre Testing";
     const POST_TESTING = "Post Testing";
-    
+
     const preTests = data.filter(step => step.test === PRE_TESTING);
     const regularSteps = data.filter(step => (step.test !== PRE_TESTING && step.test !== POST_TESTING));
     const postTests = data.filter(step => step.test === POST_TESTING);
-    
+
     const orderedStepDataList = [...preTests, ...regularSteps, ...postTests];
 
     for (const [i, stepData] of orderedStepDataList.entries()) {
-            let step = new Step(stepData, steps, i);
-            $(step).data("id", {stepId: i, actionId: -1, controlId: -1});
-            step.addElements();
-            step.draw();
-            steps.push(step);
+        let step = new Step(stepData, steps, i);
+        $(step).data("id", {stepId: i, actionId: -1, controlId: -1});
+        step.addElements();
+        step.draw();
+        steps.push(step);
     }
 
     if (steps.length > 0) {

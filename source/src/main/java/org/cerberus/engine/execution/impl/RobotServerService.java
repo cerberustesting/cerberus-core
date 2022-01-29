@@ -532,6 +532,11 @@ public class RobotServerService implements IRobotServerService {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
 
+            // Check if Sikuli is available on node.
+            if (driver != null) {
+                tCExecution.getSession().setSikuliAvailable(sikuliService.isSikuliServerReachableOnNode(tCExecution.getSession()));
+            }
+
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {

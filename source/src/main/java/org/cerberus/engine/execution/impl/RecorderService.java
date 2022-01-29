@@ -335,16 +335,27 @@ public class RecorderService implements IRecorderService {
          * Take Screenshot and write it
          */
         File newImage = null;
+        File newImageDesktop = null;
         if (applicationType.equals(Application.TYPE_GUI)
                 || applicationType.equals(Application.TYPE_APK)
                 || applicationType.equals(Application.TYPE_IPA)) {
+
             newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession(), cropValues);
+            // If Sikuli is available we also take a full desktop screenshot
+            if (testCaseExecution.getSession().isSikuliAvailable()) {
+                newImageDesktop = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
+            }
+
         } else if (applicationType.equals(Application.TYPE_FAT)) {
+
             newImage = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
+
         }
 
         if (newImage != null) {
             try {
+                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
+                
                 Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png", false);
                 LOG.debug(logPrefix + "FullPath " + recorder.getFullPath());
 
@@ -354,7 +365,6 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
                 }
                 // Getting the max size of the screenshot.
-                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
                 String fileDesc = "Screenshot";
                 if (maxSizeParam < newImage.length()) {
                     LOG.warn(logPrefix + "Screenshot size exceeds the maximum defined in configurations (" + newImage.length() + ">=" + maxSizeParam + ") " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
@@ -374,6 +384,33 @@ public class RecorderService implements IRecorderService {
                 FileUtils.forceDelete(newImage);
                 LOG.debug(logPrefix + "Temp file deleted with success " + newImage.getName());
                 LOG.debug(logPrefix + "Screenshot done in : " + recorder.getRelativeFilenameURL());
+
+                if (newImageDesktop != null) {
+                    Recorder recorderDestop = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot-desktop", "png", false);
+                    LOG.debug(logPrefix + "FullPath " + recorderDestop.getFullPath());
+
+                    // Getting the max size of the screenshot.
+                    fileDesc = "Desktop Screenshot";
+                    if (maxSizeParam < newImageDesktop.length()) {
+                        LOG.warn(logPrefix + "Screenshot size exceeds the maximum defined in configurations (" + newImageDesktop.length() + ">=" + maxSizeParam + ") " + newImageDesktop.getName() + " destination: " + recorderDestop.getRelativeFilenameURL());
+                        fileDesc = "Desktop Screenshot Too Big !!";
+                    } else {
+                        // Copies the temp file to the execution file
+                        FileUtils.copyFile(newImageDesktop, new File(recorderDestop.getFullFilename()));
+                        LOG.debug(logPrefix + "Copy file finished with success - source: " + newImageDesktop.getName() + " destination: " + recorderDestop.getRelativeFilenameURL());
+                        LOG.info("File saved : " + recorderDestop.getFullFilename());
+                    }
+
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorderDestop.getLevel(), fileDesc, recorderDestop.getRelativeFilenameURL(), "PNG", "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+
+                    //deletes the temporary file
+                    FileUtils.forceDelete(newImageDesktop);
+                    LOG.debug(logPrefix + "Temp file deleted with success " + newImageDesktop.getName());
+                    LOG.debug(logPrefix + "Desktop Screenshot done in : " + recorderDestop.getRelativeFilenameURL());
+
+                }
 
             } catch (IOException ex) {
                 LOG.error(logPrefix + ex.toString(), ex);
@@ -396,7 +433,7 @@ public class RecorderService implements IRecorderService {
         String step = String.valueOf(testCaseStepActionExecution.getStepId());
         String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-        String controlString = control.equals(0) ? null : String.valueOf(control);
+        String controlString = (control < 0) ? null : String.valueOf(control);
 
         try {
             Recorder recorder = this.initFilenames(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), test, testCase, step, index, sequence, controlString, null, 0, "pagesource", "html", false);

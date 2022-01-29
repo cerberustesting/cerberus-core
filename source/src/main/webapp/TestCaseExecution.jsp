@@ -68,6 +68,7 @@
                                         <span id="environment"></span>
                                         <span name="Separator"> </span>
                                         <span id="controlstatus" style="font-weight: 900"></span>
+                                        <span id="duration"></span>
                                     </div>
                                     <div class="text-wrap">
                                         <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>

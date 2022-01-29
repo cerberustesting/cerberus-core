@@ -41,6 +41,9 @@ public class Session {
     private Integer nodeProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
     
     private boolean started;
+    private boolean sikuliAvailable;
+    
+    
     private WebDriver driver;
     private AppiumDriver appiumDriver;
 
@@ -73,6 +76,14 @@ public class Session {
     private MutableCapabilities desiredCapabilities;
 
     private JSONArray consoleLogs;
+
+    public boolean isSikuliAvailable() {
+        return sikuliAvailable;
+    }
+
+    public void setSikuliAvailable(boolean sikuliAvailable) {
+        this.sikuliAvailable = sikuliAvailable;
+    }
 
     public Integer getNodeProxyPort() {
         return nodeProxyPort;

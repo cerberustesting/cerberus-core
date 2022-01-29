@@ -1,10 +1,12 @@
 *Bug fixes*
 [square]
-* none
+* Page source were not correctly displayed on execution screen.
 
 *Improvements / New features*
 [square]
-* User refactor adding posibility to create local user even with Keycloak activated (in order to support service account with APIKey).
+* User refactor adding possibility to create local user even when Keycloak is activated (in order to support service account with APIKey). That allow to create as many APIKey as needed.
+* User can have 5 attributes and a comment field for specific need.
+* On GUI application, if sikuli extention is available, desktop screenshots are also taken (on top of current web screenshot)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
