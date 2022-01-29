@@ -38,7 +38,14 @@ public interface ISikuliService {
      * @param session
      * @return
      */
-    public boolean isSikuliServerReachable(Session session);
+    public boolean isSikuliServerReachableOnRobot(Session session);
+
+    /**
+     *
+     * @param session
+     * @return
+     */
+    public boolean isSikuliServerReachableOnNode(Session session);
 
     /**
      *

@@ -165,7 +165,7 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public boolean isSikuliServerReachable(Session session) {
+    public boolean isSikuliServerReachableOnRobot(Session session) {
         HttpURLConnection connection = null;
         BufferedReader in = null;
         PrintStream os = null;
@@ -204,6 +204,47 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
+    public boolean isSikuliServerReachableOnNode(Session session) {
+        HttpURLConnection connection = null;
+        BufferedReader in = null;
+        PrintStream os = null;
+
+        URL url;
+        String host = StringUtil.cleanHostURL(session.getNodeHost());
+        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        try {
+            /**
+             * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
+             */
+            url = new URL(urlToConnect);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            LOG.debug("Trying to connect to: " + urlToConnect);
+
+            if (connection != null) {
+                LOG.debug("Answer from Server: " + connection.getResponseCode());
+            }
+
+            if (connection == null || connection.getResponseCode() != 200) {
+                return false;
+            }
+
+        } catch (IOException ex) {
+            LOG.warn(ex);
+            return false;
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return true;
+    }
+
+    @Override
     public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String locator2, String text, String text2) {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -213,7 +254,7 @@ public class SikuliService implements ISikuliService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String host = StringUtil.cleanHostURL(session.getHost());
+        String host = StringUtil.cleanHostURL(session.getNodeHost());
         String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
         try {
             /**
@@ -223,11 +264,11 @@ public class SikuliService implements ISikuliService {
             if (session.getNodeProxyPort() > 0) {
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
 
-                LOG.debug("Open Connection to (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.debug("Open Connection to : " + urlToConnect);
+                LOG.info("Open Connection to : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Sikuli extension the sikuli timeout + 10 s to perform the action/control.

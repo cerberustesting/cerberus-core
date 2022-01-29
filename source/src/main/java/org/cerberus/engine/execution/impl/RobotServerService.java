@@ -437,7 +437,7 @@ public class RobotServerService implements IRobotServerService {
                     /**
                      * Check sikuli extension is reachable
                      */
-                    if (!sikuliService.isSikuliServerReachable(session)) {
+                    if (!sikuliService.isSikuliServerReachableOnRobot(session)) {
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
                         mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSession().getHost()));
                         mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSession().getPort()));
