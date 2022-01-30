@@ -51,6 +51,7 @@
             <%@ include file="include/transversalobject/AppService.html"%>
             <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            <%@ include file="include/utils/modal-generic.html"%>
 
 
             <h1 class="page-title-line">Test Case Script</h1>

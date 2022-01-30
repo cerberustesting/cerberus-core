@@ -51,6 +51,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.sikuli.impl.SikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;
@@ -94,9 +95,9 @@ public class ControlService implements IControlService {
     private IRobotServerService robotServerService;
 
     @Override
-    public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution controlExecution) {
         MessageEvent res;
-        TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution execution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
@@ -104,25 +105,25 @@ public class ControlService implements IControlService {
          */
         try {
             // When starting a new control, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getDescription(),
-                    tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-            testCaseStepActionControlExecution.setDescription(answerDecode.getItem());
+            answerDecode = variableService.decodeStringCompletly(controlExecution.getDescription(),
+                    execution, controlExecution.getTestCaseStepActionExecution(), false);
+            controlExecution.setDescription(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the control result.
-                testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
-                testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                controlExecution.setEnd(new Date().getTime());
                 LOG.debug("Control interupted due to decode 'Description' Error.");
-                return testCaseStepActionControlExecution;
+                return controlExecution;
             }
         } catch (CerberusEventException cex) {
-            testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
-            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            return testCaseStepActionControlExecution;
+            controlExecution.setControlResultMessage(cex.getMessageError());
+            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return controlExecution;
         }
 
         /**
@@ -134,128 +135,145 @@ public class ControlService implements IControlService {
             //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
             //if the property service was unable to decode the property that is specified in the object,
             //then the execution of this control should not performed
-            if (testCaseStepActionControlExecution.getValue1() == null) {
-                testCaseStepActionControlExecution.setValue1("");
+            if (controlExecution.getValue1() == null) {
+                controlExecution.setValue1("");
             }
-            if (testCaseStepActionControlExecution.getValue1().contains("%")) {
+            if (controlExecution.getValue1().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
-                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+                execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(), tCExecution,
-                        testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue1(answerDecode.getItem());
+                answerDecode = variableService.decodeStringCompletly(controlExecution.getValue1(), execution,
+                        controlExecution.getTestCaseStepActionExecution(), false);
+                controlExecution.setValue1(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
-                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
-                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
+                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value1' Error.");
-                    return testCaseStepActionControlExecution;
+                    return controlExecution;
                 }
 
             }
 
-            if (testCaseStepActionControlExecution.getValue2() == null) {
-                testCaseStepActionControlExecution.setValue2("");
+            if (controlExecution.getValue2() == null) {
+                controlExecution.setValue2("");
             }
-            if (testCaseStepActionControlExecution.getValue2().contains("%")) {
+            if (controlExecution.getValue2().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
-                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+                execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
-                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue2(answerDecode.getItem());
+                answerDecode = variableService.decodeStringCompletly(controlExecution.getValue2(),
+                        execution, controlExecution.getTestCaseStepActionExecution(), false);
+                controlExecution.setValue2(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
-                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
-                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
+                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value2' Error.");
-                    return testCaseStepActionControlExecution;
+                    return controlExecution;
                 }
 
             }
 
-            if (testCaseStepActionControlExecution.getValue3() == null) {
-                testCaseStepActionControlExecution.setValue3("");
+            if (controlExecution.getValue3() == null) {
+                controlExecution.setValue3("");
             }
-            if (testCaseStepActionControlExecution.getValue3().contains("%")) {
+            if (controlExecution.getValue3().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
-                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+                execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue3(),
-                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
-                testCaseStepActionControlExecution.setValue3(answerDecode.getItem());
+                answerDecode = variableService.decodeStringCompletly(controlExecution.getValue3(),
+                        execution, controlExecution.getTestCaseStepActionExecution(), false);
+                controlExecution.setValue3(answerDecode.getItem());
 
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
-                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
-                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value3"));
+                    controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    controlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value3' Error.");
-                    return testCaseStepActionControlExecution;
+                    return controlExecution;
                 }
 
             }
         } catch (CerberusEventException cex) {
-            testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
-            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            return testCaseStepActionControlExecution;
+            controlExecution.setControlResultMessage(cex.getMessageError());
+            controlExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return controlExecution;
         }
 
         /**
          * Timestamp starts after the decode. TODO protect when property is
          * null.
          */
-        testCaseStepActionControlExecution.setStart(new Date().getTime());
+        controlExecution.setStart(new Date().getTime());
 
         // When starting a new control, we reset the property list that was already calculated.
-        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+        execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+        String value1 = controlExecution.getValue1();
+        String value2 = controlExecution.getValue2();
+        String value3 = controlExecution.getValue3();
 
         // Define Timeout
-        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(testCaseStepActionControlExecution.getOptions());
+        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(controlExecution.getOptions());
         if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
             Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
-            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+            robotServerService.setOptionsTimeout(execution.getSession(), newTimeout);
         }
         if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
             Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
-            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
+            robotServerService.setOptionsHighlightElement(execution.getSession(), newHighlightElement);
         }
         if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
-            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
+            robotServerService.setOptionsMinSimilarity(execution.getSession(), minSimilarity);
+        }
+
+        // Record picture= files at action level.
+        Identifier identifier = identifierService.convertStringToIdentifier(value1);
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isNullOrEmpty(identifier.getLocator())) {
+            LOG.warn("Saving Image 1 on Control : " + identifier.getLocator());
+
+            controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "1"));
+        }
+        identifier = identifierService.convertStringToIdentifier(value2);
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isNullOrEmpty(identifier.getLocator())) {
+            LOG.warn("Saving Image 2 on Control : " + identifier.getLocator());
+            controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "2"));
         }
 
         try {
 
-            switch (testCaseStepActionControlExecution.getControl()) {
+            switch (controlExecution.getControl()) {
 
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL:
-                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyStringEqual(value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
-                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyStringDifferent(value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
-                    res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringGreater(value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR:
-                    res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyStringMinor(value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
-                    res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyStringContains(value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
-                    res = this.verifyStringNotContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyStringNotContains(value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
@@ -263,98 +281,98 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATEROREQUAL:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOR:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOROREQUAL:
-                    res = this.evaluateControl_ifNumericXXX(testCaseStepActionControlExecution.getControl(), testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.evaluateControl_ifNumericXXX(controlExecution.getControl(), value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT:
                     //TODO validate properties
-                    res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementPresent(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT:
                     //TODO validate properties
-                    res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementNotPresent(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE:
                     //TODO validate properties
-                    res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementVisible(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE:
                     //TODO validate properties
-                    res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementNotVisible(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS:
-                    res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyElementEquals(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT:
-                    res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyElementDifferent(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT:
                     //TODO validate properties
-                    res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyElementInElement(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE:
-                    res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementClickable(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE:
-                    res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyElementNotClickable(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATEROREQUAL:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATEROREQUAL, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATEROREQUAL, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL:
-                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL, tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTMATCHREGEX:
-                    res = this.VerifyElementTextMatchRegex(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.VerifyElementTextMatchRegex(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
-                    res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.VerifyTextInPage(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
-                    res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.VerifyTextNotInPage(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
-                    res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue3());
+                    res = this.verifyTitle(execution, value1, controlExecution.getValue3());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYURL:
-                    res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyUrl(execution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
-                    res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyTextInDialog(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE:
-                    res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    res = this.verifyXmlTreeStructure(execution, value1, controlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
-                    res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution, testCaseStepActionControlExecution.getValue1());
+                    res = this.takeScreenshot(execution, controlExecution.getTestCaseStepActionExecution(), controlExecution, value1);
                     break;
                 case TestCaseStepActionControl.CONTROL_GETPAGESOURCE:
-                    res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+                    res = this.getPageSource(execution, controlExecution.getTestCaseStepActionExecution(), controlExecution);
                     break;
 
                 default:
                     res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
-                    res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));
+                    res.setDescription(res.getDescription().replace("%CONTROL%", controlExecution.getControl()));
             }
         } catch (final CerberusEventException exception) {
             res = exception.getMessageError();
@@ -365,9 +383,9 @@ public class ControlService implements IControlService {
         }
 
         // Reset Timeout to default
-        robotServerService.setOptionsToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(execution.getSession());
 
-        testCaseStepActionControlExecution.setControlResultMessage(res);
+        controlExecution.setControlResultMessage(res);
 
         /**
          * Updating Control result message only if control is not successful.
@@ -375,7 +393,7 @@ public class ControlService implements IControlService {
          * transformed to OK.
          */
         if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+            controlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
         }
 
         /**
@@ -384,13 +402,13 @@ public class ControlService implements IControlService {
          * but refresh the Execution status.
          */
         if (res.isStopTest()) {
-            if (testCaseStepActionControlExecution.getFatal().equals("Y")) {
-                testCaseStepActionControlExecution.setStopExecution(true);
+            if (controlExecution.getFatal().equals("Y")) {
+                controlExecution.setStopExecution(true);
             }
         }
 
-        testCaseStepActionControlExecution.setEnd(new Date().getTime());
-        return testCaseStepActionControlExecution;
+        controlExecution.setEnd(new Date().getTime());
+        return controlExecution;
     }
 
     private MessageEvent verifyStringDifferent(String value1, String value2, String isCaseSensitive) {
@@ -1690,7 +1708,7 @@ public class ControlService implements IControlService {
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
-            TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence(), cropValues);
+            List<TestCaseExecutionFile> file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId(), cropValues);
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;
@@ -1706,7 +1724,7 @@ public class ControlService implements IControlService {
         if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
-            TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId());
             if (file != null) {
                 List<TestCaseExecutionFile> fileList = new ArrayList<>();
                 fileList.add(file);

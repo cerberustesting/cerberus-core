@@ -6,7 +6,11 @@
 [square]
 * User refactor adding possibility to create local user even when Keycloak is activated (in order to support service account with APIKey). That allow to create as many APIKey as needed.
 * User can have 5 attributes and a comment field for specific need.
-* On GUI application, if sikuli extention is available, desktop screenshots are also taken (on top of current web screenshot)
+* On GUI application, if sikuli extension is available (hybrid mode), desktop screenshots are also taken (on top of current web screenshot)
+* UI improvements on testcasescript page when using picture= elements. Preview are larger and real size can be open on click.
+* Page Source and Screenshots are now taken even if action are forced to continue.
+* When defining an element based on picture (using sikuli feature), all pictures are now saved at execution level. That makes execution analysis easier by better understanding which picture Cerberus used.
+* Total execution duration is now displayed on top of the page.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

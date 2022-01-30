@@ -81,8 +81,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
             LOG.debug("SQL.param.testcase : " + testCaseStepActionControlExecution.getTestCase());
             LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepActionControlExecution.getIndex());
-            LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getSequence());
-            LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlSequence());
+            LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getActionId());
+            LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlId());
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -93,8 +93,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setLong(i++, testCaseStepActionControlExecution.getId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getStepId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getIndex());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getSequence());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getControlSequence());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getActionId());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getControlId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getSort());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionOperator());
@@ -166,8 +166,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
             LOG.debug("SQL.param.testcase : " + testCaseStepActionControlExecution.getTestCase());
             LOG.debug("SQL.param.step : " + testCaseStepActionControlExecution.getStepId());
             LOG.debug("SQL.param.index : " + testCaseStepActionControlExecution.getIndex());
-            LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getSequence());
-            LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlSequence());
+            LOG.debug("SQL.param.sequence : " + testCaseStepActionControlExecution.getActionId());
+            LOG.debug("SQL.param.controlsequence : " + testCaseStepActionControlExecution.getControlId());
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -212,8 +212,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(i++, testCaseStepActionControlExecution.getTestCase());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getStepId());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getIndex());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getSequence());
-                preStat.setInt(i++, testCaseStepActionControlExecution.getControlSequence());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getActionId());
+                preStat.setInt(i++, testCaseStepActionControlExecution.getControlId());
 
                 preStat.executeUpdate();
 

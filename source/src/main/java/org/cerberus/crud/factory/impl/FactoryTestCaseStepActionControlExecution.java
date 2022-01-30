@@ -47,8 +47,8 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setTestCase(testCase);
         testCaseStepActionControlExecution.setStepId(stepId);
         testCaseStepActionControlExecution.setIndex(index);
-        testCaseStepActionControlExecution.setSequence(sequence);
-        testCaseStepActionControlExecution.setControlSequence(controlSequence);
+        testCaseStepActionControlExecution.setActionId(sequence);
+        testCaseStepActionControlExecution.setControlId(controlSequence);
         testCaseStepActionControlExecution.setSort(sort);
         testCaseStepActionControlExecution.setReturnCode(returnCode);
         testCaseStepActionControlExecution.setReturnMessage(returnMessage);

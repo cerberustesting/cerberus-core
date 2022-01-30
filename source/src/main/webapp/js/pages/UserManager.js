@@ -57,6 +57,9 @@ function initPage() {
         $("#editUserModal").find("#systems option").prop('selected', false)
     });
 
+    $('#setAPIKey').click(function (e) {
+        $("#apiKey").val(generateUUID());
+    });
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&roles=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList", undefined, true);

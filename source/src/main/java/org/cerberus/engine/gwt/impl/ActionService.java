@@ -140,9 +140,9 @@ public class ActionService implements IActionService {
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
 
     @Override
-    public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
+    public TestCaseStepActionExecution doAction(TestCaseStepActionExecution actionExecution) {
         MessageEvent res;
-        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution tCExecution = actionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
@@ -152,24 +152,24 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getDescription(),
-                    tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setDescription(answerDecode.getItem());
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getDescription(),
+                    tCExecution, actionExecution, false);
+            actionExecution.setDescription(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
-                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                testCaseStepActionExecution.setEnd(new Date().getTime());
+                actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Description"));
+                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Description' Error.");
-                return testCaseStepActionExecution;
+                return actionExecution;
             }
         } catch (CerberusEventException cex) {
-            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            testCaseStepActionExecution.setEnd(new Date().getTime());
-            return testCaseStepActionExecution;
+            actionExecution.setActionResultMessage(cex.getMessageError());
+            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            actionExecution.setEnd(new Date().getTime());
+            return actionExecution;
         }
 
         /**
@@ -180,24 +180,24 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
-                    tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setValue1(answerDecode.getItem());
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(),
+                    tCExecution, actionExecution, false);
+            actionExecution.setValue1(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
-                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value1"));
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                testCaseStepActionExecution.setEnd(new Date().getTime());
+                actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value1"));
+                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value1' Error.");
-                return testCaseStepActionExecution;
+                return actionExecution;
             }
         } catch (CerberusEventException cex) {
-            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            testCaseStepActionExecution.setEnd(new Date().getTime());
-            return testCaseStepActionExecution;
+            actionExecution.setActionResultMessage(cex.getMessageError());
+            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            actionExecution.setEnd(new Date().getTime());
+            return actionExecution;
         }
 
         try {
@@ -205,42 +205,42 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
-                    tCExecution, testCaseStepActionExecution, false);
-            testCaseStepActionExecution.setValue2(answerDecode.getItem());
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(),
+                    tCExecution, actionExecution, false);
+            actionExecution.setValue2(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
                 // If anything wrong with the decode --> we stop here with decode message in the action result.
-                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value2"));
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                testCaseStepActionExecution.setEnd(new Date().getTime());
+                actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value2"));
+                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value2' Error.");
-                return testCaseStepActionExecution;
+                return actionExecution;
             }
         } catch (CerberusEventException cex) {
-            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            testCaseStepActionExecution.setEnd(new Date().getTime());
-            return testCaseStepActionExecution;
+            actionExecution.setActionResultMessage(cex.getMessageError());
+            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            actionExecution.setEnd(new Date().getTime());
+            return actionExecution;
         }
 
         /**
          * Timestamp starts after the decode.
          */
-        testCaseStepActionExecution.setStart(new Date().getTime());
+        actionExecution.setStart(new Date().getTime());
 
-        String value1 = testCaseStepActionExecution.getValue1();
-        String value2 = testCaseStepActionExecution.getValue2();
-        String value3 = testCaseStepActionExecution.getValue3();
-        String propertyName = testCaseStepActionExecution.getPropertyName();
-        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2 + " and value3 : " + value3);
+        String value1 = actionExecution.getValue1();
+        String value2 = actionExecution.getValue2();
+        String value3 = actionExecution.getValue3();
+        String propertyName = actionExecution.getPropertyName();
+        LOG.debug("Doing Action : " + actionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2 + " and value3 : " + value3);
 
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
-        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(testCaseStepActionExecution.getOptions());
+        HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(actionExecution.getOptions());
         if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
             Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
             robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
@@ -255,8 +255,21 @@ public class ActionService implements IActionService {
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
 
+        // Record picture= files at action level.
+        Identifier identifier = identifierService.convertStringToIdentifier(value1);
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isNullOrEmpty(identifier.getLocator())) {
+            LOG.warn("Saving Image 1 on Action : " + identifier.getLocator());
+
+            actionExecution.addFileList(recorderService.recordPicture(actionExecution, 0, identifier.getLocator(), "1"));
+        }
+        identifier = identifierService.convertStringToIdentifier(value2);
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isNullOrEmpty(identifier.getLocator())) {
+            LOG.warn("Saving Image 2 on Action : " + identifier.getLocator());
+            actionExecution.addFileList(recorderService.recordPicture(actionExecution, 0, identifier.getLocator(), "2"));
+        }
+
         try {
-            switch (testCaseStepActionExecution.getAction()) {
+            switch (actionExecution.getAction()) {
                 case TestCaseStepAction.ACTION_CLICK:
                     res = this.doActionClick(tCExecution, value1, value2);
                     break;
@@ -300,7 +313,7 @@ public class ActionService implements IActionService {
                     res = this.doActionOpenURL(tCExecution, value1, value2, true);
                     break;
                 case TestCaseStepAction.ACTION_OPENURLLOGIN:
-                    testCaseStepActionExecution.setValue1(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
+                    actionExecution.setValue1(actionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
                     res = this.doActionUrlLogin(tCExecution);
                     break;
                 case TestCaseStepAction.ACTION_OPENURL:
@@ -364,7 +377,7 @@ public class ActionService implements IActionService {
                     res = this.doActionWaitNetworkTrafficIdle(tCExecution);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
-                    res = this.doActionCallService(testCaseStepActionExecution, value1, value2, value3);
+                    res = this.doActionCallService(actionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
                     res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
@@ -373,22 +386,22 @@ public class ActionService implements IActionService {
                     res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
-                    res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
+                    res = this.doActionCalculateProperty(actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
-                    res = this.doActionSetNetworkTrafficContent(tCExecution, testCaseStepActionExecution, value1, value2);
+                    res = this.doActionSetNetworkTrafficContent(tCExecution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
-                    res = this.doActionIndexNetworkTraffic(tCExecution, testCaseStepActionExecution, value1);
+                    res = this.doActionIndexNetworkTraffic(tCExecution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
-                    res = this.doActionSetConsoleContent(tCExecution, testCaseStepActionExecution, value1);
+                    res = this.doActionSetConsoleContent(tCExecution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
-                    res = this.doActionSetServiceCallContent(tCExecution, testCaseStepActionExecution);
+                    res = this.doActionSetServiceCallContent(tCExecution, actionExecution);
                     break;
                 case TestCaseStepAction.ACTION_SETCONTENT:
-                    res = this.doActionSetContent(tCExecution, testCaseStepActionExecution, value1);
+                    res = this.doActionSetContent(tCExecution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -399,18 +412,18 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
                     break;
                 case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
-                    res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
+                    res = this.doActionRemoveDifference(actionExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
                     break;
                 default:
                     res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
-                    res.setDescription(res.getDescription().replace("%ACTION%", testCaseStepActionExecution.getAction()));
+                    res.setDescription(res.getDescription().replace("%ACTION%", actionExecution.getAction()));
 
             }
         } catch (final Exception unexpected) {
@@ -429,34 +442,32 @@ public class ActionService implements IActionService {
          * whatever the return of the action is, we force the return to move
          * forward the test with no screenshot, pagesource.
          */
-        if (testCaseStepActionExecution.isFatal().equals("N") && res.isStopTest()) {
+        if (actionExecution.isFatal().equals("N") && res.isStopTest()) {
             res.setDescription(res.getDescription() + " -- Execution forced to continue.");
-            res.setDoScreenshot(false);
-            res.setGetPageSource(false);
             res.setStopTest(false);
             res.setMessage(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING);
         }
 
-        testCaseStepActionExecution.setActionResultMessage(res);
+        actionExecution.setActionResultMessage(res);
 
         /**
          * Determine here the impact of the Action on the full test return code
          * from the ResultMessage of the Action.
          */
-        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+        actionExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
 
         /**
          * Determine here if we stop the test from the ResultMessage of the
          * Action.
          */
-        testCaseStepActionExecution.setStopExecution(res.isStopTest());
+        actionExecution.setStopExecution(res.isStopTest());
 
         /**
          * Timestamp stops here.
          */
-        testCaseStepActionExecution.setEnd(new Date().getTime());
+        actionExecution.setEnd(new Date().getTime());
 
-        return testCaseStepActionExecution;
+        return actionExecution;
     }
 
     private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
@@ -586,7 +597,7 @@ public class ActionService implements IActionService {
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
             LOG.debug("Click : " + identifier.toString());
-            
+
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());

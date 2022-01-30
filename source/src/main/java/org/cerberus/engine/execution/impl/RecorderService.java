@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +89,6 @@ public class RecorderService implements IRecorderService {
     @Override
     public List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
-        TestCaseExecutionFile objectFile = null;
 
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
@@ -111,7 +112,7 @@ public class RecorderService implements IRecorderService {
             getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
             applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
             returnCode = testCaseStepActionControlExecution.getReturnCode();
-            controlNumber = testCaseStepActionControlExecution.getControlSequence();
+            controlNumber = testCaseStepActionControlExecution.getControlId();
         }
 
         /**
@@ -130,10 +131,7 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    objectFile = this.recordScreenshot(myExecution, testCaseStepActionExecution, controlNumber, "");
-                    if (objectFile != null) {
-                        objectFileList.add(objectFile);
-                    }
+                    objectFileList.addAll(this.recordScreenshot(myExecution, testCaseStepActionExecution, controlNumber, ""));
                 } else {
                     LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
                 }
@@ -158,10 +156,7 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    objectFile = this.recordPageSource(myExecution, testCaseStepActionExecution, controlNumber);
-                    if (objectFile != null) {
-                        objectFileList.add(objectFile);
-                    }
+                    objectFileList.add(this.recordPageSource(myExecution, testCaseStepActionExecution, controlNumber));
                 } else {
                     LOG.debug(logPrefix + "Not getting page source because connectivity with selenium server lost.");
                 }
@@ -219,12 +214,12 @@ public class RecorderService implements IRecorderService {
             returnCode = testCaseStepActionExecution.getReturnCode();
         } else {
             returnCode = testCaseStepActionControlExecution.getReturnCode();
-            controlNumber = testCaseStepActionControlExecution.getControlSequence();
+            controlNumber = testCaseStepActionControlExecution.getControlId();
             test = testCaseStepActionControlExecution.getTest();
             testCase = testCaseStepActionControlExecution.getTestCase();
             step = String.valueOf(testCaseStepActionControlExecution.getStepId());
             index = String.valueOf(testCaseStepActionControlExecution.getIndex());
-            sequence = String.valueOf(testCaseStepActionControlExecution.getSequence());
+            sequence = String.valueOf(testCaseStepActionControlExecution.getActionId());
             controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
         }
         // Used for logging purposes
@@ -313,8 +308,9 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues) {
+    public List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues) {
 
+        List<TestCaseExecutionFile> objectList = new ArrayList<>();
         TestCaseExecutionFile object = null;
 
         String test = testCaseStepActionExecution.getTest();
@@ -355,7 +351,7 @@ public class RecorderService implements IRecorderService {
         if (newImage != null) {
             try {
                 long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
-                
+
                 Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png", false);
                 LOG.debug(logPrefix + "FullPath " + recorder.getFullPath());
 
@@ -378,6 +374,7 @@ public class RecorderService implements IRecorderService {
 
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), fileDesc, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
+                objectList.add(object);
                 testCaseExecutionFileService.save(object);
 
                 //deletes the temporary file
@@ -403,6 +400,7 @@ public class RecorderService implements IRecorderService {
 
                     // Index file created to database.
                     object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorderDestop.getLevel(), fileDesc, recorderDestop.getRelativeFilenameURL(), "PNG", "", null, "", null);
+                    objectList.add(object);
                     testCaseExecutionFileService.save(object);
 
                     //deletes the temporary file
@@ -419,6 +417,66 @@ public class RecorderService implements IRecorderService {
             }
         } else {
             LOG.warn(logPrefix + "Screenshot returned null.");
+        }
+        return objectList;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordPicture(TestCaseStepActionExecution actionExecution, Integer control, String locator, String valueFieldName) {
+
+        TestCaseExecutionFile object = null;
+
+        String test = actionExecution.getTest();
+        String testCase = actionExecution.getTestCase();
+        String step = String.valueOf(actionExecution.getStepId());
+        String index = String.valueOf(actionExecution.getIndex());
+        String sequence = String.valueOf(actionExecution.getSequence());
+        String controlString = (control < 0) ? null : String.valueOf(control);
+        long runId = actionExecution.getId();
+        String extension = "";
+
+        LOG.debug("Saving picture.");
+
+        /**
+         * Take Screenshot and write it
+         */
+        try {
+
+            URL url = new URL(locator);
+            URLConnection connection = url.openConnection();
+
+            InputStream istream = new BufferedInputStream(connection.getInputStream());
+//            String mimeType = URLConnection.guessContentTypeFromStream(istream);
+//            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+//            MimeType mt = allTypes.forName(mimeType);
+//            extension = mt.getExtension();
+            byte[] bytes = IOUtils.toByteArray(istream);
+
+            Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "picture" + valueFieldName, "png", false);
+
+            LOG.debug("Picture FullPath " + recorder.getFullPath());
+
+            File dir = new File(recorder.getFullPath());
+            if (!dir.exists()) {
+                LOG.debug("Create directory for execution " + recorder.getFullPath());
+                dir.mkdirs();
+            }
+            File newImage = new File(recorder.getFullFilename());
+            OutputStream outStream = new FileOutputStream(newImage);
+            outStream.write(bytes);
+            IOUtils.close(outStream);
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorder.getLevel(), "Picture " + valueFieldName, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+            //deletes the temporary file
+            LOG.debug("Picture saved to : " + recorder.getRelativeFilenameURL());
+
+        } catch (IOException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
         }
         return object;
     }
@@ -1123,7 +1181,7 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
+    public Recorder initFilenames(long exeID, String test, String testCase, String stepID, String index, String ctionID, String controlID, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
         Recorder newRecorder = new Recorder();
 
         try {
@@ -1171,17 +1229,17 @@ public class RecorderService implements IRecorderService {
             if (!StringUtil.isNullOrEmpty(testCase)) {
                 sbfileName.append(testCase).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(step)) {
-                sbfileName.append("S").append(step).append("-");
+            if (!StringUtil.isNullOrEmpty(stepID)) {
+                sbfileName.append("S").append(stepID).append("-");
             }
             if (!StringUtil.isNullOrEmpty(index)) {
                 sbfileName.append("I").append(index).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(sequence)) {
-                sbfileName.append("A").append(sequence).append("-");
+            if (!StringUtil.isNullOrEmpty(ctionID)) {
+                sbfileName.append("A").append(ctionID).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(controlString)) {
-                sbfileName.append("C").append(controlString).append("-");
+            if (!StringUtil.isNullOrEmpty(controlID)) {
+                sbfileName.append("C").append(controlID).append("-");
             }
             if (!StringUtil.isNullOrEmpty(property)) {
                 sbfileName.append(property).append("-");
@@ -1205,12 +1263,12 @@ public class RecorderService implements IRecorderService {
              * Property level --> property+index
              */
             String level = "";
-            if (!(StringUtil.isNullOrEmpty(controlString))) {
-                level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence + "-" + controlString;
-            } else if (!(StringUtil.isNullOrEmpty(sequence))) {
-                level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence;
-            } else if (!(StringUtil.isNullOrEmpty(step))) {
-                level = test + "-" + testCase + "-" + step + "-" + index;
+            if (!(StringUtil.isNullOrEmpty(controlID))) {
+                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID + "-" + controlID;
+            } else if (!(StringUtil.isNullOrEmpty(ctionID))) {
+                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID;
+            } else if (!(StringUtil.isNullOrEmpty(stepID))) {
+                level = test + "-" + testCase + "-" + stepID + "-" + index;
             } else if (!(StringUtil.isNullOrEmpty(property))) {
                 level = property + "-" + propertyIndex;
             }

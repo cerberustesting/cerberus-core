@@ -562,7 +562,7 @@ public enum MessageEventEnum {
     // *********** GENERIC ***********
     GENERIC_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation finished with success.", false, false, false, MessageGeneralEnum.GENERIC_SUCCESS),
     GENERIC_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Operation finished with Warning :  %REASON%.", false, false, false, MessageGeneralEnum.GENERIC_WARNING),
-    GENERIC_ERROR(500, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Operation finished with error ! %REASON%", false, false, false, MessageGeneralEnum.GENERIC_WARNING),
+    GENERIC_ERROR(500, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Operation finished with error ! %REASON%", false, false, false, MessageGeneralEnum.GENERIC_ERROR),
     // *********** OTHERS ***********
     NOT_IMPLEMEMTED(900, "", "Not Implememted.", true, true, false, MessageGeneralEnum.EXECUTION_FA);
 

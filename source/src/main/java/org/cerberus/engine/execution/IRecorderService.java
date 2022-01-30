@@ -55,7 +55,17 @@ public interface IRecorderService {
      * @param cropValues
      * @return
      */
-    TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
+    List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
+
+    /**
+     *
+     * @param actionExecution
+     * @param controlId
+     * @param locator
+     * @param valueFieldName
+     * @return
+     */
+    TestCaseExecutionFile recordPicture(TestCaseStepActionExecution actionExecution, Integer controlId, String locator, String valueFieldName);
 
     /**
      *

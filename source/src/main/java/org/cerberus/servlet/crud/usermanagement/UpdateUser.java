@@ -162,7 +162,7 @@ public class UpdateUser extends HttpServlet {
                 try {
                     
                     ans = userService.update(myUser);
-                    AnswerUtil.agregateAnswer(finalAnswer, ans);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
@@ -172,21 +172,20 @@ public class UpdateUser extends HttpServlet {
                         logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : ['" + login + "']", request);
                         
                         if (!newRoles.isEmpty()) {
-                            
                             userRoleService.updateUserRoles(myUser, newRoles);
-                            
                         }
+                        
                         if (!newSystems.isEmpty()) {
                             request.getSession().setAttribute("MySystem", newSystems.get(0).getSystem());
                             userSystemService.updateUserSystems(myUser, newSystems);
                         }
+                        
                     }
 
                     /**
                      * Adding Log entry.
                      */
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
-                    AnswerUtil.agregateAnswer(finalAnswer, ans);
+//                    AnswerUtil.agregateAnswer(finalAnswer, ans);
                     
                     jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());

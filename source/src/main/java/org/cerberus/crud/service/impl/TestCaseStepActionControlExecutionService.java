@@ -83,7 +83,7 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
             TestCaseStepActionControlExecution tcsace = (TestCaseStepActionControlExecution) control;
 
-            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStepId() + "-" + tcsace.getIndex() + "-" + tcsace.getSequence() + "-" + tcsace.getControlSequence());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, tcsace.getTest() + "-" + tcsace.getTestCase() + "-" + tcsace.getStepId() + "-" + tcsace.getIndex() + "-" + tcsace.getActionId() + "-" + tcsace.getControlId());
             tcsace.setFileList(files.getDataList());
 
             tcsaceList.add(tcsace);

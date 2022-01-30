@@ -146,11 +146,11 @@ public class TestCaseStepActionControlExecution {
         this.testCaseStepActionExecution = testCaseStepActionExecution;
     }
 
-    public int getControlSequence() {
+    public int getControlId() {
         return controlSequence;
     }
 
-    public void setControlSequence(int control) {
+    public void setControlId(int control) {
         this.controlSequence = control;
     }
 
@@ -298,11 +298,11 @@ public class TestCaseStepActionControlExecution {
         this.returnMessage = returnMessage;
     }
 
-    public int getSequence() {
+    public int getActionId() {
         return sequence;
     }
 
-    public void setSequence(int sequence) {
+    public void setActionId(int sequence) {
         this.sequence = sequence;
     }
 
@@ -408,8 +408,8 @@ public class TestCaseStepActionControlExecution {
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStepId());
             result.put("index", this.getIndex());
-            result.put("sequence", this.getSequence());
-            result.put("control", this.getControlSequence());
+            result.put("sequence", this.getActionId());
+            result.put("control", this.getControlId());
             result.put("sort", this.getSort());
             result.put("conditionOperator", this.getConditionOperator());
             result.put("conditionVal1Init", this.getConditionVal1Init());

@@ -2209,8 +2209,8 @@ Action.prototype.draw = function (afterAction) {
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
+    var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
+    var imgGrp = $("<div></div>").css("height", "100%").append($("<div style='margin-top:40px;max-width: 200px'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
     if ((!this.parentStep.isUsingLibraryStep) && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -2256,8 +2256,7 @@ Action.prototype.draw = function (afterAction) {
     });
     row.append(drag);
     row.append(this.generateContent());
-    row.append(imgGrp);
-    row.append(btnGrp);
+    row.append(btnGrp.append(imgGrp));
     row.data("item", this);
     htmlElement.prepend(row);
 
@@ -2730,8 +2729,8 @@ Control.prototype.draw = function (afterControl) {
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%"));
+    var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
+    var imgGrp = $("<div></div>").css("height", "100%;max-width: 200px").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%"));
 
     var content = this.generateContent();
 
@@ -2785,8 +2784,7 @@ Control.prototype.draw = function (afterControl) {
 
     htmlElement.append(drag);
     htmlElement.append(content);
-    htmlElement.append(imgGrp);
-    htmlElement.append(btnGrp);
+    htmlElement.append(btnGrp.append(imgGrp));
     htmlElement.data("item", this);
 
     setPlaceholderControl(htmlElement);
@@ -3271,7 +3269,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
-                                $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
+                                $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime()).attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
@@ -4224,4 +4222,8 @@ function tec_keyispressed(e) {
         return false;
     }
     return true;
+}
+
+function displayPictureOfMinitature1(element) {
+    showPicture("screenshot", $(element).attr('src'));
 }

@@ -235,12 +235,29 @@ public class UserService implements IUserService {
 
     @Override
     public Answer delete(User user) {
-        return userDAO.delete(user);
+        if (User.USER_SERVICEACCOUNT.equals(user.getLogin())) {
+
+            MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_ERROR);
+            msg.setDescription(msg.getDescription().replace("%REASON%", "You cannot delete Cerberus service account '" + User.USER_SERVICEACCOUNT + "'!"));
+            return new Answer(msg);
+
+        } else {
+            return userDAO.delete(user);
+
+        }
     }
 
     @Override
     public Answer update(User user) {
-        return userDAO.update(user);
+        if (User.USER_SERVICEACCOUNT.equals(user.getLogin()) && user.getApiKey().length() < 15) {
+
+            MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_ERROR);
+            msg.setDescription(msg.getDescription().replace("%REASON%", "Cerberus service account '" + User.USER_SERVICEACCOUNT + "' must have an APIKey larger than 15 digits!"));
+            return new Answer(msg);
+
+        } else {
+            return userDAO.update(user);
+        }
     }
 
     @Override
