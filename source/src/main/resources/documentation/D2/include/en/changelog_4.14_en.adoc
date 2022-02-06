@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * Page source were not correctly displayed on execution screen.
+* Manage correctly user name with spaces.
 
 *Improvements / New features*
 [square]

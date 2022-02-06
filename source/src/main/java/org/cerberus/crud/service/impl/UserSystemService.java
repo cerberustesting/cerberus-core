@@ -20,6 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IUserSystemDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
@@ -47,6 +49,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserSystemService implements IUserSystemService {
+
+    private static final Logger LOG = LogManager.getLogger(UserSystemService.class);
 
     @Autowired
     private IUserSystemDAO userSystemDAO;
@@ -120,14 +124,16 @@ public class UserSystemService implements IUserSystemService {
     public void createSystemAutomatic(String user) throws CerberusException {
         // Automatically create a User Space system depending on parameters.
         if (parameterService.getParameterBooleanByKey("cerberus_accountcreation_ownsystemcreation", "", true)) {
-            String newSystem = "US-" + user;
+            LOG.debug(user);
+            String newSystem = "US-" + user.replace(" ", "");
+            LOG.debug("New User System : " + newSystem);
             // Create invariant.
             invariantService.create(invariantFactory.create("SYSTEM", newSystem, 9999, "System for user " + user, "User System", "", "", "", "", "", "", "", "", ""));
             // Create User/System.
             UserSystem us = factoryUserSystem.create(user, newSystem);
             userSystemDAO.create(us);
         }
-        // Automatically all systems depending on parameters.
+        // Automatically add systems depending on parameters.
         String param = parameterService.getParameterStringByKey("cerberus_accountcreation_systemlist", "", "ALL");
         if (param.equals("ALL")) {
             userSystemDAO.createAllSystemList(user);
