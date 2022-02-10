@@ -21,26 +21,26 @@
     Author     : cerberus
 */
 .action-group label {
-	display:block !important;
+    display:block !important;
 }
 
 .many{
-	display:initial!important;
+    display:initial!important;
 }
 
 .col-lg-5 input{
-	width: 80% !important;
+    width: 80% !important;
 }
 
 .separator-left {
     border-left: 1px solid #E3E3E3;
-/*    width: inherit;*/
+    /*    width: inherit;*/
     padding-left: 5px;
     /*margin-right: 5px;*/
 }
 
 .separator-top {
-/*    width: inherit;*/
+    /*    width: inherit;*/
     padding-top: 15px;
     /*margin-right: 5px;*/
 }
@@ -124,6 +124,11 @@
     position: relative;
 }
 
+.extra-info {
+    font-size: 24px;
+}
+
+
 .action {
     font-size: 12px;
     background-color: #fff;
@@ -145,7 +150,7 @@
     }
 }
 .secondaryProperty{
-	border-left: 6px solid #7f8c8d;
+    border-left: 6px solid #7f8c8d;
 }
 
 .control {
@@ -202,10 +207,17 @@
 }
 
 .drag-step-action span {
+    font-size: 24px;
     display: block;
     text-align: center;
     margin-top: 17px;
     cursor: move;
+}
+
+.extra-info span {
+    display: block;
+    text-align: center;
+    margin-top: 17px;
 }
 
 .drag-step-action #labelDiv {
@@ -228,13 +240,13 @@
 
 @media (min-width: 1200px) {
     .drag-step-action span {
-        margin-top: 60px;
+        margin-top: 40px;
     }
     .drag-step-action #labelDiv {
         margin-top: 0px;
     }
     .drag-step-action #labelDiv span {
-         margin-top: 5px;
+        margin-top: 5px;
     }
 }
 
@@ -249,61 +261,61 @@
 }
 
 .step-action:hover {
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 .step-action:hover input{
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 .step-action:hover select{
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 
 .step-action input::-webkit-input-placeholder {
-color: red !important;
+    color: red !important;
 }
- 
+
 .step-action input:-moz-placeholder { /* Firefox 18- */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .step-action input::-moz-placeholder {  /* Firefox 19+ */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .step-action input:-ms-input-placeholder {  
-color: red !important;  
+    color: red !important;  
 }
 
 .property-table input::-webkit-input-placeholder {
-color: red !important;
+    color: red !important;
 }
- 
+
 .property-table input:-moz-placeholder { /* Firefox 18- */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .property-table input::-moz-placeholder {  /* Firefox 19+ */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .property-table input:-ms-input-placeholder {  
-color: red !important;  
+    color: red !important;  
 }
 
 .property-table textarea::-webkit-input-placeholder {
-color: red !important;
+    color: red !important;
 }
- 
+
 .property-table textarea:-moz-placeholder { /* Firefox 18- */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .property-table textarea::-moz-placeholder {  /* Firefox 19+ */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .property-table textarea:-ms-input-placeholder {  
-color: red !important;  
+    color: red !important;  
 }
 
 .lib-info {
@@ -347,7 +359,7 @@ color: red !important;
 }
 
 .list-group-item-secondary {
-	background-color: #dfe4ea;
+    background-color: #dfe4ea;
 }
 
 .list-group-item-warning.active {
@@ -380,9 +392,9 @@ color: red !important;
 }
 
 .list-group-item.active>.badge, .nav-pills>.active>a>.badge {
-     color: #5bc0de;
-     background-color: #fff;
- }
+    color: #5bc0de;
+    background-color: #fff;
+}
 
 .list-group-item-calm>.badge {
     color: #fff;
@@ -488,17 +500,21 @@ fieldset[disabled] .btn-grey.active {
 }
 
 .library-Icon{
-	font-size:1.5em;
-	padding-left:7px;
+    font-size:1.5em;
+    padding-left:7px;
 }
 
 .loop-Icon{
-	font-size:1.5em;
-      	padding-left:7px;
+    font-size:1.5em;
+    padding-left:7px;
+}
 
+.info-Icon{
+    font-size:24px;
+    padding-left:7px;
 }
 
 .textArea{
-	padding-right:1px;
-	padding-left:2px;
+    padding-right:1px;
+    padding-left:2px;
 }

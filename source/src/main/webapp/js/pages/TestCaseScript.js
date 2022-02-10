@@ -1654,7 +1654,7 @@ function isBefore(a, b) {
 
 function handleDragStart(event) {
     var dataTransfer = event.originalEvent.dataTransfer;
-    var obj = this.parentNode;
+    var obj = this.parentNode.parentNode;
     var offsetX = 50;
     var offsetY = 50;
     var img;
@@ -1678,7 +1678,7 @@ function handleDragStart(event) {
 
 function handleDragEnter(event) {
     setModif(true);
-    var target = this.parentNode;
+    var target = this.parentNode.parentNode;
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
 
@@ -1735,7 +1735,7 @@ function handleDrop(event) {
 }
 
 function handleDragEnd(event) {
-    this.parentNode.style.opacity = '1';
+    this.parentNode.parentNode.style.opacity = '1';
     setAllSort();
 }
 
@@ -1818,22 +1818,38 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
 
 Step.prototype.draw = function () {
     var htmlElement = this.html;
-    var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "2px").prop("draggable", true)
+    var col1 = $("<div></div>").addClass("col-sm-1")
+    var drag = $("<div></div>").addClass("drag-step").css("padding-left", "5px").css("padding-right", "2px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
     var loopIcon = $("<div></div>").addClass("col-sm-1 loop-Icon");
     var libraryIcon = $("<div></div>").addClass("col-sm-1 library-Icon");
+    var forcedIcon = $("<div></div>").addClass("col-sm-1 forced-Icon");
 
+    var infoIcon = $("<div></div>").addClass("col-sm-1 info-Icon");
+    
+    if (this.isExecutionForced) {
+        forcedIcon = getClassForce("Step", "info-Icon");
+    }
     if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
-        loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
+        loopIcon = $("<span class='loopIcon' title='Step will loop.'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
+    } else if ((this.conditionOperator !== "never")
+            && (this.conditionOperator !== "always")) {
+
+        infoIcon = getClassWithCondition("Step", "info-Icon");
+
+    }
+    if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
+            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+        infoIcon = getClassNever("Step", "info-Icon");
     }
 
     if (this.isLibraryStep) {
-        libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
+        libraryIcon = $("<span class='libraryIcon' title='Step is a library.'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
 
     if (this.isUsingLibraryStep) {
-        libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
+        libraryIcon = $("<span class='libraryIcon' title='Step is using a library.'></span>").addClass("glyphicon glyphicon-lock library-Icon");
     }
 
     drag.on("dragstart", handleDragStart);
@@ -1844,10 +1860,13 @@ Step.prototype.draw = function () {
     drag.on("dragend", handleDragEnd);
 
     // htmlElement.append(badge);
-    htmlElement.append(drag);
+    col1.append(drag);
+    htmlElement.append(col1);
     htmlElement.append(this.textArea);
     htmlElement.append(loopIcon);
     htmlElement.append(libraryIcon);
+    htmlElement.append(forcedIcon);
+    htmlElement.append(infoIcon);
     htmlElement.data("item", this);
     htmlElement.click(this.show);
 
@@ -2200,17 +2219,45 @@ function Action(json, parentStep, canUpdate) {
     this.hasPermissionsUpdate = canUpdate;
 }
 
+function getClassNever(object, addClass) {
+    return $("<span title='" + object + " will not be executed.'></span>").addClass("fa fa-times " + addClass);
+}
+function getClassFatal(object, addClass) {
+    return $("<span title='" + object + " will stop in case of error.'></span>").addClass("fa fa-exclamation " + addClass);
+}
+function getClassForce(object, addClass) {
+    return $("<span title='" + object + " will be forced to execute.'></span>").addClass("fa fa-arrow-down " + addClass);
+}
+function getClassWithCondition(object, addClass) {
+    return $("<span title='" + object + " has condition defined.'></span>").addClass("fa fa-question " + addClass);
+}
+
 Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var col1 = $("<div></div>").addClass("col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
+    var extra = $("<div></div>").addClass("extra-info");
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").css("height", "100%").append($("<div style='margin-top:40px;max-width: 200px'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
+
+    if ((action.conditionOperator !== 'always')) {
+        var container = plusBtn.parent().parent().parent();
+
+        if ((action.conditionOperator === 'never')) {
+            extra.append(getClassNever("Action", ""));
+        } else {
+            extra.append(getClassWithCondition("Action", ""));
+        }
+    }
+    if (action.isFatal) {
+        extra.append(getClassFatal("Action", ""));
+    }
 
     if ((!this.parentStep.isUsingLibraryStep) && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -2254,7 +2301,8 @@ Action.prototype.draw = function (afterAction) {
             action.html.find(".step-action").removeClass("danger");
         }
     });
-    row.append(drag);
+    col1.append(drag).append(extra);
+    row.append(col1);
     row.append(this.generateContent());
     row.append(btnGrp.append(imgGrp));
     row.data("item", this);
@@ -2350,7 +2398,19 @@ Action.prototype.generateContent = function () {
         if (obj.conditionOperator !== actionconditionoperator.val()) {
             setModif(true);
         }
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-times").remove();
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-question").remove();
         obj.conditionOperator = actionconditionoperator.val();
+        if ((obj.conditionOperator === "never")) {
+            var content = getClassNever("Action", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+        }
+        if ((obj.conditionOperator !== "always") && (obj.conditionOperator !== "never")) {
+            var content = getClassWithCondition("Action", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+
+        }
+
         if ((obj.conditionOperator === "always") || (obj.conditionOperator === "never")) {
             actionconditionval1.parent().hide();
             actionconditionval2.parent().hide();
@@ -2461,6 +2521,11 @@ Action.prototype.generateContent = function () {
     forceExeStatusList.on("change", function () {
         setModif(true);
         obj.isFatal = forceExeStatusList.val() === "true" ? true : false;
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-exclamation").remove();
+        if (obj.isFatal) {
+            var content = getClassFatal("Action", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+        }
     });
 
     value1Field.val(cleanErratum(this.value1));
@@ -2485,7 +2550,7 @@ Action.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions).append(options));
-    secondRow.append($("<div></div>").addClass("v1 col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
+    secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
      * l'élement" ){ console.log(".append(choiceField)") }
@@ -2724,7 +2789,10 @@ function Control(json, parentAction, canUpdate) {
 Control.prototype.draw = function (afterControl) {
     var htmlElement = this.html;
     var control = this;
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var col1 = $("<div></div>").addClass("col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
+    var extra = $("<div></div>").addClass("extra-info");
+
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
@@ -2734,6 +2802,19 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
+    if ((control.conditionOperator !== 'always')) {
+        var container = plusBtn.parent().parent().parent();
+
+        if ((control.conditionOperator === 'never')) {
+            extra.append(getClassNever("Control", ""));
+        } else {
+            extra.append(getClassWithCondition("Control", ""));
+        }
+    }
+
+    if (control.isFatal) {
+        extra.append(getClassFatal("Control", ""));
+    }
     if ((!this.parentAction.parentStep.isUsingLibraryStep) && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
@@ -2782,7 +2863,9 @@ Control.prototype.draw = function (afterControl) {
         addControlAndFocus(scope.parentAction, scope);
     });
 
-    htmlElement.append(drag);
+    col1.append(drag).append(extra);
+
+    htmlElement.append(col1);
     htmlElement.append(content);
     htmlElement.append(btnGrp.append(imgGrp));
     htmlElement.data("item", this);
@@ -2871,8 +2954,18 @@ Control.prototype.generateContent = function () {
             setModif(true);
         }
         obj.conditionOperator = controlconditionoperator.val();
-        setPlaceholderCondition($(this).parents(".control"));
 
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-times").remove();
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-question").remove();
+        if ((obj.conditionOperator === "never")) {
+            var content = getClassNever("Control", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+        }
+        if ((obj.conditionOperator !== "always") && (obj.conditionOperator !== "never")) {
+            var content = getClassWithCondition("Control", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+        }
+        setPlaceholderCondition($(this).parents(".control"));
     });
     controlconditionoperator.val(this.conditionOperator).trigger("change");
 
@@ -2996,6 +3089,11 @@ Control.prototype.generateContent = function () {
     fatalList.on("change", function () {
         setModif(true);
         obj.isFatal = fatalList.val() === "true" ? true : false;
+        $(this).parent().parent().parent().parent().find(".extra-info .fa-exclamation").remove();
+        if (obj.isFatal) {
+            var content = getClassFatal("Control", "");
+            $(this).parent().parent().parent().parent().find(".extra-info").append(content);
+        }
     });
 
     firstRow.append(descContainer);

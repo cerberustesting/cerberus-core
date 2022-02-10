@@ -12,6 +12,7 @@
 * Page Source and Screenshots are now taken even if action are forced to continue.
 * When defining an element based on picture (using sikuli feature), all pictures are now saved at execution level. That makes execution analysis easier by better understanding which picture Cerberus used.
 * Total execution duration is now displayed on top of the page.
+* GUI improvements on testcase script page. Icons will show if step/action/control are fatal, have conditions or are disable.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
