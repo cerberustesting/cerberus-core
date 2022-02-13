@@ -19,11 +19,14 @@
  */
 package org.cerberus.crud.entity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.util.DateUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -276,6 +279,8 @@ public class TestCaseStepActionExecution {
 
     public void setEnd(long end) {
         this.end = end;
+        DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+        this.endLong = Long.valueOf(df.format(end));
     }
 
     public long getEndLong() {
@@ -356,6 +361,8 @@ public class TestCaseStepActionExecution {
 
     public void setStart(long start) {
         this.start = start;
+        DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+        this.startLong = Long.valueOf(df.format(start));
     }
 
     public long getStartLong() {

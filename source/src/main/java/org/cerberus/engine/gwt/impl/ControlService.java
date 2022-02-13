@@ -213,10 +213,10 @@ public class ControlService implements IControlService {
         }
 
         /**
-         * Timestamp starts after the decode. TODO protect when property is
-         * null.
+         * Timestamp starts after the decode. 
          */
         controlExecution.setStart(new Date().getTime());
+        controlExecution.setEnd(new Date().getTime());
 
         // When starting a new control, we reset the property list that was already calculated.
         execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());

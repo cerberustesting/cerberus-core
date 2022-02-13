@@ -22,9 +22,12 @@ package org.cerberus.crud.entity;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.util.DateUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -218,6 +221,10 @@ public class TestCaseStepExecution {
 
     public void setEnd(long end) {
         this.end = end;
+        DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+        this.fullEnd = Long.valueOf(df.format(end));
+        long elapsed = (this.end - this.start);
+        this.timeElapsed = BigDecimal.valueOf(elapsed).movePointLeft(3) ;
     }
 
     public long getFullEnd() {
@@ -258,6 +265,10 @@ public class TestCaseStepExecution {
 
     public void setStart(long start) {
         this.start = start;
+        DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+        this.fullStart = Long.valueOf(df.format(start));
+        long elapsed = (this.end - this.start);
+        this.timeElapsed = BigDecimal.valueOf(elapsed).movePointLeft(3) ;
     }
 
     public int getStepId() {
@@ -442,8 +453,8 @@ public class TestCaseStepExecution {
             if (withChilds) {
                 JSONArray array = new JSONArray();
                 if (this.getTestCaseStepActionExecutionList() != null) {
-                    for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList()) {
-                        array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson(true, false));
+                    for (Object actionExecution : this.getTestCaseStepActionExecutionList()) {
+                        array.put(((TestCaseStepActionExecution) actionExecution).toJson(true, false));
                     }
                 }
                 result.put("testCaseStepActionExecutionList", array);

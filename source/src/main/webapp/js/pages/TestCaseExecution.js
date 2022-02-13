@@ -1314,7 +1314,7 @@ function setConfigPanel(data) {
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
     if (data.controlStatus !== "PE") {
-        configPanel.find("#duration").text("("+(data.end - data.start) / 1000 + " s)");
+        configPanel.find("#duration").text("(" + (data.end - data.start) / 1000 + " s)");
     }
 
     if (isTheExecutionManual) {
@@ -2022,13 +2022,17 @@ function Step(json, steps, id) {
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
-    $(this.html).data("index", id)
+    $(this.html).data("index", id);
+    let timeElapsedFormat = "...";
+    if (this.timeElapsed !== undefined && this.timeElapsed>0){
+        timeElapsedFormat = this.timeElapsed;
+    }
     if (this.test === "Pre Testing") {
-        var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
+        var stepDesc = "[PRE]  " + this.description + "  (" + timeElapsedFormat + ")";
     } else if (this.test === "Post Testing") {
-        var stepDesc = "[POST]  " + this.description + "  (" + this.timeElapsed + ")";
+        var stepDesc = "[POST]  " + this.description + "  (" + timeElapsedFormat + ")";
     } else {
-        var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")";
+        var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + timeElapsedFormat + ")";
     }
     this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
 

@@ -67,9 +67,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, `loop`, batnumexe, returncode, start, fullstart, "
+        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, `loop`, batnumexe, returncode, start, fullstart, end, fullend, "
                 + "returnMessage, description, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -98,6 +98,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setTimestamp(i++, new Timestamp(testCaseStepExecution.getStart()));
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(i++, df.format(testCaseStepExecution.getStart()));
+                preStat.setTimestamp(i++, new Timestamp(testCaseStepExecution.getEnd()));
+                preStat.setString(i++, df.format(testCaseStepExecution.getEnd()));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepExecution.getReturnMessage(), 65000));
                 preStat.setString(i++, testCaseStepExecution.getDescription());
                 preStat.setString(i++, testCaseStepExecution.getConditionOperator());

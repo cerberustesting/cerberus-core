@@ -900,7 +900,9 @@ function updateDropzone(messageToDisplay, idModal) {
     if (imagePasteFromClipboard !== undefined) {
         //reset value inside the input
         var inputs = $(idModal).find("#Filename")[0];
-        inputs.value = "";
+        if (inputs !== undefined) {
+            inputs.value = "";
+        }
     } else {
         //reset value for the var that stock the picture inside the clipboard
         imagePasteFromClipboard = undefined;

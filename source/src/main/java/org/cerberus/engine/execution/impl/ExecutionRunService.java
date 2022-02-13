@@ -20,6 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,6 +93,7 @@ import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.robotproviders.ILambdaTestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.session.SessionCounter;
+import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
@@ -1112,6 +1115,8 @@ public class ExecutionRunService implements IExecutionRunService {
              * Start Execution of TestCaseStepAction
              */
             long startAction = new Date().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+            long startLongAction = Long.valueOf(df.format(startAction));
 
             /**
              * Create and Register TestCaseStepActionExecution.
@@ -1123,7 +1128,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startAction, startAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startLongAction, startLongAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, stepExecution);
             testCaseStepActionExecution.setOptions(testCaseStepAction.getOptionsActive());
             testCaseStepActionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
@@ -1394,6 +1399,8 @@ public class ExecutionRunService implements IExecutionRunService {
              * Start Execution of TestCAseStepActionControl
              */
             long startControl = new Date().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
+            long startLongControl = Long.valueOf(df.format(startControl));
 
             /**
              * Create and Register TestCaseStepActionControlExecution
@@ -1405,7 +1412,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             null, null,
                             control.getConditionOperator(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(),
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
-                            control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, 0, 0, 0,
+                            control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
                             control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             controlExe.setConditionOptions(control.getConditionOptionsActive());
             controlExe.setOptions(control.getOptionsActive());

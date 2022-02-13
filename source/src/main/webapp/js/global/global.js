@@ -2767,7 +2767,6 @@ function getComboConfigApplication() {
 }
 
 function comboConfigApplication_formatSelection(application) {
-    console.log(application);
     var result = application.id;
     if (!isEmpty(application.type)) {
         result = result + " [" + application.type + "]";

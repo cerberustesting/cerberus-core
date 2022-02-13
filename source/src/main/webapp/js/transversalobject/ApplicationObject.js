@@ -67,7 +67,6 @@ function initModalApplicationObject(page, application) {
     });
 
     setUpDragAndDrop('#editApplicationObjectModal');
-    hidePasteMessageIfNotOnFirefox()
 }
 
 function editApplicationObjectClick(applicationObject, value) {
@@ -371,14 +370,6 @@ function handlePictureSend(items, idModal) {
     }
 }
 
-function hidePasteMessageIfNotOnFirefox() {
-    var isOnFirefox = typeof InstallTrigger !== 'undefined';
-    if (!isOnFirefox) {
-        for (var i = 0; i < $('[id*="DropzoneClipboardPasteMessage"]').length; i++) {
-            $('[id*="DropzoneClipboardPasteMessage"]')[i].style.display = 'none';
-        }
-    }
-}
 
 
 /* functions used by both modal */

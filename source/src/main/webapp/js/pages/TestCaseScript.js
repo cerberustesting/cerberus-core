@@ -1827,7 +1827,7 @@ Step.prototype.draw = function () {
     var forcedIcon = $("<div></div>").addClass("col-sm-1 forced-Icon");
 
     var infoIcon = $("<div></div>").addClass("col-sm-1 info-Icon");
-    
+
     if (this.isExecutionForced) {
         forcedIcon = getClassForce("Step", "info-Icon");
     }
@@ -2239,14 +2239,19 @@ Action.prototype.draw = function (afterAction) {
     var col1 = $("<div></div>").addClass("col-lg-1").prop("draggable", true);
     var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
     var extra = $("<div></div>").addClass("extra-info");
-    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn moreOptions").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").css("height", "100%").append($("<div style='margin-top:40px;max-width: 200px'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
+    var imgGrp = $("<div></div>").css("height", "100%")
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px")));
 
     if ((action.conditionOperator !== 'always')) {
+        plusBtn.removeClass("btn-default").addClass("btn-primary");
         var container = plusBtn.parent().parent().parent();
 
         if ((action.conditionOperator === 'never')) {
@@ -2409,6 +2414,11 @@ Action.prototype.generateContent = function () {
             var content = getClassWithCondition("Action", "");
             $(this).parent().parent().parent().parent().find(".extra-info").append(content);
 
+        }
+        if ((obj.conditionOperator === "always")) {
+            $(this).parent().parent().parent().parent().find(".moreOptions").removeClass("btn-primary").addClass("btn-default");
+        } else {
+            $(this).parent().parent().parent().parent().find(".moreOptions").removeClass("btn-default").addClass("btn-primary");
         }
 
         if ((obj.conditionOperator === "always") || (obj.conditionOperator === "never")) {
@@ -2793,16 +2803,20 @@ Control.prototype.draw = function (afterControl) {
     var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
     var extra = $("<div></div>").addClass("extra-info");
 
-    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn moreOptions").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").css("height", "100%;max-width: 200px").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%"));
-
+    var imgGrp1 = $("<div></div>").css("height", "100%")
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
     var content = this.generateContent();
 
     if ((control.conditionOperator !== 'always')) {
+        plusBtn.removeClass("btn-default").addClass("btn-primary");
         var container = plusBtn.parent().parent().parent();
 
         if ((control.conditionOperator === 'never')) {
@@ -2867,7 +2881,7 @@ Control.prototype.draw = function (afterControl) {
 
     htmlElement.append(col1);
     htmlElement.append(content);
-    htmlElement.append(btnGrp.append(imgGrp));
+    htmlElement.append(btnGrp.append(imgGrp1));
     htmlElement.data("item", this);
 
     setPlaceholderControl(htmlElement);
@@ -2931,9 +2945,9 @@ Control.prototype.generateContent = function () {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelControlDiv'></span>"));
     descContainer.append(descriptionField);
-    var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
-    var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
-    var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
+    var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v1").css("width", "100%");
+    var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v2").css("width", "100%");
+    var controlValue3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v3").css("width", "100%");
 
     var controlconditionoperator = $("<select></select>").addClass("form-control input-sm");
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2966,6 +2980,13 @@ Control.prototype.generateContent = function () {
             $(this).parent().parent().parent().parent().find(".extra-info").append(content);
         }
         setPlaceholderCondition($(this).parents(".control"));
+
+        if ((obj.conditionOperator === "always")) {
+            $(this).parent().parent().parent().parent().find(".moreOptions").removeClass("btn-primary").addClass("btn-default");
+        } else {
+            $(this).parent().parent().parent().parent().find(".moreOptions").removeClass("btn-default").addClass("btn-primary");
+        }
+
     });
     controlconditionoperator.val(this.conditionOperator).trigger("change");
 
@@ -3367,7 +3388,19 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
-                                $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime()).attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                if ($(this).hasClass("v1")) {
+                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg1")
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                } else if ($(this).hasClass("v2")) {
+                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg2")
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                } else if ($(this).hasClass("v3")) {
+                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg3")
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                }
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
@@ -3416,11 +3449,14 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         $(document).on('input', ".content div.fieldRow input:not('.description')", function (e) {
             let data = loadGuiProperties();
-            if ($(this).parent().parent().find("select").val() === "callService") {
-                let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
-                modifyAutocompleteSource($(this), url);
-            } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
-                modifyAutocompleteSource($(this), null, data);
+            try {
+                if ($(this).parent().parent().find("select").val() === "callService") {
+                    let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
+                    modifyAutocompleteSource($(this), url);
+                } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
+                    modifyAutocompleteSource($(this), null, data);
+                }
+            } catch (e) {
             }
             $(this).trigger("settingsButton");
         });
