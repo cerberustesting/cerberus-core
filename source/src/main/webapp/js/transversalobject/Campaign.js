@@ -760,10 +760,10 @@ function addLabelEntryClick(tableId) {
 
 function removeLabelEntryClick(tableId, key) {
     $('#' + tableId + '_wrapper #removeLabel').filter(function (i, e) {
-        return $(e).attr("key") === key;
+        return $(e).attr("key") == key;
     }).off().prop("disabled", true);
     $("#" + tableId).DataTable().rows(function (i, d, n) {
-        return d[2] === key;
+        return d[2] == key;
     }).remove().draw();
     updateSelectLabel(tableId);
 }
@@ -875,7 +875,7 @@ function findValueTableDataByCol(tableId, colIndex, value) {
     var result = false;
     //Iterate all td's in second column
     $.each($("#" + tableId).DataTable().rows().data(), function (i, v) {
-        if (v[colIndex] === value) {
+        if (v[colIndex] == value) {
             result = true;
         }
     });

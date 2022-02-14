@@ -794,20 +794,20 @@ public class TestCaseExecution {
         return testCaseStepExecutionList;
     }
 
-    public void setTestCaseStepExecutionList(List<TestCaseStepExecution> testCaseStepExecutionList) {
-        this.testCaseStepExecutionList = testCaseStepExecutionList;
+    public void setTestCaseStepExecutionList(List<TestCaseStepExecution> stepExecutionList) {
+        this.testCaseStepExecutionList = stepExecutionList;
     }
 
-    public void addTestCaseStepExecutionList(TestCaseStepExecution testCaseStepExecution) {
-        if (testCaseStepExecution != null) {
-            this.testCaseStepExecutionList.add(testCaseStepExecution);
+    public void addStepExecutionList(TestCaseStepExecution stepExecution) {
+        if (stepExecution != null) {
+            this.testCaseStepExecutionList.add(stepExecution);
         }
     }
 
-    public void addTestCaseStepExecutionList(List<TestCaseStepExecution> testCaseStepExecutionList) {
-        if (testCaseStepExecutionList != null) {
-            for (TestCaseStepExecution testCaseStepExecution : testCaseStepExecutionList) {
-                this.testCaseStepExecutionList.add(testCaseStepExecution);
+    public void addStepExecutionList(List<TestCaseStepExecution> stepExecutionList) {
+        if (stepExecutionList != null) {
+            for (TestCaseStepExecution stepExecution : stepExecutionList) {
+                this.testCaseStepExecutionList.add(stepExecution);
             }
         }
     }

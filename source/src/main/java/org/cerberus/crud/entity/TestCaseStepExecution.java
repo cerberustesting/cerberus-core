@@ -383,16 +383,16 @@ public class TestCaseStepExecution {
         this.testCaseStepActionExecutionList = testCaseStepActionExecutionList;
     }
 
-    public void addTestCaseStepActionExecutionList(TestCaseStepActionExecution testCaseStepActionExecution) {
-        if (testCaseStepActionExecution != null) {
-            this.testCaseStepActionExecutionList.add(testCaseStepActionExecution);
+    public void addActionExecutionList(TestCaseStepActionExecution actionExecution) {
+        if (actionExecution != null) {
+            this.testCaseStepActionExecutionList.add(actionExecution);
         }
     }
 
-    public void addTestCaseStepActionExecutionList(List<TestCaseStepActionExecution> testCaseStepActionExecutionList) {
-        if (testCaseStepActionExecutionList != null) {
-            for (TestCaseStepActionExecution testCaseStepActionExecution : testCaseStepActionExecutionList) {
-                this.testCaseStepActionExecutionList.add(testCaseStepActionExecution);
+    public void addActionExecutionList(List<TestCaseStepActionExecution> actionExecutionList) {
+        if (actionExecutionList != null) {
+            for (TestCaseStepActionExecution actionExecution : actionExecutionList) {
+                this.testCaseStepActionExecutionList.add(actionExecution);
             }
         }
     }

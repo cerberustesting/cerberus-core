@@ -1,3 +1,5 @@
+=== Introduction
+
 Cerberus has integrated a hook mecanism management.
 That allow to react on some event in order to trigger asynchroniously some external notification or synchronize external systems (for reporting or test referencial).
 On top of the public API available, that feature allow a better, easier and faster integration of Cerberus with external tools.

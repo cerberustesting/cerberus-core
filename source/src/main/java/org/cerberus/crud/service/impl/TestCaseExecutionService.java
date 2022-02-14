@@ -289,10 +289,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());
         // Then we add the steps from the main testcase.
         AnswerList<TestCaseStepExecution> steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
-        testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
+        testCaseExecution.addStepExecutionList(steps.getDataList());
         // Then we add the Post steps .
         AnswerList<TestCaseStepExecution> postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
-        testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
+        testCaseExecution.addStepExecutionList(postTestCaseSteps.getDataList());
 
         // Get Execution Files.
         AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(executionId, "");

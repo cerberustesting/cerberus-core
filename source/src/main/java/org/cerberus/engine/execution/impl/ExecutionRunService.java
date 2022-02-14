@@ -569,12 +569,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 if (execute_TestCase || execution.getManualExecution().equals("Y")) {
 
                     boolean doStepStopExecution = false;
-                    for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
+                    for (TestCaseStep step : mainExecutionTestCaseStepList) {
 
-                        ConditionOperatorEnum testcaseStepConditionEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStep.getConditionOperator());
+                        ConditionOperatorEnum testcaseStepConditionEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(step.getConditionOperator());
 
                         // exeMod management : We trigger Forced Step no matter if previous step execution asked to stop.
-                        if (!doStepStopExecution || testCaseStep.isExecutionForced()) {
+                        if (!doStepStopExecution || step.isExecutionForced()) {
 
                             // init the index of the step in case we loop.
                             int step_index = 1;
@@ -595,15 +595,15 @@ public class ExecutionRunService implements IExecutionRunService {
                                  * Create and Register TestCaseStepExecution
                                  */
                                 MessageEvent stepMess = new MessageEvent(MessageEventEnum.STEP_PENDING)
-                                        .resolveDescription("STEP", String.valueOf(testCaseStep.getSort()))
+                                        .resolveDescription("STEP", String.valueOf(step.getSort()))
                                         .resolveDescription("STEPINDEX", String.valueOf(step_index));
                                 stepExecution = factoryTestCaseStepExecution.create(
-                                        runID, testCaseStep.getTest(), testCaseStep.getTestcase(),
-                                        testCaseStep.getStepId(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOperator(), testCaseStep.getConditionValue1(), testCaseStep.getConditionValue2(), testCaseStep.getConditionValue3(), testCaseStep.getConditionValue1(), testCaseStep.getConditionValue2(), testCaseStep.getConditionValue3(), null,
-                                        startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, testCaseStep, execution,
-                                        testCaseStep.isUsingLibraryStep(), testCaseStep.getLibraryStepTest(), testCaseStep.getLibraryStepTestcase(), testCaseStep.getLibraryStepStepId(), testCaseStep.getDescription());
-                                stepExecution.setLoop(testCaseStep.getLoop());
-                                stepExecution.setConditionOptions(testCaseStep.getConditionOptionsActive());
+                                        runID, step.getTest(), step.getTestcase(),
+                                        step.getStepId(), step_index, step.getSort(), step.getLoop(), step.getConditionOperator(), step.getConditionValue1(), step.getConditionValue2(), step.getConditionValue3(), step.getConditionValue1(), step.getConditionValue2(), step.getConditionValue3(), null,
+                                        startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, step, execution,
+                                        step.isUsingLibraryStep(), step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId(), step.getDescription());
+                                stepExecution.setLoop(step.getLoop());
+                                stepExecution.setConditionOptions(step.getConditionOptionsActive());
 
                                 testCaseStepExecutionService.insertTestCaseStepExecution(stepExecution);
                                 stepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
@@ -612,7 +612,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                  * We populate the TestCaseStep inside the
                                  * execution List
                                  */
-                                execution.addTestCaseStepExecutionList(stepExecution);
+                                execution.addStepExecutionList(stepExecution);
 
                                 // determine if step is executed (execute_Step) and if we trigger a new step execution after (execute_Next_Step)
                                 boolean execute_Step = true;
@@ -872,7 +872,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             } while (execute_Next_Step && step_index <= maxloop);
 
                             // Step execution boolean is considered for next step execution only if current step was not forced or forced and failed.
-                            if (!testCaseStep.isExecutionForced() || stepExecution.isStopExecution()) {
+                            if (!step.isExecutionForced() || stepExecution.isStopExecution()) {
                                 doStepStopExecution = stepExecution.isStopExecution();
                             }
                         }
@@ -1121,7 +1121,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Create and Register TestCaseStepActionExecution.
              */
-            TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
+            TestCaseStepActionExecution actionExecution = factoryTestCaseStepActionExecution.create(
                     stepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestcase(),
                     testCaseStepAction.getStepId(), stepExecution.getIndex(), testCaseStepAction.getActionId(), testCaseStepAction.getSort(), null, null,
                     testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
@@ -1130,15 +1130,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
                     (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startLongAction, startLongAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, stepExecution);
-            testCaseStepActionExecution.setOptions(testCaseStepAction.getOptionsActive());
-            testCaseStepActionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
+            actionExecution.setOptions(testCaseStepAction.getOptionsActive());
+            actionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
 
-            this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
+            this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(actionExecution);
 
             /**
              * We populate the TestCase Action List
              */
-            stepExecution.addTestCaseStepActionExecutionList(testCaseStepActionExecution);
+            stepExecution.addActionExecutionList(actionExecution);
 
             /**
              * If execution is not manual, evaluate the condition at the action
@@ -1149,15 +1149,15 @@ public class ExecutionRunService implements IExecutionRunService {
             if (!execution.getManualExecution().equals("Y")) {
 
                 try {
-                    answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), execution, null, false);
-                    testCaseStepActionExecution.setConditionVal1(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(actionExecution.getConditionVal1(), execution, null, false);
+                    actionExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value1"));
-                        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        testCaseStepActionExecution.setEnd(new Date().getTime());
+                        actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value1"));
+                        actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        actionExecution.setEnd(new Date().getTime());
                         LOG.debug("Action interupted due to decode 'Action Condition Value1' Error.");
                         conditionDecodeError = true;
                     }
@@ -1166,15 +1166,15 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
 
                 try {
-                    answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal2(), execution, null, false);
-                    testCaseStepActionExecution.setConditionVal2(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(actionExecution.getConditionVal2(), execution, null, false);
+                    actionExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value2"));
-                        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        testCaseStepActionExecution.setEnd(new Date().getTime());
+                        actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value2"));
+                        actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        actionExecution.setEnd(new Date().getTime());
                         LOG.debug("Action interupted due to decode 'Action Condition Value2' Error.");
                         conditionDecodeError = true;
                     }
@@ -1182,15 +1182,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.warn(cex);
                 }
                 try {
-                    answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal3(), execution, null, false);
-                    testCaseStepActionExecution.setConditionVal3(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(actionExecution.getConditionVal3(), execution, null, false);
+                    actionExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value3"));
-                        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        testCaseStepActionExecution.setEnd(new Date().getTime());
+                        actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value3"));
+                        actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        actionExecution.setEnd(new Date().getTime());
                         LOG.debug("Action interupted due to decode 'Action Condition Value3' Error.");
                         conditionDecodeError = true;
                     }
@@ -1201,15 +1201,15 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!(conditionDecodeError)) {
 
-                ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(testCaseStepActionExecution.getConditionOperator());
+                ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(actionExecution.getConditionOperator());
 
-                conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOperator(),
-                        testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), testCaseStepActionExecution.getConditionVal3(),
-                        execution, testCaseStepActionExecution.getConditionOptions());
+                conditionAnswer = this.conditionService.evaluateCondition(actionExecution.getConditionOperator(),
+                        actionExecution.getConditionVal1(), actionExecution.getConditionVal2(), actionExecution.getConditionVal3(),
+                        execution, actionExecution.getConditionOptions());
                 boolean execute_Action = conditionAnswer.getItem();
 
                 if (execution.getManualExecution().equals("Y") && actionConditionOperatorEnum.isOperatorEvaluationRequired()) {
-                    testCaseStepActionExecution.setDescription(testCaseStepActionExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                    actionExecution.setDescription(actionExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
                 }
 
                 /**
@@ -1221,26 +1221,26 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     // Execute or not the action here.
                     if (execute_Action || execution.getManualExecution().equals("Y")) {
-                        LOG.debug("Executing action : " + testCaseStepActionExecution.getAction() + " with val1 : " + testCaseStepActionExecution.getValue1()
-                                + " and val2 : " + testCaseStepActionExecution.getValue2()
-                                + " and val3 : " + testCaseStepActionExecution.getValue3());
+                        LOG.debug("Executing action : " + actionExecution.getAction() + " with val1 : " + actionExecution.getValue1()
+                                + " and val2 : " + actionExecution.getValue2()
+                                + " and val3 : " + actionExecution.getValue3());
 
                         /**
                          * We execute the Action
                          */
-                        testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution, execution);
+                        actionExecution = this.executeAction(actionExecution, execution);
                         /**
                          * If Action or property reported to stop the testcase,
                          * we stop it and update the step with the message.
                          */
-                        stepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
-                        if ((!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
-                                && (!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
-                            stepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
-                            stepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
+                        stepExecution.setStopExecution(actionExecution.isStopExecution());
+                        if ((!(actionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
+                                && (!(actionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
+                            stepExecution.setExecutionResultMessage(actionExecution.getExecutionResultMessage());
+                            stepExecution.setStepResultMessage(actionExecution.getActionResultMessage());
                         }
 
-                        if (testCaseStepActionExecution.isStopExecution()) {
+                        if (actionExecution.isStopExecution()) {
                             break;
                         }
 
@@ -1249,20 +1249,20 @@ public class ExecutionRunService implements IExecutionRunService {
                         /**
                          * Record Screenshot, PageSource
                          */
-                        testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
+                        actionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(actionExecution, null));
 
-                        LOG.debug("Registering Action : " + testCaseStepActionExecution.getAction());
+                        LOG.debug("Registering Action : " + actionExecution.getAction());
 
                         // We change the Action message only if the action is not executed due to condition.
                         MessageEvent actionMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_NOTEXECUTED);
-                        testCaseStepActionExecution.setActionResultMessage(actionMes);
-                        testCaseStepActionExecution.setReturnMessage(testCaseStepActionExecution.getReturnMessage()
-                                .replace("%COND%", testCaseStepActionExecution.getConditionOperator())
+                        actionExecution.setActionResultMessage(actionMes);
+                        actionExecution.setReturnMessage(actionExecution.getReturnMessage()
+                                .replace("%COND%", actionExecution.getConditionOperator())
                                 .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
                         );
 
-                        testCaseStepActionExecution.setEnd(new Date().getTime());
-                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                        actionExecution.setEnd(new Date().getTime());
+                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
                         LOG.debug("Registered Action");
 
                     }
@@ -1270,50 +1270,50 @@ public class ExecutionRunService implements IExecutionRunService {
                     // Error when performing the condition evaluation. We force no execution (false)
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     mes.setDescription(mes.getDescription()
-                            .replace("%COND%", testCaseStepActionExecution.getConditionOperator())
+                            .replace("%COND%", actionExecution.getConditionOperator())
                             .replace("%AREA%", "action ")
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
-                    testCaseStepActionExecution.setExecutionResultMessage(mes);
-                    stepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
+                    actionExecution.setExecutionResultMessage(mes);
+                    stepExecution.setExecutionResultMessage(actionExecution.getExecutionResultMessage());
 
-                    testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
+                    actionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
                             .resolveDescription("AREA", "")
-                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOperator())
+                            .resolveDescription("COND", actionExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     stepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_FAILED)
                             .resolveDescription("AREA", "action ")
-                            .resolveDescription("COND", testCaseStepActionExecution.getConditionOperator())
+                            .resolveDescription("COND", actionExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
-                    if (testCaseStepActionExecution.isFatal().equals("N")) {
-                        testCaseStepActionExecution.setStopExecution(false);
-                        MessageEvent actionMes = testCaseStepActionExecution.getActionResultMessage();
-                        actionMes.setDescription(testCaseStepActionExecution.getActionResultMessage().getDescription() + " -- Execution forced to continue.");
-                        testCaseStepActionExecution.setActionResultMessage(actionMes);
+                    if (actionExecution.isFatal().equals("N")) {
+                        actionExecution.setStopExecution(false);
+                        MessageEvent actionMes = actionExecution.getActionResultMessage();
+                        actionMes.setDescription(actionExecution.getActionResultMessage().getDescription() + " -- Execution forced to continue.");
+                        actionExecution.setActionResultMessage(actionMes);
                     } else {
-                        testCaseStepActionExecution.setStopExecution(true);
+                        actionExecution.setStopExecution(true);
                     }
 
-                    stepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
+                    stepExecution.setStopExecution(actionExecution.isStopExecution());
 
-                    testCaseStepActionExecution.setEnd(new Date().getTime());
+                    actionExecution.setEnd(new Date().getTime());
 
-                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
                     LOG.debug("Action interupted due to condition error.");
                     // We stop any further Action execution.
-                    if (testCaseStepActionExecution.isStopExecution()) {
+                    if (actionExecution.isStopExecution()) {
                         break;
                     }
                 }
             } else {
 
-                testCaseStepActionExecution.setEnd(new Date().getTime());
-                stepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
-                stepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
-                stepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
-                this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                actionExecution.setEnd(new Date().getTime());
+                stepExecution.setExecutionResultMessage(actionExecution.getExecutionResultMessage());
+                stepExecution.setStepResultMessage(actionExecution.getActionResultMessage());
+                stepExecution.setStopExecution(actionExecution.isStopExecution());
+                this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
                 LOG.debug("Registered Action");
-                if (testCaseStepActionExecution.isStopExecution()) {
+                if (actionExecution.isStopExecution()) {
                     break;
                 }
 
@@ -1323,7 +1323,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log TestCaseStepActionExecution
              */
             if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
-                LOG.info(testCaseStepActionExecution.toJson(false, true));
+                LOG.info(actionExecution.toJson(false, true));
             }
 
         }
@@ -1406,7 +1406,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Create and Register TestCaseStepActionControlExecution
              */
             LOG.debug("Creating TestCaseStepActionControlExecution");
-            TestCaseStepActionControlExecution controlExe
+            TestCaseStepActionControlExecution controlExecution
                     = factoryTestCaseStepActionControlExecution.create(actionExecution.getId(), control.getTest(), control.getTestcase(),
                             control.getStepId(), actionExecution.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
                             null, null,
@@ -1414,32 +1414,32 @@ public class ExecutionRunService implements IExecutionRunService {
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
                             control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
                             control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
-            controlExe.setConditionOptions(control.getConditionOptionsActive());
-            controlExe.setOptions(control.getOptionsActive());
+            controlExecution.setConditionOptions(control.getConditionOptionsActive());
+            controlExecution.setOptions(control.getOptionsActive());
 
-            this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExe);
+            this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution);
 
-            LOG.debug("Executing control : " + controlExe.getControlId() + " type : " + controlExe.getControl());
+            LOG.debug("Executing control : " + controlExecution.getControlId() + " type : " + controlExecution.getControl());
 
             /**
              * We populate the TestCase Control List
              */
-            actionExecution.addTestCaseStepActionExecutionList(controlExe);
+            actionExecution.addTestCaseStepActionExecutionList(controlExecution);
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
             if (!execution.getManualExecution().equals("Y")) {
                 try {
-                    answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal1(), execution, null, false);
-                    controlExe.setConditionVal1(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(controlExecution.getConditionVal1(), execution, null, false);
+                    controlExecution.setConditionVal1(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        controlExe.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value1"));
-                        controlExe.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        controlExe.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        controlExe.setEnd(new Date().getTime());
+                        controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value1"));
+                        controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        controlExecution.setEnd(new Date().getTime());
                         LOG.debug("Control interupted due to decode 'Control Condition Value1' Error.");
                         conditionDecodeError = true;
                     }
@@ -1448,15 +1448,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.warn(cex);
                 }
                 try {
-                    answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal2(), execution, null, false);
-                    controlExe.setConditionVal2(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(controlExecution.getConditionVal2(), execution, null, false);
+                    controlExecution.setConditionVal2(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        controlExe.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value2"));
-                        controlExe.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        controlExe.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        controlExe.setEnd(new Date().getTime());
+                        controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value2"));
+                        controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        controlExecution.setEnd(new Date().getTime());
                         LOG.debug("Control interupted due to decode 'Control Condition Value2' Error.");
                         conditionDecodeError = true;
                     }
@@ -1464,15 +1464,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.warn(cex);
                 }
                 try {
-                    answerDecode = variableService.decodeStringCompletly(controlExe.getConditionVal3(), execution, null, false);
-                    controlExe.setConditionVal3(answerDecode.getItem());
+                    answerDecode = variableService.decodeStringCompletly(controlExecution.getConditionVal3(), execution, null, false);
+                    controlExecution.setConditionVal3(answerDecode.getItem());
 
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        controlExe.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value3"));
-                        controlExe.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
-                        controlExe.setStopExecution(answerDecode.getResultMessage().isStopTest());
-                        controlExe.setEnd(new Date().getTime());
+                        controlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value3"));
+                        controlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        controlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        controlExecution.setEnd(new Date().getTime());
                         LOG.debug("Control interupted due to decode 'Control Condition Value3' Error.");
                         conditionDecodeError = true;
                     }
@@ -1483,16 +1483,16 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!(conditionDecodeError)) {
 
-                ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(controlExe.getConditionOperator());
+                ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(controlExecution.getConditionOperator());
 
-                conditionAnswer = this.conditionService.evaluateCondition(controlExe.getConditionOperator(),
-                        controlExe.getConditionVal1(), controlExe.getConditionVal2(), controlExe.getConditionVal3(),
-                        execution, controlExe.getConditionOptions());
+                conditionAnswer = this.conditionService.evaluateCondition(controlExecution.getConditionOperator(),
+                        controlExecution.getConditionVal1(), controlExecution.getConditionVal2(), controlExecution.getConditionVal3(),
+                        execution, controlExecution.getConditionOptions());
 
                 boolean execute_Control = conditionAnswer.getItem();
 
                 if (execution.getManualExecution().equals("Y") && controlConditionOperatorEnum.isOperatorEvaluationRequired()) {
-                    controlExe.setDescription(controlExe.getDescription() + " - " + conditionAnswer.getMessageDescription());
+                    controlExecution.setDescription(controlExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
                 }
                 /**
                  * If condition OK or if manual execution, then execute the
@@ -1506,7 +1506,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         /**
                          * We execute the control
                          */
-                        controlExe = executeControl(controlExe, execution);
+                        controlExecution = executeControl(controlExecution, execution);
 
                         /**
                          * We update the Action with the execution message and
@@ -1515,22 +1515,22 @@ public class ExecutionRunService implements IExecutionRunService {
                          * the status to OK when it should stay KO when a
                          * control failed previously.
                          */
-                        actionExecution.setStopExecution(controlExe.isStopExecution());
-                        if (!(controlExe.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
+                        actionExecution.setStopExecution(controlExecution.isStopExecution());
+                        if (!(controlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
                             //NA is a special case of not having success while calculating the property; the action shouldn't be stopped
-                            if (controlExe.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
+                            if (controlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
                                 //restores the messages information if the property is not defined for the country
                                 actionExecution.setActionResultMessage(actionMessage);
                                 actionExecution.setExecutionResultMessage(excutionResultMessage);
                             } else {
-                                actionExecution.setExecutionResultMessage(controlExe.getExecutionResultMessage());
-                                actionExecution.setActionResultMessage(controlExe.getControlResultMessage());
+                                actionExecution.setExecutionResultMessage(controlExecution.getExecutionResultMessage());
+                                actionExecution.setActionResultMessage(controlExecution.getControlResultMessage());
                             }
                         }
                         /**
                          * If Control reported to stop the testcase, we stop it.
                          */
-                        if (controlExe.isStopExecution()) {
+                        if (controlExecution.isStopExecution()) {
                             break;
                         }
 
@@ -1539,23 +1539,23 @@ public class ExecutionRunService implements IExecutionRunService {
                         /**
                          * Record Screenshot, PageSource
                          */
-                        controlExe.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(controlExe.getTestCaseStepActionExecution(), controlExe));
+                        controlExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(controlExecution.getTestCaseStepActionExecution(), controlExecution));
 
                         /**
                          * Register Control in database
                          */
-                        LOG.debug("Registering Control : " + controlExe.getControlId());
+                        LOG.debug("Registering Control : " + controlExecution.getControlId());
 
                         // We change the Action message only if the action is not executed due to condition.
                         MessageEvent controlMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_NOTEXECUTED);
-                        controlExe.setControlResultMessage(controlMes);
-                        controlExe.setReturnMessage(controlExe.getReturnMessage()
-                                .replace("%COND%", controlExe.getConditionOperator())
+                        controlExecution.setControlResultMessage(controlMes);
+                        controlExecution.setReturnMessage(controlExecution.getReturnMessage()
+                                .replace("%COND%", controlExecution.getConditionOperator())
                                 .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
                         );
 
-                        controlExe.setEnd(new Date().getTime());
-                        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExe);
+                        controlExecution.setEnd(new Date().getTime());
+                        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
                         LOG.debug("Registered Control");
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -1566,35 +1566,35 @@ public class ExecutionRunService implements IExecutionRunService {
                     // Error when performing the condition evaluation. We force no execution (false)
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     mes.setDescription(mes.getDescription()
-                            .replace("%COND%", controlExe.getConditionOperator())
+                            .replace("%COND%", controlExecution.getConditionOperator())
                             .replace("%AREA%", "control ")
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
-                    controlExe.setExecutionResultMessage(mes);
+                    controlExecution.setExecutionResultMessage(mes);
                     actionExecution.setExecutionResultMessage(mes);
 
-                    controlExe.setControlResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_FAILED)
+                    controlExecution.setControlResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_FAILED)
                             .resolveDescription("AREA", "")
-                            .resolveDescription("COND", controlExe.getConditionOperator())
+                            .resolveDescription("COND", controlExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
                     actionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
                             .resolveDescription("AREA", "control ")
-                            .resolveDescription("COND", controlExe.getConditionOperator())
+                            .resolveDescription("COND", controlExecution.getConditionOperator())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
-                    controlExe.setEnd(new Date().getTime());
+                    controlExecution.setEnd(new Date().getTime());
 
-                    this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExe);
+                    this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
                     LOG.debug("Control interupted due to condition error.");
                     // We stop any further Control execution.
                     break;
                 }
             } else {
 
-                controlExe.setEnd(new Date().getTime());
-                actionExecution.setExecutionResultMessage(controlExe.getExecutionResultMessage());
-                actionExecution.setActionResultMessage(controlExe.getControlResultMessage());
-                this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExe);
+                controlExecution.setEnd(new Date().getTime());
+                actionExecution.setExecutionResultMessage(controlExecution.getExecutionResultMessage());
+                actionExecution.setActionResultMessage(controlExecution.getControlResultMessage());
+                this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
                 LOG.debug("Registered Control");
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -1605,7 +1605,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log TestCaseStepActionControlExecution
              */
             if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
-                LOG.info(controlExe.toJson(false, true));
+                LOG.info(controlExecution.toJson(false, true));
             }
 
         }

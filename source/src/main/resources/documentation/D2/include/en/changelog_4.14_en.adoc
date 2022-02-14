@@ -3,7 +3,8 @@
 * Page source were not correctly displayed on execution screen.
 * Manage correctly user name with spaces.
 * Fixed issue when updating application object value from Test Case Script page.
-* Fixed display of elapsed duration on testcase execution detail page in websocket mode #2359
+* Fixed display of elapsed duration on testcase execution detail page in websocket mode (autorefresh during execution) #2359
+* Fixed delete label on campaign definition #2360
 
 *Improvements / New features*
 [square]
