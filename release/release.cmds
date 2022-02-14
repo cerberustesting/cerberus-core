@@ -61,7 +61,7 @@ awk -v changelogTitle="$changelogTitle" '{gsub(/Changelog.+[1-9]/,changelogTitle
 
 # Add new entry to french and english documentation for next release
 sed -e '$a\ ' source/src/main/resources/documentation/D2/documentation_en.adoc > source/src/main/resources/documentation/D2/documentation_en.adoc.back && mv source/src/main/resources/documentation/D2/documentation_en.adoc.back source/src/main/resources/documentation/D2/documentation_en.adoc
-sed -e '$a\= '$nextRelease'' source/src/main/resources/documentation/D2/documentation_en.adoc > source/src/main/resources/documentation/D2/documentation_en.adoc.back && mv source/src/main/resources/documentation/D2/documentation_en.adoc.back source/src/main/resources/documentation/D2/documentation_en.adoc
+sed -e '$a\== '$nextRelease'' source/src/main/resources/documentation/D2/documentation_en.adoc > source/src/main/resources/documentation/D2/documentation_en.adoc.back && mv source/src/main/resources/documentation/D2/documentation_en.adoc.back source/src/main/resources/documentation/D2/documentation_en.adoc
 sed -e '$a\:file-to-include: changelog_'$nextRelease'_en.adoc' source/src/main/resources/documentation/D2/documentation_en.adoc > source/src/main/resources/documentation/D2/documentation_en.adoc.back && mv source/src/main/resources/documentation/D2/documentation_en.adoc.back source/src/main/resources/documentation/D2/documentation_en.adoc
 sed -e '$a\include::include/en/{file-to-include}[]' source/src/main/resources/documentation/D2/documentation_en.adoc > source/src/main/resources/documentation/D2/documentation_en.adoc.back && mv source/src/main/resources/documentation/D2/documentation_en.adoc.back source/src/main/resources/documentation/D2/documentation_en.adoc
 
