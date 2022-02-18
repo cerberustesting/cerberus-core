@@ -33,11 +33,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         appendCountryList(country);
 
         var system = getUser().defaultSystem;
-        var test = GetURLParameter("test");
-        var testcase = GetURLParameter("testcase");
+        var test = decodeURIComponent(GetURLParameter("test"));
+        var testcase = decodeURIComponent(GetURLParameter("testcase"));
         var environment = GetURLParameter("environment");
         var country = GetURLParameter("country");
-        var tag = GetURLParameter("tag");
+        var tag = decodeURIComponent(GetURLParameter("tag"));
         var browser = GetURLParameter("browser");
         //check if Extended Test Case Filters is collapse and load the data if it is not
         var filterPanelDataLoaded = false;
@@ -298,10 +298,10 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     var testCaseURL = "";
 
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
-        testURL = "&test=" + defTest;
+        testURL = "&test=" + encodeURIComponent(defTest);
     }
     if ((defTestcase !== null) && (defTestcase !== undefined)) { // If test is defined, we limit the testcase list on that test.
-        testCaseURL = "&testCase=" + defTestcase;
+        testCaseURL = "&testCase=" + encodeURIComponent(defTestcase);
     }
     // Get the requested result size value
     var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
