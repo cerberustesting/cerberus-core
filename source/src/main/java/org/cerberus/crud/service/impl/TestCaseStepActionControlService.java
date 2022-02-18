@@ -19,29 +19,30 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cerberus.crud.dao.ITestCaseStepActionControlDAO;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Service
 public class TestCaseStepActionControlService implements ITestCaseStepActionControlService {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlService.class);
-    
+
     @Autowired
     private ITestCaseStepActionControlDAO testCaseStepActionControlDao;
 
@@ -169,5 +170,13 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
         }
         ans = createList(listToCreate);
         return ans;
+    }
+
+    public int getMaxControlId(Collection<TestCaseStepActionControl> controls) {
+        return controls
+                .stream()
+                .max(Comparator.comparing(TestCaseStepActionControl::getControlId))
+                .map(TestCaseStepActionControl::getControlId)
+                .orElse(0);
     }
 }

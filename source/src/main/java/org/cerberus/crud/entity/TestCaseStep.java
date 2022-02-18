@@ -21,6 +21,7 @@ package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ public class TestCaseStep {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    @EqualsAndHashCode.Exclude
     private JSONArray conditionOptions;
     private String description;
     private boolean isUsingLibraryStep;  //  true if the stepId use a stepId from another test
@@ -52,22 +54,31 @@ public class TestCaseStep {
     private Integer libraryStepStepId;   //  the stepId of the original step
     private boolean isLibraryStep;
     private boolean isExecutionForced;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private String dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
 
     /**
      * Not included in table.
      */
+    @EqualsAndHashCode.Exclude
     private List<TestCaseStepAction> actions;
+    @EqualsAndHashCode.Exclude
     private boolean isStepInUseByOtherTestcase;
 
     // Properties belonging to the testcase owning the step. Used by the public API
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountryProperties> properties;
 
     //    private int initialStep;
+    @EqualsAndHashCode.Exclude
     private TestCase testcaseObj;
+    @EqualsAndHashCode.Exclude
     private int libraryStepSort; // Contain the sort information of the library.
 
     /**
@@ -114,17 +125,13 @@ public class TestCaseStep {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TestCaseStep other = obj;
-        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+        if ((this.test == null) ? (obj.test != null) : !this.test.equals(obj.test)) {
             return false;
         }
-        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
+        if ((this.testcase == null) ? (obj.testcase != null) : !this.testcase.equals(obj.testcase)) {
             return false;
         }
-        if (this.stepId != other.stepId) {
-            return false;
-        }
-        return true;
+        return this.stepId == obj.stepId;
     }
 
     public JSONObject toJson() {

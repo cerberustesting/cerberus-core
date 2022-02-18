@@ -19,37 +19,37 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 public interface ITestCaseStepActionService {
-    
-    TestCaseStepAction findTestCaseStepActionbyKey (String test, String testCase, int stepId, int actionId);
+
+    TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int stepId, int actionId);
 
     List<TestCaseStepAction> getListOfAction(String test, String testcase, int stepId);
-    
-    void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException ;
-    
+
+    void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
+
     boolean insertListTestCaseStepAction(List<TestCaseStepAction> testCaseStepActionList);
-    
+
     boolean changeTestCaseStepActionActionId(String test, String testCase, int stepId, int oldActionId, int newActionId);
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
 
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
-    
-    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException ;
+    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException;
 
-    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException ;
-    
+    public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;
+
+    public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException;
+
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList, boolean duplicate) throws CerberusException;
 
     public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
@@ -57,8 +57,16 @@ public interface ITestCaseStepActionService {
     public AnswerList<TestCaseStepAction> readByVarious1WithDependency(String test, String testcase, int stepId);
 
     Answer create(TestCaseStepAction object);
-    
+
     Answer createList(List<TestCaseStepAction> objectList);
 
     Answer duplicateList(List<TestCaseStepAction> objectList, String test, String testCase);
+
+    /**
+     * Get the highest actionId from the given actions
+     *
+     * @param actions a collection of actions from which get the highest actionId
+     * @return the highest actionId from the given actions
+     */
+    int getMaxActionId(Collection<TestCaseStepAction> actions);
 }

@@ -19,35 +19,15 @@
  */
 package org.cerberus.servlet.crud.test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestCaseStepActionControlService;
-import org.cerberus.crud.service.ITestCaseStepActionService;
-import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.crud.service.*;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -63,8 +43,17 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @WebServlet(name = "UpdateTestCaseWithDependencies", urlPatterns = {"/UpdateTestCaseWithDependencies"})
@@ -73,19 +62,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     private static final Logger LOG = LogManager.getLogger(UpdateTestCaseWithDependencies.class);
     private ITestCaseService testCaseService;
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
-    private ITestCaseStepService tcsService;
-    private ITestCaseStepActionService tcsaService;
-    private ITestCaseStepActionControlService tcsacService;
-    private IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory;
+    private ITestCaseStepService stepService;
+    private ITestCaseStepActionService actionService;
+    private ITestCaseStepActionControlService controlService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws ServletException                         if a servlet-specific error occurs
+     * @throws IOException                              if an I/O error occurs
      * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -120,8 +108,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         JSONArray properties = jObj.getJSONArray("properties");
         JSONArray steps = jObj.getJSONArray("steps");
 
-        boolean duplicate = false;
-
         /**
          * Checking all constrains before calling the services.
          */
@@ -135,10 +121,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             testCaseService = appContext.getBean(ITestCaseService.class);
             testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-            tcsService = appContext.getBean(ITestCaseStepService.class);
-            tcsaService = appContext.getBean(ITestCaseStepActionService.class);
-            tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
-            testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+            stepService = appContext.getBean(ITestCaseStepService.class);
+            actionService = appContext.getBean(ITestCaseStepActionService.class);
+            controlService = appContext.getBean(ITestCaseStepActionControlService.class);
 
             AnswerItem<TestCase> testcaseAnswerItem = testCaseService.readByKey(testId, testCaseId);
             TestCase testcase = testcaseAnswerItem.getItem();
@@ -165,9 +150,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
             } else { // Test Case exist and we can update it so Global update start here
 
-                /**
-                 * TestcaseCountryProperties Update.
-                 */
+                // TestcaseCountryProperties Update
                 List<TestCaseCountryProperties> testcaseCountryPropertiesFromPage = getTestCaseCountryPropertiesFromParameter(testcase, properties);
                 testCaseCountryPropertiesService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, testcaseCountryPropertiesFromPage);
 
@@ -176,51 +159,51 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                  * - generating a new stepId, action or controlId number,
                  * - setting the correct related stepId and action for action or controlId
                  */
-                List<TestCaseStep> testcaseStepsFromPage = getTestCaseStepsFromParameter(request, appContext, testId, testCaseId, duplicate, steps);
-                List<TestCaseStepAction> testcaseStepActionsFromPage = new ArrayList<>();
-                List<TestCaseStepActionControl> testcaseStepActionControlsFromPage = new ArrayList<>();
+                List<TestCaseStep> stepsFromRequest = getTestCaseStepsFromParameter(request, appContext, testId, testCaseId, steps);
+                List<TestCaseStepAction> actionsFromRequest = new ArrayList<>();
+                List<TestCaseStepActionControl> controlsFromRequest = new ArrayList<>();
 
-                int nextStepNumber = getMaxStepNumber(testcaseStepsFromPage);
-                for (TestCaseStep testcaseStepFromPage : testcaseStepsFromPage) {
-                    if (testcaseStepFromPage.getStepId() == -1) {
-                        testcaseStepFromPage.setStepId(++nextStepNumber);
+                int maxStepId = stepService.getMaxStepId(stepsFromRequest);
+                for (TestCaseStep step : stepsFromRequest) {
+                    if (step.getStepId() == -1) {
+                        step.setStepId(++maxStepId);
                     }
 
-                    if (testcaseStepFromPage.getActions() != null) {
-                        int nextSequenceNumber = getMaxSequenceNumber(testcaseStepFromPage.getActions());
-                        for (TestCaseStepAction tcsa : testcaseStepFromPage.getActions()) {
-                            if (tcsa.getActionId() == -1) {
-                                tcsa.setActionId(++nextSequenceNumber);
+                    if (step.getActions() != null) {
+                        int maxActionId = actionService.getMaxActionId(step.getActions());
+                        for (TestCaseStepAction action : step.getActions()) {
+                            if (action.getActionId() == -1) {
+                                action.setActionId(++maxActionId);
                             }
-                            tcsa.setStepId(testcaseStepFromPage.getStepId());
+                            action.setStepId(step.getStepId());
 
-                            if (tcsa.getControls() != null) {
-                                int nextControlNumber = getMaxControlNumber(tcsa.getControls());
-                                for (TestCaseStepActionControl tscac : tcsa.getControls()) {
-                                    if (tscac.getControlId() == -1) {
-                                        tscac.setControlId(++nextControlNumber);
+                            if (action.getControls() != null) {
+                                int maxControlId = controlService.getMaxControlId(action.getControls());
+                                for (TestCaseStepActionControl control : action.getControls()) {
+                                    if (control.getControlId() == -1) {
+                                        control.setControlId(++maxControlId);
                                     }
-                                    tscac.setStepId(testcaseStepFromPage.getStepId());
-                                    tscac.setActionId(tcsa.getActionId());
+                                    control.setStepId(step.getStepId());
+                                    control.setActionId(action.getActionId());
                                 }
-                                testcaseStepActionControlsFromPage.addAll(tcsa.getControls());
+                                controlsFromRequest.addAll(action.getControls());
                             }
                         }
-                        testcaseStepActionsFromPage.addAll(testcaseStepFromPage.getActions());
+                        actionsFromRequest.addAll(step.getActions());
                     }
                 }
 
                 /*
                  * Create, update or delete stepId, action and controlId according to the needs
                  */
-                List<TestCaseStep> tcsFromDtb = new ArrayList<>(tcsService.getListOfSteps(initialTest, initialTestCase));
-                tcsService.compareListAndUpdateInsertDeleteElements(testcaseStepsFromPage, tcsFromDtb, duplicate);
+                List<TestCaseStep> stepsFromDatabase = new ArrayList<>(stepService.getListOfSteps(initialTest, initialTestCase));
+                stepService.compareListAndUpdateInsertDeleteElements(stepsFromRequest, stepsFromDatabase, false);
 
-                List<TestCaseStepAction> tcsaFromDtb = new ArrayList<>(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
-                tcsaService.compareListAndUpdateInsertDeleteElements(testcaseStepActionsFromPage, tcsaFromDtb, duplicate);
+                List<TestCaseStepAction> actionsFromDatabase = new ArrayList<>(actionService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+                actionService.compareListAndUpdateInsertDeleteElements(actionsFromRequest, actionsFromDatabase, false);
 
-                List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList<>(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
-                tcsacService.compareListAndUpdateInsertDeleteElements(testcaseStepActionControlsFromPage, tcsacFromDtb, duplicate);
+                List<TestCaseStepActionControl> controlsFromDatabase = new ArrayList<>(controlService.findControlByTestTestCase(initialTest, initialTestCase));
+                controlService.compareListAndUpdateInsertDeleteElements(controlsFromRequest, controlsFromDatabase, false);
 
                 testcase.setUsrModif(request.getUserPrincipal().getName());
                 testcase.setVersion(testcase.getVersion() + 1);
@@ -252,63 +235,6 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     }
 
-    /**
-     * Get the highest stepId number from the given steps
-     *
-     * @param steps a collection of steps from which get the highest stepId
-     * number
-     * @return the highest stepId number from the given steps
-     */
-    private int getMaxStepNumber(Collection<TestCaseStep> steps) {
-        int nextStepNumber = 0;
-        if (steps != null) {
-            for (TestCaseStep step : steps) {
-                if (nextStepNumber < step.getStepId()) {
-                    nextStepNumber = step.getStepId();
-                }
-            }
-        }
-        return nextStepNumber;
-    }
-
-    /**
-     * Get the highest action sequence from the given actions
-     *
-     * @param actions a collection of actions from which get the highest action
-     * sequence
-     * @return the highest action sequence from the given actions
-     */
-    private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
-        int nextSequenceNumber = 0;
-        if (actions != null) {
-            for (TestCaseStepAction action : actions) {
-                if (nextSequenceNumber < action.getActionId()) {
-                    nextSequenceNumber = action.getActionId();
-                }
-            }
-        }
-        return nextSequenceNumber;
-    }
-
-    /**
-     * Get the highest controlId number from the given controls
-     *
-     * @param controls a collection of controls from which get the highest
-     * controlId number
-     * @return the highest controlId number from the given controls
-     */
-    private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
-        int nextControlNumber = 0;
-        if (controls != null) {
-            for (TestCaseStepActionControl control : controls) {
-                if (nextControlNumber < control.getControlId()) {
-                    nextControlNumber = control.getControlId();
-                }
-            }
-        }
-        return nextControlNumber;
-    }
-
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(TestCase testcase, JSONArray properties) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
 
@@ -332,15 +258,31 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             if (!delete && !property.isEmpty()) {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getJSONObject(j).getString("value");
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(testcase.getTest(), testcase.getTestcase(), country, property, description, type, database, value, value2, length, rowLimit, nature,
-                            retryNb, retryPeriod, cacheExpire, rank, null, null, null, null));
+                    testCaseCountryProp.add(TestCaseCountryProperties.builder()
+                            .test(testcase.getTest())
+                            .testcase(testcase.getTestcase())
+                            .country(country)
+                            .property(property)
+                            .description(description)
+                            .type(type)
+                            .database(database)
+                            .value1(value)
+                            .value2(value2)
+                            .length(length)
+                            .rowLimit(rowLimit)
+                            .cacheExpire(cacheExpire)
+                            .nature(nature)
+                            .retryNb(retryNb)
+                            .retryPeriod(retryPeriod)
+                            .rank(rank)
+                            .build());
                 }
             }
         }
         return testCaseCountryProp;
     }
 
-    private List<TestCaseStep> getTestCaseStepsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate, JSONArray stepArray) throws JSONException {
+    private List<TestCaseStep> getTestCaseStepsFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray stepArray) throws JSONException {
         List<TestCaseStep> testCaseStep = new ArrayList<>();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
@@ -458,13 +400,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -481,10 +424,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -20,10 +20,7 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.util.StringUtil;
@@ -44,6 +41,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class TestCase {
     private String test;
     private String testcase;
@@ -62,6 +60,7 @@ public class TestCase {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    @EqualsAndHashCode.Exclude
     private JSONArray conditionOptions;
     private String type;
     private String origine;
@@ -71,6 +70,7 @@ public class TestCase {
     private String fromMinor;
     private String toMajor;
     private String toMinor;
+    @EqualsAndHashCode.Exclude
     private JSONArray bugs;
     private String targetMajor;
     private String targetMinor;
@@ -78,28 +78,42 @@ public class TestCase {
     private String executor;
     private String userAgent;
     private String screenSize;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
     /**
      * Not included in table.
      */
+    @EqualsAndHashCode.Exclude
     private String system;
+    @EqualsAndHashCode.Exclude
     private String lastExecutionStatus;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountryProperties> testCaseCountryProperties;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountryProperties> testCaseInheritedProperties;
+    @EqualsAndHashCode.Exclude
     private List<Invariant> invariantCountries;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountry> testCaseCountries;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseStep> steps;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseLabel> testCaseLabels;
+    @EqualsAndHashCode.Exclude
     private List<Label> labels;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseDep> dependencies;
 
     public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
-    
+
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     @JsonIgnore

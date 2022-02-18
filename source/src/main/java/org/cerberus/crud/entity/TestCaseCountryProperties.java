@@ -20,21 +20,17 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.sql.Timestamp;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.cerberus.engine.entity.MessageEvent;
-import java.util.List;
-import java.util.Objects;
-
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.engine.entity.MessageEvent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author bcivel
@@ -43,6 +39,7 @@ import org.json.JSONObject;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Builder
 public class TestCaseCountryProperties {
 
     private String test;
@@ -61,17 +58,25 @@ public class TestCaseCountryProperties {
     private int retryNb;
     private int retryPeriod;
     private int rank;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
      */
+    @EqualsAndHashCode.Exclude
     private MessageEvent result;
+    @EqualsAndHashCode.Exclude
     private TestCaseCountry testcaseCountry;
+    @EqualsAndHashCode.Exclude
     private List<Invariant> invariantCountries;
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountry> testcaseCountries;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseCountryProperties.class);
@@ -259,5 +264,5 @@ public class TestCaseCountryProperties {
         }
         return testCaseCountryPropertiesJson;
     }
-    
+
 }

@@ -85,16 +85,14 @@ public class TestcaseStepApiService {
             Map<Pair<String, String>, List<TestCaseCountryProperties>> testCaseCountryProperties = getCountriesByTestAndTestCase(countryInvariants, testcases);
 
             steps
-                    .forEach(testCaseStep -> {
-                        testCaseStep.setProperties(
-                                testCaseCountryProperties.get(
-                                        Pair.of(
-                                                testCaseStep.getTest(),
-                                                testCaseStep.getTestcase()
-                                        )
-                                )
-                        );
-                    });
+                    .forEach(testCaseStep -> testCaseStep.setProperties(
+                            testCaseCountryProperties.get(
+                                    Pair.of(
+                                            testCaseStep.getTest(),
+                                            testCaseStep.getTestcase()
+                                    )
+                            )
+                    ));
         } catch (CerberusException ex) {
             LOG.warn(ex);
         }

@@ -19,33 +19,34 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Service
 public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionService.class);
-    
+
     @Autowired
     private ITestCaseStepActionDAO testCaseStepActionDAO;
     @Autowired
@@ -203,5 +204,13 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         }
         ans = createList(listToCreate);
         return ans;
+    }
+
+    public int getMaxActionId(Collection<TestCaseStepAction> actions) {
+        return actions
+                .stream()
+                .max(Comparator.comparing(TestCaseStepAction::getActionId))
+                .map(TestCaseStepAction::getActionId)
+                .orElse(0);
     }
 }

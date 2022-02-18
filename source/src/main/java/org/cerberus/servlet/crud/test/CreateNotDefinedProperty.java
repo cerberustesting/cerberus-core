@@ -19,21 +19,9 @@
  */
 package org.cerberus.servlet.crud.test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.crud.factory.impl.FactoryTestCaseCountryProperties;
 import org.cerberus.crud.service.IDocumentationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -42,12 +30,24 @@ import org.cerberus.crud.service.impl.DocumentationService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.TestCaseCountryPropertiesService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Creates a new property for the test case.
@@ -64,10 +64,10 @@ public class CreateNotDefinedProperty extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -79,14 +79,10 @@ public class CreateNotDefinedProperty extends HttpServlet {
 
         ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(TestCaseCountryPropertiesService.class);
         ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-        IFactoryTestCaseCountryProperties factoryTestCaseCountryProperties = appContext.getBean(FactoryTestCaseCountryProperties.class);
 
         try {
 
-            String propertyName = request.getParameter("property");
-            if (propertyName != null) {
-                propertyName = propertyName.replace("%", "");
-            }
+            final String propertyName = request.getParameter("property") == null ? request.getParameter("property").replace("%", "") : request.getParameter("property");
             String toTest = request.getParameter("totest");
             String toTestCase = request.getParameter("totestcase");
             String propertyType = request.getParameter("propertyType");
@@ -96,8 +92,6 @@ public class CreateNotDefinedProperty extends HttpServlet {
             List<String> toCountriesAll = testCaseCountryService.findListOfCountryByTestTestCase(toTest, toTestCase);
 
             if (toCountriesAll != null && toCountriesAll.size() > 0) {
-                // Variable for the properties list of the destination TestCase
-                List<TestCaseCountryProperties> listOfPropertiesToInsert = new ArrayList<>();
 
                 // Variable for the countries of a property of the destination TestCase
                 List<String> toCountriesProp;
@@ -114,21 +108,28 @@ public class CreateNotDefinedProperty extends HttpServlet {
                     toCountries.removeAll(toCountriesProp);
                 }
 
-                for (String country : toCountries) {
-                    listOfPropertiesToInsert.add(factoryTestCaseCountryProperties.create(toTest,
-                            toTestCase,
-                            country,
-                            propertyName,
-                            "",
-                            propertyType,
-                            "---",
-                            notDefinedProperty,
-                            "",
-                            "0",
-                            0,
-                            "STATIC", 0, 10000, 0, 1, null, null, null, null
-                    ));
-                }
+                // Variable for the properties list of the destination TestCase
+                List<TestCaseCountryProperties> listOfPropertiesToInsert = toCountries
+                        .stream()
+                        .map(country -> TestCaseCountryProperties.builder()
+                                .test(toTest)
+                                .testcase(toTestCase)
+                                .country(country)
+                                .description("")
+                                .property(propertyName)
+                                .type(propertyType)
+                                .database("---")
+                                .value1(notDefinedProperty)
+                                .value2("")
+                                .length("0")
+                                .rowLimit(0)
+                                .nature("STATIC")
+                                .retryNb(0)
+                                .retryPeriod(10000)
+                                .cacheExpire(0)
+                                .rank(1)
+                                .build())
+                        .collect(Collectors.toList());
 
                 Answer answer = testCaseCountryPropertiesService.createListTestCaseCountryPropertiesBatch(listOfPropertiesToInsert);
                 rs = answer.getResultMessage();
@@ -162,13 +163,14 @@ public class CreateNotDefinedProperty extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -179,10 +181,10 @@ public class CreateNotDefinedProperty extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

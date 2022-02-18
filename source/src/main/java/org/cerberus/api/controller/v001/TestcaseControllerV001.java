@@ -22,33 +22,24 @@ package org.cerberus.api.controller.v001;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.api.dto.v001.TestcaseDTOV001;
+import org.cerberus.api.mapper.v001.TestcaseMapperV001;
+import org.cerberus.api.service.PublicApiAuthenticationService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.exception.CerberusException;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.api.dto.v001.TestcaseDTOV001;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.api.mapper.v001.TestcaseMapperV001;
-import org.cerberus.api.service.PublicApiAuthenticationService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author MorganLmd
  */
-@Slf4j
 @AllArgsConstructor
 @RestController
 @Api(tags = "Testcase")
@@ -64,7 +55,7 @@ public class TestcaseControllerV001 {
 
     @ApiOperation("Get all testcases filtered by test")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
-    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = "application/json")
+    @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TestcaseDTOV001> findTestcasesByTest(
             @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -78,7 +69,7 @@ public class TestcaseControllerV001 {
 
     @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
-    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = "application/json")
+    @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseDTOV001 findTestcaseByTestAndTestcase(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
@@ -90,17 +81,39 @@ public class TestcaseControllerV001 {
 
     @ApiOperation("Create a new Testcase")
     @ApiResponse(code = 200, message = "ok")
-    @PostMapping(headers = {API_VERSION_1}, produces = "application/json")
+    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseDTOV001 createTestcase(
-            @Valid @RequestBody TestcaseDTOV001 newTestcase,
+            @RequestBody TestcaseDTOV001 newTestcase,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal) {
+            Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        LOG.debug("Testcase COntroller !!");
 
         return this.testcaseMapper.toDTO(
                 this.testCaseService.createTestcaseWithDependenciesAPI(
                         this.testcaseMapper.toEntity(newTestcase)
                 )
         );
+    }
+
+    @ApiOperation("Update a Testcase")
+    @ApiResponse(code = 200, message = "ok")
+    @PutMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public TestcaseDTOV001 update(
+            @PathVariable("testcaseId") String testcaseId,
+            @PathVariable("testFolderId") String testFolderId,
+            @RequestBody TestcaseDTOV001 testcaseToUpdate,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) throws CerberusException {
+
+        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        return this.testcaseMapper.toDTO(
+                this.testCaseService.updateTestcaseAPI(
+                        testFolderId,
+                        testcaseId,
+                        this.testcaseMapper.toEntity(testcaseToUpdate)
+                ));
     }
 }
