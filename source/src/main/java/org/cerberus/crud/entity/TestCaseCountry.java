@@ -20,17 +20,12 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+
 import java.sql.Timestamp;
 import java.util.List;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
- *
  * @author bcivel
  */
 @Builder
@@ -43,17 +38,23 @@ public class TestCaseCountry {
     private String test;
     private String testcase;
     private String country;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
      */
+    @EqualsAndHashCode.Exclude
     private List<TestCaseCountryProperties> testCaseCountryProperty;
+    @EqualsAndHashCode.Exclude
     private TestCase testCaseObj;
-    
+
 
     @JsonIgnore
     public TestCase getTestCaseObj() {

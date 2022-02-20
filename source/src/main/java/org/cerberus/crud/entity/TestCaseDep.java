@@ -19,15 +19,24 @@
  */
 package org.cerberus.crud.entity;
 
-import java.sql.Timestamp;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+
 /**
  * @author bcivel
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class TestCaseDep {
 
     private long id;
@@ -39,131 +48,25 @@ public class TestCaseDep {
     private String dependencyEvent;
     private boolean isActive;
     private String description;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
-    private String testcaseDescription;
 
     /**
      * Not included in table.
      */
+    @EqualsAndHashCode.Exclude
+    private String testcaseDescription;
+
     public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testcase Execution.
     public static final String TYPE_EVENT = "EVENT"; // Creation of an Event.
 
     private static final Logger LOG = LogManager.getLogger(TestCaseDep.class);
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTestcase() {
-        return testcase;
-    }
-
-    public void setTestcase(String testcase) {
-        this.testcase = testcase;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDependencyTest() {
-        return dependencyTest;
-    }
-
-    public void setDependencyTest(String dependencyTest) {
-        this.dependencyTest = dependencyTest;
-    }
-
-    public String getDependencyTestcase() {
-        return dependencyTestcase;
-    }
-
-    public void setDependencyTestcase(String dependencyTestcase) {
-        this.dependencyTestcase = dependencyTestcase;
-    }
-
-    public String getDependencyEvent() {
-        return dependencyEvent;
-    }
-
-    public void setDependencyEvent(String dependencyEvent) {
-        this.dependencyEvent = dependencyEvent;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String usrModif) {
-        this.usrModif = usrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
-    }
-
-    public String getTestcaseDescription() {
-        return testcaseDescription;
-    }
-
-    public void setTestcaseDescription(String testcaseDescription) {
-        this.testcaseDescription = testcaseDescription;
-    }
 
     public boolean hasSameKey(TestCaseDep tcd) {
         return this.getTest().equals(tcd.getTest())
@@ -204,10 +107,5 @@ public class TestCaseDep {
             LOG.error(ex.toString(), ex);
         }
         return testCaseDependencyJson;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCaseDep{" + "id=" + id + ", test=" + test + ", testcase=" + testcase + ", type=" + type + ", dependencyTest=" + dependencyTest + ", dependencyTestcase=" + dependencyTestcase + ", dependencyEvent=" + dependencyEvent + ", isActive=" + isActive + ", description=" + description + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", dependencyDescription=" + testcaseDescription + '}';
     }
 }

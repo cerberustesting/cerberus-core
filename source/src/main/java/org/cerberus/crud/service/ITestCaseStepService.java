@@ -19,15 +19,15 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 public interface ITestCaseStepService {
@@ -84,13 +84,12 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
-    
+
     List<TestCaseStep> readByTestTestCaseAPI(String test, String testcase);
 
     AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
-     *
      * @param test
      * @param testcase
      * @return
@@ -102,25 +101,30 @@ public interface ITestCaseStepService {
     TestCaseStep readTestcaseStepWithDependenciesAPI(String test, String testcase, int stepId);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(TestCaseStep object);
 
     /**
-     *
      * @param objectList
      * @return
      */
     Answer createList(List<TestCaseStep> objectList);
 
     /**
-     *
      * @param objectList
      * @param test
      * @param testCase
      * @return
      */
     Answer duplicateList(List<TestCaseStep> objectList, String test, String testCase);
+
+    /**
+     * Get the highest stepId number from the given steps
+     *
+     * @param steps a collection of steps from which get the highest stepId
+     * @return the highest stepId number from the given steps
+     */
+    int getMaxStepId(Collection<TestCaseStep> steps);
 }

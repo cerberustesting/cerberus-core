@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.api.errorhandler.exception.FailedInsertOperationException;
 import org.cerberus.api.errorhandler.exception.InvalidRequestException;
 import org.cerberus.crud.dao.ITestCaseDAO;
@@ -45,6 +46,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author bcivel
@@ -182,7 +184,7 @@ public class TestCaseService implements ITestCaseService {
 
         AnswerList<TestCase> testCases = this.readByTestByCriteria(system, test, startPosition, length, sortInformation, searchParameter, individualSearch);
 
-        if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testCases.getDataList().size() > 0 && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
+        if (testCases.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !testCases.getDataList().isEmpty() && isCalledFromListPage) {//the service was able to perform the query, then we should get all values
 
             HashMap<String, Invariant> countryInvariants = (HashMap<String, Invariant>) invariantService.readByIdNameToHash("COUNTRY");
             List<TestCaseCountry> testCaseCountries = testCaseCountryService.readByTestTestCase(system, test, null, testCases.getDataList()).getDataList();
@@ -326,7 +328,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-        AnswerList<TestCase> result = new AnswerList<>();
+        AnswerList<TestCase> result;
         String[] status = null;
         String[] system = null;
         String[] application = null;
@@ -411,7 +413,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     public boolean containsTestCase(final List<TestCaseListDTO> list, final String number) {
-        return list.stream().filter(o -> o.getTestCaseNumber().equals(number)).findFirst().isPresent();
+        return list.stream().anyMatch(testCaseListDTO -> testCaseListDTO.getTestCaseNumber().equals(number));
     }
 
     @Override
@@ -490,10 +492,8 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public Answer update(String keyTest, String keyTestcase, TestCase testcase) {
         // We first create the corresponding test if it doesn,'t exist.
-        if (testcase.getTest() != null) {
-            if (!testService.exist(testcase.getTest())) {
-                testService.create(factoryTest.create(testcase.getTest(), "", true, null, testcase.getUsrModif(), null, "", null));
-            }
+        if (testcase.getTest() != null && !testService.exist(testcase.getTest())) {
+            testService.create(factoryTest.create(testcase.getTest(), "", true, null, testcase.getUsrModif(), null, "", null));
         }
         Answer ans = testCaseDao.update(keyTest, keyTestcase, testcase);
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -521,10 +521,8 @@ public class TestCaseService implements ITestCaseService {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null && !testService.exist(testCase.getTest())) {
             testService.create(factoryTest.create(testCase.getTest(), "", true, null, testCase.getUsrCreated(), null, "", null));
-
         }
-        Answer ans = testCaseDao.create(testCase);
-        return ans;
+        return testCaseDao.create(testCase);
     }
 
     @Override
@@ -670,52 +668,60 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public TestCase createTestcaseWithDependenciesAPI(TestCase testcase) {
+    public TestCase createTestcaseWithDependenciesAPI(TestCase newTestcase) throws CerberusException {
 
-        if (testcase.getTest() == null || testcase.getTest().isEmpty()) {
+        final String FAILED_TO_INSERT = "Failed to insert the testcase in the database";
+
+        if (newTestcase.getTest() == null || newTestcase.getTest().isEmpty()) {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
-        if (testcase.getTestcase() != null) {
+        if (newTestcase.getTestcase() != null) {
             throw new InvalidRequestException("testcaseId forbidden to create Testcase");
         }
 
-        testcase.setTestcase(this.getNextAvailableTestcaseId(testcase.getTest()));
-        Answer testcaseCreationAnswer = this.create(testcase);
+        newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
+        Answer testcaseCreationAnswer = this.create(newTestcase);
 
         if (!testcaseCreationAnswer.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-            throw new FailedInsertOperationException("Failed to insert the testcase in the database");
+            throw new FailedInsertOperationException(FAILED_TO_INSERT);
         }
 
         //for tcstep, insert steps
-        if (testcase.getSteps() != null) {
-            for (TestCaseStep tcs : testcase.getSteps()) {
-                tcs.setTest(testcase.getTest());
-                tcs.setTestcase(testcase.getTestcase());
-                Answer newTestcaseStep = testCaseStepService.create(tcs);
+        if (newTestcase.getSteps() != null) {
+            int stepId = 0;
+            for (TestCaseStep step : newTestcase.getSteps()) {
+                step.setTest(newTestcase.getTest());
+                step.setTestcase(newTestcase.getTestcase());
+                step.setStepId(stepId++);
+                Answer newTestcaseStep = testCaseStepService.create(step);
                 if (!newTestcaseStep.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new FailedInsertOperationException("Failed to insert the testcase in the database");
+                    throw new FailedInsertOperationException(FAILED_TO_INSERT);
                 }
 
-                if (tcs.getActions() != null) {
-                    for (TestCaseStepAction tcsa : tcs.getActions()) {
-                        tcsa.setTest(testcase.getTest());
-                        tcsa.setTestcase(testcase.getTestcase());
-                        tcsa.setStepId(tcs.getStepId());
-                        Answer newTestcaseStepAction = testCaseStepActionService.create(tcsa);
+                if (step.getActions() != null && !step.isUsingLibraryStep()) {
+                    int actionId = 0;
+                    for (TestCaseStepAction action : step.getActions()) {
+                        action.setTest(newTestcase.getTest());
+                        action.setTestcase(newTestcase.getTestcase());
+                        action.setStepId(step.getStepId());
+                        action.setActionId(actionId++);
+                        Answer newTestcaseStepAction = testCaseStepActionService.create(action);
                         if (!newTestcaseStepAction.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                            throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
+                            throw new FailedInsertOperationException(FAILED_TO_INSERT);
                         }
 
-                        if (tcsa.getControls() != null) {
-                            for (TestCaseStepActionControl tcsac : tcsa.getControls()) {
-                                tcsac.setTest(testcase.getTest());
-                                tcsac.setTestcase(testcase.getTestcase());
-                                tcsac.setStepId(tcs.getStepId());
-                                tcsac.setActionId(tcsa.getActionId());
-                                Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(tcsac);
+                        if (action.getControls() != null) {
+                            int controlId = 0;
+                            for (TestCaseStepActionControl control : action.getControls()) {
+                                control.setTest(newTestcase.getTest());
+                                control.setTestcase(newTestcase.getTestcase());
+                                control.setStepId(step.getStepId());
+                                control.setActionId(action.getActionId());
+                                control.setControlId(controlId++);
+                                Answer newTestcaseStepActionControl = testCaseStepActionControlService.create(control);
                                 if (!newTestcaseStepActionControl.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                                    throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
+                                    throw new FailedInsertOperationException(FAILED_TO_INSERT);
                                 }
                             }
                         }
@@ -725,44 +731,40 @@ public class TestCaseService implements ITestCaseService {
             }
         }
 
-        if (testcase.getInvariantCountries() != null && !testcase.getInvariantCountries().isEmpty()) {
-            testcase.getInvariantCountries()
-                    .forEach(invariantCountry -> {
-                        testcase.appendTestCaseCountries(
-                                TestCaseCountry.builder()
-                                        .test(testcase.getTest())
-                                        .testcase(testcase.getTestcase())
-                                        .country(invariantCountry.getValue())
-                                        .build()
-                        );
-                    });
+        this.fillTestcaseCountriesFromInvariantsCountry(newTestcase);
+        if (newTestcase.getTestCaseCountryProperties() != null && !newTestcase.getTestCaseCountryProperties().isEmpty()) {
+            newTestcase.setTestCaseCountryProperties(
+                    this.testCaseCountryPropertiesService.getFlatListOfTestCaseCountryPropertiesFromAggregate(
+                            newTestcase.getTestCaseCountryProperties()
+                    )
+            );
+        }
 
-            for (TestCaseCountry tcc : testcase.getTestCaseCountries()) {
-                tcc.setTest(testcase.getTest());
-                tcc.setTestcase(testcase.getTestcase());
-                Answer newTestcaseCountry = testCaseCountryService.create(tcc);
-                if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                    throw new FailedInsertOperationException("Failed to insert the testcase in the database");
-                }
+        for (TestCaseCountry tcc : newTestcase.getTestCaseCountries()) {
+            tcc.setTest(newTestcase.getTest());
+            tcc.setTestcase(newTestcase.getTestcase());
+            Answer newTestcaseCountry = testCaseCountryService.create(tcc);
+            if (!newTestcaseCountry.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                throw new FailedInsertOperationException(FAILED_TO_INSERT);
+            }
 
-                if (tcc.getTestCaseCountryProperty() != null) {
-                    for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
-                        tccp.setTest(testcase.getTest());
-                        tccp.setTestcase(testcase.getTestcase());
-                        Answer newTestcaseCountryProperties = testCaseCountryPropertiesService.create(tccp);
-                        if (!newTestcaseCountryProperties.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
-                            throw new FailedInsertOperationException("Failed to insert the testcase in the databse");
-                        }
+            if (tcc.getTestCaseCountryProperty() != null) {
+                for (TestCaseCountryProperties tccp : tcc.getTestCaseCountryProperty()) {
+                    tccp.setTest(newTestcase.getTest());
+                    tccp.setTestcase(newTestcase.getTestcase());
+                    Answer newTestcaseCountryProperties = testCaseCountryPropertiesService.create(tccp);
+                    if (!newTestcaseCountryProperties.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
+                        throw new FailedInsertOperationException(FAILED_TO_INSERT);
                     }
                 }
             }
         }
 
         //insert testcasedependencies
-        if (testcase.getDependencies() != null) {
-            for (TestCaseDep tcd : testcase.getDependencies()) {
-                tcd.setTest(testcase.getTest());
-                tcd.setTestcase(testcase.getTestcase());
+        if (newTestcase.getDependencies() != null) {
+            for (TestCaseDep tcd : newTestcase.getDependencies()) {
+                tcd.setTest(newTestcase.getTest());
+                tcd.setTestcase(newTestcase.getTestcase());
                 try {
                     testCaseDepService.create(tcd);
                 } catch (CerberusException ex) {
@@ -772,14 +774,145 @@ public class TestCaseService implements ITestCaseService {
         }
 
         //insert testcaselabel
-        if (testcase.getTestCaseLabels() != null) {
-            for (TestCaseLabel tcl : testcase.getTestCaseLabels()) {
-                tcl.setTest(testcase.getTest());
-                tcl.setTestcase(testcase.getTestcase());
-                testCaseLabelService.create(tcl);
+        if (newTestcase.getLabels() != null && !newTestcase.getLabels().isEmpty()) {
+            newTestcase.setTestCaseLabels(this.getTestcaseLabelsFromLabels(newTestcase.getLabels(), newTestcase.getTest(), newTestcase.getTestcase(), newTestcase.getUsrCreated()));
+            this.testCaseLabelService.createList(newTestcase.getTestCaseLabels());
+        }
+
+        return this.findTestCaseByKeyWithDependencies(newTestcase.getTest(), newTestcase.getTestcase(), true).getItem();
+    }
+
+    public TestCase updateTestcaseAPI(String testFolderId, String testcaseId, TestCase newTestcaseVersion) throws CerberusException {
+
+        if (testFolderId == null || testFolderId.isEmpty()) {
+            throw new InvalidRequestException("testFolderId is required to update a testcase");
+        }
+
+        if (testcaseId == null || testcaseId.isEmpty()) {
+            throw new InvalidRequestException("testcaseId is required to update a testcase");
+        }
+
+        TestCase oldTestcaseVersion = new TestCase();
+        try {
+            oldTestcaseVersion = this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true).getItem();
+            if (oldTestcaseVersion == null) {
+                throw new EntityNotFoundException(TestCase.class, "testcaseFolderId", newTestcaseVersion.getTest(), "testcaseId", newTestcaseVersion.getTestcase());
+            }
+        } catch (CerberusException e) {
+            LOG.warn(e.getMessage());
+        }
+
+        LOG.debug(newTestcaseVersion.toJson());
+        LOG.debug(oldTestcaseVersion.toJson());
+
+        LOG.debug(newTestcaseVersion.equals(oldTestcaseVersion));
+        if (!newTestcaseVersion.equals(oldTestcaseVersion)) {
+            newTestcaseVersion.setVersion(newTestcaseVersion.getVersion() + 1);
+            LOG.debug(this.updateTestCaseInformation(newTestcaseVersion));
+        }
+
+        if (newTestcaseVersion.getSteps() != null && !newTestcaseVersion.getSteps().isEmpty()) {
+            this.testCaseStepService.compareListAndUpdateInsertDeleteElements(newTestcaseVersion.getSteps(), oldTestcaseVersion.getSteps(), false);
+
+            List<TestCaseStepAction> newActions = this.getAllActionsFromTestcase(newTestcaseVersion);
+            List<TestCaseStepAction> oldActions = this.testCaseStepActionService.findTestCaseStepActionbyTestTestCase(testFolderId, testcaseId);
+            this.testCaseStepActionService.compareListAndUpdateInsertDeleteElements(newActions, oldActions, false);
+
+            List<TestCaseStepActionControl> newControls = this.getAllControlsFromTestcase(newTestcaseVersion);
+            List<TestCaseStepActionControl> oldControls = this.testCaseStepActionControlService.findControlByTestTestCase(testFolderId, testcaseId);
+            this.testCaseStepActionControlService.compareListAndUpdateInsertDeleteElements(newControls, oldControls, false);
+        }
+
+        this.fillTestcaseCountriesFromInvariantsCountry(newTestcaseVersion);
+        this.testCaseCountryService.compareListAndUpdateInsertDeleteElements(
+                newTestcaseVersion.getTest(),
+                newTestcaseVersion.getTestcase(),
+                newTestcaseVersion.getTestCaseCountries()
+        );
+
+        if (newTestcaseVersion.getTestCaseCountryProperties() != null && !newTestcaseVersion.getTestCaseCountryProperties().isEmpty()) {
+            newTestcaseVersion.setTestCaseCountryProperties(
+                    this.testCaseCountryPropertiesService
+                            .getFlatListOfTestCaseCountryPropertiesFromAggregate(newTestcaseVersion.getTestCaseCountryProperties())
+            );
+        }
+
+        LOG.debug(newTestcaseVersion.getTestCaseCountryProperties());
+        if (newTestcaseVersion.getTestCaseCountryProperties() != null && !newTestcaseVersion.getTestCaseCountryProperties().isEmpty()) {
+            this.testCaseCountryPropertiesService.compareListAndUpdateInsertDeleteElements(
+                    newTestcaseVersion.getTest(),
+                    newTestcaseVersion.getTestcase(),
+                    newTestcaseVersion.getTestCaseCountryProperties()
+            );
+        }
+
+        if (newTestcaseVersion.getDependencies() != null && !newTestcaseVersion.getDependencies().isEmpty()) {
+            this.testCaseDepService.compareListAndUpdateInsertDeleteElements(
+                    newTestcaseVersion.getTest(),
+                    newTestcaseVersion.getTestcase(),
+                    newTestcaseVersion.getDependencies()
+            );
+        }
+
+        if (newTestcaseVersion.getLabels() != null && !newTestcaseVersion.getLabels().isEmpty()) {
+            newTestcaseVersion.setTestCaseLabels(this.getTestcaseLabelsFromLabels(newTestcaseVersion.getLabels(), newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), newTestcaseVersion.getUsrCreated()));
+            this.testCaseLabelService.compareListAndUpdateInsertDeleteElements(
+                    newTestcaseVersion.getTest(),
+                    newTestcaseVersion.getTestcase(),
+                    newTestcaseVersion.getTestCaseLabels()
+            );
+        }
+        return this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true).getItem();
+    }
+
+    private void fillTestcaseCountriesFromInvariantsCountry(TestCase testcase) {
+        if (testcase.getInvariantCountries() == null || testcase.getInvariantCountries().isEmpty()) {
+            try {
+                testcase.setInvariantCountries(this.invariantService.readByIdName("COUNTRY"));
+            } catch (CerberusException e) {
+                LOG.warn("Unable to retrieve countries from invariant table" + e);
             }
         }
 
-        return testcase;
+        testcase.getInvariantCountries()
+                .forEach(invariantCountry -> testcase.appendTestCaseCountries(
+                        TestCaseCountry.builder()
+                                .test(testcase.getTest())
+                                .testcase(testcase.getTestcase())
+                                .country(invariantCountry.getValue())
+                                .build()
+                ));
+    }
+
+    private List<TestCaseLabel> getTestcaseLabelsFromLabels(List<Label> labels, String testFolderId, String testcaseId, String userCreated) {
+        return labels
+                .stream()
+                .map(label -> TestCaseLabel.builder()
+                        .test(testFolderId)
+                        .testcase(testcaseId)
+                        .labelId(label.getId())
+                        .usrCreated(userCreated)
+                        .label(label)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<TestCaseStepAction> getAllActionsFromTestcase(TestCase testcase) {
+        return testcase.getSteps()
+                .stream()
+                .filter(step -> !step.isUsingLibraryStep())
+                .flatMap(testCaseStep -> testCaseStep.getActions().stream())
+                .collect(Collectors.toList());
+    }
+
+    private List<TestCaseStepActionControl> getAllControlsFromTestcase(TestCase testcase) {
+        return testcase.getSteps()
+                .stream()
+                .filter(step -> !step.isUsingLibraryStep())
+                .flatMap(testCaseStep -> testCaseStep.getActions()
+                        .stream()
+                        .flatMap(testCaseStepAction -> testCaseStepAction.getControls().stream())
+                )
+                .collect(Collectors.toList());
     }
 }

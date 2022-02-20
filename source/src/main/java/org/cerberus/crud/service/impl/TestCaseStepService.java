@@ -19,25 +19,27 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -150,7 +152,7 @@ public class TestCaseStepService implements ITestCaseStepService {
 //        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
     }
 
-//    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
+    //    private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
 //        for (TestCaseStep tcsDifference : testCaseStepList) {
 //            if (tcsDifference.isStepInUseByOtherTestcase()) {
 //                List<TestCaseStep> tcsUsingStep = this.getTestCaseStepUsingStepInParamter(tcsDifference.getTest(), tcsDifference.getTestcase(), tcsDifference.getInitialStep());
@@ -277,6 +279,15 @@ public class TestCaseStepService implements ITestCaseStepService {
             ans = testCaseStepDAO.create(objectToCreate);
         }
         return ans;
+    }
+
+    @Override
+    public int getMaxStepId(Collection<TestCaseStep> steps) {
+        return steps
+                .stream()
+                .max(Comparator.comparing(TestCaseStep::getStepId))
+                .map(TestCaseStep::getStepId)
+                .orElse(0);
     }
 
 }

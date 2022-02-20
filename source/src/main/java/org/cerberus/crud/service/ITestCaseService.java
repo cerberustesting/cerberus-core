@@ -19,18 +19,17 @@
  */
 package org.cerberus.crud.service;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
@@ -48,7 +47,6 @@ public interface ITestCaseService {
     TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -57,7 +55,6 @@ public interface ITestCaseService {
     TestCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testCase
      * @param withSteps
@@ -67,14 +64,12 @@ public interface ITestCaseService {
     AnswerItem<TestCase> findTestCaseByKeyWithDependencies(String test, String testCase, boolean withSteps) throws CerberusException;
 
     /**
-     *
      * @param test
      * @return
      */
     List<TestCase> findTestCaseByTest(String test);
 
     /**
-     *
      * @param system
      * @param test
      * @param startPosition
@@ -89,7 +84,6 @@ public interface ITestCaseService {
     AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param system
      * @return
@@ -97,7 +91,6 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByTestSystem(String test, String system);
 
     /**
-     *
      * @param application
      * @return
      */
@@ -110,22 +103,20 @@ public interface ITestCaseService {
      * @param testFilter
      * @param applicationFilter
      * @param country
-     * @param system system of the main test case.
-     * @param build current build
-     * @param revision current revision
+     * @param system            system of the main test case.
+     * @param build             current build
+     * @param revision          current revision
      * @return
      */
     List<TestCase> getTestCaseForPrePostTesting(String testFilter, String applicationFilter, String country, String system, String build, String revision);
 
     /**
-     *
      * @param testCase
      * @return
      */
     boolean updateTestCaseInformation(TestCase testCase);
 
     /**
-     *
      * @param tCase
      * @param text
      * @param system
@@ -134,7 +125,6 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByAllCriteria(TestCase tCase, String text, String system);
 
     /**
-     *
      * @param column
      * @return
      */
@@ -163,7 +153,7 @@ public interface ITestCaseService {
     AnswerList<TestCase> findTestCaseByCampaign(String campaign);
 
     /**
-     * @param campaign the campaign name
+     * @param campaign  the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign and activated for the
      * countries
@@ -179,7 +169,6 @@ public interface ITestCaseService {
     String getNextAvailableTestcaseId(String test);
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -188,7 +177,6 @@ public interface ITestCaseService {
     List<TestCase> findUseTestCaseList(String test, String testCase) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param app
      * @param active
@@ -206,7 +194,6 @@ public interface ITestCaseService {
     List<TestCase> findByCriteria(String[] test, String[] app, String[] active, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign, String[] battery);
 
     /**
-     *
      * @param test
      * @param testcase
      * @return
@@ -218,15 +205,14 @@ public interface ITestCaseService {
      * Method that get all the testcases that use a determined testdatalib entry
      *
      * @param testDataLibId testdatalib unique identifier
-     * @param name testdatalib name
-     * @param country country for which testdatalib is defined
+     * @param name          testdatalib name
+     * @param country       country for which testdatalib is defined
      * @return an answer with the test cases and a message indicating the status
      * of the operation
      */
     AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
 
     /**
-     *
      * @param test
      * @return
      */
@@ -259,7 +245,6 @@ public interface ITestCaseService {
     public AnswerItem<TestCase> readByKeyWithDependency(String test, String testCase);
 
     /**
-     *
      * @param test
      * @param app
      * @param creator
@@ -274,10 +259,9 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
+                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
-     *
      * @param system
      * @param test
      * @param searchParameter
@@ -288,7 +272,6 @@ public interface ITestCaseService {
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
-     *
      * @param systems
      * @param to
      * @return
@@ -296,7 +279,6 @@ public interface ITestCaseService {
     public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to);
 
     /**
-     *
      * @param keyTest
      * @param keyTestCase
      * @param testCase
@@ -305,28 +287,24 @@ public interface ITestCaseService {
     public Answer update(String keyTest, String keyTestCase, TestCase testCase);
 
     /**
-     *
      * @param testCase
      * @return
      */
     public Answer create(TestCase testCase);
 
     /**
-     *
      * @param testCase
      * @return
      */
     public Answer createAPI(TestCase testCase);
 
     /**
-     *
      * @param testCase
      * @return
      */
     public Answer delete(TestCase testCase);
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -334,7 +312,6 @@ public interface ITestCaseService {
     TestCase convert(AnswerItem<TestCase> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -342,7 +319,6 @@ public interface ITestCaseService {
     List<TestCase> convert(AnswerList<TestCase> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */
@@ -393,26 +369,32 @@ public interface ITestCaseService {
     public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request);
 
     /**
-     *
      * @param service
      * @return
      */
     public AnswerList<TestListDTO> findTestCasesThatUseService(String service);
 
     /**
-     *
      * @param testCase
      * @throws org.cerberus.exception.CerberusException
      */
     public void createTestcaseWithDependencies(TestCase testCase) throws CerberusException;
 
     /**
-     *
      * @param testCase
      * @return
      * @throws CerberusException
      * @throws java.sql.SQLException
      */
-    public TestCase createTestcaseWithDependenciesAPI(TestCase testCase);
+    public TestCase createTestcaseWithDependenciesAPI(TestCase testCase) throws CerberusException;
+
+    /**
+     * @param testFolderId
+     * @param testcaseId
+     * @param newTestcase
+     * @return
+     * @throws CerberusException
+     */
+    public TestCase updateTestcaseAPI(String testFolderId, String testcaseId, TestCase newTestcase) throws CerberusException;
 
 }

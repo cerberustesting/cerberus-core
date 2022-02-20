@@ -20,19 +20,26 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.sql.Timestamp;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class TestCaseStepAction {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
@@ -46,23 +53,30 @@ public class TestCaseStepAction {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
+    @EqualsAndHashCode.Exclude
     private JSONArray conditionOptions;
     private String action;
     private String value1;
     private String value2;
     private String value3;
+    @EqualsAndHashCode.Exclude
     private JSONArray options;
     private boolean isFatal;
     private String description;
     private String screenshotFilename;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
      */
+    @EqualsAndHashCode.Exclude
     List<TestCaseStepActionControl> controls;
 
     /**
@@ -152,38 +166,6 @@ public class TestCaseStepAction {
     public static final String CONDITIONOPERATOR_IFTEXTNOTINELEMENT = "ifTextNotInElement";
     public static final String CONDITIONOPERATOR_NEVER = "never";
 
-    public String getConditionOperator() {
-        return conditionOperator;
-    }
-
-    public void setConditionOperator(String conditionOperator) {
-        this.conditionOperator = conditionOperator;
-    }
-
-    public String getConditionValue1() {
-        return conditionValue1;
-    }
-
-    public void setConditionValue1(String conditionValue1) {
-        this.conditionValue1 = conditionValue1;
-    }
-
-    public String getConditionValue2() {
-        return conditionValue2;
-    }
-
-    public void setConditionValue2(String conditionValue2) {
-        this.conditionValue2 = conditionValue2;
-    }
-
-    public String getConditionValue3() {
-        return conditionValue3;
-    }
-
-    public void setConditionValue3(String conditionValue3) {
-        this.conditionValue3 = conditionValue3;
-    }
-
     @JsonIgnore
     public JSONArray getConditionOptions() {
         return conditionOptions;
@@ -205,58 +187,6 @@ public class TestCaseStepAction {
         return res;
     }
 
-    public void setConditionOptions(JSONArray conditionOptions) {
-        this.conditionOptions = conditionOptions;
-    }
-
-    public String getScreenshotFilename() {
-        return screenshotFilename;
-    }
-
-    public void setScreenshotFilename(String screenshotFilename) {
-        this.screenshotFilename = screenshotFilename;
-    }
-
-    public List<TestCaseStepActionControl> getControls() {
-        return controls;
-    }
-
-    public void setControls(List<TestCaseStepActionControl> controls) {
-        this.controls = controls;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getValue1() {
-        return value1;
-    }
-
-    public void setValue1(String value1) {
-        this.value1 = value1;
-    }
-
-    public String getValue2() {
-        return value2;
-    }
-
-    public void setValue2(String value2) {
-        this.value2 = value2;
-    }
-
-    public String getValue3() {
-        return value3;
-    }
-
-    public void setValue3(String value3) {
-        this.value3 = value3;
-    }
-
     @JsonIgnore
     public JSONArray getOptions() {
         return options;
@@ -276,98 +206,6 @@ public class TestCaseStepAction {
             }
         }
         return res;
-    }
-
-    public void setOptions(JSONArray options) {
-        this.options = options;
-    }
-
-    public boolean isFatal() {
-        return isFatal;
-    }
-
-    public void setFatal(boolean isFatal) {
-        this.isFatal = isFatal;
-    }
-
-    public int getActionId() {
-        return actionId;
-    }
-
-    public void setActionId(int actionId) {
-        this.actionId = actionId;
-    }
-
-    public int getSort() {
-        return sort;
-    }
-
-    public void setSort(int sort) {
-        this.sort = sort;
-    }
-
-    public int getStepId() {
-        return stepId;
-    }
-
-    public void setStepId(int stepId) {
-        this.stepId = stepId;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getTestcase() {
-        return testcase;
-    }
-
-    public void setTestcase(String testcase) {
-        this.testcase = testcase;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String usrModif) {
-        this.usrModif = usrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
     }
 
     public boolean hasSameKey(TestCaseStepAction obj) {
@@ -393,101 +231,6 @@ public class TestCaseStepAction {
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.test);
-        hash = 97 * hash + Objects.hashCode(this.testcase);
-        hash = 97 * hash + this.stepId;
-        hash = 97 * hash + this.actionId;
-        hash = 97 * hash + this.sort;
-        hash = 97 * hash + Objects.hashCode(this.conditionOperator);
-        hash = 97 * hash + Objects.hashCode(this.conditionValue1);
-        hash = 97 * hash + Objects.hashCode(this.conditionValue2);
-        hash = 97 * hash + Objects.hashCode(this.conditionValue3);
-        hash = 97 * hash + Objects.hashCode(this.action);
-        hash = 97 * hash + Objects.hashCode(this.value1);
-        hash = 97 * hash + Objects.hashCode(this.value2);
-        hash = 97 * hash + Objects.hashCode(this.value3);
-        hash = 97 * hash + (this.isFatal ? 1 : 0);
-        hash = 97 * hash + Objects.hashCode(this.description);
-        hash = 97 * hash + Objects.hashCode(this.screenshotFilename);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TestCaseStepAction other = (TestCaseStepAction) obj;
-        if (this.stepId != other.stepId) {
-            return false;
-        }
-        if (this.actionId != other.actionId) {
-            return false;
-        }
-        if (this.sort != other.sort) {
-            return false;
-        }
-        if (this.isFatal != other.isFatal) {
-            return false;
-        }
-        if (!Objects.equals(this.test, other.test)) {
-            return false;
-        }
-        if (!Objects.equals(this.testcase, other.testcase)) {
-            return false;
-        }
-        if (!Objects.equals(this.conditionOperator, other.conditionOperator)) {
-            return false;
-        }
-        if (!Objects.equals(this.conditionValue1, other.conditionValue1)) {
-            return false;
-        }
-        if (!Objects.equals(this.conditionValue2, other.conditionValue2)) {
-            return false;
-        }
-        if (!Objects.equals(this.conditionValue3, other.conditionValue3)) {
-            return false;
-        }
-        if (!Objects.equals(this.action, other.action)) {
-            return false;
-        }
-        if (!Objects.equals(this.value1, other.value1)) {
-            return false;
-        }
-        if (!Objects.equals(this.value2, other.value2)) {
-            return false;
-        }
-        if (!Objects.equals(this.value3, other.value3)) {
-            return false;
-        }
-        if (!Objects.equals(this.description, other.description)) {
-            return false;
-        }
-        if (!Objects.equals(this.screenshotFilename, other.screenshotFilename)) {
-            return false;
-        }
-        if (!Objects.equals(this.options, other.options)) {
-            return false;
-        }
-        if (!Objects.equals(this.conditionOptions, other.conditionOptions)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCaseStepAction{" + "test=" + test + ", testcase=" + testcase + ", stepId=" + stepId + ", actionId=" + actionId + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionValue1=" + conditionValue1 + ", conditionValue2=" + conditionValue2 + ", conditionValue3=" + conditionValue3 + ", action=" + action + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", isFatal=" + isFatal + ", description=" + description + ", screenshotFilename=" + screenshotFilename + ", usrCreated=" + usrCreated + ", dateCreated=" + dateCreated + ", usrModif=" + usrModif + ", dateModif=" + dateModif + ", controls=" + controls + '}';
-    }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();

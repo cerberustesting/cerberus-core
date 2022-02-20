@@ -19,6 +19,13 @@
  */
 package org.cerberus.servlet.crud.test;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -43,17 +50,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseService;
 
 /**
- *
  * @author bcivel
  */
 @WebServlet(name = "UpdateTestCaseProperties", urlPatterns = {"/UpdateTestCaseProperties"})
@@ -65,10 +63,10 @@ public class UpdateTestCaseProperties extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws ServletException  if a servlet-specific error occurs
+     * @throws IOException       if an I/O error occurs
      * @throws CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -123,8 +121,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
             } else /**
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
-             */
-            {
+             */ {
                 if (!testCaseService.hasPermissionsUpdate(tc, request)) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
@@ -168,8 +165,6 @@ public class UpdateTestCaseProperties extends HttpServlet {
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
         List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
-//        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
-        IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         JSONArray properties = new JSONArray(request.getParameter("propArr"));
 
         for (int i = 0; i < properties.length(); i++) {
@@ -192,8 +187,25 @@ public class UpdateTestCaseProperties extends HttpServlet {
             if (!delete && !property.isEmpty()) {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
-
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0, rank, null, null, null, null));
+                    testCaseCountryProp.add(TestCaseCountryProperties.builder()
+                            .test(test)
+                            .testcase(testCase)
+                            .country(country)
+                            .property(property)
+                            .description(description)
+                            .type(type)
+                            .database(database)
+                            .value1(value)
+                            .value2(value2)
+                            .length(length)
+                            .rowLimit(rowLimit)
+                            .nature(nature)
+                            .retryNb(retryNb)
+                            .retryPeriod(retryPeriod)
+                            .cacheExpire(0)
+                            .rank(rank)
+                            .build()
+                    );
                 }
             }
         }
@@ -201,13 +213,14 @@ public class UpdateTestCaseProperties extends HttpServlet {
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -224,10 +237,10 @@ public class UpdateTestCaseProperties extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

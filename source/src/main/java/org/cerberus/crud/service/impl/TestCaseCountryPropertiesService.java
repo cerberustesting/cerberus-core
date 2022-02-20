@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author bcivel
@@ -432,6 +433,38 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         }
         ans = createList(listToCreate);
         return ans;
+    }
+
+    public List<TestCaseCountryProperties> getFlatListOfTestCaseCountryPropertiesFromAggregate(List<TestCaseCountryProperties> testCaseCountryProperties) {
+        /*
+        1 prop 3 country
+        1 prop 6 country
+         */
+        return testCaseCountryProperties
+                .stream()
+                .flatMap(prop -> prop.getInvariantCountries()
+                        .stream()
+                        .map(invariant -> TestCaseCountryProperties.builder()
+                                .test(prop.getTest())
+                                .testcase(prop.getTestcase())
+                                .country(invariant.getValue())
+                                .property(prop.getProperty())
+                                .description(prop.getDescription())
+                                .type(prop.getType())
+                                .database(prop.getDatabase())
+                                .value1(prop.getValue1())
+                                .value2(prop.getValue2())
+                                .length(prop.getLength())
+                                .rowLimit(prop.getRowLimit())
+                                .nature(prop.getNature())
+                                .cacheExpire(prop.getCacheExpire())
+                                .retryNb(prop.getRetryNb())
+                                .retryPeriod(prop.getRetryPeriod())
+                                .rank(prop.getRank())
+                                .usrModif(prop.getUsrModif())
+                                .build()
+                        )
+                ).collect(Collectors.toList());
     }
 
 }

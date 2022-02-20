@@ -19,15 +19,15 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 public interface ITestCaseStepActionControlService {
@@ -51,7 +51,6 @@ public interface ITestCaseStepActionControlService {
     public AnswerList<TestCaseStepActionControl> readByTestTestCase(String test, String testcase);
 
     /**
-     *
      * @param test
      * @param testcase
      * @param stepId
@@ -65,4 +64,12 @@ public interface ITestCaseStepActionControlService {
     Answer createList(List<TestCaseStepActionControl> testCaseStepActionControls);
 
     Answer duplicateList(List<TestCaseStepActionControl> testCaseStepActionControls, String test, String testcase);
+
+    /**
+     * Get the highest controlId from the given controls
+     *
+     * @param controls a collection of controls from which get the highest controlId
+     * @return the highest controlId from the given controls
+     */
+    int getMaxControlId(Collection<TestCaseStepActionControl> controls);
 }
