@@ -967,7 +967,7 @@ function applyExecPref(tag) {
     var pref = JSON.parse(localStorage.getItem("executionSettings"));
 
     if (pref !== null) {
-        if (tag !== null) { // if tag defined from URL we take that value.
+        if ((tag !== null) && (tag !== "null")) { // if tag defined from URL we take that value.
             $("#tag").val(tag);
         } else {
             $("#tag").val(pref.Tag);

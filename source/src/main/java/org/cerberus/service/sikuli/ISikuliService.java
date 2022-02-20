@@ -186,10 +186,11 @@ public interface ISikuliService {
      *
      * @param session
      * @param locator
-     * @param property
+     * @param textToKey
+     * @param modifier
      * @return
      */
-    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property);
+    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String textToKey, String modifier);
 
     /**
      *

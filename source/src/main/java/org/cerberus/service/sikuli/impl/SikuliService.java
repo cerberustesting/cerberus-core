@@ -642,18 +642,18 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String text) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_KEYPRESS, locator, null, text, "");
+    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String textToKey, String modifier) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_KEYPRESS, locator, null, textToKey, modifier);
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-            message.setDescription(message.getDescription().replace("%DATA%", text));
+            message.setDescription(message.getDescription().replace("%DATA%", textToKey));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER);
-            mes.setDescription(mes.getDescription().replace("%KEY%", text).replace("%REASON%", actionResult.getMessageDescription()));
+            mes.setDescription(mes.getDescription().replace("%KEY%", textToKey).replace("%REASON%", actionResult.getMessageDescription()));
             return mes;
         }
 
