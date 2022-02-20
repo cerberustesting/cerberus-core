@@ -111,6 +111,18 @@ public interface ICountryEnvParamService {
 
     /**
      *
+     * @param systems
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param Active
+     * @return
+     */
+    public AnswerList<CountryEnvParam> readDistinctCountryByVarious(List<String> systems, String country, String environment, String build, String revision, String Active);
+
+    /**
+     *
      * @param system
      * @param country
      * @param environment

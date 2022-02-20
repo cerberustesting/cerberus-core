@@ -102,6 +102,25 @@ public interface ICountryEnvParamDAO {
 
     /**
      *
+     * @param systems
+     * @param country
+     * @param environment
+     * @param build
+     * @param revision
+     * @param active
+     * @param envGp
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param string
+     * @return
+     */
+    public AnswerList<CountryEnvParam> readDistinctCountryByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    /**
+     *
      * @param cep
      * @return
      */

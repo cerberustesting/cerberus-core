@@ -792,6 +792,193 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
+    public AnswerList<CountryEnvParam> readDistinctCountryByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CountryEnvParam> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<CountryEnvParam> cepList = new ArrayList<>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS ");
+
+        query.append(" max(cev.`system`) `system`, max(cev.Environment) Environment, Country, '' Description,  ");
+        query.append(" max(cev.build) build, max(cev.revision) revision, max(cev.chain) chain, '' DistribList, ");
+        query.append(" '' EMailBodyRevision, max(cev.Type) type, '' EMailBodyChain, '' EMailBodyDisableEnvironment,  ");
+        query.append(" max(cev.Active) active, max(cev.maintenanceact) maintenanceact, max(cev.maintenancestr) maintenancestr, max(cev.maintenanceend) maintenanceend, ");
+        query.append("inv.gp1");
+        query.append(" FROM countryenvparam cev ");
+
+        query.append(" LEFT OUTER JOIN invariant inv on inv.idname='COUNTRY' and inv.value=cev.country ");
+
+        searchSQL.append(" where 1=1 ");
+
+        if ((systems != null) && (!systems.isEmpty())) {
+            searchSQL.append(" and (").append(SqlUtil.generateInClause("`System`", systems)).append(") ");
+        }
+//        if (!StringUtil.isNullOrEmpty(system)) {
+//            searchSQL.append(" and (`System` = ? )");
+//        }
+        if (!StringUtil.isNullOrEmpty(active)) {
+            searchSQL.append(" and (`active` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(country)) {
+            searchSQL.append(" and (`country` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(environment)) {
+            searchSQL.append(" and (`environment` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(build)) {
+            searchSQL.append(" and (`build` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(revision)) {
+            searchSQL.append(" and (`revision` = ? )");
+        }
+        if (!StringUtil.isNullOrEmpty(envGp)) {
+            searchSQL.append(" and (inv.`gp1` = ? )");
+        }
+        query.append(searchSQL);
+
+        query.append(" group by `country` ");
+        query.append(" order by `country` ");
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.system : " + systems);
+            LOG.debug("SQL.active : " + active);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                if ((systems != null) && (!systems.isEmpty())) {
+                    for (String mysystem : systems) {
+                        preStat.setString(i++, mysystem);
+                    }
+                }
+//                if (!StringUtil.isNullOrEmpty(system)) {
+//                    preStat.setString(i++, system);
+//                }
+                if (!StringUtil.isNullOrEmpty(active)) {
+                    preStat.setString(i++, active);
+                }
+                if (!StringUtil.isNullOrEmpty(country)) {
+                    preStat.setString(i++, country);
+                }
+                if (!StringUtil.isNullOrEmpty(environment)) {
+                    preStat.setString(i++, environment);
+                }
+                if (!StringUtil.isNullOrEmpty(build)) {
+                    preStat.setString(i++, build);
+                }
+                if (!StringUtil.isNullOrEmpty(revision)) {
+                    preStat.setString(i++, revision);
+                }
+                if (!StringUtil.isNullOrEmpty(envGp)) {
+                    preStat.setString(i++, envGp);
+                }
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+
+                        String system1 = resultSet.getString("System");
+                        String count = resultSet.getString("Country");
+                        String env = resultSet.getString("Environment");
+                        String description = resultSet.getString("Description");
+                        String build1 = resultSet.getString("Build");
+                        String revision1 = resultSet.getString("Revision");
+                        String chain = resultSet.getString("chain");
+                        String distribList = resultSet.getString("distribList");
+                        String eMailBodyRevision = resultSet.getString("eMailBodyRevision");
+                        String type = resultSet.getString("type");
+                        String eMailBodyChain = resultSet.getString("eMailBodyChain");
+                        String eMailBodyDisableEnvironment = resultSet.getString("eMailBodyDisableEnvironment");
+                        boolean active1 = StringUtil.parseBoolean(resultSet.getString("active"));
+                        boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("maintenanceact"));
+                        String maintenanceStr = resultSet.getString("maintenancestr");
+                        String maintenanceEnd = resultSet.getString("maintenanceend");
+                        String envGp1 = resultSet.getString("gp1");
+                        cepList.add(factoryCountryEnvParam.create(system1, count, env, description, build1, revision1, chain, distribList, eMailBodyRevision,
+                                type, eMailBodyChain, eMailBodyDisableEnvironment, active1, maintenanceAct, maintenanceStr, maintenanceEnd, envGp1));
+
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (cepList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<>(cepList, nrTotalRows);
+                    } else if (cepList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<>(cepList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "CountryEnvParam").replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<>(cepList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(cepList);
+        return response;
+    }
+
+    @Override
     public Answer create(CountryEnvParam cep) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();

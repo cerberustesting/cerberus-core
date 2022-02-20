@@ -306,29 +306,8 @@ function displayHeaderLabel(doc) {
         // Refresh History Menu
         refreshHistoryMenu();
 
-        // System menu
-//        var systems = getSystem();
-        $("#MySystem option").remove();
-        for (var s in user.system) {
-            $("#MySystem").append($('<option></option>').text(user.system[s]).val(user.system[s]));
-        }
-        for (var s in user.defaultSystems) {
-            $("#MySystem option[value='" + user.defaultSystems[s] + "']").attr("selected", "selected");
-        }
-
-
-        var select = $("#MySystem");
-        select.multiselect(new multiSelectConfSystem("MySystem"));
-
-        $("#MySystem").on("onChange", function () {
-            console.info("onChange");
-        });
-        $("#MySystem").on("onDropdownHidden", function () {
-            console.info("onDropdownHidden");
-        });
-        $("#MySystem").change(function () {
-            console.info("onDropdownHidden");
-        });
+        // Refresh Combo user menu
+        loadUserSystemCombo();
 
         // Language menu
         var languages = getLanguageFromSessionStorage();
@@ -345,6 +324,38 @@ function displayHeaderLabel(doc) {
 
     }
 }
+
+
+function loadUserSystemCombo() {
+    // System menu
+    var user = getUser();
+//        var systems = getSystem();
+    $("#MySystem option").remove();
+    for (var s in user.system) {
+        $("#MySystem").append($('<option></option>').text(user.system[s]).val(user.system[s]));
+    }
+    for (var s in user.defaultSystems) {
+        $("#MySystem option[value='" + user.defaultSystems[s] + "']").attr("selected", "selected");
+    }
+
+
+    var select = $("#MySystem");
+    select.multiselect(new multiSelectConfSystem("MySystem"));
+
+    $("#MySystem").on("onChange", function () {
+        console.info("onChange");
+    });
+    $("#MySystem").on("onDropdownHidden", function () {
+        console.info("onDropdownHidden");
+    });
+    $("#MySystem").change(function () {
+        console.info("onDropdownHidden");
+    });
+
+
+
+}
+
 
 function refreshHistoryMenu() {
     let entryList = localStorage.getItem("historyTestcases");

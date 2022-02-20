@@ -460,7 +460,7 @@ function displayEnvList(selectName, system, defaultValue) {
  * @returns {void}
  */
 function displayUniqueEnvList(selectName, system, defaultValue) {
-    $.when($.getJSON("ReadCountryEnvParam", "unique=true" + system)).then(function (data) {
+    $.when($.getJSON("ReadCountryEnvParam", "uniqueEnvironment=true" + system)).then(function (data) {
         $("[name='" + selectName + "']").empty();
         for (var option in data.contentTable) {
             var text = data.contentTable[option].environment;
@@ -632,6 +632,11 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
 function cleanCacheInvariant(idName) {
     var cacheEntryName = "INVARIANT_" + idName;
     sessionStorage.removeItem(cacheEntryName);
+    if (idName === "SYSTEM") {
+        sessionStorage.removeItem("user");
+        readUserFromDatabase();
+        loadUserSystemCombo();
+    }
 }
 
 /**
@@ -1935,17 +1940,17 @@ function displayFooter(doc) {
  */
 function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
-    
+
     isProduction = true;
     isProduction = ((myenv === "prd") || (myenv === "prod") || (myenv === "PROD") || (myenv === "demo"));
-    isDev = ((window.location.hostname.includes('localhost')) 
+    isDev = ((window.location.hostname.includes('localhost'))
             || (window.location.hostname.includes('gravity.cerberus-testing.com'))
             || (window.location.hostname.includes('qa.cerberus-testing.com')));
-    
+
     if (!isProduction) {
         document.body.style.background = "#FFFFCC";
     }
-    
+
     if ((isProduction) && (!isDev)) {
 //        document.getElementById("menuDocumentationD3").style.display = "none";
 //        document.getElementById("menuDocumentationD3").style.display = "none";
@@ -2863,15 +2868,15 @@ function saveHistory(tce, historyEntry, maxEntries) {
 
 function generateUUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
-    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-    return 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx-xxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx-xxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16;//random number between 0 and 16
-        if(d > 0){//Use timestamp until depleted
-            r = (d + r)%16 | 0;
-            d = Math.floor(d/16);
+        if (d > 0) {//Use timestamp until depleted
+            r = (d + r) % 16 | 0;
+            d = Math.floor(d / 16);
         } else {//Use microseconds since page-load if supported
-            r = (d2 + r)%16 | 0;
-            d2 = Math.floor(d2/16);
+            r = (d2 + r) % 16 | 0;
+            d2 = Math.floor(d2 / 16);
         }
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });

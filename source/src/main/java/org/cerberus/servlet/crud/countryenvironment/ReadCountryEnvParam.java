@@ -100,7 +100,8 @@ public class ReadCountryEnvParam extends HttpServlet {
         String revision = policy.sanitize(request.getParameter("revision"));
         String active = policy.sanitize(request.getParameter("active"));
         String envGp = policy.sanitize(request.getParameter("envgp"));
-        boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
+        boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), ParameterParserUtil.parseBooleanParam(request.getParameter("uniqueEnvironment"), false));
+        boolean uniqueCountry = ParameterParserUtil.parseBooleanParam(request.getParameter("uniqueCountry"), false);
         boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
@@ -117,6 +118,9 @@ public class ReadCountryEnvParam extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (unique) {
                 answer = findUniqueEnvironmentList(systems, active, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (uniqueCountry) {
+                answer = findUniqueCountryList(systems, active, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
                 answer = findDistinctValuesOfColumn(systems.get(0), appContext, request, columnName);
@@ -243,6 +247,32 @@ public class ReadCountryEnvParam extends HttpServlet {
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
         AnswerList<CountryEnvParam> resp = cepService.readDistinctEnvironmentByVarious(systems, null, null, null, null, null);
+
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+
+            for (CountryEnvParam cep : resp.getDataList()) {
+                jsonArray.put(convertCountryEnvParamtoJSONObject(cep));
+            }
+
+        }
+
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+        object.put("hasPermissions", userHasPermissions);
+
+        item.setItem(object);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
+    }
+
+    private AnswerItem<JSONObject> findUniqueCountryList(List<String> systems, String active, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+        AnswerItem<JSONObject> item = new AnswerItem<>();
+        JSONObject object = new JSONObject();
+        cepService = appContext.getBean(ICountryEnvParamService.class);
+
+        AnswerList<CountryEnvParam> resp = cepService.readDistinctCountryByVarious(systems, null, null, null, null, null);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

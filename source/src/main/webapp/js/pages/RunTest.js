@@ -199,15 +199,15 @@ function displayPageLabel() {
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#exeLabel").text(doc.getDocLabel("page_runtest", "execution_settings"));
-    $("#executionPanel label[for='tag']").html(doc.getDocOnline("page_runtest", "tag")+ "&nbsp;<span class='toggle glyphicon glyphicon-tag pull-right'></span>");
+    $("#executionPanel label[for='tag']").html(doc.getDocOnline("page_runtest", "tag") + "&nbsp;<span class='toggle glyphicon glyphicon-tag pull-right'></span>");
     $("#executionPanel label[for='verbose']").text(doc.getDocOnline("page_runtest", "verbose"));
     $("#executionPanel label[for='screenshot']").html(doc.getDocOnline("page_runtest", "screenshot") + "&nbsp;<span class='toggle glyphicon glyphicon-picture pull-right'></span>");
     $("#executionPanel label[for='video']").html(doc.getDocOnline("page_runtest", "video") + "&nbsp;<span class='toggle glyphicon glyphicon-film pull-right'></span>");
-    $("#executionPanel label[for='pageSource']").html(doc.getDocOnline("page_runtest", "pagesource")+ "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
-    $("#executionPanel label[for='seleniumLog']").html(doc.getDocOnline("page_runtest", "seleniumlog")+ "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
-    $("#executionPanel label[for='consoleLog']").html(doc.getDocOnline("page_runtest", "consolelog")+ "&nbsp;<span class='toggle glyphicon glyphicon-console pull-right'></span>");
-    $("#executionPanel label[for='timeout']").html(doc.getDocOnline("page_runtest", "timeout")+ "&nbsp;<span class='toggle glyphicon glyphicon-time pull-right'></span>");
-    $("#executionPanel label[for='retries']").html(doc.getDocOnline("page_runtest", "retries")+ "&nbsp;<span class='toggle glyphicon glyphicon-repeat pull-right'></span>");
+    $("#executionPanel label[for='pageSource']").html(doc.getDocOnline("page_runtest", "pagesource") + "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
+    $("#executionPanel label[for='seleniumLog']").html(doc.getDocOnline("page_runtest", "seleniumlog") + "&nbsp;<span class='toggle glyphicon glyphicon-list pull-right'></span>");
+    $("#executionPanel label[for='consoleLog']").html(doc.getDocOnline("page_runtest", "consolelog") + "&nbsp;<span class='toggle glyphicon glyphicon-console pull-right'></span>");
+    $("#executionPanel label[for='timeout']").html(doc.getDocOnline("page_runtest", "timeout") + "&nbsp;<span class='toggle glyphicon glyphicon-time pull-right'></span>");
+    $("#executionPanel label[for='retries']").html(doc.getDocOnline("page_runtest", "retries") + "&nbsp;<span class='toggle glyphicon glyphicon-repeat pull-right'></span>");
     $("#executionPanel label[for='manualExecution']").text(doc.getDocOnline("page_runtest", "manual_execution"));
     $("#executionPanel label[for='priority']").text(doc.getDocOnline("page_runtest", "priority"));
     $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
@@ -296,11 +296,11 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     showLoader("#chooseTest");
     var testURL = "";
     var testCaseURL = "";
-
-    if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
+    
+    if ((defTest !== "null") && (defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testURL = "&test=" + encodeURIComponent(defTest);
     }
-    if ((defTestcase !== null) && (defTestcase !== undefined)) { // If test is defined, we limit the testcase list on that test.
+    if ((defTestcase !== "null") && (defTestcase !== null) && (defTestcase !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testCaseURL = "&testCase=" + encodeURIComponent(defTestcase);
     }
     // Get the requested result size value
@@ -334,12 +334,19 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
                                 .data("item", data.contentTable[i]));
                     }
                 } else {
-                    var text = data.contentTable[0].test + " - " + data.contentTable[0].testcase + " [" + data.contentTable[0].application + "]: " + data.contentTable[0].description;
+                    if (data.contentTable.length <= 0) {
+                        showMessageMainPage("danger", "No test case available to run ! Please select another system or create some.", true);
 
-                    testCaseList.append($("<option></option>")
-                            .text(text)
-                            .val(data.contentTable[0].test + "-" + data.contentTable[0].testcase)
-                            .data("item", data.contentTable[0]));
+                    } else {
+                        var text = data.contentTable[0].test + " - " + data.contentTable[0].testcase + " [" + data.contentTable[0].application + "]: " + data.contentTable[0].description;
+
+                        testCaseList.append($("<option></option>")
+                                .text(text)
+                                .val(data.contentTable[0].test + "-" + data.contentTable[0].testcase)
+                                .data("item", data.contentTable[0]));
+
+                    }
+
                 }
             }
             hideLoader("#chooseTest");
@@ -351,13 +358,14 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
 }
 
 function appendCountryList(defCountry) {
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+
+    var jqxhr = $.getJSON("ReadCountryEnvParam", "uniqueCountry=true"+getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (data) {
         var countryList = $("[name=countryList]");
 
-        for (var index = 0; index < data.length; index++) {
-            var country = data[index].value;
-            if ((country === defCountry) || (data.length <= 1)) // We select the the country if it is the one from the URL or if there is only 1 country.
+        for (var index = 0; index < data.contentTable.length; index++) {
+            var country = data.contentTable[index].country;
+            if ((country === defCountry) || (data.contentTable.length <= 1)) // We select the the country if it is the one from the URL or if there is only 1 country.
             {
                 myChecked = 'checked="" ';
 

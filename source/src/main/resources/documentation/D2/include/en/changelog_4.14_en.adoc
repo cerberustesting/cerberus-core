@@ -17,6 +17,7 @@
 * [GUI] On testcase script page, when using picture= elements. Preview are larger and real size can be open on click. Also more than 1 picture are displayed in case several parameters could use several pictures.
 * [GUI] On testcase script page, icons will show if step/action/control are fatal, have conditions or are disable.
 * [GUI] Highlight 'more option' icon on actions and controls when a condition is defined. #2357
+" [GUI] Run Testcase page now only disply countries available from the selected systems #2274
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

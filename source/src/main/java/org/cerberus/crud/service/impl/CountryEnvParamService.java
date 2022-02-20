@@ -127,6 +127,11 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
+    public AnswerList<CountryEnvParam> readDistinctCountryByVarious(List<String> systems, String country, String environment, String build, String revision, String active) {
+        return countryEnvParamDao.readDistinctCountryByVariousByCriteria(systems, country, environment, build, revision, active, null, 0, 0, null, null, null, null);
+    }
+
+    @Override
     public boolean exist(String system, String country, String environment) {
         AnswerItem objectAnswer = readByKey(system, country, environment);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
