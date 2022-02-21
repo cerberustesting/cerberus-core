@@ -17,7 +17,8 @@
 * [GUI] On "Testcase script" page, when using picture= elements. Preview are larger and real size can be open on click. Also more than 1 picture are displayed in case several parameters could use several pictures.
 * [GUI] On "Testcase script" page, icons will show if step/action/control are fatal, have conditions or are disable.
 * [GUI] On "Testcase script" page, Highlight 'more option' icon on actions and controls when a condition is defined. #2357
-" [GUI] On "Run Testcase" page only the countries available on the selected systems are displayed #2274
+* [GUI] On "Run Testcase" page only the countries available on the selected systems are displayed #2274
+* [Engine] Sikuli engine now allow modifier keys. That allow to do CTRL+F5 for example. #1763
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
