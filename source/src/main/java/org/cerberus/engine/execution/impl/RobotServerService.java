@@ -619,7 +619,7 @@ public class RobotServerService implements IRobotServerService {
         MutableCapabilities caps = new MutableCapabilities();
         // In case browser is not defined at that level, we force it to firefox.
         if (StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
-            tCExecution.setBrowser("firefox");
+            tCExecution.setBrowser("");
         }
 
         /**
@@ -1006,6 +1006,13 @@ public class RobotServerService implements IRobotServerService {
 
                 case "iphone":
                     capabilities = DesiredCapabilities.iphone();
+                    break;
+
+                case "":
+                    /**
+                     * We allow to start a Selenium session without any browser defined.
+                     * This is used to support bundleId capability.
+                     */
                     break;
 
                 // Unfortunatly Yandex is not yet supported on BrowserStack. Once it will be it should look like that:

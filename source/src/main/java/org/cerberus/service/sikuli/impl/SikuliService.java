@@ -646,14 +646,18 @@ public class SikuliService implements ISikuliService {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_KEYPRESS, locator, null, textToKey, modifier);
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-            message.setDescription(message.getDescription().replace("%DATA%", textToKey));
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS)
+                    .resolveDescription("ELEMENT", locator)
+                    .resolveDescription("DATA", textToKey)
+                    .resolveDescription("MODIFIER", modifier);
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER);
-            mes.setDescription(mes.getDescription().replace("%KEY%", textToKey).replace("%REASON%", actionResult.getMessageDescription()));
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
+                    .resolveDescription("ELEMENT", locator)
+                    .resolveDescription("DATA", textToKey)
+                    .resolveDescription("MODIFIER", modifier)
+                    .resolveDescription("REASON", actionResult.getMessageDescription());
             return mes;
         }
 
