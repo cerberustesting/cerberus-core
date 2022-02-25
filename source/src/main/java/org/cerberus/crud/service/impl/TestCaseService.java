@@ -676,9 +676,14 @@ public class TestCaseService implements ITestCaseService {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
+        if (newTestcase.getApplication() == null || newTestcase.getApplication().isEmpty()) {
+            throw new InvalidRequestException("application is required to create a Testcase");
+        }
+
         if (newTestcase.getTestcase() != null) {
             throw new InvalidRequestException("testcaseId forbidden to create Testcase");
         }
+
 
         newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
         Answer testcaseCreationAnswer = this.create(newTestcase);
