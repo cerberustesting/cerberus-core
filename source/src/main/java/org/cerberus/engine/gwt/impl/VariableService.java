@@ -349,16 +349,22 @@ public class VariableService implements IVariableService {
              * Last Service Called Variables.
              */
             if (!(tCExecution.getLastServiceCalled() == null)) {
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
-            } else {
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
-            }
-            if (!(tCExecution.getLastServiceCalled() == null)) {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", tCExecution.getLastServiceCalled().getResponseHTTPBody());
             } else {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", VALUE_WHEN_NULL);
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
+            }
+            if (!(tCExecution.getLastServiceCalled() == null)) {
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_RESPONSE%", tCExecution.getLastServiceCalled().getResponseHTTPBody());
+            } else {
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", VALUE_WHEN_NULL);
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
             }
 
             /**
