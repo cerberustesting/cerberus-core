@@ -88,8 +88,6 @@ public class TestcaseControllerV001 {
             Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
 
-        LOG.debug("Testcase COntroller !!");
-
         return this.testcaseMapper.toDTO(
                 this.testCaseService.createTestcaseWithDependenciesAPI(
                         this.testcaseMapper.toEntity(newTestcase)

@@ -19,8 +19,6 @@
  */
 package org.cerberus.config;
 
-import java.security.Principal;
-import java.util.concurrent.Executor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,22 +26,13 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.servlet.mvc.condition.NameValueExpression;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Tag;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.concurrent.Executor;
 
 /**
- *
  * @author bcivel
  */
 @Configuration
-@EnableSwagger2
 @EnableAsync
 @EnableScheduling
 @ComponentScan("org.cerberus")
@@ -68,47 +57,5 @@ public class CerberusConfiguration {
     @Bean
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
-    }
-
-    @Bean
-    public Docket swaggerDocV1() {
-        return configureVersion("1");
-    }
-
-    private Docket configureVersion(String version) {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("public API version " + version)
-                .ignoredParameterTypes(Principal.class)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("org.cerberus.api.controller"))
-                .apis(p -> {
-                    if (p.headers() != null) {
-                        for (NameValueExpression nve : p.headers()) {
-                            if ((nve.getName().equals("X-API-VERSION")) && (nve.getValue().equals(version))) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                })
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo(version))
-                .tags(new Tag("Invariant", "Description of Invariant endpoint"))
-                .tags(new Tag("Testcase", "Description of Testcase endpoint"))
-                .tags(new Tag("Testcase Action", "Description of Testcase Control endpoint"))
-                .tags(new Tag("Testcase Step", "Description of Testcase Step endpoint"))
-                .useDefaultResponseMessages(false);
-    }
-
-    private ApiInfo apiInfo(String version) {
-        return new ApiInfoBuilder()
-                .title("Cerberus public API")
-                .description("Documentation for Cerberus testing public API")
-                .version(version)
-                .license("GNU General Public License v3.0")
-                .licenseUrl("https://www.gnu.org/licenses/gpl-3.0.en.html")
-                .termsOfServiceUrl("https://github.com/cerberustesting/cerberus-source")
-                .build();
     }
 }
