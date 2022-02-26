@@ -862,7 +862,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                  * Log TestCaseStepExecution
                                  */
                                 if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
-                                    LOG.info(stepExecution.toJson(false, true));
+                                    LOG.info(stepExecution.toJson(false, true, execution.getSecrets()));
                                 }
 
                                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -1323,7 +1323,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log TestCaseStepActionExecution
              */
             if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
-                LOG.info(actionExecution.toJson(false, true));
+                LOG.info(actionExecution.toJson(false, true, execution.getSecrets()));
             }
 
         }
@@ -1605,7 +1605,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Log TestCaseStepActionControlExecution
              */
             if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
-                LOG.info(controlExecution.toJson(false, true));
+                LOG.info(controlExecution.toJson(false, true, execution.getSecrets()));
             }
 
         }

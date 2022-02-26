@@ -57,6 +57,7 @@ public final class StringUtil {
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
 
     private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
+    private static final String SECRET_STRING = "XXXXXX";
 
     /**
      * To avoid instantiation of utility class
@@ -288,6 +289,19 @@ public final class StringUtil {
             if (matcher.matches()) {
                 return matcher.replaceAll("$1<a href=\\\"$2\\\">$2</a>$3");
             }
+        }
+        return text;
+    }
+
+    /**
+     *
+     * @param text
+     * @param secrets
+     * @return
+     */
+    public static String secureFromSecrets(String text, List<String> secrets) {
+        for (String secret : secrets) {
+            text = text.replace(secret, SECRET_STRING);
         }
         return text;
     }

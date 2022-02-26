@@ -31,6 +31,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Selenium;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.service.har.entity.NetworkTrafficIndex;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -138,6 +139,9 @@ public class TestCaseExecution {
     // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
+
+    // List of strings that needs to be secured and hidden from end users.
+    private List<String> secrets;
 
     private List<TestCaseExecutionQueueDep> testCaseExecutionQueueDepList;
 
@@ -253,6 +257,18 @@ public class TestCaseExecution {
 
     public void appendNetworkTrafficIndexList(NetworkTrafficIndex newIndex) {
         this.networkTrafficIndexList.add(newIndex);
+    }
+
+    public List<String> getSecrets() {
+        return secrets;
+    }
+
+    public void setSecrets(List<String> secrets) {
+        this.secrets = secrets;
+    }
+
+    public void appendSecret(String secret) {
+        this.secrets.add(secret);
     }
 
     public TestCaseExecutionHttpStat getHttpStat() {
@@ -1157,7 +1173,7 @@ public class TestCaseExecution {
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("controlStatus", this.getControlStatus());
-            result.put("controlMessage", this.getControlMessage());
+            result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
             result.put("application", this.getApplication());
             result.put("robot", this.getRobot());
             result.put("robotExecutor", this.getRobotExecutor());
@@ -1170,13 +1186,14 @@ public class TestCaseExecution {
             result.put("crbVersion", this.getCrbVersion());
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
+
             result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionVal1Init", this.getConditionVal1Init());
-            result.put("conditionVal2Init", this.getConditionVal2Init());
-            result.put("conditionVal3Init", this.getConditionVal3Init());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
+            result.put("conditionVal1Init", StringUtil.secureFromSecrets(this.getConditionVal1Init(), this.getSecrets()));
+            result.put("conditionVal2Init", StringUtil.secureFromSecrets(this.getConditionVal2Init(), this.getSecrets()));
+            result.put("conditionVal3Init", StringUtil.secureFromSecrets(this.getConditionVal3Init(), this.getSecrets()));
+            result.put("conditionVal1", StringUtil.secureFromSecrets(this.getConditionVal1(), this.getSecrets()));
+            result.put("conditionVal2", StringUtil.secureFromSecrets(this.getConditionVal2(), this.getSecrets()));
+            result.put("conditionVal3", StringUtil.secureFromSecrets(this.getConditionVal3(), this.getSecrets()));
             result.put("userAgent", this.getUserAgent());
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
@@ -1200,7 +1217,7 @@ public class TestCaseExecution {
                 JSONArray array = new JSONArray();
                 if (this.getTestCaseStepExecutionList() != null) {
                     for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
-                        array.put(((TestCaseStepExecution) testCaseStepExecution).toJson(true, false));
+                        array.put(((TestCaseStepExecution) testCaseStepExecution).toJson(true, false, this.getSecrets()));
                     }
                 }
                 result.put("testCaseStepExecutionList", array);
@@ -1229,7 +1246,7 @@ public class TestCaseExecution {
                 array = new JSONArray();
                 for (String key1 : this.getTestCaseExecutionDataMap().keySet()) {
                     TestCaseExecutionData tced = this.getTestCaseExecutionDataMap().get(key1);
-                    array.put((tced).toJson(true, false));
+                    array.put((tced).toJson(true, false, this.getSecrets()));
                 }
                 result.put("testCaseExecutionDataList", array);
 

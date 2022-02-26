@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.util.DateUtil;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -400,9 +401,10 @@ public class TestCaseStepActionControlExecution {
      *
      * @param withChilds boolean that define if childs should be included
      * @param withParents boolean that define if parents should be included
+     * @param secrets
      * @return TestCaseStepActionControlExecution in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds, boolean withParents) {
+    public JSONObject toJson(boolean withChilds, boolean withParents, List<String> secrets) {
         JSONObject result = new JSONObject();
         // Check if both parameter are not set to true
         if (withChilds == true && withParents == true) {
@@ -419,27 +421,27 @@ public class TestCaseStepActionControlExecution {
             result.put("control", this.getControlId());
             result.put("sort", this.getSort());
             result.put("conditionOperator", this.getConditionOperator());
-            result.put("conditionVal1Init", this.getConditionVal1Init());
-            result.put("conditionVal2Init", this.getConditionVal2Init());
-            result.put("conditionVal3Init", this.getConditionVal3Init());
-            result.put("conditionVal1", this.getConditionVal1());
-            result.put("conditionVal2", this.getConditionVal2());
-            result.put("conditionVal3", this.getConditionVal3());
+            result.put("conditionVal1Init", StringUtil.secureFromSecrets(this.getConditionVal1Init(), secrets));
+            result.put("conditionVal2Init", StringUtil.secureFromSecrets(this.getConditionVal2Init(), secrets));
+            result.put("conditionVal3Init", StringUtil.secureFromSecrets(this.getConditionVal3Init(), secrets));
+            result.put("conditionVal1", StringUtil.secureFromSecrets(this.getConditionVal1(), secrets));
+            result.put("conditionVal2", StringUtil.secureFromSecrets(this.getConditionVal2(), secrets));
+            result.put("conditionVal3", StringUtil.secureFromSecrets(this.getConditionVal3(), secrets));
             result.put("controlType", this.getControl());
-            result.put("controlProperty", this.getValue1());
-            result.put("controlPropertyInit", this.getValue1Init());
-            result.put("controlValue", this.getValue2());
-            result.put("controlValueInit", this.getValue2Init());
-            result.put("controlValue3", this.getValue3());
-            result.put("controlValue3Init", this.getValue3Init());
+            result.put("controlProperty", StringUtil.secureFromSecrets(this.getValue1(), secrets));
+            result.put("controlValue", StringUtil.secureFromSecrets(this.getValue2(), secrets));
+            result.put("controlValue3", StringUtil.secureFromSecrets(this.getValue3(), secrets));
+            result.put("controlPropertyInit", StringUtil.secureFromSecrets(this.getValue1Init(), secrets));
+            result.put("controlValueInit", StringUtil.secureFromSecrets(this.getValue2Init(), secrets));
+            result.put("controlValue3Init", StringUtil.secureFromSecrets(this.getValue3Init(), secrets));
             result.put("fatal", this.getFatal());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("startlong", this.getStartLong());
             result.put("endlong", this.getEndLong());
-            result.put("description", this.getDescription());
+            result.put("description", StringUtil.secureFromSecrets(this.getDescription(), secrets));
             result.put("returnCode", this.getReturnCode());
-            result.put("returnMessage", this.getReturnMessage());
+            result.put("returnMessage", StringUtil.secureFromSecrets(this.getReturnMessage(), secrets));
 
             if (withChilds) {
                 JSONArray array = new JSONArray();
@@ -454,7 +456,7 @@ public class TestCaseStepActionControlExecution {
             }
 
             if (withParents) {
-                result.put("testCaseStepActionExecution", this.getTestCaseStepActionExecution().toJson(false, true));
+                result.put("testCaseStepActionExecution", this.getTestCaseStepActionExecution().toJson(false, true, secrets));
             }
 
         } catch (JSONException ex) {

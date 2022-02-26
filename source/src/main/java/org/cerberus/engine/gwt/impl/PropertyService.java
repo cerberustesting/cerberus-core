@@ -139,7 +139,7 @@ public class PropertyService implements IPropertyService {
     private IHarService harService;
 
     @Override
-    public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
+    public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution execution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
@@ -147,7 +147,7 @@ public class PropertyService implements IPropertyService {
         answer.setResultMessage(msg);
         answer.setItem(stringToDecode);
 
-        String country = tCExecution.getCountry();
+        String country = execution.getCountry();
         long now = new Date().getTime();
         String stringToDecodeInit = stringToDecode;
 
@@ -158,7 +158,7 @@ public class PropertyService implements IPropertyService {
         /**
          * We start to decode properties from available executiondata List.
          */
-        stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, tCExecution);
+        stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, execution);
 
         /**
          * Look at all the potencial properties still contained in
@@ -181,7 +181,7 @@ public class PropertyService implements IPropertyService {
         /**
          * Get the list of properties needed to calculate the required property
          */
-        List<TestCaseCountryProperties> tcProperties = tCExecution.getTestCaseCountryPropertyList();
+        List<TestCaseCountryProperties> tcProperties = execution.getTestCaseCountryPropertyList();
         List<TestCaseCountryProperties> linkedProperties = new ArrayList<>();
         for (String internalProperty : internalPropertiesFromStringToDecode) { // Looping on potential properties in string to decode.
             List<TestCaseCountryProperties> newLinkedProperties = new ArrayList<>();
@@ -201,12 +201,12 @@ public class PropertyService implements IPropertyService {
              * First create testCaseExecutionData object
              */
             now = new Date().getTime();
-            tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(), eachTccp.getRank(),
+            tcExeData = factoryTestCaseExecutionData.create(execution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(), eachTccp.getRank(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
-                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), "", null, "N");
+                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), execution.getApplicationObj().getSystem(), execution.getEnvironment(), execution.getCountry(), "", null, "N");
             tcExeData.setTestCaseCountryProperties(eachTccp);
-            tcExeData.settCExecution(tCExecution);
+            tcExeData.settCExecution(execution);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
             }
@@ -214,7 +214,7 @@ public class PropertyService implements IPropertyService {
             /*  First check if property has already been calculated
              *  if action is calculateProperty, then set isKnownData to false.
              */
-            tcExeData = getExecutionDataFromList(tCExecution.getTestCaseExecutionDataMap(), eachTccp, forceCalculation, tcExeData);
+            tcExeData = getExecutionDataFromList(execution.getTestCaseExecutionDataMap(), eachTccp, forceCalculation, tcExeData);
 
             /**
              * If testcasecountryproperty not defined, set ExecutionData with
@@ -227,7 +227,7 @@ public class PropertyService implements IPropertyService {
              * If not already calculated, or calculateProperty, then calculate it and insert or update it.
              */
             if (MessageEventEnum.PROPERTY_PENDING.equals(tcExeData.getPropertyResultMessage().getSource())) {
-                calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, eachTccp, forceCalculation);
+                calculateProperty(tcExeData, execution, testCaseStepActionExecution, eachTccp, forceCalculation);
                 msg = tcExeData.getPropertyResultMessage();
                 //saves the result
                 try {
@@ -237,7 +237,7 @@ public class PropertyService implements IPropertyService {
                      * of the TestCaseExecution
                      */
                     LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + String.valueOf(tcExeData.getIndex()) + "' Value : '" + tcExeData.getValue() + "'");
-                    tCExecution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
+                    execution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
                     if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                         for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
@@ -255,7 +255,7 @@ public class PropertyService implements IPropertyService {
             /**
              * After calculation, replace properties by value calculated
              */
-            stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, tCExecution);
+            stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, execution);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + eachTccp.getProperty() + " calculated with Value = " + tcExeData.getValue() + ", Value1 = " + tcExeData.getValue1() + ", Value2 = " + tcExeData.getValue2());
@@ -263,8 +263,8 @@ public class PropertyService implements IPropertyService {
             /**
              * Log TestCaseExecutionData
              */
-            if ((tCExecution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", tCExecution.getSystem(), false)) {
-                LOG.info(tcExeData.toJson(false, true));
+            if ((execution.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionlog_enable", execution.getSystem(), false)) {
+                LOG.info(tcExeData.toJson(false, true, execution.getSecrets()));
             }
         }
 

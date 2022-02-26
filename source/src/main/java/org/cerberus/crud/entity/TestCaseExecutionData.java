@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 
 /**
@@ -220,16 +221,16 @@ public class TestCaseExecutionData {
     public void setRetryPeriod(int retryperiod) {
         this.retryPeriod = retryperiod;
     }
-    
+
     public int getRank() {
-		return Rank;
-	}
+        return Rank;
+    }
 
-	public void setRank(int rank) {
-		Rank = rank;
-	}
+    public void setRank(int rank) {
+        Rank = rank;
+    }
 
-	public int getIndex() {
+    public int getIndex() {
         return index;
     }
 
@@ -407,9 +408,10 @@ public class TestCaseExecutionData {
      *
      * @param withChilds boolean that define if childs should be included
      * @param withParents boolean that define if parents should be included
+     * @param secrets
      * @return TestCaseExecutionData in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds, boolean withParents) {
+    public JSONObject toJson(boolean withChilds, boolean withParents, List<String> secrets) {
         JSONObject result = new JSONObject();
         // Check if both parameter are not set to true
         if (withChilds == true && withParents == true) {
@@ -421,14 +423,14 @@ public class TestCaseExecutionData {
             result.put("property", this.getProperty());
             result.put("index", this.getIndex());
             result.put("database", this.getDatabase());
-            result.put("value", this.getValue());
+            result.put("value", StringUtil.secureFromSecrets(this.getValue(), secrets));
             result.put("type", this.getType());
             result.put("rank", this.getRank());
-            result.put("value1Init", this.getValue1Init());
-            result.put("value2Init", this.getValue2Init());
-            result.put("value1", this.getValue1());
-            result.put("value2", this.getValue2());
-            result.put("length", this.getLength());
+            result.put("value1Init", StringUtil.secureFromSecrets(this.getValue1Init(), secrets));
+            result.put("value2Init", StringUtil.secureFromSecrets(this.getValue2Init(), secrets));
+            result.put("value1", StringUtil.secureFromSecrets(this.getValue1(), secrets));
+            result.put("value2", StringUtil.secureFromSecrets(this.getValue2(), secrets));
+            result.put("length", StringUtil.secureFromSecrets(this.getLength(), secrets));
             result.put("rowLimit", this.getRowLimit());
             result.put("nature", this.getNature());
             result.put("retryNb", this.getRetryNb());
@@ -438,8 +440,8 @@ public class TestCaseExecutionData {
             result.put("startLong", this.getStartLong());
             result.put("endLong", this.getEndLong());
             result.put("RC", this.getRC());
-            result.put("rMessage", this.getrMessage());
-            result.put("description", this.getDescription());
+            result.put("rMessage", StringUtil.secureFromSecrets(this.getrMessage(), secrets));
+            result.put("description", StringUtil.secureFromSecrets(this.getDescription(), secrets));
 
             if (withChilds) {
                 JSONArray array = new JSONArray();
