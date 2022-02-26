@@ -1192,7 +1192,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionOpenURL(TestCaseExecution tCExecution, String object, String property, boolean withBase) {
+    private MessageEvent doActionOpenURL(TestCaseExecution execution, String value1, String value2, boolean withBase) {
         MessageEvent message;
         String element;
         try {
@@ -1200,7 +1200,10 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "openUrl[WithBase]", tCExecution);
+            if (withBase && StringUtil.isNullOrEmpty(value1)) {
+                value1 = "/";
+            }
+            element = getElementToUse(value1, value2, "openUrl[WithBase]", execution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -1208,12 +1211,12 @@ public class ActionService implements IActionService {
             identifier.setIdentifier("url");
             identifier.setLocator(element);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionOpenURL(tCExecution.getSession(), tCExecution.getUrl(), identifier, withBase);
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return webdriverService.doSeleniumActionOpenURL(execution.getSession(), execution.getUrl(), identifier, withBase);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "OpenURL[WithBase]"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action OpenUrl :" + ex);
@@ -1841,12 +1844,12 @@ public class ActionService implements IActionService {
         }
     }
 
-    private String getElementToUse(String value1, String value2, String action, TestCaseExecution tCExecution) throws CerberusEventException {
+    private String getElementToUse(String value1, String value2, String action, TestCaseExecution execution) throws CerberusEventException {
         if (!StringUtil.isNullOrEmpty(value1)) {
             return value1;
         } else if (!StringUtil.isNullOrEmpty(value2)) {
-            logEventService.createForPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + value2);
-            LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + value2);
+            logEventService.createForPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
+            LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
             return value2;
         }
         if (!(action.equals("wait"))) { // Wait is the only action can be excuted with no parameters. For all other actions we raize an exception as this should never happen.
