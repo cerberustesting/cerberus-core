@@ -2544,11 +2544,11 @@ Action.prototype.generateContent = function () {
         obj.value1 = convertValueWithErratum(obj.value1, value1Field.val());
     });
 
-    value2Field.val(this.value2);
+    value2Field.val(cleanErratum(this.value2));
     value2Field.css("width", "100%");
     value2Field.on("change", function () {
         setModif(true);
-        obj.value2 = value2Field.val();
+        obj.value2 = convertValueWithErratum(obj.value2, value2Field.val());
     });
 
     value3Field.val(this.value3);
@@ -3079,18 +3079,18 @@ Control.prototype.generateContent = function () {
     });
 
 
-    controlValue1Field.val(this.value1);
+    controlValue1Field.val(cleanErratum(this.value1));
     controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
         setModif(true);
-        obj.value1 = controlValue1Field.val();
+        obj.value1 = convertValueWithErratum(obj.value1, controlValue1Field.val());
     });
 
-    controlValue2Field.val(this.value2);
+    controlValue2Field.val(cleanErratum(this.value2));
     controlValue2Field.css("width", "84%");
     controlValue2Field.on("change", function () {
         setModif(true);
-        obj.value2 = controlValue2Field.val();
+        obj.value2 = convertValueWithErratum(obj.value2, controlValue2Field.val());
     });
 
     controlValue3Field.val(this.value3);

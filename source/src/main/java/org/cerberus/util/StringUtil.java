@@ -72,7 +72,7 @@ public final class StringUtil {
     public static String getShortenVersionOfString(String in) {
 
         if (in.length() > MAX_STRING_SIZE_IN_MESSAGE) {
-            return in.substring(0, MAX_STRING_SIZE_IN_MESSAGE) + "... (TOO LONG TO DISPLAY !! Please check Action or Property detail)";
+            return in.substring(0, MAX_STRING_SIZE_IN_MESSAGE) + "... (TOO LONG TO DISPLAY !! Please check Action, Control or Property detail)";
         }
         return in;
     }

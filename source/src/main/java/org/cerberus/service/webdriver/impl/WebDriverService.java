@@ -136,7 +136,7 @@ public class WebDriverService implements IWebDriverService {
         return by;
     }
 
-    private WebElement getWebElementUsingQuerySelector(Session session, String querySelector){
+    private WebElement getWebElementUsingQuerySelector(Session session, String querySelector) {
 
         WebDriver driver = session.getDriver();
 
@@ -148,8 +148,8 @@ public class WebDriverService implements IWebDriverService {
         StringBuilder script = new StringBuilder();
         script.append("document");
 
-        if (structure.length == 1){
-            script.append(".querySelector('"+structure[0]+"')");
+        if (structure.length == 1) {
+            script.append(".querySelector('" + structure[0] + "')");
         } else {
             for (int index = 0; index < structure.length - 1; index++) {
                 script.append(".querySelector('" + structure[index] + "').shadowRoot");
@@ -158,7 +158,8 @@ public class WebDriverService implements IWebDriverService {
         }
 
         /**
-         * Loop until timeout is reached to scroll to the element and retrieve it
+         * Loop until timeout is reached to scroll to the element and retrieve
+         * it
          */
         WebElement finalElement = null;
         long start = new Date().getTime();
@@ -176,28 +177,27 @@ public class WebDriverService implements IWebDriverService {
                 Thread.sleep(500);
 
                 //Scroll to element
-                if(!scrolled) {
-                    ((JavascriptExecutor) driver).executeScript(script.toString()+".scrollIntoView()");
+                if (!scrolled) {
+                    ((JavascriptExecutor) driver).executeScript(script.toString() + ".scrollIntoView()");
                     LOG.debug("Scrolled into View : ");
-                    scrolled=true;
+                    scrolled = true;
                 }
-
 
                 //Get element
-                finalElement = (WebElement)((JavascriptExecutor) driver).executeScript("return "+script);
+                finalElement = (WebElement) ((JavascriptExecutor) driver).executeScript("return " + script);
 
                 //If element retrieved is on the visible part of the page, break
-                if(finalElement.getLocation().getX() < driver.manage().window().getSize().getWidth() &&
-                        finalElement.getLocation().getY() < driver.manage().window().getSize().getHeight()){
-                    LOG.debug("FOUND : "+finalElement);
+                if (finalElement.getLocation().getX() < driver.manage().window().getSize().getWidth()
+                        && finalElement.getLocation().getY() < driver.manage().window().getSize().getHeight()) {
+                    LOG.debug("FOUND : " + finalElement);
                     return finalElement;
                 } else {
-                    scrolled=false;
-                    LOG.debug("Element '"+querySelector+"' "+finalElement.getLocation()+" is out of the visible screen "+driver.manage().window().getSize()+" >> Retrying to scroll");
+                    scrolled = false;
+                    LOG.debug("Element '" + querySelector + "' " + finalElement.getLocation() + " is out of the visible screen " + driver.manage().window().getSize() + " >> Retrying to scroll");
                 }
 
-            } catch (Exception ex){
-                LOG.debug("NOT FOUND : " +querySelector);
+            } catch (Exception ex) {
+                LOG.debug("NOT FOUND : " + querySelector);
             }
 
         }
@@ -301,7 +301,7 @@ public class WebDriverService implements IWebDriverService {
             }
         } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_QUERYSELECTOR)) {
             WebElement element = getWebElementUsingQuerySelector(session, identifier.getLocator());
-            if(element !=null){
+            if (element != null) {
                 answer.setItem(getWebElementUsingQuerySelector(session, identifier.getLocator()));
                 msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
                 msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
@@ -1153,19 +1153,23 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public MessageEvent doSeleniumActionWait(Session session, Identifier identifier) {
-        MessageEvent message;
-        try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
-            wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            return message;
-        } catch (TimeoutException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            LOG.debug(exception.toString());
-            return message;
-        }
+
+        AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
+        return answer.getResultMessage();
+
+//        MessageEvent message;
+//        try {
+//            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+//            wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
+//            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+//            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+//            return message;
+//        } catch (TimeoutException exception) {
+//            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+//            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+//            LOG.debug(exception.toString());
+//            return message;
+//        }
     }
 
     @Override

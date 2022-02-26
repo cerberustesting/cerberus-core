@@ -213,7 +213,7 @@ public class ControlService implements IControlService {
         }
 
         /**
-         * Timestamp starts after the decode. 
+         * Timestamp starts after the decode.
          */
         controlExecution.setStart(new Date().getTime());
         controlExecution.setEnd(new Date().getTime());
@@ -372,7 +372,7 @@ public class ControlService implements IControlService {
 
                 default:
                     res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
-                    res.setDescription(res.getDescription().replace("%CONTROL%", controlExecution.getControl()));
+                    res.resolveDescription("CONTROL", controlExecution.getControl());
             }
         } catch (final CerberusEventException exception) {
             res = exception.getMessageError();
@@ -415,15 +415,15 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? !value1.equals(value2) : !value1.equalsIgnoreCase(value2)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGDIFFERENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
+            mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+        mes.resolveDescription("STRING1", value1);
+        mes.resolveDescription("STRING2", value2);
+        mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         return mes;
     }
 
@@ -431,15 +431,15 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.equals(value2) : value1.equalsIgnoreCase(value2)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGEQUAL);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
+            mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+        mes.resolveDescription("STRING1", value1);
+        mes.resolveDescription("STRING2", value2);
+        mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         return mes;
 
     }
@@ -448,15 +448,15 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.indexOf(value2) >= 0 : value1.toLowerCase().indexOf(value2.toLowerCase()) >= 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
+            mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+        mes.resolveDescription("STRING1", value1);
+        mes.resolveDescription("STRING2", value2);
+        mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         return mes;
 
     }
@@ -466,16 +466,16 @@ public class ControlService implements IControlService {
         if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false) ? value1.indexOf(value2) >= 0 : value1.toLowerCase().indexOf(value2.toLowerCase()) >= 0) {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-            mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
+            mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
 
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+        mes.resolveDescription("STRING1", value1);
+        mes.resolveDescription("STRING2", value2);
+        mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
         return mes;
 
     }
@@ -484,13 +484,13 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (value1.compareToIgnoreCase(value2) > 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
             return mes;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
             return mes;
         }
     }
@@ -499,13 +499,13 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (value1.compareToIgnoreCase(value2) < 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
             return mes;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            mes.resolveDescription("STRING1", value1);
+            mes.resolveDescription("STRING2", value2);
             return mes;
         }
     }
@@ -526,9 +526,8 @@ public class ControlService implements IControlService {
             value1 = Double.valueOf(newControlValue1);
         } catch (NumberFormatException nfe) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
-            mes.setDescription(mes.getDescription()
-                    .replace("%COND%", control)
-                    .replace("%STRINGVALUE%", newControlValue1));
+            mes.resolveDescription("COND", control);
+            mes.resolveDescription("STRINGVALUE", newControlValue1);
             return mes;
         }
 
@@ -538,9 +537,8 @@ public class ControlService implements IControlService {
             value2 = Double.valueOf(newControlValue2);
         } catch (NumberFormatException nfe) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
-            mes.setDescription(mes.getDescription()
-                    .replace("%COND%", control)
-                    .replace("%STRINGVALUE%", newControlValue2));
+            mes.resolveDescription("COND", control);
+            mes.resolveDescription("STRINGVALUE", newControlValue2);
             return mes;
         }
 
@@ -551,96 +549,98 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
                 if (Objects.equals(value1, value2)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString()).replace("%STRING3%", "")
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+                    mes.resolveDescription("STRING3", "");
+
                 }
                 break;
 
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
                 if (!(Objects.equals(value1, value2))) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString()).replace("%STRING3%", "")
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+                    mes.resolveDescription("STRING3", "");
+
                 }
                 break;
 
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATER:
                 if (value1 > value2) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 }
                 break;
 
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATEROREQUAL:
                 if (value1 >= value2) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATEROREQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATEROREQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 }
                 break;
 
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOR:
                 if (value1 < value2) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 }
                 break;
 
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOROREQUAL:
                 if (value1 <= value2) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOROREQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOROREQUAL);
-                    mes.setDescription(mes.getDescription()
-                            .replace("%COND%", control)
-                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
-                    );
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRING1", value1.toString());
+                    mes.resolveDescription("STRING2", value2.toString());
+
                 }
                 break;
 
@@ -665,11 +665,11 @@ public class ControlService implements IControlService {
                         return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        mes.resolveDescription("STRING1", elementPath);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        mes.resolveDescription("STRING1", elementPath);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -685,34 +685,34 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (xmlUnitService.isElementPresent(responseBody, elementPath)) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             }
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 if (jsonService.getFromJson(responseBody, null, elementPath) != null) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    mes.resolveDescription("STRING1", elementPath);
                                     return mes;
                                 } else {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    mes.resolveDescription("STRING1", elementPath);
                                     return mes;
                                 }
                             } catch (Exception ex) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                mes.resolveDescription("ERROR", ex.toString());
                                 return mes;
                             }
                         }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementPresent"));
+                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("CONTROL", "verifyElementPresent");
                             return mes;
                     }
 
@@ -726,8 +726,8 @@ public class ControlService implements IControlService {
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementPresent"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "VerifyElementPresent");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -750,11 +750,11 @@ public class ControlService implements IControlService {
                         return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
                     } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        mes.resolveDescription("STRING1", elementPath);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        mes.resolveDescription("STRING1", elementPath);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -773,34 +773,34 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!(xmlUnitService.isElementPresent(responseBody, elementPath))) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             }
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 if (jsonService.getFromJson(responseBody, null, elementPath) == null) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    mes.resolveDescription("STRING1", elementPath);
                                     return mes;
                                 } else {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    mes.resolveDescription("STRING1", elementPath);
                                     return mes;
                                 }
                             } catch (Exception ex) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                mes.resolveDescription("ERROR", ex.toString());
                                 return mes;
                             }
                         }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
+                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("CONTROL", "verifyElementNotPresent");
                             return mes;
                     }
 
@@ -811,8 +811,8 @@ public class ControlService implements IControlService {
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "verifyElementNotPresent");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -835,16 +835,19 @@ public class ControlService implements IControlService {
                     if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                            mes.resolveDescription("STRING2", element);
+                            mes.resolveDescription("STRING1", childElement);
                             return mes;
                         } else {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                            mes.resolveDescription("STRING2", element);
+                            mes.resolveDescription("STRING1", childElement);
                             return mes;
                         }
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NO_SUCH_ELEMENT);
-                        mes.setDescription(mes.getDescription().replace("%SELEX%", new NoSuchElementException("").toString()).replace("%ELEMENT%", element));
+                        mes.resolveDescription("SELEX", new NoSuchElementException("").toString());
+                        mes.resolveDescription("ELEMENT", element);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -852,13 +855,14 @@ public class ControlService implements IControlService {
                 }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-                mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                mes.resolveDescription("STRING2", element);
+                mes.resolveDescription("STRING1", childElement);
                 return mes;
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementInElement"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyElementInElement");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
         }
     }
@@ -875,11 +879,11 @@ public class ControlService implements IControlService {
                     Identifier identifier = identifierService.convertStringToIdentifier(html);
                     if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.resolveDescription("STRING1", html);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.resolveDescription("STRING1", html);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -889,8 +893,8 @@ public class ControlService implements IControlService {
             } else {
 
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementVisible"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "verifyElementVisible");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
 
             }
@@ -912,16 +916,16 @@ public class ControlService implements IControlService {
                     if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                            mes.resolveDescription("STRING1", html);
                             return mes;
                         } else {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                            mes.resolveDescription("STRING1", html);
                             return mes;
                         }
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.resolveDescription("STRING1", html);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -930,8 +934,8 @@ public class ControlService implements IControlService {
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotVisible"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "verifyElementNotVisible");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
 
             }
@@ -948,8 +952,8 @@ public class ControlService implements IControlService {
         // If case of not compatible application then exit with error
         if (!tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementEquals"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyElementEquals");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
         }
 
@@ -960,13 +964,13 @@ public class ControlService implements IControlService {
             switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                     mes = xmlUnitService.isElementEquals(xmlResponse, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
-                    mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
-                    mes.setDescription(mes.getDescription().replace("%EXPECTED_ELEMENT%", expectedElement));
+                    mes.resolveDescription("XPATH", xpath);
+                    mes.resolveDescription("EXPECTED_ELEMENT", expectedElement);
                     return mes;
                 default:
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                    mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                    mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementEquals"));
+                    mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                    mes.resolveDescription("CONTROL", "verifyElementEquals");
                     return mes;
             }
 
@@ -985,8 +989,8 @@ public class ControlService implements IControlService {
         // If case of not compatible application then exit with error
         if (!tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementDifferent"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyElementDifferent");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
         }
 
@@ -998,13 +1002,13 @@ public class ControlService implements IControlService {
                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                     String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                     mes = xmlUnitService.isElementEquals(xmlResponse, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
-                    mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
-                    mes.setDescription(mes.getDescription().replace("%DIFFERENT_ELEMENT%", differentElement));
+                    mes.resolveDescription("XPATH", xpath);
+                    mes.resolveDescription("DIFFERENT_ELEMENT", differentElement);
                     return mes;
                 default:
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                    mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                    mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementDifferent"));
+                    mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                    mes.resolveDescription("CONTROL", "verifyElementDifferent");
                     return mes;
             }
 
@@ -1039,7 +1043,7 @@ public class ControlService implements IControlService {
                     // In case of null actual value then we alert user
                     if (actual == null) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NULL);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                        mes.resolveDescription("STRING1", path);
                         return mes;
                     }
 
@@ -1055,7 +1059,7 @@ public class ControlService implements IControlService {
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                                 if (!xmlUnitService.isElementPresent(responseBody, path)) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT);
-                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                    mes.resolveDescription("ELEMENT", path);
                                     return mes;
                                 }
                                 String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
@@ -1063,7 +1067,7 @@ public class ControlService implements IControlService {
                                 // In case of null actual value then we alert user
                                 if (actual == null) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NULL);
-                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                    mes.resolveDescription("ELEMENT", path);
                                     return mes;
                                 }
                                 // Get the result depending on the control required.
@@ -1075,14 +1079,14 @@ public class ControlService implements IControlService {
                                     actual = jsonService.getFromJson(responseBody, null, path);
                                 } catch (Exception ex) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                    mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                    mes.resolveDescription("ERROR", ex.toString());
                                     return mes;
                                 }
                             }
                             // In case of null actual value then we alert user
                             if (actual == null) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                mes.resolveDescription("ELEMENT", path);
                                 return mes;
                             }
                             // Get the result depending on the control required.
@@ -1091,8 +1095,8 @@ public class ControlService implements IControlService {
 
                             default:
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                                mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                                mes.setDescription(mes.getDescription().replace("%CONTROL%", control));
+                                mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                                mes.resolveDescription("CONTROL", control);
                                 return mes;
                         }
 
@@ -1103,15 +1107,15 @@ public class ControlService implements IControlService {
 
                 default:
                     mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                    mes.setDescription(mes.getDescription().replace("%CONTROL%", control));
-                    mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                    mes.resolveDescription("CONTROL", control);
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                     return mes;
 
             }
 
         } catch (NoSuchElementException exception) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+            mes.resolveDescription("ELEMENT", path);
             return mes;
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
@@ -1121,7 +1125,7 @@ public class ControlService implements IControlService {
 
     private MessageEvent switchControl(String control, String path, String actual, String expected, String isCaseSensitive) {
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        mes.setDescription(mes.getDescription().replace("%CONTROL%", "switchControl-" + control));
+        mes.resolveDescription("CONTROL", "switchControl-" + control);
 
         switch (control) {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL:
@@ -1144,7 +1148,8 @@ public class ControlService implements IControlService {
                     value1 = Double.valueOf(actual);
                 } catch (NumberFormatException nfe) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
-                    mes.setDescription(mes.getDescription().replace("%COND%", control).replace("%STRINGVALUE%", actual));
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRINGVALUE", actual);
                     return mes;
                 }
 
@@ -1154,16 +1159,17 @@ public class ControlService implements IControlService {
                     value2 = Double.valueOf(expected);
                 } catch (NumberFormatException nfe) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
-                    mes.setDescription(mes.getDescription().replace("%COND%", control).replace("%STRINGVALUE%", expected));
+                    mes.resolveDescription("COND", control);
+                    mes.resolveDescription("STRINGVALUE", expected);
                     return mes;
                 }
                 mes = checkNumericVerifyElement(control, value1, value2);
                 break;
         }
-        mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
-        mes.setDescription(mes.getDescription().replace("%ELEMENTVALUE%", actual));
-        mes.setDescription(mes.getDescription().replace("%VALUE%", expected));
-        mes.setDescription(mes.getDescription().replace("%CASESENSITIVE%", caseSensitiveMessageValue(isCaseSensitive)));
+        mes.resolveDescription("ELEMENT", path);
+        mes.resolveDescription("ELEMENTVALUE", actual);
+        mes.resolveDescription("VALUE", expected);
+        mes.resolveDescription("CASESENSITIVE", caseSensitiveMessageValue(isCaseSensitive));
         return mes;
     }
 
@@ -1199,7 +1205,7 @@ public class ControlService implements IControlService {
 
     private MessageEvent checkNumericVerifyElement(String control, Double actual, Double expected) {
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        mes.setDescription(mes.getDescription().replace("%CONTROL%", "checkNumericVerifyElement-" + control));
+        mes.resolveDescription("CONTROL", "checkNumericVerifyElement-" + control);
 
         switch (control) {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
@@ -1245,7 +1251,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!xmlUnitService.isElementPresent(responseBody, path)) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                mes.resolveDescription("ELEMENT", path);
                                 return mes;
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
@@ -1257,15 +1263,15 @@ public class ControlService implements IControlService {
                             pathContent = jsonService.getFromJson(responseBody, null, path);
                         } catch (Exception ex) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                            mes.resolveDescription("ERROR", ex.toString());
                             return mes;
                         }
                         break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementTextMatchRegex"));
+                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("CONTROL", "VerifyElementTextMatchRegex");
                             return mes;
                     }
 
@@ -1276,8 +1282,8 @@ public class ControlService implements IControlService {
                 }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementTextMatchRegex"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "VerifyElementTextMatchRegex");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
             }
             LOG.debug("Control : VerifyElementMatchRegex element : " + path + " has value : " + StringUtil.sanitize(pathContent));
@@ -1287,21 +1293,21 @@ public class ControlService implements IControlService {
                     Matcher matcher = pattern.matcher(pathContent);
                     if (matcher.find()) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(pathContent)));
-                        mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
+                        mes.resolveDescription("STRING1", path);
+                        mes.resolveDescription("STRING2", StringUtil.sanitize(pathContent));
+                        mes.resolveDescription("STRING3", regex);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(pathContent)));
-                        mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
+                        mes.resolveDescription("STRING1", path);
+                        mes.resolveDescription("STRING2", StringUtil.sanitize(pathContent));
+                        mes.resolveDescription("STRING3", regex);
                         return mes;
                     }
                 } catch (PatternSyntaxException e) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
-                    mes.setDescription(mes.getDescription().replace("%PATERN%", regex));
-                    mes.setDescription(mes.getDescription().replace("%ERROR%", e.getMessage()));
+                    mes.resolveDescription("PATERN", regex);
+                    mes.resolveDescription("ERROR", e.getMessage());
                     return mes;
                 }
             } else if (pathContent != null) {
@@ -1309,13 +1315,13 @@ public class ControlService implements IControlService {
                 return mes;
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
-                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                mes.resolveDescription("ELEMENT", path);
                 return mes;
             }
         } catch (NoSuchElementException exception) {
             LOG.debug(exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+            mes.resolveDescription("ELEMENT", path);
             return mes;
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
@@ -1339,13 +1345,13 @@ public class ControlService implements IControlService {
 
                     if (str.trim().equalsIgnoreCase(valueToTest)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINALERT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
+                        mes.resolveDescription("STRING1", str);
+                        mes.resolveDescription("STRING2", valueToTest);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
+                        mes.resolveDescription("STRING1", str);
+                        mes.resolveDescription("STRING2", valueToTest);
                         return mes;
                     }
                 } else {
@@ -1359,8 +1365,8 @@ public class ControlService implements IControlService {
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInDialog"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyTextInDialog");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1386,17 +1392,17 @@ public class ControlService implements IControlService {
                     Matcher matcher = pattern.matcher(pageSource);
                     if (matcher.find()) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINPAGE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", Pattern.quote(regex)));
+                        mes.resolveDescription("STRING1", Pattern.quote(regex));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", Pattern.quote(regex)));
+                        mes.resolveDescription("STRING1", Pattern.quote(regex));
                         return mes;
                     }
                 } catch (PatternSyntaxException e) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE_INVALIDPATERN);
-                    mes.setDescription(mes.getDescription().replace("%PATERN%", Pattern.quote(regex)));
-                    mes.setDescription(mes.getDescription().replace("%ERROR%", e.getMessage()));
+                    mes.resolveDescription("PATERN", Pattern.quote(regex));
+                    mes.resolveDescription("ERROR", e.getMessage());
                     return mes;
                 }
             } catch (WebDriverException exception) {
@@ -1408,8 +1414,8 @@ public class ControlService implements IControlService {
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInPage"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyTextInPage");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1434,17 +1440,17 @@ public class ControlService implements IControlService {
                     Matcher matcher = pattern.matcher(pageSource);
                     if (!(matcher.find())) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINPAGE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", Pattern.quote(regex)));
+                        mes.resolveDescription("STRING1", Pattern.quote(regex));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", Pattern.quote(regex)));
+                        mes.resolveDescription("STRING1", Pattern.quote(regex));
                         return mes;
                     }
                 } catch (PatternSyntaxException e) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINPAGE_INVALIDPATERN);
-                    mes.setDescription(mes.getDescription().replace("%PATERN%", Pattern.quote(regex)));
-                    mes.setDescription(mes.getDescription().replace("%ERROR%", e.getMessage()));
+                    mes.resolveDescription("PATERN", Pattern.quote(regex));
+                    mes.resolveDescription("ERROR", e.getMessage());
                     return mes;
                 }
             } catch (WebDriverException exception) {
@@ -1454,8 +1460,8 @@ public class ControlService implements IControlService {
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyTextNotInPage"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "VerifyTextNotInPage");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1501,15 +1507,15 @@ public class ControlService implements IControlService {
                 url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
 
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                mes.resolveDescription("STRING1", url);
+                mes.resolveDescription("STRING2", controlUrl);
                 return mes;
 
             } catch (TimeoutException exception) {
                 url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
+                mes.resolveDescription("STRING1", url);
+                mes.resolveDescription("STRING2", controlUrl);
                 return mes;
 
             } catch (WebDriverException exception) {
@@ -1519,8 +1525,8 @@ public class ControlService implements IControlService {
         } else {
 
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyUrl"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyUrl");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1556,16 +1562,16 @@ public class ControlService implements IControlService {
                 pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
 
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TITLE);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+                mes.resolveDescription("STRING1", pageTitle);
+                mes.resolveDescription("STRING2", title);
+                mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
                 return mes;
 
             } catch (TimeoutException exception) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TITLE);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", pageTitle));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", title));
-                mes.setDescription(mes.getDescription().replace("%STRING3%", caseSensitiveMessageValue(isCaseSensitive)));
+                mes.resolveDescription("STRING1", pageTitle);
+                mes.resolveDescription("STRING2", title);
+                mes.resolveDescription("STRING3", caseSensitiveMessageValue(isCaseSensitive));
                 return mes;
             } catch (WebDriverException exception) {
                 return parseWebDriverException(exception);
@@ -1574,8 +1580,8 @@ public class ControlService implements IControlService {
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTitle"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyTitle");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1596,19 +1602,19 @@ public class ControlService implements IControlService {
                             String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                             if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                                mes.resolveDescription("STRING1", StringUtil.sanitize(controlProperty));
+                                mes.resolveDescription("STRING2", StringUtil.sanitize(controlValue));
                                 return mes;
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                                mes.resolveDescription("STRING1", StringUtil.sanitize(controlProperty));
+                                mes.resolveDescription("STRING2", StringUtil.sanitize(controlValue));
                                 return mes;
                             }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
-                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyXmlTreeStructure"));
+                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("CONTROL", "verifyXmlTreeStructure");
                             return mes;
                     }
                 } else {
@@ -1624,8 +1630,8 @@ public class ControlService implements IControlService {
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyXmlTreeStructure"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+            mes.resolveDescription("CONTROL", "verifyXmlTreeStructure");
+            mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
             return mes;
 
         }
@@ -1641,11 +1647,11 @@ public class ControlService implements IControlService {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
-                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+                        mes.resolveDescription("ELEMENT", html);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CLICKABLE);
-                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+                        mes.resolveDescription("ELEMENT", html);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -1653,8 +1659,8 @@ public class ControlService implements IControlService {
                 }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "verifyElementClickable");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -1672,11 +1678,11 @@ public class ControlService implements IControlService {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
-                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+                        mes.resolveDescription("ELEMENT", html);
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCLICKABLE);
-                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+                        mes.resolveDescription("ELEMENT", html);
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -1684,8 +1690,8 @@ public class ControlService implements IControlService {
                 }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementNotClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getAppTypeEngine()));
+                mes.resolveDescription("CONTROL", "VerifyElementNotClickable");
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -1714,8 +1720,8 @@ public class ControlService implements IControlService {
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine()));
+        message.resolveDescription("CONTROL", "takeScreenShot");
+        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine());
         return message;
     }
 
@@ -1734,8 +1740,8 @@ public class ControlService implements IControlService {
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine()));
+        message.resolveDescription("CONTROL", "takeScreenShot");
+        message.resolveDescription("APPLICATIONTYPE", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine());
         return message;
     }
 
@@ -1748,7 +1754,7 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         LOG.error(exception.toString(), exception);
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SELENIUM_CONNECTIVITY);
-        mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
+        mes.resolveDescription("ERROR", exception.getMessage().split("\n")[0]);
         return mes;
     }
 
