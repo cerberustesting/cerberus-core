@@ -2881,3 +2881,17 @@ function generateUUID() { // Public Domain/MIT
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
 }
+
+
+function cleanErratum(oldValue) {
+    if (oldValue.startsWith('erratum=')) {
+        if (oldValue.includes(",")) {
+            return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
+        } else {
+            return oldValue;
+        }
+    } else {
+        return oldValue;
+    }
+}
+

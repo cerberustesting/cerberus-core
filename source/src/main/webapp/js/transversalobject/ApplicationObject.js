@@ -259,7 +259,7 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         }
 
         formEdit.find("#object").prop("value", applicationObject.object);
-        formEdit.find("#value").prop("value", applicationObject.value);
+        formEdit.find("#value").prop("value", cleanErratum(applicationObject.value));
 
 
     }

@@ -6057,3 +6057,6 @@ INSERT INTO user (login, name, email, team, language, attribute01, attribute02, 
 INSERT INTO user (login, name, email, team, language, attribute01, attribute02, attribute03, attribute04, attribute05, apikey, password, userpreferences, usrcreated, comment) 
     SELECT "srvaccount", "Cerberus Service Account", "", "", 'en', '', '', '', '', '', LEFT(MD5(RAND()), 90), "", "" , "DatabaseVersioningService", "DO NOT REMOVE !! Service Account for internal use by Cerberus." 
     FROM dual;
+
+-- 1698
+ALTER TABLE `applicationobject` CHANGE COLUMN `Value` `Value` LONGTEXT NULL DEFAULT NULL ;

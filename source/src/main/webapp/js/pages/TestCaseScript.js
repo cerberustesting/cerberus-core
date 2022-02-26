@@ -2679,18 +2679,6 @@ function getTitleFromOptionsActive(options) {
     return result.substring(0, result.length - 3);
 }
 
-function cleanErratum(oldValue) {
-    if (oldValue.startsWith('erratum=')) {
-        if (oldValue.includes(",")) {
-            return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
-        } else {
-            return oldValue;
-        }
-    } else {
-        return oldValue;
-    }
-}
-
 function convertValueWithErratum(oldValue, newValue) {
     if (newValue.startsWith('erratum=')) {
         setModif(true);

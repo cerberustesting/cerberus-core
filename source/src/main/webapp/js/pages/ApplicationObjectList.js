@@ -231,7 +231,11 @@ function aoColumnsFunc(tableId) {
             "sName": "value",
             "like": true,
             "sWidth": "60px",
-            "title": doc.getDocOnline("page_applicationObject", "Value")
+            "title": doc.getDocOnline("page_applicationObject", "Value"),
+            "mRender": function (data, type, obj) {
+                var currentCase = cleanErratum(obj["value"]);
+                return currentCase;
+            }
         },
         {
             "data": "screenshotfilename",
