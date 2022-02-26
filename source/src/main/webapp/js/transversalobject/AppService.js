@@ -507,7 +507,6 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         } else { // DUPLICATE
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
             formEdit.find("#service").prop("value", service.service);
-            formEdit.find("#service").prop("value", "");
         }
     }
     if (isEmpty(service)) {
