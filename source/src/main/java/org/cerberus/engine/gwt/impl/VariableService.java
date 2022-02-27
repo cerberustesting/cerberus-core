@@ -206,110 +206,110 @@ public class VariableService implements IVariableService {
     }
 
     @Override
-    public String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution) {
+    public String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution execution) {
 
         try {
             /**
              * Trying to replace by system environment variables from Execution.
              */
-            stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplicationObj().getSystem());
-            stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplicationObj().getApplication());
-            stringToDecode = stringToDecode.replace("%SYS_BROWSER%", tCExecution.getBrowser());
-            stringToDecode = stringToDecode.replace("%SYS_ROBOT%", tCExecution.getRobot());
-            stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", tCExecution.getRobotDecli());
-            stringToDecode = stringToDecode.replace("%SYS_SCREENSIZE%", tCExecution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
-            stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
-            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
-            stringToDecode = stringToDecode.replace("%SYS_EXEURL%", tCExecution.getUrl());
-            stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
-            stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP2%", tCExecution.getCountryObj().getGp2());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP3%", tCExecution.getCountryObj().getGp3());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP4%", tCExecution.getCountryObj().getGp4());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP5%", tCExecution.getCountryObj().getGp5());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP6%", tCExecution.getCountryObj().getGp6());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP7%", tCExecution.getCountryObj().getGp7());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP8%", tCExecution.getCountryObj().getGp8());
-            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP9%", tCExecution.getCountryObj().getGp9());
-            stringToDecode = stringToDecode.replace("%SYS_TEST%", tCExecution.getTest());
-            stringToDecode = stringToDecode.replace("%SYS_TESTCASE%", tCExecution.getTestCase());
-            stringToDecode = stringToDecode.replace("%SYS_TESTCASEDESCRIPTION%", tCExecution.getDescription());
-            stringToDecode = stringToDecode.replace("%SYS_SSIP%", tCExecution.getSeleniumIP());
-            stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
-            stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
-            stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
-            stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
-            stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+            stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", execution.getApplicationObj().getSystem());
+            stringToDecode = stringToDecode.replace("%SYS_APPLI%", execution.getApplicationObj().getApplication());
+            stringToDecode = stringToDecode.replace("%SYS_BROWSER%", execution.getBrowser());
+            stringToDecode = stringToDecode.replace("%SYS_ROBOT%", execution.getRobot());
+            stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", execution.getRobotDecli());
+            stringToDecode = stringToDecode.replace("%SYS_SCREENSIZE%", execution.getScreenSize());
+            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", execution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
+            stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", execution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", execution.getCountryEnvironmentParameters().getUrl());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", execution.getCountryEnvironmentParameters().getVar1());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", execution.getCountryEnvironmentParameters().getVar2());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", execution.getCountryEnvironmentParameters().getVar3());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", execution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%SYS_EXEURL%", execution.getUrl());
+            stringToDecode = stringToDecode.replace("%SYS_ENV%", execution.getEnvironmentData());
+            stringToDecode = stringToDecode.replace("%SYS_ENVGP%", execution.getEnvironmentDataObj().getGp1());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", execution.getCountry());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP1%", execution.getCountryObj().getGp1());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP2%", execution.getCountryObj().getGp2());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP3%", execution.getCountryObj().getGp3());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP4%", execution.getCountryObj().getGp4());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP5%", execution.getCountryObj().getGp5());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP6%", execution.getCountryObj().getGp6());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP7%", execution.getCountryObj().getGp7());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP8%", execution.getCountryObj().getGp8());
+            stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP9%", execution.getCountryObj().getGp9());
+            stringToDecode = stringToDecode.replace("%SYS_TEST%", execution.getTest());
+            stringToDecode = stringToDecode.replace("%SYS_TESTCASE%", execution.getTestCase());
+            stringToDecode = stringToDecode.replace("%SYS_TESTCASEDESCRIPTION%", execution.getDescription());
+            stringToDecode = stringToDecode.replace("%SYS_SSIP%", execution.getSeleniumIP());
+            stringToDecode = stringToDecode.replace("%SYS_SSPORT%", execution.getSeleniumPort());
+            stringToDecode = stringToDecode.replace("%SYS_TAG%", execution.getTag());
+            stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(execution.getId()));
+            stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(execution.getStart())));
+            stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(execution.getId()));
             long nowInMS = new Date().getTime();
-            stringToDecode = stringToDecode.replace("%SYS_EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
+            stringToDecode = stringToDecode.replace("%SYS_EXEELAPSEDMS%", String.valueOf(nowInMS - execution.getStart()));
             // New syntax
-            stringToDecode = stringToDecode.replace("%system.SYSTEM%", tCExecution.getApplicationObj().getSystem());
-            stringToDecode = stringToDecode.replace("%system.APPLI%", tCExecution.getApplicationObj().getApplication());
-            stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
-            stringToDecode = stringToDecode.replace("%system.ROBOT%", tCExecution.getRobot());
-            stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", tCExecution.getRobotDecli());
-            if (tCExecution.getRobotExecutorObj() != null) {
-                stringToDecode = stringToDecode.replace("%system.ROBOTHOST%", tCExecution.getRobotExecutorObj().getHost());
+            stringToDecode = stringToDecode.replace("%system.SYSTEM%", execution.getApplicationObj().getSystem());
+            stringToDecode = stringToDecode.replace("%system.APPLI%", execution.getApplicationObj().getApplication());
+            stringToDecode = stringToDecode.replace("%system.BROWSER%", execution.getBrowser());
+            stringToDecode = stringToDecode.replace("%system.ROBOT%", execution.getRobot());
+            stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", execution.getRobotDecli());
+            if (execution.getRobotExecutorObj() != null) {
+                stringToDecode = stringToDecode.replace("%system.ROBOTHOST%", execution.getRobotExecutorObj().getHost());
             }
 
-            stringToDecode = stringToDecode.replace("%system.SCREENSIZE%", tCExecution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
-            stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
-            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
-            stringToDecode = stringToDecode.replace("%system.EXEURL%", tCExecution.getUrl());
-            stringToDecode = stringToDecode.replace("%system.ENV%", tCExecution.getEnvironmentData());
-            stringToDecode = stringToDecode.replace("%system.ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
-            stringToDecode = stringToDecode.replace("%system.COUNTRY%", tCExecution.getCountry());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP2%", tCExecution.getCountryObj().getGp2());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP3%", tCExecution.getCountryObj().getGp3());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP4%", tCExecution.getCountryObj().getGp4());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP5%", tCExecution.getCountryObj().getGp5());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP6%", tCExecution.getCountryObj().getGp6());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP7%", tCExecution.getCountryObj().getGp7());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP8%", tCExecution.getCountryObj().getGp8());
-            stringToDecode = stringToDecode.replace("%system.COUNTRYGP9%", tCExecution.getCountryObj().getGp9());
-            stringToDecode = stringToDecode.replace("%system.TEST%", tCExecution.getTest());
-            stringToDecode = stringToDecode.replace("%system.TESTCASE%", tCExecution.getTestCase());
-            stringToDecode = stringToDecode.replace("%system.TESTCASEDESCRIPTION%", tCExecution.getDescription());
-            stringToDecode = stringToDecode.replace("%system.SSIP%", tCExecution.getSeleniumIP());
-            stringToDecode = stringToDecode.replace("%system.SSPORT%", tCExecution.getSeleniumPort());
-            stringToDecode = stringToDecode.replace("%system.TAG%", tCExecution.getTag());
-            stringToDecode = stringToDecode.replace("%system.EXECUTIONID%", String.valueOf(tCExecution.getId()));
-            stringToDecode = stringToDecode.replace("%system.EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
-            stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+            stringToDecode = stringToDecode.replace("%system.SCREENSIZE%", execution.getScreenSize());
+            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", execution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
+            stringToDecode = stringToDecode.replace("%system.APP_HOST%", execution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", execution.getCountryEnvironmentParameters().getUrl());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR1%", execution.getCountryEnvironmentParameters().getVar1());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR2%", execution.getCountryEnvironmentParameters().getVar2());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR3%", execution.getCountryEnvironmentParameters().getVar3());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR4%", execution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%system.EXEURL%", execution.getUrl());
+            stringToDecode = stringToDecode.replace("%system.ENV%", execution.getEnvironmentData());
+            stringToDecode = stringToDecode.replace("%system.ENVGP%", execution.getEnvironmentDataObj().getGp1());
+            stringToDecode = stringToDecode.replace("%system.COUNTRY%", execution.getCountry());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP1%", execution.getCountryObj().getGp1());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP2%", execution.getCountryObj().getGp2());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP3%", execution.getCountryObj().getGp3());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP4%", execution.getCountryObj().getGp4());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP5%", execution.getCountryObj().getGp5());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP6%", execution.getCountryObj().getGp6());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP7%", execution.getCountryObj().getGp7());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP8%", execution.getCountryObj().getGp8());
+            stringToDecode = stringToDecode.replace("%system.COUNTRYGP9%", execution.getCountryObj().getGp9());
+            stringToDecode = stringToDecode.replace("%system.TEST%", execution.getTest());
+            stringToDecode = stringToDecode.replace("%system.TESTCASE%", execution.getTestCase());
+            stringToDecode = stringToDecode.replace("%system.TESTCASEDESCRIPTION%", execution.getDescription());
+            stringToDecode = stringToDecode.replace("%system.SSIP%", execution.getSeleniumIP());
+            stringToDecode = stringToDecode.replace("%system.SSPORT%", execution.getSeleniumPort());
+            stringToDecode = stringToDecode.replace("%system.TAG%", execution.getTag());
+            stringToDecode = stringToDecode.replace("%system.EXECUTIONID%", String.valueOf(execution.getId()));
+            stringToDecode = stringToDecode.replace("%system.EXESTART%", String.valueOf(new Timestamp(execution.getStart())));
+            stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(execution.getId()));
             nowInMS = new Date().getTime();
-            stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
-            if (tCExecution.getRemoteProxyUUID() != null) {
-                stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", tCExecution.getRemoteProxyUUID());
+            stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - execution.getStart()));
+            if (execution.getRemoteProxyUUID() != null) {
+                stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", execution.getRemoteProxyUUID());
             }
-            if (tCExecution.getRobotExecutorObj() != null) {
-                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + tCExecution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID());
+            if (execution.getRobotExecutorObj() != null) {
+                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + execution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + execution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + execution.getRemoteProxyUUID());
             }
             /**
              * Trying to replace by system environment variables from Step
              * Execution .
              */
-            if (tCExecution.getTestCaseStepExecutionList() != null) {
+            if (execution.getTestCaseStepExecutionList() != null) {
 
-                if (tCExecution.getTestCaseStepExecutionList().size() > 0) {
-                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_SORT%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getSort()));
-                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_SORT%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getSort()));
+                if (execution.getTestCaseStepExecutionList().size() > 0) {
+                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_SORT%", String.valueOf(execution.getTestCaseStepExecutionList().get(execution.getTestCaseStepExecutionList().size() - 1).getSort()));
+                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_SORT%", String.valueOf(execution.getTestCaseStepExecutionList().get(execution.getTestCaseStepExecutionList().size() - 1).getSort()));
 
                     // %SYS_CURRENTSTEP_INDEX%
                     if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
-                        TestCaseStepExecution currentStep = tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                        TestCaseStepExecution currentStep = execution.getTestCaseStepExecutionList().get(execution.getTestCaseStepExecutionList().size() - 1);
                         stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
                         stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
                         nowInMS = new Date().getTime();
@@ -317,7 +317,7 @@ public class VariableService implements IVariableService {
 
                     }
                     if (stringToDecode.contains("%system.CURRENTSTEP_")) {
-                        TestCaseStepExecution currentStep = tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                        TestCaseStepExecution currentStep = execution.getTestCaseStepExecutionList().get(execution.getTestCaseStepExecutionList().size() - 1);
                         stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
                         stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
                         nowInMS = new Date().getTime();
@@ -328,7 +328,7 @@ public class VariableService implements IVariableService {
                 // %SYS_STEP.n.RETURNCODE%
                 if (stringToDecode.contains("%SYS_STEP.")) {
                     String syntaxToReplace = "";
-                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionList()) {
+                    for (Object testCaseStepExecution : execution.getTestCaseStepExecutionList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
                         syntaxToReplace = "%SYS_STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
@@ -336,7 +336,7 @@ public class VariableService implements IVariableService {
                 }
                 if (stringToDecode.contains("%system.STEP.")) {
                     String syntaxToReplace = "";
-                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionList()) {
+                    for (Object testCaseStepExecution : execution.getTestCaseStepExecutionList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
                         syntaxToReplace = "%system.STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
@@ -348,19 +348,27 @@ public class VariableService implements IVariableService {
             /**
              * Last Service Called Variables.
              */
-            if (!(tCExecution.getLastServiceCalled() == null)) {
-                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
-                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", tCExecution.getLastServiceCalled().getResponseHTTPBody());
+            if (!(execution.getLastServiceCalled() == null)) {
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(execution.getLastServiceCalled().getResponseHTTPCode()));
+                stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", execution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                if (!(execution.getLastServiceCalled().getResponseHTTPBody() == null)) {
+                    stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", execution.getLastServiceCalled().getResponseHTTPBody());
+                } else {
+                    stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
+                }
             } else {
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_CALL%", VALUE_WHEN_NULL);
                 stringToDecode = stringToDecode.replace("%system.LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
             }
-            if (!(tCExecution.getLastServiceCalled() == null)) {
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", tCExecution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
-                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_RESPONSE%", tCExecution.getLastServiceCalled().getResponseHTTPBody());
+            if (!(execution.getLastServiceCalled() == null)) {
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(execution.getLastServiceCalled().getResponseHTTPCode()));
+                stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", execution.getLastServiceCalled().toJSONOnDefaultExecution().toString());
+                if (!(execution.getLastServiceCalled().getResponseHTTPBody() == null)) {
+                    stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_RESPONSE%", execution.getLastServiceCalled().getResponseHTTPBody());
+                } else {
+                    stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_RESPONSE%", VALUE_WHEN_NULL);
+                }
             } else {
                 stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
                 stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_CALL%", VALUE_WHEN_NULL);
@@ -411,7 +419,7 @@ public class VariableService implements IVariableService {
             return stringToDecode;
 
         } catch (Exception e) {
-            LOG.error("Error when decoding system variable.", e, e.getStackTrace());
+            LOG.error("Error when decoding system variable on exe : " + execution.getId(), e);
         }
         return stringToDecode;
     }
