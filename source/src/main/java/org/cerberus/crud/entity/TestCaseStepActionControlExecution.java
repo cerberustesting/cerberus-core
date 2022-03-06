@@ -21,6 +21,7 @@ package org.cerberus.crud.entity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -404,7 +405,7 @@ public class TestCaseStepActionControlExecution {
      * @param secrets
      * @return TestCaseStepActionControlExecution in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds, boolean withParents, List<String> secrets) {
+    public JSONObject toJson(boolean withChilds, boolean withParents, HashMap<String, String> secrets) {
         JSONObject result = new JSONObject();
         // Check if both parameter are not set to true
         if (withChilds == true && withParents == true) {

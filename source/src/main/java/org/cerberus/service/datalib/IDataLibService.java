@@ -39,11 +39,11 @@ public interface IDataLibService {
      *
      * @param lib
      * @param testCaseCountryProperty
-     * @param tCExecution
+     * @param execution
      * @param testCaseExecutionData
      * @return
      */
-    AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData);
+    AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData);
 
     /**
      * This method return the first ObjectData from DataSet

@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -66,7 +67,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlExecutionDAO.class);
 
     @Override
-    public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution, HashMap<String, String> secrets) {
 
         final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, `index`, sequence, controlsequence, sort, returncode, "
                 + "conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, "
@@ -98,19 +99,19 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setInt(i++, testCaseStepActionControlExecution.getSort());
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3(), 65000), secrets));
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getControl(), 200));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionControlExecution.getStart()));
@@ -125,10 +126,10 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(i++, df.format(testCaseStepActionControlExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionControlExecution.getEnd()));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionControlExecution.getTest());
                 preStat.setString(i++, testCaseStepActionControlExecution.getTestCase());
-                preStat.setString(i++, testCaseStepActionControlExecution.getDescription());
+                preStat.setString(i++, StringUtil.secureFromSecrets(testCaseStepActionControlExecution.getDescription(), secrets));
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -150,7 +151,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     }
 
     @Override
-    public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution, HashMap<String, String> secrets) {
 
         final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, conditionOperator = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal3Init = ?, "
                 + "conditionVal1 = ?, conditionVal2 = ?, conditionVal3 = ?, control = ?, "
@@ -177,19 +178,19 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 int i = 1;
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getConditionVal3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionControlExecution.getControl());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionControlExecution.getValue3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionControlExecution.getStart()));
@@ -204,7 +205,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(i++, df.format(testCaseStepActionControlExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionControlExecution.getEnd()));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionControlExecution.getDescription());
                 preStat.setInt(i++, testCaseStepActionControlExecution.getSort());
                 preStat.setLong(i++, testCaseStepActionControlExecution.getId());

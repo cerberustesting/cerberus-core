@@ -24,6 +24,7 @@ import java.util.*;
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestDataLibDAO;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestDataLib;
@@ -36,6 +37,8 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -96,7 +99,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
+    public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system, TestCaseExecution execution) {
         AnswerList<HashMap<String, String>> answer = new AnswerList<>();
         AnswerList<TestDataLib> answerDataLib = new AnswerList<>();
         AnswerList<TestDataLibData> answerData = new AnswerList<>();
@@ -123,6 +126,10 @@ public class TestDataLibService implements ITestDataLibService {
             HashMap<String, String> row = new HashMap<>();
             for (TestDataLibData tdld : objectDataList) {
                 row.put(tdld.getSubData(), tdld.getValue());
+                if (ParameterParserUtil.parseBooleanParam(tdld.getEncrypt(), false)) {
+                    LOG.debug("Adding string to secret list : " + tdld.getSubData() + " - " + tdld.getValue() + " --> " + tdld.getEncrypt());
+                    execution.appendSecret(tdld.getValue());
+                }
             }
             row.put("TestDataLibID", String.valueOf(tdl.getTestDataLibID()));
             result.add(row);

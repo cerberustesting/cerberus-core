@@ -141,7 +141,7 @@ public class TestCaseExecution {
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
 
     // List of strings that needs to be secured and hidden from end users.
-    private List<String> secrets;
+    private HashMap<String, String> secrets;
 
     private List<TestCaseExecutionQueueDep> testCaseExecutionQueueDepList;
 
@@ -259,16 +259,16 @@ public class TestCaseExecution {
         this.networkTrafficIndexList.add(newIndex);
     }
 
-    public List<String> getSecrets() {
+    public HashMap<String, String> getSecrets() {
         return secrets;
     }
 
-    public void setSecrets(List<String> secrets) {
+    public void setSecrets(HashMap<String, String> secrets) {
         this.secrets = secrets;
     }
 
     public void appendSecret(String secret) {
-        this.secrets.add(secret);
+        this.secrets.put(secret, "");
     }
 
     public TestCaseExecutionHttpStat getHttpStat() {

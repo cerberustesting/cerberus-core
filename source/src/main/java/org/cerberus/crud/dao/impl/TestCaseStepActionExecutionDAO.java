@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -318,7 +319,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
+    public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution, HashMap<String, String> secrets) {
 
         final String query = "INSERT INTO testcasestepactionexecution(id, step, `index`, sequence, sort, "
                 + "conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, ACTION, "
@@ -348,19 +349,19 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setInt(i++, testCaseStepActionExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionExecution.getAction());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue3Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionExecution.isFatal());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
@@ -376,10 +377,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(i++, testCaseStepActionExecution.getReturnCode());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());
-                preStat.setString(i++, testCaseStepActionExecution.getDescription());
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getDescription(), 65000), secrets));
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -401,7 +402,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
+    public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution, HashMap<String, String> secrets) {
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, value1 = ?, value2 = ?, value3 = ?, forceExeStatus = ?, start = ?, END = ?"
                 + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, description = ?, sort = ?"
@@ -426,9 +427,9 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
             try {
                 int i = 1;
                 preStat.setString(i++, testCaseStepActionExecution.getAction());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue3(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionExecution.isFatal());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
@@ -444,19 +445,19 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(i++, testCaseStepActionExecution.getReturnCode());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000));
-                preStat.setString(i++, testCaseStepActionExecution.getDescription());
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getDescription(), 65000), secrets));
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue3Init(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue3Init(), 65000), secrets));
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOperator());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3Init(), 65000));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal3Init(), 65000), secrets));
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());

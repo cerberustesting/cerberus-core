@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -55,13 +56,13 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
     private static final Logger LOG = LogManager.getLogger(TestCaseStepExecutionService.class);
     
     @Override
-    public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        this.testCaseStepExecutionDao.insertTestCaseStepExecution(testCaseStepExecution);
+    public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution, HashMap<String,String> secrets) {
+        this.testCaseStepExecutionDao.insertTestCaseStepExecution(testCaseStepExecution, secrets);
     }
 
     @Override
-    public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        this.testCaseStepExecutionDao.updateTestCaseStepExecution(testCaseStepExecution);
+    public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution, HashMap<String,String> secrets) {
+        this.testCaseStepExecutionDao.updateTestCaseStepExecution(testCaseStepExecution,secrets);
     }
 
     @Override

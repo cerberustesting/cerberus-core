@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepExecution;
@@ -33,14 +34,16 @@ public interface ITestCaseStepExecutionService {
     /**
      *
      * @param testCaseStepExecution
+     * @param secrets
      */
-    void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution);
+    void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution, HashMap<String,String> secrets);
 
     /**
      *
      * @param testCaseStepExecution
+     * @param secrets
      */
-    void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution);
+    void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution, HashMap<String,String> secrets);
 
     /**
      *

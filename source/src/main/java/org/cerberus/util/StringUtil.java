@@ -23,7 +23,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -299,9 +301,21 @@ public final class StringUtil {
      * @param secrets
      * @return
      */
-    public static String secureFromSecrets(String text, List<String> secrets) {
-        for (String secret : secrets) {
-            text = text.replace(secret, SECRET_STRING);
+    public static String secureFromSecrets(String text, HashMap<String, String> secrets) {
+        if (secrets == null) {
+            return text;
+        }
+        for (Map.Entry<String, String> entry : secrets.entrySet()) {
+            /**
+             * Secrets with less than 3 Characters are not really secrets. We
+             * avoid to clean text with secrets that are lower than 3 characters
+             * in order to replace some relevant parts of text by mistake.
+             */
+
+            if (entry.getKey().length() > 3) {
+                text = text.replace(entry.getKey(), SECRET_STRING);
+            }
+
         }
         return text;
     }

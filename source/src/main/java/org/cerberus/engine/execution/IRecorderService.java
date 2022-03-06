@@ -138,9 +138,10 @@ public interface IRecorderService {
      * @param property
      * @param propertyIndex
      * @param result
+     * @param secrets
      * @return
      */
-    TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result);
+    TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result, HashMap<String, String> secrets);
 
     /**
      *
@@ -148,9 +149,10 @@ public interface IRecorderService {
      * @param property
      * @param propertyIndex
      * @param content
+     * @param secrets
      * @return
      */
-    TestCaseExecutionFile recordProperty(Long runId, String property, int propertyIndex, String content);
+    TestCaseExecutionFile recordProperty(Long runId, String property, int propertyIndex, String content, HashMap<String, String> secrets);
 
     /**
      * records into a file in a JSON format the requested capability from the
@@ -194,13 +196,6 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution);
 
-    /**
-     *
-     * @param testCaseExecution
-     * @param url
-     * @return
-     */
-    TestCaseExecutionFile recordNetworkTrafficLog(TestCaseExecution testCaseExecution, String url);
 
     /**
      *
@@ -209,13 +204,6 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution);
 
-    /**
-     *
-     * @param executionId
-     * @param tcsae
-     * @param uploadedFile
-     */
-    void recordUploadedFile(long executionId, TestCaseStepActionExecution tcsae, FileItem uploadedFile);
 
     /**
      *

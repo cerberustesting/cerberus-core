@@ -231,7 +231,7 @@ public class PropertyService implements IPropertyService {
                 msg = tcExeData.getPropertyResultMessage();
                 //saves the result
                 try {
-                    testCaseExecutionDataService.save(tcExeData);
+                    testCaseExecutionDataService.save(tcExeData, execution.getSecrets());
                     /**
                      * Add TestCaseExecutionData in TestCaseExecutionData List
                      * of the TestCaseExecution
@@ -244,7 +244,7 @@ public class PropertyService implements IPropertyService {
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
                                     tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
-                            testCaseExecutionDataService.save(tcedS);
+                            testCaseExecutionDataService.save(tcedS, execution.getSecrets());
                         }
                     }
                 } catch (CerberusException cex) {
@@ -555,12 +555,12 @@ public class PropertyService implements IPropertyService {
     }
 
     @Override
-    public void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution,
+    public void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, TestCaseStepActionExecution testCaseStepActionExecution,
             TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
-        String test = tCExecution.getTest();
-        String testCase = tCExecution.getTestCase();
+        String test = execution.getTest();
+        String testCase = execution.getTestCase();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         if (LOG.isDebugEnabled()) {
@@ -568,17 +568,17 @@ public class PropertyService implements IPropertyService {
         }
 
         // Checking recursive decode.
-        if ((tCExecution.getRecursiveAlreadyCalculatedPropertiesList() != null) && (tCExecution.getRecursiveAlreadyCalculatedPropertiesList().contains(testCaseCountryProperty.getProperty()))) {
+        if ((execution.getRecursiveAlreadyCalculatedPropertiesList() != null) && (execution.getRecursiveAlreadyCalculatedPropertiesList().contains(testCaseCountryProperty.getProperty()))) {
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_RECURSIVE);
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getProperty())
-                    .replace("%HISTO%", tCExecution.getRecursiveAlreadyCalculatedPropertiesList().toString()));
+                    .replace("%HISTO%", execution.getRecursiveAlreadyCalculatedPropertiesList().toString()));
             testCaseExecutionData.setPropertyResultMessage(res);
             testCaseExecutionData.setEnd(new Date().getTime());
             LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
             return;
         }
-        if (tCExecution.getRecursiveAlreadyCalculatedPropertiesList() != null) {
-            tCExecution.getRecursiveAlreadyCalculatedPropertiesList().add(testCaseCountryProperty.getProperty());
+        if (execution.getRecursiveAlreadyCalculatedPropertiesList() != null) {
+            execution.getRecursiveAlreadyCalculatedPropertiesList().add(testCaseCountryProperty.getProperty());
         }
 
         try {
@@ -590,7 +590,7 @@ public class PropertyService implements IPropertyService {
 
             if (cacheValue > 0) {
                 try {
-                    data = testCaseExecutionDataService.readLastCacheEntry(tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), testCaseCountryProperty.getProperty(), cacheValue);
+                    data = testCaseExecutionDataService.readLastCacheEntry(execution.getApplicationObj().getSystem(), execution.getEnvironment(), execution.getCountry(), testCaseCountryProperty.getProperty(), cacheValue);
                     if (data != null) {
                         useCache = true;
                     }
@@ -606,7 +606,7 @@ public class PropertyService implements IPropertyService {
                  */
                 if (testCaseCountryProperty.getValue1().contains("%")) {
 
-                    answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue1(), tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue1(), execution, null, false);
                     testCaseExecutionData.setValue1(answerDecode.getItem());
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the property result.
@@ -621,7 +621,7 @@ public class PropertyService implements IPropertyService {
 
                 if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
 
-                    answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue2(), tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue2(), execution, null, false);
                     testCaseExecutionData.setValue2(answerDecode.getItem());
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the property result.
@@ -697,72 +697,72 @@ public class PropertyService implements IPropertyService {
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
-                            testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, execution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMSQL:
-                            testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMHTML:
-                            testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
-                            testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMJS:
-                            testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
-                            testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMCOOKIE:
-                            testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMXML:
-                            testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETRAWFROMXML:
-                            testCaseExecutionData = this.property_getRawFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getRawFromXml(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
-                            testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMJSON:
-                            testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, execution, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
-                            testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
-                            testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETELEMENTPOSITION:
-                            testCaseExecutionData = this.property_getElementPosition(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_getElementPosition(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMNETWORKTRAFFIC:
-                            testCaseExecutionData = this.property_getFromNetworkTraffic(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromNetworkTraffic(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETOTP:
-                            testCaseExecutionData = this.property_getOTP(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                            testCaseExecutionData = this.property_getOTP(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
                             break;
 
                         // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
-                            testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                            testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, execution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                             res = testCaseExecutionData.getPropertyResultMessage();
                             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
                             testCaseExecutionData.setPropertyResultMessage(res);
@@ -771,7 +771,7 @@ public class PropertyService implements IPropertyService {
                             break;
 
                         case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
-                            testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                            testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
                             res = testCaseExecutionData.getPropertyResultMessage();
                             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
                             testCaseExecutionData.setPropertyResultMessage(res);
@@ -841,7 +841,7 @@ public class PropertyService implements IPropertyService {
                     }
                     testCaseExecutionData.setDataLibRawData(result);
                     //Record result in filessytem.
-                    recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
+                    recorderService.recordTestDataLibProperty(execution.getId(), testCaseCountryProperty.getProperty(), 1, result, execution.getSecrets());
 
                 }
 
@@ -970,8 +970,8 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
-        if ("Y".equalsIgnoreCase(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+    private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, boolean forceCalculation) {
+        if ("Y".equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyActive())) {
             String jsonPath = testCaseExecutionData.getValue2();
             if (StringUtil.isNullOrEmpty(jsonPath)) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);
@@ -984,18 +984,18 @@ public class PropertyService implements IPropertyService {
                 //TODO : check if HAR is the same than the last one to avoid to download same har file several times
                 // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
                 Integer indexFrom = 0;
-                if (!tCExecution.getNetworkTrafficIndexList().isEmpty()) {
+                if (!execution.getNetworkTrafficIndexList().isEmpty()) {
                     // Take the value from the last entry.
-                    indexFrom = tCExecution.getNetworkTrafficIndexList().get(tCExecution.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
+                    indexFrom = execution.getNetworkTrafficIndexList().get(execution.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
                 }
 
-                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, tCExecution.getRobotExecutorObj().getExecutorExtensionHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
-                        tCExecution.getRemoteProxyUUID(), tCExecution.getSystem(), indexFrom);
+                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorExtensionHost(), execution.getRobotExecutorObj().getExecutorExtensionPort(),
+                        execution.getRemoteProxyUUID(), execution.getSystem(), indexFrom);
 
-                harRes = harService.enrichWithStats(harRes, tCExecution.getCountryEnvironmentParameters().getDomain(), tCExecution.getSystem(), tCExecution.getNetworkTrafficIndexList());
+                harRes = harService.enrichWithStats(harRes, execution.getCountryEnvironmentParameters().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());
 
                 //Record result in filessytem.
-                testCaseExecutionData.addFileList(recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1)));
+                testCaseExecutionData.addFileList(recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1), execution.getSecrets()));
 
                 String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath);
 
@@ -1004,7 +1004,7 @@ public class PropertyService implements IPropertyService {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC)
                             .resolveDescription("PARAM", jsonPath)
                             .resolveDescription("VALUE", valueFromJson)
-                            .resolveDescription("INDEX", String.valueOf(tCExecution.getNetworkTrafficIndexList().size()))
+                            .resolveDescription("INDEX", String.valueOf(execution.getNetworkTrafficIndexList().size()))
                             .resolveDescription("NBHITS", String.valueOf(indexFrom));
                     testCaseExecutionData.setPropertyResultMessage(res);
 
@@ -1027,8 +1027,8 @@ public class PropertyService implements IPropertyService {
             }
         } else {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PROXYNOTACTIVE);
-            res.setDescription(res.getDescription().replace("%ROBOT%", tCExecution.getRobot()));
-            res.setDescription(res.getDescription().replace("%EXECUTOR%", tCExecution.getRobotExecutor()));
+            res.setDescription(res.getDescription().replace("%ROBOT%", execution.getRobot()));
+            res.setDescription(res.getDescription().replace("%EXECUTOR%", execution.getRobotExecutor()));
             testCaseExecutionData.setPropertyResultMessage(res);
 
         }
@@ -1493,14 +1493,14 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, boolean forceRecalculation) {
+    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, boolean forceRecalculation) {
         String jsonResponse = "";
         try {
             /**
              * If tCExecution LastServiceCalled exist, get the response;
              */
-            if (null != tCExecution.getLastServiceCalled()) {
-                jsonResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+            if (null != execution.getLastServiceCalled()) {
+                jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
             }
 
             if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
@@ -1536,7 +1536,7 @@ public class PropertyService implements IPropertyService {
             }
 
             //Record result in filessytem.
-            recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse);
+            recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
             String valueFromJson = this.jsonService.getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
 
@@ -1569,7 +1569,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution,
+    private TestCaseExecutionData property_getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution,
             TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
 
         MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
@@ -1580,8 +1580,8 @@ public class PropertyService implements IPropertyService {
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
-                tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry());
+                execution.getApplicationObj().getSystem(), execution.getEnvironmentData(),
+                execution.getCountry());
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = answer.getItem();
@@ -1592,7 +1592,7 @@ public class PropertyService implements IPropertyService {
             try {
                 if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
-                    answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), tCExecution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), execution, testCaseStepActionExecution, false);
                     String decodedScript = answerDecode.getItem();
                     testDataLib.setScript(decodedScript);
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -1611,7 +1611,7 @@ public class PropertyService implements IPropertyService {
 
             // Here, we try to decode testCaseCountryProperty field `length` to get the value of property if needed
             try {
-                answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), tCExecution, testCaseStepActionExecution, false);
+                answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), execution, testCaseStepActionExecution, false);
                 decodedLength = answerDecode.getItem();
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "length"));
@@ -1643,7 +1643,7 @@ public class PropertyService implements IPropertyService {
             }
 
             // We calculate here the result for the lib
-            serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, tCExecution, testCaseExecutionData);
+            serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, execution, testCaseExecutionData);
             testCaseExecutionData.setDataLib(testDataLib.getName());
 
             res = serviceAnswer.getResultMessage();
@@ -1673,11 +1673,12 @@ public class PropertyService implements IPropertyService {
                 }
 
                 //Record result in filessytem.
-                recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
+                testCaseExecutionData.addFileList(recorderService.recordTestDataLibProperty(execution.getId(), testCaseCountryProperty.getProperty(), 1, result, execution.getSecrets()));
 
             }
 
-            res.setDescription(res.getDescription().replace("%ENTRY%", testDataLib.getName()).replace("%ENTRYID%", String.valueOf(testDataLib.getTestDataLibID())));
+            res.resolveDescription("ENTRY", testDataLib.getName());
+            res.resolveDescription("ENTRYID", String.valueOf(testDataLib.getTestDataLibID()));
 
         } else {//no TestDataLib found was returned
             //the library does not exist at all
@@ -1686,9 +1687,9 @@ public class PropertyService implements IPropertyService {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()).
-                        replace("%COUNTRY%", tCExecution.getCountryEnvironmentParameters().getCountry()).
-                        replace("%ENVIRONMENT%", tCExecution.getCountryEnvironmentParameters().getEnvironment()).
-                        replace("%SYSTEM%", tCExecution.getCountryEnvironmentParameters().getSystem()));
+                        replace("%COUNTRY%", execution.getCountryEnvironmentParameters().getCountry()).
+                        replace("%ENVIRONMENT%", execution.getCountryEnvironmentParameters().getEnvironment()).
+                        replace("%SYSTEM%", execution.getCountryEnvironmentParameters().getSystem()));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_EXIST_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()));

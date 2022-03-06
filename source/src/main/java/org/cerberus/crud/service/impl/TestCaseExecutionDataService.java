@@ -112,8 +112,8 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public void create(TestCaseExecutionData object) throws CerberusException {
-        testCaseExecutionDataDao.create(object);
+    public void create(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException {
+        testCaseExecutionDataDao.create(object, secrets);
     }
 
     @Override
@@ -122,8 +122,8 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public void update(TestCaseExecutionData object) throws CerberusException {
-        testCaseExecutionDataDao.update(object);
+    public void update(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException {
+        testCaseExecutionDataDao.update(object, secrets);
     }
 
     @Override
@@ -154,25 +154,25 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public void save(TestCaseExecutionData object) throws CerberusException {
+    public void save(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException {
         if (this.exist(object.getId(), object.getProperty(), object.getIndex())) {
-            update(object);
+            update(object, secrets);
         } else {
-            create(object);
+            create(object, secrets);
         }
     }
 
     @Override
-    public void loadTestCaseExecutionDataFromDependencies(final TestCaseExecution testCaseExecution) throws CerberusException {
+    public void loadTestCaseExecutionDataFromDependencies(final TestCaseExecution execution) throws CerberusException {
 
         // We get the full list of ExecutionData from dependencies.
-        List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCaseExecutionDataFromDependencies(testCaseExecution);
+        List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCaseExecutionDataFromDependencies(execution);
 
         // We then dedup it per property name.
         TreeMap<String, TestCaseExecutionData> newExeDataMap = new TreeMap<>();
         for (TestCaseExecutionData data : testCaseExecutionData) {
             data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY).resolveDescription("EXEID", String.valueOf(data.getId())));
-            data.setId(testCaseExecution.getId());
+            data.setId(execution.getId());
             if (!StringUtil.isNullOrEmpty(data.getJsonResult())) {
                 try {
                     JSONArray array = new JSONArray(data.getJsonResult());
@@ -198,11 +198,11 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
         }
 
         // And finally set the dedup result to execution object and also record all results to database.
-        testCaseExecution.setTestCaseExecutionDataMap(newExeDataMap);
+        execution.setTestCaseExecutionDataMap(newExeDataMap);
         for (Map.Entry<String, TestCaseExecutionData> entry : newExeDataMap.entrySet()) {
             String key = entry.getKey();
             TestCaseExecutionData value = entry.getValue();
-            testCaseExecutionDataDao.create(value);
+            testCaseExecutionDataDao.create(value, execution.getSecrets());
         }
 
     }

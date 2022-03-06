@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -39,14 +40,16 @@ public interface ITestCaseStepActionControlExecutionDAO {
     /**
      *
      * @param testCaseStepActionControlExecution
+     * @param secrets
      */
-    void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+    void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution, HashMap<String, String> secrets);
 
     /**
      *
      * @param testCaseStepActionControlExecution
+     * @param secrets
      */
-    void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+    void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution, HashMap<String, String> secrets);
 
     /**
      *

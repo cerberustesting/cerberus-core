@@ -67,6 +67,8 @@ public class UpdateTestCaseExecution extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.json.JSONException
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, JSONException, CerberusException {
 
@@ -178,7 +180,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             //create this testCaseStepExecution and update the bdd with it
             TestCaseStepExecution currentTestCaseStepExecution = createTestCaseStepExecution(id, test, testCase, stepId, index, sort, loop, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, returnMessage, description);
             ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
-            testCaseStepExecutionService.updateTestCaseStepExecution(currentTestCaseStepExecution);
+            testCaseStepExecutionService.updateTestCaseStepExecution(currentTestCaseStepExecution, null);
             //update action list belonging to the current Step
             updateTestCaseStepActionFromJsonArray(currentStep.getJSONArray("actionArr"), appContext);
         }
@@ -240,7 +242,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, stepId, index, sequence, sort, returnCode, returnMessage, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, action, value1Init, value2Init, value3Init, value1, value2, value3, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
             ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
 
-            testCaseStepActionExecutionService.updateTestCaseStepActionExecution(currentTestCaseStepActionExecution);
+            testCaseStepActionExecutionService.updateTestCaseStepActionExecution(currentTestCaseStepActionExecution, null);
             //update the control list belonging to the current Action
             updateTestCaseStepActionControlExecutionFromJsonArray(currentAction.getJSONArray("controlArr"), appContext);
 
@@ -301,7 +303,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             TestCaseStepActionControlExecution currentTestCaseStepActionControlExecution = createTestCaseStepActionControlExecution(id, test, testCase, stepId, index, sequence, controlSequence, sort, returnCode, returnMessage, conditionOperator, conditionVal1Init, conditionVal2Init, conditionVal3Init, conditionVal1, conditionVal2, conditionVal3, control, value1Init, value2Init, value3Init, value1, value2, value3, fatal, start, end, fullStart, fullEnd, description, null, null);
             ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
 
-            testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(currentTestCaseStepActionControlExecution);
+            testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(currentTestCaseStepActionControlExecution, null);
         }
     }
 

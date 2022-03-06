@@ -421,7 +421,7 @@
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="conditionVal2TC">conditionVal2TC</label>
-                                        <input type="text" class="form-control" id="conditionVal1TC" readonly>
+                                        <input type="text" class="form-control" id="conditionVal2TC" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">

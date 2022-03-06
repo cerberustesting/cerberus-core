@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,9 +127,10 @@ public interface ITestCaseExecutionDataService {
     /**
      *
      * @param object
+     * @param secrets
      * @throws org.cerberus.exception.CerberusException
      */
-    void create(TestCaseExecutionData object) throws CerberusException;
+    void create(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException;
 
     /**
      *
@@ -140,9 +142,10 @@ public interface ITestCaseExecutionDataService {
     /**
      *
      * @param object
+     * @param secrets
      * @throws org.cerberus.exception.CerberusException
      */
-    public void update(TestCaseExecutionData object) throws CerberusException;
+    public void update(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException;
 
     /**
      *
@@ -170,9 +173,10 @@ public interface ITestCaseExecutionDataService {
     /**
      *
      * @param object
+     * @param secrets
      * @throws org.cerberus.exception.CerberusException
      */
-    void save(TestCaseExecutionData object) throws CerberusException;
+    void save(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException;
 
     /**
      * Load All ExecutionData of testcases that this execution depends

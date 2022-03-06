@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,9 +108,10 @@ public interface ITestCaseExecutionDataDAO {
     /**
      *
      * @param object
+     * @param secrets
      * @throws org.cerberus.exception.CerberusException
      */
-    void create(TestCaseExecutionData object) throws CerberusException;
+    void create(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException;
 
     /**
      *
@@ -121,9 +123,10 @@ public interface ITestCaseExecutionDataDAO {
     /**
      *
      * @param object
+     * @param secrets
      * @throws org.cerberus.exception.CerberusException
      */
-    void update(TestCaseExecutionData object) throws CerberusException;
+    void update(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException;
 
     /**
      *

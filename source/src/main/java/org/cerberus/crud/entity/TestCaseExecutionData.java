@@ -411,7 +411,7 @@ public class TestCaseExecutionData {
      * @param secrets
      * @return TestCaseExecutionData in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds, boolean withParents, List<String> secrets) {
+    public JSONObject toJson(boolean withChilds, boolean withParents, HashMap<String, String> secrets) {
         JSONObject result = new JSONObject();
         // Check if both parameter are not set to true
         if (withChilds == true && withParents == true) {

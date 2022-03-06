@@ -21,6 +21,7 @@ package org.cerberus.crud.entity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
@@ -451,7 +452,7 @@ public class TestCaseStepActionExecution {
      * @param secrets
      * @return TestCaseStepActionExecution in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds, boolean withParents, List<String> secrets) {
+    public JSONObject toJson(boolean withChilds, boolean withParents, HashMap<String, String> secrets) {
         JSONObject result = new JSONObject();
         // Check if both parameter are not set to true
         if (withChilds == true && withParents == true) {
@@ -485,6 +486,7 @@ public class TestCaseStepActionExecution {
             result.put("end", this.getEnd());
             result.put("startlong", this.getStartLong());
             result.put("endlong", this.getEndLong());
+            
             result.put("description", StringUtil.secureFromSecrets(this.getDescription(), secrets));
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", StringUtil.secureFromSecrets(this.getReturnMessage(), secrets));

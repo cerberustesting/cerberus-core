@@ -101,7 +101,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty,
-            TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
+            TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
         AnswerItem<HashMap<String, String>> resultColumns;
         AnswerList<HashMap<String, String>> resultData;
         AnswerList<HashMap<String, String>> result;
@@ -133,7 +133,7 @@ public class DataLibService implements IDataLibService {
                     String eKey = entry.getKey(); // SubData
                     String eValue = entry.getValue(); // Parsing Answer
                     try {
-                        answerDecode = variableService.decodeStringCompletly(eValue, tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(eValue, execution, null, false);
                         columnList.put(eKey, (String) answerDecode.getItem());
 
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -169,7 +169,7 @@ public class DataLibService implements IDataLibService {
         if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
             rowLimit = nbRowsRequested;
         }
-        resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution, testCaseExecutionData);
+        resultData = getDataObjectList(lib, columnList, rowLimit, execution, testCaseExecutionData);
 
         //Manage error message.
         if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_DATA.getCode()) {
@@ -190,6 +190,7 @@ public class DataLibService implements IDataLibService {
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()));
             result.setResultMessage(msg);
             return result;
+
         } else {
             result = new AnswerList<>();
             result.setDataList(null);
@@ -202,7 +203,7 @@ public class DataLibService implements IDataLibService {
         /**
          * Filter out the result from requested rows depending on the nature
          */
-        result = filterWithNature(testCaseCountryProperty.getNature(), resultData, tCExecution, testCaseCountryProperty, nbRowsRequested);
+        result = filterWithNature(testCaseCountryProperty.getNature(), resultData, execution, testCaseCountryProperty, nbRowsRequested);
 
         //Manage error message.
         if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURE.getCode()) {
@@ -462,10 +463,10 @@ public class DataLibService implements IDataLibService {
     /**
      * Get the list of subData
      *
-     * @param lib
+     * @param dataLib
      * @return
      */
-    private AnswerItem<HashMap<String, String>> getSubDataFromType(TestDataLib lib) {
+    private AnswerItem<HashMap<String, String>> getSubDataFromType(TestDataLib dataLib) {
         AnswerList<TestDataLibData> answerData = new AnswerList<>();
         AnswerItem<HashMap<String, String>> result = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
@@ -473,10 +474,10 @@ public class DataLibService implements IDataLibService {
         List<TestDataLibData> objectDataList = new ArrayList<>();
         HashMap<String, String> row = new HashMap<>();
 
-        switch (lib.getType()) {
+        switch (dataLib.getType()) {
 
             case TestDataLib.TYPE_CSV:
-                answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, null, "N");
+                answerData = testDataLibDataService.readByVarious(dataLib.getTestDataLibID(), null, null, "N");
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
                     objectDataList = answerData.getDataList();
                     boolean missingKey = true;
@@ -509,7 +510,7 @@ public class DataLibService implements IDataLibService {
                 break;
 
             case TestDataLib.TYPE_SQL:
-                answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), "N", null, null);
+                answerData = testDataLibDataService.readByVarious(dataLib.getTestDataLibID(), "N", null, null);
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
                     objectDataList = answerData.getDataList();
                     boolean missingKey = true;
@@ -542,7 +543,7 @@ public class DataLibService implements IDataLibService {
                 break;
 
             case TestDataLib.TYPE_SERVICE:
-                answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, "N", null);
+                answerData = testDataLibDataService.readByVarious(dataLib.getTestDataLibID(), null, "N", null);
 
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
 
@@ -593,14 +594,14 @@ public class DataLibService implements IDataLibService {
      * @param columnList
      * @return
      */
-    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit, TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
+    private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit, TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         AnswerList<HashMap<String, String>> responseList;
-        String system = tCExecution.getApplicationObj().getSystem();
-        String country = tCExecution.getCountry();
-        String environment = tCExecution.getEnvironment();
+        String system = execution.getApplicationObj().getSystem();
+        String country = execution.getCountry();
+        String environment = execution.getEnvironment();
         Pattern pattern;
         Matcher matcher;
         Parameter p;
@@ -794,7 +795,7 @@ public class DataLibService implements IDataLibService {
                 LOG.debug("Service Path : " + lib.getServicePath());
 
                 // Service Call is made here.
-                AnswerItem ai = serviceService.callService(lib.getService(), null, null, lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), tCExecution);
+                AnswerItem ai = serviceService.callService(lib.getService(), null, null, lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), execution);
 
                 msg = ai.getResultMessage();
 
@@ -805,7 +806,7 @@ public class DataLibService implements IDataLibService {
 
                     //Record result in filessytem.
 //                testCaseExecutionData.addFileList(recorderService.recordServiceCall(tCExecution, null, 0, testCaseExecutionData.getProperty(), appService));
-                    recorderService.recordServiceCall(tCExecution, null, 0, testCaseExecutionData.getProperty(), appService);
+                    recorderService.recordServiceCall(execution, null, 0, testCaseExecutionData.getProperty(), appService);
 
                     // Call successful so we can start to parse the result and build RawData per columns from subdata entries.
                     /**
@@ -1047,7 +1048,7 @@ public class DataLibService implements IDataLibService {
                 break;
 
             case TestDataLib.TYPE_INTERNAL:
-                result = testDataLibService.readINTERNALWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system);
+                result = testDataLibService.readINTERNALWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system, execution);
                 //if the sql service returns a success message then we can process it
                 if ((result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !result.getDataList().isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_INTERNAL);

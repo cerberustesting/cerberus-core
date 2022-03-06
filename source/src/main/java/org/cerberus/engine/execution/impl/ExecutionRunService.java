@@ -605,7 +605,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 stepExecution.setLoop(step.getLoop());
                                 stepExecution.setConditionOptions(step.getConditionOptionsActive());
 
-                                testCaseStepExecutionService.insertTestCaseStepExecution(stepExecution);
+                                testCaseStepExecutionService.insertTestCaseStepExecution(stepExecution, execution.getSecrets());
                                 stepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
                                 /**
@@ -824,7 +824,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         stepExecution.setDescription(stepExecution.getDescription() + " - " + conditionAnswer.getMessageDescription());
                                     }
 
-                                    testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution);
+                                    testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution, execution.getSecrets());
 
                                     if (stepExecution.isStopExecution()) {
                                         break;
@@ -847,14 +847,14 @@ public class ExecutionRunService implements IExecutionRunService {
                                     );
 
                                     stepExecution.setEnd(new Date().getTime());
-                                    this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution);
+                                    this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution, execution.getSecrets());
                                     LOG.debug(logPrefix + "Registered Step");
 
                                 } else {
                                     // Not executed because decode error or failed condition.
                                     stepExecution.setEnd(new Date().getTime());
                                     stepExecution.setStopExecution(true);
-                                    this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution);
+                                    this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution, execution.getSecrets());
                                     LOG.debug(logPrefix + "Registered Step");
                                 }
 
@@ -1133,7 +1133,7 @@ public class ExecutionRunService implements IExecutionRunService {
             actionExecution.setOptions(testCaseStepAction.getOptionsActive());
             actionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
 
-            this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(actionExecution);
+            this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(actionExecution, execution.getSecrets());
 
             /**
              * We populate the TestCase Action List
@@ -1262,7 +1262,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         );
 
                         actionExecution.setEnd(new Date().getTime());
-                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
+                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
                         LOG.debug("Registered Action");
 
                     }
@@ -1298,7 +1298,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     actionExecution.setEnd(new Date().getTime());
 
-                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
+                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
                     LOG.debug("Action interupted due to condition error.");
                     // We stop any further Action execution.
                     if (actionExecution.isStopExecution()) {
@@ -1311,7 +1311,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 stepExecution.setExecutionResultMessage(actionExecution.getExecutionResultMessage());
                 stepExecution.setStepResultMessage(actionExecution.getActionResultMessage());
                 stepExecution.setStopExecution(actionExecution.isStopExecution());
-                this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
+                this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
                 LOG.debug("Registered Action");
                 if (actionExecution.isStopExecution()) {
                     break;
@@ -1329,7 +1329,7 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         stepExecution.setEnd(new Date().getTime());
 
-        this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution);
+        this.testCaseStepExecutionService.updateTestCaseStepExecution(stepExecution, execution.getSecrets());
 
         updateExecutionWebSocketOnly(execution, false);
 
@@ -1370,7 +1370,7 @@ public class ExecutionRunService implements IExecutionRunService {
          */
         LOG.debug("Registering Action : " + actionExecution.getAction());
 
-        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution);
+        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(actionExecution, execution.getSecrets());
         LOG.debug("Registered Action");
 
         if (actionExecution.isStopExecution()) {
@@ -1417,7 +1417,7 @@ public class ExecutionRunService implements IExecutionRunService {
             controlExecution.setConditionOptions(control.getConditionOptionsActive());
             controlExecution.setOptions(control.getOptionsActive());
 
-            this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution);
+            this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
 
             LOG.debug("Executing control : " + controlExecution.getControlId() + " type : " + controlExecution.getControl());
 
@@ -1555,7 +1555,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         );
 
                         controlExecution.setEnd(new Date().getTime());
-                        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
+                        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
                         LOG.debug("Registered Control");
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -1584,7 +1584,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     controlExecution.setEnd(new Date().getTime());
 
-                    this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
+                    this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
                     LOG.debug("Control interupted due to condition error.");
                     // We stop any further Control execution.
                     break;
@@ -1594,7 +1594,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 controlExecution.setEnd(new Date().getTime());
                 actionExecution.setExecutionResultMessage(controlExecution.getExecutionResultMessage());
                 actionExecution.setActionResultMessage(controlExecution.getControlResultMessage());
-                this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
+                this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
                 LOG.debug("Registered Control");
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -1657,7 +1657,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Register Control in database
          */
         LOG.debug("Registering Control : " + controlExecution.getControlId());
-        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution);
+        this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
         LOG.debug("Registered Control");
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.

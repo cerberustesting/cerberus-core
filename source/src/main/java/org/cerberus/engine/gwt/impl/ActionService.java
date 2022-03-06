@@ -1601,6 +1601,7 @@ public class ActionService implements IActionService {
                             tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "", "N");
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
+
                     // Property message goes to Action message.
                     message = tcExeData.getPropertyResultMessage();
                     if (message.getCodeString().equals("OK")) {
@@ -1621,7 +1622,7 @@ public class ActionService implements IActionService {
                     }
                     //saves the result
                     try {
-                        testCaseExecutionDataService.save(tcExeData);
+                        testCaseExecutionDataService.save(tcExeData, tCExecution.getSecrets());
                         LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + tcExeData.getIndex() + "' Value : '" + tcExeData.getValue() + "'");
                         tCExecution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
                         if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
@@ -1630,7 +1631,7 @@ public class ActionService implements IActionService {
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                         tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
                                         tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", "", "N");
-                                testCaseExecutionDataService.save(tcedS);
+                                testCaseExecutionDataService.save(tcedS, tCExecution.getSecrets());
                             }
                         }
                     } catch (CerberusException cex) {

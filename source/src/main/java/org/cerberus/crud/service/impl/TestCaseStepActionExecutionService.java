@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -59,14 +60,14 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionExecutionService.class);
 
     @Override
-    public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
-        this.testCaseStepActionExecutionDao.insertTestCaseStepActionExecution(testCaseStepActionExecution);
+    public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution, HashMap<String, String> secrets) {
+        this.testCaseStepActionExecutionDao.insertTestCaseStepActionExecution(testCaseStepActionExecution, secrets);
 
     }
 
     @Override
-    public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
-        this.testCaseStepActionExecutionDao.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+    public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution, HashMap<String, String> secrets) {
+        this.testCaseStepActionExecutionDao.updateTestCaseStepActionExecution(testCaseStepActionExecution, secrets);
     }
 
     @Override

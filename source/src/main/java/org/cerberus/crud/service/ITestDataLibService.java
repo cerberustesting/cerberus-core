@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -125,9 +126,10 @@ public interface ITestDataLibService {
      * @param rowLimit max number of row to be taken
      * @param system context system in order to get the calculation. It is used
      * to get the potencial parameters.
+     * @param execution
      * @return
      */
-    AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system);
+    AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system, TestCaseExecution execution);
 
     /**
      *

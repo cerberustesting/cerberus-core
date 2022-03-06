@@ -21,6 +21,7 @@ package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import org.cerberus.crud.entity.Application;
@@ -136,7 +137,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setUsrModif(usrModif);
         newTce.setDateModif(dateModif);
         newTce.setNetworkTrafficIndexList(new ArrayList<>());
-        newTce.setSecrets(new ArrayList<>());
+        newTce.setSecrets(new HashMap<>());
 
         return newTce;
     }
