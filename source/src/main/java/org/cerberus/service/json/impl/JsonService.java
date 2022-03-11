@@ -38,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author bcivel
@@ -210,7 +211,22 @@ public class JsonService implements IJsonService {
         String jsonPath = checkJsonPathFormat(attributeToFind);
 
         LOG.debug("JSON PATH : " + jsonPath);
-        try {
+
+        if (JsonPath.read(document, jsonPath) instanceof List) {
+            List<Object> jsonSearchedElements = JsonPath.read(document, jsonPath);
+            LOG.debug("jsonSearchedElements " + jsonSearchedElements.stream().collect(Collectors.toList()));
+            return jsonSearchedElements
+                    .stream()
+                    .map(this::switchCorrectObject)
+                    .collect(Collectors.toList());
+        } else {
+            Object o = JsonPath.read(document, jsonPath);
+            LOG.debug("OBJECT " + o.toString());
+            List<String> listToReturn = new ArrayList<>();
+            listToReturn.add(this.switchCorrectObject(o));
+            return listToReturn;
+        }
+        /*try {
             //Maybe it is a List of string.
             LOG.debug("JSON PATH trying ListOfObject : " + jsonPath);
             List<Object> toto = JsonPath.read(document, jsonPath);
@@ -268,7 +284,7 @@ public class JsonService implements IJsonService {
                     }
                 }
             }
-        }
+        }*/
 
     }
 
@@ -289,74 +305,28 @@ public class JsonService implements IJsonService {
     }
 
     private String switchCorrectObject(Object value) {
-        switch (value.getClass().getSimpleName()) {
-            case "String":
-                LOG.debug("object string");
-                return String.valueOf(value);
-            case "Integer":
-                LOG.debug("object integer");
-                return String.valueOf(((int) value));
-            case "Boolean":
-                LOG.debug("object boolean");
-                return ((Boolean) value).toString();
-            case "JSONArray":
-                LOG.debug("object jsonarray");
-                return ((JSONArray) value).toString(JSONStyle.LT_COMPRESS);
-            case "Double":
-                LOG.debug("object double");
-                return String.valueOf((double) value);
-            default:
-                LOG.debug("object other type");
-                try {
-                    return value.toString();
-                } catch (Exception e) {
-                    return DEFAULT_GET_FROM_JSON_VALUE;
-                }
-
-        }
-    }
-
-    private List<String> switchCorrectObjectList(Object value) {
-        List<String> result = new ArrayList<>();
-        LOG.debug("VALUE : " + value.getClass().getSimpleName());
-        if (value.getClass().getSimpleName().equals("ArrayList")) {
-            try {
-                switch (((ArrayList) value).get(0).getClass().getSimpleName()) {
-                    case "Integer": //List of integer
-                        List<Integer> integer = (ArrayList) value;
-                        for (Integer inte : integer) {
-                            result.add(String.valueOf(inte));
-                        }
-                        return result;
-                    default: //List of object
-                        List<Object> objects = (ArrayList) value;
-                        for (Object obj : objects) {
-                            result.add(String.valueOf(obj));
-                        }
-                        return result;
-                }
-            } catch (IndexOutOfBoundsException exception) {
-                return new ArrayList<>();
-            }
+        if (value instanceof String) {
+            LOG.debug("object string");
+            return value.toString();
+        } else if (value instanceof Integer) {
+            LOG.debug("object integer");
+            return ((Integer) value).toString();
+        } else if (value instanceof Boolean) {
+            LOG.debug("object boolean");
+            return ((Boolean) value).toString();
+        } else if (value instanceof JSONArray) {
+            LOG.debug("object jsonarray");
+            return ((JSONArray) value).toString(JSONStyle.LT_COMPRESS);
+        } else if (value instanceof Double) {
+            LOG.debug("object double");
+            return ((Double) value).toString();
         } else {
-            //List<String> result = new ArrayList<>();
-            switch (value.getClass().getSimpleName()) {
-                case "String":
-                    result.add(value.toString());
-                    return result;
-                case "Integer":
-                    result.add(String.valueOf(((int) value)));
-                    return result;
-                case "Boolean":
-                    result.add(((Boolean) value).toString());
-                    return result;
+            LOG.debug("object other type");
+            try {
+                return value.toString();
+            } catch (Exception e) {
+                return DEFAULT_GET_FROM_JSON_VALUE;
             }
         }
-        return result;
-        //if value = list
-        //if value != list
-
-
-        //return null;
     }
 }
