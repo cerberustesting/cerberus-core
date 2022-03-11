@@ -96,6 +96,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETRAWFROMXML = "getRawFromXml";
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
     public static final String TYPE_GETFROMJSON = "getFromJson";
+    public static final String TYPE_GETRAWFROMJSON = "getRawFromJson";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
     public static final String TYPE_GETFROMCOMMAND = "getFromCommand";
     public static final String TYPE_GETELEMENTPOSITION = "getElementPosition";

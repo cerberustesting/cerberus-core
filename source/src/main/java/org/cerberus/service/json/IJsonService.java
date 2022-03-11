@@ -19,33 +19,41 @@
  */
 package org.cerberus.service.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jayway.jsonpath.InvalidPathException;
+
+import java.net.MalformedURLException;
 import java.util.List;
 
 /**
- *
  * @author bcivel
  */
 public interface IJsonService {
 
     /**
-     *
      * @param url
      * @return
      */
-    String callUrlAndGetJsonResponse(String url);
+    String callUrlAndGetJsonResponse(String url) throws MalformedURLException;
 
     /**
-     *
      * @param jsonMessage
      * @param url
      * @param attribute
      * @return
      * @throws java.lang.Exception
      */
-    String getFromJson(String jsonMessage, String url, String attribute) throws Exception;
+    String getFromJson(String jsonMessage, String url, String attribute) throws InvalidPathException;
 
     /**
-     *
+     * @param jsonMessage
+     * @param attribute
+     * @return
+     * @throws Exception
+     */
+    String getRawFromJson(String jsonMessage, String attribute) throws JsonProcessingException;
+
+    /**
      * @param jsonMessage
      * @param attribute
      * @return
@@ -54,7 +62,6 @@ public interface IJsonService {
     List<String> getFromJson(String jsonMessage, String attribute) throws Exception;
 
     /**
-     *
      * @param jsonMessage
      * @param filterPath
      * @return

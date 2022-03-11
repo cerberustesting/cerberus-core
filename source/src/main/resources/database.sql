@@ -6060,3 +6060,6 @@ INSERT INTO user (login, name, email, team, language, attribute01, attribute02, 
 
 -- 1698
 ALTER TABLE `applicationobject` CHANGE COLUMN `Value` `Value` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1699
+INSERT INTO invariant (idname, value, sort, description, VeryShortDesc) VALUES('PROPERTYTYPE', 'getRawFromJson', 72, 'Get element in standard JSON format', 'Get raw JSON element');
