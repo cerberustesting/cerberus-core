@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.file.IFileService;
@@ -47,7 +48,8 @@ public class FileService implements IFileService {
     private static final Logger LOG = LogManager.getLogger(FileService.class);
 
     @Override
-    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
+    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution) {
+        LOG.debug("Columns to hide : " + columnsToHide);
         String str = "";
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
         List<HashMap<String, String>> csv = new ArrayList<>();
@@ -83,13 +85,16 @@ public class FileService implements IFileService {
                  * result object if it has been defined in subdata
                  */
                 for (String element : str.split(separator)) {
-
                     // Looping against all subdata to get any column that match the current element position.
                     for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
                         String columnPos = entry.getValue();
                         String subDataName = entry.getKey();
                         if (columnPos.equals(String.valueOf(columnPosition))) { // If columns defined from subdata match the column number, we add the value here.
                             line.put(subDataName, element);
+                            // If column is on the columns to hide we add it to the secret list
+                            if (columnsToHide.contains(subDataName)) {
+                                execution.appendSecret(element);
+                            }
                             noDataMapped = false;
                         }
                     }

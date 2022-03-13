@@ -305,6 +305,9 @@ public final class StringUtil {
         if (secrets == null) {
             return text;
         }
+        if (isNullOrEmpty(text)) {
+            return text;
+        }
         for (Map.Entry<String, String> entry : secrets.entrySet()) {
             /**
              * Secrets with less than 3 Characters are not really secrets. We

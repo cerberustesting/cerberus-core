@@ -93,7 +93,7 @@ public class PropertyService implements IPropertyService {
 
     private static final Logger LOG = LogManager.getLogger(PropertyService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
-    private static final String VALUE_NULL = "<NULL>";
+    public static final String VALUE_NULL = "<NULL>";
 
     @Autowired
     private IWebDriverService webdriverService;
@@ -786,6 +786,9 @@ public class PropertyService implements IPropertyService {
                     }
                     execution_count++;
 
+                    // Adding secrets if property looks like a password
+                    addPropertyASecret(testCaseExecutionData, execution);
+
                 }
 
                 if (execution_count >= 2) { // If there were at least 1 retry, we notify it in the result message.
@@ -840,6 +843,10 @@ public class PropertyService implements IPropertyService {
                         LOG.error(ex, ex);
                     }
                     testCaseExecutionData.setDataLibRawData(result);
+
+                    // Adding secrets if property looks like a password
+                    addPropertyASecret(testCaseExecutionData, execution);
+
                     //Record result in filessytem.
                     recorderService.recordTestDataLibProperty(execution.getId(), testCaseCountryProperty.getProperty(), 1, result, execution.getSecrets());
 
@@ -859,6 +866,12 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
         }
 
+    }
+
+    private void addPropertyASecret(TestCaseExecutionData executionData, TestCaseExecution execution) {
+        if (executionData.getProperty().contains("PASSW")) {
+            execution.appendSecret(executionData.getValue());
+        }
     }
 
     private TestCaseExecutionData property_getFromCommand(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {

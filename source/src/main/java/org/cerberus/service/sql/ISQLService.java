@@ -85,8 +85,10 @@ public interface ISQLService {
      * @param defaultTimeOut
      * @param system
      * @param columnsToGet
+     * @param columnsToHide
+     * @param execution
      * @return
      */
-    AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet);
+    AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution);
 
 }

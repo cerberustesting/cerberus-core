@@ -50,6 +50,7 @@ import org.cerberus.service.file.IFileService;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
@@ -166,7 +167,7 @@ public class DataLibService implements IDataLibService {
          * per row with key = column and value = content
          */
         int rowLimit = testCaseCountryProperty.getRowLimit();
-        if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
+        if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to get more than requested record.
             rowLimit = nbRowsRequested;
         }
         resultData = getDataObjectList(lib, columnList, rowLimit, execution, testCaseExecutionData);
@@ -588,6 +589,27 @@ public class DataLibService implements IDataLibService {
     }
 
     /**
+     * Get list of subdata that are secrets.
+     */
+    private List<String> getListOfSecrets(Integer dataLibId) {
+        AnswerList<TestDataLibData> answerData = new AnswerList<>();
+        List<TestDataLibData> objectDataList = new ArrayList<>();
+        List<String> result = new ArrayList<>();
+
+        answerData = testDataLibDataService.readByVarious(dataLibId, null, null, null);
+        if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
+            objectDataList = answerData.getDataList();
+            for (TestDataLibData tdld : objectDataList) {
+                if (ParameterParserUtil.parseBooleanParam(tdld.getEncrypt(), false)) {
+                    result.add(tdld.getSubData());
+                }
+            }
+        }
+        LOG.debug("List of Subdata that needs to be hidden : " + result);
+        return result;
+    }
+
+    /**
      * Get the dataObject List depending on the type
      *
      * @param lib
@@ -607,6 +629,7 @@ public class DataLibService implements IDataLibService {
         Parameter p;
 
         List<HashMap<String, String>> list;
+        List<String> columnsToHide = new ArrayList<>();
 
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
@@ -689,8 +712,11 @@ public class DataLibService implements IDataLibService {
                     servicePathCsv = csv_path + servicePathCsv;
                 }
 
+                // Get list of columns to hide.
+                columnsToHide = getListOfSecrets(lib.getTestDataLibID());
+
                 // CSV Call is made here.
-                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList);
+                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, execution);
                 list = responseList.getDataList();
 
                 //if the query returns sucess then we can get the data
@@ -735,11 +761,16 @@ public class DataLibService implements IDataLibService {
 
                             if (!(StringUtil.isNullOrEmpty(connectionName))) {
 
-                                Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
-                                //performs a query that returns several rows containing n columns
-                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList);
+                                // Get list of columns to hide.
+                                columnsToHide = getListOfSecrets(lib.getTestDataLibID());
+                                LOG.debug("To hide : " + columnsToHide);
 
-                                //if the query returns sucess then we can get the data
+                                Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
+
+                                //performs a query that returns several rows containing n columns
+                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList, columnsToHide, execution);
+
+                                //if the query returns sucess then, we can get the data
                                 if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
 
                                     list = responseList.getDataList();
@@ -794,6 +825,9 @@ public class DataLibService implements IDataLibService {
                 String servicePath = lib.getServicePath();
                 LOG.debug("Service Path : " + lib.getServicePath());
 
+                // Get list of columns to hide.
+                columnsToHide = getListOfSecrets(lib.getTestDataLibID());
+
                 // Service Call is made here.
                 AnswerItem ai = serviceService.callService(lib.getService(), null, null, lib.getDatabaseUrl(), lib.getEnvelope(), lib.getServicePath(), lib.getMethod(), execution);
 
@@ -803,10 +837,6 @@ public class DataLibService implements IDataLibService {
                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
 
                     appService = (AppService) ai.getItem();
-
-                    //Record result in filessytem.
-//                testCaseExecutionData.addFileList(recorderService.recordServiceCall(tCExecution, null, 0, testCaseExecutionData.getProperty(), appService));
-                    recorderService.recordServiceCall(execution, null, 0, testCaseExecutionData.getProperty(), appService);
 
                     // Call successful so we can start to parse the result and build RawData per columns from subdata entries.
                     /**
@@ -876,6 +906,10 @@ public class DataLibService implements IDataLibService {
                                                 }
                                             }
 
+                                            // If column is on the columns to hide we add it to the secret list
+                                            if (columnsToHide.contains(subDataColumnToTreat)) {
+                                                execution.appendSecrets(listTemp1);
+                                            }
                                             // Add the Subdata with associated list in the HashMap.
                                             hashTemp1.put(subDataColumnToTreat, listTemp1);
 
@@ -963,6 +997,11 @@ public class DataLibService implements IDataLibService {
 
                                         if (listTemp1.size() > 0) {
 
+                                            // If column is on the columns to hide we add it to the secret list
+                                            if (columnsToHide.contains(subDataColumnToTreat)) {
+                                                execution.appendSecrets(listTemp1);
+                                            }
+
                                             // Add the Subdata with associated list in the HashMap.
                                             hashTemp1.put(subDataColumnToTreat, listTemp1);
 
@@ -1033,6 +1072,9 @@ public class DataLibService implements IDataLibService {
                         }
 
                     }
+
+                    //Record result in filessytem.
+                    execution.addFileList(recorderService.recordServiceCall(execution, null, 0, testCaseExecutionData.getProperty(), appService));
 
                 } else {
                     String soapError = msg.getDescription();

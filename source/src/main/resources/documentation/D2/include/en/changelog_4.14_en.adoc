@@ -5,12 +5,13 @@
 * Fixed issue when updating application object value from Test Case Script page.
 * Fixed display of elapsed duration on "Testcase execution detail" page in websocket mode (autorefresh during execution) #2359
 * Fixed delete label on campaign definition #2360
+* Page Source and Screenshots are now taken on failed action even if it is forced to continue.
 
 *Improvements / New features*
 [square]
 * User refactor adding possibility to create local user even when Keycloak is activated (in order to support service account with APIKey). That allow to create as many APIKey as needed.
 * User can have 5 attributes and a comment field for specific needs.
-* Page Source and Screenshots are now taken on failed action even if it is forced to continue.
+* Secrets managements. All subdata flagged as encrypted, will be hidden from execution results. All Properties name that contain PASSW will also automatically have its content hidden from execution reports.
 * On GUI application, if sikuli extension is available (hybrid mode), desktop screenshots are also taken (on top of current web screenshot)
 * When defining an element based on picture (using sikuli feature), all pictures are now saved at execution level. That makes execution analysis easier by better understanding which picture Cerberus used.
 * Total execution duration is now displayed on top of the page.

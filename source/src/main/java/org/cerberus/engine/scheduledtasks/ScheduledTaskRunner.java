@@ -57,7 +57,7 @@ public class ScheduledTaskRunner {
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {
         LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
-
+        
         // We get the new period from parameter and trigger the Queue automatic cancellation job.
         b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 60);
         b2TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueueprocessingjob_period", "", 30);

@@ -271,6 +271,12 @@ public class TestCaseExecution {
         this.secrets.put(secret, "");
     }
 
+    public void appendSecrets(List<String> secrets) {
+        secrets.forEach(secret -> {
+            this.secrets.put(secret, "");
+        });
+    }
+
     public TestCaseExecutionHttpStat getHttpStat() {
         return httpStat;
     }
@@ -1177,7 +1183,7 @@ public class TestCaseExecution {
             result.put("application", this.getApplication());
             result.put("robot", this.getRobot());
             result.put("robotExecutor", this.getRobotExecutor());
-            result.put("robotHost", this.getRobotHost());
+            result.put("robotHost", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));
             result.put("robotPort", this.getRobotPort());
             result.put("url", this.getUrl());
             result.put("tag", this.getTag());
@@ -1355,13 +1361,13 @@ public class TestCaseExecution {
             result.put("end", new Timestamp(this.getEnd()));
             result.put("durationInMs", this.getEnd() - this.getStart());
             result.put("controlStatus", this.getControlStatus());
-            result.put("controlMessage", this.getControlMessage());
+            result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
             result.put("application", this.getApplication());
             JSONObject robotLocal = new JSONObject();
 
             robotLocal.put("name", this.getRobot());
             robotLocal.put("executor", this.getRobotExecutor());
-            robotLocal.put("host", this.getRobotHost());
+            robotLocal.put("host", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));
             robotLocal.put("port", this.getRobotPort());
             robotLocal.put("declination", this.getRobotDecli());
             robotLocal.put("provider", this.getRobotProvider());
