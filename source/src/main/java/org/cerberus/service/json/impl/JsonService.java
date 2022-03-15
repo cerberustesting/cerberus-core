@@ -75,9 +75,9 @@ public class JsonService implements IJsonService {
      * Get element (from attributeToFind) from Json file either from the url
      * called or jsonmessage.
      *
-     * @param jsonMessage
+     * @param jsonMessage     JSON Content
      * @param url             URL of the Json file to parse
-     * @param attributeToFind
+     * @param attributeToFind The path of the searched element
      * @return Value of the element from the Json File or null if the element is
      * not found.
      */
@@ -103,81 +103,24 @@ public class JsonService implements IJsonService {
         //Get the value
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
         String jsonPath = checkJsonPathFormat(attributeToFind);
-        //LOG.debug("JSON PATH : " + jsonPath);
-        //List<Object> objects = new ArrayList<Object>();
-        //LOG.debug("ttttttttttt objects " + objects.getClass().getSimpleName());
-        //List<String> strings = new ArrayList<String>();
-        //strings.add("test");
-        //LOG.debug("ttttttttttt strings " + strings.get(0).getClass().getSimpleName());
-        //LOG.debug("ttttttttttt strings " + strings.getClass().getCanonicalName());
-        //LOG.debug("ttttttttttt strings " + strings.getClass().getTypeName());
-        /*List<Object> test = new ArrayList<>();
-        switchCorrectObjectList(test);*/
 
-        return switchCorrectObject(JsonPath.read(document, jsonPath));
-        /*try {
-            //Maybe it is a string.
-            LOG.debug("JSON PATH trying String : " + jsonPath);
-            Object test = JsonPath.read(json, jsonPath);
-            LOG.debug("ttttttttt " + test.getClass().getSimpleName());
-            String tryString = JsonPath.read(json, jsonPath);
-            LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-            LOG.debug("CLASS with getName: " + tryString.getClass().getSimpleName());
-            return String.valueOf(tryString);
-
-        } catch (Exception exString) {
-            try {
-                //Maybe it is an Integer.
-                LOG.debug("JSON PATH trying Integer : " + jsonPath);
-                LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-                int tryInt = JsonPath.read(document, jsonPath);
-                return String.valueOf(tryInt);
-
-            } catch (Exception exInt) {
-                try {
-                    //Maybe it is a Boolean.
-                    LOG.debug("JSON PATH trying Boolean : " + jsonPath);
-                    LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-                    Boolean tryBoolean = JsonPath.read(document, jsonPath);
-                    return tryBoolean.toString();
-
-                } catch (Exception exBool) {
-                    try {
-                        //Maybe it is a JSONArray.
-                        LOG.debug("JSON PATH trying JSONArray : " + jsonPath);
-                        LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-                        JSONArray tryJSONArray = JsonPath.read(document, jsonPath);
-                        return tryJSONArray.toString(JSONStyle.LT_COMPRESS);
-
-                    } catch (Exception exArray) {
-                        try {
-                            LOG.debug("JSON PATH trying float : " + jsonPath);
-                            LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-                            double tryFloat = JsonPath.read(document, jsonPath);
-                            return String.valueOf(tryFloat);
-                        } catch (Exception exFloat) {
-                            try {
-                                LOG.debug("JSON PATH trying Object : " + jsonPath);
-                                LOG.debug("CLASS : " + JsonPath.read(document, jsonPath).getClass().getSimpleName());
-                                Object tryObject = JsonPath.read(document, jsonPath);
-                                return tryObject.toString();
-                            } catch (Exception exObject) {
-                                return DEFAULT_GET_FROM_JSON_VALUE;
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
-
+        return castObjectAccordingToJson(JsonPath.read(document, jsonPath));
     }
 
+    /**
+     * Get element from a JSON content
+     *
+     * @param jsonMessage     JSON Content
+     * @param attributeToFind The path of the searched element
+     * @return A string according to the standard JSON Format of the searched element (i.e '{ key:"value", key2:"value2" }')
+     * @throws JsonProcessingException Error with Jackson when he tries to write the value
+     */
     @Override
     public String getRawFromJson(String jsonMessage, String attributeToFind) throws JsonProcessingException {
         String jsonPath = checkJsonPathFormat(attributeToFind);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        //Exception PathNotFound throwed by read method when not elements found
+        //Exception InavlidPathException throwed by read method when not elements found
         JsonNode jsonElementsSearched = JsonPath.using(
                         Configuration
                                 .defaultConfiguration()
@@ -190,8 +133,8 @@ public class JsonService implements IJsonService {
     /**
      * Get element (from attributeToFind) from jsonMessage
      *
-     * @param jsonMessage
-     * @param attributeToFind
+     * @param jsonMessage     JSON Content
+     * @param attributeToFind The path of the searched element
      * @return Value of the element from the Json File or null if the element is
      * not found.
      */
@@ -202,90 +145,22 @@ public class JsonService implements IJsonService {
             return null;
         }
 
-//        int resultInt = 0;
-        //Get the Json File in string format
-        String json = jsonMessage;
-
         //Get the value
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonMessage);
         String jsonPath = checkJsonPathFormat(attributeToFind);
 
-        LOG.debug("JSON PATH : " + jsonPath);
-
+        //When JsonPath returns a list
         if (JsonPath.read(document, jsonPath) instanceof List) {
             List<Object> jsonSearchedElements = JsonPath.read(document, jsonPath);
-            LOG.debug("jsonSearchedElements " + jsonSearchedElements.stream().collect(Collectors.toList()));
             return jsonSearchedElements
                     .stream()
-                    .map(this::switchCorrectObject)
+                    .map(this::castObjectAccordingToJson)
                     .collect(Collectors.toList());
         } else {
-            Object o = JsonPath.read(document, jsonPath);
-            LOG.debug("OBJECT " + o.toString());
-            List<String> listToReturn = new ArrayList<>();
-            listToReturn.add(this.switchCorrectObject(o));
-            return listToReturn;
+            List<String> jsonSearchedElements = new ArrayList<>();
+            jsonSearchedElements.add(this.castObjectAccordingToJson(JsonPath.read(document, jsonPath)));
+            return jsonSearchedElements;
         }
-        /*try {
-            //Maybe it is a List of string.
-            LOG.debug("JSON PATH trying ListOfObject : " + jsonPath);
-            List<Object> toto = JsonPath.read(document, jsonPath);
-            List<String> result = new ArrayList<>();
-            for (Object obj : toto) {
-                result.add(String.valueOf(obj));
-            }
-            return result;
-
-        } catch (Exception exString) {
-            LOG.debug("JSON PATH ListOfObject exception.");
-            try {
-                //Maybe it is an Integer.
-                LOG.debug("JSON PATH trying ListOfInteger : " + jsonPath);
-                List<Integer> toto = JsonPath.read(document, jsonPath);
-                List<String> result = new ArrayList<>();
-                for (Integer inte : toto) {
-                    result.add(String.valueOf(inte));
-                }
-                return result;
-
-            } catch (Exception exIntList) {
-                LOG.debug("JSON PATH ListOfInteger Exception.");
-                try {
-                    //Maybe it is an Integer.
-                    LOG.debug("JSON PATH trying String : " + jsonPath);
-                    String toto = JsonPath.read(document, jsonPath);
-                    List<String> result = new ArrayList<>();
-                    result.add(toto);
-                    return result;
-
-                } catch (Exception exInt) {
-                    LOG.debug("JSON PATH String Exception.");
-                    try {
-                        //Maybe it is an JSONArray.
-                        LOG.debug("JSON PATH trying Integer : " + jsonPath);
-                        int toto = JsonPath.read(document, jsonPath);
-                        List<String> result = new ArrayList<>();
-                        result.add(String.valueOf(toto));
-                        return result;
-
-                    } catch (Exception exBool) {
-                        LOG.debug("JSON PATH Integer Exception.");
-                        try {
-                            //Maybe it is an JSONArray.
-                            LOG.debug("JSON PATH trying Boolean : " + jsonPath);
-                            Boolean toto = JsonPath.read(document, jsonPath);
-                            List<String> result = new ArrayList<>();
-                            result.add(toto.toString());
-                            return result;
-
-                        } catch (Exception exArray) {
-                            throw exArray;
-                        }
-                    }
-                }
-            }
-        }*/
-
     }
 
     @Override
@@ -298,30 +173,34 @@ public class JsonService implements IJsonService {
         return result.toString().trim();
     }
 
-    //Private methods
-
+    /**
+     * Add required elements for the json path if necessary
+     *
+     * @param path The JSON Path entered by the user
+     * @return Correct path
+     */
     private String checkJsonPathFormat(String path) {
         return (!path.startsWith("$.") && !path.startsWith("$[")) ? String.format("$.%s", path) : path;
     }
 
-    private String switchCorrectObject(Object value) {
+    /**
+     * Cast and return a string according to the object in the JSON
+     *
+     * @param value The object which is returned by JsonPath.read() method
+     * @return String which represent the value of the object
+     */
+    private String castObjectAccordingToJson(Object value) {
         if (value instanceof String) {
-            LOG.debug("object string");
             return value.toString();
         } else if (value instanceof Integer) {
-            LOG.debug("object integer");
             return ((Integer) value).toString();
         } else if (value instanceof Boolean) {
-            LOG.debug("object boolean");
             return ((Boolean) value).toString();
         } else if (value instanceof JSONArray) {
-            LOG.debug("object jsonarray");
             return ((JSONArray) value).toString(JSONStyle.LT_COMPRESS);
         } else if (value instanceof Double) {
-            LOG.debug("object double");
             return ((Double) value).toString();
         } else {
-            LOG.debug("object other type");
             try {
                 return value.toString();
             } catch (Exception e) {
