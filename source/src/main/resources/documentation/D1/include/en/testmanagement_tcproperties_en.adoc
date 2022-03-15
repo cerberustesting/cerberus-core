@@ -84,6 +84,8 @@ Properties can be called in action or control values field or in another propert
 
 | getFromJson | JSON path to get a certain element from a service call | `$.status`
 
+| getRawFromJson | Get element from a JSON content in a JSON format | `$.status`
+
 | getFromCommand |  | 
 
 | getFromGroovy | Execute the specified Groovy script and get the last defined variable | `'%property.date%'.replace('\','-').substring(0,10)`
