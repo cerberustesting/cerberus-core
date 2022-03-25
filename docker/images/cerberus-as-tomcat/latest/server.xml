@@ -160,7 +160,7 @@
              userTable="user"
              userNameCol="Login"
              userCredCol="Password"
-             userRoleTable="usergroup"
+             userRoleTable="userrole"
              roleNameCol="GroupName">
         <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
       </Realm>
