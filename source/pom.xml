@@ -39,7 +39,7 @@
 
         <!-- Version management -->
         <!-- Spring Version -->
-        <spring.version>5.2.11.RELEASE</spring.version>
+        <spring.version>5.3.18</spring.version>
         <spring-webmvc.version>5.2.4.RELEASE</spring-webmvc.version>
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
