@@ -268,7 +268,9 @@ public class TestCaseExecution {
     }
 
     public void appendSecret(String secret) {
-        this.secrets.put(secret, "");
+        if (secret != null) {
+            this.secrets.put(secret, "");
+        }
     }
 
     public void appendSecrets(List<String> secrets) {
@@ -1185,7 +1187,7 @@ public class TestCaseExecution {
             result.put("robotExecutor", this.getRobotExecutor());
             result.put("robotHost", StringUtil.secureFromSecrets(this.getRobotHost(), this.getSecrets()));
             result.put("robotPort", this.getRobotPort());
-            result.put("url", this.getUrl());
+            result.put("url", StringUtil.secureFromSecrets(this.getUrl(), this.getSecrets()));
             result.put("tag", this.getTag());
             result.put("verbose", this.getVerbose());
             result.put("status", this.getStatus());
@@ -1380,7 +1382,7 @@ public class TestCaseExecution {
             robotLocal.put("userAgent", this.getUserAgent());
             result.put("robot", robotLocal);
 
-            result.put("url", this.getUrl());
+            result.put("url", StringUtil.secureFromSecrets(this.getUrl(), this.getSecrets()));
             result.put("tag", this.getTag());
             result.put("status", this.getStatus());
             result.put("executor", this.getExecutor());

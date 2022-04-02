@@ -618,4 +618,21 @@ public final class StringUtil {
         }
         return "";
     }
+
+    public static String getPasswordFromUrl(String appURL) {
+        URL appMyURL = null;
+        try {
+            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", "http://"));
+        } catch (MalformedURLException ex) {
+            LOG.warn("Exception when parsing Application URL.", ex);
+        }
+        if (appMyURL != null) {
+            String[] userInfoArray = appMyURL.getUserInfo().split(":", 2);
+            if (userInfoArray.length > 1) {
+                return userInfoArray[1];
+            }
+        }
+        return null;
+    }
+
 }

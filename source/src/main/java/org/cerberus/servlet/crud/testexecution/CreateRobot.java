@@ -108,6 +108,8 @@ public class CreateRobot extends HttpServlet {
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), "", charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
+        String extraParam = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("extraParam"), "", charset);
+        boolean isAcceptInsecureCerts = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter("isAcceptInsecureCerts"), true, charset);
 
         List<RobotCapability> capabilities;
         if (request.getParameter("capabilities") == null) {
@@ -192,7 +194,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts,capabilities, executors, robotDecli, type);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

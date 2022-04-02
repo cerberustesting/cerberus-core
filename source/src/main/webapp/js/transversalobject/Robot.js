@@ -69,6 +69,8 @@ function initModalRobot() {
     $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
+    $("#editRobotModal [name='acceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
+    $("#editRobotModal [name='extraParamField']").html(doc.getDocOnline("robot", "ExtraParam"));
     $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
     $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
     $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
@@ -248,7 +250,7 @@ function confirmRobotModalHandler(mode) {
         tcElement.parents("div.form-group").removeClass("has-error");
     }
 
-
+    data.isAcceptInsecureCerts = formEdit.find("#isAcceptInsecureCerts").prop("checked");
     // we send to the server
 //    if (data.hostUsername !== hostUserBeforeUpdate || data.hostPassword !== HOST_PASSWORD_DEFAULT) {
 //        data.hostUsernameToSend = data.hostUsername;
@@ -287,6 +289,8 @@ function confirmRobotModalHandler(mode) {
             profileFolder: data.profileFolder,
             robotDecli: data.robotdecli,
             description: data.description,
+            isAcceptInsecureCerts: data.isAcceptInsecureCerts,
+            extraParam: data.extraParam,
             lbexemethod: data.lbexemethod,
             capabilities: data.capabilities,
             executors: data.executors
@@ -362,7 +366,9 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.robotDecli = "";
         robotObj1.description = "";
         robotObj1.lbexemethod = "BYRANKING";
-        robotObj1.type = ""
+        robotObj1.type = "";
+        robotObj1.extraParam = "";
+        robotObj1.isAcceptInsecureCerts = true;
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
 
@@ -409,6 +415,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#Description").prop("value", "");
         formEdit.find("#type").val("");
         formEdit.find("#lbexemethod").val("ROUNDROBIN");
+        formEdit.find("#extraParam").val("");
+        formEdit.find("#isAcceptInsecureCerts").prop("checked", true);
     } else {
         if (mode === "EDIT") {
             formEdit.find("#robotid").prop("value", robot.robotID);
@@ -427,6 +435,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#Description").prop("value", robot.description);
         formEdit.find("#type").val(robot.type);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
+        formEdit.find("#extraParam").val(robot.extraParam);
+        formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);
     }
@@ -455,6 +465,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#hostPassword").prop("readonly", false);
         formEdit.find("#hostUsername").prop("readonly", false);
         formEdit.find("#type").prop("readonly", false);
+        formEdit.find("#extraParam").prop("readonly", false);
+        formEdit.find("#isAcceptInsecureCerts").prop("readonly", false);
     } else {
         formEdit.find("#robotName").prop("readonly", "readonly");
         formEdit.find("#active").prop("disabled", "disabled");
@@ -472,6 +484,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#hostPassword").prop("readonly", "readonly");
         formEdit.find("#hostUsername").prop("readonly", "readonly");
         formEdit.find("#type").prop("readonly", "readonly");
+        formEdit.find("#extraParam").prop("readonly", "readonly");
+        formEdit.find("#isAcceptInsecureCerts").prop("readonly", "readonly");
     }
 }
 

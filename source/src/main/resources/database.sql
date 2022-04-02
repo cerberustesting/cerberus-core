@@ -6060,3 +6060,14 @@ INSERT INTO user (login, name, email, team, language, attribute01, attribute02, 
 
 -- 1698
 ALTER TABLE `applicationobject` CHANGE COLUMN `Value` `Value` LONGTEXT NULL DEFAULT NULL ;
+
+-- 1699
+ALTER TABLE `robot` 
+    ADD COLUMN `ExtraParam` VARCHAR(1000) NOT NULL DEFAULT '' AFTER `ProfileFolder`,
+    ADD COLUMN `IsAcceptInsecureCerts` BOOLEAN DEFAULT 1 AFTER `ExtraParam`;
+
+
+-- 1700
+INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('CAPABILITY', 'browserstack.local', 10, '')
+  ,('CAPABILITY', 'browserstack.localIdentifier', 20, '');
