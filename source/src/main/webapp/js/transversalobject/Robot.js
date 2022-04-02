@@ -69,7 +69,7 @@ function initModalRobot() {
     $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
     $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
-    $("#editRobotModal [name='acceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
+    $("#editRobotModal [name='isAcceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
     $("#editRobotModal [name='extraParamField']").html(doc.getDocOnline("robot", "ExtraParam"));
     $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
     $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));

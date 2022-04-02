@@ -1955,6 +1955,9 @@ function envTuning(myenv) {
 //        document.getElementById("menuDocumentationD3").style.display = "none";
 //        document.getElementById("menuDocumentationD3").style.display = "none";
 //        document.getElementById("menuSwagger").style.display = "none";
+
+        // Hide Russia language entry.
+        document.getElementById("MyLang")[2].style.display = "none";
     }
 }
 
