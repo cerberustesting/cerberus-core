@@ -28,4 +28,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* in case you don't use Keycloak for authentification yet, don't forget to change your tomcat conf changing on server.xml file from userRoleTable="usergroup" to userRoleTable="userrole"
+* in case you don't use Keycloak for authentification yet, don't forget to change your tomcat conf changing on server.xml file from userRoleTable="usergroup" to userRoleTable="userrole" and roleNameCol="GroupName" to roleNameCol="Role"
