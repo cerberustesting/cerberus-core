@@ -28,6 +28,8 @@ import java.util.List;
 /**
  * @author bcivel
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Getter
 @Setter
