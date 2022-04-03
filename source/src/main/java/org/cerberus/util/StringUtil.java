@@ -626,7 +626,7 @@ public final class StringUtil {
         } catch (MalformedURLException ex) {
             LOG.warn("Exception when parsing Application URL.", ex);
         }
-        if (appMyURL != null) {
+        if ((appMyURL != null) && (appMyURL.getUserInfo() != null)) {
             String[] userInfoArray = appMyURL.getUserInfo().split(":", 2);
             if (userInfoArray.length > 1) {
                 return userInfoArray[1];
