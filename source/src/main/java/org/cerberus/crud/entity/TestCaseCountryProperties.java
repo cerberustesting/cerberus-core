@@ -35,6 +35,8 @@ import java.util.Objects;
 /**
  * @author bcivel
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode

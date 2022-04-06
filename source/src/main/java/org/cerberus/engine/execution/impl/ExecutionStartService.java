@@ -260,6 +260,7 @@ public class ExecutionStartService implements IExecutionStartService {
          *
          */
         LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '" + tCExecution.getManualURL() + "'");
+        String appURL = "";
         if (tCExecution.getManualURL() == 1) {
             LOG.debug("Execution will be done with manual application connectivity setting.");
             if (StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
@@ -271,7 +272,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
-                String appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
+                appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
+                tCExecution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
                 tCExecution.setUrl(appURL);
                 // If domain is empty we guess it from URL.
                 if (StringUtil.isNullOrEmpty(cea.getDomain())) {
@@ -316,8 +318,9 @@ public class ExecutionStartService implements IExecutionStartService {
                             cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                         }
                     }
-
-                    tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+                    appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
+                    tCExecution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
+                    tCExecution.setUrl(appURL);
                     if ("GUI".equals(tCExecution.getApplicationObj().getType())) {
                         // Domain calculation only make sense for Web applications.
                         // If domain is empty we guess it from URL.

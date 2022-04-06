@@ -46,6 +46,8 @@ public class Robot {
     private String userAgent;
     private String screenSize;
     private String profileFolder;
+    private String extraParam;
+    private boolean isAcceptInsecureCerts;
     private String robotDecli;
     private String lbexemethod; // Contain the method used in order to spread the load against all executors of the robot.
     private String description;
@@ -63,6 +65,22 @@ public class Robot {
     private List<RobotCapability> capabilities;
     private List<RobotCapability> capabilitiesDecoded;
     private List<RobotExecutor> executors;
+
+    public String getExtraParam() {
+        return extraParam;
+    }
+
+    public void setExtraParam(String extraParam) {
+        this.extraParam = extraParam;
+    }
+
+    public boolean isAcceptInsecureCerts() {
+        return isAcceptInsecureCerts;
+    }
+
+    public void setIsAcceptInsecureCerts(boolean isAcceptInsecureCerts) {
+        this.isAcceptInsecureCerts = isAcceptInsecureCerts;
+    }
 
     public String getProfileFolder() {
         return profileFolder;
@@ -246,6 +264,8 @@ public class Robot {
             result.put("browser", this.getBrowser());
             result.put("lbexemethod", this.getLbexemethod());
             result.put("type", this.getType());
+            result.put("isAcceptInsecureCerts", this.isAcceptInsecureCerts());
+            result.put("extraParam", this.getExtraParam());
 
             if (withChilds) {
                 // Looping on ** Capabilities **

@@ -471,6 +471,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robot','screensize','','fr','Taille d\\'écran','Cette valeur correspond à la taille d\\'écran qui sera utilisé lors de l\\'execution.<br><br>Les valeurs sont définies dans la table d\\'invariant et peuvent être complétées si besoin via la page d\\'invariant.<br>Les valeur doivent être deux entiers séparé par une <b>*</b>.<br><i>Par Example : 1024*768</i><br><br>Pour ajouter de nouvelles valeurs, contactez votre administrateur Cerberus.',NULL)");
         b.append(",('robot','useragent','','en','User Agent','User Agent of the robot.',NULL)");
         b.append(",('robot','useragent','','fr','User Agent','User Agent du Robot.',NULL)");
+        b.append(",('robot','IsAcceptInsecureCerts','','en','Accept Insecure Certs','Accept any insecured certificate.',NULL)");
+        b.append(",('robot','IsAcceptInsecureCerts','','fr','Accepter Certificats','Accepte les certificats invalides.',NULL)");
+        b.append(",('robot','ExtraParam','','en','Extra Parameters','Extra parameters sent to the robot.',NULL)");
+        b.append(",('robot','ExtraParam','','fr','Parametres additionnels','Parametres additionnel envoyé au robot.',NULL)");
         b.append(",('robot','ProfileFolder','','en','Profile Folder','Profile Folder of the robot (user data or profile). That allow to avoid starting all testcases from an empty user session.',NULL)");
         b.append(",('robot','ProfileFolder','','fr','Dossier du Profil Utilisateur','Repertoire contenant le profile de l\\'utilisateur. Definir ce parametre permet de lancer des tests avec un profil utilisateur specific (sans repartir d\\'une session vide à chaque execution)',NULL)");
         b.append(",('robot','version','','en','Version','Brower Version of the robot.',NULL)");

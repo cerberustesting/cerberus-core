@@ -19,7 +19,8 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,12 +40,12 @@
 
         <!-- Version management -->
         <!-- Spring Version -->
-        <spring.version>5.2.11.RELEASE</spring.version>
-        <spring-webmvc.version>5.2.4.RELEASE</spring-webmvc.version>
+        <spring.version>5.3.18</spring.version>
+        <spring-security.version>5.6.2</spring-security.version>
         <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
         <gson.version>2.8.0</gson.version>
-        <jackson-databind.version>2.11.0</jackson-databind.version>
+        <jackson-databind.version>2.12.6.1</jackson-databind.version>
         <!-- jsonpath -->
         <jsonxpath.version>2.5.0</jsonxpath.version>
         <!-- Groovy Version -->
@@ -148,22 +149,22 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring-webmvc.version}</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring-security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -241,7 +242,7 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>${jna.version}</version>
-            <classifier />
+            <classifier/>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -811,16 +812,20 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to QA server..." />
-                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}" password="${cerberus.demo.qa.password}" trust="yes" />
+                                        <echo message="Uploading artifact to QA server..."/>
+                                        <scp file="${project.build.directory}/${project.build.finalName}.zip"
+                                             todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}"
+                                             password="${cerberus.demo.qa.password}" trust="yes"/>
                                         <!--
                                             Deploy artifact by:
                                                 1. Extracting distribution package to the server's upload path;
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
+                                        <echo message="Deploying..."/>
+                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}"
+                                                 password="${cerberus.demo.qa.password}" trust="yes"
+                                                 command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )"/>
                                     </target>
                                 </configuration>
                             </execution>

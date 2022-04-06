@@ -853,6 +853,8 @@ public class RobotServerService implements IRobotServerService {
                     FirefoxOptions optionsFF = new FirefoxOptions();
                     FirefoxProfile profile = new FirefoxProfile();
                     profile.setPreference("app.update.enabled", false);
+
+                    // Language
                     try {
                         Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
                         if (invariant.getGp2() == null) {
@@ -877,6 +879,7 @@ public class RobotServerService implements IRobotServerService {
                         profile.setPreference("general.useragent.override", usedUserAgent);
                     }
 
+                    // Verbose level and Healess
                     if (tCExecution.getVerbose() <= 0) {
                         optionsFF.setHeadless(true);
                     }
@@ -889,11 +892,14 @@ public class RobotServerService implements IRobotServerService {
                         LOG.debug("Setting Firefox proxy to : " + proxy.toString());
                         optionsFF.setProxy(proxy);
                     }
-
                     optionsFF.setProfile(profile);
 
                     // Accept Insecure Certificates.
-                    optionsFF.setAcceptInsecureCerts(true);
+                    if (tCExecution.getRobotObj() != null && !tCExecution.getRobotObj().isAcceptInsecureCerts()) {
+                        optionsFF.setAcceptInsecureCerts(false);
+                    } else {
+                        optionsFF.setAcceptInsecureCerts(true);
+                    }
 
                     // Collect Logs on Selenium side.
                     optionsFF.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
@@ -914,17 +920,36 @@ public class RobotServerService implements IRobotServerService {
                     } else {
                         optionsCH.addArguments("start-maximized");
                     }
+
+                    // Language
+                    try {
+                        Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
+                        if (invariant.getGp2() == null) {
+                            LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+                            optionsCH.addArguments("--lang=en");
+                        } else {
+                            optionsCH.addArguments("--lang=" + invariant.getGp2());
+                        }
+                    } catch (CerberusException ex) {
+                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
+                        optionsCH.addArguments("--lang=en");
+                    }
+
                     // Force a specific profile for that session (allow to reuse cookies and browser preferences).
                     if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
                         optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getProfileFolder());
                     }
-                    if (tCExecution.getVerbose() <= 0) {
-                        optionsCH.addArguments("--headless");
-                    }
+
                     // Set UserAgent if necessary
                     if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                         optionsCH.addArguments("--user-agent=" + usedUserAgent);
                     }
+
+                    // Verbose level and Healess
+                    if (tCExecution.getVerbose() <= 0) {
+                        optionsCH.addArguments("--headless");
+                    }
+
                     // Add the WebDriver proxy capability.
                     if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
                         Proxy proxy = new Proxy();
@@ -935,8 +960,18 @@ public class RobotServerService implements IRobotServerService {
                         LOG.debug("Setting Chrome proxy to : " + proxy.toString());
                         optionsCH.setCapability("proxy", proxy);
                     }
+
                     // Accept Insecure Certificates.
-                    optionsCH.setAcceptInsecureCerts(true);
+                    if (tCExecution.getRobotObj() != null && !tCExecution.getRobotObj().isAcceptInsecureCerts()) {
+                        optionsCH.setAcceptInsecureCerts(false);
+                    } else {
+                        optionsCH.setAcceptInsecureCerts(true);
+                    }
+
+                    // Extra Browser Parameters.
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getExtraParam())) {
+                        optionsCH.addArguments(tCExecution.getRobotObj().getExtraParam());
+                    }
 
                     // Collect Logs on Selenium side.
                     optionsCH.setCapability("goog:loggingPrefs", logPrefs);
@@ -1010,8 +1045,8 @@ public class RobotServerService implements IRobotServerService {
 
                 case "":
                     /**
-                     * We allow to start a Selenium session without any browser defined.
-                     * This is used to support bundleId capability.
+                     * We allow to start a Selenium session without any browser
+                     * defined. This is used to support bundleId capability.
                      */
                     break;
 

@@ -24,7 +24,9 @@
 * New Property 'getRawFromJson' #2355
 * New system variable : %system.LASTSERVICE_RESPONSE%. It allows to control and manipulate the last service call response in an easier way on GUI, APK or IPA tests that require service calls.
 * Better support of erratum on all controls. fix #2336
+* You can now configure if unsecured certificates are accepted at robot level.
+* Country attribute 2 is now map to browser lang. You can also force extra parameters at robot level. fix #2368
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* in case you don't use Keycloak for authentification yet, don't forget to change your tomcat conf changing on server.xml file from userRoleTable="usergroup" to userRoleTable="userrole" and roleNameCol="GroupName" to roleNameCol="Role"

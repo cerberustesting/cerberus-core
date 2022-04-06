@@ -113,7 +113,7 @@ public class RobotDAO implements IRobotDAO {
                 ps -> ps.setString(1, robot),
                 rs -> loadFromResultSet(rs)
         );
-        
+
         //sets the message
         return result;
     }
@@ -381,9 +381,9 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `ProfileFolder`, `robotdecli`, `lbexemethod`, `type`) ");
+        query.append("INSERT INTO robot (`robot`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `ProfileFolder`, `ExtraParam`, `IsAcceptInsecureCerts`, `robotdecli`, `lbexemethod`, `type`) ");
 
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -403,6 +403,8 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(i++, robot.getUserAgent());
                 preStat.setString(i++, robot.getScreenSize());
                 preStat.setString(i++, robot.getProfileFolder());
+                preStat.setString(i++, robot.getExtraParam());
+                preStat.setBoolean(i++, robot.isAcceptInsecureCerts());
                 preStat.setString(i++, robot.getRobotDecli());
                 preStat.setString(i++, robot.getLbexemethod());
                 preStat.setString(i++, robot.getType());
@@ -486,7 +488,7 @@ public class RobotDAO implements IRobotDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, ProfileFolder = ?, robotdecli = ?, lbexemethod = ?, type = ?, dateModif = NOW() ");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, ProfileFolder = ?, ExtraParam = ?, IsAcceptInsecureCerts = ?, robotdecli = ?, lbexemethod = ?, type = ?, dateModif = NOW() ");
         query.append("WHERE robotID = ?");
 
         // Debug message on SQL.
@@ -507,6 +509,8 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(cpt++, robot.getUserAgent());
                 preStat.setString(cpt++, robot.getScreenSize());
                 preStat.setString(cpt++, robot.getProfileFolder());
+                preStat.setString(cpt++, robot.getExtraParam());
+                preStat.setBoolean(cpt++, robot.isAcceptInsecureCerts());
                 preStat.setString(cpt++, robot.getRobotDecli());
                 preStat.setString(cpt++, robot.getLbexemethod());
                 preStat.setString(cpt++, robot.getType());
@@ -553,10 +557,12 @@ public class RobotDAO implements IRobotDAO {
         String profileFolder = ParameterParserUtil.parseStringParam(rs.getString("ProfileFolder"), "");
         String robotDecli = ParameterParserUtil.parseStringParam(rs.getString("robotdecli"), "");
         String type = ParameterParserUtil.parseStringParam(rs.getString("type"), "");
+        String extraParam = ParameterParserUtil.parseStringParam(rs.getString("ExtraParam"), "");
+        boolean isAcceptInsecureCerts = rs.getBoolean("isAcceptInsecureCerts");
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, robotDecli, type);
+        return factoryRobot.create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts, robotDecli, type);
     }
 
     @Override
