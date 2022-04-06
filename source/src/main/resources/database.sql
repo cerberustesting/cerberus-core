@@ -6070,3 +6070,6 @@ ALTER TABLE `robot`
 INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES   ('CAPABILITY', 'browserstack.local', 10, '')
   ,('CAPABILITY', 'browserstack.localIdentifier', 20, '');
+
+-- 1701
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES('PROPERTYTYPE', 'getRawFromJson', 72, 'Get element in standard JSON format', 'Get raw JSON element');

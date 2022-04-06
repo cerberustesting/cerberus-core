@@ -19,20 +19,8 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.logging.Level;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jayway.jsonpath.InvalidPathException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -81,6 +69,12 @@ import org.json.JSONObject;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * {Insert class description here}
@@ -738,6 +732,10 @@ public class PropertyService implements IPropertyService {
 
                         case TestCaseCountryProperties.TYPE_GETFROMJSON:
                             testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, execution, forceRecalculation);
+                            break;
+
+                        case TestCaseCountryProperties.TYPE_GETRAWFROMJSON:
+                            testCaseExecutionData = this.property_getRawFromJson(testCaseExecutionData, execution);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
@@ -1508,75 +1506,91 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, boolean forceRecalculation) {
         String jsonResponse = "";
+
+        if (null != execution.getLastServiceCalled()) {
+            jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
+        }
+
+        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+            try {
+                jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
+
+            } catch (MalformedURLException e) {
+                LOG.debug("URL is invalid so we consider that it is a json file.");
+                jsonResponse = testCaseExecutionData.getValue2();
+            }
+        }
+
         try {
-            /**
-             * If tCExecution LastServiceCalled exist, get the response;
-             */
-            if (null != execution.getLastServiceCalled()) {
-                jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
-            }
-
-            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
-                try {
-                    URL myurl;
-                    myurl = new URL(testCaseExecutionData.getValue2());
-
-                    String str = "";
-                    StringBuilder sb = new StringBuilder();
-                    BufferedReader br = null;
-                    try {
-                        br = new BufferedReader(new InputStreamReader(myurl.openStream()));
-                        while (null != (str = br.readLine())) {
-                            sb.append(str);
-                        }
-                    } catch (IOException ex) {
-                        LOG.warn("Error Getting Json File " + ex);
-                    } finally {
-                        if (br != null) {
-                            try {
-                                br.close();
-                            } catch (IOException e) {
-                                LOG.warn(e.toString());
-                            }
-                        }
-                    }
-                    jsonResponse = sb.toString();
-
-                } catch (MalformedURLException e) {
-                    LOG.debug("URL is invalid so we consider that it is a json file.");
-                    jsonResponse = testCaseExecutionData.getValue2();
-                }
-            }
-
             //Record result in filessytem.
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
-            String valueFromJson = this.jsonService.getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
+            String valueFromJson = this
+                    .jsonService
+                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
 
-            if (valueFromJson != null) {
-                testCaseExecutionData.setValue(valueFromJson);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
-                testCaseExecutionData.setPropertyResultMessage(res);
-
-            } else {
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replace("%ERROR%", ""));
-                testCaseExecutionData.setPropertyResultMessage(res);
-
+            if (valueFromJson == null) {
+                throw new InvalidPathException();
             }
-        } catch (Exception exception) {
+
+            testCaseExecutionData.setValue(valueFromJson);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        } catch (InvalidPathException exception) { //Path not found, invalid path syntax or empty path
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ERROR%", ""));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData property_getRawFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution) {
+        String jsonResponse = "";
+
+        //If tCExecution LastServiceCalled exist, get the response
+        if (execution.getLastServiceCalled() != null) {
+            jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
+        }
+
+        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+            try {
+                jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
+
+            } catch (MalformedURLException e) {
+                LOG.debug("URL is invalid so we consider that it is a json file.");
+                jsonResponse = testCaseExecutionData.getValue2();
+            }
+        }
+
+        //Process
+        try {
+            //Record result in filesystem.
+            recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
+
+            //Get the raw
+            String valueFromJson = this.jsonService.getRawFromJson(jsonResponse, testCaseExecutionData.getValue1());
+
+            testCaseExecutionData.setValue(valueFromJson);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+            testCaseExecutionData.setPropertyResultMessage(res);
+
+        } catch (JsonProcessingException | InvalidPathException exception) { //Path not found, invalid path syntax or empty path
             if (LOG.isDebugEnabled()) {
                 LOG.error("Exception when getting property from JSON.", exception);
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
             res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%ERROR%", exception.toString()));
+            res.setDescription(res.getDescription().replace("%ERROR%", ""));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;

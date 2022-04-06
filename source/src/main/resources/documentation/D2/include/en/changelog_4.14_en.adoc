@@ -21,6 +21,7 @@
 * [GUI] On "Run Testcase" page only the countries available on the selected systems are displayed #2274
 * [Engine] Sikuli engine now allow modifier keys. That allow to do CTRL+F5 for example. #1763
 * New control 'verifyElementTextContains' #2158
+* New Property 'getRawFromJson' #2355
 * New system variable : %system.LASTSERVICE_RESPONSE%. It allows to control and manipulate the last service call response in an easier way on GUI, APK or IPA tests that require service calls.
 * Better support of erratum on all controls. fix #2336
 * You can now configure if unsecured certificates are accepted at robot level.
