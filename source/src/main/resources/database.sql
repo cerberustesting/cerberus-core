@@ -5921,27 +5921,27 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1632
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-    select "CAMPAIGN_START", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyStartTagExecution = "Y";
+    select 'CAMPAIGN_START', campaign, 1, 'EMAIL', DistribList, '', 'importSQL' from campaign where NotifyStartTagExecution = 'Y';
 
 -- 1633
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-    select "CAMPAIGN_END", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "Y";
+    select 'CAMPAIGN_END', campaign, 1, 'EMAIL', DistribList, '', 'importSQL' from campaign where NotifyEndTagExecution = 'Y';
 
 -- 1634
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-    select "CAMPAIGN_END_CIKO", campaign, 1, "EMAIL", DistribList, "", "importSQL" from campaign where NotifyEndTagExecution = "CIKO";
+    select 'CAMPAIGN_END_CIKO', campaign, 1, 'EMAIL', DistribList, '', 'importSQL' from campaign where NotifyEndTagExecution = 'CIKO';
 
 -- 1635
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-    select "CAMPAIGN_START", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyStartTagExecution = "Y";
+    select 'CAMPAIGN_START', campaign, 1, 'SLACK', SlackWebhook, SlackChannel, 'importSQL' from campaign where SlackNotifyStartTagExecution = 'Y';
 
 -- 1636
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-  select "CAMPAIGN_END", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "Y";
+  select 'CAMPAIGN_END', campaign, 1, 'SLACK', SlackWebhook, SlackChannel, 'importSQL' from campaign where SlackNotifyEndTagExecution = 'Y';
 
 -- 1637
 INSERT INTO eventhook (Eventreference, ObjectKey1, IsActive, HookConnector, HookRecipient, HookChannel, UsrCreated)
-  select "CAMPAIGN_END_CIKO", campaign, 1, "SLACK", SlackWebhook, SlackChannel, "importSQL" from campaign where SlackNotifyEndTagExecution = "CIKO";
+  select 'CAMPAIGN_END_CIKO', campaign, 1, 'SLACK', SlackWebhook, SlackChannel, 'importSQL' from campaign where SlackNotifyEndTagExecution = 'CIKO';
 
 -- 1638
 ALTER TABLE `campaign` 
@@ -6049,13 +6049,13 @@ ALTER TABLE `user`
     ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';
 
 -- 1696
-INSERT INTO user (login, name, email, team, language, attribute01, attribute02, attribute03, attribute04, attribute05, apikey, password, userpreferences, usrcreated) 
-    SELECT concat("srvaccount",right(param,1)), concat("Service Account ",right(param,1)), "", "", 'en', '', '', '', '', '', value, "", "" , "DatabaseVersioningService" 
+INSERT INTO `user` (`login`, `name`, `email`, `team`, `language`, `attribute01`, `attribute02`, `attribute03`, `attribute04`, `attribute05`, `apikey`, `password`, `userpreferences`, `usrcreated`)
+    SELECT concat('srvaccount', right(param, 1)), concat('Service Account ', right(param, 1)), '', '', 'en', '', '', '', '', '', value, '', '' , 'DatabaseVersioningService'
     FROM parameter where param like 'cerberus_apikey_value%' and `system` = '' and value is not null and value !='';
 
 -- 1697
-INSERT INTO user (login, name, email, team, language, attribute01, attribute02, attribute03, attribute04, attribute05, apikey, password, userpreferences, usrcreated, comment) 
-    SELECT "srvaccount", "Cerberus Service Account", "", "", 'en', '', '', '', '', '', LEFT(MD5(RAND()), 90), "", "" , "DatabaseVersioningService", "DO NOT REMOVE !! Service Account for internal use by Cerberus." 
+INSERT INTO `user` (`login`, `name`, `email`, `team`, `language`, `attribute01`, `attribute02`, `attribute03`, `attribute04`, `attribute05`, `apikey`, `password`, `userpreferences`, `usrcreated`, `comment`)
+    SELECT 'srvaccount', 'Cerberus Service Account', '', '', 'en', '', '', '', '', '', LEFT(MD5(RAND()), 90), '', '', 'DatabaseVersioningService', 'DO NOT REMOVE !! Service Account for internal use by Cerberus.'
     FROM dual;
 
 -- 1698
@@ -6065,7 +6065,6 @@ ALTER TABLE `applicationobject` CHANGE COLUMN `Value` `Value` LONGTEXT NULL DEFA
 ALTER TABLE `robot` 
     ADD COLUMN `ExtraParam` VARCHAR(1000) NOT NULL DEFAULT '' AFTER `ProfileFolder`,
     ADD COLUMN `IsAcceptInsecureCerts` BOOLEAN DEFAULT 1 AFTER `ExtraParam`;
-
 
 -- 1700
 INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
