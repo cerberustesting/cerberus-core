@@ -911,9 +911,9 @@ public class ConditionService implements IConditionService {
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICDIFFERENT:
                 mes = Objects.equals(value1, value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICDIFFERENT)
+                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICDIFFERENT)
                         :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICDIFFERENT);
+                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICDIFFERENT);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICGREATER:
