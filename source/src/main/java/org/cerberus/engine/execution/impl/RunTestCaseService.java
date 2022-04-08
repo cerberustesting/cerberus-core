@@ -23,18 +23,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IExecutionStartService;
 import org.cerberus.engine.execution.IRunTestCaseService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * {Insert class description here}
- *
  * @author Tiago Bernardes
  * @version 1.0, 23/01/2013
  * @since 2.0.0
@@ -54,18 +52,15 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
-        /**
-         * Start Execution (Checks and Creation of ID)
-         *
-         */
+        // Start Execution (Checks and Creation of ID)
         try {
-            LOG.debug("Start Execution " + "ID=" + tCExecution.getId());
+            LOG.debug("Start Execution " + "ID={}", tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
-            LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + " ID=" + tCExecution.getId());
+            LOG.info("Execution Started : UUID={} ID= {}", tCExecution.getExecutionUUID(), " ID=" + tCExecution.getId());
 
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
-            LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + " causedBy=" + ex.getMessageError().getDescription());
+            LOG.info("Execution not Launched : UUID={} causedBy={}", tCExecution.getExecutionUUID(), ex.getMessageError().getDescription());
             try {
                 // After every execution finished we try to trigger more from the queue;-).
                 executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -75,9 +70,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             return tCExecution;
         }
 
-        /**
-         * Execute TestCase in new thread if asynchroneous execution
-         */
+        //  Execute TestCase in new thread if the execution is asynchronous
         if (tCExecution.getId() != 0) {
             try {
                 if (!tCExecution.isSynchroneous()) {
@@ -87,7 +80,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
-                LOG.warn("Execution stopped due to exception. " + ex.getMessageError().getDescription(), ex);
+                LOG.warn("Execution stopped due to exception. {}", ex.getMessageError().getDescription(), ex);
                 try {
                     // After every execution finished we try to trigger more from the queue;-).
                     executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -96,7 +89,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (Exception ex) {
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
-                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + " causedBy=" + ex.toString(), ex);
+                LOG.warn("Execution stopped due to exception : UUID={} causeBy={}", tCExecution.getExecutionUUID(), ex.toString(), ex);
                 try {
                     // After every execution finished we try to trigger more from the queue;-).
                     executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -105,10 +98,8 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             }
         }
-        /**
-         * Return tcexecution object
-         */
-        LOG.debug("Exit RunTestCaseService : " + tCExecution.getId());
+
+        LOG.debug("Exit RunTestCaseService : {}", tCExecution.getId());
         return tCExecution;
     }
 }

@@ -19,24 +19,20 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.util.Arrays;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.engine.execution.IIdentifierService;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 /**
- *
  * @author bcivel
  */
 @Service
 public class IdentifierService implements IIdentifierService {
-
-    private static final Logger LOG = LogManager.getLogger(IdentifierService.class);
 
     @Override
     public Identifier convertStringToIdentifier(String input) {
@@ -66,7 +62,7 @@ public class IdentifierService implements IIdentifierService {
                 locator = strings[1];
             }
         }
-        
+
         result.setIdentifier(identifier);
         result.setLocator(locator);
         return result;
@@ -86,7 +82,7 @@ public class IdentifierService implements IIdentifierService {
 
     @Override
     public void checkWebElementIdentifier(String identifier) throws CerberusEventException {
-        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "coord", "picture","querySelector", "erratum"};
+        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "coord", "picture", "querySelector", "erratum"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SELENIUM);

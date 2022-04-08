@@ -19,40 +19,31 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import org.cerberus.enums.MessageGeneralEnum;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.BuildRevisionInvariant;
-import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.exception.CerberusException;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IExecutionCheckService;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
- * {Insert class description here}
- *
  * @author Tiago Bernardes
  * @version 1.0, 15/01/2013
  * @since 0.9.0
@@ -60,9 +51,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExecutionCheckService implements IExecutionCheckService {
 
-    /**
-     * The associated {@link org.apache.logging.log4j.Logger} to this class
-     */
     private static final Logger LOG = LogManager.getLogger(ExecutionCheckService.class);
 
     @Autowired
@@ -74,11 +62,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     @Override
     public MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution) {
-        LOG.debug("Starting checks with manualURL : " + tCExecution.getManualURL());
+        LOG.debug("Starting checks with manualURL : {}", tCExecution.getManualURL());
         if (tCExecution.getManualURL() == 1) {
-            /**
-             * Manual application connectivity parameter
-             */
+            // Manual application connectivity parameter
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
@@ -87,12 +73,13 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         } else {
-            /**
-             * Automatic application connectivity parameter (from database)
-             * Correspond to manualURL = 1 or = 2 (override)
-             */
+            // Automatic application connectivity parameter (from database)  Correspond to manualURL = 1 or = 2 (override)
             if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                    && this.checkRangeBuildRevision(tCExecution.getTestCaseObj(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision(), tCExecution.getCountryEnvParam().getSystem())
+                    && this.checkRangeBuildRevision(
+                    tCExecution.getTestCaseObj(),
+                    tCExecution.getCountryEnvParam().getBuild(),
+                    tCExecution.getCountryEnvParam().getRevision(),
+                    tCExecution.getCountryEnvParam().getSystem())
                     && this.checkTargetMajorRevision(tCExecution)
                     && this.checkActiveEnvironmentGroup(tCExecution)
                     && this.checkTestCaseActive(tCExecution.getTestCaseObj())
@@ -108,9 +95,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkEnvironmentActive(CountryEnvParam cep) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if environment is active");
-        }
+        LOG.debug("Checking if environment is active");
         if (cep != null && cep.isActive()) {
             return true;
         }
@@ -119,9 +104,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTestCaseActive(TestCase testCase) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if testcase is active");
-        }
+        LOG.debug("Checking if testcase is active");
         if (testCase.isActive()) {
             return true;
         }
@@ -130,9 +113,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTestActive(Test test) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if test is active");
-        }
+        LOG.debug("Checking if test is active");
         if (test.getActive()) {
             return true;
         }
@@ -142,10 +123,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTestCaseNotManual(TestCaseExecution tCExecution) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if testcase is not MANUAL");
-        }
-
+        LOG.debug("Checking if testcase is not MANUAL");
         if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getTestCaseObj().getType().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;
@@ -155,32 +133,29 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
     @Override
     public boolean checkRangeBuildRevision(TestCase tc, String envBuild, String envRevision, String envSystem) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if test can be executed in this build and revision");
-        }
+        LOG.debug("Checking if test can be executed in this build and revision");
         String tcFromMajor = ParameterParserUtil.parseStringParam(tc.getFromMajor(), "");
         String tcToMajor = ParameterParserUtil.parseStringParam(tc.getToMajor(), "");
         String tcFromMinor = ParameterParserUtil.parseStringParam(tc.getFromMinor(), "");
         String tcToMinor = ParameterParserUtil.parseStringParam(tc.getToMinor(), "");
         String sprint = ParameterParserUtil.parseStringParam(envBuild, "");
         String revision = ParameterParserUtil.parseStringParam(envRevision, "");
-        String system = envSystem;
         int dif = -1;
 
-        if (!tcFromMajor.isEmpty() && sprint != null) {
+        if (!tcFromMajor.isEmpty()) {
             try {
                 if (sprint.isEmpty()) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
-                } else {
-                    dif = this.compareBuild(sprint, tcFromMajor, system);
                 }
+
+                dif = this.compareBuild(sprint, tcFromMajor, envSystem);
                 if (dif == 0) {
-                    if (!tcFromMinor.isEmpty() && revision != null) {
+                    if (!tcFromMinor.isEmpty()) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(revision, tcFromMinor, system) < 0) {
+                        } else if (this.compareRevision(revision, tcFromMinor, envSystem) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -189,29 +164,14 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                     return false;
                 }
-            } catch (NumberFormatException exception) {
-                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_WRONGFORMAT);
-                return false;
-            } catch (CerberusException ex) {
-                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_BADLYDEFINED);
-                return false;
-            }
-        }
 
-        if (!tcToMajor.isEmpty() && sprint != null) {
-            try {
-                if (sprint.isEmpty()) {
-                    message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
-                    return false;
-                } else {
-                    dif = this.compareBuild(tcToMajor, sprint, system);
-                }
+                dif = this.compareBuild(tcToMajor, sprint, envSystem);
                 if (dif == 0) {
-                    if (!tcToMinor.isEmpty() && revision != null) {
+                    if (!tcToMinor.isEmpty()) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(tcToMinor, revision, system) < 0) {
+                        } else if (this.compareRevision(tcToMinor, revision, envSystem) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -233,9 +193,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkTargetMajorRevision(TestCaseExecution tCExecution) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking target build");
-        }
+        LOG.debug("Checking target build");
         TestCase tc = tCExecution.getTestCaseObj();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcTargetMajor = ParameterParserUtil.parseStringParam(tc.getTargetMajor(), "");
@@ -244,7 +202,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
         int dif = -1;
 
-        if (!tcTargetMajor.isEmpty() && sprint != null) {
+        if (!tcTargetMajor.isEmpty()) {
             try {
                 if (sprint.isEmpty()) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
@@ -253,7 +211,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     dif = this.compareBuild(sprint, tcTargetMajor, env.getSystem());
                 }
                 if (dif == 0) {
-                    if (!tcRevision.isEmpty() && revision != null) {
+                    if (!tcRevision.isEmpty()) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
@@ -278,9 +236,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkActiveEnvironmentGroup(TestCaseExecution tCExecution) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
-        }
+        LOG.debug("Checking environment {}", tCExecution.getCountryEnvParam().getEnvironment());
         TestCase tc = tCExecution.getTestCaseObj();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkIsActiveQA(tc, tCExecution.getEnvironmentData());
@@ -325,9 +281,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkCountry(TestCaseExecution tCExecution) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if country is setup for this testcase. " + tCExecution.getTest() + "-" + tCExecution.getTestCase() + "-" + tCExecution.getCountry());
-        }
+        LOG.debug("Checking if country is setup for this testcase. {}-{}-{}", tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
         if (testCaseCountryService.exist(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry())) {
             return true;
         } else {
@@ -389,14 +343,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     return true;
                 }
 
-            } catch (ParseException exception) {
-                LOG.error("Error when parsing maintenance start and/or end."
-                        + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
-                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString(), exception);
             } catch (Exception exception) {
-                LOG.error("Error when parsing maintenance start and/or end."
-                        + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
-                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString(), exception);
+                LOG.error("Error when parsing maintenance start and/or end. {}{}{} {}{}{}",
+                        tCExecution.getCountryEnvParam().getSystem(), tCExecution.getCountryEnvParam().getCountry(), tCExecution.getCountryEnvParam().getEnvironment(),
+                        tCExecution.getCountryEnvParam().getMaintenanceStr(), tCExecution.getCountryEnvParam().getMaintenanceEnd(), exception.toString(), exception);
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             message.resolveDescription("START", tCExecution.getCountryEnvParam().getMaintenanceStr())
@@ -404,7 +354,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     .resolveDescription("SYSTEM", tCExecution.getCountryEnvParam().getSystem())
                     .resolveDescription("COUNTRY", tCExecution.getCountryEnvParam().getCountry())
                     .resolveDescription("ENV", tCExecution.getCountryEnvParam().getEnvironment());
-
             return false;
         }
         return true;
@@ -421,7 +370,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
             }
 
             String urlString = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
-            LOG.debug("Url to check Proxy Executor : " + urlString);
+            LOG.debug("Url to check Proxy Executor : {}", urlString);
 
             URL url;
             try {
@@ -431,7 +380,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 urlConn.setReadTimeout(15000);
 
                 try (InputStream is = urlConn.getInputStream()) {
-                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
                     StringBuilder sb = new StringBuilder();
                     int cp;
                     while ((cp = rd.read()) != -1) {
@@ -444,17 +393,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     if ("OK".equals(json.getString("message"))) {
                         return true;
                     }
-
-                } catch (ConnectException ex) {
-                    LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
                 } catch (Exception ex) {
-                    LOG.error("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+                    LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
                 }
 
-            } catch (MalformedURLException ex) {
-                LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
             } catch (IOException ex) {
-                LOG.warn("Exception Reaching Cerberus Extension " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString());
+                LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
             }
 
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE);

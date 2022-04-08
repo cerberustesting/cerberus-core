@@ -19,36 +19,29 @@
  */
 package org.cerberus.engine.execution;
 
-import java.util.HashMap;
-import java.util.List;
 import org.apache.commons.fileupload.FileItem;
-import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionFile;
-import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.*;
 import org.cerberus.engine.entity.Recorder;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 public interface IRecorderService {
 
     /**
-     *
      * @param testCaseStepActionExecution
      * @param testCaseStepActionControlExecution
      * @return
      */
-    List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+    List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionAndControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -58,7 +51,6 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
 
     /**
-     *
      * @param actionExecution
      * @param controlId
      * @param locator
@@ -68,7 +60,6 @@ public interface IRecorderService {
     TestCaseExecutionFile recordPicture(TestCaseStepActionExecution actionExecution, Integer controlId, String locator, String valueFieldName);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -77,7 +68,6 @@ public interface IRecorderService {
     TestCaseExecutionFile recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -88,16 +78,14 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param service
      * @return
      */
     List<TestCaseExecutionFile> recordServiceCallContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, AppService service);
-    
+
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -109,7 +97,6 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordNetworkTrafficContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service, boolean withDetail);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -121,7 +108,6 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordConsoleContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, JSONObject consoleContent, boolean withDetail);
 
     /**
-     *
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
@@ -133,7 +119,6 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, String content, String contentType);
 
     /**
-     *
      * @param runId
      * @param property
      * @param propertyIndex
@@ -144,7 +129,6 @@ public interface IRecorderService {
     TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result, HashMap<String, String> secrets);
 
     /**
-     *
      * @param runId
      * @param property
      * @param propertyIndex
@@ -176,7 +160,6 @@ public interface IRecorderService {
     TestCaseExecutionFile recordServerCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsFinalList);
 
     /**
-     *
      * @param testCaseStepActionControlExecution
      * @param testCaseStepActionExecution
      * @param extension
@@ -190,7 +173,6 @@ public interface IRecorderService {
     AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
 
     /**
-     *
      * @param testCaseExecution
      * @return
      */
@@ -198,7 +180,6 @@ public interface IRecorderService {
 
 
     /**
-     *
      * @param testCaseExecution
      * @return
      */
@@ -206,14 +187,12 @@ public interface IRecorderService {
 
 
     /**
-     *
      * @param exeID
      * @return
      */
     String getStorageSubFolderURL(long exeID);
 
     /**
-     *
      * @param exeID
      * @return
      */
@@ -224,7 +203,7 @@ public interface IRecorderService {
     /**
      * attach a physique file to the testcase execution and save it to database
      *
-     * @param tce the test case execution
+     * @param tce      the test case execution
      * @param recorder the recorder that was created to save file on datastorage
      * @param fileDesc description of file : Exxemple : "Video"
      * @param fileType File type (PNG, MP4, etc.)

@@ -34,22 +34,15 @@ public class RetriesService implements IRetriesService {
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
-    /**
-     * The associated {@link org.apache.logging.log4j.Logger} to this class
-     */
     private static final Logger LOG = LogManager.getLogger(RetriesService.class);
 
-    /**
-     * Retry management, in case the result is not (OK or NE), we execute the
-     * job again reducing the retry to 1.
-     *
-     */
+    // Retry management, in case the result is not (OK or NE), we execute the job again reducing the retry to 1.
     @Override
     public boolean manageRetries(TestCaseExecution tCExecution) {
         if (tCExecution.getNumberOfRetries() > 0
                 && !tCExecution.getResultMessage().getCodeString().equals("OK")
                 && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
-            TestCaseExecutionQueue newExeQueue = new TestCaseExecutionQueue();
+            TestCaseExecutionQueue newExeQueue;
             if (tCExecution.getQueueID() > 0) {
                 // If QueueId exist, we try to get the original execution queue.
                 try {
@@ -68,27 +61,24 @@ public class RetriesService implements IRetriesService {
     }
 
     private boolean manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
-        // copy ExecutionQueue
-        TestCaseExecutionQueue newExeQueue = tCExecutionQueue;
-
         // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
-        int newRetry = newExeQueue.getRetries() - 1;
+        int newRetry = tCExecutionQueue.getRetries() - 1;
         if (newRetry < 0) {
             LOG.debug("Execution not retried because no more retry.");
             return false; // no automatic retry if newRetry <=0
         }
-        if (TestCaseExecutionQueue.State.CANCELLED.toString().equals(newExeQueue.getState().toString())) {
+        if (TestCaseExecutionQueue.State.CANCELLED.toString().equals(tCExecutionQueue.getState().toString())) {
             LOG.debug("Execution not retried because Current Queue Entry is CANCELLED.");
             return false; // no automatic retry if source queue has been cancelled. #1752
         }
         long exeQueue = tCExecutionQueue.getId();
-        newExeQueue.setId(0);
-        newExeQueue.setDebugFlag("N");
-        newExeQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
-        newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
-        newExeQueue.setRetries(newRetry);
+        tCExecutionQueue.setId(0);
+        tCExecutionQueue.setDebugFlag("N");
+        tCExecutionQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
+        tCExecutionQueue.setState(TestCaseExecutionQueue.State.QUEUED);
+        tCExecutionQueue.setRetries(newRetry);
         // Insert execution to the Queue.
-        executionQueueService.create(newExeQueue, false, exeQueue, TestCaseExecutionQueue.State.QUEUED);
+        executionQueueService.create(tCExecutionQueue, false, exeQueue, TestCaseExecutionQueue.State.QUEUED);
         return true;
     }
 }
