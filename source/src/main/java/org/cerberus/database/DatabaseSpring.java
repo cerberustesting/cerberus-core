@@ -19,18 +19,17 @@
  */
 package org.cerberus.database;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.config.Property;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Database class, allow to get Connections defined on glassfish.
@@ -43,9 +42,7 @@ import org.springframework.stereotype.Repository;
 public class DatabaseSpring {
 
     private static final Logger LOG = LogManager.getLogger(DatabaseSpring.class);
-    /**
-     * Object autowired by Spring, linked to glassfish for getting connection.
-     */
+    // Object autowired by Spring, linked to glassfish for getting connection.
     @Autowired
     private DataSource dataSource;
     private boolean onTransaction = false;
@@ -68,7 +65,7 @@ public class DatabaseSpring {
             }
             return this.dataSource.getConnection();
         } catch (SQLException exception) {
-            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus{} : {}", System.getProperty(Property.ENVIRONMENT), exception.toString());
         }
 
         return null;
@@ -82,14 +79,14 @@ public class DatabaseSpring {
                 //automatically commits the changes
                 this.conn.commit();
             } catch (SQLException ex) {
-                LOG.warn("Exception closing connection :" + ex);
+                LOG.warn("Exception closing connection : {}", ex.toString(), ex);
             }
         }
         if (this.conn != null) {
             try {
                 this.conn.close();
             } catch (SQLException ex) {
-                LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + ex.toString());
+                LOG.warn("Can't end/close the connection to datasource jdbc/cerberus{} : {}", System.getProperty(Property.ENVIRONMENT), ex.toString());
             }
         }
 
@@ -101,7 +98,7 @@ public class DatabaseSpring {
             this.conn = this.dataSource.getConnection();
             this.conn.setAutoCommit(false);
         } catch (SQLException exception) {
-            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus{} : {}", System.getProperty(Property.ENVIRONMENT), exception.toString());
         }
     }
 
@@ -113,11 +110,11 @@ public class DatabaseSpring {
             } else {
                 this.conn.rollback();
             }
-            if (this.conn != null) {
-                this.conn.close();
-            }
+
+            this.conn.close();
+
         } catch (SQLException ex) {
-            LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + ex.toString());
+            LOG.warn("Can't end/close the connection to datasource jdbc/cerberus{} : {}", System.getProperty(Property.ENVIRONMENT), ex.toString());
         }
     }
 
@@ -134,7 +131,7 @@ public class DatabaseSpring {
         try {
             InitialContext ic = new InitialContext();
             String conName = "jdbc/" + connection;
-            LOG.info("connecting to '" + conName + "'");
+            LOG.info("connecting to '{}'", conName);
             DataSource ds = (DataSource) ic.lookup(conName);
             return ds.getConnection();
         } catch (SQLException ex) {
@@ -145,12 +142,10 @@ public class DatabaseSpring {
             try {
                 ic = new InitialContext();
                 String conName = "java:/comp/env/jdbc/" + connection;
-                LOG.info("connecting to '" + conName + "'");
+                LOG.info("connecting to '{}'", conName);
                 DataSource ds = (DataSource) ic.lookup(conName);
                 return ds.getConnection();
-            } catch (NamingException ex1) {
-                LOG.warn(ex.toString());
-            } catch (SQLException ex1) {
+            } catch (NamingException | SQLException ex1) {
                 LOG.warn(ex.toString());
             }
         }

@@ -27,12 +27,12 @@ import java.util.ArrayList;
 public interface IDocumentationDatabaseService {
 
     /**
-     * @param SQLString String that contains the SQL that will be executed
-     * against the Cerberus database.
+     * @param sqlString String that contains the SQL that will be executed
+     *                  against the Cerberus database.
      * @return "OK" if the SQL executed correctly and a string with the error
      * when not executed.
      */
-    String exeSQL(String SQLString);
+    String exeSQL(String sqlString);
 
     /**
      * This method call exeSQL with documentation script right after

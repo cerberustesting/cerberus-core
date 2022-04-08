@@ -27,18 +27,18 @@ import java.util.ArrayList;
 public interface IDatabaseVersioningService {
 
     /**
-     * @param SQLString String that contains the SQL that will be executed
-     * against the Cerberus database.
+     * @param sqlString String that contains the SQL that will be executed
+     *                  against the Cerberus database.
      * @return "OK" if the SQL executed correctly and a string with the error
      * when not executed.
      */
-    String exeSQL(String SQLString);
+    String exeSQL(String sqlString);
 
     /**
      * @return true if the database is up to date and false if the database
      * needs to be upgraded.
      */
-    boolean isDatabaseUptodate();
+    boolean isDatabaseUpToDate();
 
     /**
      * @return an array of string that contain all the SQL instructions that
@@ -48,7 +48,6 @@ public interface IDatabaseVersioningService {
     ArrayList<String> getSQLScriptFromFile();
 
     /**
-     *
      * @return
      */
     public int getSqlVersion();

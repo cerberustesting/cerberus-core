@@ -19,20 +19,21 @@
  */
 package org.cerberus.database;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.service.IMyVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * @author vertigo
@@ -44,18 +45,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
     private int sqlVersion;
 
     @Autowired
-    private IMyVersionService MyversionService;
+    private IMyVersionService myVersionService;
     @Autowired
     private DatabaseSpring databaseSpring;
 
     @Override
-    public String exeSQL(String SQLString) {
-        LOG.info("Starting Execution of '" + SQLString + "'");
+    public String exeSQL(String sqlString) {
+        LOG.info("Starting Execution of '{}'", sqlString);
 
         try (Connection connection = this.databaseSpring.connect();
-                Statement preStat = connection.createStatement();) {
-            preStat.execute(SQLString);
-            LOG.info("'" + SQLString + "' Executed successfully.");
+             Statement preStat = connection.createStatement()) {
+            preStat.execute(sqlString);
+            LOG.info("'{}'  Executed successfully.", sqlString);
         } catch (Exception exception1) {
             LOG.error(exception1.toString(), exception1);
             return exception1.toString();
@@ -64,16 +65,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
     }
 
     @Override
-    public boolean isDatabaseUptodate() {
+    public boolean isDatabaseUpToDate() {
         // Get version from the database
-        MyVersion MVersion;
-        MVersion = MyversionService.findMyVersionByKey("database");
-        if (MVersion != null) {
+        MyVersion myVersion;
+        myVersion = myVersionService.findMyVersionByKey("database");
+        if (myVersion != null) {
             // compare both to see if version is uptodate.
-            if (getSqlVersion() == MVersion.getValue()) {
+            if (getSqlVersion() == myVersion.getValue()) {
                 return true;
             }
-            LOG.info("Database needs an upgrade - Script : " + getSqlVersion() + " Database : " + MVersion.getValue());
+            LOG.info("Database needs an upgrade - Script : {} Database : {}", getSqlVersion(), myVersion.getValue());
         }
         return false;
     }
@@ -95,42 +96,35 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
             URL resource = classLoader.getResource("database.sql");
             if (resource == null) {
                 LOG.error("file not found");
-            } else {
-                file = new File(resource.toURI());
+                return result;
+            }
 
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new FileReader(file));
-                    String line = reader.readLine();
-                    String sqlLine = "";
-                    while (line != null) {
-                        if (!((line.startsWith("--")) || line.isEmpty())) {
-                            // Line is not empty and does not start with --
-                            if (line.startsWith(" ")) {
-                                sqlLine += line;
-                            } else {
-                                // This is a new SQL Instruction;
-                                if (!sqlLine.isEmpty()) {
-                                    result.add(sqlLine);
-                                }
-                                sqlLine = line;
+            file = new File(resource.toURI());
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line = reader.readLine();
+                StringBuilder sqlLine = new StringBuilder();
+                while (line != null) {
+                    if (!((line.startsWith("--")) || line.isEmpty())) {
+                        // Line is not empty and does not start with --
+                        if (line.startsWith(" ")) {
+                            sqlLine.append(line);
+                        } else {
+                            // This is a new SQL Instruction;
+                            if (sqlLine.length() > 0) {
+                                result.add(sqlLine.toString());
                             }
+                            sqlLine = new StringBuilder(line);
                         }
-                        // read next line
-                        line = reader.readLine();
                     }
-                    if (!sqlLine.isEmpty()) {
-                        result.add(sqlLine);
-                    }
-                    reader.close();
-                } catch (IOException e) {
-                    LOG.error(e, e);
-                } finally {
-                    if (reader != null) {
-                        reader.close();
-                    }
+                    // read next line
+                    line = reader.readLine();
                 }
-
+                if (sqlLine.length() > 0) {
+                    result.add(sqlLine.toString());
+                }
+            } catch (IOException e) {
+                LOG.error(e, e);
             }
         } catch (Exception ex) {
             LOG.error(ex, ex);

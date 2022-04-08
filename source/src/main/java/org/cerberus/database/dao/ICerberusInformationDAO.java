@@ -19,8 +19,9 @@
  */
 package org.cerberus.database.dao;
 
-import java.util.HashMap;
 import org.cerberus.util.answer.AnswerItem;
+
+import java.util.HashMap;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -32,10 +33,5 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface ICerberusInformationDAO {
 
-    /**
-     *
-     * @return
-     */
     AnswerItem<HashMap<String, String>> getDatabaseInformation();
-
 }

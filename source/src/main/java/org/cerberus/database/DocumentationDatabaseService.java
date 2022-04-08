@@ -19,17 +19,17 @@
  */
 package org.cerberus.database;
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.ArrayList;
-import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 /**
- *
  * @author ryltar this is a singleton. 1 per instance
  */
 @Component
@@ -50,20 +50,20 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
     private DatabaseSpring databaseSpring;
 
     @Override
-    public String exeSQL(String SQLString) {
-        String SQLStringLog = "";
-        if (SQLString != null) {
-            if (SQLString.length() > 51) {
-                SQLStringLog = SQLString.substring(0, 50) + "...'";
+    public String exeSQL(String sqlString) {
+        String sqlStringLog = "";
+        if (sqlString != null) {
+            if (sqlString.length() > 51) {
+                sqlStringLog = sqlString.substring(0, 50) + "...'";
             } else {
-                SQLStringLog = SQLString;
+                sqlStringLog = sqlString;
             }
         }
-        LOG.info("Starting Execution of '" + SQLStringLog + "'");
+        LOG.info("Starting Execution of '{}'", sqlStringLog);
         try (Connection connection = this.databaseSpring.connect();
-                Statement preStat = connection.createStatement();) {
-            preStat.execute(SQLString);
-            LOG.info("'" + SQLStringLog + "' Executed successfully.");
+             Statement preStat = connection.createStatement()) {
+            preStat.execute(sqlString);
+            LOG.info("'{}' Executed successfully.", sqlStringLog);
         } catch (Exception exception1) {
             LOG.warn("Could not refresh Documentation tables. Maybe database is not yet initialized ?");
             LOG.debug(exception1.toString(), exception1);
@@ -83,9 +83,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
 
         // Init Documentation table.
         b = new StringBuilder();
-        /**
-         * Cerberus Official Standard TABLES.
-         */
+        // Cerberus Official Standard TABLES.
         b.append("INSERT INTO `documentation` VALUES ");
         b.append("('application','Application','','en','Application','','_application_attributes')");
         b.append(",('application','Application','','ru','Приложение','','_application_attributes')");
@@ -139,31 +137,31 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','description','','ru','Описание','','_service_library')");
         b.append(",('appservice','description','','fr','Description','','_librairie_de_services')");
         b.append(",('appservice','group','','en','Group','','_service_library')");
-		b.append(",('appservice','group','','ru','Группа','','_service_library')");
+        b.append(",('appservice','group','','ru','Группа','','_service_library')");
         b.append(",('appservice','group','','fr','Groupe','','_librairie_de_services')");
         b.append(",('appservice','method','','en','Method','','_service_library')");
-		b.append(",('appservice','method','','ru','Метод','','_service_library')");
+        b.append(",('appservice','method','','ru','Метод','','_service_library')");
         b.append(",('appservice','method','','fr','Méthode','','_librairie_de_services')");
         b.append(",('appservice','operation','','en','Operation','','_service_library')");
-		b.append(",('appservice','operation','','ru','Операция','','_service_library')");
+        b.append(",('appservice','operation','','ru','Операция','','_service_library')");
         b.append(",('appservice','operation','','fr','Operation','','_librairie_de_services')");
         b.append(",('appservice','service','','en','Service','','_service_library')");
-		b.append(",('appservice','service','','ru','Служба','','_service_library')");
+        b.append(",('appservice','service','','ru','Служба','','_service_library')");
         b.append(",('appservice','service','','fr','Service','','_librairie_de_services')");
         b.append(",('appservice','servicePath','','en','Service Path','This field is used to set the location of your service. you can put a <b>URL</b> as following : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  you can also put a <b>relative path</b> as following : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_service_library')");
         b.append(",('appservice','servicePath','','ru','Путь к службе','Это поле используется для Установки расположения вашей службы. Вы можете вставить <b>URL</b> по кримеру : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  Вы можете так же указать относительный путь <b>relative path</b> как указано ниже : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /МойФайл.txt </code> </center>','_service_library')");
-		b.append(",('appservice','servicePath','','fr','Chemin du service','Ce champ est utilisé pour specifier où se situe votre service. vous pouvez mettre une <b>URL</b> comme ceci : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  vous pouvez aussi mettre un <b>chemin relatif</b> comme cela : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_librairie_de_services')");
+        b.append(",('appservice','servicePath','','fr','Chemin du service','Ce champ est utilisé pour specifier où se situe votre service. vous pouvez mettre une <b>URL</b> comme ceci : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  vous pouvez aussi mettre un <b>chemin relatif</b> comme cela : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_librairie_de_services')");
         b.append(",('appservice','srvRequest','','en','Request','','_service_library')");
-		b.append(",('appservice','srvRequest','','ru','Запрос','','_service_library')");
+        b.append(",('appservice','srvRequest','','ru','Запрос','','_service_library')");
         b.append(",('appservice','srvRequest','','fr','Requête','','_librairie_de_services')");
         b.append(",('appservice','type','','en','Type','','_service_library')");
-		b.append(",('appservice','type','','ru','Тип','','_service_library')");
+        b.append(",('appservice','type','','ru','Тип','','_service_library')");
         b.append(",('appservice','type','','fr','Type','','_librairie_de_services')");
         b.append(",('appservicecontent','Sort','','en','Sort','','_service_library')");
-		b.append(",('appservicecontent','Sort','','ru','Сортировать','','_service_library')");
+        b.append(",('appservicecontent','Sort','','ru','Сортировать','','_service_library')");
         b.append(",('appservicecontent','Sort','','fr','Tri','','_librairie_de_services')");
         b.append(",('appservicecontent','Key','','en','Key','','_service_library')");
-		b.append(",('appservicecontent','Key','','ru','Ключ','','_service_library')");
+        b.append(",('appservicecontent','Key','','ru','Ключ','','_service_library')");
         b.append(",('appservicecontent','Key','','fr','Clé','','_librairie_de_services')");
         b.append(",('appservicecontent','Value','','en','Value','','_service_library')");
         b.append(",('appservicecontent','Value','','ru','Значение','','_service_library')");
@@ -193,7 +191,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionbatch','build','','en','Build','Build during the excution of the Batch Event.',NULL)");
         b.append(",('buildrevisionbatch','build','','fr','Build','Build lors de l\\'éxecution de l\\'événement Batch.',NULL)");
         b.append(",('buildrevisionbatch','dateBatch','','en','Date','',NULL)");
-		b.append(",('buildrevisionbatch','dateBatch','','ru','Дата','',NULL)");
+        b.append(",('buildrevisionbatch','dateBatch','','ru','Дата','',NULL)");
         b.append(",('buildrevisionbatch','dateBatch','','fr','Date','',NULL)");
         b.append(",('buildrevisionbatch','revision','','en','Revision','Revision during the excution of the Batch Event.',NULL)");
         b.append(",('buildrevisionbatch','revision','','fr','Revision','Revision lors de l\\'éxecution de l\\'événement Batch.',NULL)");
@@ -217,7 +215,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','Build','','en','Build','','_build_content')");
         b.append(",('buildrevisionparameters','Build','','fr','Build','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','datecre','','en','Creation Date','','_build_content')");
-		b.append(",('buildrevisionparameters','datecre','','ru','Дата создания','','_build_content')");
+        b.append(",('buildrevisionparameters','datecre','','ru','Дата создания','','_build_content')");
         b.append(",('buildrevisionparameters','datecre','','fr','Date de Création','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','id','','en','ID','','_build_content')");
         b.append(",('buildrevisionparameters','id','','fr','ID','','_contenu_des_builds')");
@@ -228,7 +226,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','mavenArtifactId','','en','Maven Artifact ID','','_build_content')");
         b.append(",('buildrevisionparameters','mavenArtifactId','','fr','Maven Artifact ID','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','mavenGroupId','','en','Maven Group ID','','_build_content')");
-		b.append(",('buildrevisionparameters','mavenGroupId','','ru','Идентификатор Maven Группы','','_build_content')");																															  
+        b.append(",('buildrevisionparameters','mavenGroupId','','ru','Идентификатор Maven Группы','','_build_content')");
         b.append(",('buildrevisionparameters','mavenGroupId','','fr','ID du groupe Maven','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','mavenVersion','','en','Maven Version','','_build_content')");
         b.append(",('buildrevisionparameters','mavenVersion','','fr','Maven Version','','_contenu_des_builds')");
@@ -325,7 +323,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam_log','Creator','','en','User','',NULL)");
         b.append(",('countryenvparam_log','Creator','','fr','Utilisateur','',NULL)");
         b.append(",('countryenvparam_log','datecre','','en','Date & Time','',NULL)");
-		b.append(",('countryenvparam_log','datecre','','ru','Дата и время','',NULL)");
+        b.append(",('countryenvparam_log','datecre','','ru','Дата и время','',NULL)");
         b.append(",('countryenvparam_log','datecre','','fr','Date & Heure','',NULL)");
         b.append(",('countryenvparam_log','Description','','en','Description','',NULL)");
         b.append(",('countryenvparam_log','Description','','ru','Описание','',NULL)");
@@ -366,7 +364,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('invariant','COUNTRY','','en','Country','A <code class=\\'doc-crbvvoca\\'>country</code> is a declination of a <code class=\\'doc-crbvvoca\\'>system</code> in an <code class=\\'doc-crbvvoca\\'>environment</code> with a specific configuration.<br>This is called <code class=\\'doc-crbvvoca\\'>country</code> because for <code class=\\'doc-crbvvoca\\'>systems</code> that support multiple countries, every <code class=\\'doc-crbvvoca\\'>country</code> is deployed on different <code class=\\'doc-crbvvoca\\'>environments</code>. Each of them can have the same version of the <code class=\\'doc-crbvvoca\\'>application</code> but with different configuration. As a consequence, some <code class=\\'doc-crbvvoca\\'>test case</code> may or may not be relevant on that <code class=\\'doc-crbvvoca\\'>country</code>.',NULL)");
         b.append(",('invariant','COUNTRY','','fr','Pays','Un <code class=\\'doc-crbvvoca\\'>pays</code> est une declinaison d\\'un <code class=\\'doc-crbvvoca\\'>système</code> dans un <code class=\\'doc-crbvvoca\\'>environnement</code> avec une configuration specifique.<br>Ca porte le nom de <code class=\\'doc-crbvvoca\\'>pays</code> car pour les <code class=\\'doc-crbvvoca\\'>systèmes</code> qui supportent plusieurs pays, chaque <code class=\\'doc-crbvvoca\\'>pays</code> est deployé sur un <code class=\\'doc-crbvvoca\\'>environnement</code> different. Chacun d\\'entre eux peut avoir la même version de l\\'<code class=\\'doc-crbvvoca\\'>application</code> mais avec differentes configuration. En conséquence, certain <code class=\\'doc-crbvvoca\\'>cas de test</code> peuvent ou non etre pertinant sur ce <code class=\\'doc-crbvvoca\\'>pays</code>.',NULL)");
         b.append(",('invariant','ENVGP','','en','Environment Group','',NULL)");
-		b.append(",('invariant','ENVGP','','ru','Группа окружения','',NULL)");																			   
+        b.append(",('invariant','ENVGP','','ru','Группа окружения','',NULL)");
         b.append(",('invariant','ENVGP','','fr','Groupe d\\'Environnement','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','en','Environment','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','fr','Environnement','',NULL)");
@@ -397,7 +395,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','longdesc','','ru','Полное описание','',NULL)");
         b.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         b.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");
-		b.append(",('label','parentid','','ru','Родительская метка идентификатора','<p>TЭто значение представляет собой идентификатор родительской метки. Это позволяет группировать или создавать иерархию меток</p>',NULL)");																																																																																						   
+        b.append(",('label','parentid','','ru','Родительская метка идентификатора','<p>TЭто значение представляет собой идентификатор родительской метки. Это позволяет группировать или создавать иерархию меток</p>',NULL)");
         b.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>',NULL)");
         b.append(",('label','reqcriticity','','en','Criticity','',NULL)");
         b.append(",('label','reqcriticity','','fr','Criticité','',NULL)");
@@ -424,7 +422,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('logevent','remoteip','','en','Remote IP','IP from which the user connected to Cerberus to perform the action.',NULL)");
         b.append(",('logevent','remoteip','','fr','IP Distante','IP à partir de laquelle l\\'utilisateur s\\'est connecté à Cerberus.',NULL)");
         b.append(",('logevent','time','','en','Time','Timestamp of the log message.',NULL)");
-		b.append(",('logevent','time','','ru','Время','Метка времени сообщения в логе .',NULL)");
+        b.append(",('logevent','time','','ru','Время','Метка времени сообщения в логе .',NULL)");
         b.append(",('logevent','time','','fr','Date','Date à laquelle l\\'action a été effectuée.',NULL)");
         b.append(",('myversion','key','','en','Key','This is the reference of the component inside Cerberus that we want to keep track of the version.',NULL)");
         b.append(",('myversion','key','','fr','Clé',NULL,NULL)");
@@ -537,7 +535,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('tag','campaign','','en','Campaign','Campaign that was at the origin of the creation of the Tag.',NULL)");
         b.append(",('tag','campaign','','fr','Campagne','Campagne à l\\'origine de la création du Tag',NULL)");
         b.append(",('tag','dateendqueue','','en','End Of Queue Date','Date and Time that correspond to the moment when all execution on the tag are finished. That means that there are no more PE execution and no more QUEUED execution in the queue.',NULL)");
-		b.append(",('tag','dateendqueue','','ru','Дата окончания очереди ','Дата и время когда все выполнения по тегу были завершены. That means that there are no more PE execution and no more QUEUED execution in the queue.',NULL)");
+        b.append(",('tag','dateendqueue','','ru','Дата окончания очереди ','Дата и время когда все выполнения по тегу были завершены. That means that there are no more PE execution and no more QUEUED execution in the queue.',NULL)");
         b.append(",('tag','dateendqueue','','fr','Fin de Queue','Date et Heure de fin de l\\'ensemble des executions du tags. Sous entendu qu\\'ils n\\'y a plus d\\'éxecution en status PE ni d\\'execution en attente dans la queue.',NULL)");
         b.append(",('tag','nbexe','','en','Exe Nb','Total nb of execution done inside the tag. An execution that was retried 3 times will count as 3.',NULL)");
         b.append(",('tag','nbexe','','fr','Nb Exe','Nombre total d\\'éxécution associé au tag. Une éxécution qui a nécessité 3 retry compte pour 3.',NULL)");
@@ -554,7 +552,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('test','Automated','','en','Automated','Define if the test is automated or not.','_test')");
         b.append(",('test','Automated','','fr','Automatisé','Boléen qui définit si le test est automatisé ou non','_test')");
         b.append(",('test','dateCreation','','en','Creation date','The date when the test have been created','_test')");
-		b.append(",('test','dateCreation','','ru','Дата создания','Дата когда тест был создан','_test')");
+        b.append(",('test','dateCreation','','ru','Дата создания','Дата когда тест был создан','_test')");
         b.append(",('test','dateCreation','','fr','Date de création','Date à laquelle le test a été créé','_test')");
         b.append(",('test','description','','en','Folder Description','This is the description of the <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
         b.append(",('test','description','','ru','Описание папки','Это описание <code class=\\'doc-crbvvoca\\'>теста</code>.','_test')");
@@ -627,7 +625,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','IsActive','','fr','Activation globale','','_cas_de_test')");
         b.append(",('testcase','TCDateCrea','','en','Creation Date','This is the <code class=\\'doc-crbvvoca\\'>test case</code> creation date.','_testcase')");
         b.append(",('testcase','TCDateCrea','','ru','Дата создания','Это дата создания <code class=\\'doc-crbvvoca\\'>тестового случая</code>.','_testcase')");
-		b.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
+        b.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
         b.append(",('testcase','TestCase','','en','Testcase ID','A <code class=\\'doc-crbvvoca\\'>test case</code> is a scenario that test a specific feature of an <code class=\\'doc-crbvvoca\\'>application</code>.','_testcase')");
         b.append(",('testcase','TestCase','','fr','ID du Cas de test','','_cas_de_test')");
         b.append(",('testcase','version','','en','Version','Version number of the testcase.','_testcase')");
@@ -733,7 +731,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueuedep','status','','en','Status',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','status','','fr','Status',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','releaseDate','','en','Release Date',NULL,NULL)");
-		b.append(",('testcaseexecutionqueuedep','releaseDate','','ru','Дата выпуска',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','releaseDate','','ru','Дата выпуска',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','releaseDate','','fr','Date de liberation',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
@@ -782,7 +780,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaselabel','labelId','','en','Label ID','',NULL)");
         b.append(",('testcaselabel','labelId','','fr','ID du label','',NULL)");
         b.append(",('testcasestep','step','','en','Step','A step is a group of actions.',NULL)");
-		b.append(",('testcasestep','step','','ru','Шаг','Шаг это группа действий.',NULL)");																									
+        b.append(",('testcasestep','step','','ru','Шаг','Шаг это группа действий.',NULL)");
         b.append(",('testcasestepaction','Action','','en','Action','It is the action that will be executed by Cerberus.<br><br>It can take the following values :',NULL)");
         b.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\n\n<br/><br/>\n\nUsage :<br/>\n\n<doc class=\"usage\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Field</th>\n   <th class=\\'ex\\'>Usage</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value1</td>\n   <td class=\\'ex\\'>Property name to be calculated.</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value2</td>\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\n  </tr>\n </table>\n</doc>\n\n<br/><br/>\n\nExamples :<br/>\n\n<doc class=\"examples\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Value1</th>\n   <th class=\\'ex\\'>Value2</th>\n   <th class=\\'ex\\'>Result</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'></td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\n  </tr>\n </table>\n</doc>',NULL)");
         b.append(",('testcasestepaction','Action','callSoap','en','Call Soap.','TBD',NULL)");
@@ -887,7 +885,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the data entry apply to ALL countries. </p>','_data_library')");
         b.append(",('testdatalib','country','','fr','Pays',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','created','','en','Creation Date','','_data_library')");
-		b.append(",('testdatalib','created','','ru','Дата создания','','_data_library')");
+        b.append(",('testdatalib','created','','ru','Дата создания','','_data_library')");
         b.append(",('testdatalib','created','','fr','Date de création',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','creator','','en','Creator','User who created the data.','_data_library')");
         b.append(",('testdatalib','creator','','fr','Créateur',NULL,'_librairie_de_données')");
@@ -907,10 +905,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','environment','','en','Environment','<p>Environment where the entry is available. If not specified, then the data entry apply to ALL environments.</p>','_data_library')");
         b.append(",('testdatalib','environment','','fr','Environnement',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','group','','en','Group','<p>Name that groups entries that are at some extent correlated. It is an <b>optional</b> attribute.</p>','_data_library')");
-		b.append(",('testdatalib','group','','ru','Группа','<p>Имя, которое группирует связанные записи. Это <b>не обязательный</b> атрибут.</p>','_data_library')");																																																						
+        b.append(",('testdatalib','group','','ru','Группа','<p>Имя, которое группирует связанные записи. Это <b>не обязательный</b> атрибут.</p>','_data_library')");
         b.append(",('testdatalib','group','','fr','Groupe',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodified','','en','Modification Date','','_data_library')");
-		b.append(",('testdatalib','lastmodified','','ru','Дата модификации','','_data_library')");
+        b.append(",('testdatalib','lastmodified','','ru','Дата модификации','','_data_library')");
         b.append(",('testdatalib','lastmodified','','fr','Dernière modification',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodifier','','en','Last Modifier','User who last modified the data.','_data_library')");
         b.append(",('testdatalib','lastmodifier','','fr','Dernier modificateur','Utilisateur qui a modifié en dernier la donnée','_librairie_de_données')");
@@ -972,7 +970,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('user','apiKey','','fr','API Key','','_management_des_utilisateurs')");
         b.append(",('usergroup','GroupName','','en','Role','Authorities are managed by role. In order to be granted to a set of feature, you must belong to the corresponding role.<br>Every user can of course belong to as many role as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every role.<br>Some roles are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum role you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> role on top of <code class=\\'doc-fixed\\'>TestRO</code> role.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> role.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum role you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> role on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> role.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         b.append(",('usergroup','GroupName','','fr','Role',NULL,'_management_des_utilisateurs')");
-        /**
+        /*
          * Cerberus Pages Documentation.
          */
         b.append(",('page_application','button_create','','en','Create new Application','',NULL)");
@@ -1019,10 +1017,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_applicationObject','createapplicationobjectfield','','ru','Создать объект приложения','',NULL)");
         b.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d\\'application','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','en','Creation date','',NULL)");
-		b.append(",('page_applicationObject','DateCreated','','ru','Дата создания','',NULL)");
+        b.append(",('page_applicationObject','DateCreated','','ru','Дата создания','',NULL)");
         b.append(",('page_applicationObject','DateCreated','','fr','Date de création','',NULL)");
         b.append(",('page_applicationObject','DateModif','','en','Last modification date','',NULL)");
-		b.append(",('page_applicationObject','DateModif','','ru','Дата последней модификации','',NULL)");
+        b.append(",('page_applicationObject','DateModif','','ru','Дата последней модификации','',NULL)");
         b.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','',NULL)");
         b.append(",('page_applicationObject','editapplicationobjectfield','','ru','Редактировать объект приложения','',NULL)");
@@ -1229,7 +1227,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_environment','to','','en','To','',NULL)");
         b.append(",('page_environment','to','','fr','Destinataire','',NULL)");
         b.append(",('page_environment','envgp','','en','Environment Group','',NULL)");
-		b.append(",('page_environment','envgp','','ru','Группа окружения','',NULL)");																					  
+        b.append(",('page_environment','envgp','','ru','Группа окружения','',NULL)");
         b.append(",('page_environment','envgp','','fr','Groupe de l\\' environnement','',NULL)");
         b.append(",('page_eventhook','title','','en','Event Hooks','',NULL)");
         b.append(",('page_eventhook','title','','fr','Point d\\'entrée d\\'événements','',NULL)");
@@ -1451,144 +1449,144 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','en','Regression Execution Status on External Applications','This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that <b>does not</b> belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)',NULL)");
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','fr','Statistiques d\\'Execution en Régression sur des Applications Externes',NULL,NULL)");
         b.append(",('page_global','beta_message','','en','This page is in beta, some features may not be available or fully functional.','',NULL)");
-		b.append(",('page_global','beta_message','','ru','Эта страница находится в бета-тестировании, некоторые возможности могут быть доступны не полностью.','',NULL)");
+        b.append(",('page_global','beta_message','','ru','Эта страница находится в бета-тестировании, некоторые возможности могут быть доступны не полностью.','',NULL)");
         b.append(",('page_global','beta_message','','fr','Cette page est en beta, certaines fonctionnalités peuvent être indisponnible ou non complètes.','',NULL)");
         b.append(",('page_global','btn_add','','en','Create','',NULL)");
-		b.append(",('page_global','btn_add','','ru','Создать','',NULL)");
+        b.append(",('page_global','btn_add','','ru','Создать','',NULL)");
         b.append(",('page_global','btn_add','','fr','Ajouter','',NULL)");
         b.append(",('page_global','btn_cancel','','en','Cancel','',NULL)");
-		b.append(",('page_global','btn_cancel','','ru','Отмена','',NULL)");
+        b.append(",('page_global','btn_cancel','','ru','Отмена','',NULL)");
         b.append(",('page_global','btn_cancel','','fr','Annuler','',NULL)");
         b.append(",('page_global','btn_clearfilter','','en','','',NULL)");
         b.append(",('page_global','btn_clearfilter','','fr','','',NULL)");
         b.append(",('page_global','btn_delete','','en','Delete','',NULL)");
-		b.append(",('page_global','btn_delete','','ru','Удалить','',NULL)");
+        b.append(",('page_global','btn_delete','','ru','Удалить','',NULL)");
         b.append(",('page_global','btn_delete','','fr','Supprimer','',NULL)");
         b.append(",('page_global','btn_duplicate','','en','Duplicate','',NULL)");
-		b.append(",('page_global','btn_duplicate','','ru','Дублировать','',NULL)");
+        b.append(",('page_global','btn_duplicate','','ru','Дублировать','',NULL)");
         b.append(",('page_global','btn_duplicate','','fr','Dupliquer','',NULL)");
         b.append(",('page_global','btn_edit','','en','Edit',NULL,NULL)");
-		b.append(",('page_global','btn_edit','','ru','Редактировать',NULL,NULL)");
+        b.append(",('page_global','btn_edit','','ru','Редактировать',NULL,NULL)");
         b.append(",('page_global','btn_edit','','fr','Editer',NULL,NULL)");
         b.append(",('page_global','btn_export','','en','Export','',NULL)");
-		b.append(",('page_global','btn_export','','ru','Экспорт','',NULL)");
+        b.append(",('page_global','btn_export','','ru','Экспорт','',NULL)");
         b.append(",('page_global','btn_export','','fr','Export',NULL,NULL)");
         b.append(",('page_global','btn_restoreuserpreferences','','en','Load','',NULL)");
-		b.append(",('page_global','btn_restoreuserpreferences','','ru','Загрузить','',NULL)");
+        b.append(",('page_global','btn_restoreuserpreferences','','ru','Загрузить','',NULL)");
         b.append(",('page_global','btn_restoreuserpreferences','','fr','Charger','',NULL)");
         b.append(",('page_global','btn_savetableconfig','','en','Save','',NULL)");
-		b.append(",('page_global','btn_savetableconfig','','ru','Сохранить','',NULL)");
+        b.append(",('page_global','btn_savetableconfig','','ru','Сохранить','',NULL)");
         b.append(",('page_global','btn_savetableconfig','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','en','Show/Hide','',NULL)");
-		b.append(",('page_global','btn_showHideColumns','','ru','Показать/Скрыть','',NULL)");
+        b.append(",('page_global','btn_showHideColumns','','ru','Показать/Скрыть','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
         b.append(",('page_global','buttonAdd','','en','Create','',NULL)");
-		b.append(",('page_global','buttonAdd','','ru','Создать','',NULL)");
+        b.append(",('page_global','buttonAdd','','ru','Создать','',NULL)");
         b.append(",('page_global','buttonAdd','','fr','Créer','',NULL)");
         b.append(",('page_global','buttonDuplicate','','en','Duplicate','',NULL)");
-		b.append(",('page_global','buttonDuplicate','','ru','дублировать','',NULL)");
+        b.append(",('page_global','buttonDuplicate','','ru','дублировать','',NULL)");
         b.append(",('page_global','buttonDuplicate','','fr','Dupliquer','',NULL)");
         b.append(",('page_global','buttonEdit','','en','Save','',NULL)");
-		b.append(",('page_global','buttonEdit','','ru','Сохранить','',NULL)");
+        b.append(",('page_global','buttonEdit','','ru','Сохранить','',NULL)");
         b.append(",('page_global','buttonEdit','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','buttonClose','','en','Close','',NULL)");
-		b.append(",('page_global','buttonClose','','ru','Закрыть','',NULL)");
+        b.append(",('page_global','buttonClose','','ru','Закрыть','',NULL)");
         b.append(",('page_global','buttonClose','','fr','Fermer','',NULL)");
         b.append(",('page_global','buttonConfirm','','en','Yes','',NULL)");
-		b.append(",('page_global','buttonConfirm','','ru','Да','',NULL)");
+        b.append(",('page_global','buttonConfirm','','ru','Да','',NULL)");
         b.append(",('page_global','buttonConfirm','','fr','Oui','',NULL)");
         b.append(",('page_global','buttonDismiss','','en','No','',NULL)");
-		b.append(",('page_global','buttonDismiss','','ru','Нет','',NULL)");
+        b.append(",('page_global','buttonDismiss','','ru','Нет','',NULL)");
         b.append(",('page_global','buttonDismiss','','fr','Non','',NULL)");
         b.append(",('page_global','buttonLoad','','en','Load','',NULL)");
-		b.append(",('page_global','buttonLoad','','ru','Загрузить','',NULL)");
+        b.append(",('page_global','buttonLoad','','ru','Загрузить','',NULL)");
         b.append(",('page_global','buttonLoad','','fr','Charger','',NULL)");
         b.append(",('page_global','button_massAction','','en','Mass Action',NULL,NULL)");
-		b.append(",('page_global','button_massAction','','ru','Массовая операция',NULL,NULL)");
+        b.append(",('page_global','button_massAction','','ru','Массовая операция',NULL,NULL)");
         b.append(",('page_global','button_massAction','','fr','Action en masse',NULL,NULL)");
         b.append(",('page_global','columnAction','','en','Actions','',NULL)");
-		b.append(",('page_global','columnAction','','ru','Действия','',NULL)");
+        b.append(",('page_global','columnAction','','ru','Действия','',NULL)");
         b.append(",('page_global','columnAction','','fr','Actions','',NULL)");
         b.append(",('page_global','export_data','','en','Export Data','',NULL)");
-		b.append(",('page_global','export_data','','ru','Экспорт данных','',NULL)");
+        b.append(",('page_global','export_data','','ru','Экспорт данных','',NULL)");
         b.append(",('page_global','export_data','','fr','Export de Données',NULL,NULL)");
         b.append(",('page_global','filters','','en','Filters','',NULL)");
-		b.append(",('page_global','filters','','ru','Фильтры','',NULL)");
+        b.append(",('page_global','filters','','ru','Фильтры','',NULL)");
         b.append(",('page_global','filters','','fr','Filtres','',NULL)");
         b.append(",('page_global','footer_bug','','en','Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.','',NULL)");
-		b.append(",('page_global','footer_bug','','ru','Откройте сообщение об ошибке или попросите добавить новую функцию <a target=\"_blank\"  href=\"%LINK%\">здесь</a>.','',NULL)");
+        b.append(",('page_global','footer_bug','','ru','Откройте сообщение об ошибке или попросите добавить новую функцию <a target=\"_blank\"  href=\"%LINK%\">здесь</a>.','',NULL)");
         b.append(",('page_global','footer_bug','','fr','Ouvrir un bug ou envoyer une demande d\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.','',NULL)");
         b.append(",('page_global','footer_text','','en','Page started generating on %SERVERDATE% by %VERSION% Build %BUILD% in %ENV% and took %TIMING%ms (browser date : %DATE%)','',NULL)");
-		b.append(",('page_global','footer_text','','ru','Страница начала генерироваться %SERVERDATE% Версия %VERSION% Сборка %BUILD% в %ENV% и заняла %TIMING% мс (browser date : %DATE%)','',NULL)");
+        b.append(",('page_global','footer_text','','ru','Страница начала генерироваться %SERVERDATE% Версия %VERSION% Сборка %BUILD% в %ENV% и заняла %TIMING% мс (browser date : %DATE%)','',NULL)");
         b.append(",('page_global','footer_text','','fr','Page générée le %SERVERDATE% par %VERSION% Build %BUILD% en environnement : %ENV% et a pris %TIMING%ms (date du navigteur : %DATE%)','',NULL)");
         b.append(",('page_global','invalid_extension_message','','en','Please select a file with the extension','',NULL)");
-		b.append(",('page_global','invalid_extension_message','','ru','Пожалуйста, выберите файл с расширением','',NULL)");
+        b.append(",('page_global','invalid_extension_message','','ru','Пожалуйста, выберите файл с расширением','',NULL)");
         b.append(",('page_global','invalid_extension_message','','fr','Merci de selectionner un fichier avec l\\'extension ','',NULL)");
         b.append(",('page_global','lbl_all','','en','All','',NULL)");
-		b.append(",('page_global','lbl_all','','ru','Все','',NULL)");
+        b.append(",('page_global','lbl_all','','ru','Все','',NULL)");
         b.append(",('page_global','lbl_all','','fr','Tous','',NULL)");
         b.append(",('page_global','message_delete','','en','Do you want to delete <b>\\'%ENTRY%\\'</b> %TABLE% ?','',NULL)");
-		b.append(",('page_global','message_delete','','ru','Вы хотите удалить <b>\\'%ENTRY%\\'</b> %TABLE% ?','',NULL)");
+        b.append(",('page_global','message_delete','','ru','Вы хотите удалить <b>\\'%ENTRY%\\'</b> %TABLE% ?','',NULL)");
         b.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','',NULL)");
         b.append(",('page_global','message_massActionError','','en','Please select at least 1 line before trying to perform a mass action!',NULL,NULL)");
-		b.append(",('page_global','message_massActionError','','ru','Пожалуйста, выберите хотя бы 1 строку, прежде чем пытаться выполнить массовое действие!',NULL,NULL)");
+        b.append(",('page_global','message_massActionError','','ru','Пожалуйста, выберите хотя бы 1 строку, прежде чем пытаться выполнить массовое действие!',NULL,NULL)");
         b.append(",('page_global','message_massActionError','','fr','Merci de selectionner au moins 1 élément avant de faire une action en masse !',NULL,NULL)");
         b.append(",('page_global','message_exportActionError','','en','Please select at least 1 testcase to export!',NULL,NULL)");
-		b.append(",('page_global','message_exportActionError','','ru','Выберите хотя бы 1 тестовый случай для экспорта!',NULL,NULL)");
+        b.append(",('page_global','message_exportActionError','','ru','Выберите хотя бы 1 тестовый случай для экспорта!',NULL,NULL)");
         b.append(",('page_global','message_exportActionError','','fr','Merci de selectionner au moins 1 cas de test à exporter !',NULL,NULL)");
         b.append(",('page_global','old_page','','en','Old Page','',NULL)");
-		b.append(",('page_global','old_page','','ru','Старая страница','',NULL)");
+        b.append(",('page_global','old_page','','ru','Старая страница','',NULL)");
         b.append(",('page_global','old_page','','fr','Ancienne Page','',NULL)");
         b.append(",('page_global','processing','','en','Processing…','',NULL)");
-		b.append(",('page_global','processing','','ru','Обновить…','',NULL)");
+        b.append(",('page_global','processing','','ru','Обновить…','',NULL)");
         b.append(",('page_global','processing','','fr','Traitement en cours...','',NULL)");
         b.append(",('page_global','refresh','','en','Refresh',NULL,NULL)");
-		b.append(",('page_global','refresh','','ru','Обновить',NULL,NULL)");
+        b.append(",('page_global','refresh','','ru','Обновить',NULL,NULL)");
         b.append(",('page_global','refresh','','fr','Rafraichir',NULL,NULL)");
         b.append(",('page_global','tooltip_clearfilter','','en','Clear filters applied','',NULL)");
-		b.append(",('page_global','tooltip_clearfilter','','ru','Очистить фильтры','',NULL)");
+        b.append(",('page_global','tooltip_clearfilter','','ru','Очистить фильтры','',NULL)");
         b.append(",('page_global','tooltip_clearfilter','','fr','Effacer les filtres appliqués','',NULL)");
         b.append(",('page_global','tooltip_column_filter_empty','','en','Filter',NULL,NULL)");
-		b.append(",('page_global','tooltip_column_filter_empty','','ru','Фильтр',NULL,NULL)");
+        b.append(",('page_global','tooltip_column_filter_empty','','ru','Фильтр',NULL,NULL)");
         b.append(",('page_global','tooltip_column_filter_empty','','fr','Filtre',NULL,NULL)");
         b.append(",('page_global','tooltip_column_filter_filtered','','en','Filtered value(s)',NULL,NULL)");
-		b.append(",('page_global','tooltip_column_filter_filtered','','ru','Отфильтрованное(ые) значение(я) ',NULL,NULL)");
+        b.append(",('page_global','tooltip_column_filter_filtered','','ru','Отфильтрованное(ые) значение(я) ',NULL,NULL)");
         b.append(",('page_global','tooltip_column_filter_filtered','','fr','Valeur(s) filtrée(s)',NULL,NULL)");
         b.append(",('page_global','tooltip_delete_item','','en','This item will be removed from the database','',NULL)");
-		b.append(",('page_global','tooltip_delete_item','','ru','Этот элемент будет удален из базы данных','',NULL)");
+        b.append(",('page_global','tooltip_delete_item','','ru','Этот элемент будет удален из базы данных','',NULL)");
         b.append(",('page_global','tooltip_delete_item','','fr','Cette ligne sera supprimée de la base','',NULL)");
         b.append(",('page_global','tooltip_mark_remove','','en','Mark item to be removed from the database','',NULL)");
-		b.append(",('page_global','tooltip_mark_remove','','ru','Отметить элемент для удаления из базы данных','',NULL)");
+        b.append(",('page_global','tooltip_mark_remove','','ru','Отметить элемент для удаления из базы данных','',NULL)");
         b.append(",('page_global','tooltip_mark_remove','','fr','Selectionner la ligne pour la supprimer de la base','',NULL)");
         b.append(",('page_global','tooltip_massAction','','en','Select All or None to perform Mass Action',NULL,NULL)");
-		b.append(",('page_global','tooltip_massAction','','ru','Выбрать все или ничего для выполнения массовых действий',NULL,NULL)");
+        b.append(",('page_global','tooltip_massAction','','ru','Выбрать все или ничего для выполнения массовых действий',NULL,NULL)");
         b.append(",('page_global','tooltip_massAction','','fr','Selectionner ou Déselectionner tous pour Action en masse',NULL,NULL)");
         b.append(",('page_global','tooltip_massActionLine','','en','Select to perform Mass Action on that line',NULL,NULL)");
-		b.append(",('page_global','tooltip_massActionLine','','ru','Выберите для выполнения массовых действий для этой строки',NULL,NULL)");
+        b.append(",('page_global','tooltip_massActionLine','','ru','Выберите для выполнения массовых действий для этой строки',NULL,NULL)");
         b.append(",('page_global','tooltip_massActionLine','','fr','Selection pour Action en masse',NULL,NULL)");
         b.append(",('page_global','tooltip_restoreuserpreferences','','en','Restore the table configuration','Restore the table configuration from the user preferences. Filters and column display are available in user preferences',NULL)");
-		b.append(",('page_global','tooltip_restoreuserpreferences','','ru','Восстановить конфигурацию таблицы','Восстановить конфигурацию таблицы из пользовательских настроек. Фильтры и отображение столбцов доступны в пользовательских настройках.',NULL)");
+        b.append(",('page_global','tooltip_restoreuserpreferences','','ru','Восстановить конфигурацию таблицы','Восстановить конфигурацию таблицы из пользовательских настроек. Фильтры и отображение столбцов доступны в пользовательских настройках.',NULL)");
         b.append(",('page_global','tooltip_restoreuserpreferences','','fr','Restaurer la configuration de la table','Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration','Save the table configuration. Filters and column display is stored in пользовательских настройках',NULL)");
-		b.append(",('page_global','tooltip_savetableconfig','','ru','Сохранить конфигурацию таблицы','Фильтры и показываемые колонки сохранены в ',NULL)");
+        b.append(",('page_global','tooltip_savetableconfig','','ru','Сохранить конфигурацию таблицы','Фильтры и показываемые колонки сохранены в ',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','en','Show/hide columns','',NULL)");
-		b.append(",('page_global','tooltip_showHideColumns','','ru','Показать/Скрыть колонки','',NULL)");
+        b.append(",('page_global','tooltip_showHideColumns','','ru','Показать/Скрыть колонки','',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','',NULL)");
         b.append(",('page_global','unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!','',NULL)");
-		b.append(",('page_global','unexpected_error_message','','ru','Невозможно выполнить задание. Случилась непредвиденная ошибка!','',NULL)");
+        b.append(",('page_global','unexpected_error_message','','ru','Невозможно выполнить задание. Случилась непредвиденная ошибка!','',NULL)");
         b.append(",('page_global','unexpected_error_message','','fr','Impossible de finaliser l\\'operation. Une erreur inattendue est survenue','',NULL)");
         b.append(",('page_global','warning','','en','Warning','',NULL)");
-		b.append(",('page_global','warning','','ru','Предупреждение','',NULL)");
+        b.append(",('page_global','warning','','ru','Предупреждение','',NULL)");
         b.append(",('page_global','warning','','fr','Attention','',NULL)");
         b.append(",('page_global','btn_bulkrename','','en','Bulk Rename','',NULL)");
-		b.append(",('page_global','btn_bulkrename','','ru','Групповое переименование','',NULL)");
+        b.append(",('page_global','btn_bulkrename','','ru','Групповое переименование','',NULL)");
         b.append(",('page_global','btn_bulkrename','','fr','Renommer massivement','',NULL)");
         b.append(",('page_global','tab_definition','','en','Definition','',NULL)");
-		b.append(",('page_global','tab_definition','','ru','Определение','',NULL)");
+        b.append(",('page_global','tab_definition','','ru','Определение','',NULL)");
         b.append(",('page_global','tab_definition','','fr','Définition','',NULL)");
         b.append(",('page_global','tab_advanced','','en','Advanced','',NULL)");
-		b.append(",('page_global','tab_advanced','','ru','Детально','',NULL)");
+        b.append(",('page_global','tab_advanced','','ru','Детально','',NULL)");
         b.append(",('page_global','tab_advanced','','fr','Avancé','',NULL)");
         b.append(",('page_global','traca','','en','Traceability','',NULL)");
         b.append(",('page_global','traca','','ru','Прослеживаемость','',NULL)");
@@ -2333,7 +2331,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','',NULL)");
         b.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','',NULL)");
         b.append(",('page_testcaseexecutionqueue','requestDate_col','','en','Last State Date','',NULL)");
-		b.append(",('page_testcaseexecutionqueue','requestDate_col','','ru','Дата последнего состояния','',NULL)");
+        b.append(",('page_testcaseexecutionqueue','requestDate_col','','ru','Дата последнего состояния','',NULL)");
         b.append(",('page_testcaseexecutionqueue','requestDate_col','','fr','Date du dernier Etat','',NULL)");
         b.append(",('page_testcaseexecutionqueue','retries_col','','en','Retries','',NULL)");
         b.append(",('page_testcaseexecutionqueue','retries_col','','fr','Tentatives','',NULL)");
@@ -2370,84 +2368,84 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','robothost','','en','Robot Host','',NULL)");
         b.append(",('page_testcaseexecutionqueue','robothost','','fr','Robot Host','',NULL)");
         b.append(",('page_testcaselist','title','','en','Test Cases','',NULL)");
-		b.append(",('page_testcaselist','title','','ru','Тестовый случай','',NULL)");
+        b.append(",('page_testcaselist','title','','ru','Тестовый случай','',NULL)");
         b.append(",('page_testcaselist','title','','fr','Cas de Tests','',NULL)");
         b.append(",('page_testcaselist','activationCriteria','','en','Activation Criteria','',NULL)");
-		b.append(",('page_testcaselist','activationCriteria','','ru','Условия активации','',NULL)");
+        b.append(",('page_testcaselist','activationCriteria','','ru','Условия активации','',NULL)");
         b.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','',NULL)");
         b.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL,NULL)");
-		b.append(",('page_testcaselist','btn_create','','ru','Создать тестовый случай',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_create','','ru','Создать тестовый случай',NULL,NULL)");
         b.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import','','en','Import Test Cases',NULL,NULL)");
-		b.append(",('page_testcaselist','btn_import','','ru','Импортировать тестовые случаи',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','ru','Импортировать тестовые случаи',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import','','fr','Importer les Cas de Tests',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import_ide','','en','Import Test Case From Selenium IDE',NULL,NULL)");
-		b.append(",('page_testcaselist','btn_import_ide','','ru','Импортировать тестовые случаи из Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','ru','Импортировать тестовые случаи из Selenium IDE',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import_ide','','fr','Importer un Cas de Test de Selenium IDE',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export','','en','Export Test Cases',NULL,NULL)");
-		b.append(",('page_testcaselist','btn_export','','ru','Экспортировать тестовые случаи',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export','','ru','Экспортировать тестовые случаи',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export','','fr','Exporter les Cas de Test',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export1file','','en','Export Test Cases (Single File)',NULL,NULL)");
-		b.append(",('page_testcaselist','btn_export1file','','ru','Экспортировать тестовые случаи (Одним файлом)',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_export1file','','ru','Экспортировать тестовые случаи (Одним файлом)',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export1file','','fr','Exporter les Cas de Test (Fichier unique)',NULL,NULL)");
         b.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','',NULL)");
-		b.append(",('page_testcaselist','btn_delete','','ru','Удалить тестовый случай','',NULL)");
+        b.append(",('page_testcaselist','btn_delete','','ru','Удалить тестовый случай','',NULL)");
         b.append(",('page_testcaselist','btn_delete','','fr','Supprimer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_delete_all','','en','Delete all these Test Case : ','',NULL)");
-		b.append(",('page_testcaselist','btn_delete_all','','ru','Удалить все тестовые случаи : ','',NULL)");
+        b.append(",('page_testcaselist','btn_delete_all','','ru','Удалить все тестовые случаи : ','',NULL)");
         b.append(",('page_testcaselist','btn_delete_all','','fr','Supprimer ces Cas de Test : ','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','en','Duplicate Test Case','',NULL)");
-		b.append(",('page_testcaselist','btn_duplicate','','ru','Дублировать тестовый случай','',NULL)");
+        b.append(",('page_testcaselist','btn_duplicate','','ru','Дублировать тестовый случай','',NULL)");
         b.append(",('page_testcaselist','btn_duplicate','','fr','Dupliquer le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_edit','','en','Edit Test Case Header','',NULL)");
-		b.append(",('page_testcaselist','btn_edit','','ru','Править заголовок тестового случая','',NULL)");
+        b.append(",('page_testcaselist','btn_edit','','ru','Править заголовок тестового случая','',NULL)");
         b.append(",('page_testcaselist','btn_edit','','fr','Modifer l\\'Entete du Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_editLabel','','en','Edit Test Case labels','',NULL)");
-		b.append(",('page_testcaselist','btn_editLabel','','ru','Править тэги тестового случая','',NULL)");
+        b.append(",('page_testcaselist','btn_editLabel','','ru','Править тэги тестового случая','',NULL)");
         b.append(",('page_testcaselist','btn_editLabel','','fr','Modifier les étiquettes du Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_editScript','','en','Go to Test Case Script Page','',NULL)");
-		b.append(",('page_testcaselist','btn_editScript','','ru','Перейти к сценарию тестового случая','',NULL)");
+        b.append(",('page_testcaselist','btn_editScript','','ru','Перейти к сценарию тестового случая','',NULL)");
         b.append(",('page_testcaselist','btn_editScript','','fr','Aller à la page du Script du Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_runTest','','en','Run Test Case','',NULL)");
-		b.append(",('page_testcaselist','btn_runTest','','ru','Запустить Тестовый случай','',NULL)");
+        b.append(",('page_testcaselist','btn_runTest','','ru','Запустить Тестовый случай','',NULL)");
         b.append(",('page_testcaselist','btn_runTest','','fr','Exécuter le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_view','','en','View Test Case','',NULL)");
-		b.append(",('page_testcaselist','btn_view','','ru','Посмотреть Тестовый случай','',NULL)");
+        b.append(",('page_testcaselist','btn_view','','ru','Посмотреть Тестовый случай','',NULL)");
         b.append(",('page_testcaselist','btn_view','','fr','Voir Cas de Test','',NULL)");
         b.append(",('page_testcaselist','filters','','en','Filters','Test filter',NULL)");
-		b.append(",('page_testcaselist','filters','','ru','Фильтры','Test filter',NULL)");
+        b.append(",('page_testcaselist','filters','','ru','Фильтры','Test filter',NULL)");
         b.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests',NULL)");
         b.append(",('page_testcaselist','import_testcase_msg','','en','Select testcase files to import','',NULL)");
-		b.append(",('page_testcaselist','import_testcase_msg','','ru','Выбрать импортируемые файлы тестовых случаев','',NULL)");
+        b.append(",('page_testcaselist','import_testcase_msg','','ru','Выбрать импортируемые файлы тестовых случаев','',NULL)");
         b.append(",('page_testcaselist','import_testcase_msg','','fr','Selectionner des fichiers de cas de test à importer','',NULL)");
         b.append(",('page_testcaselist','link','','en','Bug Link','',NULL)");
-		b.append(",('page_testcaselist','link','','ru','Ссылка на ошибку','',NULL)");
+        b.append(",('page_testcaselist','link','','ru','Ссылка на ошибку','',NULL)");
         b.append(",('page_testcaselist','link','','fr','Lien vers le Bug','',NULL)");
         b.append(",('page_testcaselist','massAction','','en','Massively update the selected test cases','',NULL)");
-		b.append(",('page_testcaselist','massAction','','ru','Массовое обновление выбранных тестовых случаев','',NULL)");
+        b.append(",('page_testcaselist','massAction','','ru','Массовое обновление выбранных тестовых случаев','',NULL)");
         b.append(",('page_testcaselist','massAction','','fr','Mise à jour en masse les Cas de Test selectionnés','',NULL)");
         b.append(",('page_testcaselist','tabLabel','','en','Label Management',NULL,NULL)");
-		b.append(",('page_testcaselist','tabLabel','','ru','Управление тэгами',NULL,NULL)");
+        b.append(",('page_testcaselist','tabLabel','','ru','Управление тэгами',NULL,NULL)");
         b.append(",('page_testcaselist','tabLabel','','fr','Gestion des Labels',NULL,NULL)");
         b.append(",('page_testcaselist','tabUpdate','','en','Update',NULL,NULL)");
-		b.append(",('page_testcaselist','tabUpdate','','ru','Обновить',NULL,NULL)");
+        b.append(",('page_testcaselist','tabUpdate','','ru','Обновить',NULL,NULL)");
         b.append(",('page_testcaselist','tabUpdate','','fr','Mise à jour',NULL,NULL)");
         b.append(",('page_testcaselist','testCaseInfo','','en','Test Case Info','',NULL)");
-		b.append(",('page_testcaselist','testCaseInfo','','ru','Информация о Тестовом случае','',NULL)");
+        b.append(",('page_testcaselist','testCaseInfo','','ru','Информация о Тестовом случае','',NULL)");
         b.append(",('page_testcaselist','testCaseInfo','','fr','Test Case Info','',NULL)");
         b.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test',NULL)");
-		b.append(",('page_testcaselist','testcaselist','','ru','Список Тестовых случаев','Список всех тестовых случаев выбранного теста',NULL)");
+        b.append(",('page_testcaselist','testcaselist','','ru','Список Тестовых случаев','Список всех тестовых случаев выбранного теста',NULL)");
         b.append(",('page_testcaselist','testcaselist','','fr','Liste des Cas de Test','Liste de tout les cas de test du test selectionné',NULL)");
         b.append(",('page_testcaselist','testCaseParameter','','en','Test Case Parameter','',NULL)");
-		b.append(",('page_testcaselist','testCaseParameter','','ru','Параметры тестового случая','',NULL)");
+        b.append(",('page_testcaselist','testCaseParameter','','ru','Параметры тестового случая','',NULL)");
         b.append(",('page_testcaselist','testCaseParameter','','fr','Parametres du Cas de Test','',NULL)");
         b.append(",('page_testcaselist','testInfo','','en','Test Info','',NULL)");
-		b.append(",('page_testcaselist','testInfo','','ru','Информация о тесте','',NULL)");
+        b.append(",('page_testcaselist','testInfo','','ru','Информация о тесте','',NULL)");
         b.append(",('page_testcaselist','testInfo','','fr','Test Info','',NULL)");
         b.append(",('page_testcaselist','ask_edit_testcase','','en','Do you want to edit testcase script now ?','',NULL)");
-		b.append(",('page_testcaselist','ask_edit_testcase','','ru','Вы хотите редактировать сценарий тестового случая сейчас ?','',NULL)");
+        b.append(",('page_testcaselist','ask_edit_testcase','','ru','Вы хотите редактировать сценарий тестового случая сейчас ?','',NULL)");
         b.append(",('page_testcaselist','ask_edit_testcase','','fr','Souhaitez-vous aller editer le cas de test maintenant ?','',NULL)");
-		b.append(",('page_testcasescript','action_field','','en','Action','',NULL)");
+        b.append(",('page_testcasescript','action_field','','en','Action','',NULL)");
         b.append(",('page_testcasescript','action_field','','fr','Action','',NULL)");
         b.append(",('page_testcasescript','add_action','','en','Add Action','',NULL)");
         b.append(",('page_testcasescript','add_action','','fr','Ajouter une Action','',NULL)");
@@ -2587,7 +2585,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins une propriété sans pays de selectionné. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','',NULL)");
         b.append(",('page_testcasescript','warning_one_empty_prop','','en','There is at least one property with no name defined. If you save it will be removed. Do you still want to save ?','',NULL)");
         b.append(",('page_testcasescript','warning_one_empty_prop','','fr','Il y a au moins une propriétée sans pays. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','',NULL)");
-		b.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.',NULL)");
+        b.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.',NULL)");
         b.append(",('page_testcasesearch','text','','ru','Текст','Вставте сюда текст для поиска в последующих полях каждого <code class=\\'doc-crbvvoca\\'>тестового случая</code> :<br>- Короткое описание,<br>- Детальное описание / Ожидаемое описание,<br>- HowTo<br>- Коментарий<br><br>NB : Поиск регистро-чувствительный.',NULL)");
         b.append(",('page_testcasesearch','text','','fr','Texte',NULL,NULL)");
         b.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','',NULL)");
@@ -2739,7 +2737,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','team_field','','fr','Equipe','',NULL)");
         b.append(",('page_user','title_remove','','en','Delete User','',NULL)");
         b.append(",('page_user','title_remove','','fr','Supprimer l\\'Utilisateur','',NULL)");
-        /**
+        /*
          * Cerberus Transversal GUI Pages Documentation.
          */
         b.append(",('scheduler','cronexp','','en','Cron Expression','Scheduler use cron expression in quartz format to plan campaign execution. Example : 0 0 12 1/1 * ? * <br> everyday at noon',NULL)");
@@ -2813,10 +2811,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('multiselect','select_all','','en','Select all','',NULL)");
         b.append(",('multiselect','select_all','','fr','Selectionner tous','',NULL)");
         b.append(",('transversal','DateCreated','','en','Creation Date','Date of the creation of the object.','_data_library')");
-		b.append(",('transversal','DateCreated','','ru','Дата создания','Дата создания объекта.','_data_library')");
+        b.append(",('transversal','DateCreated','','ru','Дата создания','Дата создания объекта.','_data_library')");
         b.append(",('transversal','DateCreated','','fr','Date de Création','Date de création de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','DateModif','','en','Modification Date','Last modification Date of the object.','_data_library')");
-		b.append(",('transversal','DateModif','','ru','Дата модификации','Дата последней модификации объекта.','_data_library')");
+        b.append(",('transversal','DateModif','','ru','Дата модификации','Дата последней модификации объекта.','_data_library')");
         b.append(",('transversal','DateModif','','fr','Date de Modification','Date de dernière modification de l\\'objet.','_librairie_de_données')");
         b.append(",('transversal','UsrCreated','','en','Created by','User who created the object.','_data_library')");
         b.append(",('transversal','UsrCreated','','fr','Créé par','Utilisateur ayant créé l\\'objet.','_librairie_de_données')");
@@ -2837,7 +2835,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(" ;");
         a.add(b.toString());
 
-        /* 
+        /*
          *  Updated Tutorial
          */
         a.add("DELETE FROM `documentation` where DocTable = 'interactiveTuto' ;");

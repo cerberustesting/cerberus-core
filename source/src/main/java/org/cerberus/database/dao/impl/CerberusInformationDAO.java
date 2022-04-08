@@ -19,20 +19,20 @@
  */
 package org.cerberus.database.dao.impl;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.HashMap;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.database.dao.ICerberusInformationDAO;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -56,43 +56,30 @@ public class CerberusInformationDAO implements ICerberusInformationDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         HashMap<String, String> cerberusInformation = new HashMap<>();
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : ");
-        }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            
+        try (Connection connection = this.databaseSpring.connect()) {
+
             DatabaseMetaData metaData = connection.getMetaData();
-            
+
             cerberusInformation.put("DatabaseProductName", metaData.getDatabaseProductName());
             cerberusInformation.put("DatabaseProductVersion", metaData.getDatabaseProductVersion());
             cerberusInformation.put("DatabaseMajorVersion", Integer.toString(metaData.getDatabaseMajorVersion()));
             cerberusInformation.put("DatabaseMinorVersion", Integer.toString(metaData.getDatabaseMinorVersion()));
-            
+
             cerberusInformation.put("DriverName", metaData.getDriverName());
             cerberusInformation.put("DriverVersion", metaData.getDriverVersion());
             cerberusInformation.put("DriverMajorVersion", Integer.toString(metaData.getDriverMajorVersion()));
             cerberusInformation.put("DriverMinorVersion", Integer.toString(metaData.getDriverMinorVersion()));
-            
+
             cerberusInformation.put("JDBCMajorVersion", Integer.toString(metaData.getJDBCMajorVersion()));
             cerberusInformation.put("JDBCMinorVersion", Integer.toString(metaData.getJDBCMinorVersion()));
-            
+
             ans.setItem(cerberusInformation);
-            
+
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            LOG.error("Unable to execute query : {}", exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         //sets the message
