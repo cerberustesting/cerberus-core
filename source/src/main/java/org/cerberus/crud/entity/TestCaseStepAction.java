@@ -53,13 +53,11 @@ public class TestCaseStepAction {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
-    @EqualsAndHashCode.Exclude
     private JSONArray conditionOptions;
     private String action;
     private String value1;
     private String value2;
     private String value3;
-    @EqualsAndHashCode.Exclude
     private JSONArray options;
     private boolean isFatal;
     private String description;

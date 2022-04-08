@@ -19,10 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import com.google.common.primitives.Ints;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -77,8 +74,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Optional;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -241,16 +243,25 @@ public class ActionService implements IActionService {
 
         // Define Timeout
         HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(actionExecution.getOptions());
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
-            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX).isEmpty()) {
+            Optional<Integer> timeoutOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)));
+            if (timeoutOptionValue.isPresent()) {
+                robotServerService.setOptionsTimeout(tCExecution.getSession(), timeoutOptionValue.get());
+            } else {
+                //TODO return a message alerting about the failed cast
+                LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+            }
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
-            LOG.debug("toto set he : " + optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
-            Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
-            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX).isEmpty()) {
+            Optional<Integer> highlightOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)));
+            if (highlightOptionValue.isPresent()) {
+                robotServerService.setOptionsHighlightElement(tCExecution.getSession(), highlightOptionValue.get());
+            } else {
+                //TODO return a message alerting about the failed cast
+                LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+            }
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX).isEmpty()) {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }

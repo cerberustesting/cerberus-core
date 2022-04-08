@@ -19,18 +19,9 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import org.apache.logging.log4j.Logger;
+import com.google.common.primitives.Ints;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -64,6 +55,18 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * {Insert class description here}
@@ -227,18 +230,29 @@ public class ControlService implements IControlService {
 
         // Define Timeout
         HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(controlExecution.getOptions());
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
-            Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
-            robotServerService.setOptionsTimeout(execution.getSession(), newTimeout);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX).isEmpty()) {
+            Optional<Integer> timeoutOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)));
+            if (timeoutOptionValue.isPresent()) {
+                robotServerService.setOptionsTimeout(execution.getSession(), timeoutOptionValue.get());
+            } else {
+                //TODO return a message alerting about the failed cast
+                LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+            }
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
-            Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
-            robotServerService.setOptionsHighlightElement(execution.getSession(), newHighlightElement);
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX).isEmpty()) {
+            Optional<Integer> highlightOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)));
+            if (highlightOptionValue.isPresent()) {
+                robotServerService.setOptionsHighlightElement(execution.getSession(), highlightOptionValue.get());
+            } else {
+                //TODO return a message alerting about the failed cast
+                LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+            }
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX).isEmpty()) {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(execution.getSession(), minSimilarity);
         }
+
 
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
@@ -1260,13 +1274,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path);
-                        } catch (Exception ex) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.resolveDescription("ERROR", ex.toString());
-                            return mes;
-                        }
-                        break;
+                                pathContent = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.resolveDescription("ERROR", ex.toString());
+                                return mes;
+                            }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1746,9 +1760,9 @@ public class ControlService implements IControlService {
     }
 
     /**
-     * @author memiks
      * @param exception the exception need to be parsed by Cerberus
      * @return A new Event Message with selenium related description
+     * @author memiks
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
