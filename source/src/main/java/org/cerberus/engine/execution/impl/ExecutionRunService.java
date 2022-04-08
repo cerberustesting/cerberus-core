@@ -304,7 +304,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     execution.getSystem(), execution.getCountryEnvParam().getBuild(), execution.getCountryEnvParam().getRevision());
             List<TestCaseStep> preTestCaseStepList = new ArrayList<>();
             //Load Pre TestCase with Step dependencies (Actions/Control)
-            if (preTests != null) {
+            if (preTests != null && !preTests.isEmpty()) {
                 LOG.debug("{}Loaded PreTest List. {} found", logPrefix, preTests.size());
                 LOG.debug("{}Pre-testcases Loaded.", logPrefix);
                 LOG.debug("{}Loading all Steps information (Actions & Controls) of all Pre-testcase.", logPrefix);
@@ -323,7 +323,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     execution.getSystem(), execution.getCountryEnvParam().getBuild(), execution.getCountryEnvParam().getRevision());
             List<TestCaseStep> postTestCaseStepList = new ArrayList<>();
             // Load Post TestCase with Step dependencies (Actions/Control)
-            if (postTests != null) {
+            if (postTests != null && !postTests.isEmpty()) {
                 LOG.debug("{}Loaded PostTest List. {} found.", logPrefix, postTests.size());
                 LOG.debug("{}Post-testcases Loaded.", logPrefix);
                 LOG.debug("{}Loading all Steps information (Actions & Controls) of all Post-testcase.", logPrefix);
@@ -593,6 +593,9 @@ public class ExecutionRunService implements IExecutionRunService {
                                                     doExecuteNextStep = false;
                                                     break;
                                                 case TestCaseStep.LOOP_ONCEIFCONDITIONTRUE:
+                                                case "":
+                                                    doExecuteNextStep = false;
+                                                    break;
                                                 case TestCaseStep.LOOP_WHILECONDITIONFALSEDO:
                                                 case TestCaseStep.LOOP_DOWHILECONDITIONFALSE:
                                                     doExecuteStep = !doExecuteStep;
