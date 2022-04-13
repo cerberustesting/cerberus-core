@@ -30,6 +30,7 @@ import org.cerberus.api.mappers.v001.TestcaseMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.exception.CerberusException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -62,6 +64,7 @@ public class TestcaseController {
 
     @ApiOperation("Get all testcases filtered by test")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TestcaseDTOV001> findTestcasesByTest(
             @PathVariable("testFolderId") String testFolderId,
@@ -76,6 +79,7 @@ public class TestcaseController {
 
     @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseDTOV001 findTestcaseByTestAndTestcase(
             @PathVariable("testFolderId") String testFolderId,
@@ -88,6 +92,7 @@ public class TestcaseController {
 
     @ApiOperation("Create a new Testcase")
     @ApiResponse(code = 200, message = "ok")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseDTOV001 createTestcase(
             @RequestBody TestcaseDTOV001 newTestcase,
@@ -104,6 +109,7 @@ public class TestcaseController {
 
     @ApiOperation("Update a Testcase")
     @ApiResponse(code = 200, message = "ok")
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseDTOV001 update(
             @PathVariable("testcaseId") String testcaseId,

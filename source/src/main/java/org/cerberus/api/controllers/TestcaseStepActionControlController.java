@@ -28,15 +28,14 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.api.dto.v001.TestcaseStepActionControlDTOV001;
 import org.cerberus.api.mappers.v001.TestcaseStepActionControlMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -62,6 +61,7 @@ public class TestcaseStepActionControlController {
 
     @ApiOperation("Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseStepActionControlDTOV001 findControlByKey(
             @PathVariable("testFolderId") String testFolderId,
@@ -77,16 +77,4 @@ public class TestcaseStepActionControlController {
                         testFolderId, testcaseId, stepId, actionId, controlId)
         );
     }
-
-    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void createTestcaseStepActionControll(
-            @RequestBody TestcaseStepActionControlDTOV001 controlDTO,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal) {
-        this.apiAuthenticationService.authenticate(principal, apiKey);
-        TestCaseStepActionControl control = this.controlMapper.toEntity(controlDTO);
-        LOG.debug(control.toString());
-    }
-
-
 }

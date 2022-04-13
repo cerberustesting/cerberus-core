@@ -28,15 +28,14 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.api.dto.v001.TestcaseStepActionDTOV001;
 import org.cerberus.api.mappers.v001.TestcaseStepActionMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
-import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -62,6 +61,7 @@ public class TestcaseStepActionController {
 
     @ApiOperation("Find a testcaseStepAction by key (testFolderId, testcaseId, stepId, actionId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public TestcaseStepActionDTOV001 findActionByKey(
             @PathVariable("testFolderId") String testFolderId,
@@ -79,6 +79,7 @@ public class TestcaseStepActionController {
 
     @ApiOperation("Find actions by testcase step (testFolderId, testcaseId, stepId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TestcaseStepActionDTOV001> findActionsByStep(
             @PathVariable("testFolderId") String testFolderId,
@@ -93,16 +94,4 @@ public class TestcaseStepActionController {
                 .map(this.actionMapper::toDTO)
                 .collect(Collectors.toList());
     }
-
-    @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void create(
-            @RequestBody TestcaseStepActionDTOV001 actionDTO,
-            @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal) {
-        this.apiAuthenticationService.authenticate(principal, apiKey);
-        TestCaseStepAction action = this.actionMapper.toEntity(actionDTO);
-        LOG.debug(action.toString());
-
-    }
-
 }

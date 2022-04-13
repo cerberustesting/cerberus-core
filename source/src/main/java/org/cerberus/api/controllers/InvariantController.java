@@ -30,11 +30,13 @@ import org.cerberus.api.mappers.v001.InvariantMapperV001;
 import org.cerberus.api.services.InvariantApiService;
 import org.cerberus.api.services.PublicApiAuthenticationService;
 import org.cerberus.exception.CerberusException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -59,6 +61,7 @@ public class InvariantController {
 
     @ApiOperation("Get all invariants filtered by idName")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InvariantDTOV001> findInvariantByIdName(
             @PathVariable("idName") String idName,
@@ -73,6 +76,7 @@ public class InvariantController {
 
     @ApiOperation("Get all invariants filtered by idName and value")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}/{value}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
     public InvariantDTOV001 findInvariantByIdNameAndValue(
             @PathVariable("idName") String idName,
