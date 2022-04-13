@@ -21,7 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.api.errorhandler.exception.EntityNotFoundException;
+import org.cerberus.api.exceptions.EntityNotFoundException;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
