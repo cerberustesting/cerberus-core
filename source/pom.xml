@@ -43,11 +43,12 @@
         <spring.version>5.3.18</spring.version>
         <spring-security.version>5.6.2</spring-security.version>
         <!-- JSON Lib Version -->
-        <json.version>20080701</json.version>
-        <gson.version>2.8.0</gson.version>
-        <jackson-databind.version>2.12.6.1</jackson-databind.version>
+        <json.version>20220320</json.version>
+        <gson.version>2.9.0</gson.version>
+        <jackson-databind.version>2.13.2.2</jackson-databind.version>
+        <jackson-datatype-jsr310.version>2.13.2</jackson-datatype-jsr310.version>
         <!-- jsonpath -->
-        <jsonxpath.version>2.5.0</jsonxpath.version>
+        <jsonxpath.version>2.7.0</jsonxpath.version>
         <!-- Groovy Version -->
         <groovy.version>2.4.21</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
@@ -60,11 +61,11 @@
         <!-- Erratum API -->
         <sftm-tree-matching.version>1.1.0</sftm-tree-matching.version>
         <!-- Loggers -->
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.17.2</log4j.version>
         <slf4j.version>1.7.26</slf4j.version>
         <!-- Compile scope -->
-        <javaee-web-api>8.0</javaee-web-api>
-        <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
+        <javaee-web-api>8.0.1</javaee-web-api>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
         <javax.websocket-api>1.1</javax.websocket-api>
         <guava.version>31.1-jre</guava.version>
         <xmlunit.version>1.5</xmlunit.version>
@@ -209,6 +210,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-datatype-jsr310.version}</version>
+        </dependency>
+
 
         <!-- Groovy -->
         <dependency>
@@ -249,13 +256,6 @@
             <artifactId>jna-platform</artifactId>
             <version>${jna.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>pro.truongsinh</groupId>
-            <artifactId>appium-flutter-finder</artifactId>
-            <version>0.0.4</version>
-        </dependency>
-        -->
 
         <!-- Log4J -->
         <dependency>
@@ -429,14 +429,6 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
-            <!--            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jruby</groupId>
-                    <artifactId>jruby-complete</artifactId>
-                </exclusion>
-            </exclusions>
-            -->
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -455,6 +447,8 @@
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
         </dependency>
+
+        <!-- Swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>

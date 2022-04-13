@@ -22,30 +22,10 @@ package org.cerberus.service.webdriver.impl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.W32APIOptions;
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.Robot;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
+import mantu.lab.treematching.TreeMatcher;
+import mantu.lab.treematching.TreeMatcherResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
@@ -85,10 +65,27 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import mantu.lab.treematching.*;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
- *
  * @author bcivel
  */
 @Service
@@ -365,13 +362,11 @@ public class WebDriverService implements IWebDriverService {
     }
 
     /**
-     *
      * @param session
      * @param identifier
      * @return the new xpath value calculated using Erratum algorithm. Cerberus
      * will attempt to convert during the timeeout parameter period or after a
      * maximum of 100 iterations.
-     *
      */
     private String getNewXPathFromErratum(Session session, Identifier identifier) {
 
@@ -614,7 +609,7 @@ public class WebDriverService implements IWebDriverService {
      * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
-     * Database) inside current URL (from Selenium)
+     *                                Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
@@ -1237,6 +1232,7 @@ public class WebDriverService implements IWebDriverService {
         boolean SetForegroundWindow(HWND hWnd);
 
         HWND FindWindow(String winClass, String title);
+
         int SW_SHOW = 1;
     }
 
@@ -1256,13 +1252,13 @@ public class WebDriverService implements IWebDriverService {
 
             // Arbitrary
             String[] browsers = new String[]{
-                "",
-                "Google Chrome",
-                "Mozilla Firefox",
-                "Opera",
-                "Safari",
-                "Internet Explorer",
-                "Microsoft Edge",};
+                    "",
+                    "Google Chrome",
+                    "Mozilla Firefox",
+                    "Opera",
+                    "Safari",
+                    "Internet Explorer",
+                    "Microsoft Edge",};
 
             for (String browser : browsers) {
                 HWND window;
@@ -1557,8 +1553,8 @@ public class WebDriverService implements IWebDriverService {
             LOG.warn(exception.toString());
             throw new CerberusEventException(message);
         } catch (PatternSyntaxException e) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_REGEX_INVALIDPATERN);
-            message.setDescription(message.getDescription().replace("%PATERN%", property.getLocator()));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_REGEX_INVALIDPATTERN);
+            message.setDescription(message.getDescription().replace("%PATTERN%", property.getLocator()));
             message.setDescription(message.getDescription().replace("%ERROR%", e.getMessage()));
             throw new CerberusEventException(message);
         }
@@ -1786,9 +1782,9 @@ public class WebDriverService implements IWebDriverService {
     }
 
     /**
-     * @author vertigo17
      * @param exception the exception need to be parsed by Cerberus
      * @return A new Event Message with selenium related description
+     * @author vertigo17
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
