@@ -19,16 +19,6 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
@@ -63,6 +53,17 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author bcivel
  */
@@ -75,10 +76,10 @@ public class UpdateCampaign extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -250,7 +251,7 @@ public class UpdateCampaign extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("isActive"));
-            String strId = tcsaJson.getString("id");
+            String strId = String.valueOf(tcsaJson.getInt("id"));
             String desc = tcsaJson.getString("description");
             String type = "CAMPAIGN";
             String name = campaign;
@@ -295,7 +296,7 @@ public class UpdateCampaign extends HttpServlet {
             String description = policy.sanitize(objJson.getString("description"));
             boolean isActive = objJson.getBoolean("isActive");
             String hookChannel = policy.sanitize(objJson.getString("hookChannel"));
-            String strId = objJson.getString("id");
+            String strId = String.valueOf(objJson.getInt("id"));
 
             int id;
             if (strId.isEmpty()) {
@@ -318,16 +319,17 @@ public class UpdateCampaign extends HttpServlet {
         }
         return evtList;
     }
-    
-    
+
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -344,10 +346,10 @@ public class UpdateCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
