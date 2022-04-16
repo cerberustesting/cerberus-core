@@ -251,7 +251,7 @@ public class UpdateCampaign extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("isActive"));
-            String strId = String.valueOf(tcsaJson.getInt("id"));
+            String strId = tcsaJson.getString("id");
             String desc = tcsaJson.getString("description");
             String type = "CAMPAIGN";
             String name = campaign;
@@ -296,7 +296,7 @@ public class UpdateCampaign extends HttpServlet {
             String description = policy.sanitize(objJson.getString("description"));
             boolean isActive = objJson.getBoolean("isActive");
             String hookChannel = policy.sanitize(objJson.getString("hookChannel"));
-            String strId = String.valueOf(objJson.getInt("id"));
+            String strId = objJson.getString("id");
 
             int id;
             if (strId.isEmpty()) {
