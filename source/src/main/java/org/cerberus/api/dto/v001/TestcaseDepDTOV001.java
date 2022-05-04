@@ -20,11 +20,16 @@
 
 package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.cerberus.api.dto.views.View;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author MorganLmd
@@ -35,24 +40,34 @@ import lombok.extern.jackson.Jacksonized;
 @ApiModel(value = "TestcaseDependency")
 public class TestcaseDepDTOV001 {
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(position = 0)
     private long id;
 
+    @NotBlank(message = "The test folder id this testcase is dependent of is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 1)
     private String dependencyTestFolderId;
 
+    @NotBlank(message = "The testcase id this testcase is dependent of is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 2)
     private String dependencyTestcaseId;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 3)
     private String dependencyEvent;
 
+    @NotNull(message = "Type is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)
     private String type;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
-    private boolean isActive;
+    private boolean isActive = true;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)
     private String description;
 }

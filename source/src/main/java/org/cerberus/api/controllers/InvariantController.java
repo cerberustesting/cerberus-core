@@ -19,13 +19,16 @@
  */
 package org.cerberus.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.api.dto.v001.InvariantDTOV001;
+import org.cerberus.api.dto.views.View;
 import org.cerberus.api.mappers.v001.InvariantMapperV001;
 import org.cerberus.api.services.InvariantApiService;
 import org.cerberus.api.services.PublicApiAuthenticationService;
@@ -61,30 +64,38 @@ public class InvariantController {
 
     @ApiOperation("Get all invariants filtered by idName")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
+    @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<InvariantDTOV001> findInvariantByIdName(
+    public ResponseWrapper<List<InvariantDTOV001>> findInvariantByIdName(
             @PathVariable("idName") String idName,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.invariantApiService.readyByIdName(idName)
-                .stream()
-                .map(this.invariantMapper::toDTO)
-                .collect(Collectors.toList());
+        return ResponseWrapper.wrap(
+                this.invariantApiService.readyByIdName(idName)
+                        .stream()
+                        .map(this.invariantMapper::toDTO)
+                        .collect(Collectors.toList())
+        );
     }
 
     @ApiOperation("Get all invariants filtered by idName and value")
     @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
+    @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}/{value}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
-    public InvariantDTOV001 findInvariantByIdNameAndValue(
+    public ResponseWrapper<InvariantDTOV001> findInvariantByIdNameAndValue(
             @PathVariable("idName") String idName,
             @PathVariable("value") String value,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.invariantMapper.toDTO(this.invariantApiService.readByKey(idName, value));
+        return ResponseWrapper.wrap(
+                this.invariantMapper.toDTO(
+                        this.invariantApiService.readByKey(idName, value)
+                )
+        );
     }
 
 }

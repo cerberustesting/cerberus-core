@@ -20,13 +20,17 @@
 
 package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import org.cerberus.crud.entity.Invariant;
+import org.cerberus.api.dto.views.View;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -38,54 +42,76 @@ import java.util.List;
 @ApiModel(value = "TestcaseCountryProperties")
 public class TestcaseCountryPropertiesDTOV001 {
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(position = 0)
     private String testFolderId;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(position = 1)
     private String testcaseId;
 
+    @NotBlank(message = "Property is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 2)
     private String property;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 3)
     private String description;
 
+    @NotBlank(message = "Message is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)
     private String type;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
     private String database;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)
     private String value1;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 7)
     private String value2;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 8)
     private String length;
 
+    @NotNull(message = "Row limit is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 9)
     private int rowLimit;
 
+    @NotNull(message = "Nature is mandatory")
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 10)
     private String nature;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 11)
     private int rank;
 
+    @Valid
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 16)
+    private List<InvariantDTOV001> countries;
+
+    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 12)
     private String usrCreated;
 
+    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 13)
     private String dateCreated;
 
+    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 14)
     private String usrModif;
 
+    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 15)
     private String dateModif;
-
-    @ApiModelProperty(position = 16)
-    private List<Invariant> countries;
 }

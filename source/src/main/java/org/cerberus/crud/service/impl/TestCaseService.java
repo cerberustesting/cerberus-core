@@ -812,7 +812,11 @@ public class TestCaseService implements ITestCaseService {
 
         //insert testcaselabel
         if (newTestcase.getLabels() != null && !newTestcase.getLabels().isEmpty()) {
-            newTestcase.setTestCaseLabels(this.getTestcaseLabelsFromLabels(newTestcase.getLabels(), newTestcase.getTest(), newTestcase.getTestcase(), newTestcase.getUsrCreated()));
+            newTestcase.setTestCaseLabels(
+                    this.getTestcaseLabelsFromLabels(
+                            newTestcase.getLabels(), newTestcase.getTest(), newTestcase.getTestcase(), newTestcase.getUsrCreated()
+                    )
+            );
             this.testCaseLabelService.createList(newTestcase.getTestCaseLabels());
         }
 
@@ -892,7 +896,11 @@ public class TestCaseService implements ITestCaseService {
         }
 
         if (newTestcaseVersion.getLabels() != null && !newTestcaseVersion.getLabels().isEmpty()) {
-            newTestcaseVersion.setTestCaseLabels(this.getTestcaseLabelsFromLabels(newTestcaseVersion.getLabels(), newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), newTestcaseVersion.getUsrCreated()));
+            newTestcaseVersion.setTestCaseLabels(
+                    this.getTestcaseLabelsFromLabels(
+                            newTestcaseVersion.getLabels(), newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), newTestcaseVersion.getUsrCreated()
+                    )
+            );
             this.testCaseLabelService.compareListAndUpdateInsertDeleteElements(
                     newTestcaseVersion.getTest(),
                     newTestcaseVersion.getTestcase(),

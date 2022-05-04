@@ -19,13 +19,16 @@
  */
 package org.cerberus.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.api.dto.v001.TestcaseStepActionDTOV001;
+import org.cerberus.api.dto.views.View;
 import org.cerberus.api.mappers.v001.TestcaseStepActionMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
@@ -61,9 +64,10 @@ public class TestcaseStepActionController {
 
     @ApiOperation("Find a testcaseStepAction by key (testFolderId, testcaseId, stepId, actionId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TestcaseStepActionDTOV001 findActionByKey(
+    public ResponseWrapper<TestcaseStepActionDTOV001> findActionByKey(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
@@ -71,27 +75,32 @@ public class TestcaseStepActionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.actionMapper.toDTO(
-                this.actionService.findTestCaseStepActionbyKey(
-                        testFolderId, testcaseId, stepId, actionId)
+        return ResponseWrapper.wrap(
+                this.actionMapper.toDTO(
+                        this.actionService.findTestCaseStepActionbyKey(
+                                testFolderId, testcaseId, stepId, actionId)
+                )
         );
     }
 
     @ApiOperation("Find actions by testcase step (testFolderId, testcaseId, stepId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TestcaseStepActionDTOV001> findActionsByStep(
+    public ResponseWrapper<List<TestcaseStepActionDTOV001>> findActionsByStep(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.actionService.readByVarious1WithDependency(testFolderId, testcaseId, stepId)
-                .getDataList()
-                .stream()
-                .map(this.actionMapper::toDTO)
-                .collect(Collectors.toList());
+        return ResponseWrapper.wrap(
+                this.actionService.readByVarious1WithDependency(testFolderId, testcaseId, stepId)
+                        .getDataList()
+                        .stream()
+                        .map(this.actionMapper::toDTO)
+                        .collect(Collectors.toList())
+        );
     }
 }
