@@ -20,27 +20,19 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.*;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.crud.entity.*;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.utils.RequestDbUtils;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.factory.IFactoryTestCaseExecution;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -52,6 +44,17 @@ import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
@@ -391,7 +394,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-            String build, String revision) throws CerberusException {
+                                                           String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT exe.* FROM testcaseexecution exe ")
                 .append("WHERE exe.test = ? AND exe.testcase = ? AND exe.environment = ? ")
@@ -399,7 +402,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("ORDER BY exe.id DESC").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setString(3, environment);
@@ -423,8 +426,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
         TestCaseExecution result = null;
         final String query = new StringBuffer("SELECT exe.* FROM testcaseexecution exe ")
                 .append("WHERE exe.test = ? AND exe.testcase = ? ")
@@ -434,7 +437,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("ORDER BY exe.id DESC").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(environment));
@@ -472,7 +475,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.status LIKE ?").toString();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, dateLimit);
             preStat.setString(2, test);
             preStat.setString(3, testCase);
@@ -515,7 +518,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setLong(1, id);
             try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
@@ -540,7 +543,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testCase);
@@ -562,8 +565,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                        String build, String revision, String browser, String browserVersion,
+                                                        String ip, String port, String tag) {
 
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
@@ -599,7 +602,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("ORDER BY exe.id DESC");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, country);
@@ -1462,7 +1465,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setLong(1, executionId);
                 ResultSet resultSet = preStat.executeQuery();
@@ -1653,8 +1656,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
 
@@ -1693,7 +1696,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }

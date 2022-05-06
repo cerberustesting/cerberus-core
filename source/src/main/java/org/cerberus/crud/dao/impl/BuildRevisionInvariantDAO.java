@@ -19,23 +19,14 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.crud.factory.impl.FactoryBuildRevisionInvariant;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -46,6 +37,15 @@ import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
@@ -71,7 +71,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, system);
                 preStat.setInt(2, level);
@@ -129,7 +129,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, system);
                 preStat.setInt(2, level);
@@ -211,7 +211,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             searchSQL.append(" AND ");
             searchSQL.append(SqlUtil.generateInClause("`System`", systems));
         }
-        searchSQL.append(" AND "); 
+        searchSQL.append(" AND ");
         searchSQL.append(UserSecurity.getSystemAllowForSQL("`System`"));
 
         if (level != -1) {
@@ -525,8 +525,8 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (systems != null && !systems.isEmpty()) {
@@ -544,7 +544,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

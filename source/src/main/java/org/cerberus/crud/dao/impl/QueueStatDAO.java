@@ -19,17 +19,8 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IQueueStatDAO;
 import org.cerberus.crud.entity.QueueStat;
 import org.cerberus.crud.factory.IFactoryQueueStat;
@@ -43,6 +34,16 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -99,8 +100,8 @@ public class QueueStatDAO implements IQueueStatDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             t1 = new Timestamp(from.getTime());
@@ -109,7 +110,7 @@ public class QueueStatDAO implements IQueueStatDAO {
             preStat.setTimestamp(i++, t1);
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 int c = 0;
                 while (resultSet.next()) {
@@ -186,8 +187,8 @@ public class QueueStatDAO implements IQueueStatDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             t1 = new Timestamp(from.getTime());
@@ -227,7 +228,7 @@ public class QueueStatDAO implements IQueueStatDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setInt(1, object.getGlobalConstrain());
             preStat.setInt(2, object.getCurrentlyRunning());

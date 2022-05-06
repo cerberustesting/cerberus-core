@@ -19,24 +19,17 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IUserSystemDAO;
-import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
@@ -44,8 +37,15 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Repository
@@ -99,7 +99,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, login);
                 preStat.setString(2, system);
@@ -284,7 +284,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -309,7 +309,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -342,7 +342,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, login);
 
@@ -386,7 +386,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());
@@ -419,7 +419,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, user);
@@ -456,7 +456,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, user);
             preStat.executeUpdate();
@@ -486,7 +486,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());

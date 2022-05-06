@@ -64,7 +64,7 @@ public class InteractiveTutoDAO implements IInterractiveTutoDAO {
         InteractiveTuto tuto = null;
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, lang);
             preStat.setString(2, lang);
             preStat.setInt(3, id);

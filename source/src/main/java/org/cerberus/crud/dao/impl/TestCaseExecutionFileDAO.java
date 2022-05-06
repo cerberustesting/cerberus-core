@@ -19,25 +19,16 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
+import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionFile;
 import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
-import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionFile;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -47,6 +38,15 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -83,12 +83,12 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
             LOG.debug("SQL.param.id : " + id);
         }
 
-        try( Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
-        	preStat.setLong(1, id);
-                
-            try(ResultSet resultSet = preStat.executeQuery();) {
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+
+            preStat.setLong(1, id);
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -101,12 +101,12 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } 
+        }
         //sets the message
         ans.setResultMessage(msg);
         return ans;
@@ -117,8 +117,8 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
         AnswerItem<TestCaseExecutionFile> ans = new AnswerItem<>();
         TestCaseExecutionFile result = null;
         StringBuilder query = new StringBuilder("SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `level` = ? ");
-        if(fileDesc != null) {
-        	query.append("and `filedesc` = ? ");
+        if (fileDesc != null) {
+            query.append("and `filedesc` = ? ");
         }
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -130,17 +130,17 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
             LOG.debug("SQL.param.id : " + level);
             LOG.debug("SQL.param.id : " + fileDesc);
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             preStat.setLong(1, exeId);
             preStat.setString(2, level);
-            if(fileDesc != null) {
+            if (fileDesc != null) {
                 preStat.setString(3, fileDesc);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -153,13 +153,13 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } 
+        }
         //sets the message
         ans.setResultMessage(msg);
         return ans;

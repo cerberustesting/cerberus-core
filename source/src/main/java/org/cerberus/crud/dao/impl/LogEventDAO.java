@@ -19,6 +19,23 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.ILogEventDAO;
+import org.cerberus.crud.entity.LogEvent;
+import org.cerberus.crud.factory.IFactoryLogEvent;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,23 +45,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.dao.ILogEventDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.LogEvent;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author vertigo
@@ -77,7 +77,7 @@ public class LogEventDAO implements ILogEventDAO {
         }
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setLong(1, logEventID);
                 ResultSet resultSet = preStat.executeQuery();
@@ -159,7 +159,7 @@ public class LogEventDAO implements ILogEventDAO {
 
         if (!StringUtil.isNullOrEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
-        }else{
+        } else {
             query.append("order by `logEventID` desc");
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -344,7 +344,7 @@ public class LogEventDAO implements ILogEventDAO {
         query.append(" as distinctValues FROM logevent ");
 
         searchSQL.append("WHERE 1=1");
-        
+
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`time` like ?");
             searchSQL.append(" or `login` like ?");
@@ -368,10 +368,10 @@ public class LogEventDAO implements ILogEventDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        try(Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();)  {
-        	
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
+
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -384,10 +384,10 @@ public class LogEventDAO implements ILogEventDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -411,12 +411,12 @@ public class LogEventDAO implements ILogEventDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

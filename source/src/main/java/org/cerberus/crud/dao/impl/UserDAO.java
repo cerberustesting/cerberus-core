@@ -19,17 +19,8 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IUserDAO;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.factory.IFactoryUser;
@@ -45,6 +36,16 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -379,7 +380,7 @@ public class UserDAO implements IUserDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User").
                     replace("%OPERATION%", "Update Password").replace("%REASON%", "Your password was not updated. "
-                    + "Please contact your Cerberus' administrator to learn more information."));
+                            + "Please contact your Cerberus' administrator to learn more information."));
         }
 
         answer.setResultMessage(msg);
@@ -665,7 +666,7 @@ public class UserDAO implements IUserDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -757,7 +758,7 @@ public class UserDAO implements IUserDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, login);
                 ResultSet resultSet = preStat.executeQuery();

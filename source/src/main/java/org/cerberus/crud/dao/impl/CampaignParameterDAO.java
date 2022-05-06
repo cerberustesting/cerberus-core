@@ -19,15 +19,8 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignParameter;
@@ -44,6 +37,14 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author memiks
@@ -97,7 +98,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         final String query = "SELECT * FROM campaignparameter c";
         List<CampaignParameter> campaignParameterList = new ArrayList<>();
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
             try (ResultSet resultSet = preStat.executeQuery();) {
                 while (resultSet.next()) {
                     campaignParameterList.add(this.loadFromResultSet(resultSet));
@@ -124,7 +125,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         CampaignParameter campaignParameterResult = null;
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setInt(1, campaignparameterID);
             try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
@@ -151,7 +152,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         List<CampaignParameter> campaignParameterList = new ArrayList<>();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, campaign);
             try (ResultSet resultSet = preStat.executeQuery();) {
@@ -177,7 +178,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         final StringBuilder query = new StringBuilder("UPDATE `campaignparameter` SET campaign=?, `Parameter`=?, `Value`=? WHERE campaignparameterID=?");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setString(1, campaignParameter.getCampaign());
             preStat.setString(2, campaignParameter.getParameter());
             preStat.setString(3, campaignParameter.getValue());
@@ -194,7 +195,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         final StringBuilder query = new StringBuilder("INSERT INTO `campaignparameter` (`campaign`, `Parameter`, `Value`) VALUES (?, ?, ?);");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setString(1, campaignParameter.getCampaign());
             preStat.setString(2, campaignParameter.getParameter());
             preStat.setString(3, campaignParameter.getValue());
@@ -228,7 +229,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         List<CampaignParameter> campaignParametersList = new ArrayList<>();
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int index = 1;
             if (campaignparameterID != null) {
@@ -271,7 +272,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         final StringBuilder query = new StringBuilder("DELETE FROM `campaignparameter` WHERE campaignparameterID=?");
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setInt(1, campaignParameter.getCampaignparameterID());
             return (preStat.executeUpdate() == 1);
         } catch (SQLException exception) {
@@ -325,8 +326,8 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -342,7 +343,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     campaignParameterList.add(this.loadFromResultSet(resultSet));
@@ -398,7 +399,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, campaign);
 
@@ -443,7 +444,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.DELETE_BY_CAMPAIGN)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE_BY_CAMPAIGN)) {
             // Prepare and execute query
             preStat.setString(1, key);
             preStat.executeUpdate();
@@ -468,7 +469,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setString(1, object.getCampaign());
             preStat.setString(2, object.getParameter());
@@ -496,7 +497,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         String query = "UPDATE `campaignparameter` SET `value` = ? WHERE `campaign` = ? AND `parameter` = ?";
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, object.getValue());
             preStat.setString(2, object.getCampaign());
@@ -523,7 +524,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
             preStat.setString(1, object.getCampaign());
             preStat.setString(2, object.getParameter());

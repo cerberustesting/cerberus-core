@@ -19,27 +19,18 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ISqlLibraryDAO;
-import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.crud.entity.SqlLibrary;
+import org.cerberus.crud.factory.IFactorySqlLibrary;
 import org.cerberus.crud.factory.impl.FactorySqlLibrary;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactorySqlLibrary;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -48,6 +39,15 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -92,7 +92,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, name);
 
@@ -463,7 +463,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -504,15 +504,15 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         List<String> list = null;
         final String query = "SELECT DISTINCT Type FROM SqlLibrary";
 
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);
-        		ResultSet resultSet = preStat.executeQuery();) {
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query);
+             ResultSet resultSet = preStat.executeQuery();) {
             list = new ArrayList<>();
-        	while (resultSet.next()) {
-        		list.add(resultSet.getString("Type"));
+            while (resultSet.next()) {
+                list.add(resultSet.getString("Type"));
             }
         } catch (SQLException exception) {
-        	LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         }
         return list;
     }
@@ -667,18 +667,18 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         query.append("SELECT * FROM sqllibrary `sql` WHERE Name = ?");
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setString(1, key);
-            try(ResultSet resultSet = preStat.executeQuery()){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                //gets the data
                 while (resultSet.next()) {
                     p = this.loadFromResultSet(resultSet);
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 LOG.error("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
@@ -687,7 +687,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
-        } 
+        }
         a.setResultMessage(msg);
         a.setItem(p);
         return a;
@@ -748,7 +748,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         }
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -761,16 +761,16 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 //get the total number of rows
-                
+
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -790,11 +790,11 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

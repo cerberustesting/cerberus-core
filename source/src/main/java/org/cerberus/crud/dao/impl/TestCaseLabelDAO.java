@@ -20,29 +20,17 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -52,9 +40,19 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Implements methods defined on ILabelDAO
- *
  */
 @Repository
 public class TestCaseLabelDAO implements ITestCaseLabelDAO {
@@ -87,7 +85,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             //prepare and execute query
             preStat.setInt(1, id);
 
@@ -135,7 +133,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             //prepare and execute query
             preStat.setInt(1, labelId);
             preStat.setString(2, test);
@@ -221,8 +219,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -240,7 +238,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     Label label = labelDAO.loadFromResultSet(resultSet);
@@ -297,7 +295,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             preStat.setString(1, object.getTest());
             preStat.setString(2, object.getTestcase());
@@ -330,7 +328,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, object.getId());
 
             preStat.executeUpdate();
@@ -358,7 +356,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query);
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, object.getTest());
             preStat.setString(2, object.getTestcase());
             preStat.setInt(3, object.getLabelId());
@@ -452,8 +450,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
             int i = 1;
             if ((testcaseList != null) && !testcaseList.isEmpty()) {
                 if (testcaseList.size() < 101) {
@@ -476,7 +474,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     Label label = labelDAO.loadFromResultSet(resultSet);
@@ -549,8 +547,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
             int i = 1;
             if (!Strings.isNullOrEmpty(type)) {
                 preStat.setString(i++, type);
@@ -560,7 +558,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     Label label = labelDAO.loadFromResultSet(resultSet);
