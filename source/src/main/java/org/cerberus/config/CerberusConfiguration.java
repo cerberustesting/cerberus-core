@@ -40,14 +40,6 @@ import java.util.concurrent.Executor;
 @ComponentScan("org.cerberus")
 public class CerberusConfiguration {
 
-/*    @Bean
-    public PropertiesResolver properties() {
-        PropertiesResolver pr = new PropertiesResolver();
-        pr.setOrder(1);
-        pr.setIgnoreUnresolvablePlaceholders(false);
-        return pr;
-    }*/
-
     @Bean
     public DataSource dataSource() throws NamingException {
         JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
