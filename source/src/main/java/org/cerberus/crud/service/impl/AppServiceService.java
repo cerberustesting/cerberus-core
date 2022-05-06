@@ -19,10 +19,10 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.fileupload.FileItem;
+import org.cerberus.api.exceptions.EntityNotFoundException;
+import org.cerberus.api.exceptions.FailedInsertOperationException;
+import org.cerberus.api.exceptions.InvalidRequestException;
 import org.cerberus.crud.dao.IAppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
@@ -41,8 +41,10 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author cte
  */
 @Service
@@ -110,8 +112,50 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
+    public AppService createAPI(AppService newAppService) {
+        if (newAppService.getService() == null || newAppService.getService().isEmpty()) {
+            throw new InvalidRequestException("service is required to create an ApplicationService");
+        }
+
+        if (newAppService.getType() == null || newAppService.getType().isEmpty()) {
+            throw new InvalidRequestException("type is required to create an ApplicationService");
+        }
+
+        if (newAppService.getMethod() == null || newAppService.getMethod().isEmpty()) {
+            throw new InvalidRequestException("method is required to create an ApplicationService");
+        }
+
+        Answer answer = this.create(newAppService);
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return this.readByKey(newAppService.getService()).getItem();
+        } else {
+            throw new FailedInsertOperationException("Failed to insert the new application service in the database");
+        }
+    }
+
+    @Override
     public Answer update(String service, AppService object) {
         return appServiceDao.update(service, object);
+    }
+
+    @Override
+    public AppService updateAPI(String service, AppService appServiceToUpdate) {
+        if (service == null || service.isEmpty()) {
+            throw new InvalidRequestException("service is required to update an ApplicationService");
+        }
+
+        AppService appServiceFromDb = this.readByKey(service).getItem();
+        if (appServiceFromDb == null) {
+            throw new EntityNotFoundException(AppService.class, "service", service);
+        }
+
+        appServiceToUpdate.setService(appServiceFromDb.getService());
+        Answer answer = this.update(service, appServiceToUpdate);
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return this.readByKey(service).getItem();
+        } else {
+            throw new FailedInsertOperationException("Unable to update service for service=" + service);
+        }
     }
 
     @Override

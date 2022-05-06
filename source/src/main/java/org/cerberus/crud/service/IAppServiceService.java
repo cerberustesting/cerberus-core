@@ -19,9 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
@@ -30,8 +27,10 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author cte
  */
 public interface IAppServiceService {
@@ -39,7 +38,7 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} List with the given Criteria
      *
-     * @param name the name of the service
+     * @param name  the name of the service
      * @param limit the number of {@link AppService} to get
      * @return
      */
@@ -51,11 +50,11 @@ public interface IAppServiceService {
      * Get the {@link AppService} List of the given {@link System} with the
      * given Criteria
      *
-     * @param startPosition the start index to look for
-     * @param length the number of {@link AppService} to get
-     * @param columnName the Column name to sort
+     * @param startPosition    the start index to look for
+     * @param length           the number of {@link AppService} to get
+     * @param columnName       the Column name to sort
      * @param sort
-     * @param searchParameter the string to search in the {@link AppService}
+     * @param searchParameter  the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
      * @param systems
      * @return
@@ -73,9 +72,9 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} of the given key
      *
-     * @param key the key of the {@link AppService} to get
+     * @param key          the key of the {@link AppService} to get
      * @param activeDetail Y will load detail only with Active data on header
-     * and content. null wil load all data.
+     *                     and content. null wil load all data.
      * @return
      */
     AnswerItem<AppService> readByKeyWithDependency(String key, String activeDetail);
@@ -83,8 +82,8 @@ public interface IAppServiceService {
     /**
      * Get the distinctValue of the column
      *
-     * @param columnName the Column name to get
-     * @param searchParameter the string to search in the {@link AppService}
+     * @param columnName       the Column name to get
+     * @param searchParameter  the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -97,11 +96,23 @@ public interface IAppServiceService {
     Answer create(AppService object);
 
     /**
+     * @param newAppService
+     * @return
+     */
+    AppService createAPI(AppService newAppService);
+
+    /**
      * @param service
-     * @param object the {@link AppService} to Update
+     * @param object  the {@link AppService} to Update
      * @return {@link AnswerItem}
      */
     Answer update(String service, AppService object);
+
+    /**
+     * @param appServiceToUpdate
+     * @return
+     */
+    AppService updateAPI(String serviceName, AppService appServiceToUpdate);
 
     /**
      * @param object the {@link AppService} to Delete
@@ -110,7 +121,6 @@ public interface IAppServiceService {
     Answer delete(AppService object);
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -118,7 +128,6 @@ public interface IAppServiceService {
     AppService convert(AnswerItem<AppService> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -126,7 +135,6 @@ public interface IAppServiceService {
     List<AppService> convert(AnswerList<AppService> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */
