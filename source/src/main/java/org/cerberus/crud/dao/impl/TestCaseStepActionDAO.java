@@ -19,6 +19,24 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.ITestCaseStepActionDAO;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.SqlUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,24 +44,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.dao.ITestCaseStepActionDAO;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TestCaseStepAction;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerList;
-import org.json.JSONArray;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * {Insert class description here}
@@ -77,7 +77,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -116,7 +116,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -149,7 +149,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -185,7 +185,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             try {
                 preStat.setString(1, test);
@@ -267,7 +267,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -349,7 +349,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -415,7 +415,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -460,7 +460,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, tcsa.getTest());
             preStat.setString(2, tcsa.getTestcase());
@@ -488,7 +488,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setInt(1, newActionId);
             preStat.setString(2, test);
@@ -520,7 +520,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -582,9 +582,9 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String usrModif = resultSet.getString("tca.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tca.DateModif");
 
-        return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator, 
-                conditionValue1, conditionValue2, conditionValue3, conditionOptions, action, value1, 
-                value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated, 
+        return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator,
+                conditionValue1, conditionValue2, conditionValue3, conditionOptions, action, value1,
+                value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated,
                 usrModif, dateModif);
     }
 

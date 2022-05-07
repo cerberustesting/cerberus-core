@@ -1,4 +1,4 @@
-/**
+/*
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -20,98 +20,108 @@
 
 package org.cerberus.api.dto.v001;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 import org.cerberus.api.dto.views.View;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.NotEmpty;
 
-/**
- * @author MorganLmd
- */
+@ToString
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseCountryProperties")
-public class TestcaseCountryPropertiesDTOV001 {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@ApiModel(value = "Service")
+public class AppServiceDTOV001 {
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
+    @NotEmpty
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 0)
-    private String testFolderId;
+    private String service;
 
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(position = 1)
-    private String testcaseId;
-
-    @NotBlank(message = "Property is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String application;
+
+    @NotEmpty
     @ApiModelProperty(position = 2)
-    private String property;
-
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 3)
-    private String description;
-
-    @NotBlank(message = "Message is mandatory")
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 4)
     private String type;
 
+    @NotEmpty
+    @ApiModelProperty(position = 3)
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String method;
+
+    @ApiModelProperty(position = 4)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String servicePath;
+
     @ApiModelProperty(position = 5)
-    private String database;
-
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonProperty("isFollowingRedirection")
+    private boolean isFollowingRedirection;
+
     @ApiModelProperty(position = 6)
-    private String value1;
-
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String fileName;
+
     @ApiModelProperty(position = 7)
-    private String value2;
-
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String operation;
+
     @ApiModelProperty(position = 8)
-    private String length;
-
-    @NotNull(message = "Row limit is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String attachementURL;
+
     @ApiModelProperty(position = 9)
-    private int rowLimit;
-
-    @NotNull(message = "Nature is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String serviceRequest;
+
     @ApiModelProperty(position = 10)
-    private String nature;
-
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String kafkaTopic;
+
     @ApiModelProperty(position = 11)
-    private int rank;
-
-    @Valid
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 16)
-    private List<InvariantDTOV001> countries;
+    private String kafkaKey;
 
-    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 12)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String kafkaFilterPath;
+
+    @ApiModelProperty(position = 13)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String kafkaFilterValue;
+
+    @ApiModelProperty(position = 14)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String group;
+
+    @ApiModelProperty(position = 15)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private String description;
+
+    @ApiModelProperty(position = 16)
+    @JsonView(value = {View.Public.GET.class})
     private String usrCreated;
 
+    @ApiModelProperty(position = 17)
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 13)
     private String dateCreated;
 
+    @ApiModelProperty(position = 18)
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
     private String usrModif;
 
+    @ApiModelProperty(position = 19)
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 15)
     private String dateModif;
 }

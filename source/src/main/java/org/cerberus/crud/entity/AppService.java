@@ -19,8 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
-import java.sql.Timestamp;
-import java.util.List;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.execution.impl.RecorderService;
@@ -29,11 +28,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 /**
  * Map la table Service
  *
  * @author cte
  */
+@ToString
 public class AppService {
 
     private String service; // Name and reference of the service

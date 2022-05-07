@@ -19,21 +19,21 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.IDocumentationDAO;
+import org.cerberus.crud.entity.Documentation;
+import org.cerberus.crud.factory.IFactoryDocumentation;
+import org.cerberus.database.DatabaseSpring;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.cerberus.crud.dao.IDocumentationDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Documentation;
-import org.cerberus.crud.factory.IFactoryDocumentation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author bcivel
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Repository;
 public class DocumentationDAO implements IDocumentationDAO {
 
     private static final Logger LOG = LogManager.getLogger(DocumentationDAO.class);
-    
+
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -55,7 +55,7 @@ public class DocumentationDAO implements IDocumentationDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setString(1, docTable);
                 preStat.setString(2, docField);
@@ -69,21 +69,21 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String description = resultSet.getString("DocDesc");
                         String docAnchor = resultSet.getString("DocAnchor");
                         result = factoryDocumentation.create(docTable, docField, docValue, docLabel, description, docAnchor);
-                    }else{
+                    } else {
                         return null;
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -120,17 +120,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(docTable, docField, docValue, docLabel, description, docAnchor));
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -167,17 +167,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(docTable, docField, "", docLabel, description, docAnchor));
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -195,55 +195,53 @@ public class DocumentationDAO implements IDocumentationDAO {
     public String findLabelFromTableAndField(String docTable, String docField, String lang) {
         final String query = "SELECT DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and length(docvalue)=0 and length(docdesc) > 1";
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+
             preStat.setMaxRows(1);
             preStat.setString(1, docTable);
             preStat.setString(2, docField);
             preStat.setString(3, lang);
-                
-            try(ResultSet resultSet = preStat.executeQuery()) {
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
                     return resultSet.getString("DocLabel");
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
-        } 
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
         return null;
     }
 
-    
-    
-    
+
     @Override
     public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang) {
         final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and Lang = ? and length(docdesc) > 1";
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+
             preStat.setMaxRows(1);
             preStat.setString(1, docTable);
             preStat.setString(2, docField);
             preStat.setString(3, docValue);
             preStat.setString(4, lang);
 
-            try(ResultSet resultSet = preStat.executeQuery()){
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
                     return resultSet.getString("DocDesc");
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
-        } 
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
 
         return null;
     }
@@ -272,17 +270,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(table, field, value, label, description, docAnchor));
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -302,7 +300,7 @@ public class DocumentationDAO implements IDocumentationDAO {
         final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
 
         Connection connection = this.databaseSpring.connect();
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -326,17 +324,17 @@ public class DocumentationDAO implements IDocumentationDAO {
                         result.add(factoryDocumentation.create(table, field, value, label, description, anchor));
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {

@@ -19,13 +19,16 @@
  */
 package org.cerberus.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.api.dto.v001.TestcaseStepActionControlDTOV001;
+import org.cerberus.api.dto.views.View;
 import org.cerberus.api.mappers.v001.TestcaseStepActionControlMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
@@ -61,9 +64,10 @@ public class TestcaseStepActionControlController {
 
     @ApiOperation("Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
+    @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TestcaseStepActionControlDTOV001 findControlByKey(
+    public ResponseWrapper<TestcaseStepActionControlDTOV001> findControlByKey(
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
@@ -72,9 +76,11 @@ public class TestcaseStepActionControlController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        return this.controlMapper.toDTO(
-                this.controlService.findTestCaseStepActionControlByKey(
-                        testFolderId, testcaseId, stepId, actionId, controlId)
+        return ResponseWrapper.wrap(
+                this.controlMapper.toDTO(
+                        this.controlService.findTestCaseStepActionControlByKey(
+                                testFolderId, testcaseId, stepId, actionId, controlId)
+                )
         );
     }
 }

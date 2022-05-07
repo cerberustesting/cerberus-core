@@ -19,6 +19,33 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.ITestCaseExecutionHttpStatDAO;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
+import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionHttpStat;
+import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionHttpStat;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.service.har.IHarService;
+import org.cerberus.service.har.entity.HarStat;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,32 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.TestCaseExecutionHttpStat;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionHttpStat;
-import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionHttpStat;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.cerberus.crud.dao.ITestCaseExecutionHttpStatDAO;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.service.har.IHarService;
-import org.cerberus.service.har.entity.HarStat;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Implements methods defined on ITestCaseExecutionHttpStatDAO
@@ -198,7 +199,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 preStat.setLong(1, exeId);
                 ResultSet resultSet = preStat.executeQuery();
@@ -246,7 +247,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
 
     @Override
     public AnswerList<TestCaseExecutionHttpStat> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to,
-            List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
+                                                                List<String> system, List<String> countries, List<String> environments, List<String> robotDecli) {
         AnswerList<TestCaseExecutionHttpStat> response = new AnswerList<>();
         List<TestCaseExecutionHttpStat> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -425,8 +426,8 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
 
     @Override
     public AnswerItem<JSONObject> readByCriteria(String controlStatus, List<TestCase> testcases, Date from, Date to,
-            List<String> system, List<String> countries, List<String> environments, List<String> robotDecli,
-            List<String> parties, List<String> types, List<String> units) {
+                                                 List<String> system, List<String> countries, List<String> environments, List<String> robotDecli,
+                                                 List<String> parties, List<String> types, List<String> units) {
 
         JSONObject object = new JSONObject();
         AnswerItem<JSONObject> response = new AnswerItem<>();

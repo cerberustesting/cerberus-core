@@ -20,29 +20,19 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -54,6 +44,17 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
@@ -682,7 +683,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 int i = 1;
                 preStat.setLong(i++, id);
@@ -963,8 +964,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -982,7 +983,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -1404,7 +1405,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "WHERE `" + COLUMN_ID + "` = ?";
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement selectStatement = connection.prepareStatement(query);) {
+             PreparedStatement selectStatement = connection.prepareStatement(query);) {
             selectStatement.setLong(1, id);
             try (ResultSet result = selectStatement.executeQuery();) {
                 if (!result.next()) {
@@ -1446,7 +1447,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
 
             int i = 1;
             preStat.setString(i++, object.getSystem());
@@ -2053,7 +2054,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+             PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -2084,7 +2085,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+             PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -2537,11 +2538,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     * TestCaseExecutionInQueue
+     *                  TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionQueue} with objects
      * {@link ResultSet} and {@link Application}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionQueue
      */
     private TestCaseExecutionQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {

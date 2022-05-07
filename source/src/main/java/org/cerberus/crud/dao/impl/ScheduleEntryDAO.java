@@ -19,6 +19,22 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.IScheduleEntryDAO;
+import org.cerberus.crud.entity.ScheduleEntry;
+import org.cerberus.crud.factory.IFactoryScheduleEntry;
+import org.cerberus.crud.factory.impl.FactoryScheduleEntry;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,24 +43,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.ScheduleEntry;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.AnswerItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.cerberus.crud.factory.impl.FactoryScheduleEntry;
-import org.cerberus.crud.factory.IFactoryScheduleEntry;
-import org.springframework.stereotype.Repository;
-import org.cerberus.crud.dao.IScheduleEntryDAO;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author cdelage
  */
 @Repository
@@ -78,7 +78,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             try {
                 int i = 1;
                 preStat.setLong(i++, id);

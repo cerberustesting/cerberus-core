@@ -19,19 +19,10 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
+import lombok.AllArgsConstructor;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Parameter;
@@ -51,153 +42,102 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.security.UserSecurity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
  *
  * @author cte
  */
+@AllArgsConstructor
 @Repository
 public class AppServiceDAO implements IAppServiceDAO {
 
-    /**
-     * Description of the variable here.
-     */
-    @Autowired
     private DatabaseSpring databaseSpring;
-    @Autowired
     private IFactoryAppService factoryAppService;
-    @Autowired
     private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(AppServiceDAO.class);
-
-    private final String OBJECT_NAME = "AppService";
-    private final int MAX_ROW_SELECTED = 100000;
-    private final String SQL_DUPLICATED_CODE = "23000";
+    private static final String OBJECT_NAME = "AppService";
+    private static final int MAX_ROW_SELECTED = 100000;
+    private static final String SQL_DUPLICATED_CODE = "23000";
+    private static final String SQL_ERROR_UNABLETOEXECUTEQUERY = "Unable to execute query : {}";
+    private static final String SQL_MESSAGE = "SQL : {}";
 
     @Override
     public AppService findAppServiceByKey(String service) throws CerberusException {
-        boolean throwEx = false;
         AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, service);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        String group = resultSet.getString("Group");
-                        String serviceRequest = resultSet.getString("ServiceRequest");
-                        String description = resultSet.getString("Description");
-                        String servicePath = resultSet.getString("servicePath");
-                        String attachementURL = resultSet.getString("AttachementURL");
-                        String operation = resultSet.getString("Operation");
-                        String application = resultSet.getString("Application");
-                        String type = resultSet.getString("Type");
-                        String method = resultSet.getString("Method");
-                        String usrModif = resultSet.getString("UsrModif");
-                        String usrCreated = resultSet.getString("UsrCreated");
-                        Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
-                        Timestamp dateModif = resultSet.getTimestamp("DateModif");
-                        String fileName = resultSet.getString("FileName");
-                        String kafkaTopic = resultSet.getString("KafkaTopic");
-                        String kafkaKey = resultSet.getString("KafkaKey");
-                        String kafkaFilterPath = resultSet.getString("KafkaFilterPath");
-                        String kafkaFilterValue = resultSet.getString("KafkaFilterValue");
-                        boolean isFollowRedir = resultSet.getBoolean("isFollowRedir");
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setString(1, service);
 
-                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
-                    } else {
-                        throwEx = true;
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.next()) {
+                    result = this.loadFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
+                LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing connection : " + e.toString());
-            }
+            LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
         }
-        if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
+
         return result;
     }
 
     @Override
     public AnswerList<AppService> findAppServiceByLikeName(String service, int limit) {
         AnswerList<AppService> response = new AnswerList<>();
-        boolean throwEx = false;
-        AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` LIKE ? limit ?";
         List<AppService> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
 
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            preStat.setString(1, "%" + service + "%");
+            preStat.setInt(2, limit);
+
+            ResultSet resultSet = preStat.executeQuery();
             try {
-                preStat.setString(1, "%" + service + "%");
-                preStat.setInt(2, limit);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-                    response = new AnswerList<>(objectList, nrTotalRows);
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
                 }
+
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+
+                resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                int nrTotalRows = 0;
+
+                if (resultSet != null && resultSet.next()) {
+                    nrTotalRows = resultSet.getInt(1);
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
+                LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             } finally {
-                preStat.close();
+                if (resultSet != null) resultSet.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception closing connection : " + e.toString());
-            }
+            LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
         }
 
         response.setResultMessage(msg);
@@ -213,10 +153,10 @@ public class AppServiceDAO implements IAppServiceDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<AppService> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disregarding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ");
         query.append("left outer JOIN application app ON srv.application = app.application");
@@ -252,7 +192,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                     q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
@@ -260,7 +200,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(searchSQL);
 
         if (systems != null && !systems.isEmpty()) {
-            systems.add(""); // authorize tranversal object
+            systems.add(""); // authorize transversal object
             query.append(" and ( app.Application is null or ");
             query.append(SqlUtil.generateInClause("app.system", systems));
             query.append(" ) ");
@@ -282,109 +222,90 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug(SQL_MESSAGE, query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            if (systems != null && !systems.isEmpty()) {
+                for (String sys : systems) {
+                    preStat.setString(i++, sys);
+                }
+            }
+
+            ResultSet resultSet = preStat.executeQuery();
             try {
-                int i = 1;
-
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
-                for (String individualColumnSearchValue : individalColumnSearchValues) {
-                    preStat.setString(i++, individualColumnSearchValue);
+                //gets the data
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
                 }
 
-                if (systems != null && !systems.isEmpty()) {
-                    for (String sys : systems) {
-                        preStat.setString(i++, sys);
-                    }
+                //get the total number of rows
+                resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                int nrTotalRows = 0;
+
+                if (resultSet != null && resultSet.next()) {
+                    nrTotalRows = resultSet.getInt(1);
                 }
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(objectList, nrTotalRows);
                 }
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
             } finally {
-                if (preStat != null) {
-                    preStat.close();
+                if (resultSet != null) {
+                    resultSet.close();
                 }
             }
 
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
+
 
         response.setResultMessage(msg);
         response.setDataList(objectList);
@@ -394,58 +315,37 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public AnswerItem<AppService> readByKey(String key) {
         AnswerItem<AppService> ans = new AnswerItem<>();
-        AppService result = null;
+        AppService result;
         final String query = "SELECT * FROM `appservice` srv WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + key);
-        }
+        LOG.debug(SQL_MESSAGE, query);
+        LOG.debug("SQL.param.service : {}", key);
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, key);
-                try (ResultSet resultSet = preStat.executeQuery();) {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+
+            preStat.setString(1, key);
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
-        //sets the message
         ans.setResultMessage(msg);
         return ans;
     }
@@ -457,7 +357,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT distinct ");
@@ -483,7 +383,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
@@ -494,11 +394,11 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+            LOG.debug(SQL_MESSAGE, query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -514,12 +414,12 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 //gets the data
                 while (resultSet.next()) {
@@ -538,7 +438,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else if (distinctValues.size() <= 0) {
+                } else if (distinctValues.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
@@ -551,7 +451,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 LOG.warn(e.toString());
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {
@@ -566,7 +466,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public Answer create(AppService object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
@@ -575,72 +475,55 @@ public class AppServiceDAO implements IAppServiceDAO {
             query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getGroup());
-                if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
-                    preStat.setString(i++, object.getApplication());
-                }
-                preStat.setString(i++, object.getType());
-                preStat.setString(i++, object.getMethod());
-                preStat.setString(i++, object.getServicePath());
-                preStat.setBoolean(i++, object.isFollowRedir());
-                preStat.setString(i++, object.getOperation());
-                preStat.setString(i++, object.getServiceRequest());
-                preStat.setString(i++, object.getKafkaTopic());
-                preStat.setString(i++, object.getKafkaKey());
-                preStat.setString(i++, object.getKafkaFilterPath());
-                preStat.setString(i++, object.getKafkaFilterValue());
-                preStat.setString(i++, object.getAttachementURL());
-                preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getFileName());
+        LOG.debug(SQL_MESSAGE, query.toString());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
+            int i = 1;
+            preStat.setString(i++, object.getService());
+            preStat.setString(i++, object.getGroup());
+            if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
+                preStat.setString(i++, object.getApplication());
             }
+            preStat.setString(i++, object.getType());
+            preStat.setString(i++, object.getMethod());
+            preStat.setString(i++, object.getServicePath());
+            preStat.setBoolean(i++, object.isFollowRedir());
+            preStat.setString(i++, object.getOperation());
+            preStat.setString(i++, object.getServiceRequest());
+            preStat.setString(i++, object.getKafkaTopic());
+            preStat.setString(i++, object.getKafkaKey());
+            preStat.setString(i++, object.getKafkaFilterPath());
+            preStat.setString(i++, object.getKafkaFilterValue());
+            preStat.setString(i++, object.getAttachementURL());
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i, object.getFileName());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
+
         return new Answer(msg);
     }
 
     @Override
     public Answer update(String service, AppService object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, KafkaTopic = ?, KafkaKey = ?, KafkaFilterPath = ?, KafkaFilterValue = ?, AttachementURL = ?, "
-                + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
+                + "`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
             query += " ,Application = ?";
         } else {
@@ -648,101 +531,67 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
         query += " WHERE `Service` = ?";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.application : " + object.getApplication());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getGroup());
-                preStat.setString(i++, object.getServicePath());
-                preStat.setBoolean(i++, object.isFollowRedir());
-                preStat.setString(i++, object.getOperation());
-                preStat.setString(i++, object.getServiceRequest());
-                preStat.setString(i++, object.getKafkaTopic());
-                preStat.setString(i++, object.getKafkaKey());
-                preStat.setString(i++, object.getKafkaFilterPath());
-                preStat.setString(i++, object.getKafkaFilterValue());
-                preStat.setString(i++, object.getAttachementURL());
-                preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getType());
-                preStat.setString(i++, object.getMethod());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, object.getFileName());
-                if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
-                    preStat.setString(i++, object.getApplication());
-                }
-                preStat.setString(i++, service);
+        LOG.debug(SQL_MESSAGE, query);
+        LOG.debug("SQL.param.application : {}", object.getApplication());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            int i = 1;
+            preStat.setString(i++, object.getService());
+            preStat.setString(i++, object.getGroup());
+            preStat.setString(i++, object.getServicePath());
+            preStat.setBoolean(i++, object.isFollowRedir());
+            preStat.setString(i++, object.getOperation());
+            preStat.setString(i++, object.getServiceRequest());
+            preStat.setString(i++, object.getKafkaTopic());
+            preStat.setString(i++, object.getKafkaKey());
+            preStat.setString(i++, object.getKafkaFilterPath());
+            preStat.setString(i++, object.getKafkaFilterValue());
+            preStat.setString(i++, object.getAttachementURL());
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getType());
+            preStat.setString(i++, object.getMethod());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i++, object.getFileName());
+            if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
+                preStat.setString(i++, object.getApplication());
             }
+            preStat.setString(i, service);
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer delete(AppService object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "DELETE FROM appservice WHERE `Service` = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, object.getService());
+        LOG.debug(SQL_MESSAGE, query);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            preStat.setString(1, object.getService());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
+
         return new Answer(msg);
     }
 
@@ -750,16 +599,16 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer uploadFile(String service, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "cerberus_ftpfile_path Parameter not found");
-        AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+        AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
         if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            Parameter p = (Parameter) a.getItem();
+            Parameter p = a.getItem();
             String uploadPath = p.getValue();
             File appDir = new File(uploadPath + File.separator + service);
             if (!appDir.exists()) {
                 try {
                     appDir.mkdirs();
                 } catch (SecurityException se) {
-                    LOG.warn("Unable to create ftp local file dir: " + se.getMessage());
+                    LOG.warn("Unable to create ftp local file dir: {}", se.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                             se.toString());
                     a.setResultMessage(msg);
@@ -774,7 +623,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                             "ftp local file uploaded");
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "FTP Local File").replace("%OPERATION%", "Upload"));
                 } catch (Exception e) {
-                    LOG.warn("Unable to upload ftp local file: " + e.getMessage());
+                    LOG.warn("Unable to upload ftp local file: {}", e.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                             e.toString());
                 }

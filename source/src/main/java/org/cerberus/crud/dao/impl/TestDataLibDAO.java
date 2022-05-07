@@ -20,6 +20,26 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.dao.ITestDataLibDAO;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.factory.IFactoryTestDataLib;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.sql.Connection;
@@ -31,29 +51,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.dao.ITestDataLibDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.factory.IFactoryTestDataLib;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.security.UserSecurity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.cerberus.crud.service.IParameterService;
 
 /**
- *
  * @author bcivel
  * @author FNogueira
  */
@@ -90,7 +89,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Connection connection = this.databaseSpring.connect();
 
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             preStat.setInt(1, testDataLibID);
 
             try {
@@ -169,7 +168,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             preStat.setString(1, name);
             preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(system));
             preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(environment));
@@ -1105,8 +1104,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
@@ -1132,7 +1131,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

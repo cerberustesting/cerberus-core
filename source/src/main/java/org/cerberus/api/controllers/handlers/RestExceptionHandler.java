@@ -23,8 +23,6 @@ import org.cerberus.api.controllers.wrappers.ErrorResponseWrapper;
 import org.cerberus.api.exceptions.EntityNotFoundException;
 import org.cerberus.api.exceptions.FailedInsertOperationException;
 import org.cerberus.api.exceptions.InvalidRequestException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +46,6 @@ import java.util.stream.Collectors;
 /**
  * @author mlombard
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(basePackages = "org.cerberus.api")
 public class RestExceptionHandler {
 
