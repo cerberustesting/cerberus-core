@@ -47,9 +47,9 @@ NB : If under Windows, you can submit the command from docker bash.
 ### Step 2 : Copy paste changelog on github
 
 * Click on 'Draft new release'.
-* Choose 'cerberus-testing-xnew.ynew' branch
-* Put in title : cerberus-testing-xnew.ynew
-* copy/paste adoc file under source/src/main/resources/documentation/include/en/changelog_xdev_ydev.adoc to content.
+* Choose 'cerberus-testing-XNEW.YNEW' tag
+* Put in title : vXNEW.YNEW
+* copy/paste adoc file under source/src/main/resources/documentation/D2/include/en/changelog_xdev_ydev.adoc to content.
 * Upload Cerberus-xnew.ynew.zip from source/target/
 * Press 'Publish Release'
 
