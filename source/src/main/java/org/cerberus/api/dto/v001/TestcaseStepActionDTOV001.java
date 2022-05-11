@@ -39,7 +39,7 @@ import java.util.List;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseStepAction")
+@ApiModel(value = "TestcaseAction")
 public class TestcaseStepActionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})

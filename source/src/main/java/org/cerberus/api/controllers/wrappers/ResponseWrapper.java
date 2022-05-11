@@ -20,28 +20,96 @@
 
 package org.cerberus.api.controllers.wrappers;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.cerberus.api.dto.views.View;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @JsonView(View.Public.GET.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class ResponseWrapper<T> {
 
     private T data;
-    private String message;
-    private int length;
+    private HttpStatus status;
     private int statusCode;
+    private int length;
+    private String message;
+    private String debugMessage;
+    private List<ISubErrorWrapper> subErrors;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private LocalDateTime timestamp;
+
+    private ResponseWrapper() {
+        timestamp = LocalDateTime.now();
+    }
+
+    public ResponseWrapper(HttpStatus status) {
+        this();
+        this.status = status;
+        this.statusCode = status.value();
+    }
+
+    public ResponseWrapper(HttpStatus status, Throwable ex) {
+        this(status);
+        this.message = "Unexpected error";
+        this.debugMessage = ex.getLocalizedMessage();
+    }
+
+    public ResponseWrapper(HttpStatus status, String message, Throwable ex) {
+        this(status, ex);
+        this.message = message;
+    }
+
+    private void addSubError(ISubErrorWrapper subError) {
+        if (subErrors == null) {
+            subErrors = new ArrayList<>();
+        }
+        subErrors.add(subError);
+    }
+
+    private void addValidationError(String object, String field, Object rejectedValue, String message) {
+        addSubError(new ValidationErrorWrapper(object, field, rejectedValue, message));
+    }
+
+    private void addValidationError(String object, String message) {
+        addSubError(new ValidationErrorWrapper(object, message));
+    }
+
+    private void addValidationError(FieldError fieldError) {
+        this.addValidationError(
+                fieldError.getObjectName(),
+                fieldError.getField(),
+                fieldError.getRejectedValue(),
+                fieldError.getDefaultMessage());
+    }
+
+    public void addValidationErrors(List<FieldError> fieldErrors) {
+        fieldErrors.forEach(this::addValidationError);
+    }
+
+    private void addValidationError(ObjectError objectError) {
+        this.addValidationError(
+                objectError.getObjectName(),
+                objectError.getDefaultMessage());
+    }
+
+    public void addValidationError(List<ObjectError> globalErrors) {
+        globalErrors.forEach(this::addValidationError);
+    }
 
     public static <T> ResponseWrapper<T> wrap(T t) {
         ResponseWrapper<T> responseWrapper = new ResponseWrapper<>();
