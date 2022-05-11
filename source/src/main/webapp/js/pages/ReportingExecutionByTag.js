@@ -278,7 +278,6 @@ let checkboxesLines = [];
 let checkedColCheckboxes = [];
 
 function loadAllReports(urlTag) {
-
     checkedColCheckboxes = [];
     if (urlTag === undefined) {
         urlTag = $('#selectTag').val();
@@ -413,16 +412,16 @@ function loadReportingData(selectTag) {
                 eval(elmt.attr("onload")) // TODO eval la method
         });
 
+        //Event fired when we resize a column on the datatable. Need to re-execute functions because datatable is regenerated
         $('#listTable').on('column-sizing.dt', function () {
-            console.log("sizing");
             createHeaderCheckboxes();
             resetCheckboxLineEvent();
             addClickEventOnColCheckboxes();
             addClickEventOnLineCheckboxes();
         });
 
+        //Event fired when the datatable is drawing. Need to re-execute functions because datatable is regenerated
         $('#listTable').on('draw.dt', function () {
-            console.log("draw");
             createHeaderCheckboxes();
             resetCheckboxLineEvent();
             addClickEventOnColCheckboxes();
@@ -431,12 +430,12 @@ function loadReportingData(selectTag) {
 
         checkboxesLines = createCheckboxesLinesArray();
         createHeaderCheckboxes();
-
         addClickEventOnLineCheckboxes();
         addClickEventOnColCheckboxes();
     });
 }
 
+//Create the checkboxes at each header column of execution. Need to execute this function at each event of datatable
 function createHeaderCheckboxes() {
     let filterCol = document.getElementById("filterHeader").children;
     let mainHeader = document.getElementById("filterHeader").previousSibling.children;
@@ -451,10 +450,9 @@ function createHeaderCheckboxes() {
     }
 }
 
+//Add the event 'click' on each column checkboxes
 function addClickEventOnColCheckboxes() {
-    //checkedColCheckboxes = [];
     document.querySelectorAll('.selectByColumn').forEach((item, index) => {
-        //updateCheckedColBoxes(item.checked, item.id);
         item.addEventListener('click', event => {
             updateCheckedColBoxes(item.checked, item.id);
             selectByColumn(item);
@@ -462,8 +460,8 @@ function addClickEventOnColCheckboxes() {
     })
 }
 
+//Update the array which contains the column checkboxes that are checked
 function updateCheckedColBoxes(isChecked, id) {
-    console.log(isChecked + " " + id);
     if (isChecked) {
         checkedColCheckboxes.push(id);
     } else {
@@ -472,9 +470,9 @@ function updateCheckedColBoxes(isChecked, id) {
             checkedColCheckboxes.splice(indexId, 1);
         }
     }
-    console.log(checkedColCheckboxes);
 }
 
+//Add the event 'click' on each line checkboxes
 function addClickEventOnLineCheckboxes() {
     document.querySelectorAll('.selectByLine').forEach((item, index) => {
         item.addEventListener('click', event => {
@@ -483,43 +481,60 @@ function addClickEventOnLineCheckboxes() {
     })
 }
 
+//Reset event click on checkboxes
 function resetCheckboxLineEvent() {
     document.querySelectorAll('.selectByLine').forEach((item, index) => {
         item.replaceWith(item.cloneNode(true));
     })
 }
 
+//Select execution by line
 function selectByLine(index) {
     checkboxesLines = createCheckboxesLinesArray();
-    let checkboxLine = checkboxesLines[index].querySelectorAll('[type="checkbox"]')
-    console.log(checkboxLine);
-    for (let checkboxIndex = 1; checkboxIndex < checkboxLine.length; checkboxIndex++) {
-        if (checkboxLine[0].checked) {
-            checkboxLine[checkboxIndex].checked = true;
-        } else {
-            checkboxLine[checkboxIndex].checked = false;
-        }
+    let actionCheckbox = findActionCheckbox(checkboxesLines, index)
+    let checkboxLine = checkboxesLines[index].querySelectorAll('[type="checkbox"]');
+    let classStatus;
+    for (let checkboxIndex = 0; checkboxIndex < checkboxLine.length; checkboxIndex++) {
+        classStatus = checkboxLine[checkboxIndex].parentElement.classList;
+        checkboxLine[checkboxIndex].checked = (actionCheckbox.checked
+            && !classStatus.contains("statusPE")
+            && !classStatus.contains("statusQE")
+            && !classStatus.contains("statusQU"));
     }
     refreshNbChecked();
 }
 
-function selectByColumn(item) {
+//Select executions by column
+function selectByColumn(headerCheckbox) {
     checkboxesLines = createCheckboxesLinesArray();
+    let checkboxParent;
+    //Current checkbox is inside checkboxParent in HTML
+    let currentCheckbox;
     for (let checkboxLineIndex = 0; checkboxLineIndex < checkboxesLines.length; checkboxLineIndex++) {
-        if (checkboxesLines[checkboxLineIndex].cells[item.id].innerHTML != 0) {
-            if (item.checked) {
-                checkboxesLines[checkboxLineIndex].cells[item.id].querySelector('[type="checkbox"]').checked = true
-            } else {
-                checkboxesLines[checkboxLineIndex].cells[item.id].querySelector('[type="checkbox"]').checked = false
-            }
+        checkboxParent = checkboxesLines[checkboxLineIndex].cells[headerCheckbox.id];
+        currentCheckbox = checkboxParent.querySelector('[type="checkbox"]');
+        //Check if we have an execution modal
+        if (checkboxParent.innerHTML != 0) {
+            currentCheckbox.checked = (headerCheckbox.checked
+                && !currentCheckbox.parentElement.classList.contains("statusQE")
+                && !currentCheckbox.parentElement.classList.contains("statusPE")
+                && !currentCheckbox.parentElement.classList.contains("statusQU"));
         }
     }
     refreshNbChecked();
 }
 
+//Find the checkboxes which allow to check/uncheck execution checkboxes on the line
+function findActionCheckbox(array, index) {
+    return array[index].querySelector('.selectByLine');
+}
+
+//Store in array the lines which contains the executions checkboxes
 function createCheckboxesLinesArray() {
+    //Get all the lines of the datatable
     let reportTableLines = document.getElementById("listTable").getElementsByTagName("tbody")[0].children
     let checkboxesLinesArray = [];
+    //Store only the lines which contains executions checkboxes
     for (let lineIndex = 0; lineIndex < reportTableLines.length; lineIndex++) {
         if (reportTableLines[lineIndex].classList.contains('odd') || reportTableLines[lineIndex].classList.contains('even')) {
             checkboxesLinesArray.push(reportTableLines[lineIndex])
@@ -1369,6 +1384,7 @@ function createShortDescRow(row, data, index) {
     $(row).children('.center').attr('rowspan', '3');
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
+    $(row).children('.selectLineCell').attr('rowspan', '3').attr('style', 'vertical-align: middle; text-align: center;');
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
     var labelValue = '';
     $.each(data.labels, function (i, e) {
@@ -1658,6 +1674,7 @@ function aoColumnsFunc(Columns) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": "20px",
+            "sClass": "selectLineCell",
             "mRender": function (row) {
                 return "<input type='checkbox' class='selectByLine'/>";
             },
