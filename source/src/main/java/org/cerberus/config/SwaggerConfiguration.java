@@ -44,10 +44,12 @@ public class SwaggerConfiguration {
 
     private static final String PUBLIC_API_VERSION_1 = "1";
 
-    private static final Tag INVARIANT_TAG = new Tag("Invariant", "Description of Invariant endpoint");
-    private static final Tag TESTCASE_TAG = new Tag("Testcase", "Description of Testcase endpoint");
-    private static final Tag TESTCASEACTION_TAG = new Tag("Testcase Action", "Description of Testcase Control endpoint");
-    private static final Tag TESTCASESTEP_TAG = new Tag("Testcase Step", "Description of Testcase Step endpoint");
+    private static final Tag INVARIANT_TAG = new Tag("Invariant", "Invariant endpoint");
+    private static final Tag TESTCASE_TAG = new Tag("Testcase", "Testcase endpoint");
+    private static final Tag TESTCASEACTION_TAG = new Tag("Testcase Action", "Testcase Action endpoint");
+    private static final Tag TESTCASECONTROL_TAG = new Tag("Testcase Control", "Testcase Control endpoint");
+    private static final Tag TESTCASESTEP_TAG = new Tag("Testcase Step", "Testcase Step endpoint");
+    private static final Tag SERVICE_TAG = new Tag("Service", "Service endpoint");
 
     private static final String LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
     private static final String GITHUB_REPOSITORY = "https://github.com/cerberustesting/cerberus-source";
@@ -78,8 +80,10 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo(version))
                 .tags(INVARIANT_TAG)
                 .tags(TESTCASE_TAG)
-                .tags(TESTCASEACTION_TAG)
                 .tags(TESTCASESTEP_TAG)
+                .tags(TESTCASEACTION_TAG)
+                .tags(TESTCASECONTROL_TAG)
+                .tags(SERVICE_TAG)
                 .useDefaultResponseMessages(false);
     }
 

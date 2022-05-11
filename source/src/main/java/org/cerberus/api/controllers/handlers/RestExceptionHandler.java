@@ -19,7 +19,7 @@
  */
 package org.cerberus.api.controllers.handlers;
 
-import org.cerberus.api.controllers.wrappers.ErrorResponseWrapper;
+import org.cerberus.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.api.exceptions.EntityNotFoundException;
 import org.cerberus.api.exceptions.FailedInsertOperationException;
 import org.cerberus.api.exceptions.InvalidRequestException;
@@ -57,7 +57,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         String error = ex.getParameterName() + " parameter is missing";
-        return this.buildResponseEntity(new ErrorResponseWrapper(HttpStatus.BAD_REQUEST, error, ex));
+        return this.buildResponseEntity(new ResponseWrapper<>(HttpStatus.BAD_REQUEST, error, ex));
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
@@ -74,13 +74,13 @@ public class RestExceptionHandler {
                                 .collect(Collectors.joining(", "))
                 );
 
-        return this.buildResponseEntity(new ErrorResponseWrapper(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.toString(), ex));
+        return this.buildResponseEntity(new ResponseWrapper<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.toString(), ex));
     }
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.BAD_REQUEST);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.BAD_REQUEST);
         responseWrapper.setMessage("Validation error");
         responseWrapper.addValidationErrors(ex.getBindingResult().getFieldErrors());
         responseWrapper.addValidationError(ex.getBindingResult().getGlobalErrors());
@@ -90,7 +90,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.BAD_REQUEST, "Illegal argument", ex);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.BAD_REQUEST, "Illegal argument", ex);
         return this.buildResponseEntity(responseWrapper);
     }
 
@@ -98,21 +98,21 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         String error = "Malformed JSON request";
-        return this.buildResponseEntity(new ErrorResponseWrapper(HttpStatus.BAD_REQUEST, error, ex));
+        return this.buildResponseEntity(new ResponseWrapper<>(HttpStatus.BAD_REQUEST, error, ex));
     }
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
         String error = "Error writing JSON output";
-        return this.buildResponseEntity(new ErrorResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, error, ex));
+        return this.buildResponseEntity(new ResponseWrapper<>(HttpStatus.INTERNAL_SERVER_ERROR, error, ex));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex) {
 
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.BAD_REQUEST);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.BAD_REQUEST);
         responseWrapper.setMessage(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
         responseWrapper.setDebugMessage(ex.getMessage());
         return this.buildResponseEntity(responseWrapper);
@@ -121,7 +121,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.NOT_FOUND);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.NOT_FOUND);
         responseWrapper.setMessage(ex.getMessage());
         return this.buildResponseEntity(responseWrapper);
     }
@@ -130,7 +130,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<Object> handleInvalidRequestException(
             InvalidRequestException ex, WebRequest request) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.UNPROCESSABLE_ENTITY);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.UNPROCESSABLE_ENTITY);
         responseWrapper.setMessage(ex.getMessage());
         return buildResponseEntity(responseWrapper);
     }
@@ -138,7 +138,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.BAD_REQUEST);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.BAD_REQUEST);
         responseWrapper.setMessage(
                 String.format("The parameter '%s' of value '%s' could not be converted to type '%s'",
                         ex.getName(), ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName())
@@ -150,7 +150,7 @@ public class RestExceptionHandler {
     @ExceptionHandler({BadCredentialsException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<Object> handleAccessDeniedException(final BadCredentialsException ex, final WebRequest request) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.UNAUTHORIZED);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.UNAUTHORIZED);
         responseWrapper.setMessage(ex.getMessage());
         return buildResponseEntity(responseWrapper);
     }
@@ -158,12 +158,12 @@ public class RestExceptionHandler {
     @ExceptionHandler({DataAccessException.class, FailedInsertOperationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleDatabaseException(final RuntimeException ex, final WebRequest request) {
-        ErrorResponseWrapper responseWrapper = new ErrorResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.INTERNAL_SERVER_ERROR);
         responseWrapper.setMessage(ex.getMessage());
         return buildResponseEntity(responseWrapper);
     }
 
-    private ResponseEntity<Object> buildResponseEntity(ErrorResponseWrapper responseWrapper) {
+    private ResponseEntity<Object> buildResponseEntity(ResponseWrapper<Object> responseWrapper) {
         return new ResponseEntity<>(responseWrapper, responseWrapper.getStatus());
     }
 

@@ -38,7 +38,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseStepActionControl")
+@ApiModel(value = "TestcaseControl")
 public class TestcaseStepActionControlDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
