@@ -55,7 +55,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Api(tags = "Service")
 @RestController
-@RequestMapping(path = "/public/service")
+@RequestMapping(path = "/public/services")
 public class AppServiceController {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
