@@ -20,23 +20,18 @@
 
 package org.cerberus.api.mappers.v001;
 
-import org.cerberus.api.dto.v001.AppServiceDTOV001;
+import org.cerberus.api.dto.v001.AppServiceHeaderDTOV001;
 import org.cerberus.api.mappers.TimestampMapper;
-import org.cerberus.crud.entity.AppService;
-import org.mapstruct.InheritInverseConfiguration;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.util.StringUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class, AppServiceHeaderMapperV001.class, AppServiceContentMapperV001.class})
-public interface AppServiceMapperV001 {
+@Mapper(componentModel = "spring", uses = {TimestampMapper.class}, imports = {StringUtil.class})
+public interface AppServiceHeaderMapperV001 {
 
-    @Mapping(source = "followRedir", target = "isFollowingRedirection")
-    @Mapping(source = "contentList", target = "contents")
-    @Mapping(source = "headerList", target = "headers")
-    AppServiceDTOV001 toDTO(AppService appService);
+    @Mapping(source = "active", target = "isActive")
+    AppServiceHeaderDTOV001 toDTO(AppServiceHeader appServiceHeader);
 
-
-    @InheritInverseConfiguration
-    @Mapping(source = "followingRedirection", target = "followRedir")
-    AppService toEntity(AppServiceDTOV001 appServiceDTO);
+    AppServiceHeader toEntity(AppServiceHeaderDTOV001 appServiceHeaderDTO);
 }

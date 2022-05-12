@@ -20,6 +20,7 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * @author vertigo
@@ -30,7 +31,7 @@ public class AppServiceHeader {
     private String key;
     private String value;
     private int sort;
-    private String active;
+    private boolean isActive;
     private String description;
     private String UsrCreated;
     private Timestamp DateCreated;
@@ -69,12 +70,12 @@ public class AppServiceHeader {
         this.sort = sort;
     }
 
-    public String getActive() {
-        return active;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getDescription() {
@@ -136,47 +137,16 @@ public class AppServiceHeader {
     }
 
     @Override
-    public int hashCode() {
-
-        int hash = 3;
-        hash = 67 * hash + (this.service != null ? this.service.hashCode() : 0);
-        hash = 67 * hash + (this.key != null ? this.key.hashCode() : 0);
-        hash = 67 * hash + this.sort;
-        hash = 67 * hash + (this.value != null ? this.value.hashCode() : 0);
-        hash = 67 * hash + (this.active != null ? this.active.hashCode() : 0);
-        hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
-        return hash;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppServiceHeader that = (AppServiceHeader) o;
+        return sort == that.sort && isActive == that.isActive && service.equals(that.service) && key.equals(that.key) && value.equals(that.value) && description.equals(that.description);
     }
 
     @Override
-    public boolean equals(Object obj) {
-
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AppServiceHeader other = (AppServiceHeader) obj;
-        if ((this.service == null) ? (other.service != null) : !this.service.equals(other.service)) {
-            return false;
-        }
-        if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
-            return false;
-        }
-        if (this.sort != other.sort) {
-            return false;
-        }
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
-            return false;
-        }
-        if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
-            return false;
-        }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(service, key, value, sort, isActive, description);
     }
 
     @Override

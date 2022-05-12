@@ -19,10 +19,11 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import java.sql.Timestamp;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.factory.IFactoryAppServiceContent;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 
 /**
  * @author vertigo
@@ -32,13 +33,13 @@ public class FactoryAppServiceContent implements IFactoryAppServiceContent {
 
     @Override
     public AppServiceContent create(String service, String key,
-            String value, String active, int sort, String description,
-            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+                                    String value, boolean isActive, int sort, String description,
+                                    String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         AppServiceContent newObject = new AppServiceContent();
         newObject.setService(service);
         newObject.setKey(key);
         newObject.setValue(value);
-        newObject.setActive(active);
+        newObject.setActive(isActive);
         newObject.setSort(sort);
         newObject.setDescription(description);
         newObject.setUsrCreated(usrCreated);

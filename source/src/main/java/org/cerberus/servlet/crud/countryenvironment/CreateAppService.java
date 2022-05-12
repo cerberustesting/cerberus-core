@@ -19,18 +19,6 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -61,6 +49,19 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author cte
  */
@@ -81,10 +82,10 @@ public class CreateAppService extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -231,11 +232,11 @@ public class CreateAppService extends HttpServlet {
             int sort = objectJson.getInt("sort");
             String key = objectJson.getString("key");
             String value = objectJson.getString("value");
-            String active = objectJson.getString("active");
+            boolean isActive = objectJson.getBoolean("isActive");
             String description = objectJson.getString("description");
 
             if (!delete) {
-                contentList.add(appServiceContentFactory.create(service, key, value, active, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
+                contentList.add(appServiceContentFactory.create(service, key, value, isActive, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
             }
         }
         return contentList;
@@ -252,24 +253,25 @@ public class CreateAppService extends HttpServlet {
             int sort = objectJson.getInt("sort");
             String key = objectJson.getString("key");
             String value = objectJson.getString("value");
-            String active = objectJson.getString("active");
+            boolean isActive = objectJson.getBoolean("isActive");
             String description = objectJson.getString("description");
 
             if (!delete) {
-                headerList.add(appServiceHeaderFactory.create(service, key, value, active, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
+                headerList.add(appServiceHeaderFactory.create(service, key, value, isActive, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
             }
         }
         return headerList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -286,10 +288,10 @@ public class CreateAppService extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

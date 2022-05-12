@@ -19,16 +19,6 @@
  */
 package org.cerberus.service.rest.impl;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.net.ssl.SSLContext;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -36,7 +26,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -81,8 +70,18 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.net.ssl.SSLContext;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -152,7 +151,7 @@ public class RestService implements IRestService {
                 Header[] allHeaderList = response.getAllHeaders();
                 for (Header header : allHeaderList) {
                     myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
-                            header.getValue(), "Y", 0, "", "", null, "", null));
+                            header.getValue(), true, 0, "", "", null, "", null));
                 }
                 HttpEntity entity = response.getEntity();
                 myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
@@ -170,8 +169,8 @@ public class RestService implements IRestService {
 
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
-            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
+                                           List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+                                           String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", true, "", "",
                 "", null, "", null, null);
@@ -195,7 +194,7 @@ public class RestService implements IRestService {
         }
         // If token is defined, we add 'cerberus-token' on the http header.
         if (!StringUtil.isNullOrEmpty(token)) {
-            headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+            headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
         CloseableHttpClient httpclient = null;
@@ -377,7 +376,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -476,7 +475,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -529,7 +528,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 

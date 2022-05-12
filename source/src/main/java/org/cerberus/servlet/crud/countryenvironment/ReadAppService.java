@@ -21,11 +21,15 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.cerberus.engine.entity.MessageEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -41,16 +45,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-import javax.servlet.annotation.WebServlet;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.service.IAppServiceService;
-import org.cerberus.crud.service.ITestCaseService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
@@ -65,10 +69,10 @@ public class ReadAppService extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -195,7 +199,7 @@ public class ReadAppService extends HttpServlet {
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
-        AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key, null);
+        AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key, false, true);
         AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = resp.getItem();
@@ -238,7 +242,7 @@ public class ReadAppService extends HttpServlet {
      * using one service.
      *
      * @param appContext - context object used to get the required beans
-     * @param service - identifier of the service
+     * @param service    - identifier of the service
      * @return an answer item containing the information about the test cases
      * that use the entry
      * @throws JSONException
@@ -329,13 +333,14 @@ public class ReadAppService extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -346,10 +351,10 @@ public class ReadAppService extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

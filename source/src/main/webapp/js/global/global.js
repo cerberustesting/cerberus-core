@@ -17,12 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Retrieves the plugin script that allows the generation of a loader.
- */
-//$.getScript("js/jquery.blockUI.js");
-
-
 var showBurger = false;
 var showSettings = false;
 
@@ -48,22 +42,19 @@ var showSettings = false;
             $(".navbar-header").hide();
             showSettings = false;
         }
-
     });
-
 })();
 
 function handleErrorAjaxAfterTimeout(result) {
-    var doc = new Doc();
+    const doc = new Doc();
 
     if (result.readyState === 4 && result.status === 200) {
         $(location).prop("pathname", $(location).prop("pathname"));
         $(location).prop("search", $(location).prop("search"));
     } else {
-        var localMessage = new Message("danger", doc.getDocLabel("page_global", "unexpected_error_message"));
+        const localMessage = new Message("danger", doc.getDocLabel("page_global", "unexpected_error_message"));
         showMessageMainPage(localMessage);
     }
-
 }
 
 /***
@@ -72,9 +63,9 @@ function handleErrorAjaxAfterTimeout(result) {
  * @returns {String} - label associated with the type
  */
 function getSubDataLabel(type) {
-    var doc = getDoc();
-    var docTestdatalibdata = doc.testdatalibdata;
-    var labelEntry = "Entry";
+    const doc = getDoc();
+    const docTestdatalibdata = doc.testdatalibdata;
+    let labelEntry = "Entry";
     if (type === "INTERNAL") {
         labelEntry = displayDocLink(docTestdatalibdata.value);
     } else if (type === "SQL") {
@@ -113,12 +104,12 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         async = asyn;
     }
 
-    var cacheEntryName = "INVARIANT_" + idName;
+    const cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
-    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+    let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    //var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
         $.ajax({
@@ -128,13 +119,12 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
-                for (var index = 0; index < list.length; index++) {
-                    var item = list[index].value;
-                    var desc = list[index].value;
-                    if (!isEmpty(list[index].description))
-                        desc += " - " + list[index].description;
+                for (const element of list) {
+                    let desc = element.value;
+                    if (!isEmpty(element.description))
+                        desc += " - " + element.description;
 
-                    $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
+                    $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(element.value));
                 }
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
@@ -145,11 +135,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             }
         });
     } else {
-        for (var index = 0; index < list.length; index++) {
-            var item = list[index].value;
-            var desc = list[index].value + " - " + list[index].description;
-
-            $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
+        for (const element of list) {
+            const desc = element.value + " - " + element.description;
+            $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(element.value));
         }
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
@@ -165,11 +153,11 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
  * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
  * @param {String} forceReload true in order to force the reload of list from database.
  * @param {String} addValue1 [optional] Adds a value on top of the normal List.
- * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @param {String} async [optional] Do a async ajax request. Default: true
  * @returns {array}
  */
-function getInvariantArray(idName, forceReload, addValue1, asyn) {
-    var result = [];
+function getInvariantArray(idName, forceReload, addValue1, async = true) {
+
     // Adding the specific value when defined.
     if (addValue1 !== undefined) {
         result.add(addValue1);
@@ -179,17 +167,13 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
         forceReload = true;
     }
 
-    var async = true;
-    if (asyn !== undefined) {
-        async = asyn;
-    }
-
-    var cacheEntryName = "INVARIANT_" + idName;
+    const cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
-    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
 
+    let result = [];
     if (list === null) {
         $.ajax({
             url: "FindInvariantByID",
@@ -198,21 +182,16 @@ function getInvariantArray(idName, forceReload, addValue1, asyn) {
             success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
-                for (var index = 0; index < list.length; index++) {
-                    var item = list[index].value;
-                    result.push(item);
+                for (const element of list) {
+                    result.push(element.value);
                 }
             }
         });
     } else {
-        for (var index = 0; index < list.length; index++) {
-            var item = list[index].value;
-            var desc = list[index].value + " - " + list[index].description;
-
-            result.push(item);
+        for (const element of list) {
+            result.push(element.value);
         }
     }
-
     return result;
 }
 
@@ -549,7 +528,6 @@ function getUserArray(forceReload, addValue1, asyn) {
 }
 
 
-
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.
  * @param {String} idName value that filters the invariants that will be retrieved
@@ -583,25 +561,21 @@ function getInvariantListN(list, handleData) {
  * it on local cache.
  * The forceReload boolean can force the refresh of the list from the server.
  * @param {String} idName of the invariant to load (ex : COUNTRY)
- * @param {boolean} forceReload true if we want to force the reload on cache from the server
- * @param {boolean} notAsync true if we dont want to have Async ajax
+ * @param {boolean} forceReload true if we want to force reloading on cache from the server
+ * @param {boolean} async false if we don't want to have Async ajax
  * @param {boolean} addValue Value that can be added at the beginning of the combo.
  */
-function getSelectInvariant(idName, forceReload, notAsync, addValue) {
-    var cacheEntryName = "INVARIANT_" + idName;
+function getSelectInvariant(idName, forceReload, async = true, addValue) {
+    const cacheEntryName = "INVARIANT_" + idName;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
-    var async = true;
-    if (notAsync) {
-        async = false;
-    }
-    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
+
+    let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    let select = $("<select></select>").addClass("form-control input-sm");
     if (addValue !== undefined) {
         select.append($("<option></option>").text(addValue).val(addValue));
     }
-
     if (list === null) {
         $.ajax({
             url: "FindInvariantByID",
@@ -610,27 +584,24 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
             success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
-                for (var index = 0; index < list.length; index++) {
-                    var item = list[index].value;
-
+                for (const element of list) {
+                    const item = element.value;
                     select.append($("<option></option>").text(item).val(item));
                 }
             },
             error: showUnexpectedError
         });
     } else {
-        for (var index = 0; index < list.length; index++) {
-            var item = list[index].value;
-
+        for (const element of list) {
+            const item = element.value;
             select.append($("<option></option>").text(item).val(item));
         }
     }
-
     return select;
 }
 
 function cleanCacheInvariant(idName) {
-    var cacheEntryName = "INVARIANT_" + idName;
+    const cacheEntryName = "INVARIANT_" + idName;
     sessionStorage.removeItem(cacheEntryName);
     if (idName === "SYSTEM") {
         sessionStorage.removeItem("user");
@@ -666,16 +637,11 @@ function getSelectRobot(forceReload, notAsync) {
             async: async,
             success: function (data) {
                 list = data.contentTable;
-//                console.info(list);
-//                console.info(list.length);
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
-//                    console.info(list[index].robot);
                     var item = list[index].robot;
                     var text = list[index].robot + " [" + list[index].host + "]";
-
                     select.append($("<option></option>").text(text).val(item));
-//                    console.info(item + " - " + text)
                 }
             },
             error: showUnexpectedError
@@ -831,7 +797,6 @@ function getSelectDeployType(forceReload) {
 
     return select;
 }
-
 
 
 /**
@@ -1465,9 +1430,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
+                    'DataTables_' + settings.sInstance + '_' + location.pathname,
+                    JSON.stringify(data)
+                );
             } catch (e) {
                 console.error("access denied, " + e)
             }
@@ -1569,9 +1534,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (oSettings, data) {
             try {
                 localStorage.setItem(
-                        'DataTables_' + oSettings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
+                    'DataTables_' + oSettings.sInstance + '_' + location.pathname,
+                    JSON.stringify(data)
+                );
             } catch (e) {
                 console.error("access denied, " + e);
             }
@@ -1621,22 +1586,22 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+            .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
-                $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
+            $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
-            updateUserPreferences(objectWaitingLayer);
-        })
-                );
+                updateUserPreferences(objectWaitingLayer);
+            })
+        );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
-                $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
+            $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
-            location.reload();
-        })
-                );
+                location.reload();
+            })
+        );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1847,10 +1812,10 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
-                $this = this,
-                oTimerId = null,
-                sPreviousSearch = null,
-                anControl = $('input', _that.fnSettings().aanFeatures.f);
+            $this = this,
+            oTimerId = null,
+            sPreviousSearch = null,
+            anControl = $('input', _that.fnSettings().aanFeatures.f);
 
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
@@ -1944,8 +1909,8 @@ function envTuning(myenv) {
     isProduction = true;
     isProduction = ((myenv === "prd") || (myenv === "prod") || (myenv === "PROD") || (myenv === "demo"));
     isDev = ((window.location.hostname.includes('localhost'))
-            || (window.location.hostname.includes('gravity.cerberus-testing.com'))
-            || (window.location.hostname.includes('qa.cerberus-testing.com')));
+        || (window.location.hostname.includes('gravity.cerberus-testing.com'))
+        || (window.location.hostname.includes('qa.cerberus-testing.com')));
 
     if (!isProduction) {
         document.body.style.background = "#FFFFCC";
@@ -2105,9 +2070,9 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 
 function escapeHtml(unsafe) {
     return unsafe
-            .replace(/"/g, "&quot;")
-            .replace(/\\/g, '\\\\')
-            .replace(/'/g, "\\'");
+        .replace(/"/g, "&quot;")
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'");
 }
 
 function getShortenString(bigString) {
@@ -2116,6 +2081,7 @@ function getShortenString(bigString) {
     }
     return bigString;
 }
+
 function getRowClass(status) {
     var rowClass = [];
 
@@ -2279,120 +2245,120 @@ function autocompleteVariable(identifier, Tags) {
     }
 
     $(identifier)
-            // don't navigate away from the field on tab when selecting an item
-            .on("keydown", function (event) {
-                if (event.keyCode === $.ui.keyCode.TAB &&
-                        $(this).autocomplete("instance").menu.active) {
-                    event.preventDefault();
+        // don't navigate away from the field on tab when selecting an item
+        .on("keydown", function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB &&
+                $(this).autocomplete("instance").menu.active) {
+                event.preventDefault();
+            }
+            // We hide the message generated by autocomplete because we don't want it
+            $("span[role='status']").hide();
+        })
+        .autocomplete({
+            minLength: 1,
+            messages: {
+                noResults: '',
+                results: function () {
                 }
-                // We hide the message generated by autocomplete because we don't want it
-                $("span[role='status']").hide();
-            })
-            .autocomplete({
-                minLength: 1,
-                messages: {
-                    noResults: '',
-                    results: function () {
-                    }
-                },
-                open: function () {
-                    //If autocomplete is in modal, needs to be upper the modal
-                    if ($(this).closest($(".modal")).length > 0) {
-                        $(this).autocomplete('widget').css('z-index', 1050);
-                    }
-                    return false;
-                },
-                source: function (request, response) {
-                    //Get the part of the string we want (between the last % before our cursor and the cursor)
-                    var selectionStart = this.element[0].selectionStart;
-                    var stringToAnalyse = this.term.substring(0, selectionStart);
-                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                    //If there is a pair number of % it means there is no open variable that needs to be autocompleted
-                    if ((this.term.match(/%/g) || []).length % 2 > 0) {
-                        //Start Iterating on Tags
-                        var tag = 0;
-                        var found = false;
-                        while (tag < Tags.length && !found) {
-                            //If We find the separator, then we filter with the already written part
-                            if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                                var arrayLabels = [];
-
-                                if (Tags[tag].regex === "%object\\.") {
-                                    Tags[tag].array.forEach(function (data) {
-                                        arrayLabels.push(data.object);
-                                    });
-
-                                } else {
-                                    arrayLabels = Tags[tag].array;
-                                }
-                                this.currentIndexTag = tag;
-                                var arrayToDisplay = $.ui.autocomplete.filter(
-                                        arrayLabels, extractLast(identifier, Tags[tag].regex));
-                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) !== "") {
-                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
-                                }
-                                response(arrayToDisplay);
-                                found = true;
-                            }
-                            tag++;
-                        }
-                    }
-                },
-                focus: function () {
-                    $('a[data-toggle="tooltip"]').each(function (idx, data) {
-                        var direction = "top";
-                        if (idx < 4)
-                            direction = "bottom";
-
-                        $(data).tooltip({
-                            animated: 'fade',
-                            placement: direction,
-                            html: true
-                        });
-
-                        var parent = $(data).parent().parent();
-                        if (parent.hasClass("ui-autocomplete")) {
-                            parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
-                        }
-                    });
-                    // prevent value inserted on focus
-                    return false;
-                },
-                select: function (event, ui) {
-                    //Get the part of the string we want (between the last % before our cursor and the cursor)
-                    var stringToAnalyse = this.value.substring(0, this.selectionStart);
-                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                    //Start iterating on Tags
-                    var found = false;
+            },
+            open: function () {
+                //If autocomplete is in modal, needs to be upper the modal
+                if ($(this).closest($(".modal")).length > 0) {
+                    $(this).autocomplete('widget').css('z-index', 1050);
+                }
+                return false;
+            },
+            source: function (request, response) {
+                //Get the part of the string we want (between the last % before our cursor and the cursor)
+                var selectionStart = this.element[0].selectionStart;
+                var stringToAnalyse = this.term.substring(0, selectionStart);
+                var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                //If there is a pair number of % it means there is no open variable that needs to be autocompleted
+                if ((this.term.match(/%/g) || []).length % 2 > 0) {
+                    //Start Iterating on Tags
                     var tag = 0;
+                    var found = false;
                     while (tag < Tags.length && !found) {
-                        //If we find our separator, we compute the output
+                        //If We find the separator, then we filter with the already written part
                         if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                            // remove the current input
-                            var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
-                            var afterCursor = this.value.substring(this.selectionStart, this.value.length);
-                            // add the selected item and eventually the content to add
-                            var value = Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter;
-                            //If it is the end of the variable, we automaticly add a % at the end of the line
+                            var arrayLabels = [];
 
-                            this.value = beforeRegex + value + afterCursor;
-                            this.setSelectionRange((beforeRegex + value).length, (beforeRegex + value).length);
+                            if (Tags[tag].regex === "%object\\.") {
+                                Tags[tag].array.forEach(function (data) {
+                                    arrayLabels.push(data.object);
+                                });
 
+                            } else {
+                                arrayLabels = Tags[tag].array;
+                            }
+                            this.currentIndexTag = tag;
+                            var arrayToDisplay = $.ui.autocomplete.filter(
+                                arrayLabels, extractLast(identifier, Tags[tag].regex));
+                            if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) !== "") {
+                                arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
+                            }
+                            response(arrayToDisplay);
                             found = true;
                         }
                         tag++;
                     }
-                    // We trigger input to potentially display an image if there is one
-                    $(this).trigger("input").trigger("change");
-                    return false;
-                },
-                close: function (event, ui) {
-                    val = $(this).val();
-                    $(this).autocomplete("search", val); //keep autocomplete open by
-                    //searching the same input again
-                    return false;
                 }
-            });
+            },
+            focus: function () {
+                $('a[data-toggle="tooltip"]').each(function (idx, data) {
+                    var direction = "top";
+                    if (idx < 4)
+                        direction = "bottom";
+
+                    $(data).tooltip({
+                        animated: 'fade',
+                        placement: direction,
+                        html: true
+                    });
+
+                    var parent = $(data).parent().parent();
+                    if (parent.hasClass("ui-autocomplete")) {
+                        parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
+                    }
+                });
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function (event, ui) {
+                //Get the part of the string we want (between the last % before our cursor and the cursor)
+                var stringToAnalyse = this.value.substring(0, this.selectionStart);
+                var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                //Start iterating on Tags
+                var found = false;
+                var tag = 0;
+                while (tag < Tags.length && !found) {
+                    //If we find our separator, we compute the output
+                    if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
+                        // remove the current input
+                        var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
+                        var afterCursor = this.value.substring(this.selectionStart, this.value.length);
+                        // add the selected item and eventually the content to add
+                        var value = Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter;
+                        //If it is the end of the variable, we automaticly add a % at the end of the line
+
+                        this.value = beforeRegex + value + afterCursor;
+                        this.setSelectionRange((beforeRegex + value).length, (beforeRegex + value).length);
+
+                        found = true;
+                    }
+                    tag++;
+                }
+                // We trigger input to potentially display an image if there is one
+                $(this).trigger("input").trigger("change");
+                return false;
+            },
+            close: function (event, ui) {
+                val = $(this).val();
+                $(this).autocomplete("search", val); //keep autocomplete open by
+                //searching the same input again
+                return false;
+            }
+        });
 }
 
 /**
@@ -2548,10 +2514,8 @@ function isJson(str) {
  * @returns {Boolean} True if str is a HTML or a XML
  */
 function isHTMLorXML(str) {
-    var doc = new DOMParser().parseFromString(str, "text/html");
-    return Array.from(doc.body.childNodes).some(function (node) {
-        return node.nodeType === 1;
-    });// Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+    const doc = new DOMParser().parseFromString(str, "text/html");
+    return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 }
 
 /**
@@ -2579,11 +2543,9 @@ function jsonPost(conf) {
 }
 
 function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
+    const sel = document.getElementById("MySystem");
+    return sel.options[sel.selectedIndex].value;
 }
-
 
 /********************************SELECT2 COMBO*******************************************/
 
@@ -2594,8 +2556,8 @@ function getSys() {
  * @returns {undefined} void
  */
 function comboConfigTag_format(tag) {
-    var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
+    let markup = "<div class='select2-result-tag clearfix'>" +
+        "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
     if (tag.description) {
         markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
@@ -2618,200 +2580,175 @@ function comboConfigTag_format(tag) {
 }
 
 function comboConfigTag_formatSelection(tag) {
-    var result = tag.id;
     if (!isEmpty(tag.campaign)) {
-        result = result + " [" + tag.campaign + "]";
+        return `${tag.id}[${tag.campaign}]`;
     }
-    return result;
+    return tag.id;
 }
 
 
 function getComboConfigTag() {
 
-    var config =
-            {
-                ajax: {
-                    url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30" + getUser().defaultSystemsQuery,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
+    return {
+        ajax: {
+            url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30" + getUser().defaultSystemsQuery,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStartPage: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
                         return {
-                            sSearch: params.term, // search term
-                            iDisplayStartPage: params.page
+                            id: obj.tag,
+                            text: obj.tag,
+                            tag: obj.tag,
+                            description: obj.description,
+                            campaign: obj.campaign,
+                            DateCreated: obj.DateCreated,
+                            nbExeUsefull: obj.nbExeUsefull,
+                            ciResult: obj.ciResult
                         };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated, nbExeUsefull: obj.nbExeUsefull, ciResult: obj.ciResult};
-                            }),
-                            pagination: {
-                                more: (params.page * 30) < data.iTotalRecords
-                            }
-                        };
-                    },
-                    cache: true
-                },
-                escapeMarkup: function (markup) {
-                    return markup;
-                }, // let our custom formatter work
-                minimumInputLength: 0,
-                templateResult: comboConfigTag_format, // omitted for brevity, see the source of this page
-                templateSelection: comboConfigTag_formatSelection // omitted for brevity, see the source of this page
-            };
-
-    return config;
-
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // let our custom formatter work
+        minimumInputLength: 0,
+        templateResult: comboConfigTag_format, // omitted for brevity, see the source of this page
+        templateSelection: comboConfigTag_formatSelection // omitted for brevity, see the source of this page
+    };
 }
-
 
 
 function getComboConfigService() {
-    var config =
-            {
-                ajax: {
-                    url: "ReadAppService?iSortCol_0=0&sSortDir_0=asc&sColumns=service,type,method,description&iDisplayLength=30&sSearch_0=",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.page = params.page || 1;
-                        return {
-                            sSearch: params.term, // search term
-                            iDisplayStart: (params.page * 30) - 30
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.service, text: obj.service};
-                            }),
-                            pagination: {
-                                more: (params.page * 30) < data.iTotalRecords
-                            }
-                        };
-                    },
-                    cache: true,
-                    allowClear: true
-                },
+    return {
+        ajax: {
+            url: "ReadAppService?iSortCol_0=0&sSortDir_0=asc&sColumns=service,type,method,description&iDisplayLength=30&sSearch_0=",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                params.page = params.page || 1;
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStart: (params.page * 30) - 30
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
+                        return {id: obj.service, text: obj.service};
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true,
+            allowClear: true
+        },
 //                tags: true,
-                width: "100%",
-                minimumInputLength: 0
-            };
-    return config;
+        width: "100%",
+        minimumInputLength: 0
+    };
 }
 
 function getComboConfigTest() {
-    var config =
-            {
-                ajax: {
-                    url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=30&sSearch_0=",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.page = params.page || 1;
-                        return {
-                            sSearch: params.term, // search term
-                            iDisplayStart: (params.page * 30) - 30
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.test, text: obj.test};
-                            }),
-                            pagination: {
-                                more: (params.page * 30) < data.iTotalRecords
-                            }
-                        };
-                    },
-                    cache: true,
-                    allowClear: true
-                },
-                // Allow entry that does not exist in the list..
-                tags: true,
-                width: "100%",
-                minimumInputLength: 0
-            };
-    return config;
+    return {
+        ajax: {
+            url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=30&sSearch_0=",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                params.page = params.page || 1;
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStart: (params.page * 30) - 30
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
+                        return {id: obj.test, text: obj.test};
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true,
+            allowClear: true
+        },
+        // Allow entry that does not exist in the list..
+        tags: true,
+        width: "100%",
+        minimumInputLength: 0
+    };
 }
 
 function getComboConfigApplication() {
-    var config =
-            {
-                ajax: {
-                    url: "ReadApplication",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.page = params.page || 1;
-                        return {
-                            sSearch: params.term, // search term
-                            iDisplayStart: (params.page * 30) - 30
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.application, text: obj.application, type: obj.type};
-                            }),
-                            pagination: {
-                                more: (params.page * 30) < data.iTotalRecords
-                            }
-                        };
-                    },
-                    cache: true,
-                    allowClear: true
-                },
-                width: "100%",
-                minimumInputLength: 0,
-                templateResult: comboConfigApplication_format, // omitted for brevity, see the source of this page
-                templateSelection: comboConfigApplication_formatSelection // omitted for brevity, see the source of this page
-            };
-    return config;
+    return {
+        ajax: {
+            url: "ReadApplication",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                params.page = params.page || 1;
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStart: (params.page * 30) - 30
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
+                        return {id: obj.application, text: obj.application, type: obj.type};
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true,
+            allowClear: true
+        },
+        width: "100%",
+        minimumInputLength: 0,
+        templateResult: comboConfigApplication_format, // omitted for brevity, see the source of this page
+        templateSelection: comboConfigApplication_formatSelection // omitted for brevity, see the source of this page
+    };
 }
 
 function comboConfigApplication_formatSelection(application) {
-    var result = application.id;
     if (!isEmpty(application.type)) {
-        result = result + " [" + application.type + "]";
+        return `${application.id} [${application.type}]`;
     }
-    return result;
+    return application.id;
 }
 
 function comboConfigApplication_format(app) {
-//    var markup = "<div class='select2-result-tag clearfix'>" +
-//            "<div class='select2-result-tag__title'>" + app.id + "</div>";
-    var markup = app.id + " [" + app.type + "]";
-
-//    if (app.type) {
-//        markup += "<div class='select2-result-tag__description'>" + app.type + "</div>";
-//    }
-//    markup += "<div class='select2-result-tag__statistics'>";
-//    if (app.campaign) {
-//        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + app.campaign + "</div>";
-//    }
-//    if (app.DateCreated) {
-//        markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + app.DateCreated + "</div>";
-//    }
-//    if (app.nbExeUsefull > 0) {
-//        markup += "<div class='select2-result-tag__detail'> " + app.nbExeUsefull + " Exe(s)</div>";
-//        markup += "<div class='select2-result-tag__detail " + app.ciResult + "'> " + app.ciResult + "</div>";
-//    }
-//    markup += "</div>";
-//    markup += "</div>";
-
-    return markup;
+    return `${app.id} [${app.type}]`;
 }
 
 
-function getBugIdList(data, appurl) {
-    var link = "";
-    if (isEmpty(appurl)) {
-        $.each(data, function (idx, obj) {
+function getBugIdList(data, appUrl) {
+    let link = "";
+    if (isEmpty(appUrl)) {
+        $.each(data, function (_, obj) {
             if (obj.act) {
                 link = link + '' + obj.id;
                 if (obj.desc !== "") {
@@ -2821,9 +2758,9 @@ function getBugIdList(data, appurl) {
             }
         });
     } else {
-        $.each(data, function (idx, obj) {
+        $.each(data, function (_, obj) {
             if (obj.act) {
-                link = link + '<a target="_blank" href="' + appurl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
+                link = link + '<a target="_blank" href="' + appUrl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
                 if (obj.desc !== "") {
                     link = link + " - " + obj.desc;
                 }
@@ -2835,7 +2772,7 @@ function getBugIdList(data, appurl) {
 }
 
 function get_Color_fromindex(index) {
-    var colors = ['#3366FF', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', '#cad3f1', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', '#B91D0D', 'olive'];
+    const colors = ['#3366FF', '#3498DB', 'blueviolet', 'midnightblue', 'salmon', 'olive', 'teal', 'grey', '#cad3f1', 'yellow', 'magenta', 'lightgreen', 'lightgrey', 'coral', 'violet', '#B91D0D', 'olive'];
     return colors[index % colors.length];
 }
 
@@ -2850,14 +2787,11 @@ function saveHistory(tce, historyEntry, maxEntries) {
         localStorage.setItem(historyEntry, JSON.stringify(entryList));
     } else {
         // Remove the entries that has the same id in order to avoid duplicates.
-        for (var item in entryList) {
-//            console.log(item);
+        for (const item in entryList) {
             if (tce.id === entryList[item].id) {
                 entryList.splice(item, 1);
             }
         }
-//        console.log(tce);
-//        console.log(entryList);
         entryList.push(tce);
         if (entryList.length > maxEntries) {
             entryList.shift();
@@ -2870,10 +2804,10 @@ function saveHistory(tce, historyEntry, maxEntries) {
 
 
 function generateUUID() { // Public Domain/MIT
-    var d = new Date().getTime();//Timestamp
-    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    let d = new Date().getTime();//Timestamp
+    let d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
     return 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx-xxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16;//random number between 0 and 16
+        let r = Math.random() * 16;//random number between 0 and 16
         if (d > 0) {//Use timestamp until depleted
             r = (d + r) % 16 | 0;
             d = Math.floor(d / 16);
@@ -2887,14 +2821,9 @@ function generateUUID() { // Public Domain/MIT
 
 
 function cleanErratum(oldValue) {
-    if (oldValue.startsWith('erratum=')) {
-        if (oldValue.includes(",")) {
-            return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
-        } else {
-            return oldValue;
-        }
-    } else {
-        return oldValue;
+    if (oldValue.startsWith('erratum=') && oldValue.includes(",")) {
+        return oldValue.split(',')[0] + ",[HTML-SOURCE-CONTENT]";
     }
+    return oldValue;
 }
 

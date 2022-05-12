@@ -76,7 +76,7 @@ public class AppServiceController {
             Principal principal
     ) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.findAppServiceByKey(service));
+        Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.readByKeyWithDependency(service, false, true).getItem());
         if (appServiceOptional.isPresent()) {
             return ResponseWrapper.wrap(
                     this.appServiceMapper.toDTO(

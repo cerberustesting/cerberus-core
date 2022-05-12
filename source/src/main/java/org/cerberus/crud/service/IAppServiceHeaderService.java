@@ -19,23 +19,21 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vertigo
  */
 public interface IAppServiceHeaderService {
 
     /**
-     *
      * @param service
      * @param key
      * @return
@@ -43,21 +41,19 @@ public interface IAppServiceHeaderService {
     AnswerItem<AppServiceHeader> readByKey(String service, String key);
 
     /**
-     *
      * @return
      */
     AnswerList<AppServiceHeader> readAll();
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @return
      */
-    AnswerList<AppServiceHeader> readByVarious(String service, String active);
+    AnswerList<AppServiceHeader> readByVarious(String service, boolean withActiveCriteria, boolean isActive);
 
     /**
-     *
      * @param startPosition
      * @param length
      * @param columnName
@@ -69,9 +65,9 @@ public interface IAppServiceHeaderService {
     AnswerList<AppServiceHeader> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @param startPosition
      * @param length
      * @param columnName
@@ -80,10 +76,9 @@ public interface IAppServiceHeaderService {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceHeader> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceHeader> readByVariousByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param service
      * @param key
      * @return true is application exist or false is application does not exist
@@ -92,35 +87,30 @@ public interface IAppServiceHeaderService {
     boolean exist(String service, String key);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(AppServiceHeader object);
 
     /**
-     *
      * @param objectList
      * @return
      */
     Answer createList(List<AppServiceHeader> objectList);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer delete(AppServiceHeader object);
 
     /**
-     *
      * @param objectList
      * @return
      */
     Answer deleteList(List<AppServiceHeader> objectList);
 
     /**
-     *
      * @param service
      * @param key
      * @param object
@@ -129,7 +119,6 @@ public interface IAppServiceHeaderService {
     Answer update(String service, String key, AppServiceHeader object);
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -137,7 +126,6 @@ public interface IAppServiceHeaderService {
     AppServiceHeader convert(AnswerItem<AppServiceHeader> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -145,14 +133,12 @@ public interface IAppServiceHeaderService {
     List<AppServiceHeader> convert(AnswerList<AppServiceHeader> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
 
     /**
-     *
      * @param service
      * @param newList
      * @return
@@ -160,7 +146,6 @@ public interface IAppServiceHeaderService {
     Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceHeader> newList);
 
     /**
-     *
      * @param service
      * @param searchParameter
      * @param individualSearch

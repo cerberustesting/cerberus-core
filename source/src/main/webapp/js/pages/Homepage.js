@@ -37,8 +37,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             selector: '[data-toggle="tooltip"]'
         });
         $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
+                'placement': 'auto',
+                'container': 'body'
+            }
         );
 
         $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
@@ -171,7 +172,8 @@ function getSys() {
 
 function readStatus() {
     var result;
-    $.ajax({url: "FindInvariantByID",
+    $.ajax({
+        url: "FindInvariantByID",
         data: {idName: "TCSTATUS"},
         async: false,
         dataType: 'json',
@@ -240,7 +242,12 @@ function buildExeBar(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            let p = {
+                x: c.points[j].x,
+                y: c.points[j].y,
+                id: c.points[j].exe,
+                controlStatus: c.points[j].exeControlStatus
+            };
             d.push(p);
         }
         let lab = c.key.key;
@@ -368,27 +375,28 @@ function getHPOptionsExeBar(title, unit) {
         },
         scales: {
             xAxes: [{
-                    offset: true,
-                    type: 'time',
-                    stacked: true,
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'day',
-                        round: 'day',
-                        displayFormats: {
-                            day: 'MMM D'
-                        }},
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
+                offset: true,
+                type: 'time',
+                stacked: true,
+                time: {
+                    tooltipFormat: 'll',
+                    unit: 'day',
+                    round: 'day',
+                    displayFormats: {
+                        day: 'MMM D'
                     }
-                }],
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Date'
+                }
+            }],
             yAxes: [{
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+                stacked: true,
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
         }
     };
     return option;
@@ -405,27 +413,28 @@ function getHPOptionsTcGraph(title, unit) {
         },
         scales: {
             xAxes: [{
-                    offset: false,
-                    type: 'time',
-                    stacked: false,
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'day',
-                        round: 'day',
-                        displayFormats: {
-                            day: 'MMM D'
-                        }},
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
+                offset: false,
+                type: 'time',
+                stacked: false,
+                time: {
+                    tooltipFormat: 'll',
+                    unit: 'day',
+                    round: 'day',
+                    displayFormats: {
+                        day: 'MMM D'
                     }
-                }],
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Date'
+                }
+            }],
             yAxes: [{
-                    stacked: false,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+                stacked: false,
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
         }
     };
     return option;
@@ -498,7 +507,7 @@ function loadTagExec() {
             reportArea.append(idDiv);
         }
         for (var index = 0; index < tagList.length; index++) {
-            let : tagName = tagList[index];
+            let tagName = tagList[index];
             //TODO find a way to remove the use for resendTag
             var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
             var jqxhr = $.get(requestToServlet, null, "json");
@@ -555,7 +564,8 @@ function readLastTagExec(searchString) {
 }
 
 function getCountryFilter() {
-    return $.ajax({url: "FindInvariantByID",
+    return $.ajax({
+        url: "FindInvariantByID",
         data: {idName: "COUNTRY"},
         async: false,
         dataType: 'json',
@@ -570,7 +580,12 @@ function aoColumnsFunc() {
     var statusLen = status.length;
 
     var aoColumns = [
-        {"data": "Application", "bSortable": true, "sName": "Application", "title": doc.getDocOnline("application", "Application"), "sWidth": "50px",
+        {
+            "data": "Application",
+            "bSortable": true,
+            "sName": "Application",
+            "title": doc.getDocOnline("application", "Application"),
+            "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 var href = "TestCaseList.jsp?application=" + data;
 

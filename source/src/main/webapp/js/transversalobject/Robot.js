@@ -273,7 +273,8 @@ function confirmRobotModalHandler(mode) {
         url: myServlet,
         async: true,
         method: "POST",
-        data: {robot: data.robot,
+        data: {
+            robot: data.robot,
             robotid: data.robotid,
             active: data.robotActive,
             host: data.host,
@@ -390,7 +391,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
-            || (mode === "DUPLICATE") || (mode === "ADD"));
+        || (mode === "DUPLICATE") || (mode === "ADD"));
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -508,7 +509,7 @@ function loadExecutorsTable(tableBody, executors) {
 function appendCapabilityRow(tableBody, capability) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectCapability = getSelectInvariant("CAPABILITY", false, true);
+    var selectCapability = getSelectInvariant("CAPABILITY", false, false);
     var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
     var table = $("#" + tableBody);
 
@@ -560,7 +561,6 @@ function appendExecutorRow(tableBody, executor) {
     var executorProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyPort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyPort);
     var executorProxyActiveInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyActive") + " --\">").addClass("form-control input-sm").prop("checked", executor.executorProxyActive);
     var table = $("#" + tableBody);
-
 
 
     var row = $("<tr></tr>");

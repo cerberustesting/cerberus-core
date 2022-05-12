@@ -19,15 +19,15 @@
  */
 package org.cerberus.crud.dao;
 
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.AppServiceHeader;
-
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -40,7 +40,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface IAppServiceHeaderDAO {
 
     /**
-     *
      * @param service
      * @param key
      * @return
@@ -48,9 +47,9 @@ public interface IAppServiceHeaderDAO {
     AnswerItem<AppServiceHeader> readByKey(String service, String key);
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @param startPosition
      * @param length
      * @param columnName
@@ -59,24 +58,21 @@ public interface IAppServiceHeaderDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceHeader> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceHeader> readByVariousByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(AppServiceHeader object);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer delete(AppServiceHeader object);
 
     /**
-     *
      * @param service
      * @param key
      * @param object
@@ -85,18 +81,17 @@ public interface IAppServiceHeaderDAO {
     Answer update(String service, String key, AppServiceHeader object);
 
     /**
-     * Uses data of ResultSet to create object {@link AppServiceContent}
+     * Uses data of ResultSet to create object {@link org.cerberus.crud.entity.AppServiceContent}
      *
      * @param rs ResultSet relative to select from table Application
-     * @return object {@link AppServiceContent}
+     * @return object {@link org.cerberus.crud.entity.AppServiceContent}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
     AppServiceHeader loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     *
      * @param service
      * @param searchParameter
      * @param individualSearch

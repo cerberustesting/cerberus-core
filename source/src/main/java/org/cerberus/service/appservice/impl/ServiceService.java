@@ -19,8 +19,6 @@
  */
 package org.cerberus.service.appservice.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
@@ -47,11 +45,12 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  * @author vertigo17
- *
  */
 @Service
 public class ServiceService implements IServiceService {
@@ -106,7 +105,7 @@ public class ServiceService implements IServiceService {
             } else {
                 // If Service information is defined, we get it from database.
                 LOG.debug("Getting AppService from service : " + service);
-                appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, "Y"));
+                appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true, true));
 
             }
 

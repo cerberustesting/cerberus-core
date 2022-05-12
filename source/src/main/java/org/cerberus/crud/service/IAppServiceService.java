@@ -77,7 +77,7 @@ public interface IAppServiceService {
      *                     and content. null wil load all data.
      * @return
      */
-    AnswerItem<AppService> readByKeyWithDependency(String key, String activeDetail);
+    AnswerItem<AppService> readByKeyWithDependency(String key, boolean withActiveCriteria, boolean activeDetail);
 
     /**
      * Get the distinctValue of the column

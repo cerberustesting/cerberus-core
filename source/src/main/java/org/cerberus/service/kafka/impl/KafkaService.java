@@ -21,14 +21,8 @@ package org.cerberus.service.kafka.impl;
 
 import com.jayway.jsonpath.PathNotFoundException;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -71,8 +65,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Producer is a one shot producer in that it writes a single record then closes
@@ -111,8 +112,8 @@ public class KafkaService implements IKafkaService {
 
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs) {
+                                               String bootstrapServers,
+                                               List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
@@ -121,30 +122,30 @@ public class KafkaService implements IKafkaService {
 
         // If token is defined, we add 'cerberus-token' on the http header.
         if (!StringUtil.isNullOrEmpty(token)) {
-            serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+            serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
         // Do we activate Avro feature ?
         boolean activateAvro = false;
         for (AppServiceContent object : serviceContent) {
-            if (!StringUtil.parseBoolean(object.getActive()) && object.getKey().contains("enable_avro")) {
+            if (object.isActive() && object.getKey().contains("enable_avro")) {
                 activateAvro = true;
             }
         }
 
         Properties props = new Properties();
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, "Y", 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", "Y", 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", "Y", 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
         if (!activateAvro) {
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", "Y", 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
-        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
         for (AppServiceContent object : serviceContent) {
-            if (StringUtil.parseBoolean(object.getActive())) {
+            if (object.isActive()) {
                 props.put(object.getKey(), object.getValue());
             }
         }
@@ -174,7 +175,7 @@ public class KafkaService implements IKafkaService {
 
             ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, eventMessage);
             for (AppServiceHeader object : serviceHeader) {
-                if (StringUtil.parseBoolean(object.getActive())) {
+                if (object.isActive()) {
                     record.headers().add(new RecordHeader(object.getKey(), object.getValue().getBytes()));
                 }
             }
@@ -221,7 +222,7 @@ public class KafkaService implements IKafkaService {
     @SuppressWarnings("unchecked")
     @Override
     public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
-            List<AppServiceContent> serviceContent, int timeoutMs) {
+                                                           List<AppServiceContent> serviceContent, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<Map<TopicPartition, Long>> result = new AnswerItem<>();
@@ -231,18 +232,18 @@ public class KafkaService implements IKafkaService {
         try {
 
             Properties props = new Properties();
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), "Y", 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
             for (AppServiceContent object : serviceContent) {
-                if (StringUtil.parseBoolean(object.getActive())) {
+                if (object.isActive()) {
                     props.put(object.getKey(), object.getValue());
                 }
             }
@@ -292,7 +293,7 @@ public class KafkaService implements IKafkaService {
     @SuppressWarnings("unchecked")
     @Override
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) {
+                                          List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
@@ -307,14 +308,14 @@ public class KafkaService implements IKafkaService {
         try {
 
             Properties props = new Properties();
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", "Y", 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
 
             for (AppServiceContent object : serviceContent) {
-                if (StringUtil.parseBoolean(object.getActive())) {
+                if (object.isActive()) {
                     props.put(object.getKey(), object.getValue());
                 }
             }
@@ -473,7 +474,7 @@ public class KafkaService implements IKafkaService {
                 if (testCaseStepAction.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)
                         && !testCaseStepAction.getConditionOperator().equals(TestCaseStepAction.CONDITIONOPERATOR_NEVER)) {
 
-                    AnswerItem<AppService> localService = appServiceService.readByKeyWithDependency(testCaseStepAction.getValue1(), "Y");
+                    AnswerItem<AppService> localService = appServiceService.readByKeyWithDependency(testCaseStepAction.getValue1(), true, true);
                     if (localService.getItem() != null) {
                         if (localService.getItem().getType().equals(AppService.TYPE_KAFKA) && localService.getItem().getMethod().equals(AppService.METHOD_KAFKASEARCH)) {
 
@@ -531,7 +532,7 @@ public class KafkaService implements IKafkaService {
                                         String field = "Header Value " + object.getKey() + " of Service '" + localService.getItem().getService() + "'";
                                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEEKALLTOPICS)
                                                 .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
-                                        LOG.debug("Getting all consumers interupted due to decode '" + field + "'.");
+                                        LOG.debug("Getting all consumers interrupted due to decode '" + field + "'.");
                                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND);
                                         mes.setDescription(message.getDescription());
                                         throw new CerberusException(mes);

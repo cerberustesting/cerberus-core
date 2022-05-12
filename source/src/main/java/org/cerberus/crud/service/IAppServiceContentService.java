@@ -19,23 +19,21 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vertigo
  */
 public interface IAppServiceContentService {
 
     /**
-     *
      * @param service
      * @param key
      * @return
@@ -43,21 +41,19 @@ public interface IAppServiceContentService {
     AnswerItem<AppServiceContent> readByKey(String service, String key);
 
     /**
-     *
      * @return
      */
     AnswerList<AppServiceContent> readAll();
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @return
      */
-    AnswerList<AppServiceContent> readByVarious(String service, String active);
+    AnswerList<AppServiceContent> readByVarious(String service, boolean withActiveCriteria, boolean isActive);
 
     /**
-     *
      * @param startPosition
      * @param length
      * @param columnName
@@ -69,9 +65,9 @@ public interface IAppServiceContentService {
     AnswerList<AppServiceContent> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @param startPosition
      * @param length
      * @param columnName
@@ -80,10 +76,9 @@ public interface IAppServiceContentService {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceContent> readByServiceByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceContent> readByServiceByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param service
      * @param key
      * @return true is application exist or false is application does not exist
@@ -92,35 +87,30 @@ public interface IAppServiceContentService {
     boolean exist(String service, String key);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(AppServiceContent object);
 
     /**
-     *
      * @param objectList
      * @return
      */
     Answer createList(List<AppServiceContent> objectList);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer delete(AppServiceContent object);
 
     /**
-     *
      * @param objectList
      * @return
      */
     Answer deleteList(List<AppServiceContent> objectList);
 
     /**
-     *
      * @param service
      * @param key
      * @param object
@@ -129,7 +119,6 @@ public interface IAppServiceContentService {
     Answer update(String service, String key, AppServiceContent object);
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -137,7 +126,6 @@ public interface IAppServiceContentService {
     AppServiceContent convert(AnswerItem<AppServiceContent> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -145,14 +133,12 @@ public interface IAppServiceContentService {
     List<AppServiceContent> convert(AnswerList<AppServiceContent> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
 
     /**
-     *
      * @param service
      * @param newList
      * @return
@@ -160,7 +146,6 @@ public interface IAppServiceContentService {
     Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceContent> newList);
 
     /**
-     *
      * @param service
      * @param searchParameter
      * @param individualSearch
