@@ -32,6 +32,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.cerberus.api.dto.views.View;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @ToString
 @Data
@@ -42,7 +43,7 @@ import javax.validation.constraints.NotEmpty;
 public class AppServiceDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.POST.class})
     @ApiModelProperty(position = 0)
     private String service;
 
@@ -110,18 +111,26 @@ public class AppServiceDTOV001 {
     private String description;
 
     @ApiModelProperty(position = 16)
-    @JsonView(value = {View.Public.GET.class})
-    private String usrCreated;
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private List<AppServiceHeaderDTOV001> headers;
+
+    @ApiModelProperty(position = 17)
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    private List<AppServiceContentDTOV001> contents;
 
     @ApiModelProperty(position = 17)
     @JsonView(value = {View.Public.GET.class})
+    private String usrCreated;
+
+    @ApiModelProperty(position = 19)
+    @JsonView(value = {View.Public.GET.class})
     private String dateCreated;
 
-    @ApiModelProperty(position = 18)
+    @ApiModelProperty(position = 20)
     @JsonView(value = {View.Public.GET.class})
     private String usrModif;
 
-    @ApiModelProperty(position = 19)
+    @ApiModelProperty(position = 21)
     @JsonView(value = {View.Public.GET.class})
     private String dateModif;
 }
