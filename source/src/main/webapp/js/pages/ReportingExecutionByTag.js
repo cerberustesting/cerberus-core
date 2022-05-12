@@ -96,10 +96,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         openNavbarMenu("navMenuExecutionReporting");
 
         $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
+                'placement': 'auto',
+                'container': 'body'
+            }
         );
-
 
     });
 });
@@ -172,7 +172,8 @@ function loadTagSaveButtons() {
 }
 
 function loadCountryFilter() {
-    $.ajax({url: "FindInvariantByID",
+    $.ajax({
+        url: "FindInvariantByID",
         data: {idName: "COUNTRY"},
         async: false,
         dataType: 'json',
@@ -273,8 +274,11 @@ function loadTagFilters(urlTag) {
     }
 }
 
-function loadAllReports(urlTag) {
+let checkboxesLines = [];
+let checkedColCheckboxes = [];
 
+function loadAllReports(urlTag) {
+    checkedColCheckboxes = [];
     if (urlTag === undefined) {
         urlTag = $('#selectTag').val();
         InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(urlTag) + '');
@@ -325,7 +329,7 @@ function loadReportingData(selectTag) {
         if (data.hasOwnProperty('tagObject')) {
 
             // Save history entries
-            saveHistory(getHistoryCampaign(data.tagObject), "historyCampaigns",5);
+            saveHistory(getHistoryCampaign(data.tagObject), "historyCampaigns", 5);
             refreshHistoryMenu();
 
             // Tag Detail feed.
@@ -397,8 +401,9 @@ function loadReportingData(selectTag) {
         }
 
         $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
+                'placement': 'auto',
+                'container': 'body'
+            }
         ).on('shown.bs.popover', function () {
             // Manually offer possibility to popover elemt to know when it's loading
             let idPopup = $(this).attr("aria-describedby")
@@ -406,8 +411,138 @@ function loadReportingData(selectTag) {
             if (elmt.length > 0)
                 eval(elmt.attr("onload")) // TODO eval la method
         });
-    });
 
+        //Event fired when we resize a column on the datatable. Need to re-execute functions because datatable is regenerated
+        $('#listTable').on('column-sizing.dt', function () {
+            createHeaderCheckboxes();
+            resetCheckboxLineEvent();
+            addClickEventOnColCheckboxes();
+            addClickEventOnLineCheckboxes();
+        });
+
+        //Event fired when the datatable is drawing. Need to re-execute functions because datatable is regenerated
+        $('#listTable').on('draw.dt', function () {
+            createHeaderCheckboxes();
+            resetCheckboxLineEvent();
+            addClickEventOnColCheckboxes();
+            addClickEventOnLineCheckboxes();
+        });
+
+        checkboxesLines = createCheckboxesLinesArray();
+        createHeaderCheckboxes();
+        addClickEventOnLineCheckboxes();
+        addClickEventOnColCheckboxes();
+    });
+}
+
+//Create the checkboxes at each header column of execution. Need to execute this function at each event of datatable
+function createHeaderCheckboxes() {
+    //Line with column filter
+    let filterCol = document.getElementById("filterHeader").children;
+    //Line with title column
+    let mainHeader = document.getElementById("filterHeader").previousSibling.children;
+    //Add the checkboxes in the filter header only for the executions
+    for (let index = 0; index < mainHeader.length; index++) {
+        if (mainHeader[index].classList.contains("exec")) {
+            filterCol[index].style.textAlign = "center";
+            //Fill or don't fill the checkbox depending if checkbox index is in the array or not
+            filterCol[index].innerHTML = checkedColCheckboxes.indexOf(index.toString()) >= 0
+                ? filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "' checked/>"
+                : filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "'/>";
+        }
+    }
+}
+
+//Add the event 'click' on each column checkboxes
+function addClickEventOnColCheckboxes() {
+    document.querySelectorAll('.selectByColumn').forEach((item, index) => {
+        item.addEventListener('click', event => {
+            updateCheckedColBoxes(item.checked, item.id);
+            selectByColumn(item);
+        })
+    })
+}
+
+//Update the array which contains the column checkboxes that are checked
+function updateCheckedColBoxes(isChecked, id) {
+    if (isChecked) {
+        checkedColCheckboxes.push(id);
+    } else {
+        //If the checkbox is unchecked, we delete it from the array
+        let indexId = checkedColCheckboxes.indexOf(id);
+        if (indexId >= 0) {
+            checkedColCheckboxes.splice(indexId, 1);
+        }
+    }
+}
+
+//Add the event 'click' on each line checkboxes
+function addClickEventOnLineCheckboxes() {
+    document.querySelectorAll('.selectByLine').forEach((item, index) => {
+        item.addEventListener('click', event => {
+            selectByLine(index);
+        })
+    })
+}
+
+//Reset event click on checkboxes
+function resetCheckboxLineEvent() {
+    document.querySelectorAll('.selectByLine').forEach((item, index) => {
+        item.replaceWith(item.cloneNode(true));
+    })
+}
+
+//Select execution by line
+function selectByLine(index) {
+    checkboxesLines = createCheckboxesLinesArray();
+    let actionCheckbox = findActionCheckbox(checkboxesLines, index)
+    let checkboxLine = checkboxesLines[index].querySelectorAll('[type="checkbox"]');
+    let checkboxParent;
+    for (let checkboxIndex = 0; checkboxIndex < checkboxLine.length; checkboxIndex++) {
+        checkboxParent = checkboxLine[checkboxIndex].parentElement;
+        checkboxLine[checkboxIndex].checked = (actionCheckbox.checked
+            && !checkboxParent.classList.contains("statusPE")
+            && !checkboxParent.classList.contains("statusQU"));
+    }
+    refreshNbChecked();
+}
+
+//Select executions by column
+function selectByColumn(headerCheckbox) {
+    checkboxesLines = createCheckboxesLinesArray();
+    let executionContainer;
+    //Current checkbox is inside executionContainer in HTML
+    let currentCheckbox;
+    for (let checkboxLineIndex = 0; checkboxLineIndex < checkboxesLines.length; checkboxLineIndex++) {
+        executionContainer = checkboxesLines[checkboxLineIndex].cells[headerCheckbox.id];
+        currentCheckbox = executionContainer.querySelector('[type="checkbox"]');
+        //Check if we have an execution modal
+        if (executionContainer.innerHTML != 0) {
+            currentCheckbox.checked = (headerCheckbox.checked
+                && !currentCheckbox.parentElement.classList.contains("statusPE")
+                && !currentCheckbox.parentElement.classList.contains("statusQU"));
+        }
+    }
+    refreshNbChecked();
+}
+
+//Find the checkboxes which allow to check/uncheck execution checkboxes on the line
+function findActionCheckbox(array, index) {
+    return array[index].querySelector('.selectByLine');
+}
+
+//Store in array the lines which contains the executions checkboxes
+function createCheckboxesLinesArray() {
+    //Get all the lines of the datatable
+    let reportTableLines = document.getElementById("listTable").getElementsByTagName("tbody")[0].children
+    let checkboxesLinesArray = [];
+    //Store only the lines which contains executions checkboxes
+    for (let lineIndex = 0; lineIndex < reportTableLines.length; lineIndex++) {
+        if (reportTableLines[lineIndex].classList.contains('odd') || reportTableLines[lineIndex].classList.contains('even')) {
+            checkboxesLinesArray.push(reportTableLines[lineIndex])
+        }
+    }
+    return checkboxesLinesArray;
 }
 
 function getHistoryCampaign(object) {
@@ -465,8 +600,7 @@ function generateTagBarTooltip(data) {
 }
 
 
-
-function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
+function filterCountryBrowserReport(selectTag, splitFilterSettings) {
     //var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
@@ -480,7 +614,7 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
 
 }
 
-function  filterLabelReport(selectTag) {
+function filterLabelReport(selectTag) {
     //var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
@@ -785,28 +919,28 @@ function appendPanelStatus(status, total, selectTag) {
     if ((rowClass.panel === "panelQU") || (rowClass.panel === "panelQE")) {
         // When we display the QU or QE status, we add a link to all executions in the queue on the queue page.
         $("#ReportByStatusTable").append(
-                $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'></a>").append(
+            $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'></a>").append(
                 $("<div class='panel " + rowClass.panel + "'></div>").append(
-                $('<div class="panel-heading"></div>').append(
-                $('<div class="row"></div>').append(
-                $('<div class="col-xs-6 status"></div>').text(status).prepend(
-                $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
-                $('<div class="col-xs-6 text-right"></div>').append(
-                $('<div class="total"></div>').text(total[status].value)))).append(
-                $('<div class="row"></div>').append(
-                $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
-                ))));
+                    $('<div class="panel-heading"></div>').append(
+                        $('<div class="row"></div>').append(
+                            $('<div class="col-xs-6 status"></div>').text(status).prepend(
+                                $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+                            $('<div class="col-xs-6 text-right"></div>').append(
+                                $('<div class="total"></div>').text(total[status].value)))).append(
+                        $('<div class="row"></div>').append(
+                            $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
+                    ))));
     } else {
         $("#ReportByStatusTable").append(
-                $("<div class='panel " + rowClass.panel + "'></div>").append(
+            $("<div class='panel " + rowClass.panel + "'></div>").append(
                 $('<div class="panel-heading"></div>').append(
-                $('<div class="row"></div>').append(
-                $('<div class="col-xs-6 status"></div>').text(status).prepend(
-                $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
-                $('<div class="col-xs-6 text-right"></div>').append(
-                $('<div class="total"></div>').text(total[status].value)))).append(
-                $('<div class="row"></div>').append(
-                $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
+                    $('<div class="row"></div>').append(
+                        $('<div class="col-xs-6 status"></div>').text(status).prepend(
+                            $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+                        $('<div class="col-xs-6 text-right"></div>').append(
+                            $('<div class="total"></div>').text(total[status].value)))).append(
+                    $('<div class="row"></div>').append(
+                        $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
                 )));
     }
 }
@@ -824,8 +958,10 @@ function loadReportByStatusTable(data, selectTag) {
                 if (total.hasOwnProperty(key)) {
                     total[key].value += data.axis[index][key].value;
                 } else {
-                    total[key] = {"value": data.axis[index][key].value,
-                        "color": data.axis[index][key].color};
+                    total[key] = {
+                        "value": data.axis[index][key].value,
+                        "color": data.axis[index][key].color
+                    };
                 }
                 total.test += data.axis[index][key].value;
             }
@@ -852,14 +988,14 @@ function loadReportByStatusTable(data, selectTag) {
 //    }
     // add a panel for the total
     $("#ReportByStatusTable").append(
-            $("<div class='panel panel-primary'></div>").append(
+        $("<div class='panel panel-primary'></div>").append(
             $('<div class="panel-heading"></div>').append(
-            $('<div class="row"></div>').append(
-            $('<div class="col-xs-6 status"></div>').text("Total").prepend(
-            $('<span class="" style="margin-right: 5px;"></span>'))).append(
-            $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total.test))
-            ))));
+                $('<div class="row"></div>').append(
+                    $('<div class="col-xs-6 status"></div>').text("Total").prepend(
+                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                    $('<div class="col-xs-6 text-right"></div>').append(
+                        $('<div class="total"></div>').text(total.test))
+                ))));
     //format data to be used by the chart
 
     var dataset = [];
@@ -893,29 +1029,29 @@ function loadReportByStatusChart(data) {
     var radius = Math.min(width, height) / 2;
 
     var svg = d3.select('#statusChart')
-            .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
 
     var arc = d3.svg.arc()
-            .outerRadius(radius);
+        .outerRadius(radius);
 
     var pie = d3.layout.pie()
-            .value(function (d) {
-                return d.value;
-            })
-            .sort(null);
+        .value(function (d) {
+            return d.value;
+        })
+        .sort(null);
 
     var path = svg.selectAll('path')
-            .data(pie(data))
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', function (d, i) {
-                return d.data.color;
-            });
+        .data(pie(data))
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', function (d, i) {
+            return d.data.color;
+        });
     hideLoader($("#ReportByStatus"));
 }
 
@@ -934,42 +1070,42 @@ function loadReportTestFolderChart(dataset) {
         $("#ReportByTestFolderPanel").show();
 
         var margin = {top: 20, right: 20, bottom: 200, left: 150},
-                width = 1200 - margin.left - margin.right,
-                height = 600 - margin.top - margin.bottom;
+            width = 1200 - margin.left - margin.right,
+            height = 600 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal()
-                .rangeRoundBands([0, width], .1);
+            .rangeRoundBands([0, width], .1);
 
         var y = d3.scale.linear()
-                .rangeRound([height, 0]);
+            .rangeRound([height, 0]);
 
         var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom");
+            .scale(x)
+            .orient("bottom");
 
         var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left");
+            .scale(y)
+            .orient("left");
 
         var tip = d3.tip()
-                .attr('class', 'd3-tip')
-                .offset([-10, 0])
-                .html(function (d) {
-                    var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
-                    var len = d.chartData.length;
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d) {
+                var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
+                var len = d.chartData.length;
 
-                    for (var index = 0; index < len; index++) {
-                        res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
+                for (var index = 0; index < len; index++) {
+                    res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
                     </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";
-                    }
-                    return res;
-                });
+                }
+                return res;
+            });
 
         var svg = d3.select("#ReportTestFolderChart").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         svg.call(tip);
 
@@ -989,57 +1125,57 @@ function loadReportTestFolderChart(dataset) {
             return d.name;
         }));
         y.domain([0, d3.max(data, function (d) {
-                return d.totalTests;
-            })]);
+            return d.totalTests;
+        })]);
 
         svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-                .selectAll("text")
-                .call(wrap, 200)
-                .style({"text-anchor": "end"})
-                .attr("dx", "-.8em")
-                .attr("dy", "-.55em")
-                .attr("transform", "rotate(-75)");
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .selectAll("text")
+            .call(wrap, 200)
+            .style({"text-anchor": "end"})
+            .attr("dx", "-.8em")
+            .attr("dy", "-.55em")
+            .attr("transform", "rotate(-75)");
 
         svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("TestCase Number");
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("TestCase Number");
 
         var name = svg.selectAll(".name")
-                .data(data)
-                .enter().append("g")
-                .attr("class", "g")
-                .attr("transform", function (d) {
-                    return "translate(" + x(d.name) + ",0)";
-                });
+            .data(data)
+            .enter().append("g")
+            .attr("class", "g")
+            .attr("transform", function (d) {
+                return "translate(" + x(d.name) + ",0)";
+            });
 
         svg.selectAll(".g")
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
 
         name.selectAll("rect")
-                .data(function (d) {
-                    return d.chartData;
-                })
-                .enter().append("rect")
-                .attr("width", x.rangeBand())
-                .attr("y", function (d) {
-                    return y(d.y1);
-                })
-                .attr("height", function (d) {
-                    return y(d.y0) - y(d.y1);
-                })
-                .style("fill", function (d) {
-                    return d.color;
-                });
+            .data(function (d) {
+                return d.chartData;
+            })
+            .enter().append("rect")
+            .attr("width", x.rangeBand())
+            .attr("y", function (d) {
+                return y(d.y1);
+            })
+            .attr("height", function (d) {
+                return y(d.y0) - y(d.y1);
+            })
+            .style("fill", function (d) {
+                return d.color;
+            });
     } else {
         $("#ReportByTestFolderPanel").hide();
     }
@@ -1056,7 +1192,7 @@ function exportReport() {
     var exportDataFilter = $("#exportData input");
 
     var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + selectTag + "&" + statusFilter.serialize() +
-            "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
+        "&" + countryFilter.serialize() + "&" + exportDataFilter.serialize());
     $.when(jqxhr).then(function (data) {
         alert(data);
     });
@@ -1112,30 +1248,30 @@ function createRow(row, isTotalRow) {
         }
     }
     $tr.append(
-            $('<td>').text(row.OK).css("text-align", "right"),
-            $('<td>').text(row.KO).css("text-align", "right"),
-            $('<td>').text(row.FA).css("text-align", "right"),
-            $('<td>').text(row.NA).css("text-align", "right"),
-            $('<td>').text(row.NE).css("text-align", "right"),
-            $('<td>').text(row.WE).css("text-align", "right"),
-            $('<td>').text(row.PE).css("text-align", "right"),
-            $('<td>').text(row.QU).css("text-align", "right"),
-            $('<td>').text(row.QE).css("text-align", "right"),
-            $('<td>').text(row.CA).css("text-align", "right"),
-            $('<td>').text(row.notOKTotal).css("text-align", "right"),
-            $('<td>').text(row.total).css("text-align", "right"),
-            $('<td>').text(row.percOK + "%").css("text-align", "right"),
-            $('<td>').text(row.percKO + "%").css("text-align", "right"),
-            $('<td>').text(row.percFA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNE + "%").css("text-align", "right"),
-            $('<td>').text(row.percWE + "%").css("text-align", "right"),
-            $('<td>').text(row.percPE + "%").css("text-align", "right"),
-            $('<td>').text(row.percQU + "%").css("text-align", "right"),
-            $('<td>').text(row.percQE + "%").css("text-align", "right"),
-            $('<td>').text(row.percCA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
-            );
+        $('<td>').text(row.OK).css("text-align", "right"),
+        $('<td>').text(row.KO).css("text-align", "right"),
+        $('<td>').text(row.FA).css("text-align", "right"),
+        $('<td>').text(row.NA).css("text-align", "right"),
+        $('<td>').text(row.NE).css("text-align", "right"),
+        $('<td>').text(row.WE).css("text-align", "right"),
+        $('<td>').text(row.PE).css("text-align", "right"),
+        $('<td>').text(row.QU).css("text-align", "right"),
+        $('<td>').text(row.QE).css("text-align", "right"),
+        $('<td>').text(row.CA).css("text-align", "right"),
+        $('<td>').text(row.notOKTotal).css("text-align", "right"),
+        $('<td>').text(row.total).css("text-align", "right"),
+        $('<td>').text(row.percOK + "%").css("text-align", "right"),
+        $('<td>').text(row.percKO + "%").css("text-align", "right"),
+        $('<td>').text(row.percFA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNE + "%").css("text-align", "right"),
+        $('<td>').text(row.percWE + "%").css("text-align", "right"),
+        $('<td>').text(row.percPE + "%").css("text-align", "right"),
+        $('<td>').text(row.percQU + "%").css("text-align", "right"),
+        $('<td>').text(row.percQE + "%").css("text-align", "right"),
+        $('<td>').text(row.percCA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
+    );
     return $tr;
 }
 
@@ -1157,32 +1293,33 @@ function createHeaderRow() {
         $tr.append($('<td>').text("Application").css("text-align", "center"));
 
     $tr.append(
-            $('<td>').text("OK").css("text-align", "center"),
-            $('<td>').text("KO").css("text-align", "center"),
-            $('<td>').text("FA").css("text-align", "center"),
-            $('<td>').text("NA").css("text-align", "center"),
-            $('<td>').text("NE").css("text-align", "center"),
-            $('<td>').text("WE").css("text-align", "center"),
-            $('<td>').text("PE").css("text-align", "center"),
-            $('<td>').text("QU").css("text-align", "center"),
-            $('<td>').text("QE").css("text-align", "center"),
-            $('<td>').text("CA").css("text-align", "center"),
-            $('<td>').text("NOT OK").css("text-align", "center"),
-            $('<td>').text("TOTAL").css("text-align", "center"),
-            $('<td>').text("% OK").css("text-align", "center"),
-            $('<td>').text("% KO").css("text-align", "center"),
-            $('<td>').text("% FA").css("text-align", "center"),
-            $('<td>').text("% NA").css("text-align", "center"),
-            $('<td>').text("% NE").css("text-align", "center"),
-            $('<td>').text("% WE").css("text-align", "center"),
-            $('<td>').text("% PE").css("text-align", "center"),
-            $('<td>').text("% QU").css("text-align", "center"),
-            $('<td>').text("% QE").css("text-align", "center"),
-            $('<td>').text("% CA").css("text-align", "center"),
-            $('<td>').text("% NOT OK").css("text-align", "center")
-            );
+        $('<td>').text("OK").css("text-align", "center"),
+        $('<td>').text("KO").css("text-align", "center"),
+        $('<td>').text("FA").css("text-align", "center"),
+        $('<td>').text("NA").css("text-align", "center"),
+        $('<td>').text("NE").css("text-align", "center"),
+        $('<td>').text("WE").css("text-align", "center"),
+        $('<td>').text("PE").css("text-align", "center"),
+        $('<td>').text("QU").css("text-align", "center"),
+        $('<td>').text("QE").css("text-align", "center"),
+        $('<td>').text("CA").css("text-align", "center"),
+        $('<td>').text("NOT OK").css("text-align", "center"),
+        $('<td>').text("TOTAL").css("text-align", "center"),
+        $('<td>').text("% OK").css("text-align", "center"),
+        $('<td>').text("% KO").css("text-align", "center"),
+        $('<td>').text("% FA").css("text-align", "center"),
+        $('<td>').text("% NA").css("text-align", "center"),
+        $('<td>').text("% NE").css("text-align", "center"),
+        $('<td>').text("% WE").css("text-align", "center"),
+        $('<td>').text("% PE").css("text-align", "center"),
+        $('<td>').text("% QU").css("text-align", "center"),
+        $('<td>').text("% QE").css("text-align", "center"),
+        $('<td>').text("% CA").css("text-align", "center"),
+        $('<td>').text("% NOT OK").css("text-align", "center")
+    );
     return $tr;
 }
+
 /**
  * Creates a summary table from data retrieved from server.
  * @param {type} data
@@ -1215,6 +1352,7 @@ function createSummaryTable(data) {
 
     });
 }
+
 function selectTableToCopy() {
 
     var el = document.getElementById('summaryTable');
@@ -1248,6 +1386,7 @@ function createShortDescRow(row, data, index) {
     $(row).children('.center').attr('rowspan', '3');
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
+    $(row).children('.selectLineCell').attr('rowspan', '3').attr('style', 'vertical-align: middle; text-align: center;');
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
     var labelValue = '';
     $.each(data.labels, function (i, e) {
@@ -1432,7 +1571,6 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         });
 
 
-
         $('#submitExe').click(massAction_copyQueueWithoutDep);
         $('#submitExewithDep').click(massAction_copyQueueWithDep);
     }
@@ -1481,11 +1619,14 @@ function massAction_copyQueue(option) {
 function massAction_copyQueueWithDep() {
     massAction_copyQueue("toQUEUEDwithDep");
 }
+
 function massAction_copyQueueWithoutDep() {
     massAction_copyQueue("toQUEUED");
 }
 
 var cptDep = 0;
+
+
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colNb = Columns.length;
@@ -1530,6 +1671,15 @@ function aoColumnsFunc(Columns) {
             "sName": "app.application",
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")
+        },
+        {
+            "bSortable": false,
+            "bSearchable": false,
+            "sWidth": "20px",
+            "sClass": "selectLineCell",
+            "mRender": function (row) {
+                return "<input type='checkbox' class='selectByLine'/>";
+            },
         }
     ];
     for (var i = 0; i < colNb; i++) {
@@ -1549,7 +1699,7 @@ function aoColumnsFunc(Columns) {
                     return "";
                 }
             },
-            "sClass": "center",
+            "sClass": "center exec",
             "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
@@ -1609,7 +1759,7 @@ function aoColumnsFunc(Columns) {
                     if (data.TestCaseDep.length > 0) {
                         cell += '<span style="padding:0px; border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon ">';
                         cell += '<a id="dep' + cptDep + '" role="button" class="btn btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover" data-placement="right">' +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
+                            '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </a>'
                         cell += '</span>';
                         cptDep++;
                     }
@@ -1623,45 +1773,45 @@ function aoColumnsFunc(Columns) {
         aoColumns.push(col);
     }
     var col =
-            {
-                "data": "priority",
-                "sName": "tec.priority",
-                "sClass": "priority",
-                "sWidth": "20px",
-                "title": doc.getDocOnline("invariant", "PRIORITY")
-            };
+        {
+            "data": "priority",
+            "sName": "tec.priority",
+            "sClass": "priority",
+            "sWidth": "20px",
+            "title": doc.getDocOnline("invariant", "PRIORITY")
+        };
     aoColumns.push(col);
     var col =
-            {
-                "data": "comment",
-                "sName": "tec.comment",
-                "sClass": "comment",
-                "sWidth": "60px",
-                "title": doc.getDocOnline("testcase", "Comment")
-            };
+        {
+            "data": "comment",
+            "sName": "tec.comment",
+            "sClass": "comment",
+            "sWidth": "60px",
+            "title": doc.getDocOnline("testcase", "Comment")
+        };
     aoColumns.push(col);
     var col =
-            {
-                "data": "bugs",
-                "bSearchable": false,
-                "mRender": function (data, type, obj) {
-                    return getBugIdList(data, obj.AppBugURL);
-                },
-                "sName": "tec.bugs",
-                "sClass": "bugid",
-                "sWidth": "40px",
-                "title": doc.getDocOnline("testcase", "BugID")
-            };
+        {
+            "data": "bugs",
+            "bSearchable": false,
+            "mRender": function (data, type, obj) {
+                return getBugIdList(data, obj.AppBugURL);
+            },
+            "sName": "tec.bugs",
+            "sClass": "bugid",
+            "sWidth": "40px",
+            "title": doc.getDocOnline("testcase", "BugID")
+        };
     aoColumns.push(col);
 
     var col =
-            {
-                "data": "NbRetry",
-                "sName": "NbRetry",
-                "sClass": "NbRetry",
-                "sWidth": "40px",
-                "title": "Total nb of Retries"
-            };
+        {
+            "data": "NbRetry",
+            "sName": "NbRetry",
+            "sClass": "NbRetry",
+            "sWidth": "40px",
+            "title": "Total nb of Retries"
+        };
     aoColumns.push(col);
 
     return aoColumns;
@@ -1679,16 +1829,17 @@ function renderDependency(id, dependencyArray) {
         $("#" + idProgressBar).parent().addClass("info");
     });
     $("#" + id).attr('title', "Dependency")
-            .addClass("info")
-            .popover('fixTitle')
-            .attr("data-content", text)
-            .attr("data-placement", "right")
-            .popover('show');
+        .addClass("info")
+        .popover('fixTitle')
+        .attr("data-content", text)
+        .attr("data-placement", "right")
+        .popover('show');
 }
 
 function customConfig(config) {
     var doc = new Doc();
-    var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
+    var customColvisConfig = {
+        "buttonText": doc.getDocLabel("dataTable", "colVis"),
         "exclude": [0, 1, 2],
         "stateChange": function (iColumn, bVisible) {
             $('.shortDesc').each(function () {
@@ -1713,14 +1864,14 @@ function customConfig(config) {
 function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),
-                words = text.text().split(/\s+/).reverse(),
-                word,
-                line = [],
-                lineNumber = 0,
-                lineHeight = 1.1, // ems
-                y = text.attr("y"),
-                dy = parseFloat(text.attr("dy")),
-                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            y = text.attr("y"),
+            dy = parseFloat(text.attr("dy")),
+            tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
         while (word = words.pop()) {
             line.push(word);
             tspan.text(line.join(" "));
@@ -1733,3 +1884,7 @@ function wrap(text, width) {
         }
     });
 }
+
+
+
+
