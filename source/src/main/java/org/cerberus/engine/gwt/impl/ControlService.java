@@ -20,15 +20,10 @@
 package org.cerberus.engine.gwt.impl;
 
 import com.google.common.primitives.Ints;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionFile;
-import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.*;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -56,12 +51,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -626,11 +616,16 @@ public class ControlService implements IControlService {
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
-                                if (jsonService.getFromJson(responseBody, null, elementPath) != null) {
+                                //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
+                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+                                    mes.resolveDescription("STRING1", elementPath);
+                                    return mes;
                                 } else {
-                                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                                    throw new PathNotFoundException();
                                 }
+                            } catch (PathNotFoundException ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                                 mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             } catch (Exception ex) {
@@ -708,11 +703,16 @@ public class ControlService implements IControlService {
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
-                                if (jsonService.getFromJson(responseBody, null, elementPath) == null) {
-                                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                                } else {
+                                //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
+                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                    mes.resolveDescription("STRING1", elementPath);
+                                    return mes;
+                                } else {
+                                    throw new PathNotFoundException();
                                 }
+                            } catch (PathNotFoundException ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                                 mes.resolveDescription("STRING1", elementPath);
                                 return mes;
                             } catch (Exception ex) {
@@ -720,6 +720,7 @@ public class ControlService implements IControlService {
                                 mes.resolveDescription("ERROR", ex.toString());
                                 return mes;
                             }
+
                         }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
