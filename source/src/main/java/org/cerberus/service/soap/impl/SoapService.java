@@ -19,33 +19,6 @@
  */
 package org.cerberus.service.soap.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.activation.DataHandler;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,8 +42,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
+import javax.activation.DataHandler;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -189,13 +189,13 @@ public class SoapService implements ISoapService {
         if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(
                     new Authenticator() {
-                @Override
-                public PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(
-                            proxyUser, proxyPassword.toCharArray()
-                    );
-                }
-            }
+                        @Override
+                        public PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(
+                                    proxyUser, proxyPassword.toCharArray()
+                            );
+                        }
+                    }
             );
             System.setProperty("http.proxyUser", proxyUser);
             System.setProperty("http.proxyPassword", proxyPassword);
@@ -230,14 +230,14 @@ public class SoapService implements ISoapService {
         }
         // We feed the header with token + Standard SOAP header.
         if (token != null) {
-            header.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+            header.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
         if (StringUtil.isNullOrEmpty(soapOperation)) {
-            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "", "Y", 0, "", "", null, "", null));
+            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "", true, 0, "", "", null, "", null));
         } else {
-            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + soapOperation + "\"", "Y", 0, "", "", null, "", null));
+            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + soapOperation + "\"", true, 0, "", "", null, "", null));
         }
-        header.add(factoryAppServiceHeader.create(null, "Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE, "Y", 0, "", "", null, "", null));
+        header.add(factoryAppServiceHeader.create(null, "Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE, true, 0, "", "", null, "", null));
         serviceSOAP.setHeaderList(header);
 
         SOAPConnectionFactory soapConnectionFactory;
@@ -356,7 +356,8 @@ public class SoapService implements ISoapService {
 
             result.setItem(serviceSOAP);
 
-        } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
+        } catch (SOAPException | UnsupportedOperationException | IOException | SAXException |
+                 ParserConfigurationException | CerberusException e) {
             LOG.error("Exception when trying to callSOAP on URL : '" + servicePath + "' for operation : '" + soapOperation + "'", e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()

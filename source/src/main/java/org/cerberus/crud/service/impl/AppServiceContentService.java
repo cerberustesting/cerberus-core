@@ -19,11 +19,9 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceContentDAO;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.service.IAppServiceContentService;
@@ -36,18 +34,20 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author bcivel
  */
+@AllArgsConstructor
 @Service
 public class AppServiceContentService implements IAppServiceContentService {
 
-    @Autowired
-    private IAppServiceContentDAO AppServiceContentDAO;
+    private final IAppServiceContentDAO appServiceContentDAO;
 
     private static final Logger LOG = LogManager.getLogger(AppServiceContentService.class);
 
@@ -55,38 +55,38 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public AnswerItem<AppServiceContent> readByKey(String service, String key) {
-        return AppServiceContentDAO.readByKey(service, key);
+        return appServiceContentDAO.readByKey(service, key);
     }
 
     @Override
     public AnswerList<AppServiceContent> readAll() {
-        return readByServiceByCriteria(null, null, 0, 0, "sort", "asc", null, null);
+        return readByServiceByCriteria(null, false, true, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList<AppServiceContent> readByVarious(String service, String active) {
-        return AppServiceContentDAO.readByVariousByCriteria(service, active, 0, 0, "sort", "asc", null, null);
+    public AnswerList<AppServiceContent> readByVarious(String service, boolean withActiveCriteria, boolean isActive) {
+        return appServiceContentDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
     public AnswerList<AppServiceContent> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return AppServiceContentDAO.readByVariousByCriteria(null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return appServiceContentDAO.readByVariousByCriteria(null, false, true, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList<AppServiceContent> readByServiceByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return AppServiceContentDAO.readByVariousByCriteria(service, active, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    public AnswerList<AppServiceContent> readByServiceByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return appServiceContentDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
     public boolean exist(String service, String key) {
-        AnswerItem objectAnswer = readByKey(service, key);
-        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+        AnswerItem<AppServiceContent> objectAnswer = readByKey(service, key);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successful and object was found.
     }
 
     @Override
     public Answer create(AppServiceContent object) {
-        return AppServiceContentDAO.create(object);
+        return appServiceContentDAO.create(object);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public Answer delete(AppServiceContent object) {
-        return AppServiceContentDAO.delete(object);
+        return appServiceContentDAO.delete(object);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public Answer update(String service, String key, AppServiceContent object) {
-        return AppServiceContentDAO.update(service, key, object);
+        return appServiceContentDAO.update(service, key, object);
     }
 
     @Override
@@ -146,21 +146,19 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceContent> newList) {
-        Answer ans = new Answer(null);
+        Answer ans;
 
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
         List<AppServiceContent> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByVarious(service, null));
+            oldList = this.convert(this.readByVarious(service, false, true));
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
         }
 
-        /**
-         * Update and Create all objects database Objects from newList
-         */
+        // Update and Create all objects database Objects from newList
         List<AppServiceContent> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
         List<AppServiceContent> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
@@ -175,9 +173,7 @@ public class AppServiceContentService implements IAppServiceContentService {
             }
         }
 
-        /**
-         * Delete all objects database Objects that do not exist from newList
-         */
+        // Delete all objects database Objects that do not exist from newList
         List<AppServiceContent> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
         List<AppServiceContent> listToDeleteToIterate = new ArrayList<>(listToDelete);
@@ -205,7 +201,7 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return AppServiceContentDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
+        return appServiceContentDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
     }
 
 }

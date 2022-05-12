@@ -76,13 +76,15 @@ $.when($.getScript("js/global/global.js")).then(function () {
         } else {
             $("#TestCaseButton").show();
             $("#RefreshQueueButton").hide();
-            /* global */ sockets = [];
+            /* global */
+            sockets = [];
             initPage(executionId);
             loadExecutionInformation(executionId, steps, sockets);
 
             $('[data-toggle="popover"]').popover({
-                'placement': 'auto',
-                'container': 'body'}
+                    'placement': 'auto',
+                    'container': 'body'
+                }
             );
         }
     });
@@ -164,6 +166,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
 
 //global bool that say if the execution is manual
 var isTheExecutionManual = false;
+
 function loadExecutionInformation(executionId, steps, sockets) {
 
     $.ajax({
@@ -604,16 +607,78 @@ function aoColumnsFunc() {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": "start", "bSortable": true, "sName": "start", "title": doc.getDocOnline("page_executiondetail", "t_start"), "sWidth": "70px"},
-        {"data": "provider", "bSortable": true, "sName": "provider", "title": doc.getDocOnline("page_executiondetail", "t_provider"), "sWidth": "100px"},
-        {"data": "domain", "bSortable": true, "visible": false, "sName": "domain", "title": doc.getDocOnline("page_executiondetail", "t_domain"), "sWidth": "70px"},
-        {"data": "url", "bSortable": true, "sName": "url", "title": doc.getDocOnline("page_executiondetail", "t_url"), "sWidth": "200px"},
-        {"data": "contentType", "bSortable": true, "sName": "contentType", "title": doc.getDocOnline("page_executiondetail", "t_contentType"), "sWidth": "70px"},
-        {"data": "httpStatus", "bSortable": true, "sName": "httpStatus", "title": doc.getDocOnline("page_executiondetail", "t_httpStatus"), "sWidth": "50px"},
-        {"data": "size", "bSortable": true, "sName": "size", "title": doc.getDocOnline("page_executiondetail", "t_size"), "sWidth": "50px"},
-        {"data": "time", "bSortable": true, "sName": "time", "title": doc.getDocOnline("page_executiondetail", "t_time"), "sWidth": "50px"},
-        {"data": "index", "bSortable": true, "visible": false, "sName": "index", "title": doc.getDocOnline("page_executiondetail", "t_index"), "sWidth": "30px"},
-        {"data": "indexName", "bSortable": true, "sName": "indexName", "title": doc.getDocOnline("page_executiondetail", "t_indexName"), "sWidth": "50px"}
+        {
+            "data": "start",
+            "bSortable": true,
+            "sName": "start",
+            "title": doc.getDocOnline("page_executiondetail", "t_start"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "provider",
+            "bSortable": true,
+            "sName": "provider",
+            "title": doc.getDocOnline("page_executiondetail", "t_provider"),
+            "sWidth": "100px"
+        },
+        {
+            "data": "domain",
+            "bSortable": true,
+            "visible": false,
+            "sName": "domain",
+            "title": doc.getDocOnline("page_executiondetail", "t_domain"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "url",
+            "bSortable": true,
+            "sName": "url",
+            "title": doc.getDocOnline("page_executiondetail", "t_url"),
+            "sWidth": "200px"
+        },
+        {
+            "data": "contentType",
+            "bSortable": true,
+            "sName": "contentType",
+            "title": doc.getDocOnline("page_executiondetail", "t_contentType"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "httpStatus",
+            "bSortable": true,
+            "sName": "httpStatus",
+            "title": doc.getDocOnline("page_executiondetail", "t_httpStatus"),
+            "sWidth": "50px"
+        },
+        {
+            "data": "size",
+            "bSortable": true,
+            "sName": "size",
+            "title": doc.getDocOnline("page_executiondetail", "t_size"),
+            "sWidth": "50px"
+        },
+        {
+            "data": "time",
+            "bSortable": true,
+            "sName": "time",
+            "title": doc.getDocOnline("page_executiondetail", "t_time"),
+            "sWidth": "50px"
+        },
+        {
+            "data": "index",
+            "bSortable": true,
+            "visible": false,
+            "sName": "index",
+            "title": doc.getDocOnline("page_executiondetail", "t_index"),
+            "sWidth": "30px"
+        },
+        {
+            "data": "indexName",
+            "bSortable": true,
+            "sName": "indexName",
+            "title": doc.getDocOnline("page_executiondetail", "t_indexName"),
+            "sWidth": "50px"
+        }
     ];
 
     return aoColumns;
@@ -626,10 +691,10 @@ function drawChart_HttpStatus(target) {
         type: 'pie',
         data: {
             datasets: [{
-                    data: [],
-                    backgroundColor: [],
-                    label: 'Hits'
-                }],
+                data: [],
+                backgroundColor: [],
+                label: 'Hits'
+            }],
             labels: []
         },
         options: {
@@ -725,10 +790,10 @@ function drawChart_SizePerType(target) {
         type: 'pie',
         data: {
             datasets: [{
-                    data: [],
-                    backgroundColor: [],
-                    label: 'Size'
-                }],
+                data: [],
+                backgroundColor: [],
+                label: 'Size'
+            }],
             labels: []
         },
         options: {
@@ -743,7 +808,8 @@ function drawChart_SizePerType(target) {
                         label += formatNumber(Math.round(tmp / 1024)) + " Kb";
                         return label;
                     }
-                }},
+                }
+            },
             title: {
                 display: true,
                 text: []
@@ -879,7 +945,8 @@ function drawChart_PerThirdParty(data, target) {
                         }
                         return label;
                     }
-                }},
+                }
+            },
             title: {
                 display: true,
                 text: titletext
@@ -927,7 +994,11 @@ function update_thirdParty_Chart() {
                 if ((entryProvider !== "unknown") && (entryProvider !== "internal")) {
                     nbThirdParty++;
                 }
-                result3rdParty[entryProvider] = {size: networkStat.requests[key].size, nb: 1, time: networkStat.requests[key].time};
+                result3rdParty[entryProvider] = {
+                    size: networkStat.requests[key].size,
+                    nb: 1,
+                    time: networkStat.requests[key].time
+                };
             }
         }
     }
@@ -1059,32 +1130,31 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         },
         scales: {
             xAxes: [{
-                    label: "Duration",
-                    ticks: {
-                        beginAtZero: true,
-                        fontFamily: "'Open Sans Bold', sans-serif",
-                        fontSize: 11
-                    },
-                    scaleLabel: {
-                        display: false
-                    },
-                    gridLines: {
-                    },
-                    stacked: true
-                }],
+                label: "Duration",
+                ticks: {
+                    beginAtZero: true,
+                    fontFamily: "'Open Sans Bold', sans-serif",
+                    fontSize: 11
+                },
+                scaleLabel: {
+                    display: false
+                },
+                gridLines: {},
+                stacked: true
+            }],
             yAxes: [{
-                    gridLines: {
-                        display: false,
-                        color: "#fff",
-                        zeroLineColor: "#fff",
-                        zeroLineWidth: 0
-                    },
-                    ticks: {
-                        fontFamily: "'Open Sans Bold', sans-serif",
-                        fontSize: 11
-                    },
-                    stacked: true
-                }]
+                gridLines: {
+                    display: false,
+                    color: "#fff",
+                    zeroLineColor: "#fff",
+                    zeroLineWidth: 0
+                },
+                ticks: {
+                    fontFamily: "'Open Sans Bold', sans-serif",
+                    fontSize: 11
+                },
+                stacked: true
+            }]
         },
         legend: {
             display: true
@@ -1101,12 +1171,12 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
             labels: [],
 
             datasets: [{
-                    label: "Start",
-                    data: [],
-                    backgroundColor: "rgba(63,103,126,0)",
-                    hoverBackgroundColor: "rgba(50,90,100,0)"
+                label: "Start",
+                data: [],
+                backgroundColor: "rgba(63,103,126,0)",
+                hoverBackgroundColor: "rgba(50,90,100,0)"
 
-                },
+            },
                 {
                     label: "Duration",
                     data: [],
@@ -1213,27 +1283,27 @@ function createVideo(videos) {
         menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
-                "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
+            "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
 
         videoIndex++;
     });
 
     $("#testCaseDetails > div").append(
-            "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
-            "   <div class=\"row\">" +
-            "       <div class=\"col-md-2\">\n" +
-            "           <div class=\"list-group step-list side-item\">" +
-            menuEntry +
-            "           </div>\n" +
-            "       </div>" +
-            "       <div class=\"col-md-10\">" +
-            "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
-            videoEntry +
-            "           Your browser does not support the video tag." +
-            "           </video>\n" +
-            "       </div>" +
-            "   </div>" +
-            "</div>");
+        "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
+        "   <div class=\"row\">" +
+        "       <div class=\"col-md-2\">\n" +
+        "           <div class=\"list-group step-list side-item\">" +
+        menuEntry +
+        "           </div>\n" +
+        "       </div>" +
+        "       <div class=\"col-md-10\">" +
+        "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
+        videoEntry +
+        "           Your browser does not support the video tag." +
+        "           </video>\n" +
+        "       </div>" +
+        "   </div>" +
+        "</div>");
 
 
     var myvid = $('#videoTest').get(0);
@@ -1430,7 +1500,6 @@ function setConfigPanel(data) {
 }
 
 
-
 function removeColorClass(element) {
     element.removeClass("text-black");
     element.removeClass("text-warning");
@@ -1503,6 +1572,7 @@ function setLoadBar(data) {
     updateDataBarVisual(data.controlStatus, progress);
 
 }
+
 /** DATA AGREGATION **/
 
 function updateDataBarVisual(controlStatus, progress = 100) {
@@ -1566,7 +1636,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
-                bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1809,9 +1879,9 @@ function createPropertiesOld(propList) {
     var doc = new Doc();
     var propertyArray = [];
 
-    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled", true);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, false).attr("disabled", true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, false).attr("disabled", true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, false).attr("disabled", true);
     var table = $("#propTable");
 
     for (var ind = 0; ind < propList.length; ind++) {
@@ -2024,7 +2094,7 @@ function Step(json, steps, id) {
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
     $(this.html).data("index", id);
     let timeElapsedFormat = "...";
-    if (this.timeElapsed !== undefined && this.timeElapsed>0){
+    if (this.timeElapsed !== undefined && this.timeElapsed > 0) {
         timeElapsedFormat = this.timeElapsed;
     }
     if (this.test === "Pre Testing") {
@@ -2123,7 +2193,6 @@ Step.prototype.update = function (idStep) {
     //
     $("#stepRC").val(this.returnCode);
 };
-
 
 
 Step.prototype.show = function () {
@@ -2261,7 +2330,6 @@ function returnMessageWritableForStep(object, field) {
     }
     field.val(object.returnMessage);
 }
-
 
 
 //Get the json data from the input of the field
@@ -2483,6 +2551,7 @@ Action.prototype.setSequence = function (sequence) {
 Action.prototype.setReturnMessage = function (returnMessage) {
     this.returnMessage = returnMessage;
 };
+
 /*
  * * Set the returnMessage for object with the field object for the action and control object
  * @param {type} object
@@ -2676,7 +2745,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
                 updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
                 //then update all the previous step if they are untouched
                 for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
-                    var currentStep = $("#steps").data("listOfStep")[ idStep ];
+                    var currentStep = $("#steps").data("listOfStep")[idStep];
                     //if previous element are untouch
                     if (currentStep.returnCode === "WE") {
                         updateStepExecutionReturnCode(idStep, "OK", false);
@@ -2740,7 +2809,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
         }
         if (newStepReturnCode !== null) {
             //update step return code
-            var stepUpdated = $("#steps").data("listOfStep")[ stepId ];
+            var stepUpdated = $("#steps").data("listOfStep")[stepId];
             stepUpdated.returnCode = newStepReturnCode;
 
             //update step visual
@@ -2796,6 +2865,7 @@ function setTestCaseReturnCodeToNA() {
     updateDataBarVisual(testCaseNewReturnCode);
 
 }
+
 /*
  * * Update the testCase focus if needed
  * @returns {void}
@@ -3532,13 +3602,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+                .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
             container.append(linkBox);
-
 
 
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
@@ -3550,32 +3619,32 @@ function addFileLink(fileList, container, manual, idStep) {
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
+                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                            return false;
+                        }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
+                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                            return false;
+                        }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
+                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                            return false;
+                        }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
+                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                            return false;
+                        }));
             }
             container.append(linkBoxtxt);
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
@@ -3597,7 +3666,6 @@ function addFileLink(fileList, container, manual, idStep) {
             container.append(linkBoxtxt);
         }
     }
-
 
 
     if (isTheExecutionManual && fileList.length !== 0) {

@@ -19,15 +19,18 @@
  */
 package org.cerberus.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Utility class centralizing string utility methods
@@ -47,16 +50,15 @@ public final class JSONUtil {
     }
 
     /**
-     *
      * @param param
      * @return
      * @throws org.json.JSONException
      */
     public static Map<String, Object> convertFromJSONObject(JSONObject param) throws JSONException {
         Map<String, Object> params = new HashMap<>();
-        Iterator keys = param.keys();
+        Iterator<String> keys = param.keys();
         while (keys.hasNext()) {
-            String key = (String) keys.next();
+            String key = keys.next();
             if (param.get(key) instanceof JSONObject) {
                 LOG.debug("Still an Object.");
                 // do something with jsonObject here      
@@ -75,7 +77,6 @@ public final class JSONUtil {
     }
 
     /**
-     *
      * @param param
      * @return
      * @throws org.json.JSONException
@@ -85,4 +86,13 @@ public final class JSONUtil {
         return convertFromJSONObject(jsonParam);
     }
 
+    public static boolean isJSONValid(String jsonInString) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.readTree(jsonInString);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }

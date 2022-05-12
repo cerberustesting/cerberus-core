@@ -19,15 +19,15 @@
  */
 package org.cerberus.crud.dao;
 
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.AppServiceContent;
-
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 
 /**
  * Interface that defines the public methods to manage Application data on table
@@ -40,7 +40,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface IAppServiceContentDAO {
 
     /**
-     *
      * @param service
      * @param key
      * @return
@@ -48,9 +47,9 @@ public interface IAppServiceContentDAO {
     AnswerItem<AppServiceContent> readByKey(String service, String key);
 
     /**
-     *
      * @param service
-     * @param active
+     * @param withActiveCriteria
+     * @param isActive
      * @param startPosition
      * @param length
      * @param columnName
@@ -59,24 +58,21 @@ public interface IAppServiceContentDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceContent> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<AppServiceContent> readByVariousByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(AppServiceContent object);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer delete(AppServiceContent object);
 
     /**
-     *
      * @param service
      * @param key
      * @param object
@@ -90,13 +86,12 @@ public interface IAppServiceContentDAO {
      * @param rs ResultSet relative to select from table Application
      * @return object {@link AppServiceContent}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
     AppServiceContent loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     *
      * @param system
      * @param searchParameter
      * @param individualSearch

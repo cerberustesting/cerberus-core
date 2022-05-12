@@ -32,11 +32,10 @@ function openModalAppService(service, mode, page = undefined) {
         addAppServiceClick(service, page);
     } else {
         duplicateAppServiceClick(service);
-}
+    }
 }
 
 function initModalAppService() {
-    console.info("init");
     var doc = new Doc();
 
     displayInvariantList("type", "SRVTYPE", false, "REST");
@@ -72,8 +71,9 @@ function initModalAppService() {
     initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
 
     $('[data-toggle="popover"]').popover({
-        'placement': 'auto',
-        'container': 'body'}
+            'placement': 'auto',
+            'container': 'body'
+        }
     );
 
     setUpDragAndDrop('#editSoapLibraryModal');
@@ -627,10 +627,10 @@ function appendApplicationListServiceModal(defaultValue) {
     $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
 }
 
-function feedAppServiceModalDataContent(ContentList) {
+function feedAppServiceModalDataContent(contentList) {
     $('#contentTableBody tr').remove();
-    if (!isEmpty(ContentList)) {
-        $.each(ContentList, function (idx, obj) {
+    if (!isEmpty(contentList)) {
+        $.each(contentList, function (idx, obj) {
             obj.toDelete = false;
             appendContentRow(obj);
         });
@@ -641,7 +641,7 @@ function appendContentRow(content) {
     var doc = new Doc();
 
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false);
+    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false, false);
     var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
     var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
     var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
@@ -650,7 +650,7 @@ function appendContentRow(content) {
 
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var active = $("<td></td>").append(activeSelect.val(content.active));
+    var isActive = $("<td></td>").append(activeSelect.val(content.isActive.toString()));
     var sortName = $("<td></td>").append(sortInput);
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
@@ -665,7 +665,7 @@ function appendContentRow(content) {
         }
     });
     activeSelect.change(function () {
-        content.active = $(this).val();
+        content.isActive = $(this).val();
     });
     /*sortInput.change(function () {
      content.sort = $(this).val();
@@ -680,18 +680,19 @@ function appendContentRow(content) {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
-    row.append(active);
+    row.append(isActive);
     row.append(sortName);
     row.append(keyName);
     row.append(valueName);
     row.append(descriptionName);
     row.data("content", content);
+    console.log(row);
     table.append(row);
 }
 
 function addNewContentRow() {
     var newContent = {
-        active: "Y",
+        isActive: true,
         sort: 10,
         key: "",
         value: "",
@@ -715,7 +716,7 @@ function feedAppServiceModalDataHeader(headerList) {
 function appendHeaderRow(content) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false);
+    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false, false);
     var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
     var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
     var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
@@ -724,7 +725,7 @@ function appendHeaderRow(content) {
 
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var active = $("<td></td>").append(activeSelect.val(content.active));
+    var isActive = $("<td></td>").append(activeSelect.val(content.isActive.toString()));
     var sortName = $("<td></td>").append(sortInput);
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
@@ -738,7 +739,7 @@ function appendHeaderRow(content) {
         }
     });
     activeSelect.change(function () {
-        content.active = $(this).val();
+        content.isActive = $(this).val();
     });
     /**sortInput.change(function () {
      content.sort = $(this).val();
@@ -753,7 +754,7 @@ function appendHeaderRow(content) {
         content.description = $(this).val();
     });
     row.append(deleteBtnRow);
-    row.append(active);
+    row.append(isActive);
     row.append(sortName);
     row.append(keyName);
     row.append(valueName);
@@ -764,7 +765,7 @@ function appendHeaderRow(content) {
 
 function addNewHeaderRow() {
     var newHeader = {
-        active: "Y",
+        isActive: true,
         sort: 10,
         key: "",
         value: "",
@@ -910,34 +911,34 @@ function updateDropzone(messageToDisplay, idModal) {
 
 function getComboConfigApplicationList() {
     var appList =
-            {
-                ajax: {
-                    url: "ReadApplication",
-                    dataType: 'json',
-                    delay: 0,
-                    data: function (params) {
-                        params.page = params.page || 1;
-                        return {
-                            sSearch: params.term, // search term
-                            iDisplayStart: (params.page * 30) - 30
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.service, text: obj.service};
-                            }),
-                            pagination: {
-                                more: (params.page * 30) < data.iTotalRecords
-                            }
-                        };
-                    },
-                    cache: true,
-                    allowClear: true
+        {
+            ajax: {
+                url: "ReadApplication",
+                dataType: 'json',
+                delay: 0,
+                data: function (params) {
+                    params.page = params.page || 1;
+                    return {
+                        sSearch: params.term, // search term
+                        iDisplayStart: (params.page * 30) - 30
+                    };
                 },
-                width: "100%",
-                minimumInputLength: 0
-            };
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.contentTable, function (obj) {
+                            return {id: obj.service, text: obj.service};
+                        }),
+                        pagination: {
+                            more: (params.page * 30) < data.iTotalRecords
+                        }
+                    };
+                },
+                cache: true,
+                allowClear: true
+            },
+            width: "100%",
+            minimumInputLength: 0
+        };
 }
 

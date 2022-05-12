@@ -19,7 +19,10 @@
  */
 package org.cerberus.crud.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.api.exceptions.EntityNotFoundException;
 import org.cerberus.api.exceptions.FailedInsertOperationException;
 import org.cerberus.api.exceptions.InvalidRequestException;
@@ -34,11 +37,12 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.JSONUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.XmlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,16 +51,13 @@ import java.util.Map;
 /**
  * @author cte
  */
+@AllArgsConstructor
 @Service
 public class AppServiceService implements IAppServiceService {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AppServiceService.class);
-
-    @Autowired
+    private static final Logger LOG = LogManager.getLogger(AppServiceService.class);
     IAppServiceDAO appServiceDao;
-    @Autowired
     private IAppServiceContentService appServiceContentService;
-    @Autowired
     private IAppServiceHeaderService appServiceHeaderService;
 
     @Override
@@ -70,7 +71,9 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(
+            int startPosition, int length, String columnName, String sort,
+            String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return appServiceDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
 
@@ -80,16 +83,17 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerItem<AppService> readByKeyWithDependency(String key, String activedetail) {
+    public AnswerItem<AppService> readByKeyWithDependency(String key, boolean withActiveCriteria, boolean activeDetail) {
         AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = answerAppService.getItem();
+
         try {
             if (appService != null) {
-                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activedetail);
+                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, withActiveCriteria, activeDetail);
                 if (content != null) {
                     appService.setContentList(content.getDataList());
                 }
-                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activedetail);
+                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, withActiveCriteria, activeDetail);
                 if (header != null) {
                     appService.setHeaderList(header.getDataList());
                 }
@@ -192,35 +196,32 @@ public class AppServiceService implements IAppServiceService {
 
     @Override
     public String guessContentType(AppService service, String defaultValue) {
-        String result = defaultValue;
-        if (service != null) {
-            for (AppServiceHeader object : service.getResponseHeaderList()) {
-                if ((object != null) && (object.getKey().equalsIgnoreCase("Content-Type"))) {
-                    if (object.getValue().contains("application/json")) {
-                        LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
-                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
-                    } else if (object.getValue().contains("application/xml")) {
-                        LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
-                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-                    }
-                }
-            }
-            if (!StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
-                if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
-                    LOG.debug("XML format guessed from 1st caracter of body.");
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-                } else if (service.getResponseHTTPBody().startsWith("{") || service.getResponseHTTPBody().startsWith("[")) {
-                    LOG.debug("JSON format guessed from 1st caracter of body.");
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
-                }
-            } else {
-                // Body is null so we don't know the format.
-                return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
-            }
-        } else {
+
+        if (service == null || StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
             // Service is null so we don't know the format.
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
+
+        for (AppServiceHeader object : service.getResponseHeaderList()) {
+            if ((object != null) && (object.getKey().equalsIgnoreCase("Content-Type"))) {
+                if (object.getValue().contains("application/json")) {
+                    LOG.debug("JSON format guessed from header : {} : {}", object.getKey(), object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                } else if (object.getValue().contains("application/xml")) {
+                    LOG.debug("XML format guessed from header : {} : {}", object.getKey(), object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                }
+            }
+        }
+
+        if (XmlUtil.isXmlWellFormed(service.getResponseHTTPBody())) {
+            LOG.debug("XML format guessed from successful parsing.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+        } else if (JSONUtil.isJSONValid(service.getResponseHTTPBody())) {
+            LOG.debug("JSON format guessed from successful parsing.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        }
+
         // Header did not define the format and could not guess from file content.
         if (StringUtil.isNullOrEmpty(defaultValue)) {
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
@@ -230,26 +231,25 @@ public class AppServiceService implements IAppServiceService {
 
     @Override
     public String convertContentListToQueryString(List<AppServiceContent> serviceContent) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (serviceContent == null || serviceContent.isEmpty()) {
-            return result;
+            return result.toString();
         }
 
         for (AppServiceContent object : serviceContent) {
-            if (object.getActive().equalsIgnoreCase("Y")) {
-                result += object.getKey();
-                result += "=";
-                result += object.getValue();
-                result += "&";
+            if (object.isActive()) {
+                result.append(object.getKey());
+                result.append("=");
+                result.append(object.getValue());
+                result.append("&");
             }
         }
-        result = StringUtil.removeLastChar(result, 1);
-        return result;
+        result = new StringBuilder(StringUtil.removeLastChar(result.toString(), 1));
+        return result.toString();
     }
 
     @Override
     public Answer uploadFile(String service, FileItem file) {
         return appServiceDao.uploadFile(service, file);
     }
-
 }

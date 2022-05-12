@@ -19,12 +19,12 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceContentDAO;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.factory.IFactoryAppServiceContent;
-import org.cerberus.crud.factory.impl.FactoryAppServiceContent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -34,7 +34,6 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -54,40 +53,36 @@ import java.util.Map;
  * @version 1.0, 15/10/13
  * @since 0.9.0
  */
+@AllArgsConstructor
 @Repository
 public class AppServiceContentDAO implements IAppServiceContentDAO {
 
-    @Autowired
-    private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryAppServiceContent factoryAppServiceContent;
 
+    private final DatabaseSpring databaseSpring;
+    private final IFactoryAppServiceContent factoryAppServiceContent;
     private static final Logger LOG = LogManager.getLogger(AppServiceContentDAO.class);
-
-    private final String OBJECT_NAME = "Service Content";
-    private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 100000;
+    private static final String OBJECT_NAME = "Service Content";
+    private static final String SQL_DUPLICATED_CODE = "23000";
+    private static final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem<AppServiceContent> readByKey(String service, String key) {
         AnswerItem<AppServiceContent> ans = new AnswerItem<>();
-        AppServiceContent result = null;
+        AppServiceContent result;
         final String query = "SELECT * FROM `appservicecontent` src WHERE `service` = ? and `key` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + service);
-            LOG.debug("SQL.param.key : " + key);
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.service : {}", service);
+        LOG.debug("SQL.param.key : {}", key);
+
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, service);
             preStat.setString(2, key);
 
-            try (ResultSet resultSet = preStat.executeQuery();) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -97,12 +92,12 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : {}", exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -112,16 +107,16 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public AnswerList<AppServiceContent> readByVariousByCriteria(String service, String active, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<AppServiceContent> readByVariousByCriteria(String service, boolean withActiveCriteria, boolean isActive, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<AppServiceContent> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<AppServiceContent> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disregarding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservicecontent src ");
 
@@ -132,7 +127,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             searchSQL.append(" or src.`key` like ?");
             searchSQL.append(" or src.`value` like ?");
             searchSQL.append(" or src.`sort` like ?");
-            searchSQL.append(" or src.`active` like ?");
+            searchSQL.append(" or src.`isActive` like ?");
             searchSQL.append(" or src.`usrCreated` like ?");
             searchSQL.append(" or src.`usrModif` like ?");
             searchSQL.append(" or src.`dateCreated` like ?");
@@ -144,7 +139,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
@@ -152,8 +147,8 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         if (!StringUtil.isNullOrEmpty(service)) {
             searchSQL.append(" and (`service` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(active)) {
-            searchSQL.append(" and (`active` = ? )");
+        if (withActiveCriteria) {
+            searchSQL.append(" and (`isActive` = ? )");
         }
         query.append(searchSQL);
 
@@ -168,13 +163,11 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -189,18 +182,18 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
             if (!StringUtil.isNullOrEmpty(service)) {
                 preStat.setString(i++, service);
             }
-            if (!StringUtil.isNullOrEmpty(active)) {
-                preStat.setString(i++, active);
+            if (withActiveCriteria) {
+                preStat.setBoolean(i, isActive);
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -217,7 +210,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                     response = new AnswerList<>(objectList, nrTotalRows);
-                } else if (objectList.size() <= 0) {
+                } else if (objectList.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     response = new AnswerList<>(objectList, nrTotalRows);
                 } else {
@@ -226,12 +219,12 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                     response = new AnswerList<>(objectList, nrTotalRows);
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : {}", exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -242,33 +235,30 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
     @Override
     public Answer create(AppServiceContent object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservicecontent (`service`, `key`, `value`, `sort`, `active`, `description`, `usrcreated`) ");
+        query.append("INSERT INTO appservicecontent (`service`, `key`, `value`, `sort`, `isActive`, `description`, `usrcreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?)");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             try {
                 int i = 1;
                 preStat.setString(i++, object.getService());
                 preStat.setString(i++, object.getKey());
                 preStat.setString(i++, object.getValue());
                 preStat.setInt(i++, object.getSort());
-                preStat.setString(i++, object.getActive());
+                preStat.setBoolean(i++, object.isActive());
                 preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getUsrCreated());
+                preStat.setString(i, object.getUsrCreated());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : {}", exception.toString());
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
@@ -279,7 +269,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 }
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -288,27 +278,24 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
     @Override
     public Answer delete(AppServiceContent object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "DELETE FROM appservicecontent WHERE `service` = ? and `key` = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + object.getService());
-            LOG.debug("SQL.param.key : " + object.getKey());
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.service : {}", object.getService());
+        LOG.debug("SQL.param.key : {}", object.getKey());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getService());
-            preStat.setString(i++, object.getKey());
+            preStat.setString(i, object.getKey());
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -317,34 +304,31 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
     @Override
     public Answer update(String service, String key, AppServiceContent object) {
-        MessageEvent msg = null;
-        final String query = "UPDATE appservicecontent SET `Service` = ?, `Key` = ?, description = ?, sort = ?, `active` = ?, `value` = ?, "
+        MessageEvent msg;
+        final String query = "UPDATE appservicecontent SET `Service` = ?, `Key` = ?, description = ?, sort = ?, `isActive` = ?, `value` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `Service` = ? and `Key` = ?";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + object.getService());
-            LOG.debug("SQL.param.key : " + object.getKey());
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.service : {}", object.getService());
+        LOG.debug("SQL.param.key : {}", object.getKey());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getService());
             preStat.setString(i++, object.getKey());
             preStat.setString(i++, object.getDescription());
             preStat.setInt(i++, object.getSort());
-            preStat.setString(i++, object.getActive());
+            preStat.setBoolean(i++, object.isActive());
             preStat.setString(i++, object.getValue());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, service);
-            preStat.setString(i++, key);
+            preStat.setString(i, key);
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -357,16 +341,14 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         String key = ParameterParserUtil.parseStringParam(rs.getString("src.key"), "");
         String value = ParameterParserUtil.parseStringParam(rs.getString("src.value"), "");
         int sort = ParameterParserUtil.parseIntegerParam(rs.getString("src.sort"), 0);
-        String active = ParameterParserUtil.parseStringParam(rs.getString("src.active"), "");
+        boolean isActive = rs.getBoolean("src.IsActive");
         String description = ParameterParserUtil.parseStringParam(rs.getString("src.description"), "");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("src.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("src.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("src.DateModif");
         Timestamp dateCreated = rs.getTimestamp("src.DateCreated");
 
-        //TODO remove when working in test with mockito and autowired
-        factoryAppServiceContent = new FactoryAppServiceContent();
-        return factoryAppServiceContent.create(service, key, value, active, sort, description,
+        return factoryAppServiceContent.create(service, key, value, isActive, sort, description,
                 usrCreated, dateCreated, usrModif, dateModif);
     }
 
@@ -377,7 +359,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
 
@@ -395,7 +377,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             searchSQL.append(" or src.`key` like ?");
             searchSQL.append(" or src.`value` like ?");
             searchSQL.append(" or src.`sort` like ?");
-            searchSQL.append(" or src.`active` like ?");
+            searchSQL.append(" or src.`isActive` like ?");
             searchSQL.append(" or src.`usrCreated` like ?");
             searchSQL.append(" or src.`usrModif` like ?");
             searchSQL.append(" or src.`dateCreated` like ?");
@@ -407,20 +389,18 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
+
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system)) {
@@ -438,11 +418,11 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -457,7 +437,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else if (distinctValues.size() <= 0) {
+                } else if (distinctValues.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
@@ -469,7 +449,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 LOG.warn(e.toString());
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.warn("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {

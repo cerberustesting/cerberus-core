@@ -6073,3 +6073,19 @@ INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1701
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES('PROPERTYTYPE', 'getRawFromJson', 72, 'Get element in standard JSON format', 'Get raw JSON element');
+
+-- 1702
+ALTER TABLE appserviceheader CHANGE COLUMN `Active` `IsActive` VARCHAR(45);
+
+-- 1703
+ALTER TABLE appservicecontent CHANGE COLUMN `Active` `IsActive` VARCHAR(45);
+
+-- 1704 - 1706
+UPDATE appserviceheader SET `IsActive` = 1 WHERE `IsActive` = 'Y';
+UPDATE appserviceheader SET `IsActive` = 0 WHERE `IsActive` != '1';
+ALTER TABLE appserviceheader MODIFY `IsActive` BOOLEAN DEFAULT 1;
+
+-- 1707 - 1709
+UPDATE appservicecontent SET `IsActive` = 1 WHERE `IsActive` = 'Y';
+UPDATE appservicecontent SET `IsActive` = 0 WHERE `IsActive` != '1';
+ALTER TABLE appservicecontent MODIFY `IsActive` BOOLEAN DEFAULT 1;

@@ -19,8 +19,9 @@
  */
 package org.cerberus.crud.factory;
 
-import java.sql.Timestamp;
 import org.cerberus.crud.entity.AppServiceHeader;
+
+import java.sql.Timestamp;
 
 /**
  * @author vertigo
@@ -28,12 +29,11 @@ import org.cerberus.crud.entity.AppServiceHeader;
 public interface IFactoryAppServiceHeader {
 
     /**
-     *
      * @param service
      * @param key
      * @param description Description.
      * @param value
-     * @param active
+     * @param isActive
      * @param sort
      * @param usrCreated
      * @param dateCreated
@@ -42,11 +42,10 @@ public interface IFactoryAppServiceHeader {
      * @return
      */
     AppServiceHeader create(String service, String key,
-            String value, String active, int sort, String description,
-            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+                            String value, boolean isActive, int sort, String description,
+                            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**
-     *
      * @param service
      * @return
      */

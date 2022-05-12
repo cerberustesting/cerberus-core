@@ -19,11 +19,9 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceHeaderDAO;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.service.IAppServiceHeaderService;
@@ -36,18 +34,20 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author bcivel
  */
+@AllArgsConstructor
 @Service
 public class AppServiceHeaderService implements IAppServiceHeaderService {
 
-    @Autowired
-    private IAppServiceHeaderDAO AppServiceHeaderDAO;
+    private IAppServiceHeaderDAO appServiceHeaderDAO;
 
     private static final Logger LOG = LogManager.getLogger(AppServiceHeaderService.class);
 
@@ -55,38 +55,38 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public AnswerItem<AppServiceHeader> readByKey(String service, String key) {
-        return AppServiceHeaderDAO.readByKey(service, key);
+        return appServiceHeaderDAO.readByKey(service, key);
     }
 
     @Override
     public AnswerList<AppServiceHeader> readAll() {
-        return readByVariousByCriteria(null, null, 0, 0, "sort", "asc", null, null);
+        return readByVariousByCriteria(null, false, true, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList<AppServiceHeader> readByVarious(String service, String active) {
-        return AppServiceHeaderDAO.readByVariousByCriteria(service, active, 0, 0, "sort", "asc", null, null);
+    public AnswerList<AppServiceHeader> readByVarious(String service, boolean withActiveCriteria, boolean isActive) {
+        return appServiceHeaderDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
     public AnswerList<AppServiceHeader> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return AppServiceHeaderDAO.readByVariousByCriteria(null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return appServiceHeaderDAO.readByVariousByCriteria(null, false, true, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList<AppServiceHeader> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return AppServiceHeaderDAO.readByVariousByCriteria(service, active, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    public AnswerList<AppServiceHeader> readByVariousByCriteria(String service, boolean withActiveCriteria, boolean isActive, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return appServiceHeaderDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
     public boolean exist(String service, String key) {
-        AnswerItem objectAnswer = readByKey(service, key);
-        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+        AnswerItem<AppServiceHeader> objectAnswer = readByKey(service, key);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successful and object was found.
     }
 
     @Override
     public Answer create(AppServiceHeader object) {
-        return AppServiceHeaderDAO.create(object);
+        return appServiceHeaderDAO.create(object);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public Answer delete(AppServiceHeader object) {
-        return AppServiceHeaderDAO.delete(object);
+        return appServiceHeaderDAO.delete(object);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public Answer update(String service, String key, AppServiceHeader object) {
-        return AppServiceHeaderDAO.update(service, key, object);
+        return appServiceHeaderDAO.update(service, key, object);
     }
 
     @Override
@@ -146,21 +146,19 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceHeader> newList) {
-        Answer ans = new Answer(null);
+        Answer ans;
 
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
         List<AppServiceHeader> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByVarious(service, null));
+            oldList = this.convert(this.readByVarious(service, false, true));
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
         }
 
-        /**
-         * Update and Create all objects database Objects from newList
-         */
+        // Update and Create all objects database Objects from newList
         List<AppServiceHeader> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
         List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
@@ -175,9 +173,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
             }
         }
 
-        /**
-         * Delete all objects database Objects that do not exist from newList
-         */
+        // Delete all objects database Objects that do not exist from newList
         List<AppServiceHeader> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
         List<AppServiceHeader> listToDeleteToIterate = new ArrayList<>(listToDelete);
@@ -205,7 +201,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return AppServiceHeaderDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
+        return appServiceHeaderDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
     }
 
 }
