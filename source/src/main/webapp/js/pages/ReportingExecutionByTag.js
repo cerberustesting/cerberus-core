@@ -437,12 +437,15 @@ function loadReportingData(selectTag) {
 
 //Create the checkboxes at each header column of execution. Need to execute this function at each event of datatable
 function createHeaderCheckboxes() {
+    //Line with column filter
     let filterCol = document.getElementById("filterHeader").children;
+    //Line with title column
     let mainHeader = document.getElementById("filterHeader").previousSibling.children;
-
+    //Add the checkboxes in the filter header only for the executions
     for (let index = 0; index < mainHeader.length; index++) {
         if (mainHeader[index].classList.contains("exec")) {
             filterCol[index].style.textAlign = "center";
+            //Fill or don't fill the checkbox depending if checkbox index is in the array or not
             filterCol[index].innerHTML = checkedColCheckboxes.indexOf(index.toString()) >= 0
                 ? filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "' checked/>"
                 : filterCol[index].innerHTML = "<input type='checkbox' class='selectByColumn'id='" + index + "'/>";
@@ -465,6 +468,7 @@ function updateCheckedColBoxes(isChecked, id) {
     if (isChecked) {
         checkedColCheckboxes.push(id);
     } else {
+        //If the checkbox is unchecked, we delete it from the array
         let indexId = checkedColCheckboxes.indexOf(id);
         if (indexId >= 0) {
             checkedColCheckboxes.splice(indexId, 1);
@@ -493,13 +497,12 @@ function selectByLine(index) {
     checkboxesLines = createCheckboxesLinesArray();
     let actionCheckbox = findActionCheckbox(checkboxesLines, index)
     let checkboxLine = checkboxesLines[index].querySelectorAll('[type="checkbox"]');
-    let classStatus;
+    let checkboxParent;
     for (let checkboxIndex = 0; checkboxIndex < checkboxLine.length; checkboxIndex++) {
-        classStatus = checkboxLine[checkboxIndex].parentElement.classList;
+        checkboxParent = checkboxLine[checkboxIndex].parentElement;
         checkboxLine[checkboxIndex].checked = (actionCheckbox.checked
-            && !classStatus.contains("statusPE")
-            && !classStatus.contains("statusQE")
-            && !classStatus.contains("statusQU"));
+            && !checkboxParent.classList.contains("statusPE")
+            && !checkboxParent.classList.contains("statusQU"));
     }
     refreshNbChecked();
 }
@@ -507,16 +510,15 @@ function selectByLine(index) {
 //Select executions by column
 function selectByColumn(headerCheckbox) {
     checkboxesLines = createCheckboxesLinesArray();
-    let checkboxParent;
-    //Current checkbox is inside checkboxParent in HTML
+    let executionContainer;
+    //Current checkbox is inside executionContainer in HTML
     let currentCheckbox;
     for (let checkboxLineIndex = 0; checkboxLineIndex < checkboxesLines.length; checkboxLineIndex++) {
-        checkboxParent = checkboxesLines[checkboxLineIndex].cells[headerCheckbox.id];
-        currentCheckbox = checkboxParent.querySelector('[type="checkbox"]');
+        executionContainer = checkboxesLines[checkboxLineIndex].cells[headerCheckbox.id];
+        currentCheckbox = executionContainer.querySelector('[type="checkbox"]');
         //Check if we have an execution modal
-        if (checkboxParent.innerHTML != 0) {
+        if (executionContainer.innerHTML != 0) {
             currentCheckbox.checked = (headerCheckbox.checked
-                && !currentCheckbox.parentElement.classList.contains("statusQE")
                 && !currentCheckbox.parentElement.classList.contains("statusPE")
                 && !currentCheckbox.parentElement.classList.contains("statusQU"));
         }
