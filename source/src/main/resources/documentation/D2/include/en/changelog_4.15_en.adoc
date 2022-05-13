@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* verifyElementPresent and verifyElementNotPresent are now working with JSON content.
 
 *Improvements / New features*
 [square]
