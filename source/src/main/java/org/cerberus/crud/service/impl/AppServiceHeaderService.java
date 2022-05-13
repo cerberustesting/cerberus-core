@@ -60,17 +60,22 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
     @Override
     public AnswerList<AppServiceHeader> readAll() {
-        return readByVariousByCriteria(null, false, true, 0, 0, "sort", "asc", null, null);
+        return this.readByVariousByCriteria(null, false, false, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList<AppServiceHeader> readByVarious(String service, boolean withActiveCriteria, boolean isActive) {
-        return appServiceHeaderDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, 0, 0, "sort", "asc", null, null);
+    public AnswerList<AppServiceHeader> readByVarious(String service) {
+        return appServiceHeaderDAO.readByVariousByCriteria(service, false, false, 0, 0, "sort", "asc", null, null);
+    }
+
+    @Override
+    public AnswerList<AppServiceHeader> readByVarious(String service, boolean isActive) {
+        return appServiceHeaderDAO.readByVariousByCriteria(service, true, isActive, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
     public AnswerList<AppServiceHeader> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return appServiceHeaderDAO.readByVariousByCriteria(null, false, true, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return appServiceHeaderDAO.readByVariousByCriteria(null, false, false, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
@@ -153,16 +158,14 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
 
         List<AppServiceHeader> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByVarious(service, false, true));
+            oldList = this.convert(this.readByVarious(service));
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
         }
-
         // Update and Create all objects database Objects from newList
         List<AppServiceHeader> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
         List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
-
         for (AppServiceHeader objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceHeader objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
@@ -177,7 +180,6 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         List<AppServiceHeader> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
         List<AppServiceHeader> listToDeleteToIterate = new ArrayList<>(listToDelete);
-
         for (AppServiceHeader tcsDifference : listToDeleteToIterate) {
             for (AppServiceHeader tcsInPage : newList) {
                 if (tcsDifference.hasSameKey(tcsInPage)) {
@@ -189,7 +191,6 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
             ans = this.deleteList(listToDelete);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
-
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createList(listToUpdateOrInsert);

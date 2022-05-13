@@ -47,11 +47,16 @@ public interface IAppServiceContentService {
 
     /**
      * @param service
-     * @param withActiveCriteria
+     * @return
+     */
+    AnswerList<AppServiceContent> readByVarious(String service);
+
+    /**
+     * @param service
      * @param isActive
      * @return
      */
-    AnswerList<AppServiceContent> readByVarious(String service, boolean withActiveCriteria, boolean isActive);
+    public AnswerList<AppServiceContent> readByVarious(String service, boolean isActive);
 
     /**
      * @param startPosition

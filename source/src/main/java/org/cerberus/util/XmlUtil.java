@@ -499,11 +499,11 @@ public final class XmlUtil {
         return result;
     }
 
-    public static boolean isXmlWellFormed(String stringXml) {
+    public static boolean isXmlWellFormed(String xmlString) {
         DocumentBuilder dBuilder;
         try {
             dBuilder = newDocumentBuilder(true, true);
-            dBuilder.parse(stringXml);
+            dBuilder.parse(xmlString);
         } catch (ParserConfigurationException | SAXException e) {
             return false;
         } catch (IOException e) {

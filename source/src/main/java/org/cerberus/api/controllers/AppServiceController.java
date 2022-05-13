@@ -35,7 +35,6 @@ import org.cerberus.api.mappers.v001.AppServiceMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.IAppServiceService;
-import org.cerberus.exception.CerberusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,9 +73,9 @@ public class AppServiceController {
             @PathVariable("service") String service,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             Principal principal
-    ) throws CerberusException {
+    ) {
         this.apiAuthenticationService.authenticate(principal, apiKey);
-        Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.readByKeyWithDependency(service, false, true).getItem());
+        Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.readByKeyWithDependency(service).getItem());
         if (appServiceOptional.isPresent()) {
             return ResponseWrapper.wrap(
                     this.appServiceMapper.toDTO(

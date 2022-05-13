@@ -43,7 +43,7 @@ import java.util.List;
 public class AppServiceDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
     @ApiModelProperty(position = 0)
     private String service;
 
@@ -119,7 +119,7 @@ public class AppServiceDTOV001 {
     private List<AppServiceContentDTOV001> contents;
 
     @ApiModelProperty(position = 17)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     private String usrCreated;
 
     @ApiModelProperty(position = 19)
@@ -127,7 +127,7 @@ public class AppServiceDTOV001 {
     private String dateCreated;
 
     @ApiModelProperty(position = 20)
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     private String usrModif;
 
     @ApiModelProperty(position = 21)

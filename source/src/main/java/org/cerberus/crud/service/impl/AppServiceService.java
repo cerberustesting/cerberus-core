@@ -83,17 +83,40 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerItem<AppService> readByKeyWithDependency(String key, boolean withActiveCriteria, boolean activeDetail) {
+    public AnswerItem<AppService> readByKeyWithDependency(String key) {
         AnswerItem<AppService> answerAppService = this.readByKey(key);
         AppService appService = answerAppService.getItem();
 
         try {
             if (appService != null) {
-                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, withActiveCriteria, activeDetail);
+                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key);
                 if (content != null) {
                     appService.setContentList(content.getDataList());
                 }
-                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, withActiveCriteria, activeDetail);
+                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key);
+                if (header != null) {
+                    appService.setHeaderList(header.getDataList());
+                }
+                answerAppService.setItem(appService);
+            }
+        } catch (Exception e) {
+            LOG.error(e, e);
+        }
+        return answerAppService;
+    }
+
+    @Override
+    public AnswerItem<AppService> readByKeyWithDependency(String key, boolean activeDetail) {
+        AnswerItem<AppService> answerAppService = this.readByKey(key);
+        AppService appService = answerAppService.getItem();
+
+        try {
+            if (appService != null) {
+                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key, activeDetail);
+                if (content != null) {
+                    appService.setContentList(content.getDataList());
+                }
+                AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key, activeDetail);
                 if (header != null) {
                     appService.setHeaderList(header.getDataList());
                 }
@@ -130,11 +153,44 @@ public class AppServiceService implements IAppServiceService {
         }
 
         Answer answer = this.create(newAppService);
+
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            return this.readByKey(newAppService.getService()).getItem();
+
+            if (newAppService.getContentList() != null && !newAppService.getContentList().isEmpty()) {
+                newAppService.getContentList().forEach(appServiceContent -> {
+                    if (appServiceContent.getKey() == null || appServiceContent.getKey().isEmpty()) {
+                        throw new InvalidRequestException("A key is required for each ServiceContent");
+                    }
+                    appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "defaultUser" : newAppService.getUsrCreated());
+                    appServiceContent.setService(newAppService.getService());
+                });
+
+                Answer answerContent = this.appServiceContentService.createList(newAppService.getContentList());
+                if (answerContent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    throw new FailedInsertOperationException("Failed to insert the content list in the database");
+                }
+            }
+
+            if (newAppService.getHeaderList() != null && !newAppService.getHeaderList().isEmpty()) {
+                newAppService.getHeaderList().forEach(appServiceHeader -> {
+                    if (appServiceHeader.getKey() == null || appServiceHeader.getKey().isEmpty()) {
+                        throw new InvalidRequestException("A key is required for each ServiceHeader");
+                    }
+                    appServiceHeader.setUsrCreated(newAppService.getUsrCreated());
+                    appServiceHeader.setService(newAppService.getService());
+                });
+
+                Answer answerHeader = this.appServiceHeaderService.createList(newAppService.getHeaderList());
+                if (answerHeader.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    throw new FailedInsertOperationException("Failed to insert the content list in the database");
+                }
+            }
+
+            return this.readByKeyWithDependency(newAppService.getService()).getItem();
         } else {
             throw new FailedInsertOperationException("Failed to insert the new application service in the database");
         }
+
     }
 
     @Override
@@ -154,9 +210,22 @@ public class AppServiceService implements IAppServiceService {
         }
 
         appServiceToUpdate.setService(appServiceFromDb.getService());
-        Answer answer = this.update(service, appServiceToUpdate);
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            return this.readByKey(service).getItem();
+        if (appServiceToUpdate.getUsrModif() == null) {
+            appServiceToUpdate.setUsrModif("defaultUser");
+        }
+        Answer answerService = this.update(service, appServiceToUpdate);
+        if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            appServiceToUpdate.getContentList().forEach(appServiceContent -> appServiceContent.setUsrModif(appServiceToUpdate.getUsrModif()));
+            Answer answerHeader = this.appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, appServiceToUpdate.getHeaderList());
+            if (!answerHeader.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                throw new FailedInsertOperationException("Unable to update service headers for service=" + service);
+            }
+            appServiceToUpdate.getHeaderList().forEach(appServiceHeader -> appServiceHeader.setUsrModif(appServiceToUpdate.getUsrModif()));
+            Answer answerContent = this.appServiceContentService.compareListAndUpdateInsertDeleteElements(service, appServiceToUpdate.getContentList());
+            if (!answerContent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                throw new FailedInsertOperationException("Unable to update service contents for service=" + service);
+            }
+            return this.readByKeyWithDependency(service).getItem();
         } else {
             throw new FailedInsertOperationException("Unable to update service for service=" + service);
         }

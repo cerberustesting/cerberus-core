@@ -42,12 +42,12 @@ import javax.validation.constraints.NotEmpty;
 public class AppServiceHeaderDTOV001 {
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class,})
     @ApiModelProperty(position = 0)
     private String service;
 
     @NotEmpty
-    @JsonView(value = {View.Public.GET.class, View.Public.POST.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.POST.class, View.Public.PUT.class,})
     @ApiModelProperty(position = 1)
     private String key;
 
@@ -68,7 +68,7 @@ public class AppServiceHeaderDTOV001 {
     @ApiModelProperty(position = 5)
     private String description;
 
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)
     private String usrCreated;
 
@@ -76,7 +76,7 @@ public class AppServiceHeaderDTOV001 {
     @ApiModelProperty(position = 7)
     private String dateCreated;
 
-    @JsonView(value = {View.Public.GET.class})
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 8)
     private String usrModif;
 

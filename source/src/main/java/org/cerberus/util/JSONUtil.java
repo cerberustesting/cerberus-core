@@ -22,6 +22,7 @@ package org.cerberus.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.util.json.ObjectMapperUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,10 +87,10 @@ public final class JSONUtil {
         return convertFromJSONObject(jsonParam);
     }
 
-    public static boolean isJSONValid(String jsonInString) {
+    public static boolean isJSONValid(String jsonString) {
+        final ObjectMapper mapper = ObjectMapperUtil.newDefaultInstance();
         try {
-            final ObjectMapper mapper = new ObjectMapper();
-            mapper.readTree(jsonInString);
+            mapper.readTree(jsonString);
             return true;
         } catch (IOException e) {
             return false;
