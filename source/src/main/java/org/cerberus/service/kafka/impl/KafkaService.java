@@ -474,7 +474,7 @@ public class KafkaService implements IKafkaService {
                 if (testCaseStepAction.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)
                         && !testCaseStepAction.getConditionOperator().equals(TestCaseStepAction.CONDITIONOPERATOR_NEVER)) {
 
-                    AnswerItem<AppService> localService = appServiceService.readByKeyWithDependency(testCaseStepAction.getValue1(), true, true);
+                    AnswerItem<AppService> localService = appServiceService.readByKeyWithDependency(testCaseStepAction.getValue1(), true);
                     if (localService.getItem() != null) {
                         if (localService.getItem().getType().equals(AppService.TYPE_KAFKA) && localService.getItem().getMethod().equals(AppService.METHOD_KAFKASEARCH)) {
 

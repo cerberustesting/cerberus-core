@@ -452,8 +452,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             }
         } catch (Exception e) {
             LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, e.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", e.toString());
         } finally {
             // We always set the result message
             answer.setResultMessage(msg);
@@ -468,14 +468,14 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, `KafkaTopic`, `KafkaKey`, `KafkaFilterPath`, `KafkaFilterValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
 
-        LOG.debug(SQL_MESSAGE, query.toString());
+        LOG.debug(SQL_MESSAGE, query);
 
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString())) {
@@ -498,7 +498,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getKafkaFilterValue());
             preStat.setString(i++, object.getAttachementURL());
             preStat.setString(i++, object.getDescription());
-            preStat.setString(i, object.getFileName());
+            preStat.setString(i++, object.getFileName());
+            preStat.setString(i, object.getUsrCreated());
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

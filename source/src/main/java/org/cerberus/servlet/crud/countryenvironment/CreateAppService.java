@@ -170,8 +170,8 @@ public class CreateAppService extends HttpServlet {
             appServiceContentService = appContext.getBean(IAppServiceContentService.class);
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
-
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
+            LOG.debug(request.getUserPrincipal().getName());
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getUserPrincipal().getName(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 

@@ -199,7 +199,7 @@ public class ReadAppService extends HttpServlet {
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
-        AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key, false, true);
+        AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key);
         AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = resp.getItem();

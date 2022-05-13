@@ -72,12 +72,20 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} of the given key
      *
-     * @param key          the key of the {@link AppService} to get
-     * @param activeDetail Y will load detail only with Active data on header
-     *                     and content. null wil load all data.
+     * @param key the key of the {@link AppService} to getY will load detail only with Active data on header
+     *            and content. null wil load all data.
      * @return
      */
-    AnswerItem<AppService> readByKeyWithDependency(String key, boolean withActiveCriteria, boolean activeDetail);
+    AnswerItem<AppService> readByKeyWithDependency(String key);
+
+    /**
+     * Get the {@link AppService} of the given key with filtered by active contents and headers
+     *
+     * @param key
+     * @param activeDetail
+     * @return
+     */
+    AnswerItem<AppService> readByKeyWithDependency(String key, boolean activeDetail);
 
     /**
      * Get the distinctValue of the column

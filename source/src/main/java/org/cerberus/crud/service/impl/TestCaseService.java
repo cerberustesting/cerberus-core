@@ -843,10 +843,6 @@ public class TestCaseService implements ITestCaseService {
             LOG.warn(e.getMessage());
         }
 
-        LOG.debug(newTestcaseVersion.toJson());
-        LOG.debug(oldTestcaseVersion.toJson());
-
-        LOG.debug(newTestcaseVersion.equals(oldTestcaseVersion));
         if (!newTestcaseVersion.equals(oldTestcaseVersion)) {
             newTestcaseVersion.setVersion(newTestcaseVersion.getVersion() + 1);
             LOG.debug(this.updateTestCaseInformation(newTestcaseVersion));

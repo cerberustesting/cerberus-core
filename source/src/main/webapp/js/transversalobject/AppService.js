@@ -686,7 +686,6 @@ function appendContentRow(content) {
     row.append(valueName);
     row.append(descriptionName);
     row.data("content", content);
-    console.log(row);
     table.append(row);
 }
 

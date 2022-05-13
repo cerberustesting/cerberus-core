@@ -60,17 +60,22 @@ public class AppServiceContentService implements IAppServiceContentService {
 
     @Override
     public AnswerList<AppServiceContent> readAll() {
-        return readByServiceByCriteria(null, false, true, 0, 0, "sort", "asc", null, null);
+        return readByServiceByCriteria(null, false, false, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
-    public AnswerList<AppServiceContent> readByVarious(String service, boolean withActiveCriteria, boolean isActive) {
-        return appServiceContentDAO.readByVariousByCriteria(service, withActiveCriteria, isActive, 0, 0, "sort", "asc", null, null);
+    public AnswerList<AppServiceContent> readByVarious(String service) {
+        return appServiceContentDAO.readByVariousByCriteria(service, false, false, 0, 0, "sort", "asc", null, null);
+    }
+
+    @Override
+    public AnswerList<AppServiceContent> readByVarious(String service, boolean isActive) {
+        return appServiceContentDAO.readByVariousByCriteria(service, true, isActive, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
     public AnswerList<AppServiceContent> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return appServiceContentDAO.readByVariousByCriteria(null, false, true, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return appServiceContentDAO.readByVariousByCriteria(null, false, false, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
@@ -153,7 +158,7 @@ public class AppServiceContentService implements IAppServiceContentService {
 
         List<AppServiceContent> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByVarious(service, false, true));
+            oldList = this.convert(this.readByVarious(service));
         } catch (CerberusException ex) {
             LOG.error(ex, ex);
         }
