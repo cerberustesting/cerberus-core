@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
