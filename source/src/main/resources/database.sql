@@ -6089,3 +6089,9 @@ ALTER TABLE appserviceheader MODIFY `IsActive` BOOLEAN DEFAULT 1;
 UPDATE appservicecontent SET `IsActive` = 1 WHERE `IsActive` = 'Y';
 UPDATE appservicecontent SET `IsActive` = 0 WHERE `IsActive` != '1';
 ALTER TABLE appservicecontent MODIFY `IsActive` BOOLEAN DEFAULT 1;
+
+-- 1710 - 1713
+UPDATE invariant SET `value` = 'true' WHERE `idname` = 'APPSERVICECONTENTACT' AND `value` = 'Y';
+UPDATE invariant SET `value` = 'false' WHERE `idname` = 'APPSERVICECONTENTACT' AND `value` = 'N';
+UPDATE invariant SET `value` = 'true' WHERE `idname` = 'APPSERVICEHEADERACT' AND `value` = 'Y';
+UPDATE invariant SET `value` = 'false' WHERE `idname` = 'APPSERVICEHEADERACT' AND `value` = 'N';
