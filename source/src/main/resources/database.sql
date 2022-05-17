@@ -6095,3 +6095,15 @@ UPDATE invariant SET `value` = 'true' WHERE `idname` = 'APPSERVICECONTENTACT' AN
 UPDATE invariant SET `value` = 'false' WHERE `idname` = 'APPSERVICECONTENTACT' AND `value` = 'N';
 UPDATE invariant SET `value` = 'true' WHERE `idname` = 'APPSERVICEHEADERACT' AND `value` = 'Y';
 UPDATE invariant SET `value` = 'false' WHERE `idname` = 'APPSERVICEHEADERACT' AND `value` = 'N';
+
+-- 1714 - 1723
+ALTER TABLE `tag` DROP FOREIGN KEY FK_tag_1;
+ALTER TABLE `campaignparameter` DROP FOREIGN KEY FK_campaignparameter_01;
+ALTER TABLE `campaignlabel` DROP FOREIGN KEY FK_campaignlabel_01;
+ALTER TABLE `campaign` MODIFY COLUMN `campaign` VARCHAR(200) NOT NULL;
+ALTER TABLE `campaignlabel` MODIFY COLUMN `campaign` VARCHAR(200) NOT NULL;
+ALTER TABLE `campaignparameter` MODIFY COLUMN `campaign` VARCHAR(200) NOT NULL;
+ALTER TABLE `tag` MODIFY COLUMN `Campaign` VARCHAR(200) NULL DEFAULT NULL;
+ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `campaignparameter` ADD CONSTRAINT `FK_campaignparameter_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `campaignlabel` ADD CONSTRAINT `FK_campaignlabel_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE;
