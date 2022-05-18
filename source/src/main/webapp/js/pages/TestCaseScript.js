@@ -69,17 +69,17 @@ $.when($.getScript("js/global/global.js")
         var steps = [];
 
         // Load invariant list into local storage.
-        getSelectInvariant("SRVTYPE", false, true);
-        getSelectInvariant("SRVMETHOD", false, true);
-        getSelectInvariant("ACTION", false, true);
-        getSelectInvariant("CONTROL", false, true);
-        getSelectInvariant("CTRLFATAL", false, true);
-        getSelectInvariant("PROPERTYTYPE", false, true);
-        getSelectInvariant("PROPERTYDATABASE", false, true);
-        getSelectInvariant("PROPERTYNATURE", false, true);
-        getSelectInvariant("ACTIONFATAL", false, true);
-        getSelectInvariant("STEPLOOP", false, true);
-        getSelectInvariant("STEPCONDITIONOPERATOR", false, true);
+        getSelectInvariant("SRVTYPE", false, false);
+        getSelectInvariant("SRVMETHOD", false, false);
+        getSelectInvariant("ACTION", false, false);
+        getSelectInvariant("CONTROL", false, false);
+        getSelectInvariant("CTRLFATAL", false, false);
+        getSelectInvariant("PROPERTYTYPE", false, false);
+        getSelectInvariant("PROPERTYDATABASE", false, false);
+        getSelectInvariant("PROPERTYNATURE", false, false);
+        getSelectInvariant("ACTIONFATAL", false, false);
+        getSelectInvariant("STEPLOOP", false, false);
+        getSelectInvariant("STEPCONDITIONOPERATOR", false, false);
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -772,10 +772,10 @@ function drawPropertyList(property, index, isSecondary) {
 
 function drawProperty(property, testcaseinfo, canUpdate, index) {
     var doc = new Doc();
-    var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, false);
     selectType.attr("name", "propertyType");
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, false);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, false);
     var deleteBtn = $("<button class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
 
@@ -1023,10 +1023,10 @@ function propertiesToArray(propList) {
 
 function drawInheritedProperty(propList) {
     var doc = new Doc();
-    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, false).attr("disabled", true);
     selectType.attr("name", "inheritPropertyType");
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled", true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, false).attr("disabled", true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, false).attr("disabled", true);
     var table = $("#inheritedPropPanel");
 
     for (var index = 0; index < propList.length; index++) {
@@ -1949,13 +1949,13 @@ Step.prototype.show = function () {
     }
 
 
-    $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
+    $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, false).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
     $("#stepLoop").unbind("change").change(function () {
         setModif(true);
         object.loop = $(this).val();
     });
 
-    $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
+    $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, false).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
     $("#stepForceExe").unbind("change").change(function () {
         setModif(true);
         object.isExecutionForced = $(this).val() === "true" ? true : false;
@@ -1976,7 +1976,7 @@ Step.prototype.show = function () {
         object.conditionValue3 = $(this).val();
     });
 
-    $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
+    $("#stepConditionOperator").replaceWith(getSelectInvariant("STEPCONDITIONOPERATOR", false, false).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOperator"));
     $("#stepConditionOperator").unbind("change").change(function () {
         setModif(true);
         object.conditionOperator = $(this).val();
@@ -2401,7 +2401,7 @@ Action.prototype.generateContent = function () {
         obj.description = descriptionField.val();
     });
 
-    actionconditionoperator = getSelectInvariant("ACTIONCONDITIONOPERATOR", false, true).css("width", "100%");
+    actionconditionoperator = getSelectInvariant("ACTIONCONDITIONOPERATOR", false, false).css("width", "100%");
     actionconditionoperator.on("change", function () {
         if (obj.conditionOperator !== actionconditionoperator.val()) {
             setModif(true);
@@ -2458,7 +2458,7 @@ Action.prototype.generateContent = function () {
     });
     actionconditionval3.val(this.conditionValue3);
 
-    actions = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
+    actions = getSelectInvariant("ACTION", false, false).css("width", "100%").attr("id", "actionSelect");
     actions.val(this.action);
     actions.off("change").on("change", function () {
         setModif(true);
@@ -2524,7 +2524,7 @@ Action.prototype.generateContent = function () {
 
     });
 
-    forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, true).css("width", "100%");
+    forceExeStatusList = getSelectInvariant("ACTIONFATAL", false, false).css("width", "100%");
     if (this.isFatal) {
         forceExeStatusList.val("true");
     } else {
@@ -2952,7 +2952,7 @@ Control.prototype.generateContent = function () {
         obj.description = descriptionField.val();
     });
 
-    controlconditionoperator = getSelectInvariant("CONTROLCONDITIONOPERATOR", false, true).css("width", "100%").attr("id", "controlConditionSelect");
+    controlconditionoperator = getSelectInvariant("CONTROLCONDITIONOPERATOR", false, false).css("width", "100%").attr("id", "controlConditionSelect");
     controlconditionoperator.on("change", function () {
         if (obj.conditionOperator !== controlconditionoperator.val()) {
             setModif(true);
@@ -3002,7 +3002,7 @@ Control.prototype.generateContent = function () {
     });
 
 
-    controls = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
+    controls = getSelectInvariant("CONTROL", false, false).attr("id", "controlSelect");
     controls.val(this.control);
     controls.css("width", "100%");
     controls.on("change", function () {
@@ -3090,7 +3090,7 @@ Control.prototype.generateContent = function () {
         obj.value3 = controlValue3Field.val();
     });
 
-    fatalList = getSelectInvariant("CTRLFATAL", false, true);
+    fatalList = getSelectInvariant("CTRLFATAL", false, false);
     if (this.isFatal) {
         fatalList.val("true");
     } else {
