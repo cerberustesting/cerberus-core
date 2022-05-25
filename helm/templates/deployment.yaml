@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- if .Values.deployment.annotations }}
+  annotations: {{ toYaml .Values.deployment.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Version }}
+{{- if .Values.deployment.labels }}
+{{ toYaml .Values.deployment.labels | indent 4 }}
+{{- end }}
+  name: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  replicas: {{ .Values.deployment.replicas }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- if .Values.deployment.podAnnotations }}
+      annotations: {{ toYaml .Values.deployment.podAnnotations | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Release.Name }}
+{{- if .Values.deployment.podLabels }}
+{{ toYaml .Values.deployment.podLabels | indent 8 }}
+{{- end }}
+    spec:
+      {{- if .Values.serviceAccount  }}
+      serviceAccountName: {{ .Values.serviceAccount  }}
+      {{- end }}
+      {{- if .Values.image.pullSecret  }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
+      containers:
+      - name: cerberus
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-configmap
+        {{- if .Values.secrets.customSecretName }}
+        - secretRef:
+            name: {{ .Values.secrets.customSecretName }}
+        {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.deployment.port }}
+        resources: {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        {{- if .Values.volumeMedia.enabled }}
+        - mountPath: "{{ .Values.volumeMedia.mediaPath }}"
+          name: cerberus-media
+        {{- end }}
+        {{- if .Values.tomcatConfiguration.enabled }} 
+        - mountPath: /usr/local/tomcat/conf/server.xml
+          subPath: "server.xml"
+          name: server-xml
+        - mountPath: /usr/local/tomcat/conf/context.xml
+          subPath: "context.xml"
+          name: context-xml
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.deployment.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+        {{- end }}
+        {{- if .Values.livenessProbe.enabled }}  
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.deployment.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.lifecycle.enabled }} 
+        lifecycle: {{- toYaml .Values.lifecycle.actions | nindent 10 }}
+        {{- end }}
+        {{- if .Values.mediaCleaner.enabled }}
+      - name: sidecar
+        image: {{ .Values.mediaCleaner.image }} 
+        imagePullPolicy: IfNotPresent
+        command: ["crond"]
+        args: ["-l", "8", "-f"]
+        resources: {{- toYaml .Values.sidecarResources | nindent 12 }}
+        volumeMounts:
+          - mountPath: /etc/periodic/daily/cleaner
+            subPath: "cleaner"
+            name: cleaner
+          - mountPath: "{{ .Values.volumeMedia.mediaPath }}"
+            name: cerberus-media
+        {{- end }}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 120
+      volumes:
+      {{- if .Values.volumeMedia.enabled }}
+      - name: cerberus-media
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumeMedia.name }}
+      {{- end }}
+      {{- if .Values.tomcatConfiguration.enabled }}    
+      - name: server-xml
+        configMap:
+          name: {{ .Values.tomcatConfiguration.serverxml }}
+      - name: context-xml
+        configMap:
+          name: {{ .Values.tomcatConfiguration.contextxml }}
+      {{- end }}
+      {{- if .Values.mediaCleaner.enabled }}   
+      - name: cleaner
+        configMap:
+          name: {{ .Release.Name }}-cleaner-script
+          defaultMode: 0777
+      {{- end }}

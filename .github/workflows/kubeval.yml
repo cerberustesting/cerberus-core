@@ -1,0 +1,20 @@
+# trigger workflows when push modifications in helm folder
+on:
+  push:
+    paths:
+      - 'helm/**'
+
+name: Kubeval 
+jobs:
+  kubeval:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Helm lint 
+      uses: WyriHaximus/github-action-helm3@v2
+      with:
+        exec: helm template helm --output-dir validation
+    - name: Kubeval
+      uses: instrumenta/kubeval-action@master
+      with:
+        files: validation

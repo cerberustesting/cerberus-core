@@ -1,0 +1,15 @@
+{{- if .Values.volumeMedia.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: {{ .Release.Name }}
+  name: {{ .Values.volumeMedia.name }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumeMedia.storage }}
+  storageClassName: "{{ .Values.volumeMedia.storageClassName }}"
+{{- end -}}

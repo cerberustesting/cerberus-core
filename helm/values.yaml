@@ -1,0 +1,169 @@
+namespace: cerberus
+
+## images settings
+image:
+  repository: cerberustesting/cerberus-as-tomcat
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecret: ""
+
+## Service account to attach to the cerberus pod.
+serviceAccount: ""
+
+## deployment settings
+deployment:
+  port: 8080 
+  replicas: 1
+  revisionHistoryLimit: 1
+
+  ## Annotations can be added to the cerberus deployment
+  annotations: {}
+  ##
+  ## labels can be added to the kubernetes deployment
+  labels: {}
+  # kubernetes.io/name: "Kubernetes"
+
+  # Annotations to be added to cerberus pods
+  podAnnotations: {}
+  #
+  # Add custom labels to pods
+  podLabels: {}
+
+resources:
+  requests:
+    cpu: "125m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "2Gi"
+
+## Environment variable to inject into cerberus pods
+## It will generate a configmap with all key:values
+data: {}
+#  DATABASE_HOST: "database-service"
+#  DATABASE_PORT: 3306
+#  DATABASE_NAME: cerberus
+#  DATABASE_USER: cerberus
+#  CERBERUS_NAME: cerberus
+#  CATALINA_OPTS: "-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+
+secrets:
+## You can define custom secrets to be injected to cerberus pod.
+  customSecretName: {}
+
+## You can use custom tomcat configuration
+## to use external datasources for example
+tomcatConfiguration:
+  # To enable custom tomcat configuration. You must provide server.xml and context.xml as configmap
+  enabled: false
+  # configmap name for server.xml
+  serverxml: ""
+  # configmap name for context.xml
+  contextxml: ""
+
+volumeMedia:
+  # Enable persistence for media files
+  enabled: true
+  # volume name
+  name: cerberus-media
+  # Storage path of media files corresponding to the cerberus_exeautomedia_path parameters
+  mediaPath: /opt/cerberus/medias/
+  storage: 20Gi
+  storageClassName: "" 
+
+service:
+  name: cerberus-svc
+  port: 8080
+
+ingress:
+  enabled: true
+  # Annotations to add to ingress
+  annotations: {}
+  #  kubernetes.io/ingress.class: nginx
+  name: ingress-cerberus
+  rules:
+    host: cerberus.net
+
+mediaCleaner:
+  # Enable Automatic purge of media files (screenshots, API response files...)
+  # Based on alpine docker image with crond command
+  # Configmap will be copy in /etc/periodic/daily
+  # Following Cron command will be executed :
+  # $ find 'mediaPath' -regex ".*/[0-9]\{3,\}/.*" -mtime +'retention' -exec rm -rf {} \;
+  enabled: true
+  image: alpine:3.15.3
+  successHistoryLimit: 1
+  failedHistoryLimit: 2
+  # Retention delay (unit days)
+  retention: 10
+  # Storage path of media files corresponding to the cerberus_exeautomedia_path parameters
+  # Value cannot be "/", be carefull: command executed "-exec rm -rf {}"
+  mediaPath: /opt/cerberus/medias/
+
+# mediaCleaner sidecar ressources 
+sidecarResources: {}
+  #limits:
+  #  cpu: "25m"
+  #  # memory: "128Mi"
+  #requests:
+  #  cpu: "25m"
+  #  memory: "128Mi"
+
+# readinessProbe & livenessProbe use the tcpSocket defined with {{ .Values.deployment.port }}
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 180
+  periodSeconds: 3
+  failureThreshold: 2
+  successThreshold: 1
+  timeoutSeconds: 5
+
+# Lifecycle defines action to execute during pod lifecycle
+# Start and stop the queue by default.
+# You can define custom block inside actions block
+lifecycle:
+  enabled: false
+  actions:
+    postStart:
+      httpGet:
+        path: manageV001?action=start&scope=global
+        port: 8080
+    preStop:
+      httpGet:
+        path: manageV001?action=stop&scope=global
+        port: 8080
+
+purge:
+  # Enable automatic purge of the database using kubernetes cronjob
+  enabled: true
+  # Cronjob history settings
+  successHistoryLimit: 1
+  failedHistoryLimit: 2
+  # container image to execute scripts
+  image: mysql:5.7
+  pullPolicy: IfNotPresent
+  pullSecret: ""
+  serviceAccount: ""
+  # Annotations to be added to purge pods
+  podAnnotations: {}
+  ## Fill the following block to provide user / password for executing SQL scripts
+  ## You have to define either user/password or the customSecretName field
+  purgeUser:
+  # Define user and password, it will create a configmap using the variables.
+    user: purge-user
+    password: purge-pwd
+    ## Define custom secret to use for purge user credentials (ignore purgeUser if defined)
+    ## keys to set: DB_PURGE_PWD ; DB_PURGE_USR
+    customSecretName: ""
+
+  # Database host to execute SQL script purge  
+  databaseHost: database-service
+  # Default scripts sql are set but you can provide sql scripts with the configmap below (default value default-database-purge)
+  configmap: default-database-purge
+    # Cron expression to execute the purge 
+  schedule: "0 3 * * *"
