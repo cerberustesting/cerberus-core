@@ -26,6 +26,6 @@ docker/compositions/*/localdata/
 
 
 # Chart dependencies
-**/charts/*.tgz
+**/helm/*.tgz
 *.tgz
 .history
