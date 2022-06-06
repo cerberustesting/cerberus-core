@@ -84,11 +84,11 @@ public class ExecutionStartService implements IExecutionStartService {
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
     @Override
-    public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
+    public TestCaseExecution startExecution(TestCaseExecution execution) throws CerberusException {
         // Start timestamp.
         long executionStart = new Date().getTime();
         LOG.debug("Initializing Start Timestamp : {}", executionStart);
-        tCExecution.setStart(executionStart);
+        execution.setStart(executionStart);
 
         // Checking is the instance allow to open a new execution. It may be in the process to restart.
         if (!executionThreadPoolService.isInstanceActive()) {
@@ -101,51 +101,51 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Checking the parameters.");
         Invariant myInvariant;
         try {
-            myInvariant = invariantService.convert(invariantService.readByKey("OUTPUTFORMAT", tCExecution.getOutputFormat()));
+            myInvariant = invariantService.convert(invariantService.readByKey("OUTPUTFORMAT", execution.getOutputFormat()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID);
-            mes.setDescription(mes.getDescription().replace("%PARAM%", tCExecution.getOutputFormat()));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", execution.getOutputFormat()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
         try {
-            myInvariant = invariantService.convert(invariantService.readByKey("VERBOSE", String.valueOf(tCExecution.getVerbose())));
+            myInvariant = invariantService.convert(invariantService.readByKey("VERBOSE", String.valueOf(execution.getVerbose())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID);
-            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getVerbose())));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(execution.getVerbose())));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
         try {
-            myInvariant = invariantService.convert(invariantService.readByKey("SCREENSHOT", String.valueOf(tCExecution.getScreenshot())));
+            myInvariant = invariantService.convert(invariantService.readByKey("SCREENSHOT", String.valueOf(execution.getScreenshot())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID);
-            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
+            mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(execution.getScreenshot())));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
         LOG.debug("Parameters checked.");
 
         // Load TestCase information and set TCase to the TestCaseExecution object.
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDATA));
-        LOG.debug("Loading Test Case Information. {}-{}", tCExecution.getTest(), tCExecution.getTestCase());
+        execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDATA));
+        LOG.debug("Loading Test Case Information. {}-{}", execution.getTest(), execution.getTestCase());
         // Integrate this.loadTestCaseService.loadTestCase(tCExecution); inside with Dependency.
         try {
             // TestCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
-            TestCase tCase = testCaseService.convert(testCaseService.readByKey(tCExecution.getTest(), tCExecution.getTestCase()));
+            TestCase tCase = testCaseService.convert(testCaseService.readByKey(execution.getTest(), execution.getTestCase()));
             if (tCase != null) {
-                tCExecution.setTestCaseObj(tCase);
-                tCExecution.setDescription(tCase.getDescription());
-                tCExecution.setConditionOperator(tCase.getConditionOperator());
-                tCExecution.setConditionVal1(tCase.getConditionValue1());
-                tCExecution.setConditionVal1Init(tCase.getConditionValue1());
-                tCExecution.setConditionVal2(tCase.getConditionValue2());
-                tCExecution.setConditionVal2Init(tCase.getConditionValue2());
-                tCExecution.setConditionVal3(tCase.getConditionValue3());
-                tCExecution.setConditionVal3Init(tCase.getConditionValue3());
-                tCExecution.setTestCaseVersion(tCase.getVersion());
-                tCExecution.setTestCasePriority(tCase.getPriority());
-                tCExecution.setConditionOptions(tCase.getConditionOptionsActive());
+                execution.setTestCaseObj(tCase);
+                execution.setDescription(tCase.getDescription());
+                execution.setConditionOperator(tCase.getConditionOperator());
+                execution.setConditionVal1(tCase.getConditionValue1());
+                execution.setConditionVal1Init(tCase.getConditionValue1());
+                execution.setConditionVal2(tCase.getConditionValue2());
+                execution.setConditionVal2Init(tCase.getConditionValue2());
+                execution.setConditionVal3(tCase.getConditionValue3());
+                execution.setConditionVal3Init(tCase.getConditionValue3());
+                execution.setTestCaseVersion(tCase.getVersion());
+                execution.setTestCasePriority(tCase.getPriority());
+                execution.setConditionOptions(tCase.getConditionOptionsActive());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
@@ -154,63 +154,63 @@ public class ExecutionStartService implements IExecutionStartService {
              * Execution. This is done to know how stable was the testcase at
              * the time of the execution.
              */
-            tCExecution.setStatus(tCase.getStatus());
+            execution.setStatus(tCase.getStatus());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%TEST%", tCExecution.getTest()));
-            mes.setDescription(mes.getDescription().replace("%TESTCASE%", tCExecution.getTestCase()));
+            mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
+            mes.setDescription(mes.getDescription().replace("%TESTCASE%", execution.getTestCase()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Test Case Information Loaded - {}-{}", tCExecution.getTest(), tCExecution.getTestCase());
+        LOG.debug("Test Case Information Loaded - {}-{}", execution.getTest(), execution.getTestCase());
 
         // Load Test information and Set TestObject to the TestCaseExecution object.
         LOG.debug("Loading Test Information");
         try {
-            tCExecution.setTestObj(this.testService.convert(this.testService.readByKey(tCExecution.getTest())));
+            execution.setTestObj(this.testService.convert(this.testService.readByKey(execution.getTest())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%TEST%", tCExecution.getTest()));
+            mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Test Information Loaded - {}", tCExecution.getTest());
+        LOG.debug("Test Information Loaded - {}", execution.getTest());
 
         // Load Application information and Set Application to the TestCaseExecution object.
         LOG.debug("Loading Application Information");
         try {
-            tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
-            tCExecution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
+            execution.setApplication(execution.getTestCaseObj().getApplication());
+            execution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(execution.getTestCaseObj().getApplication())));
             // Setting Application Type to value coming from Application.
-            tCExecution.setAppTypeEngine(tCExecution.getApplicationObj().getType());
+            execution.setAppTypeEngine(execution.getApplicationObj().getType());
             // Setting System from queue.
-            tCExecution.getTestCaseExecutionQueue().setSystem(tCExecution.getApplicationObj().getSystem());
-            LOG.debug("Application Information Loaded - {}-{}", tCExecution.getApplicationObj().getApplication(), tCExecution.getApplicationObj().getDescription());
+            execution.getTestCaseExecutionQueue().setSystem(execution.getApplicationObj().getSystem());
+            LOG.debug("Application Information Loaded - {}-{}", execution.getApplicationObj().getApplication(), execution.getApplicationObj().getDescription());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
+            mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
 
         // Init System from Application.
-        tCExecution.setSystem(tCExecution.getApplicationObj().getSystem());
+        execution.setSystem(execution.getApplicationObj().getSystem());
 
         // Load Country information and Set it to the TestCaseExecution object.
         LOG.debug("Loading Country Information");
         try {
-            tCExecution.setCountryObj(invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry())));
-            if (tCExecution.getCountryObj() != null) {
-                LOG.debug("Country Information Loaded - {} - {}", tCExecution.getCountryObj().getValue(), tCExecution.getCountryObj().getDescription());
+            execution.setCountryObj(invariantService.convert(invariantService.readByKey("COUNTRY", execution.getCountry())));
+            if (execution.getCountryObj() != null) {
+                LOG.debug("Country Information Loaded - {} - {}", execution.getCountryObj().getValue(), execution.getCountryObj().getDescription());
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
-                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -224,28 +224,28 @@ public class ExecutionStartService implements IExecutionStartService {
          * forced to MANUAL if execution is manual.
          *
          */
-        LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '{}'", tCExecution.getManualURL());
+        LOG.debug("Checking if connectivity parameters are manual or automatic from the database. '{}'", execution.getManualURL());
         String appURL = "";
-        if (tCExecution.getManualURL() == 1) {
+        if (execution.getManualURL() == 1) {
             LOG.debug("Execution will be done with manual application connectivity setting.");
-            if (StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
+            if (StringUtil.isNullOrEmpty(execution.getMyHost())) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID);
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
-                cea.setIp(tCExecution.getMyHost());
-                cea.setUrl(tCExecution.getMyContextRoot());
+                cea = this.factorycountryEnvironmentParameters.create(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication(), execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
+                cea.setIp(execution.getMyHost());
+                cea.setUrl(execution.getMyContextRoot());
                 appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
-                tCExecution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
-                tCExecution.setUrl(appURL);
+                execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
+                execution.setUrl(appURL);
                 // If domain is empty we guess it from URL.
                 if (StringUtil.isNullOrEmpty(cea.getDomain())) {
                     cea.setDomain(StringUtil.getDomainFromUrl(appURL));
                 }
-                cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
-                tCExecution.setCountryEnvironmentParameters(cea);
+                cea.setUrlLogin(execution.getMyLoginRelativeURL());
+                execution.setCountryEnvironmentParameters(cea);
                 LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : {}-{}-{}", cea.getIp(), cea.getUrl(), cea.getUrlLogin());
                 LOG.debug(" Domain : {}", cea.getDomain());
             }
@@ -254,74 +254,74 @@ public class ExecutionStartService implements IExecutionStartService {
              * string. We keep envData information in order to trace the env
              * data that has been used.
              */
-            tCExecution.setEnvironment("MANUAL-" + tCExecution.getEnvironmentData());
+            execution.setEnvironment("MANUAL-" + execution.getEnvironmentData());
         } else {
             // Automatic application configuration execution.
             LOG.debug("Execution will be done with automatic application connectivity setting.");
             // Load Country/Environment/Application information and set them to the TestCaseExecution object
-            LOG.debug("Loading Country/Environment/Application Information. {}-{}-{}", tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication());
+            LOG.debug("Loading Country/Environment/Application Information. {}-{}-{}", execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication());
             CountryEnvironmentParameters cea;
             try {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
-                        tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
+                        execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication()));
                 if (cea != null) {
-                    if (tCExecution.getManualURL() == 2) {
+                    if (execution.getManualURL() == 2) {
                         // add possibility to override URL with MyHost if MyHost is available
-                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
-                            cea.setIp(tCExecution.getMyHost());
+                        if (!StringUtil.isNullOrEmpty(execution.getMyHost())) {
+                            cea.setIp(execution.getMyHost());
                         }
-                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot())) {
-                            cea.setUrl(tCExecution.getMyContextRoot());
+                        if (!StringUtil.isNullOrEmpty(execution.getMyContextRoot())) {
+                            cea.setUrl(execution.getMyContextRoot());
                         }
-                        if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
-                            cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
+                        if (!StringUtil.isNullOrEmpty(execution.getMyLoginRelativeURL())) {
+                            cea.setUrlLogin(execution.getMyLoginRelativeURL());
                         }
                     }
                     appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
-                    tCExecution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
-                    tCExecution.setUrl(appURL);
-                    if ("GUI".equals(tCExecution.getApplicationObj().getType()) && StringUtil.isNullOrEmpty(cea.getDomain())) {
+                    execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
+                    execution.setUrl(appURL);
+                    if ("GUI".equals(execution.getApplicationObj().getType()) && StringUtil.isNullOrEmpty(cea.getDomain())) {
                         // Domain calculation only make sense for Web applications.
                         // If domain is empty we guess it from URL.
-                        cea.setDomain(StringUtil.getDomainFromUrl(tCExecution.getUrl()));
+                        cea.setDomain(StringUtil.getDomainFromUrl(execution.getUrl()));
                     }
-                    tCExecution.setCountryEnvironmentParameters(cea);
+                    execution.setCountryEnvironmentParameters(cea);
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
-                    mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
-                    mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
+                    mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironment()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
                     LOG.error(mes.getDescription());
                     throw new CerberusException(mes);
                 }
                 // Forcing the IP URL and Login config from DevIP, DevURL and DevLogin parameter only if DevURL is defined.
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
-                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
-                mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironment()));
+                mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
                 LOG.error(mes.getDescription(), ex);
                 throw new CerberusException(mes);
             }
-            LOG.debug("Country/Environment/Application Information Loaded. {} - {} - {}", tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication());
+            LOG.debug("Country/Environment/Application Information Loaded. {} - {} - {}", execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication());
             LOG.debug(" -> Execution will be done with automatic application connectivity setting. IP/URL/LOGIN : {}-{}-{}", cea.getIp(), cea.getUrl(), cea.getUrlLogin());
             LOG.debug(" Domain : {}", cea.getDomain());
-            tCExecution.setEnvironmentData(tCExecution.getEnvironment());
+            execution.setEnvironmentData(execution.getEnvironment());
         }
 
         // Load Environment object from invariant table.
-        LOG.debug("Loading Environment Information. {}", tCExecution.getEnvironmentData());
+        LOG.debug("Loading Environment Information. {}", execution.getEnvironmentData());
         try {
-            tCExecution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", tCExecution.getEnvironmentData())));
+            execution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", execution.getEnvironmentData())));
         } catch (CerberusException ex) {
-            if (tCExecution.getManualURL() >= 1) {
+            if (execution.getManualURL() >= 1) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
@@ -329,18 +329,18 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Environment Information Loaded");
 
         // Load Environment object from invariant table.
-        LOG.debug("Loading Environment Information. {}", tCExecution.getEnvironment());
+        LOG.debug("Loading Environment Information. {}", execution.getEnvironment());
         try {
-            tCExecution.setEnvironmentObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", tCExecution.getEnvironment())));
+            execution.setEnvironmentObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", execution.getEnvironment())));
         } catch (CerberusException ex) {
-            if (tCExecution.getManualURL() >= 1) {
+            if (execution.getManualURL() >= 1) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
-                mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+                mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
@@ -348,12 +348,12 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Environment Information Loaded");
 
         // Load Priority object from invariant table.
-        LOG.debug("Loading Priority Information. {}", tCExecution.getTestCaseObj().getPriority());
+        LOG.debug("Loading Priority Information. {}", execution.getTestCaseObj().getPriority());
         try {
-            tCExecution.setPriorityObj(invariantService.convert(invariantService.readByKey("PRIORITY", String.valueOf(tCExecution.getTestCaseObj().getPriority()))));
+            execution.setPriorityObj(invariantService.convert(invariantService.readByKey("PRIORITY", String.valueOf(execution.getTestCaseObj().getPriority()))));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_PRIORITY_DOESNOTEXIST);
-            mes.setDescription(mes.getDescription().replace("%PRIO%", String.valueOf(tCExecution.getTestCaseObj().getPriority())));
+            mes.setDescription(mes.getDescription().replace("%PRIO%", String.valueOf(execution.getTestCaseObj().getPriority())));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -364,43 +364,43 @@ public class ExecutionStartService implements IExecutionStartService {
          * TestCaseExecution object. Environment considered here is the data
          * environment.
          */
-        LOG.debug("Loading Country/Environment Information. {} - {}", tCExecution.getCountry(), tCExecution.getEnvironmentData());
+        LOG.debug("Loading Country/Environment Information. {} - {}", execution.getCountry(), execution.getEnvironmentData());
         CountryEnvParam countEnvParam;
         try {
-            countEnvParam = this.countryEnvParamService.convert(this.countryEnvParamService.readByKey(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironmentData()));
-            tCExecution.setCountryEnvParam(countEnvParam);
+            countEnvParam = this.countryEnvParamService.convert(this.countryEnvParamService.readByKey(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironmentData()));
+            execution.setCountryEnvParam(countEnvParam);
             /*
              * Copy the Build/Revision of the environment to the Execution. This
              * is done to keep track of all execution done on a specific version
              * of system
              */
-            tCExecution.setBuild(countEnvParam.getBuild());
-            tCExecution.setRevision(countEnvParam.getRevision());
+            execution.setBuild(countEnvParam.getBuild());
+            execution.setRevision(countEnvParam.getRevision());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplicationObj().getSystem()));
-            mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
-            mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplicationObj().getSystem()));
+            mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
+            mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Country/Environment Information Loaded. {} - {}", tCExecution.getCountry(), tCExecution.getEnvironmentData());
+        LOG.debug("Country/Environment Information Loaded. {} - {}", execution.getCountry(), execution.getEnvironmentData());
 
         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
         Robot robObj = null;
         RobotExecutor robExeObj = null;
         String robotHost = "";
         String robotPort = "";
-        String browser = tCExecution.getBrowser();
+        String browser = execution.getBrowser();
         String robotDecli = "";
         String version = "";
         String platform = "";
-        if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
-            robObj = robotService.readByKey(tCExecution.getRobot());
+        if (!StringUtil.isNullOrEmpty(execution.getRobot())) {
+            robObj = robotService.readByKey(execution.getRobot());
 
             if (robObj == null) {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
-                        .resolveDescription("ROBOT", tCExecution.getRobot()));
+                        .resolveDescription("ROBOT", execution.getRobot()));
             }
 
             // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
@@ -411,66 +411,66 @@ public class ExecutionStartService implements IExecutionStartService {
             }
             version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
             platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-            tCExecution.setUserAgent(robObj.getUserAgent());
-            tCExecution.setScreenSize(robObj.getScreenSize());
-            tCExecution.setBrowser(browser);
-            tCExecution.setRobotDecli(robotDecli);
-            tCExecution.setVersion(version);
-            tCExecution.setPlatform(platform);
-            tCExecution.setRobotObj(robObj);
+            execution.setUserAgent(robObj.getUserAgent());
+            execution.setScreenSize(robObj.getScreenSize());
+            execution.setBrowser(browser);
+            execution.setRobotDecli(robotDecli);
+            execution.setVersion(version);
+            execution.setPlatform(platform);
+            execution.setRobotObj(robObj);
 
             // We cannot execute a testcase on a desactivated Robot.
             if ("N".equalsIgnoreCase(robObj.getActive())) {
-                LOG.debug("Robot " + tCExecution.getRobot() + " is not active.");
+                LOG.debug("Robot " + execution.getRobot() + " is not active.");
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTACTIVE)
-                        .resolveDescription("ROBOT", tCExecution.getRobot()));
+                        .resolveDescription("ROBOT", execution.getRobot()));
             }
 
             // If executor is not set, we get the best one from the list.
-            if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
-                LOG.debug("Getting the best Executor on Robot : {}", tCExecution.getRobot());
-                robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
+            if (StringUtil.isNullOrEmpty(execution.getRobotExecutor())) {
+                LOG.debug("Getting the best Executor on Robot : {}", execution.getRobot());
+                robExeObj = robotExecutorService.readBestByKey(execution.getRobot());
                 if (robExeObj != null) {
-                    tCExecution.setRobotExecutor(robExeObj.getExecutor());
-                    tCExecution.setRobotExecutorObj(robExeObj);
+                    execution.setRobotExecutor(robExeObj.getExecutor());
+                    execution.setRobotExecutorObj(robExeObj);
                     robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
                 } else {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTBESTEXECUTORNOTEXIST)
-                            .resolveDescription("ROBOT", tCExecution.getRobot())
-                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                            .resolveDescription("ROBOT", execution.getRobot())
+                            .resolveDescription("EXECUTOR", execution.getRobotExecutor()));
                 }
                 LOG.debug(" Executor retreived : {}", robExeObj.getExecutor());
             } else {
-                LOG.debug(" Getting Requested Robot / Executor : {} / {}", tCExecution.getRobot(), tCExecution.getRobotExecutor());
-                robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
-                tCExecution.setRobotExecutorObj(robExeObj);
+                LOG.debug(" Getting Requested Robot / Executor : {} / {}", execution.getRobot(), execution.getRobotExecutor());
+                robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(execution.getRobot(), execution.getRobotExecutor()));
+                execution.setRobotExecutorObj(robExeObj);
                 if (robExeObj == null) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-                            .resolveDescription("ROBOT", tCExecution.getRobot())
-                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                            .resolveDescription("ROBOT", execution.getRobot())
+                            .resolveDescription("EXECUTOR", execution.getRobotExecutor()));
                 } else {
                     // We cannot execute a testcase on a desactivated Robot.
                     if ("N".equalsIgnoreCase(robExeObj.getActive())) {
-                        LOG.debug("Robot Executor {} / {} is not active", tCExecution.getRobot(), tCExecution.getRobotExecutor());
+                        LOG.debug("Robot Executor {} / {} is not active", execution.getRobot(), execution.getRobotExecutor());
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTACTIVE)
-                                .resolveDescription("ROBOT", tCExecution.getRobot())
-                                .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                                .resolveDescription("ROBOT", execution.getRobot())
+                                .resolveDescription("EXECUTOR", execution.getRobotExecutor()));
                     }
 
                 }
             }
 
-            robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
-            robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
-            tCExecution.setRobotHost(robotHost);
-            tCExecution.setRobotPort(robotPort);
-            tCExecution.setSeleniumIP(robotHost);
-            tCExecution.setSeleniumPort(robotPort);
-            tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
-            tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
+            robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), execution.getRobotHost());
+            robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), execution.getRobotPort());
+            execution.setRobotHost(robotHost);
+            execution.setRobotPort(robotPort);
+            execution.setSeleniumIP(robotHost);
+            execution.setSeleniumPort(robotPort);
+            execution.setSeleniumIPUser(robExeObj.getHostUser());
+            execution.setSeleniumIPPassword(robExeObj.getHostPassword());
 
         } else {
-            tCExecution.setRobotDecli(browser);
+            execution.setRobotDecli(browser);
         }
 
         /*
@@ -480,93 +480,93 @@ public class ExecutionStartService implements IExecutionStartService {
          * defined.
          */
         try {
-            if (!tCExecution.getTimeout().isEmpty()) {
-                tCExecution.setCerberus_action_wait_default(Integer.valueOf(tCExecution.getTimeout()));
+            if (!execution.getTimeout().isEmpty()) {
+                execution.setCerberus_action_wait_default(Integer.valueOf(execution.getTimeout()));
             } else {
-                tCExecution.setCerberus_action_wait_default(parameterService.getParameterIntegerByKey("cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem(), 90000));
+                execution.setCerberus_action_wait_default(parameterService.getParameterIntegerByKey("cerberus_action_wait_default", execution.getApplicationObj().getSystem(), 90000));
             }
         } catch (NumberFormatException ex) {
             LOG.warn("Parameter cerberus_action_wait_default must be an integer, default value set to 90000 milliseconds. {}", ex.toString());
-            tCExecution.setCerberus_action_wait_default(90000);
+            execution.setCerberus_action_wait_default(90000);
         }
 
         // Check if test can be executed TODO : Replace Message with try/catch cerberus exception
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_VALIDATIONSTARTING));
+        execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_VALIDATIONSTARTING));
         LOG.debug("Performing the Checks before starting the execution");
-        MessageGeneral canExecuteTestCase = this.executionCheckService.checkTestCaseExecution(tCExecution);
-        tCExecution.setResultMessage(canExecuteTestCase);
+        MessageGeneral canExecuteTestCase = this.executionCheckService.checkTestCaseExecution(execution);
+        execution.setResultMessage(canExecuteTestCase);
         // We stop if the result is not OK
-        if (!(tCExecution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS)))) {
-            return tCExecution;
+        if (!(execution.getResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS)))) {
+            return execution;
         }
         LOG.debug("Checks performed -- > OK to continue.");
 
         // Changing Automatic execution flag depending on test case information.
-        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
-            if (tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_AUTOMATED)
-                    || tCExecution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_PRIVATE)) {
-                tCExecution.setManualExecution(TestCaseExecution.MANUAL_N);
+        if (execution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
+            if (execution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_AUTOMATED)
+                    || execution.getTestCaseObj().getType().equals(TestCase.TESTCASE_TYPE_PRIVATE)) {
+                execution.setManualExecution(TestCaseExecution.MANUAL_N);
 
             } else {
-                tCExecution.setManualExecution(TestCaseExecution.MANUAL_Y);
+                execution.setManualExecution(TestCaseExecution.MANUAL_Y);
             }
         }
 
         // For GUI application, check if Browser is supported.
-        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if (!execution.getManualExecution().equals("Y") && execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
-                myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", tCExecution.getBrowser()));
+                myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", execution.getBrowser()));
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
-                mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
+                mes.setDescription(mes.getDescription().replace("%BROWSER%", execution.getBrowser()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
             }
         }
 
         // Register RunID inside database.
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
+        execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
         LOG.debug("Registering Execution ID on database");
         long runID = 0;
         try {
-            runID = this.testCaseExecutionService.registerRunID(tCExecution);
+            runID = this.testCaseExecutionService.registerRunID(execution);
 
             if (runID != 0) {
-                tCExecution.setId(runID);
-                executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
+                execution.setId(runID);
+                executionUUIDObject.setExecutionUUID(execution.getExecutionUUID(), execution);
                 // Update Queue Execution here if QueueID =! 0.
-                if (tCExecution.getQueueID() != 0) {
-                    inQueueService.updateToExecuting(tCExecution.getQueueID(), "", runID);
+                if (execution.getQueueID() != 0) {
+                    inQueueService.updateToExecuting(execution.getQueueID(), "", runID);
                 }
 
-                eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, tCExecution, null, null, null);
+                eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, execution, null, null, null);
 
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
-                tCExecution.setResultMessage(mes);
+                execution.setResultMessage(mes);
                 LOG.fatal("Could not create RunID, or cannot retrieve the generated Key");
                 throw new CerberusException(mes);
             }
 
         } catch (CerberusException ex) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
+            execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
             LOG.warn(ex.getMessageError().getDescription(), ex);
             throw new CerberusException(ex.getMessageError(), ex);
         }
 
-        LOG.debug("Execution ID registered on database : {}", tCExecution.getId());
+        LOG.debug("Execution ID registered on database : {}", execution.getId());
 
         //top the browser if executionID is equal to zero (to prevent database instabilities)
-        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
+        if (execution.getManualExecution().equals(TestCaseExecution.MANUAL_Y)) {
             // Set execution executor from testcase executor (only for manual execution).
-            tCExecution.setExecutor(tCExecution.getTestCaseObj().getExecutor());
+            execution.setExecutor(execution.getTestCaseObj().getExecutor());
         }
 
         //Stop the Cerberus Executor Proxy
-        tCExecution.setCerberus_featureflipping_activatewebsocketpush(parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatewebsocketpush", "", false));
-        tCExecution.setCerberus_featureflipping_websocketpushperiod(parameterService.getParameterLongByKey("cerberus_featureflipping_websocketpushperiod", "", 5000));
+        execution.setCerberus_featureflipping_activatewebsocketpush(parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatewebsocketpush", "", false));
+        execution.setCerberus_featureflipping_websocketpushperiod(parameterService.getParameterLongByKey("cerberus_featureflipping_websocketpushperiod", "", 5000));
 
-        return tCExecution;
+        return execution;
     }
 
 }

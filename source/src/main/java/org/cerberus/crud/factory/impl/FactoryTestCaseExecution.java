@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
@@ -42,6 +44,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
+
+    private static final Logger LOG = LogManager.getLogger(FactoryTestCaseExecution.class);
 
     @Override
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,

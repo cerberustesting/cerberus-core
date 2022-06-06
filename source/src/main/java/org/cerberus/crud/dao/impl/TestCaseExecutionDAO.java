@@ -106,7 +106,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getBrowser());
                 preStat.setString(i++, tCExecution.getApplicationObj().getApplication());
                 preStat.setString(i++, tCExecution.getRobotHost());
-                preStat.setString(i++, tCExecution.getUrl());
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(tCExecution.getUrl(), 350), tCExecution.getSecrets()));
                 preStat.setString(i++, tCExecution.getRobotPort());
                 preStat.setString(i++, tCExecution.getTag());
                 preStat.setString(i++, tCExecution.getStatus());
@@ -206,7 +206,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getBrowser());
                 preStat.setString(i++, tCExecution.getApplicationObj().getApplication());
                 preStat.setString(i++, tCExecution.getRobotHost());
-                preStat.setString(i++, tCExecution.getUrl());
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(tCExecution.getUrl(), 350), tCExecution.getSecrets()));
                 preStat.setString(i++, tCExecution.getRobotPort());
                 preStat.setString(i++, tCExecution.getTag());
                 preStat.setString(i++, tCExecution.getStatus());
