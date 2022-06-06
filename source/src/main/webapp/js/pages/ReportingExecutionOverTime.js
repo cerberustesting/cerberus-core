@@ -581,17 +581,21 @@ function buildGraphs(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe};
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
             d.push(p);
         }
         let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type, c.key.testcase.testcase);
         var dataset = {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
-            hoverBackgroundColor: get_Color_fromindex(i),
+            pointBackgroundColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                return getExeStatusRowColor(value.controlStatus);
+            },
             borderColor: get_Color_fromindex(i),
-            pointRadius: 2,
-            pointHoverRadius: 5,
+            pointRadius: 3,
+            pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
             data: d
