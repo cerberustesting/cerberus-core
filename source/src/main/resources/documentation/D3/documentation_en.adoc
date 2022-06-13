@@ -44,8 +44,8 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== How to connect Cerberus to a CSV file data source
-:file-to-include: howto_data_csv_{lang}.adoc
+== How to connect Cerberus to a CSV file data source shared from Gdrive
+:file-to-include: howto_data_csv_gdrive_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_

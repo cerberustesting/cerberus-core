@@ -1,0 +1,42 @@
+*Create your file on GDrive* either by uploading it from your local computer, either directly from GDrive by using : New >> More >> Text Editor.
+
+Then, paste the data :
+
+
+----
+ID123,Olivier Durand
+ID222,Benoit Dupont
+ID999,Denis Smith
+
+----
+On the created file, select 'Share' then pick the option to get a link available for all people on the Internet.
+
+The provided link should look like this :
+
+https://drive.google.com/file/d/1T60O3pqwMZEPFtw8mbH6Iufn6Tjvpbi0/view?usp=sharing
+
+following this format
+
+https://drive.google.com/file/d/YOUR_ID/view?usp=sharing
+
+Extract the YOUR_ID data and replace in the url :
+
+https://drive.google.com/uc?export=download&id=YOUR_ID
+
+That provide this result :
+
+https://drive.google.com/uc?export=download&id=1T60O3pqwMZEPFtw8mbH6Iufn6Tjvpbi0
+
+*Create testdatalib.*
+
+Create a Testdatalib with type CSV and put in CSV URL the below URL :
+
+https://drive.google.com/uc?export=download&id=1T60O3pqwMZEPFtw8mbH6Iufn6Tjvpbi0
+
+Feed and map the subdata with column numbers.
+You can now use the testdatalib on your testcase properties.
+[NOTE]
+====
+The file can be edited using Google Text Editor and new value will be used live on the following execution.
+
+====

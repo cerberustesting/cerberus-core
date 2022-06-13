@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * verifyElementPresent and verifyElementNotPresent are now working with JSON content.
+* Added Documentation usecase on how to use test data from Google drive file.
 
 *Improvements / New features*
 [square]
