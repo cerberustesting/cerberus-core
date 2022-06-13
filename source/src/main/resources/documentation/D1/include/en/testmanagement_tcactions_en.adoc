@@ -565,11 +565,11 @@ Will allow you to execute SQL stored procedure.
 | *[green]#GUI#* | *[green]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[green]#BAT#*
 
 |=== 
-Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionally update the content with another property. That action should only be used if you need to force a calculation at a precise timing or if you want to recalculate it with the latest value. A property calculation is automatically triggered when using a property without being forced to use that action.
+Will allow you to calculate a *[red]#Property#* defined in the property section of the test case and optionally update the content using the definition of another property. That action should only be used if you need to force a calculation at a precise timing or if you want to recalculate it with the latest value. A property calculation is automatically triggered when using a property without being forced to use that action.
 
 *[blue]#Value1#* : Name of the property to calculate. If the property is already calculated, it will be forced to be calculated again.
 
-*[blue]#Value2#* : [Optional] Name of a second property that will affect the property in *Value1*.
+*[blue]#Value2#* : [Optional] Name of a second property whose definition will be used to affect the property in *Value1*.
 
 ==== setNetworkTrafficContent
 |=== 
