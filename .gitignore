@@ -23,3 +23,9 @@ source/\.idea/
 
 # docker-compose generated files #
 docker/compositions/*/localdata/
+
+
+# Chart dependencies
+**/helm/*.tgz
+*.tgz
+.history

@@ -1,0 +1,15 @@
+{{- if and (.Values.mediaCleaner.enabled) (ne .Values.mediaCleaner.mediaPath "/") }}  
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cleaner-script
+  labels:
+    app: {{ .Release.Name }}
+data:
+  cleaner: |
+    #!/bin/sh
+    echo "Job started: $(date +%Y-%m-%d-%H.%M.%S)"
+    cd {{ .Values.mediaCleaner.mediaPath }}
+    find . -regex ".*/[0-9]\{3,\}/.*" -mtime +{{ .Values.mediaCleaner.retention }} -exec rm -rf {} \; 
+    echo "Job finished: $(date +%Y-%m-%d-%H.%M.%S)"
+{{- end -}}
