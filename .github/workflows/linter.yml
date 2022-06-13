@@ -1,0 +1,16 @@
+# trigger workflows when push modifications in helm folder
+on:
+  push:
+    paths:
+      - 'helm/**'
+
+name: Helm linter
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Helm lint
+      uses: WyriHaximus/github-action-helm3@v2
+      with:
+        exec: helm lint ./helm/ 

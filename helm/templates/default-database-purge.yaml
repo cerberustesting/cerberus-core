@@ -1,0 +1,79 @@
+{{- if and (.Values.purge.enabled)  (eq .Values.purge.configmap "default-database-purge") -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-database-purge
+data:
+  purge.sql: |
+    -- ENVIRONMENT Purges.
+    -- -------------------
+
+    -- Batch/Event execution in every Environment History
+    DELETE FROM buildrevisionbatch
+    where TO_DAYS(NOW()) - TO_DAYS(DateBatch) >= 365 ;
+
+    -- Release Content History
+    DELETE FROM buildrevisionparameters
+    where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 365 ;
+
+    -- Environment status log History (new build/Revision and disable events)
+    DELETE FROM countryenvparam_log
+    where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 365 ;
+
+    -- LOG Purges.
+    -- -----------
+
+    -- User action Log History
+    DELETE FROM logevent
+    where TO_DAYS(NOW()) - TO_DAYS(Time) >= 365 ;
+
+
+    -- EXECUTION Purges.
+    -- -----------------
+
+    SELECT @ID30 := IFNULL(MAX(ID), 0) from testcaseexecution where TO_DAYS(NOW()) - TO_DAYS(Start) >= 30 ;
+
+    -- Test Execution Control History
+    DELETE FROM testcaseexecutionfile
+    where ExeID < @ID30 ;
+
+    -- Test Execution Control History
+    DELETE FROM testcasestepactioncontrolexecution
+    where ID < @ID30 ;
+
+    -- Test Execution Action History
+    DELETE FROM testcasestepactionexecution
+    where ID < @ID30 ;
+
+    -- Test Execution Step History
+    DELETE FROM testcasestepexecution
+    where ID < @ID30 ;
+
+    -- Test Execution Property History
+    DELETE FROM testcaseexecutiondata
+    where ID < @ID30 ;
+
+    -- Test Execution History
+    DELETE FROM testcaseexecution
+    where ID < @ID30 ;
+
+    -- Test Execution System versionning History
+    DELETE FROM testcaseexecutionsysver
+    where ID < @ID30 ;
+
+
+    -- EXECUTION QUEUE Purges.
+    -- -----------------------
+
+    -- Test Execution Queue History
+    DELETE FROM testcaseexecutionqueue
+    where TO_DAYS(NOW()) - TO_DAYS(DateCreated) >= 60 ;
+
+    -- Test Execution Queue History for queue entries that never generated any execution
+    DELETE FROM testcaseexecutionqueue
+    where TO_DAYS(NOW()) - TO_DAYS(DateCreated) >= 10 and ExeId is null ;
+
+    -- Test Execution Queue History for queue entries that are DONE
+    DELETE FROM testcaseexecutionqueue
+    where TO_DAYS(NOW()) - TO_DAYS(DateCreated) >= 10 and state = 'DONE' ;
+{{- end -}}

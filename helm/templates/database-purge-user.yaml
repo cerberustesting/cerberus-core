@@ -1,0 +1,9 @@
+{{- if and (.Values.purge.enabled) (eq .Values.purge.purgeUser.customSecretName "") }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-purge-credentials
+data:
+  DB_PURGE_PWD: {{ .Values.purge.purgeUser.password }}
+  DB_PURGE_USR: {{ .Values.purge.purgeUser.user }}
+{{- end -}}

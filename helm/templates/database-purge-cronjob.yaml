@@ -1,0 +1,56 @@
+{{- if .Values.purge.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-database-purge
+spec:
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.successHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedHistoryLimit }}
+  jobTemplate:
+    metadata:
+      name: {{ .Release.Name }}
+    spec:
+      template:
+        metadata:
+          {{- if .Values.purge.podAnnotations }}
+          annotations: {{ toYaml .Values.purge.podAnnotations | nindent 12 }}
+          {{- end }}
+        spec:
+          {{- if .Values.purge.serviceAccount  }}
+          serviceAccountName: {{ .Values.purge.serviceAccount  }}
+          {{- end }}
+          {{- if .Values.purge.pullSecret  }}
+          imagePullSecrets:
+            - name: {{ .Values.purge.pullSecret }}
+          {{- end }}
+          containers:
+          - name: client-sql
+            envFrom:
+            {{- if (ne .Values.purge.purgeUser.customSecretName "") }}
+            - secretRef:
+                name: {{ .Values.purge.purgeUser.customSecretName }}
+            {{- else }}
+            - configMapRef:
+                name: {{ .Release.Name }}-purge-credentials
+            {{- end }}
+            image: {{ .Values.purge.image }}
+            imagePullPolicy: {{ .Values.purge.pullPolicy }}
+            args:
+            - /bin/sh
+            - -c
+            - 'mysql --host={{ .Values.purge.databaseHost }} --user=${DB_PURGE_USR} --password=${DB_PURGE_PWD} --verbose cerberus < /opt/cerberus/purge.sql'
+            resources: {}
+            volumeMounts:
+            - mountPath: /opt/cerberus/purge.sql
+              subPath: "purge.sql"
+              name: purge
+          volumes:
+          - name: purge
+            configMap:
+              name: {{ .Values.purge.configmap }}
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+  schedule: {{ .Values.purge.schedule }}
+  suspend: false
+{{- end -}}
