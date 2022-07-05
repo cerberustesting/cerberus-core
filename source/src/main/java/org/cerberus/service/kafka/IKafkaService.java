@@ -91,6 +91,7 @@ public interface IKafkaService {
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt);
 
     /**
+     * Get the latest Offset of all partitions.
      *
      * @param mainExecutionTestCaseStepList
      * @param tCExecution

@@ -2,6 +2,7 @@
 [square]
 * verifyElementPresent and verifyElementNotPresent are now working with JSON content.
 * Added Documentation usecase on how to use test data from Google drive file.
+* Network stats are now displayed even if the results are not OK. #2199
 
 *Improvements / New features*
 [square]
