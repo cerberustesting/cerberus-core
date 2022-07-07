@@ -97,12 +97,6 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testcase) throws CerberusException {
-        return testCaseStepActionDAO.findTestCaseStepActionbyTestTestCase(test, testcase);
-
-    }
-
-    @Override
     public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException {
         for (TestCaseStepAction tcsa : tcsaToDelete) {
             deleteTestCaseStepAction(tcsa);

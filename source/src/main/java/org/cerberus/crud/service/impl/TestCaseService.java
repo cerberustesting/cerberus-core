@@ -852,7 +852,7 @@ public class TestCaseService implements ITestCaseService {
             this.testCaseStepService.compareListAndUpdateInsertDeleteElements(newTestcaseVersion.getSteps(), oldTestcaseVersion.getSteps(), false);
 
             List<TestCaseStepAction> newActions = this.getAllActionsFromTestcase(newTestcaseVersion);
-            List<TestCaseStepAction> oldActions = this.testCaseStepActionService.findTestCaseStepActionbyTestTestCase(testFolderId, testcaseId);
+            List<TestCaseStepAction> oldActions = this.testCaseStepActionService.readByTestTestCase(testFolderId, testcaseId).getDataList();
             this.testCaseStepActionService.compareListAndUpdateInsertDeleteElements(newActions, oldActions, false);
 
             List<TestCaseStepActionControl> newControls = this.getAllControlsFromTestcase(newTestcaseVersion);

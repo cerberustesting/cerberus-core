@@ -19,12 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.List;
-
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
 
 /**
  * {Insert class description here}
@@ -36,7 +36,7 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseStepActionDAO {
 
     TestCaseStepAction readByKey(String test, String testcase, int stepId, int actionId);
-    
+
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepId);
 
     void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
@@ -45,9 +45,7 @@ public interface ITestCaseStepActionDAO {
 
     void update(TestCaseStepAction tcsa) throws CerberusException;
 
-    void delete(TestCaseStepAction tcsa) throws CerberusException ;
-
-    List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testcase) throws CerberusException ;
+    void delete(TestCaseStepAction tcsa) throws CerberusException;
 
     AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
 
