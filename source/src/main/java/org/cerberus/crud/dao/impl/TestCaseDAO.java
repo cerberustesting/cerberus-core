@@ -44,9 +44,18 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -182,8 +191,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-
-        query.append(" group by tec.test, tec.testcase ");
 
         if (!StringUtil.isNullOrEmpty(sortInformation)) {
             query.append(" order by ").append(sortInformation);
