@@ -20,17 +20,17 @@
 package org.cerberus.crud.dao;
 
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 
 /**
  * {@link TestCaseExecutionQueue} DAO
@@ -42,23 +42,12 @@ public interface ITestCaseExecutionQueueDAO {
     int UNLIMITED_FETCH_SIZE = -1;
 
     /**
-     *
      * @param queueId
      * @return
      */
     AnswerItem<TestCaseExecutionQueue> readByKey(long queueId);
 
     /**
-     * Find a list of {@link TestCaseExecutionQueue}
-     *
-     * @param tag
-     * @return list of object TestCaseExecutionInQueue
-     * @throws CerberusException
-     */
-    List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
-
-    /**
-     *
      * @param tag
      * @param start
      * @param amount
@@ -73,8 +62,8 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      * Read TestCaseExecutionInQueue By Tag
      *
-     * @param tag Tag used to filter execution.
-     * @param stateList List of State to filter.
+     * @param tag              Tag used to filter execution.
+     * @param stateList        List of State to filter.
      * @param withDependencies
      * @return AnswerList that contains a list of TestCaseExecutionInQueue
      * object enriched with TestCase and Application objects
@@ -83,14 +72,12 @@ public interface ITestCaseExecutionQueueDAO {
     public AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
-     *
      * @param stateList list of state to filter.
      * @return @throws CerberusException
      */
     public AnswerList<TestCaseExecutionQueueToTreat> readByVarious2(List<String> stateList) throws CerberusException;
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -102,7 +89,6 @@ public interface ITestCaseExecutionQueueDAO {
     public AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param id
      * @param prio
      * @return
@@ -110,25 +96,12 @@ public interface ITestCaseExecutionQueueDAO {
     int getNbEntryToGo(long id, int prio);
 
     /**
-     *
      * @param tag
      * @return
      */
     public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
-     *
-     * @param tag
-     * @param env
-     * @param country
-     * @param browser
-     * @param app
-     * @return
-     */
-    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-
-    /**
-     *
      * @param columnName
      * @param sort
      * @param searchParameter
@@ -139,14 +112,12 @@ public interface ITestCaseExecutionQueueDAO {
     public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
-     *
      * @param tagnumber
      * @return
      */
     public AnswerList findTagList(int tagnumber);
 
     /**
-     *
      * @param system
      * @param testList
      * @param applicationList
@@ -179,19 +150,18 @@ public interface ITestCaseExecutionQueueDAO {
     TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException;
 
     /**
-     * @param object the {@link AppService} to Create
+     * @param object the {@link org.cerberus.crud.entity.AppService} to Create
      * @return {@link AnswerItem}
      */
     AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object);
 
     /**
-     * @param object the {@link AppService} to Update
+     * @param object the {@link org.cerberus.crud.entity.AppService} to Update
      * @return {@link AnswerItem}
      */
     Answer update(TestCaseExecutionQueue object);
 
     /**
-     *
      * @param id
      * @param priority
      * @return
@@ -199,7 +169,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updatePriority(long id, int priority);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -207,7 +176,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateComment(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @param targetState
@@ -216,7 +184,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -224,7 +191,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToQueued(long id, String comment);
 
     /**
-     *
      * @param tag
      * @param queueIds
      * @return
@@ -232,7 +198,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -240,7 +205,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToQueuedFromQuWithDep(long id, String comment);
 
     /**
-     *
      * @param id
      * @return
      * @throws CerberusException
@@ -248,7 +212,6 @@ public interface ITestCaseExecutionQueueDAO {
     boolean updateToWaiting(final Long id) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param selectedRobot
      * @param selectedRobotExt
@@ -257,7 +220,6 @@ public interface ITestCaseExecutionQueueDAO {
     void updateToStarting(long id, String selectedRobot, String selectedRobotExt) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @param exeId
@@ -266,7 +228,6 @@ public interface ITestCaseExecutionQueueDAO {
     void updateToExecuting(long id, String comment, long exeId) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @throws CerberusException
@@ -274,7 +235,6 @@ public interface ITestCaseExecutionQueueDAO {
     void updateToError(long id, String comment) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @throws CerberusException
@@ -282,7 +242,6 @@ public interface ITestCaseExecutionQueueDAO {
     void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @param exeId
@@ -291,7 +250,6 @@ public interface ITestCaseExecutionQueueDAO {
     void updateToDone(long id, String comment, long exeId) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -299,7 +257,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToCancelled(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -307,7 +264,6 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToCancelledForce(long id, String comment);
 
     /**
-     *
      * @param timeOutInS
      * @param comment
      * @return
@@ -315,7 +271,6 @@ public interface ITestCaseExecutionQueueDAO {
     AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -323,13 +278,13 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToErrorForce(long id, String comment);
 
     /**
-     * @param object the {@link AppService} to Delete
+     * @param object the {@link org.cerberus.crud.entity.AppService} to Delete
      * @return {@link AnswerItem}
      */
     Answer delete(TestCaseExecutionQueue object);
 
     /**
-     * @param id the {@link AppService} to Delete
+     * @param id the {@link org.cerberus.crud.entity.AppService} to Delete
      * @return {@link AnswerItem}
      */
     Answer delete(Long id);
@@ -338,10 +293,10 @@ public interface ITestCaseExecutionQueueDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     * TestCaseExecutionInQueue
+     *                  TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionQueue}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionQueue
      */
     TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException;
