@@ -386,44 +386,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException {
-        List<TestCaseStep> list = null;
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.libraryStepTest, tcs.libraryStepTestcase,tcs.libraryStepStepId,tcs.sort, tcs2.description FROM testcasestep tcs ");
-        query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
-        query.append("join testcasestep tcs2 on tcs.test=tcs2.test and tcs.testcase=tcs2.testcase and tcs.stepId=tcs2.stepId ");
-        query.append("where tcs.isUsingLibraryStep IS true and tc.application = ?  ");
-        query.append("group by tcs.libraryStepTest, tcs.libraryStepTestcase, tcs.libraryStepStepId ");
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-
-            preStat.setString(1, application);
-            list = new ArrayList<>();
-
-            try (ResultSet resultSet = preStat.executeQuery();) {
-                while (resultSet.next()) {
-                    String test = resultSet.getString("libraryStepTest");
-                    String testcase = resultSet.getString("libraryStepTestcase");
-                    int stepId = resultSet.getInt("libraryStepStepId");
-                    int sort = resultSet.getInt("sort");
-                    String description = resultSet.getString("description");
-                    list.add(factoryTestCaseStep.create(test, testcase, stepId, sort, null, null, null, null, null, null, description, false, null, null, 0, false, false, null, null, null, null));
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        }
-        return list;
-    }
-
-    @Override
     public List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();
