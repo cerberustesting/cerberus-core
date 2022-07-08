@@ -598,7 +598,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("LEFT OUTER JOIN testcasestep tcs2 ");
         query.append("ON tcs2.Test = tcs.libraryStepTest AND tcs2.Testcase = tcs.libraryStepTestcase AND tcs2.stepId = tcs.libraryStepStepId ");
         query.append("WHERE tcs.test = ? AND tcs.testcase = ? ");
-        query.append("GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
