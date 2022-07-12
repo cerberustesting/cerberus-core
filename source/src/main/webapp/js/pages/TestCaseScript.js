@@ -272,7 +272,7 @@ $.when($.getScript("js/global/global.js")
 
             $("#deleteStep").click(function () {
 
-                var step = $("#steps.active").data("item");
+                var step = $("#steps .active").data("item");
 
                 if (step.isStepInUseByOtherTestCase) {
                     showStepUsesLibraryInConfirmationModal(step);
