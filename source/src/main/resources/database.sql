@@ -6107,3 +6107,17 @@ ALTER TABLE `tag` MODIFY COLUMN `Campaign` VARCHAR(200) NULL DEFAULT NULL;
 ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE `campaignparameter` ADD CONSTRAINT `FK_campaignparameter_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `campaignlabel` ADD CONSTRAINT `FK_campaignlabel_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 1724
+ALTER TABLE `appservice` 
+    ADD COLUMN `KafkaFilterHeaderPath` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaFilterValue`,
+    ADD COLUMN `KafkaFilterHeaderValue` VARCHAR(1000) NULL DEFAULT '' AFTER `KafkaFilterHeaderPath`,
+    ADD COLUMN `IsAvroEnable` BOOLEAN DEFAULT 0 AFTER `KafkaFilterHeaderValue`,
+    ADD COLUMN `SchemaRegistryUrl` VARCHAR(250) NULL DEFAULT '' AFTER `IsAvroEnable`;
+
+-- 1725-1726
+ALTER TABLE `appservice` 
+    ADD COLUMN `ParentContentService` VARCHAR(255) NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;
+ALTER TABLE `appservice` 
+    ADD CONSTRAINT `FK_appservice_02` FOREIGN KEY (`ParentContentService`) REFERENCES `appservice` (`Service`) ON DELETE SET NULL ON UPDATE CASCADE;
+

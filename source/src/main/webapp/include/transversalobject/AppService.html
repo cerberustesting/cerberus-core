@@ -82,18 +82,45 @@
                                                aria-describedby="basic-editon1">
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="kafkaFilterPath" name="kafkaFilterPathField">Kafka Filter Path</label>
-                                        <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
-                                               aria-describedby="basic-editon1">
+                                <label for="kafkaFilter" name="kafkaFilterField">Kafka Filters</label>
+                                <div class="well well-sm" id="kafkaFilter">
+                                    <div class="row">
+                                        <div class="form-group col-xs-6">
+                                            <label for="kafkaFilterPath" name="kafkaFilterPathField">Event Filter Path</label>
+                                            <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
+                                        <div class="form-group col-xs-6">
+                                            <label for="kafkaFilterValue" name="kafkaFilterValueField">Event Filter Value</label>
+                                            <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-6">
+                                            <label for="kafkaFilterHeaderPath" name="kafkaFilterHeaderPathField">Header Filter Path</label>
+                                            <input type="text" class="form-control" name="kafkaFilterHeaderPath" id="kafkaFilterHeaderPath"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
+                                        <div class="form-group col-xs-6">
+                                            <label for="kafkaFilterHeaderValue" name="kafkaFilterHeaderValueField">Header Filter Value</label>
+                                            <input type="text" class="form-control" name="kafkaFilterHeaderValue" id="kafkaFilterHeaderValue"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="kafkaFilterValue" name="kafkaFilterValueField">Kafka Filter Value</label>
-                                        <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
-                                               aria-describedby="basic-editon1">
+                                <label for="avro" name="avroField">Avro</label>
+                                <div class="well well-sm" id="avro">
+                                    <div class="row">
+                                        <div class="form-group col-xs-2">
+                                            <label for="isAvroEnable" name="isAvroEnableField">Enable Avro</label>
+                                            <input class="form-control input-sm" id="isAvroEnable" name="isAvroEnable" type="checkbox" value="1">
+                                        </div>
+                                        <div class="form-group col-xs-10">
+                                            <label for="schemaRegistryUrl" name="schemaRegistryUrlField">Schema Registry URL</label>
+                                            <input type="text" class="form-control" name="schemaRegistryUrl" id="schemaRegistryUrl"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -153,6 +180,14 @@
                                 </div>
                             </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-3">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-sm-12">
+                                        <label class="control-label" for="parentContentService" name="parentContentServiceField">Parent Service</label>
+                                        <div class="input-group col-xs-12">                               	
+                                            <select type="text" class="form-control input-sm" name="parentContentService" id="parentContentService" style="width:100%;"></select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div id="listPanelContent">
                                     <div class="row">
                                         <div class="col-xs-12">

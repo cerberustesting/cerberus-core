@@ -98,8 +98,8 @@ public class ServiceService implements IServiceService {
             // If Service information is not defined, we create it from request, servicePath and operation parameters forcing in SOAP mode.
             if (StringUtil.isNullOrEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
-                appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "Automatically created Service from datalib.",
-                        servicePathParam, true, "", operation, null, null, null, null, null);
+                appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "", "", "Automatically created Service from datalib.",
+                        servicePathParam, true, "", operation, false, "", null, null, null, null, null, null);
                 service = "null";
 
             } else {

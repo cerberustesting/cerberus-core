@@ -138,9 +138,14 @@ public class CreateAppService extends HttpServlet {
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isFollowRedir"), true, charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
+        boolean isAvroEnable = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isAvroEnable"), true, charset);
+        String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
+        String parentContentService = ParameterParserUtil.parseStringParamAndDecode(fileData.get("parentContentService"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
         String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
         String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
+        String kafkaFilterHeaderPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderPath"), "", charset);
+        String kafkaFilterHeaderValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderValue"), "", charset);
         String fileName = null;
         if (file != null) {
             fileName = file.getName();
@@ -171,7 +176,8 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
             LOG.debug(request.getUserPrincipal().getName());
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, description, servicePath, isFollowRedir, attachementurl, operation, request.getUserPrincipal().getName(), null, null, null, fileName);
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue, description, servicePath,
+                    isFollowRedir, attachementurl, operation, isAvroEnable, schemaRegistryUrl, parentContentService, request.getUserPrincipal().getName(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
@@ -229,13 +235,14 @@ public class CreateAppService extends HttpServlet {
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = objectJson.getBoolean("toDelete");
+            boolean inherited = objectJson.getBoolean("isInherited");
             int sort = objectJson.getInt("sort");
             String key = objectJson.getString("key");
             String value = objectJson.getString("value");
             boolean isActive = objectJson.getBoolean("isActive");
             String description = objectJson.getString("description");
 
-            if (!delete) {
+            if ((!delete) && (!inherited)) {
                 contentList.add(appServiceContentFactory.create(service, key, value, isActive, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
             }
         }

@@ -40,6 +40,7 @@ public class FactoryAppServiceContent implements IFactoryAppServiceContent {
         newObject.setKey(key);
         newObject.setValue(value);
         newObject.setActive(isActive);
+        newObject.setInherited(false);
         newObject.setSort(sort);
         newObject.setDescription(description);
         newObject.setUsrCreated(usrCreated);

@@ -22,7 +22,7 @@ var imagePasteFromClipboard = undefined;//stock the picture if the user chose to
 
 function openModalAppService(service, mode, page = undefined) {
     if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
-        initModalAppService()
+        initModalAppService();
         $('#editSoapLibraryModal').data("initLabel", true);
     }
 
@@ -32,7 +32,7 @@ function openModalAppService(service, mode, page = undefined) {
         addAppServiceClick(service, page);
     } else {
         duplicateAppServiceClick(service);
-    }
+}
 }
 
 function initModalAppService() {
@@ -41,6 +41,7 @@ function initModalAppService() {
     displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "", "");
+    displayAppServiceList("parentContentService", "", "", "");
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_global", "btn_add"));
@@ -71,9 +72,9 @@ function initModalAppService() {
     initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
 
     $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'
-        }
+        'placement': 'auto',
+        'container': 'body'
+    }
     );
 
     setUpDragAndDrop('#editSoapLibraryModal');
@@ -263,6 +264,9 @@ function confirmAppServiceModalHandler(mode, page) {
     if (isEmpty(formData.get("isFollowRedir"))) {
         formData.append("isFollowRedir", 0);
     }
+    if (isEmpty(formData.get("isAvroEnable"))) {
+        formData.append("isAvroEnable", 0);
+    }
 
     var temp = data.service;
 
@@ -321,8 +325,10 @@ function refreshDisplayOnTypeChange(newValue) {
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
         $("label[name='kafkaTopicField']").parent().hide();
         $("label[name='kafkaKeyField']").parent().hide();
-        $("label[name='kafkaFilterPathField']").parent().hide();
-        $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='kafkaFilterField']").hide();
+        $("#editSoapLibraryModal #kafkaFilter").hide();
+        $("label[name='avroField']").hide();
+        $("#editSoapLibraryModal #avro").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "FTP") {
@@ -344,8 +350,10 @@ function refreshDisplayOnTypeChange(newValue) {
 //        $("input[name='attachementurl']").hide();
         $("label[name='kafkaTopicField']").parent().hide();
         $("label[name='kafkaKeyField']").parent().hide();
-        $("label[name='kafkaFilterPathField']").parent().hide();
-        $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='kafkaFilterField']").hide();
+        $("#editSoapLibraryModal #kafkaFilter").hide();
+        $("label[name='avroField']").hide();
+        $("#editSoapLibraryModal #avro").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "KAFKA") {
@@ -367,8 +375,10 @@ function refreshDisplayOnTypeChange(newValue) {
 //        $("input[name='attachementurl']").hide();
         $("label[name='kafkaTopicField']").parent().show();
         $("label[name='kafkaKeyField']").parent().show();
-        $("label[name='kafkaFilterPathField']").parent().show();
-        $("label[name='kafkaFilterValueField']").parent().show();
+        $("label[name='kafkaFilterField']").show();
+        $("#editSoapLibraryModal #kafkaFilter").show();
+        $("label[name='avroField']").show();
+        $("#editSoapLibraryModal #avro").show();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
     } else { // REST
@@ -390,8 +400,10 @@ function refreshDisplayOnTypeChange(newValue) {
 //        $("input[name='attachementurl']").hide();
         $("label[name='kafkaTopicField']").parent().hide();
         $("label[name='kafkaKeyField']").parent().hide();
-        $("label[name='kafkaFilterPathField']").parent().hide();
-        $("label[name='kafkaFilterValueField']").parent().hide();
+        $("label[name='kafkaFilterField']").hide();
+        $("#editSoapLibraryModal #kafkaFilter").hide();
+        $("label[name='avroField']").hide();
+        $("#editSoapLibraryModal #avro").hide();
         $("label[name='isFollowRedirField']").parent().show();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     }
@@ -432,6 +444,10 @@ function feedAppServiceModal(serviceName, modalId, mode) {
                     // set it with the service value
                     $("#editSoapLibraryModal #application").val(service.application).trigger('change');
 
+                    //initialize the select2
+                    $('#editSoapLibraryModal #parentContentService').select2(getComboConfigAppServiceList());
+                    // set it with the service value
+                    $("#editSoapLibraryModal #parentContentService").val(service.parentContentService).trigger('change');
 
                     formEdit.modal('show');
                 } else {
@@ -453,6 +469,8 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.kafkaKey = "";
         serviceObj1.kafkaFilterPath = "";
         serviceObj1.kafkaFilterValue = "";
+        serviceObj1.kafkaFilterHeaderPath = "";
+        serviceObj1.kafkaFilterHeaderValue = "";
         serviceObj1.operation = "";
         serviceObj1.attachementurl = "";
         serviceObj1.description = "";
@@ -462,6 +480,9 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.headerList = "";
         serviceObj1.fileName = "Drag and drop Files";
         serviceObj1.isFollowRedir = true;
+        serviceObj1.isAvroEnable = false;
+        serviceObj1.schemaRegistryURL = "";
+        serviceObj1.parentContentService = "";
 
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
         refreshDisplayOnTypeChange(serviceObj1.type);
@@ -491,6 +512,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
         appendApplicationListServiceModal(service.application);
+        appendAppServiceListServiceModal(service.parentContentService);
         formEdit.find("#service").prop("value", service.service);
         formEdit.find("#usrcreated").prop("value", service.UsrCreated);
         formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
@@ -519,6 +541,9 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#isFollowRedir").prop("checked", true);
         formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
+        formEdit.find("#isAvroEnable").prop("checked", false);
+        formEdit.find("#schemaRegistryUrl").prop("value", "");
+        formEdit.find("#parentContentService").prop("value", "");
         formEdit.find("#group").prop("value", "");
         formEdit.find("#operation").prop("value", "");
         formEdit.find("#description").prop("value", "");
@@ -527,12 +552,17 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#kafkaKey").prop("value", "");
         formEdit.find("#kafkaFilterPath").prop("value", "");
         formEdit.find("#kafkaFilterValue").prop("value", "");
+        formEdit.find("#kafkaFilterHeaderPath").prop("value", "");
+        formEdit.find("#kafkaFilterHeaderValue").prop("value", "");
     } else {
         formEdit.find("#application").val(service.application);
         formEdit.find("#type").val(service.type);
         formEdit.find("#method").val(service.method);
         formEdit.find("#servicePath").prop("value", service.servicePath);
         formEdit.find("#isFollowRedir").prop("checked", service.isFollowRedir);
+        formEdit.find("#isAvroEnable").prop("checked", service.isAvroEnable);
+        formEdit.find("#schemaRegistryUrl").prop("value", service.schemaRegistryURL);
+        formEdit.find("#parentContentService").val(service.parentContentService);
         formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
         formEdit.find("#group").prop("value", service.group);
@@ -542,6 +572,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#kafkaKey").prop("value", service.kafkaKey);
         formEdit.find("#kafkaFilterPath").prop("value", service.kafkaFilterPath);
         formEdit.find("#kafkaFilterValue").prop("value", service.kafkaFilterValue);
+        formEdit.find("#kafkaFilterHeaderPath").prop("value", service.kafkaFilterHeaderPath);
+        formEdit.find("#kafkaFilterHeaderValue").prop("value", service.kafkaFilterHeaderValue);
         if (service.fileName === "") {
             updateDropzone("Drag and drop Files", "#" + modalId);
         } else {
@@ -581,6 +613,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
         formEdit.find("#application").prop("readonly", "readonly");
+        formEdit.find("#parentContentService").prop("readonly", "readonly");
         formEdit.find("#type").prop("disabled", "disabled");
         formEdit.find("#isFollowRedir").prop("disabled", "disabled");
         formEdit.find("#method").prop("disabled", "disabled");
@@ -601,6 +634,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         $('#editSoapLibraryButton').attr('hidden', 'hidden');
     } else {
         formEdit.find("#application").removeProp("readonly");
+        formEdit.find("#parentContentService").removeProp("readonly");
         formEdit.find("#type").removeProp("disabled");
         formEdit.find("#isFollowRedir").removeProp("disabled");
         formEdit.find("#method").removeProp("disabled");
@@ -627,6 +661,12 @@ function appendApplicationListServiceModal(defaultValue) {
     $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
 }
 
+function appendAppServiceListServiceModal(defaultValue) {
+    $('#editServiceModal [name="parentContentService"]').select2(getComboConfigAppServiceList());
+    var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
+    $("#editServiceModal [name='parentContentService']").append(myoption).trigger('change'); // append the option and update Select2
+}
+
 function feedAppServiceModalDataContent(contentList) {
     $('#contentTableBody tr').remove();
     if (!isEmpty(contentList)) {
@@ -639,13 +679,22 @@ function feedAppServiceModalDataContent(contentList) {
 
 function appendContentRow(content) {
     var doc = new Doc();
+    var ro = 'readonly';
+    var deleteBtn = $("<button disable type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
 
-    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    if (content.isInherited) {
+        var ro = 'readonly ';
+        var deleteBtn = "";
+    }
     var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false, false);
-    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
-    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    if (content.isInherited) {
+        activeSelect.prop("disabled", "disabled");
+    }
+
+    var sortInput = $("<input " + ro + "maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
+    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
+    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
+    var descriptionInput = $("<input  " + ro + "maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
     var table = $("#contentTableBody");
 
     var row = $("<tr></tr>");
@@ -655,21 +704,24 @@ function appendContentRow(content) {
     var keyName = $("<td></td>").append(keyInput);
     var valueName = $("<td></td>").append(valueInput);
     var descriptionName = $("<td></td>").append(descriptionInput);
-    deleteBtn.click(function () {
-        content.toDelete = (content.toDelete) ? false : true;
 
-        if (content.toDelete) {
-            row.addClass("danger");
-        } else {
-            row.removeClass("danger");
-        }
-    });
+    if (!content.isInherited) {
+        deleteBtn.click(function () {
+            content.toDelete = (content.toDelete) ? false : true;
+
+            if (content.toDelete) {
+                row.addClass("danger");
+            } else {
+                row.removeClass("danger");
+            }
+        });
+    }
     activeSelect.change(function () {
         content.isActive = $(this).val();
     });
-    /*sortInput.change(function () {
-     content.sort = $(this).val();
-     });*/
+    sortInput.change(function () {
+        content.sort = $(this).val();
+    });
     keyInput.change(function () {
         content.key = $(this).val();
     });
@@ -692,6 +744,7 @@ function appendContentRow(content) {
 function addNewContentRow() {
     var newContent = {
         isActive: true,
+        isInherited: false,
         sort: 10,
         key: "",
         value: "",
@@ -740,9 +793,9 @@ function appendHeaderRow(content) {
     activeSelect.change(function () {
         content.isActive = $(this).val();
     });
-    /**sortInput.change(function () {
-     content.sort = $(this).val();
-     });*/
+    sortInput.change(function () {
+        content.sort = $(this).val();
+    });
     keyInput.change(function () {
         content.key = $(this).val();
     });
@@ -909,35 +962,8 @@ function updateDropzone(messageToDisplay, idModal) {
 }
 
 function getComboConfigApplicationList() {
-    var appList =
-        {
-            ajax: {
-                url: "ReadApplication",
-                dataType: 'json',
-                delay: 0,
-                data: function (params) {
-                    params.page = params.page || 1;
-                    return {
-                        sSearch: params.term, // search term
-                        iDisplayStart: (params.page * 30) - 30
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: $.map(data.contentTable, function (obj) {
-                            return {id: obj.service, text: obj.service};
-                        }),
-                        pagination: {
-                            more: (params.page * 30) < data.iTotalRecords
-                        }
-                    };
-                },
-                cache: true,
-                allowClear: true
-            },
-            width: "100%",
-            minimumInputLength: 0
-        };
+}
+
+function getComboConfigAppServiceList() {
 }
 

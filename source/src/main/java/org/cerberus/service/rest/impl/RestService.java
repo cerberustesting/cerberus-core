@@ -143,7 +143,7 @@ public class RestService implements IRestService {
             // Create a custom response handler
             ResponseHandler<AppService> responseHandler = (final HttpResponse response) -> {
                 AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", true, "", "", "", null, "", null, null);
+                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", null, "", null, "", null, null);
                 int responseCode = response.getStatusLine().getStatusCode();
                 myResponse.setResponseHTTPCode(responseCode);
                 myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -172,7 +172,7 @@ public class RestService implements IRestService {
                                            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
                                            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", true, "", "",
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "","", "", "", "", "", "", true, "", "",false, "", null, 
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);

@@ -89,10 +89,24 @@ public class AppServiceService implements IAppServiceService {
 
         try {
             if (appService != null) {
-                AnswerList<AppServiceContent> content = appServiceContentService.readByVarious(key);
-                if (content != null) {
-                    appService.setContentList(content.getDataList());
+                AnswerList<AppServiceContent> content;
+                // Add first the inherited values.
+                if (!StringUtil.isNullOrEmpty(appService.getParentContentService())) {
+                    content = appServiceContentService.readByVarious(appService.getParentContentService());
+                    if (content != null) {
+                        List<AppServiceContent> contentList = content.getDataList();
+                        for (AppServiceContent appServiceContent : contentList) {
+                            appServiceContent.setInherited(true);
+                        }
+                        appService.setContentList(content.getDataList());
+                    }
                 }
+                // Add then the normal values.
+                content = appServiceContentService.readByVarious(key);
+                if (content != null) {
+                    appService.addContentList(content.getDataList());
+                }
+                // Header List
                 AnswerList<AppServiceHeader> header = appServiceHeaderService.readByVarious(key);
                 if (header != null) {
                     appService.setHeaderList(header.getDataList());

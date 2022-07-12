@@ -36,9 +36,11 @@ import org.cerberus.crud.factory.IFactoryAppService;
 public class FactoryAppService implements IFactoryAppService {
 
     @Override
-    public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String kafkaTopic, String kafkaKey, String kafkaFilterPath, String kafkaFilterValue, 
+    public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String kafkaTopic, String kafkaKey,
+            String kafkaFilterPath, String kafkaFilterValue, String kafkaFilterHeaderPath, String kafkaFilterHeaderValue,
             String description,
-            String servicePath, boolean isFollowRedir, String attachementURL, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName) {
+            String servicePath, boolean isFollowRedir, String attachementURL, String operation, boolean isAvroEnable, String schemaRegistryUrl, String parentContentService,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName) {
         AppService s = new AppService();
         s.setService(service);
         s.setServiceRequest(serviceRequest);
@@ -65,6 +67,11 @@ public class FactoryAppService implements IFactoryAppService {
         s.setKafkaKey(kafkaKey);
         s.setKafkaFilterPath(kafkaFilterPath);
         s.setKafkaFilterValue(kafkaFilterValue);
+        s.setKafkaFilterHeaderPath(kafkaFilterHeaderPath);
+        s.setKafkaFilterHeaderValue(kafkaFilterHeaderValue);
+        s.setAvroEnable(isAvroEnable);
+        s.setSchemaRegistryURL(schemaRegistryUrl);
+        s.setParentContentService(parentContentService);
         s.setRecordTraceFile(true);
         s.setFollowRedir(isFollowRedir);
         return s;

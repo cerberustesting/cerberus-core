@@ -21,10 +21,12 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import lombok.Data;
 
 /**
  * @author vertigo
  */
+@Data
 public class AppServiceContent {
 
     private String service;
@@ -32,91 +34,12 @@ public class AppServiceContent {
     private String value;
     private int sort;
     private boolean isActive;
+    private boolean isInherited;
     private String description;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public int getSort() {
-        return sort;
-    }
-
-    public void setSort(int sort) {
-        this.sort = sort;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUsrCreated() {
-        return UsrCreated;
-    }
-
-    public void setUsrCreated(String UsrCreated) {
-        this.UsrCreated = UsrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return DateCreated;
-    }
-
-    public void setDateCreated(Timestamp DateCreated) {
-        this.DateCreated = DateCreated;
-    }
-
-    public String getUsrModif() {
-        return UsrModif;
-    }
-
-    public void setUsrModif(String UsrModif) {
-        this.UsrModif = UsrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return DateModif;
-    }
-
-    public void setDateModif(Timestamp DateModif) {
-        this.DateModif = DateModif;
-    }
 
     public boolean hasSameKey(AppServiceContent obj) {
         if (obj == null) {
@@ -138,8 +61,12 @@ public class AppServiceContent {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         AppServiceContent that = (AppServiceContent) o;
         return sort == that.sort && isActive == that.isActive && service.equals(that.service) && key.equals(that.key) && value.equals(that.value) && description.equals(that.description);
     }

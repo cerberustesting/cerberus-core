@@ -137,9 +137,14 @@ public class UpdateAppService extends HttpServlet {
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParam(fileData.get("isFollowRedir"), true);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
+        boolean isAvroEnable = ParameterParserUtil.parseBooleanParam(fileData.get("isAvroEnable"), false);
+        String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
+        String parentContentService = ParameterParserUtil.parseStringParamAndDecode(fileData.get("parentContentService"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
         String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
         String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
+        String kafkaFilterHeaderPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderPath"), "", charset);
+        String kafkaFilterHeaderValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderValue"), "", charset);
         String fileName = null;
         if (file != null) {
             fileName = file.getName();
@@ -203,7 +208,13 @@ public class UpdateAppService extends HttpServlet {
                 appService.setKafkaTopic(kafkaTopic);
                 appService.setKafkaFilterPath(kafkaFilterPath);
                 appService.setKafkaFilterValue(kafkaFilterValue);
+                appService.setKafkaFilterHeaderPath(kafkaFilterHeaderPath);
+                appService.setKafkaFilterHeaderValue(kafkaFilterHeaderValue);
                 appService.setFollowRedir(isFollowRedir);
+                appService.setAvroEnable(isAvroEnable);
+                appService.setSchemaRegistryURL(schemaRegistryUrl);
+                appService.setParentContentService(parentContentService);
+                LOG.debug(appService.toString());
                 ans = appServiceService.update(appService.getService(), appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
@@ -258,13 +269,14 @@ public class UpdateAppService extends HttpServlet {
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
             boolean delete = objectJson.getBoolean("toDelete");
+            boolean inherited = objectJson.getBoolean("isInherited");
             int sort = objectJson.getInt("sort");
             String key = objectJson.getString("key");
             String value = objectJson.getString("value");
             boolean isActive = objectJson.getBoolean("isActive");
             String description = objectJson.getString("description");
 
-            if (!delete) {
+            if ((!delete) && (!inherited)) {
                 contentList.add(appServiceContentFactory.create(service, key, value, isActive, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
             }
         }

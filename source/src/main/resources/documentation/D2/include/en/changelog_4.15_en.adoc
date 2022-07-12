@@ -1,12 +1,15 @@
 *Bug fixes*
 [square]
 * verifyElementPresent and verifyElementNotPresent are now working with JSON content.
-* Added Documentation usecase on how to use test data from Google drive file.
 * Network stats are now displayed even if the results are not OK. #2199
 
 *Improvements / New features*
 [square]
 * You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
+* Avro support for KAFKA SEARCH method.
+* KAFKA Filter during SEARCH method can now also be filtered on Headers
+* Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
+* Added Documentation usecase on how to use test data from Google drive file.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

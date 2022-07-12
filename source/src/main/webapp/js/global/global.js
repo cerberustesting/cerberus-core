@@ -239,7 +239,17 @@ function displayDeployTypeList(selectName, defaultValue) {
  * @param {String} defaultValue to be selected
  * @returns {void}
  */
-function displayAppServiceList(selectName, defaultValue) {
+function displayAppServiceList(selectName, defaultValue, extraValue) {
+
+    if (extraValue !== undefined) {
+        let extraText = extraValue;
+        if (extraValue === "") {
+            extraText = "-- No Service --";
+        }
+        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraText));
+    }
+
+
     $.when($.getJSON("ReadAppService", "")).then(function (data) {
         for (var option in data.contentTable) {
             $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].service).val(data.contentTable[option].service));
@@ -303,7 +313,11 @@ function displayDataLibList(selectName, defaultValue, data) {
 function displayApplicationList(selectName, system, defaultValue, extraValue) {
     var myData = "";
     if (extraValue !== undefined) {
-        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraValue));
+        let extraText = extraValue;
+        if (extraValue === "") {
+            extraText = "-- No Application --";
+        }
+        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraText));
     }
 
     if ((system !== "") && (system !== undefined) && (system !== null)) {
@@ -1430,9 +1444,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                    'DataTables_' + settings.sInstance + '_' + location.pathname,
-                    JSON.stringify(data)
-                );
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
                 console.error("access denied, " + e)
             }
@@ -1534,9 +1548,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (oSettings, data) {
             try {
                 localStorage.setItem(
-                    'DataTables_' + oSettings.sInstance + '_' + location.pathname,
-                    JSON.stringify(data)
-                );
+                        'DataTables_' + oSettings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
                 console.error("access denied, " + e);
             }
@@ -1586,22 +1600,22 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-            .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
-            $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
+                $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
-                updateUserPreferences(objectWaitingLayer);
-            })
-        );
+            updateUserPreferences(objectWaitingLayer);
+        })
+                );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
-            $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
+                $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
-                location.reload();
-            })
-        );
+            location.reload();
+        })
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1812,10 +1826,10 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
-            $this = this,
-            oTimerId = null,
-            sPreviousSearch = null,
-            anControl = $('input', _that.fnSettings().aanFeatures.f);
+                $this = this,
+                oTimerId = null,
+                sPreviousSearch = null,
+                anControl = $('input', _that.fnSettings().aanFeatures.f);
 
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
@@ -1909,11 +1923,11 @@ function envTuning(myenv) {
     isProduction = true;
     isProduction = ((myenv === "prd") || (myenv === "prod") || (myenv === "PROD") || (myenv === "demo"));
     isDev = ((window.location.hostname.includes('localhost'))
-        || (window.location.hostname.includes('gravity.cerberus-testing.com'))
-        || (window.location.hostname.includes('qa.cerberus-testing.com'))
-        || (window.location.hostname.includes('gravity.cerberus-testing.fr'))
-        || (window.location.hostname.includes('qa.cerberus-testing.fr'))
-        );
+            || (window.location.hostname.includes('gravity.cerberus-testing.com'))
+            || (window.location.hostname.includes('qa.cerberus-testing.com'))
+            || (window.location.hostname.includes('gravity.cerberus-testing.fr'))
+            || (window.location.hostname.includes('qa.cerberus-testing.fr'))
+            );
 
     if (!isProduction) {
         document.body.style.background = "#FFFFCC";
@@ -2073,9 +2087,9 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 
 function escapeHtml(unsafe) {
     return unsafe
-        .replace(/"/g, "&quot;")
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'");
+            .replace(/"/g, "&quot;")
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'");
 }
 
 function getShortenString(bigString) {
@@ -2248,120 +2262,120 @@ function autocompleteVariable(identifier, Tags) {
     }
 
     $(identifier)
-        // don't navigate away from the field on tab when selecting an item
-        .on("keydown", function (event) {
-            if (event.keyCode === $.ui.keyCode.TAB &&
-                $(this).autocomplete("instance").menu.active) {
-                event.preventDefault();
-            }
-            // We hide the message generated by autocomplete because we don't want it
-            $("span[role='status']").hide();
-        })
-        .autocomplete({
-            minLength: 1,
-            messages: {
-                noResults: '',
-                results: function () {
+            // don't navigate away from the field on tab when selecting an item
+            .on("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+                        $(this).autocomplete("instance").menu.active) {
+                    event.preventDefault();
                 }
-            },
-            open: function () {
-                //If autocomplete is in modal, needs to be upper the modal
-                if ($(this).closest($(".modal")).length > 0) {
-                    $(this).autocomplete('widget').css('z-index', 1050);
-                }
-                return false;
-            },
-            source: function (request, response) {
-                //Get the part of the string we want (between the last % before our cursor and the cursor)
-                var selectionStart = this.element[0].selectionStart;
-                var stringToAnalyse = this.term.substring(0, selectionStart);
-                var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                //If there is a pair number of % it means there is no open variable that needs to be autocompleted
-                if ((this.term.match(/%/g) || []).length % 2 > 0) {
-                    //Start Iterating on Tags
-                    var tag = 0;
+                // We hide the message generated by autocomplete because we don't want it
+                $("span[role='status']").hide();
+            })
+            .autocomplete({
+                minLength: 1,
+                messages: {
+                    noResults: '',
+                    results: function () {
+                    }
+                },
+                open: function () {
+                    //If autocomplete is in modal, needs to be upper the modal
+                    if ($(this).closest($(".modal")).length > 0) {
+                        $(this).autocomplete('widget').css('z-index', 1050);
+                    }
+                    return false;
+                },
+                source: function (request, response) {
+                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+                    var selectionStart = this.element[0].selectionStart;
+                    var stringToAnalyse = this.term.substring(0, selectionStart);
+                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                    //If there is a pair number of % it means there is no open variable that needs to be autocompleted
+                    if ((this.term.match(/%/g) || []).length % 2 > 0) {
+                        //Start Iterating on Tags
+                        var tag = 0;
+                        var found = false;
+                        while (tag < Tags.length && !found) {
+                            //If We find the separator, then we filter with the already written part
+                            if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
+                                var arrayLabels = [];
+
+                                if (Tags[tag].regex === "%object\\.") {
+                                    Tags[tag].array.forEach(function (data) {
+                                        arrayLabels.push(data.object);
+                                    });
+
+                                } else {
+                                    arrayLabels = Tags[tag].array;
+                                }
+                                this.currentIndexTag = tag;
+                                var arrayToDisplay = $.ui.autocomplete.filter(
+                                        arrayLabels, extractLast(identifier, Tags[tag].regex));
+                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) !== "") {
+                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
+                                }
+                                response(arrayToDisplay);
+                                found = true;
+                            }
+                            tag++;
+                        }
+                    }
+                },
+                focus: function () {
+                    $('a[data-toggle="tooltip"]').each(function (idx, data) {
+                        var direction = "top";
+                        if (idx < 4)
+                            direction = "bottom";
+
+                        $(data).tooltip({
+                            animated: 'fade',
+                            placement: direction,
+                            html: true
+                        });
+
+                        var parent = $(data).parent().parent();
+                        if (parent.hasClass("ui-autocomplete")) {
+                            parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
+                        }
+                    });
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function (event, ui) {
+                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+                    var stringToAnalyse = this.value.substring(0, this.selectionStart);
+                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                    //Start iterating on Tags
                     var found = false;
+                    var tag = 0;
                     while (tag < Tags.length && !found) {
-                        //If We find the separator, then we filter with the already written part
+                        //If we find our separator, we compute the output
                         if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                            var arrayLabels = [];
+                            // remove the current input
+                            var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
+                            var afterCursor = this.value.substring(this.selectionStart, this.value.length);
+                            // add the selected item and eventually the content to add
+                            var value = Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter;
+                            //If it is the end of the variable, we automaticly add a % at the end of the line
 
-                            if (Tags[tag].regex === "%object\\.") {
-                                Tags[tag].array.forEach(function (data) {
-                                    arrayLabels.push(data.object);
-                                });
+                            this.value = beforeRegex + value + afterCursor;
+                            this.setSelectionRange((beforeRegex + value).length, (beforeRegex + value).length);
 
-                            } else {
-                                arrayLabels = Tags[tag].array;
-                            }
-                            this.currentIndexTag = tag;
-                            var arrayToDisplay = $.ui.autocomplete.filter(
-                                arrayLabels, extractLast(identifier, Tags[tag].regex));
-                            if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) !== "") {
-                                arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
-                            }
-                            response(arrayToDisplay);
                             found = true;
                         }
                         tag++;
                     }
+                    // We trigger input to potentially display an image if there is one
+                    $(this).trigger("input").trigger("change");
+                    return false;
+                },
+                close: function (event, ui) {
+                    val = $(this).val();
+                    $(this).autocomplete("search", val); //keep autocomplete open by
+                    //searching the same input again
+                    return false;
                 }
-            },
-            focus: function () {
-                $('a[data-toggle="tooltip"]').each(function (idx, data) {
-                    var direction = "top";
-                    if (idx < 4)
-                        direction = "bottom";
-
-                    $(data).tooltip({
-                        animated: 'fade',
-                        placement: direction,
-                        html: true
-                    });
-
-                    var parent = $(data).parent().parent();
-                    if (parent.hasClass("ui-autocomplete")) {
-                        parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
-                    }
-                });
-                // prevent value inserted on focus
-                return false;
-            },
-            select: function (event, ui) {
-                //Get the part of the string we want (between the last % before our cursor and the cursor)
-                var stringToAnalyse = this.value.substring(0, this.selectionStart);
-                var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                //Start iterating on Tags
-                var found = false;
-                var tag = 0;
-                while (tag < Tags.length && !found) {
-                    //If we find our separator, we compute the output
-                    if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                        // remove the current input
-                        var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
-                        var afterCursor = this.value.substring(this.selectionStart, this.value.length);
-                        // add the selected item and eventually the content to add
-                        var value = Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter;
-                        //If it is the end of the variable, we automaticly add a % at the end of the line
-
-                        this.value = beforeRegex + value + afterCursor;
-                        this.setSelectionRange((beforeRegex + value).length, (beforeRegex + value).length);
-
-                        found = true;
-                    }
-                    tag++;
-                }
-                // We trigger input to potentially display an image if there is one
-                $(this).trigger("input").trigger("change");
-                return false;
-            },
-            close: function (event, ui) {
-                val = $(this).val();
-                $(this).autocomplete("search", val); //keep autocomplete open by
-                //searching the same input again
-                return false;
-            }
-        });
+            });
 }
 
 /**
@@ -2560,7 +2574,7 @@ function getSys() {
  */
 function comboConfigTag_format(tag) {
     let markup = "<div class='select2-result-tag clearfix'>" +
-        "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
+            "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
     if (tag.description) {
         markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
