@@ -252,6 +252,9 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
             }
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
