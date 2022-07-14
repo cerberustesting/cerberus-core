@@ -107,6 +107,9 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        LOG.debug(SQL_MESSAGE, query.toString());
+
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query)) {
 
@@ -224,9 +227,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(SQL_MESSAGE, query.toString());
-        }
+        LOG.debug(SQL_MESSAGE, query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {

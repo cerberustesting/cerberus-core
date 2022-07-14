@@ -55,11 +55,13 @@ public interface IKafkaService {
      * @param serviceHeader
      * @param serviceContent
      * @param token
+     * @param isAvroEnable
+     * @param schemaRegistryURL
      * @param timeoutMs
      * @return
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs);
+            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean isAvroEnable, String schemaRegistryURL, int timeoutMs);
 
     /**
      *
@@ -83,12 +85,17 @@ public interface IKafkaService {
      * @param serviceContent
      * @param filterValue
      * @param serviceHeader
+     * @param filterHeaderPath
      * @param targetNbEventsInt
+     * @param filterHeaderValue
+     * @param avroEnable
+     * @param schemaRegistryURL
      * @param targetNbSecInt
      * @return
      */
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt);
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue, 
+            boolean avroEnable, String schemaRegistryURL, int targetNbEventsInt, int targetNbSecInt);
 
     /**
      * Get the latest Offset of all partitions.

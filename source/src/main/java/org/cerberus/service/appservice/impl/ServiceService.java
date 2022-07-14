@@ -456,7 +456,8 @@ public class ServiceService implements IServiceService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
+                                result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
+                                        token, appService.isAvroEnable(), appService.getSchemaRegistryURL(), timeOutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -464,6 +465,8 @@ public class ServiceService implements IServiceService {
 
                                 String decodedFilterPath = appService.getKafkaFilterPath();
                                 String decodedFilterValue = appService.getKafkaFilterValue();
+                                String decodedFilterHeaderPath = appService.getKafkaFilterHeaderPath();
+                                String decodedFilterHeaderValue = appService.getKafkaFilterHeaderValue();
                                 try {
 
                                     answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
@@ -483,6 +486,30 @@ public class ServiceService implements IServiceService {
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                                         String field = "Filter Value";
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
+                                        LOG.debug("Service Call interupted due to decode '" + field + "'.");
+                                        result.setResultMessage(message);
+                                        return result;
+                                    }
+
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderPath, tCExecution, null, false);
+                                    decodedFilterHeaderPath = answerDecode.getItem();
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Filter Header Path";
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                                .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
+                                        LOG.debug("Service Call interupted due to decode '" + field + "'.");
+                                        result.setResultMessage(message);
+                                        return result;
+                                    }
+
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderValue, tCExecution, null, false);
+                                    decodedFilterHeaderValue = answerDecode.getItem();
+                                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                        String field = "Filter Header Value";
                                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
                                                 .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
                                         LOG.debug("Service Call interupted due to decode '" + field + "'.");
@@ -522,7 +549,9 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaFilterValue(decodedFilterValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
-                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, targetNbEventsInt, targetNbSecInt);
+                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, 
+                                        appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue, 
+                                        appService.isAvroEnable(), appService.getSchemaRegistryURL(), targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

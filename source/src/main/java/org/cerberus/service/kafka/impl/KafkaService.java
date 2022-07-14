@@ -115,7 +115,7 @@ public class KafkaService implements IKafkaService {
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, int timeoutMs) {
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
@@ -127,14 +127,6 @@ public class KafkaService implements IKafkaService {
             serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
-        // Do we activate Avro feature ?
-        boolean activateAvro = false;
-        for (AppServiceContent object : serviceContent) {
-            if (object.isActive() && object.getKey().contains("enable_avro")) {
-                activateAvro = true;
-            }
-        }
-
         Properties props = new Properties();
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true", true, 0, "", "", null, "", null));
@@ -143,8 +135,10 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
         } else {
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-//            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
-            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
+//            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
+            serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
@@ -154,13 +148,6 @@ public class KafkaService implements IKafkaService {
             if (object.isActive()) {
                 props.put(object.getKey(), object.getValue());
             }
-        }
-
-        if (activateAvro) {
-//        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, applicationProducer.getSchemaRegistryUrl());
-//        props.put(AbstractKafkaAvroSerDeConfig.AUTO_REGISTER_SCHEMAS, applicationProducer.getAutoRegisterSchema());
-//            props.put(AbstractKafkaAvroSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY, TopicRecordNameStrategy.class.getName());
-//        props.put(AbstractKafkaAvroSerDeConfig.USER_INFO_CONFIG, applicationProducer.getUserInfoConfig());
         }
 
         serviceREST.setServicePath(bootstrapServers);
@@ -179,24 +166,25 @@ public class KafkaService implements IKafkaService {
             producer = new KafkaProducer<>(props);
 
             if (activateAvro) {
-                String userSchema = "{\"type\":\"record\","
-                        + "\"name\":\"myrecord\","
-                        + "\"fields\":[{\"name\":\"f1\",\"type\":\"string\"}]}";
-                Schema.Parser parser = new Schema.Parser();
-                Schema schema = parser.parse(userSchema);
-                GenericRecord avroRecord = new GenericData.Record(schema);
-                avroRecord.put("f1", "value1");
-                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, avroRecord);
+//                String userSchema = "{\"type\":\"record\","
+//                        + "\"name\":\"myrecord\","
+//                        + "\"fields\":[{\"name\":\"f1\",\"type\":\"string\"}]}";
+//                Schema.Parser parser = new Schema.Parser();
+//                Schema schema = parser.parse(userSchema);
+//                GenericRecord avroRecord = new GenericData.Record(schema);
+//                avroRecord.put("f1", "value1");
+//                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, avroRecord);
+                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, eventMessage);
                 for (AppServiceHeader object : serviceHeader) {
                     if (object.isActive()) {
                         record.headers().add(new RecordHeader(object.getKey(), object.getValue().getBytes()));
                     }
                 }
-                LOG.debug("Producing Kafka message - topic : " + topic + " key : " + key + " message : " + eventMessage);
+                LOG.debug("Producing Kafka message (Avro enable) - topic : " + topic + " key : " + key + " message : " + eventMessage);
                 RecordMetadata metadata = producer.send(record).get(); //Wait for a responses
                 partition = metadata.partition();
                 offset = metadata.offset();
-                LOG.debug("Produced Kafka message - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
+                LOG.debug("Produced Kafka message (Avro enable) - topic : " + topic + " key : " + key + " partition : " + partition + " offset : " + offset);
 
             } else {
                 ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, eventMessage);
@@ -322,7 +310,8 @@ public class KafkaService implements IKafkaService {
     @SuppressWarnings("unchecked")
     @Override
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, int targetNbEventsInt, int targetNbSecInt) {
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue,
+            boolean activateAvro, String schemaRegistryURL, int targetNbEventsInt, int targetNbSecInt) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
@@ -336,14 +325,6 @@ public class KafkaService implements IKafkaService {
 
         try {
 
-            // Do we activate Avro feature ?
-            boolean activateAvro = false;
-            for (AppServiceContent object : serviceContent) {
-                if (object.isActive() && object.getKey().contains("enable_avro")) {
-                    activateAvro = true;
-                }
-            }
-
             Properties props = new Properties();
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
@@ -354,6 +335,7 @@ public class KafkaService implements IKafkaService {
             } else {
                 serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
                 serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
+                serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
             }
 
             for (AppServiceContent object : serviceContent) {
@@ -418,10 +400,9 @@ public class KafkaService implements IKafkaService {
                                     headerJSON.put(headerKey, headerValue);
                                 }
 
-                                boolean match = true;
                                 boolean recordError = false;
 
-                                // Parsing message.
+                                // Parsing event message.
                                 JSONObject recordJSON = new JSONObject();
                                 try {
                                     recordJSON = new JSONObject(record.value());
@@ -430,34 +411,19 @@ public class KafkaService implements IKafkaService {
                                     recordError = true;
                                 }
 
+                                // Complete event with headers.
+                                JSONObject messageJSON = new JSONObject();
+                                messageJSON.put("key", record.key());
+                                messageJSON.put("value", recordJSON);
+                                messageJSON.put("offset", record.offset());
+                                messageJSON.put("partition", record.partition());
+                                messageJSON.put("header", headerJSON);
+
                                 nbEvents++;
 
-                                if (!StringUtil.isNullOrEmpty(filterPath)) {
-                                    String recordJSONfiltered = "";
-                                    try {
-                                        recordJSONfiltered = jsonService.getStringFromJson(record.value(), filterPath);
-                                    } catch (PathNotFoundException ex) {
-                                        //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                                        //but we don't want to trigger the catch block for Kafka consumption
-                                        match = false;
-                                        LOG.debug("Record discarded - Path not found.");
-                                    } catch (Exception ex) {
-                                        LOG.error(ex, ex);
-                                    }
-                                    LOG.debug("Filtered value : " + recordJSONfiltered);
-                                    if (!recordJSONfiltered.equals(filterValue)) {
-                                        match = false;
-                                        LOG.debug("Record discarded - Value different.");
-                                    }
-                                }
+                                boolean match = isRecordMatch(record.value(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
 
                                 if (match) {
-                                    JSONObject messageJSON = new JSONObject();
-                                    messageJSON.put("key", record.key());
-                                    messageJSON.put("value", recordJSON);
-                                    messageJSON.put("offset", record.offset());
-                                    messageJSON.put("partition", record.partition());
-                                    messageJSON.put("header", headerJSON);
                                     resultJSON.put(messageJSON);
                                     nbFound++;
                                     if (nbFound >= targetNbEventsInt) {
@@ -498,7 +464,6 @@ public class KafkaService implements IKafkaService {
                                     headerJSON.put(headerKey, headerValue);
                                 }
 
-                                boolean match = true;
                                 boolean recordError = false;
 
                                 // Parsing message.
@@ -510,34 +475,19 @@ public class KafkaService implements IKafkaService {
                                     recordError = true;
                                 }
 
+                                // Complete event with headers.
+                                JSONObject messageJSON = new JSONObject();
+                                messageJSON.put("key", record.key());
+                                messageJSON.put("value", recordJSON);
+                                messageJSON.put("offset", record.offset());
+                                messageJSON.put("partition", record.partition());
+                                messageJSON.put("header", headerJSON);
+
                                 nbEvents++;
 
-                                if (!StringUtil.isNullOrEmpty(filterPath)) {
-                                    String recordJSONfiltered = "";
-                                    try {
-                                        recordJSONfiltered = jsonService.getStringFromJson(record.value().toString(), filterPath);
-                                    } catch (PathNotFoundException ex) {
-                                        //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                                        //but we don't want to trigger the catch block for Kafka consumption
-                                        match = false;
-                                        LOG.debug("Record discarded - Path not found.");
-                                    } catch (Exception ex) {
-                                        LOG.error(ex, ex);
-                                    }
-                                    LOG.debug("Filtered value : " + recordJSONfiltered);
-                                    if (!recordJSONfiltered.equals(filterValue)) {
-                                        match = false;
-                                        LOG.debug("Record discarded - Value different.");
-                                    }
-                                }
+                                boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
 
                                 if (match) {
-                                    JSONObject messageJSON = new JSONObject();
-                                    messageJSON.put("key", record.key());
-                                    messageJSON.put("value", recordJSON);
-                                    messageJSON.put("offset", record.offset());
-                                    messageJSON.put("partition", record.partition());
-                                    messageJSON.put("header", headerJSON);
                                     resultJSON.put(messageJSON);
                                     nbFound++;
                                     if (nbFound >= targetNbEventsInt) {
@@ -597,6 +547,51 @@ public class KafkaService implements IKafkaService {
         message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", AppService.METHOD_KAFKASEARCH).replace("%TOPIC%", topic));
         result.setResultMessage(message);
         return result;
+    }
+
+    // Method to determine if the record match the filter criterias.
+    private boolean isRecordMatch(String jsomEventMessage, String filterPath, String filterValue, String jsomMessage, String filterHeaderPath, String filterHeaderValue) {
+        boolean match = true;
+        
+        if (!StringUtil.isNullOrEmpty(filterPath)) {
+            String recordJSONfiltered = "";
+            try {
+                recordJSONfiltered = jsonService.getStringFromJson(jsomEventMessage, filterPath);
+            } catch (PathNotFoundException ex) {
+                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                //but we don't want to trigger the catch block for Kafka consumption
+                match = false;
+                LOG.debug("Record discarded - Event Path not found.");
+            } catch (Exception ex) {
+                LOG.error(ex, ex);
+            }
+            LOG.debug("Filtered Event value : " + recordJSONfiltered);
+            if (!recordJSONfiltered.equals(filterValue)) {
+                match = false;
+                LOG.debug("Record discarded - Event Value different.");
+            }
+        }
+
+        if (!StringUtil.isNullOrEmpty(filterHeaderPath)) {
+            String recordJSONfiltered = "";
+            try {
+                recordJSONfiltered = jsonService.getStringFromJson(jsomMessage, filterHeaderPath);
+            } catch (PathNotFoundException ex) {
+                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                //but we don't want to trigger the catch block for Kafka consumption
+                match = false;
+                LOG.debug("Record discarded - Message Path not found.");
+            } catch (Exception ex) {
+                LOG.error(ex, ex);
+            }
+            LOG.debug("Filtered Message value : " + recordJSONfiltered);
+            if (!recordJSONfiltered.equals(filterHeaderValue)) {
+                match = false;
+                LOG.debug("Record discarded - Message Value different.");
+            }
+        }
+
+        return match;
     }
 
     @Override

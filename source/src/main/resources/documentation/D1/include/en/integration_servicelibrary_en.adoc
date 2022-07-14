@@ -75,14 +75,66 @@ Cerberus will wait until either the number of event retrieved or time is reached
 
 When a test case contain a callService action with a KAFKA SEARCH method, at the beginning of the execution, Cerberus will automatically store the latest offset of each partition of the selected topic. When the action is reached, Cerberus will automatically search the events starting at the previously saved offset. That prevent Cerberus to search on the full list of events inside the topic securing performance of the test over time.
 
-Additionally, you can fill a 'Kafka Filter Path' in jsonpath format and corresponding 'Kafka Filter Value' in order to filter the events found to some specific ones.
+Additionally, you can *filter* the event with 2 method :
 
-The best practice is to generate a functional unique key to Cerberus (e.g. 'cerberus%system.EXECUTIONID%') or use an existing one that will be available in the events to filter the results.
+* Fill a 'Event Filter Path' in jsonpath format and corresponding 'Event Filter Value' in order to filter from the *events content* and keep only the matching ones.
 
-Example
-image:kafka_search.png[kafka_search_filters]
+* Fill a 'Message Filter Path' in jsonpath format and corresponding 'Message Filter Value' in order to filter from a json document that content **both header and body of the message**. 
+[source,]
+----
+{
+  "partition": 0,
+  "offset": 3145,
+  "header": {
+    "cerberus-token": "3027",
+    "testheader": "value2"
+  },
+  "value": {
+    "surname": "DUPONT",
+    "name": "Bernard41"
+  },
+  "key": "11"
+}
+----
 
-The results will be stored in the Cerberus elements (as it is done for SOAP/REST response) and filtered will all the elements matching the filter path = value.
+.Filter a specific header value
+====
+Header Filter Path = $.header.testheader
 
-TIPS : If you want to have multiples conditions you can use the following syntax as json path :
+Header Filter Value = value2
+====
+
+.Filter a specific Event value
+====
+Event Filter Path = $.surname
+
+Event Filter Value = DUPONT
+====
+
+
+[TIP]
+====
+Generate a functional unique key to Cerberus (e.g. 'cerberus%system.EXECUTIONID%') or use an existing one that will be available in the events to filter the results.
+
+====
+
+
+[TIP]
+====
+If you want to have *multiples conditions* you can use the following syntax as json path :
 image:kafka_search2.png[kafka_search_filters_multiple_conditions]
+
+====
+
+**Avro Support**
+
+Cerberus support https://avro.apache.org/[Avro] data serialization system.
+You can just activate the feature by checking the corresponding checkbox and feed the Avro Schema registry URL.
+Cerberus will automatically generate the necessary Kafka Property in order to configure it.
+[NOTE]
+====
+
+So far only consume is supported.
+====
+
+
