@@ -138,7 +138,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tec ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS tec.*, app.* FROM testcase tec ");
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         if (!StringUtil.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
@@ -191,6 +191,8 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
+
+        query.append(" group by tec.test, tec.testcase ");
 
         if (!StringUtil.isNullOrEmpty(sortInformation)) {
             query.append(" order by ").append(sortInformation);
