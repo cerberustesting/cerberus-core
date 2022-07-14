@@ -2,6 +2,7 @@
 [square]
 * verifyElementPresent and verifyElementNotPresent are now working with JSON content.
 * Network stats are now displayed even if the results are not OK. #2199
+* Har file for traffic content is empty when using index. #2371
 
 *Improvements / New features*
 [square]

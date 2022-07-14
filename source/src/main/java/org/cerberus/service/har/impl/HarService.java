@@ -981,10 +981,12 @@ public class HarService implements IHarService {
             JSONArray harEntries = har.getJSONObject("log").getJSONArray("entries");
             JSONArray newLogEntries = new JSONArray();
 
+            LOG.debug("Total nb hits from HAR file : {}", harEntries.length());
             for (int i = 0; i < harEntries.length(); i++) {
                 if (i >= indexStart) {
                     // Only add the entries if index is reached
-                    if (!StringUtil.isNullOrEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter)) {
+                    if ((!StringUtil.isNullOrEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter))
+                            || StringUtil.isNullOrEmpty(urlFilter)) {
                         // Only add the entries if the url to filter is defined and url contains it.
                         newLogEntries.put(harEntries.getJSONObject(i));
                     }
