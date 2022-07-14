@@ -19,9 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
@@ -48,6 +45,10 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default {@link ITestCaseExecutionQueueService} implementation
@@ -87,11 +88,6 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
             }
         }
         return result;
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.findTestCaseExecutionInQueuebyTag(tag);
     }
 
     @Override
@@ -154,11 +150,6 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCountryBrowserByTag(tag);
-    }
-
-    @Override
-    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        return testCaseExecutionInQueueDAO.readDistinctColumnByTag(tag, env, country, browser, app);
     }
 
     @Override

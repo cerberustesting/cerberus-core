@@ -205,10 +205,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 /*
                  * Create, update or delete stepId, action and controlId according to the needs
                  */
-                List<TestCaseStep> stepsFromDatabase = new ArrayList<>(stepService.getListOfSteps(initialTest, initialTestCase));
+                List<TestCaseStep> stepsFromDatabase = stepService.getListOfSteps(initialTest, initialTestCase);
                 stepService.compareListAndUpdateInsertDeleteElements(stepsFromRequest, stepsFromDatabase, false);
 
-                List<TestCaseStepAction> actionsFromDatabase = new ArrayList<>(actionService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+                List<TestCaseStepAction> actionsFromDatabase = actionService.readByTestTestCase(initialTest, initialTestCase).getDataList();
                 actionService.compareListAndUpdateInsertDeleteElements(actionsFromRequest, actionsFromDatabase, false);
 
                 List<TestCaseStepActionControl> controlsFromDatabase = new ArrayList<>(controlService.findControlByTestTestCase(initialTest, initialTestCase));

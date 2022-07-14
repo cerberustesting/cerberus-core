@@ -162,38 +162,6 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     }
 
     @Override
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) {
-        List<TestCaseCountryProperties> testCaseCountryPropertiesList = null;
-        final StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
-        query.append(" group by HEX(`property`), `type`, `database`, HEX(`value1`) ,  HEX(`value2`) , `length`, `rowlimit`, `nature`");
-
-        loggingQuery(query.toString());
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-
-            int i = 1;
-            preStat.setString(i++, test);
-            preStat.setString(i++, testcase);
-
-            try (ResultSet resultSet = preStat.executeQuery();) {
-                testCaseCountryPropertiesList = new ArrayList<>();
-
-                while (resultSet.next()) {
-                    testCaseCountryPropertiesList.add(loadFromResultSet(resultSet));
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        }
-
-        return testCaseCountryPropertiesList;
-    }
-
-    @Override
     public List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties) {
         List<String> countries = null;
         final StringBuilder query = new StringBuilder();

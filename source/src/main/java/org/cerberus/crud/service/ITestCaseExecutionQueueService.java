@@ -19,8 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.List;
-import java.util.Map;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
@@ -28,6 +26,9 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service layer to handle {@link TestCaseExecutionQueue} instances
@@ -37,25 +38,14 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseExecutionQueueService {
 
     /**
-     *
      * @param queueId
      * @param withDep
      * @return
      */
     AnswerItem<TestCaseExecutionQueue> readByKey(long queueId, boolean withDep);
 
-    /**
-     * Find a list of TestCaseWithExecution object from testcaseexecutionqueue
-     * table
-     *
-     * @param tag
-     * @return
-     * @throws CerberusException
-     */
-    List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
-     *
      * @param tag
      * @param start
      * @param amount
@@ -68,9 +58,8 @@ public interface ITestCaseExecutionQueueService {
     AnswerList<TestCaseExecutionQueue> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
-     *
-     * @param tag tag to filter.
-     * @param stateList List of State to filter.
+     * @param tag              tag to filter.
+     * @param stateList        List of State to filter.
      * @param withDependencies
      * @return
      * @throws CerberusException
@@ -110,7 +99,6 @@ public interface ITestCaseExecutionQueueService {
     AnswerList<TestCaseExecutionQueue> readQueueOpen(String tag) throws CerberusException;
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -122,7 +110,6 @@ public interface ITestCaseExecutionQueueService {
     AnswerList<TestCaseExecutionQueue> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param id
      * @param prio
      * @return
@@ -130,25 +117,12 @@ public interface ITestCaseExecutionQueueService {
     int getNbEntryToGo(long id, int prio);
 
     /**
-     *
      * @param tag
      * @return
      */
     AnswerList<TestCaseExecutionQueue> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
-     *
-     * @param tag
-     * @param env
-     * @param country
-     * @param browser
-     * @param app
-     * @return
-     */
-    public AnswerList<TestCaseExecutionQueue> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-
-    /**
-     *
      * @param columnName
      * @param sort
      * @param searchParameter
@@ -159,14 +133,12 @@ public interface ITestCaseExecutionQueueService {
     public AnswerList<String> readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
 
     /**
-     *
      * @param tagnumber
      * @return
      */
     public AnswerList findTagList(int tagnumber);
 
     /**
-     *
      * @param system
      * @param testList
      * @param applicationList
@@ -195,39 +167,37 @@ public interface ITestCaseExecutionQueueService {
      * @return
      */
     AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> tcstatusList, List<String> groupList,
-            List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList,
-            List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
-            String comment, String bugs, String ticket);
+                                     List<String> isActiveList, List<String> priorityList, List<String> targetMajorList, List<String> targetMinorList, List<String> creatorList,
+                                     List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
+                                     String comment, String bugs, String ticket);
 
     /**
      * Create a new Queue entry on database from existing object. if withNewDep
      * true, we create new not RELEASED dependencies. if false, we duplicate
      * existing dependencies from queue entry exeQueue.
      *
-     * @param object the {@link queue entry} to Create
+     * @param object      the {@link queue entry} to Create
      * @param withNewDep
-     * @param exeQueue original queue entry id from which the duplication is
-     * done.
+     * @param exeQueue    original queue entry id from which the duplication is
+     *                    done.
      * @param targetState
      * @return {@link AnswerItem}
      */
     AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueue, TestCaseExecutionQueue.State targetState);
 
     /**
-     *
      * @param exeQueueId
      * @param tag
      */
     void checkAndReleaseQueuedEntry(long exeQueueId, String tag);
 
     /**
-     * @param object the {@link AppService} to Update
+     * @param object the {@link org.cerberus.crud.entity.AppService} to Update
      * @return {@link AnswerItem}
      */
     Answer update(TestCaseExecutionQueue object);
 
     /**
-     *
      * @param id
      * @param priority
      * @return
@@ -235,7 +205,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updatePriority(long id, int priority);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -243,7 +212,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateComment(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @param targetState
@@ -252,7 +220,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToState(long id, String comment, TestCaseExecutionQueue.State targetState);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -260,7 +227,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToQueued(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -268,7 +234,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToQueuedFromQuWithDep(long id, String comment);
 
     /**
-     *
      * @param tag
      * @param queueIds
      * @return
@@ -276,7 +241,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateAllTagToQueuedFromQuTemp(String tag, List<Long> queueIds);
 
     /**
-     *
      * @param id
      * @return
      * @throws CerberusException
@@ -284,7 +248,6 @@ public interface ITestCaseExecutionQueueService {
     boolean updateToWaiting(final Long id) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @param exeId
@@ -293,7 +256,6 @@ public interface ITestCaseExecutionQueueService {
     void updateToExecuting(long id, String comment, long exeId) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param selectedRobot
      * @param selectedRobotExt
@@ -302,7 +264,6 @@ public interface ITestCaseExecutionQueueService {
     void updateToStarting(long id, String selectedRobot, String selectedRobotExt) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @throws CerberusException
@@ -310,7 +271,6 @@ public interface ITestCaseExecutionQueueService {
     void updateToError(long id, String comment) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @throws CerberusException
@@ -318,7 +278,6 @@ public interface ITestCaseExecutionQueueService {
     void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @param exeId
@@ -327,7 +286,6 @@ public interface ITestCaseExecutionQueueService {
     void updateToDone(long id, String comment, long exeId) throws CerberusException;
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -335,7 +293,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToCancelled(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -343,7 +300,6 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToCancelledForce(long id, String comment);
 
     /**
-     *
      * @param id
      * @param comment
      * @return
@@ -351,13 +307,13 @@ public interface ITestCaseExecutionQueueService {
     Answer updateToErrorForce(long id, String comment);
 
     /**
-     * @param object the {@link AppService} to Delete
+     * @param object the {@link org.cerberus.crud.entity.AppService} to Delete
      * @return {@link AnswerItem}
      */
     Answer delete(TestCaseExecutionQueue object);
 
     /**
-     * @param id the {@link AppService} to Delete
+     * @param id the {@link org.cerberus.crud.entity.AppService} to Delete
      * @return {@link AnswerItem}
      */
     Answer delete(Long id);
@@ -368,7 +324,6 @@ public interface ITestCaseExecutionQueueService {
     void cancelRunningOldQueueEntries();
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -376,7 +331,6 @@ public interface ITestCaseExecutionQueueService {
     TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -384,7 +338,6 @@ public interface ITestCaseExecutionQueueService {
     List<TestCaseExecutionQueue> convert(AnswerList<TestCaseExecutionQueue> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */

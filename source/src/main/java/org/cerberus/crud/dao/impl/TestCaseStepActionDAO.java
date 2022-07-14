@@ -100,42 +100,6 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testcase) throws CerberusException {
-        List<TestCaseStepAction> list = null;
-        final StringBuilder query = new StringBuilder();
-        query.append("SELECT tca.* ");
-        query.append("FROM testcasestepaction AS tca ");
-        query.append("RIGHT JOIN testcasestep AS tcs ON tca.Test = tcs.Test AND tca.Testcase = tcs.Testcase AND tca.StepId = tcs.StepId ");
-        query.append("WHERE tca.Test = ? AND tca.Testcase = ? ");
-        query.append("GROUP BY tca.Test, tca.Testcase, tca.StepId, tca.actionId ");
-        query.append("ORDER BY tcs.Sort, tca.Sort ");
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-
-            preStat.setString(1, test);
-            preStat.setString(2, testcase);
-
-            try (ResultSet resultSet = preStat.executeQuery()) {
-                list = new ArrayList<>();
-                while (resultSet.next()) {
-                    list.add(this.loadFromResultSet(resultSet));
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        }
-        return list;
-    }
-
-    @Override
     public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepId) {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.stepId = ? ORDER BY tca.sort";

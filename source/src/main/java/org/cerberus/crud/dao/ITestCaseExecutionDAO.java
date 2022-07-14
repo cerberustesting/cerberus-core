@@ -19,16 +19,17 @@
  */
 package org.cerberus.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -41,21 +42,19 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * @param tCExecution TestCaseExecution Object to insert in
-     * TestcaseExecution table
-     * @throws org.cerberus.exception.CerberusException
+     *                    TestcaseExecution table
      * @return execution id (long)
+     * @throws org.cerberus.exception.CerberusException
      */
     long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
     /**
-     *
      * @param tCExecution
      * @throws CerberusException
      */
     void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testcase
      * @param country
@@ -72,11 +71,10 @@ public interface ITestCaseExecutionDAO {
     AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     /**
-     *
-     * @param test Test Criteria
-     * @param testcase TestCase Criteria
+     * @param test        Test Criteria
+     * @param testcase    TestCase Criteria
      * @param environment Environment Criteria
-     * @param country Country Criteria
+     * @param country     Country Criteria
      * @param build
      * @param revision
      * @return TestCaseExecution Object created only with attributes from
@@ -84,10 +82,9 @@ public interface ITestCaseExecutionDAO {
      * @throws org.cerberus.exception.CerberusException
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-            String build, String revision) throws CerberusException;
+                                                    String build, String revision) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testCase
      * @param environment
@@ -102,20 +99,20 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag);
+                                                    String build, String revision, String browser, String browserVersion,
+                                                    String ip, String port, String tag);
 
     /**
      * @param dateLimitFrom The limit start date of the executions from which
-     * the selection is done. Mandatory parameter.
-     * @param test filter on the test
-     * @param testCase filter on the testCase
-     * @param application filter on the application.
-     * @param country filter on the country
-     * @param environment filter on the environment
+     *                      the selection is done. Mandatory parameter.
+     * @param test          filter on the test
+     * @param testCase      filter on the testCase
+     * @param application   filter on the application.
+     * @param country       filter on the country
+     * @param environment   filter on the environment
      * @param controlStatus filter on the control status (RC of the execution)
-     * @param status filter on the status (Status of the testCase when execution
-     * was made)
+     * @param status        filter on the status (Status of the testCase when execution
+     *                      was made)
      * @return a list of testCaseExecution done after the dateLimitFrom
      * parameter and following the other criteria.
      * @throws CerberusException when no executions can be found.
@@ -123,7 +120,6 @@ public interface ITestCaseExecutionDAO {
     List<TestCaseExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
     /**
-     *
      * @param id of the test case execution
      * @return the test case execution object
      * @throws CerberusException
@@ -138,7 +134,6 @@ public interface ITestCaseExecutionDAO {
     List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -147,7 +142,6 @@ public interface ITestCaseExecutionDAO {
     TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testCase
      * @param environment
@@ -162,20 +156,19 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag);
+                                                        String build, String revision, String browser, String browserVersion,
+                                                        String ip, String port, String tag);
 
     /**
      * Set Tag to an execution
      *
-     * @param id : ID of the execution
+     * @param id  : ID of the execution
      * @param tag : Tag to set to the execution
      * @throws org.cerberus.exception.CerberusException
      */
     public void setTagToExecution(long id, String tag) throws CerberusException;
 
     /**
-     *
      * @param tag
      * @param start
      * @param amount
@@ -188,7 +181,6 @@ public interface ITestCaseExecutionDAO {
     public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
-     *
      * @param system
      * @param countries
      * @param environments
@@ -221,7 +213,6 @@ public interface ITestCaseExecutionDAO {
     public Integer readNbByTag(String tag) throws CerberusException;
 
     /**
-     *
      * @param start
      * @param amount
      * @param sort
@@ -235,25 +226,12 @@ public interface ITestCaseExecutionDAO {
     AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
-     *
      * @param tag
      * @return
      */
     public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
-     *
-     * @param tag
-     * @param env
-     * @param country
-     * @param browser
-     * @param app
-     * @return
-     */
-    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-
-    /**
-     *
      * @param executionId
      * @return
      */
@@ -263,11 +241,11 @@ public interface ITestCaseExecutionDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
      * @param resultSet ResultSet relative to select from table
-     * TestCaseExecution
+     *                  TestCaseExecution
      * @return object {@link TestCaseExecution}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryTestCaseExecution
+     *                      {@link java.sql.ResultSet#getString(String)}
+     * @see org.cerberus.crud.factory.impl.FactoryTestCaseExecution
      */
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 
@@ -278,7 +256,7 @@ public interface ITestCaseExecutionDAO {
      * @param test
      * @param searchParameter
      * @param individualSearch
-     * @param columnName Name of the column
+     * @param columnName       Name of the column
      * @return object {@link TestCaseExecution}
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
