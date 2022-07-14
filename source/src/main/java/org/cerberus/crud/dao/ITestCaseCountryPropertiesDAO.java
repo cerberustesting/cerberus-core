@@ -19,16 +19,16 @@
  */
 package org.cerberus.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 import org.cerberus.crud.entity.TestCase;
-
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * {Insert class description here}
@@ -40,7 +40,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseCountryPropertiesDAO {
 
     /**
-     *
      * @param test
      * @param testcase
      * @return
@@ -49,7 +48,6 @@ public interface ITestCaseCountryPropertiesDAO {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException;
 
     /**
-     *
      * @param testcases
      * @return
      * @throws CerberusException
@@ -57,7 +55,6 @@ public interface ITestCaseCountryPropertiesDAO {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseList(List<TestCase> testcases) throws CerberusException;
 
     /**
-     *
      * @param test
      * @param testcase
      * @param oneproperty
@@ -66,7 +63,6 @@ public interface ITestCaseCountryPropertiesDAO {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty);
 
     /**
-     *
      * @param test
      * @param testcase
      * @param country
@@ -75,22 +71,12 @@ public interface ITestCaseCountryPropertiesDAO {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testcase, String country);
 
     /**
-     *
-     * @param test
-     * @param testcase
-     * @return
-     */
-    List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
-
-    /**
-     *
      * @param testCaseCountryProperties
      * @return
      */
     List<String> findCountryByProperty(TestCaseCountryProperties testCaseCountryProperties);
 
     /**
-     *
      * @param test
      * @param testcase
      * @param property
@@ -99,7 +85,6 @@ public interface ITestCaseCountryPropertiesDAO {
     List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property);
 
     /**
-     *
      * @param test
      * @param testcase
      * @param country
@@ -110,28 +95,24 @@ public interface ITestCaseCountryPropertiesDAO {
     TestCaseCountryProperties findTestCaseCountryPropertiesByKey(String test, String testcase, String country, String property) throws CerberusException;
 
     /**
-     *
      * @param testCaseCountryProperties
      * @throws CerberusException
      */
     void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
     /**
-     *
      * @param testCaseCountryProperties
      * @throws CerberusException
      */
     void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
     /**
-     *
      * @param tccp
      * @throws CerberusException
      */
     public void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 
     /**
-     *
      * @param testDataLib
      * @param name
      * @param country
@@ -141,46 +122,40 @@ public interface ITestCaseCountryPropertiesDAO {
     AnswerList<TestListDTO> findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType);
 
     /**
-     *
      * @param listOfPropertiesToInsert
      * @return
      */
     Answer createTestCaseCountryPropertiesBatch(List<TestCaseCountryProperties> listOfPropertiesToInsert);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer create(TestCaseCountryProperties object);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer delete(TestCaseCountryProperties object);
 
     /**
-     *
      * @param object
      * @return
      */
     Answer update(TestCaseCountryProperties object);
-    
+
     /**
-     *
      * @param oldName
      * @param newName
      * @return
      */
     Answer bulkRenameProperties(String oldName, String newName);
-    
+
     /**
-     * 
      * @param resultSet
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     TestCaseCountryProperties loadFromResultSet(ResultSet resultSet) throws SQLException;
 

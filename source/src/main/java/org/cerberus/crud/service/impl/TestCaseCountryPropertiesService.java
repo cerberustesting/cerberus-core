@@ -23,9 +23,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
-import org.cerberus.crud.entity.*;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseDepService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
@@ -85,22 +93,6 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
         return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase);
-    }
-
-    @Override
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException {
-        return testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
-    }
-
-    @Deprecated
-    @Override
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException {
-        List<TestCaseCountryProperties> properties = testCaseCountryPropertiesDAO.findDistinctPropertiesOfTestCase(test, testcase);
-        for (TestCaseCountryProperties property : properties) {
-            List<String> countries = testCaseCountryPropertiesDAO.findCountryByProperty(property);
-            property.setInvariantCountries(invariantService.convertCountryPropertiesToCountryInvariants(countries, countryInvariants));
-        }
-        return properties;
     }
 
     @Override

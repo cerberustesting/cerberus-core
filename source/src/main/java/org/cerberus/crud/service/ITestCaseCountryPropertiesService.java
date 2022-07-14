@@ -60,26 +60,6 @@ public interface ITestCaseCountryPropertiesService {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseProperty(String test, String testcase, String oneproperty);
 
     /**
-     * @param test
-     * @param testcase
-     * @return
-     * @throws CerberusException
-     */
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) throws CerberusException;
-
-    /**
-     * Prefer to use the findDistinctPropertiesOfTestCaseFromTestcaseList as it generate a lot less SQL.
-     *
-     * @param test
-     * @param testcase
-     * @param countryInvariants
-     * @return
-     * @throws CerberusException
-     */
-    @Deprecated
-    public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase, HashMap<String, Invariant> countryInvariants) throws CerberusException;
-
-    /**
      * @param testCaseList
      * @param countryInvariants
      * @return
