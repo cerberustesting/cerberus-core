@@ -19,12 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
-import java.util.List;
-
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
 
 /**
  * {Insert class description here}
@@ -37,15 +37,14 @@ public interface ITestCaseStepDAO {
 
 
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
-    
+
     List<TestCaseStep> findAllTestcaseSteps();
-    
+
     List<TestCaseStep> findAllLibrarySteps();
-    
+
     List<TestCaseStep> findTestcaseStepsByTestFolderId(String testFolderId);
 
     /**
-     *
      * @param test
      * @param testcase
      * @param StepId
@@ -63,8 +62,6 @@ public interface ITestCaseStepDAO {
 
     List<TestCaseStep> getTestCaseStepsUsingTestInParameter(final String test) throws CerberusException;
 
-    List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;
-
     List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
 
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
@@ -76,7 +73,6 @@ public interface ITestCaseStepDAO {
     AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
-     *
      * @param testCaseStep
      * @return
      */

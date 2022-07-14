@@ -19,11 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.text.ParseException;
-import java.util.*;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
@@ -36,17 +33,41 @@ import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTagSystem;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITagSystemService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.crud.service.ITestCaseExecutionHttpStatService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.*;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
@@ -108,14 +129,14 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-            String build, String revision) throws CerberusException {
+                                                           String build, String revision) throws CerberusException {
         return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision);
     }
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                           String build, String revision, String browser, String browserVersion,
+                                                           String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
 
@@ -160,8 +181,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-            String build, String revision, String browser, String browserVersion,
-            String ip, String port, String tag) {
+                                                        String build, String revision, String browser, String browserVersion,
+                                                        String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionInGroup(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
 
@@ -203,11 +224,6 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
-    }
-
-    @Override
-    public AnswerList<TestCaseExecution> readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);
     }
 
     @Override

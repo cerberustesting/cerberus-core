@@ -19,11 +19,25 @@
  */
 package org.cerberus.servlet.crud.test.testcase;
 
-import org.cerberus.crud.entity.*;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseDep;
+import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
+import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseDep;
 import org.cerberus.crud.factory.IFactoryTestCaseLabel;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseDepService;
+import org.cerberus.crud.service.ITestCaseLabelService;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -196,7 +210,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
 
                     List<TestCaseStepAction> tcsaList = new ArrayList<>();
                     if (!tcsList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        tcsaList = testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase);
+                        tcsaList = testCaseStepActionService.readByTestTestCase(originalTest, originalTestCase).getDataList();
                         if (!tcsaList.isEmpty()) {
                             ans = testCaseStepActionService.duplicateList(tcsaList, test, testcase);
                             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
@@ -279,8 +293,8 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
             String test = jsonObj.getString("test");
             String description = jsonObj.getString("description");
             boolean isActive = Boolean.valueOf(jsonObj.getString("isActive"));
-            Timestamp creationDate = new Timestamp(new Date().getTime());       
-            
+            Timestamp creationDate = new Timestamp(new Date().getTime());
+
             testcaseDependencies.add(testCaseDepFactory.create(testcaseDependencyId, testcase.getTest(), testcase.getTestcase(), test, testcaseId, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, isActive, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
         });
         return testcaseDependencies;

@@ -20,7 +20,13 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
@@ -203,11 +209,14 @@ public class TestCaseCountryProperties {
             testCaseCountryPropertiesJson.put("property", this.getProperty());
             testCaseCountryPropertiesJson.put("description", this.getDescription());
             testCaseCountryPropertiesJson.put("type", this.getType());
-            testCaseCountryPropertiesJson.put("dataBase", this.getDatabase());
+            testCaseCountryPropertiesJson.put("database", this.getDatabase());
             testCaseCountryPropertiesJson.put("value1", this.getValue1());
             testCaseCountryPropertiesJson.put("value2", this.getValue2());
             testCaseCountryPropertiesJson.put("length", this.getLength());
             testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
+            testCaseCountryPropertiesJson.put("retryNb", this.getRetryNb());
+            testCaseCountryPropertiesJson.put("retryPeriod", this.getRetryPeriod());
+            testCaseCountryPropertiesJson.put("cacheExpire", this.getCacheExpire());
             testCaseCountryPropertiesJson.put("nature", this.getNature());
             testCaseCountryPropertiesJson.put("rank", this.getRank());
             testCaseCountryPropertiesJson.put("usrCreated", this.getUsrCreated());
@@ -240,7 +249,7 @@ public class TestCaseCountryProperties {
             testCaseCountryPropertiesJson.put("property", this.getProperty());
             testCaseCountryPropertiesJson.put("description", this.getDescription());
             testCaseCountryPropertiesJson.put("type", this.getType());
-            testCaseCountryPropertiesJson.put("dataBase", this.getDatabase());
+            testCaseCountryPropertiesJson.put("database", this.getDatabase());
             testCaseCountryPropertiesJson.put("value1", this.getValue1());
             testCaseCountryPropertiesJson.put("value2", this.getValue2());
             testCaseCountryPropertiesJson.put("length", this.getLength());

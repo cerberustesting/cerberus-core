@@ -22,7 +22,6 @@
 
 var canUpdate = false;
 var allDelete = false;
-var loadedPropertiesNumber = -1;
 var Tags = [];
 
 
@@ -34,7 +33,6 @@ $.when($.getScript("js/global/global.js")
     , $.getScript("js/testcase/control.js")
 ).then(function () {
     $(document).ready(function () {
-        loadedPropertiesNumber = -1;
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function (ev) {
             try {
@@ -175,38 +173,25 @@ $.when($.getScript("js/global/global.js")
                     $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
                     $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
                     $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
-                    // $("#saveProperty1").attr("disabled",
-                    // !data.hasPermissionsUpdate);
-                    // $("#saveProperty2").attr("disabled",
-                    // !data.hasPermissionsUpdate);
-
-                    // Building full list of country from testcase.
-                    var myCountry = [];
-                    $.each(testcaseObject.countries, function (index) {
-                        myCountry.push(testcaseObject.countries[index].value);
-                    });
 
                     // Button Add Property insert a new Property
                     $("#addProperty").click(function () {
 
-                        if (myCountry.length <= 0) {
+                        if (testcaseObject.countries.length <= 0) {
                             showMessageMainPage("danger", doc.getDocLabel("page_testcasescript", "warning_nocountry"), false);
 
                         } else {
-
 
                             // Store the current saveScript button status and
                             // disable it
                             var saveScriptOldStatus = $("#saveScript").attr("disabled");
                             $("#saveScript").attr("disabled", true);
-                            // clone the country list
-                            var newCountryList = myCountry.slice(0);
 
                             let propIndex = $("#propTable #masterProp").length;
                             var newProperty = {
                                 property: "PROP-" + propIndex,
                                 description: "",
-                                country: newCountryList,
+                                countries: [...testcaseObject.countries],
                                 type: "text",
                                 database: "",
                                 value1: "",
@@ -225,7 +210,7 @@ $.when($.getScript("js/global/global.js")
                             setPlaceholderProperty(prop[0], prop[1]);
 
                             $(prop[0]).find("#propName").focus();
-                            // autocompleteAllFields();
+
                             setModif(true);
 
                             // Restore the saveScript button status
@@ -242,8 +227,6 @@ $.when($.getScript("js/global/global.js")
                 },
                 error: showUnexpectedError
             });
-
-//            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
             $("#addStep").click({steps: steps}, function (event) {
                 // Store the current saveScript button status and disable it
@@ -353,7 +336,6 @@ $.when($.getScript("js/global/global.js")
 
             wrap.on("scroll", function (e) {
                 $(".affix").width($("#page-layout").width() - 3);
-                // $(".affix-top").width($("#divPanelDefault").width());
             });
 
             if (tabactive !== null) {
@@ -381,7 +363,6 @@ function getHistoryTestcase(object) {
     result.testcase = object.testcase;
     return result;
 }
-
 
 function displayPageLabel(doc) {
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
@@ -479,7 +460,6 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
             if (getAlertType(data.messageType) === "success") {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
                 var url = "./TestCaseExecution.jsp?executionQueueId=" + encodeURI(data.testCaseExecutionQueueList[0].id);
-                console.info("redir : " + url);
                 window.location.replace(url);
             } else {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
@@ -570,28 +550,7 @@ function setAllSort() {
     return stepArr;
 }
 
-/*
- * Used to convert an array of country string to an array of object {value: countryName}
- * @param {type} array
- * @returns {undefined}
- */
-function convertPropertiesCountriesArrayToObj(array) {
-    for (let i = 0; i < array.length; i++) {
-        let newCountries = [];
-        for (let j = 0; j < array[i].country.length; j++) {
-            newCountries.push({value: array[i].country[j]});
-        }
-        array[i].countries = newCountries;
-        newCountries = [];
-    }
-    return array;
-}
-
 function saveScript(property) {
-
-    if (!isPropertyListDisplayed()) {
-        return;
-    }
 
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
@@ -603,8 +562,9 @@ function saveScript(property) {
     var propArr = [];
     var propertyWithoutCountry = false;
     var propertyWithoutName = false;
+
     for (var i = 0; i < properties.length; i++) {
-        if (($(properties[i]).data("property").country.length <= 0) && ($(properties[i]).data("property").toDelete === false)) {
+        if (($(properties[i]).data("property").countries.length <= 0) && ($(properties[i]).data("property").toDelete === false)) {
             propertyWithoutCountry = true;
         }
         if (($(properties[i]).data("property").property === "") && ($(properties[i]).data("property").toDelete === false)) {
@@ -639,7 +599,7 @@ function saveScript(property) {
                 informationTest: GetURLParameter("test"),
                 informationTestCase: GetURLParameter("testcase"),
                 steps: stepArr,
-                properties: convertPropertiesCountriesArrayToObj(propArr)
+                properties: propArr
             }),
             success: function () {
 
@@ -691,36 +651,8 @@ function saveScript(property) {
     } else {
         saveProp();
     }
-
 }
 
-function isPropertyListDisplayed() {
-
-    //var displayedPropertiesNumber = document.getElementById('propList').getElementsByTagName('li').length;
-    if (loadedPropertiesNumber === -1) {
-        return false;
-    }
-
-    return true;
-
-}
-
-function deleteFnct(property) {
-    var linkToProperty = null;
-
-    // go though every link and look for the right one
-    $("#propListWrapper li a").each(function () {
-        if ($(this).text() === property)
-            linkToProperty = $(this).parent();
-    });
-    if (linkToProperty !== null) {
-        if (property.toDelete) {
-            linkToProperty.addClass("list-group-item-danger");
-        } else {
-            linkToProperty.removeClass("list-group-item-danger");
-        }
-    }
-}
 
 function prevent(e) {
     e.preventDefault();
@@ -744,8 +676,6 @@ function drawPropertyList(property, index, isSecondary) {
         htmlElement.find("span.secondaryproptext").css("float", "right");
         htmlElement.find("span.secondaryproptext").css("display", "block");
         htmlElement.find("span.secondaryproptext").css("color", "#636e72");
-        // <span style="padding: 0px 10px 0px 10px;float: right;display:
-        // block;color: #636e72;">secondary</span>
     }
 
     deleteBtn.click(function (ev) {
@@ -770,7 +700,7 @@ function drawPropertyList(property, index, isSecondary) {
     $("#propList").append(htmlElement);
 }
 
-function drawProperty(property, testcaseinfo, canUpdate, index) {
+function drawProperty(property, testcaseObject, canUpdate, index) {
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, false);
     selectType.attr("name", "propertyType");
@@ -807,7 +737,6 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     rankInput.prop("readonly", !canUpdate);
 
     // if the property is secondary
-    //var isSecondary = property.description.indexOf("[secondary]") >= 0;
     var isSecondary = property.rank === 2;
     if (isSecondary) {
         var content = $("<div class='row secondaryProperty list-group-item list-group-item-secondary'></div>");
@@ -824,7 +753,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
     var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
-    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countries, property.country, !canUpdate));
+    var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseObject.countries, property.countries, !canUpdate));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
     var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
@@ -854,7 +783,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         var stopNothing = false;
         var linkToProperty = null;
         var nothing = false;
-        property.toDelete = (property.toDelete) ? false : true;
+        property.toDelete = !property.toDelete;
 
         if (property.toDelete) {
             if (isSecondary) {
@@ -894,12 +823,6 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
             if ($(this).text() === property.property)
                 linkToProperty = $(this).parent();
         });
-
-
-        // set the property in red (or remove the red color)
-
-        // set the link to the property in red (or remove the red color)
-        var propertyName = property.property;
 
         // go though every link and look for the right one
         if (linkToProperty !== null) {
@@ -1013,14 +936,6 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     return [props, property];
 }
 
-function propertiesToArray(propList) {
-    var propertyArray = [];
-    for (var index = 0; index < propList.length; index++) {
-        propertyArray.push(propList[index].property);
-    }
-    return propertyArray;
-}
-
 function drawInheritedProperty(propList) {
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, false).attr("disabled", true);
@@ -1060,7 +975,7 @@ function drawInheritedProperty(propList) {
         var row5 = $("<div class='row'></div>");
         var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
         var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
-        var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(property.country, property.country, true));
+        var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(property.countries, property.countries, true));
         var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
         var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
         var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
@@ -1133,86 +1048,69 @@ function drawInheritedProperty(propList) {
     sortProperties("#inheritedPropPanel");
 }
 
-function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
+function loadPropertiesAndDraw(test, testcase, testcaseObject, propertyToFocus, canUpdate) {
 
-    return new Promise(function (resolve, reject) {
-        var array = [];
-        var secondaryPropertiesArray = [];
+    let array = [];
+    let secondaryPropertiesArray = [];
 
-        var propertyList = [];
-        var secondaryPropertyList = [];
+    let propertyList = [];
+    let secondaryPropertyList = [];
 
-        $.ajax({
-            url: "GetPropertiesForTestCase",
-            data: {test: test, testcase: testcase},
-            async: true,
-            success: function (data) {
+    let propertiesFromTestcase = testcaseObject.properties.testCaseProperties.sort((a, b) => {
+        return compareStrings(a.property, b.property);
+    });
 
-                data.sort(function (a, b) {
-                    return compareStrings(a.property, b.property);
+    for (let i = 0; i < propertiesFromTestcase.length; i++) {
+        let property = propertiesFromTestcase[i];
+        // check if the property is secondary
+        let isSecondary = property.rank === 2;
+
+        if (isSecondary) {
+            secondaryPropertiesArray.push(propertiesFromTestcase[i].property);
+        } else {
+            array.push(propertiesFromTestcase[i].property);
+        }
+        property.toDelete = false;
+        let prop = drawProperty(property, testcaseObject, canUpdate, i);
+        setPlaceholderProperty(prop[0], prop[1]);
+
+        if (isSecondary) {
+            secondaryPropertyList.push(property.property);
+        } else {
+            propertyList.push(property.property);
+        }
+    }
+    localStorage.setItem("properties", JSON.stringify(propertyList));
+    localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
+    sortProperties("#propTable");
+    sortSecondaryProperties("#propTable");
+
+    let scope = undefined;
+    if (propertyToFocus !== undefined && propertyToFocus !== null) {
+        $("#propTable #propName").each(function (i) {
+            if ($(this).val() === propertyToFocus) {
+                scope = this;
+                $("#propertiesModal").on("shown.bs.modal", function (e) {
+                    $(scope).focus();
+                    $(scope).click();
                 });
-
-                for (var index = 0; index < data.length; index++) {
-                    var property = data[index];
-                    // check if the property is secondary
-                    var isSecondary = property.rank === 2;
-                    //var isSecondary = property.description.indexOf("[secondary]") >= 0;
-
-                    if (isSecondary) {
-                        secondaryPropertiesArray.push(data[index].property);
-                    } else {
-                        array.push(data[index].property);
-                    }
-                    property.toDelete = false;
-                    var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop[0], prop[1]);
-
-                    if (isSecondary) {
-                        secondaryPropertyList.push(property.property);
-                    } else {
-                        propertyList.push(property.property);
-                    }
-                }
-                loadedPropertiesNumber = propertyList.length;
-                localStorage.setItem("properties", JSON.stringify(propertyList));
-                localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
-                sortProperties("#propTable");
-                sortSecondaryProperties("#propTable");
-
-                var scope = undefined;
-                if (propertyToFocus !== undefined && propertyToFocus !== null) {
-                    $("#propTable #propName").each(function (i) {
-                        if ($(this).val() === propertyToFocus) {
-                            scope = this;
-                            $("#propertiesModal").on("shown.bs.modal", function (e) {
-                                $(scope).focus();
-                                $(scope).click();
-                            });
-                        }
-                    });
-                }
-
-                var propertyListUnique = Array.from(new Set(propertyList));
-                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));
-
-                for (var index = 0; index < propertyListUnique.length; index++) {
-                    drawPropertyList(propertyListUnique[index], index, false);
-                }
-
-                for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
-                    drawPropertyList(secondaryPropertyListUnique[index], index, true);
-                }
-
-                array.sort(function (a, b) {
-                    return compareStrings(a, b);
-                });
-
-
-                resolve(propertyListUnique);
-
-            },
-            error: showUnexpectedError
+            }
         });
+    }
+
+    let propertyListUnique = Array.from(new Set(propertyList));
+    let secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));
+
+    for (let index = 0; index < propertyListUnique.length; index++) {
+        drawPropertyList(propertyListUnique[index], index, false);
+    }
+
+    for (let index = 0; index < secondaryPropertyListUnique.length; index++) {
+        drawPropertyList(secondaryPropertyListUnique[index], index, true);
+    }
+
+    array.sort(function (a, b) {
+        return compareStrings(a, b);
     });
 }
 
@@ -1256,7 +1154,7 @@ function sortSecondaryProperties(identifier) {
     container.append(list);
 }
 
-function getTestCaseCountry(countries, countryToCheck, isDisabled) {
+function getTestCaseCountry(countries, countriesToCheck, isDisabled) {
     var html = [];
     var cpt = 0;
     var div = $("<div></div>").addClass("checkbox");
@@ -1269,8 +1167,8 @@ function getTestCaseCountry(countries, countryToCheck, isDisabled) {
             country = index;
         }
         var input = $("<input>").attr("type", "checkbox").attr("name", country);
-
-        if ((countryToCheck.indexOf(country) !== -1)) {
+        let countryIndex = countriesToCheck.findIndex(c => c.value === country);
+        if (countryIndex !== -1) {
             input.prop("checked", true).trigger("change");
         }
         if (isDisabled) {
@@ -1279,12 +1177,12 @@ function getTestCaseCountry(countries, countryToCheck, isDisabled) {
             input.change(function () {
                 var country = $(this).prop("name");
                 var checked = $(this).prop("checked");
-                var index = countryToCheck.indexOf(country);
+                let countryIndexChange = countriesToCheck.findIndex(c => c.value === country);
 
-                if (checked && index === -1) {
-                    countryToCheck.push(country);
-                } else if (!checked && index !== -1) {
-                    countryToCheck.splice(index, 1);
+                if (checked && countryIndexChange === -1) {
+                    countriesToCheck.push({value: country});
+                } else if (!checked && countryIndexChange !== -1) {
+                    countriesToCheck.splice(countryIndexChange, 1);
                 }
             });
         }
@@ -2174,10 +2072,6 @@ function Action(json, parentStep, canUpdate) {
         this.sort = json.sort;
         this.description = json.description;
         this.action = json.action;
-        // A SUPPRIMER
-        //this.object = json.value1;
-        //this.property = json.value2;
-        // FIN SUPPR
         this.isFatal = json.isFatal;
         this.conditionOperator = json.conditionOperator;
         this.conditionValue1 = json.conditionValue1;
@@ -2197,10 +2091,6 @@ function Action(json, parentStep, canUpdate) {
         this.stepId = parentStep.stepId;
         this.description = "";
         this.action = "doNothing";
-        /*
-         this.object = "";
-         this.property = "";
-         */
         this.isFatal = true;
         this.conditionOperator = "always";
         this.conditionValue1 = "";
@@ -2532,7 +2422,7 @@ Action.prototype.generateContent = function () {
     }
     forceExeStatusList.on("change", function () {
         setModif(true);
-        obj.isFatal = forceExeStatusList.val() === "true" ? true : false;
+        obj.isFatal = forceExeStatusList.val() === "true";
         $(this).parent().parent().parent().parent().find(".extra-info .fa-exclamation").remove();
         if (obj.isFatal) {
             var content = getClassFatal("Action", "");
@@ -2563,10 +2453,6 @@ Action.prototype.generateContent = function () {
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actions).append(options));
     secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
-    /*
-     * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
-     * l'élement" ){ console.log(".append(choiceField)") }
-     */
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Field));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoperator).append(conditionOptions));
@@ -2689,19 +2575,12 @@ function convertValueWithErratum(oldValue, newValue) {
         let oldXpath = oldValue.split(',')[0];
         let oldSource = oldValue.split(oldXpath)[1];
         if (newValue.endsWith("[HTML-SOURCE-CONTENT]")) {
-//                console.log(newXpath+oldSource);
             return newXpath + oldSource;
         } else {
-//                console.log(newValue);
             return newValue;
         }
-//            console.log(newXpath);
-//            console.log(newSource);
-//            console.log(oldSource);
-//            let newSource = value1Field.val().split(xpath)[1];
     } else {
         setModif(true);
-//            console.log(value1Field.val());
         return newValue;
     }
 
@@ -2742,7 +2621,6 @@ function Control(json, parentAction, canUpdate) {
         this.control = json.control;
         this.sort = json.sort;
         this.description = json.description;
-        //this.objType = json.objType;
         this.controlId = json.controlId;
         this.value1 = json.value1;
         this.value2 = json.value2;
@@ -4269,7 +4147,7 @@ function addPropertyWithAce(keywordValue) {
             var newProperty = {
                 property: keywordValue,
                 description: "",
-                country: myCountry,
+                countries: myCountry,
                 type: "text",
                 database: "",
                 value1: "",

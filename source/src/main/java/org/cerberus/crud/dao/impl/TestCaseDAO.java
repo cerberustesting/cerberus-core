@@ -44,9 +44,18 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -129,7 +138,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tec ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS tec.*, app.* FROM testcase tec ");
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         if (!StringUtil.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
