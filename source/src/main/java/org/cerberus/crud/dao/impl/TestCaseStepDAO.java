@@ -552,14 +552,15 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tcs.*, tcs2.sort as libraryStepSort, CASE WHEN tcs1.test + tcs1.testcase + tcs1.stepId is NULL ");
-        query.append("THEN 0 ELSE 1 END as isStepInUseByOtherTestCase ");
+        query.append("SELECT tcs.*, tcs2.sort as libraryStepSort, ");
+        query.append("MAX(IF(tcs1.test IS NULL, 0, 1)) AS isStepInUseByOtherTestCase ");
         query.append("FROM testcasestep tcs ");
         query.append("LEFT JOIN testcasestep tcs1 ");
         query.append("ON tcs1.isUsingLibraryStep = true AND tcs1.libraryStepTest = ? AND tcs1.libraryStepTestcase = ? AND tcs1.libraryStepStepId = tcs.stepId ");
         query.append("LEFT OUTER JOIN testcasestep tcs2 ");
         query.append("ON tcs2.Test = tcs.libraryStepTest AND tcs2.Testcase = tcs.libraryStepTestcase AND tcs2.stepId = tcs.libraryStepStepId ");
         query.append("WHERE tcs.test = ? AND tcs.testcase = ? ");
+        query.append("GROUP BY tcs.test, tcs.testcase, tcs.stepId ORDER BY tcs.sort");
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
