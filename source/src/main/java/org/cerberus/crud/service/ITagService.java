@@ -168,6 +168,14 @@ public interface ITagService {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    Answer updateXRayTestExecution(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @param campaign
      * @param user
      * @param reqEnvironmentList

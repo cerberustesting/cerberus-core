@@ -117,6 +117,7 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
     GUI_NO_ROBOT_EXECUTOR_AVAILABLE(403, "FA", "No robot executor available for robot %ROBOT%"),
     GUI_NO_ROBOT_AVAILABLE_FOR_TYPE(403, "FA", "No robot of type %TYPE% is available"),
+    XRAY_MISSING_PARAMETERS(102, "FA", "Missing XRay parameter."),
     // Data operations
     DATA_OPERATION_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
     DATA_OPERATION_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),

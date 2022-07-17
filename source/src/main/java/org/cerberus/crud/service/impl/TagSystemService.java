@@ -63,6 +63,11 @@ public class TagSystemService implements ITagSystemService {
     }
 
     @Override
+    public void purgeTagSystemCache() {
+        tagSystemCache.clear();
+    }
+
+    @Override
     public AnswerItem<TagSystem> readByKey(String tag, String system) {
         return tagSystemDAO.readByKey(tag, system);
     }

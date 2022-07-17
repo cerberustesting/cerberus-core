@@ -1588,6 +1588,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" priority = ?,");
         query.append(" `type` = ?,");
         query.append(" `origine` = ?,");
+        query.append(" `Reforigine` = ?,");
         query.append(" `userAgent` = ?,");
         query.append(" `screenSize` = ?,");
         query.append(" UsrModif = ?,");
@@ -1631,6 +1632,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             preStat.setString(i++, Integer.toString(tc.getPriority()));
             preStat.setString(i++, tc.getType());
             preStat.setString(i++, tc.getOrigine());
+            preStat.setString(i++, tc.getRefOrigine());
             preStat.setString(i++, tc.getUserAgent());
             preStat.setString(i++, tc.getScreenSize());
             preStat.setString(i++, tc.getUsrModif());

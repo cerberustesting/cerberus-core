@@ -59,6 +59,8 @@ public interface IFactoryTag {
      * @param reqCountryList
      * @param BrowserstackBuildHash
      * @param lambdaTestBuild
+     * @param xRayTestExecution
+     * @param xRayURL
      * @param dateModif
      * @param ciResult
      * @param ciScoreThreshold
@@ -69,7 +71,7 @@ public interface IFactoryTag {
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
             String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,
-            String reqEnvironmentList, String reqCountryList, String BrowserstackBuildHash, String lambdaTestBuild,
+            String reqEnvironmentList, String reqCountryList, String BrowserstackBuildHash, String lambdaTestBuild, String xRayTestExecution, String xRayURL,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**

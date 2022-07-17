@@ -11,6 +11,7 @@
 * KAFKA Filter during SEARCH method can now also be filtered on Headers
 * Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
 * Added Documentation usecase on how to use test data from Google drive file.
+* JIRA Xray connector for both Cloud and DC versions. #2108
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -989,6 +989,53 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public Answer updateXRayTestExecution(String tag, Tag object) {
+        MessageEvent msg = null;
+        String query = "UPDATE tag SET XRayTestExecution = ?, XRayURL = ?, dateModif = NOW(), usrModif= ?";
+        query += "  WHERE Tag = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.tag : " + object.getTag());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, object.getXRayTestExecution());
+                preStat.setString(i++, object.getXRayURL());
+                preStat.setString(i++, "");
+                preStat.setString(i++, tag);
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg = null;
         String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?"
@@ -1090,8 +1137,14 @@ public class TagDAO implements ITagDAO {
         String reqCountryList = rs.getString("tag.ReqCountryList");
         String browserstackBuildHash = rs.getString("tag.BrowserstackBuildHash");
         String lambdaTestBuild = rs.getString("tag.LambdaTestBuild");
+        String xRayTestExecution = rs.getString("tag.XRayTestExecution");
+        String xRayURL = rs.getString("tag.XRayURL");
         factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, comment, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, browserstackBuildHash, lambdaTestBuild, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, comment, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA,
+                ciScore, ciScoreThreshold, ciResult,
+                envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList,
+                browserstackBuildHash, lambdaTestBuild, xRayTestExecution, xRayURL,
+                usrCreated, dateCreated, usrModif, dateModif);
 
         return newTag;
     }
@@ -1139,8 +1192,8 @@ public class TagDAO implements ITagDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(campaign)) {
@@ -1157,7 +1210,7 @@ public class TagDAO implements ITagDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

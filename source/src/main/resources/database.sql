@@ -6121,3 +6121,22 @@ ALTER TABLE `appservice`
 ALTER TABLE `appservice` 
     ADD CONSTRAINT `FK_appservice_02` FOREIGN KEY (`ParentContentService`) REFERENCES `appservice` (`Service`) ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- 1727
+ALTER TABLE `tag` 
+    ADD COLUMN `XRayTestExecution` VARCHAR(45) NULL DEFAULT '' AFTER `LambdatestBuild`,
+    ADD COLUMN `XRayURL` VARCHAR(100) NULL DEFAULT '' AFTER `XRayTestExecution`;
+
+-- 1728
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_xraycloud_clientsecret', '','JIRA XRay Cloud Client Secret.'),
+        ('', 'cerberus_xraycloud_clientid', '','JIRA XRay Cloud Client ID.');
+
+-- 1729-1731
+UPDATE `invariant` SET `value` = 'SeleniumIDE', `description` = 'Selenium IDE' WHERE (`idname` = 'EXTERNALPROVIDER') and (`value` = 'SID');
+UPDATE `invariant` SET `value` = 'JiraXray-Cloud', `description` = 'JIRA Xray Cloud' WHERE (`idname` = 'EXTERNALPROVIDER') and (`value` = 'XRAY');
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('EXTERNALPROVIDER', 'JiraXray-DC', '210', 'JIRA Xray DC', '');
+
+-- 1732
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_xraydc_url', '','JIRA XRay DC Site URL. Ex : http://yourserver/rest/raven/2.0/api'),
+        ('', 'cerberus_xraydc_token', '','JIRA XRay DC Token value.');

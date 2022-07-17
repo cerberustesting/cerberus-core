@@ -43,6 +43,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class TestCase {
+
     private String test;
     private String testcase;
     private String application;
@@ -114,6 +115,10 @@ public class TestCase {
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";
 
+    public static final String TESTCASE_ORIGIN_SIDE = "SeleniumIDE";
+    public static final String TESTCASE_ORIGIN_JIRAXRAYCLOUD = "JiraXray-Cloud";
+    public static final String TESTCASE_ORIGIN_JIRAXRAYDC = "JiraXray-DC";
+
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     @JsonIgnore
@@ -159,7 +164,9 @@ public class TestCase {
     }
 
     public void appendTestCaseCountries(TestCaseCountry testCaseCountry) {
-        if (this.testCaseCountries == null) this.testCaseCountries = new ArrayList<>();
+        if (this.testCaseCountries == null) {
+            this.testCaseCountries = new ArrayList<>();
+        }
         this.testCaseCountries.add(testCaseCountry);
     }
 
@@ -367,7 +374,6 @@ public class TestCase {
             }
             propertiesJson.put("inheritedProperties", testCaseInheritedPropertiesJson);
             testCaseJson.put("properties", propertiesJson);
-
 
         } catch (JSONException | UnsupportedEncodingException ex) {
             LOG.error(ex.toString(), ex);

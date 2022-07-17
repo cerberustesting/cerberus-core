@@ -119,6 +119,8 @@ function initModalTestCase() {
     $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
     $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+    $("[name='originField']").html(doc.getDocLabel("testcase", "Origin"));
+    $("[name='refOriginField']").html(doc.getDocLabel("testcase", "RefOrigin"));
     //TABs
     $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
@@ -142,6 +144,10 @@ function initModalTestCase() {
         'container': 'body'}
     );
 
+    var availableOrigin = getInvariantArray("EXTERNALPROVIDER", false);
+    $('#editTestCaseModal').find("#origin").autocomplete({
+        source: availableOrigin
+    });
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
         source: availableUserAgent
@@ -869,6 +875,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal2").prop("value", "");
         formEdit.find("#conditionVal3").prop("value", "");
         formEdit.find("#comment").prop("value", "");
+        formEdit.find("#origin").prop("value", "");
+        formEdit.find("#refOrigin").prop("value", "");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
         formEdit.find("#originalTest").prop("value", testCase.test);
@@ -886,6 +894,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#description").prop("value", testCase.description);
         formEdit.find("#isActive").prop("value", testCase.isActive);
+        formEdit.find("#origin").prop("value", testCase.origine);
+        formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
 
         $('#bugTableBody tr').remove();
         // Sorting Bug list.
@@ -974,6 +984,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#addBug").prop("disabled", "disabled");
         formEdit.find("#addTestCaseDependencyButton").prop("disabled", "disabled");
         formEdit.find("#executor").prop("readonly", "readonly");
+        formEdit.find("#origin").prop("readonly", "readonly");
+        formEdit.find("#refOrigin").prop("readonly", "readonly");
 //        formEdit.find("#bugId").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountries(testCase, true);
@@ -1014,6 +1026,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#addBug").removeProp("disabled");
         formEdit.find("#addTestCaseDependencyButton").removeProp("disabled");
         formEdit.find("#executor").removeProp("disabled");
+        formEdit.find("#origin").removeProp("readonly");
+        formEdit.find("#refOrigin").removeProp("readonly");
         // feed the country list.
         appendTestCaseCountries(testCase, false);
     }

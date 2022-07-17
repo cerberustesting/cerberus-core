@@ -51,6 +51,7 @@ import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.engine.scheduler.SchedulerInit;
+import org.cerberus.service.xray.IXRayService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -77,6 +78,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     private IParameterService parameterService;
     private ITagSystemService tagSystemService;
     private IExecutionThreadPoolService executionThreadPoolService;
+    private IXRayService xrayService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -220,14 +222,18 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 }
                 cacheValuesArray.put(objParam);
             }
-            objCache.put("cacheParameterEntry", cacheValuesArray);
+            objCache.put("cacheParameterEntries", cacheValuesArray);
             objCache.put("cacheParameterDurationInS", Parameter.CACHE_DURATION);
 
             // Cache Tag System data and status
             cacheValuesArray = new JSONArray();
             tagSystemService = appContext.getBean(ITagSystemService.class);
             cacheValuesArray.put(tagSystemService.getTagSystemCache());
-            objCache.put("cacheTagSystemEntry", cacheValuesArray);
+            objCache.put("cacheTagSystemEntries", cacheValuesArray);
+
+            // Cache XRay data and status
+            xrayService = appContext.getBean(IXRayService.class);
+            objCache.put("cacheXRayEntries", xrayService.getAllCacheEntries());
 
             jsonResponse.put("cache", objCache);
 

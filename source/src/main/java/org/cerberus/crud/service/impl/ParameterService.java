@@ -435,7 +435,10 @@ public class ParameterService implements IParameterService {
                 || parameter.getParam().equals("cerberus_proxyauthentification_password")
                 || parameter.getParam().equals("cerberus_jenkinsadmin_password")
                 || parameter.getParam().equals("cerberus_smtp_password")
-                || parameter.getParam().equals("cerberus_executeCerberusCommand_password")) {
+                || parameter.getParam().equals("cerberus_executeCerberusCommand_password")
+                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraycloud_clientsecret)
+                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraydc_token)
+                ) {
             return true;
         }
         return false;
@@ -481,6 +484,10 @@ public class ParameterService implements IParameterService {
             case "cerberus_loopstep_max":
             case "cerberus_url":
             case "cerberus_webperf_ignoredomainlist":
+            case Parameter.VALUE_cerberus_xraycloud_clientid:
+            case Parameter.VALUE_cerberus_xraycloud_clientsecret:
+            case Parameter.VALUE_cerberus_xraydc_token:
+            case Parameter.VALUE_cerberus_xraydc_url:
                 return true;
             // any other parameters are not managed at system level.
             default:

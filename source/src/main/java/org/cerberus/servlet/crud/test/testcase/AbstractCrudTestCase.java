@@ -125,6 +125,7 @@ public abstract class AbstractCrudTestCase extends HttpServlet {
             tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), tc.getTest(), charset));
             tc.setTestcase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testcase"), tc.getTestcase(), charset));
             tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
+            tc.setRefOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("refOrigin"), tc.getRefOrigine(), charset));
             tc.setType(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), tc.getType(), charset));
             tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
             tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), tc.getDescription(), charset));

@@ -30,13 +30,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTag implements IFactoryTag {
-    
+
     @Override
     public Tag create(long id, String tag, String description, String comment, String campaign, Timestamp dateEndQueue,
             int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
             int ciScore, int ciScoreThreshold, String ciResult,
             String environmentList, String countryList, String robotDecliList, String systemList, String applicationList,
-            String reqEnvironmentList, String reqCountryList, String browserstackBuildHash, String lambdaTestBuild,
+            String reqEnvironmentList, String reqCountryList, String browserstackBuildHash, String lambdaTestBuild, String xRayTestExecution, String xRayURL,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Tag newObject = new Tag();
         newObject.setId(id);
@@ -45,7 +45,7 @@ public class FactoryTag implements IFactoryTag {
         newObject.setComment(comment);
         newObject.setCampaign(campaign);
         newObject.setDateEndQueue(dateEndQueue);
-        
+
         newObject.setNbExe(nbExe);
         newObject.setNbExeUsefull(nbExeUsefull);
         newObject.setNbOK(nbOK);
@@ -61,7 +61,7 @@ public class FactoryTag implements IFactoryTag {
         newObject.setCiScore(ciScore);
         newObject.setCiScoreThreshold(ciScoreThreshold);
         newObject.setCiResult(ciResult);
-        
+
         newObject.setEnvironmentList(environmentList);
         newObject.setCountryList(countryList);
         newObject.setRobotDecliList(robotDecliList);
@@ -71,21 +71,23 @@ public class FactoryTag implements IFactoryTag {
         newObject.setReqEnvironmentList(reqEnvironmentList);
         newObject.setBrowserstackBuildHash(browserstackBuildHash);
         newObject.setLambdaTestBuild(lambdaTestBuild);
-        
+        newObject.setXRayTestExecution(xRayTestExecution);
+        newObject.setXRayURL(xRayURL);
+
         newObject.setUsrModif(usrModif);
         newObject.setUsrCreated(usrCreated);
         newObject.setDateModif(dateModif);
         newObject.setDateCreated(dateCreated);
-        newObject.setExecutions(new ArrayList<>());
-        
+        newObject.setExecutionsNew(new ArrayList<>());
+
         return newObject;
     }
-    
+
     @Override
     public Tag create(String tag) {
         Tag newObject = new Tag();
         newObject.setTag(tag);
         return newObject;
     }
-    
+
 }

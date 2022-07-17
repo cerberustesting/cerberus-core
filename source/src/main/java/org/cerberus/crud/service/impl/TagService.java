@@ -242,13 +242,18 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer updateXRayTestExecution(String tag, Tag object) {
+        return tagDAO.updateXRayTestExecution(tag, object);
+    }
+
+    @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
             Tag newTag = factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", user, null, user, null);
+                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
             Answer ans = tagDAO.create(newTag);
             // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isNullOrEmpty(campaign)) {

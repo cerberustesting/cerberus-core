@@ -103,6 +103,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.cerberus.service.xray.IXRayService;
 
 /**
  * @author bcivel
@@ -151,6 +152,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private IKafkaService kafkaService;
     private IExecutorService executorService;
     private IEventService eventService;
+    private IXRayService xRayService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution execution) throws CerberusException {
@@ -891,6 +893,11 @@ public class ExecutionRunService implements IExecutionRunService {
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_END_LASTRETRY, execution, null, null, null);
             }
 
+            // JIRA XRay Connector is triggered at the end of every execution..
+            if (!willBeRetried) {
+                xRayService.createXRayTestExecution(execution);
+            }
+
             /*
              * After every execution finished, <br>
              * if the execution has a tag that has a campaign associated  <br>
@@ -1246,12 +1253,12 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug("Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution controlExecution
                     = factoryTestCaseStepActionControlExecution.create(actionExecution.getId(), control.getTest(), control.getTestcase(),
-                    control.getStepId(), actionExecution.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
-                    null, null,
-                    control.getConditionOperator(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(),
-                    control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
-                    control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
-                    control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+                            control.getStepId(), actionExecution.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
+                            null, null,
+                            control.getConditionOperator(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(),
+                            control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
+                            control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
+                            control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             controlExecution.setConditionOptions(control.getConditionOptionsActive());
             controlExecution.setOptions(control.getOptionsActive());
 
@@ -1487,12 +1494,12 @@ public class ExecutionRunService implements IExecutionRunService {
             case Application.TYPE_APK:
             case Application.TYPE_IPA:
                 try {
-                    this.robotServerService.stopServer(execution);
-                    LOG.debug("Stop server for execution {}", execution.getId());
-                } catch (WebDriverException exception) {
-                    LOG.warn("Selenium/Appium didn't manage to close connection for execution {}", execution.getId(), exception);
-                }
-                break;
+                this.robotServerService.stopServer(execution);
+                LOG.debug("Stop server for execution {}", execution.getId());
+            } catch (WebDriverException exception) {
+                LOG.warn("Selenium/Appium didn't manage to close connection for execution {}", execution.getId(), exception);
+            }
+            break;
             case Application.TYPE_FAT:
                 LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvironmentParameters().getIp());
                 if (!StringUtil.isNullOrEmpty(execution.getCountryEnvironmentParameters().getIp())) {

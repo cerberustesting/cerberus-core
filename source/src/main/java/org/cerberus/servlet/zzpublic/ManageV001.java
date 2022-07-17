@@ -33,6 +33,7 @@ import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.engine.entity.ExecutionUUID;
@@ -41,6 +42,7 @@ import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.authentification.IAPIKeyService;
+import org.cerberus.service.xray.IXRayService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONException;
@@ -62,6 +64,7 @@ public class ManageV001 extends HttpServlet {
     public static final String ACTIONSTART = "start";
     public static final String ACTIONSTOP = "stop";
     public static final String ACTIONCLEANMEMORY = "cleanMemory";
+    public static final String ACTIONPURGECACHE = "purgeCache";
 
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
@@ -69,6 +72,8 @@ public class ManageV001 extends HttpServlet {
     private SchedulerInit cerberusScheduler;
     private ILogEventService logEventService;
     private IAPIKeyService apiKeyService;
+    private IXRayService xrayService;
+    private ITagSystemService tagSystemService;
 
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -101,6 +106,8 @@ public class ManageV001 extends HttpServlet {
             cerberusScheduler = appContext.getBean(SchedulerInit.class);
             logEventService = appContext.getBean(ILogEventService.class);
             apiKeyService = appContext.getBean(IAPIKeyService.class);
+            xrayService = appContext.getBean(IXRayService.class);
+            tagSystemService = appContext.getBean(ITagSystemService.class);
 
             String message = "";
             String returnCode = "OK";
@@ -115,13 +122,27 @@ public class ManageV001 extends HttpServlet {
                 boolean globalActive = parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true);
                 boolean globalSplashPageActive = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_splashpage_enable, "", true);
 
-                if (request.getParameter("action") != null && request.getParameter("action").equals("cleanMemory")) {
+                if (request.getParameter("action") != null && request.getParameter("action").equals(ACTIONCLEANMEMORY)) {
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPrivateCalls(SERVLETNAME, "CLEANMEMORY", "Cerberus Instance requested to Garbage collection.", request);
                         System.gc();
                         message = "Memory Cleaned.";
                         returnCode = "OK";
                     }
+                }
+
+                if (request.getParameter("action") != null && request.getParameter("action").equals(ACTIONPURGECACHE)) {
+                    logEventService.createForPrivateCalls(SERVLETNAME, "PURGECACHE", "Cerberus Instance requested to Purge Cache.", request);
+
+                    //XRay
+                    xrayService.purgeAllCacheEntries();
+                    //Parameters
+                    parameterService.purgeCacheEntry(null);
+                    //TagSystem
+                    tagSystemService.purgeTagSystemCache();
+
+                    message = "Cache Purged.";
+                    returnCode = "OK";
                 }
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("runQueueJob")) {

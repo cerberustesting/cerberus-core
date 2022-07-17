@@ -110,7 +110,7 @@ public class GetTagDetailsV002 extends HttpServlet {
 
                 if (tag != null) {
                     listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(Tag);
-                    tag.setExecutions(listOfExecutions);
+                    tag.setExecutionsNew(listOfExecutions);
 
                     jsonResponse = tag.toJsonV001(cerberusUrlParameter, prioritiesList, countriesList, environmentsList);
                     response.setContentType("application/json");

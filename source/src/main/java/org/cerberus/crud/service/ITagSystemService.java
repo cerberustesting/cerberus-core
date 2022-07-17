@@ -37,6 +37,11 @@ public interface ITagSystemService {
     List<String> getTagSystemCache();
 
     /**
+     * Remove all cache entries
+     */
+    void purgeTagSystemCache();
+
+    /**
      *
      * @param tag
      * @param system
