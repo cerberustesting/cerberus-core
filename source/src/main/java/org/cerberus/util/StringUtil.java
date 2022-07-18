@@ -170,10 +170,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmpty(String str) {
-        if ((str == null) || (str.trim().isEmpty())) {
-            return true;
-        }
-        return false;
+        return (str == null) || (str.trim().isEmpty());
     }
 
     /**
@@ -183,10 +180,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmptyOrNull(String str) {
-        if ((str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"))) {
-            return true;
-        }
-        return false;
+        return (str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"));
     }
 
     /**
@@ -406,8 +400,7 @@ public final class StringUtil {
      * @return formated host
      */
     public static String removeProtocolFromHostURL(String host) {
-        String newHost = host;
-        newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
+        String newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
         LOG.debug("Removed protocol host from {} to {}", host, newHost);
         return newHost;
 
@@ -574,7 +567,7 @@ public final class StringUtil {
             return "";
         }
         for (String string : listString) {
-            if (first == true) {
+            if (first) {
                 first = false;
                 result = string;
             } else {
@@ -619,16 +612,6 @@ public final class StringUtil {
             }
         }
         return null;
-    }
-
-    public static boolean isValidArrayString(String array) {
-        try {
-            new ObjectMapper().readValue(array, new TypeReference<ArrayList<String>>() {
-            });
-            return true;
-        } catch (JsonProcessingException e) {
-            return false;
-        }
     }
 
     /**
