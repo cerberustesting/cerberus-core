@@ -6140,3 +6140,10 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_xraydc_url', '','JIRA XRay DC Site URL. Ex : http://yourserver/rest/raven/2.0/api'),
         ('', 'cerberus_xraydc_token', '','JIRA XRay DC Token value.');
+
+-- 1733 - 1736
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyElementTextArrayContains', 4910, 'Verify if a specific string is in the array retrieved using JSONPath or Xpath','verifyElementTextArrayContains');
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyElementNumericArrayContains', 4920, 'Verify if a specific numeric is in the array retrieved using JSONPath or Xpath','verifyElementNumericArrayContains');
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyStringArrayContains', 1450, 'Verify if a specific string is in the array','verifyStringArrayContains');
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyNumericArrayContains', 1800, 'Verify if a specific numeric is in the array','verifyNumericArrayContains');
+
