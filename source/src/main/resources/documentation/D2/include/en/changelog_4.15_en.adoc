@@ -7,12 +7,12 @@
 *Improvements / New features*
 [square]
 * You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
-* Avro support for KAFKA SEARCH method.
-* KAFKA Filter during SEARCH method can now also be filtered on Headers
+* Avro support for KAFKA SEARCH method. #2349
+* KAFKA Filter during SEARCH method can now also be done on Headers data.
 * Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
 * Added Documentation usecase on how to use test data from Google drive file.
 * JIRA Xray connector for both Cloud and DC versions. #2108
-
+ 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * none
