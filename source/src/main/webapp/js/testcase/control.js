@@ -69,6 +69,16 @@ var controlUIList = {
             "fatal": ""
         },
         {
+            "type": "verifyStringArrayContains",
+            "value2": "String",
+            "acol2": "col-lg-3",
+            "value1": "Tableau",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
             "type": "verifyNumericEquals",
             "value1": "Integer1", "acol1": "col-lg-3",
             "value2": "Integer2", "acol2": "col-lg-3",
@@ -107,6 +117,15 @@ var controlUIList = {
             "type": "verifyNumericMinorOrEqual",
             "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
             "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericArrayContains",
+            "value2": "Nombre",
+            "acol2": "col-lg-3",
+            "value1": "Tableau",
+            "acol1": "col-lg-3",
             "value3": null,
             "fatal": ""
         },
@@ -173,23 +192,160 @@ var controlUIList = {
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextContains", "value2": "Texte", "acol2": "col-lg-3", "value1": "Chemin vers l'Element", "acol1": "col-lg-3", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "value2": "Valeur numerique", "acol2": "col-lg-4", "value1": "Chemin vers l'Element", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Sensible à la Casse (Y/N)", "acol3": "col-lg-2", "fatal": ""},
+        {
+            "type": "verifyElementTextEqual",
+            "value2": "Texte",
+            "acol2": "col-lg-3",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextDifferent",
+            "value2": "Texte",
+            "acol2": "col-lg-3",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextContains",
+            "value2": "Texte",
+            "acol2": "col-lg-3",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextMatchRegex",
+            "value2": "Regex",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextArrayContains",
+            "value2": "Texte",
+            "acol2": "col-lg-3",
+            "value1": "Chemin vers le tableau",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericArrayContains",
+            "value2": "Nombre",
+            "acol2": "col-lg-3",
+            "value1": "Chemin vers le tableau",
+            "acol1": "col-lg-3",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericDifferent",
+            "value2": "Valeur numerique",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericGreater",
+            "value2": "Valeur numerique",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericGreaterOrEqual",
+            "value2": "Valeur numerique",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericMinor",
+            "value2": "Valeur numerique",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericMinorOrEqual",
+            "value2": "Valeur numerique",
+            "acol2": "col-lg-4",
+            "value1": "Chemin vers l'Element",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTextInPage",
+            "value2": null,
+            "value1": "Regex",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTextNotInPage",
+            "value2": null,
+            "value1": "Regex",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTitle",
+            "value2": null,
+            "value1": "Title",
+            "acol1": "col-lg-6",
+            "value3": "[opt] Sensible à la Casse (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
         {"type": "verifyUrl", "value2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Cadrer en pixel (gauche,droite,haut,bas)", "acol1": "col-lg-8", "value3": null, "fatal": null},
+        {
+            "type": "verifyTextInDialog",
+            "value2": null,
+            "value1": "Text",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyXmlTreeStructure",
+            "value2": "Tree",
+            "acol2": "col-lg-4",
+            "value1": "XPath",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "takeScreenshot",
+            "value2": null,
+            "value1": "[opt] Cadrer en pixel (gauche,droite,haut,bas)",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": null
+        },
         {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ], "en": [
         {
@@ -242,6 +398,16 @@ var controlUIList = {
             "fatal": ""
         },
         {
+            "type": "verifyStringArrayContains",
+            "value2": "String",
+            "acol2": "col-lg-3",
+            "value1": "Array",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
             "type": "verifyNumericEquals",
             "value1": "Integer1", "acol1": "col-lg-4",
             "value2": "Integer2", "acol2": "col-lg-4",
@@ -280,6 +446,15 @@ var controlUIList = {
             "type": "verifyNumericMinorOrEqual",
             "value1": "Integer1 (ex : 10)", "acol1": "col-lg-4",
             "value2": "Integer2 (ex : 20)", "acol2": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyNumericArrayContains",
+            "value2": "Number",
+            "acol2": "col-lg-3",
+            "value1": "Array",
+            "acol1": "col-lg-3",
             "value3": null,
             "fatal": ""
         },
@@ -346,23 +521,177 @@ var controlUIList = {
             "value3": null,
             "fatal": ""
         },
-        {"type": "verifyElementTextEqual", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextDifferent", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextContains", "value2": "Text", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-3", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyElementTextMatchRegex", "value2": "Regex", "acol2": "col-lg-3", "value1": "Element Path", "acol1": "col-lg-5", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericDifferent", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreater", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericGreaterOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinor", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyElementNumericMinorOrEqual", "value2": "Numeric value", "acol2": "col-lg-2", "value1": "Element Path", "acol1": "col-lg-6", "value3": null, "fatal": ""},
-        {"type": "verifyTextInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextNotInPage", "value2": null, "value1": "Regex", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTitle", "value2": null, "value1": "Title", "acol1": "col-lg-6", "value3": "[opt] Case Sensitive (Y/N)", "acol3": "col-lg-2", "fatal": ""},
-        {"type": "verifyUrl", "value2": null, "acol2": null, "value1": "URL", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyTextInDialog", "value2": null, "value1": "Text", "acol1": "col-lg-8", "value3": null, "fatal": ""},
-        {"type": "verifyXmlTreeStructure", "value2": "Tree", "acol2": "col-lg-4", "value1": "XPath", "acol1": "col-lg-4", "value3": null, "fatal": ""},
-        {"type": "takeScreenshot", "value2": null, "value1": "[opt] Crop values in pixels (left,right,top,bottom)", "acol1": "col-lg-8", "value3": null, "fatal": null},
+        {
+            "type": "verifyElementTextEqual",
+            "value2": "Text",
+            "acol2": "col-lg-3",
+            "value1": "Element Path",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextDifferent",
+            "value2": "Text",
+            "acol2": "col-lg-3",
+            "value1": "Element Path",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextContains",
+            "value2": "Text",
+            "acol2": "col-lg-3",
+            "value1": "Element Path",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextMatchRegex",
+            "value2": "Regex",
+            "acol2": "col-lg-3",
+            "value1": "Element Path",
+            "acol1": "col-lg-5",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementTextArrayContains",
+            "value2": "Text",
+            "acol2": "col-lg-3",
+            "value1": "Array path",
+            "acol1": "col-lg-3",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericArrayContains",
+            "value2": "Numeric value",
+            "acol2": "col-lg-3",
+            "value1": "Array path",
+            "acol1": "col-lg-3",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericEqual",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericDifferent",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericGreater",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericGreaterOrEqual",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericMinor",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyElementNumericMinorOrEqual",
+            "value2": "Numeric value",
+            "acol2": "col-lg-2",
+            "value1": "Element Path",
+            "acol1": "col-lg-6",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTextInPage",
+            "value2": null,
+            "value1": "Regex",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTextNotInPage",
+            "value2": null,
+            "value1": "Regex",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTitle",
+            "value2": null,
+            "value1": "Title",
+            "acol1": "col-lg-6",
+            "value3": "[opt] Case Sensitive (Y/N)",
+            "acol3": "col-lg-2",
+            "fatal": ""
+        },
+        {
+            "type": "verifyUrl",
+            "value2": null,
+            "acol2": null,
+            "value1": "URL",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyTextInDialog",
+            "value2": null,
+            "value1": "Text",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "verifyXmlTreeStructure",
+            "value2": "Tree",
+            "acol2": "col-lg-4",
+            "value1": "XPath",
+            "acol1": "col-lg-4",
+            "value3": null,
+            "fatal": ""
+        },
+        {
+            "type": "takeScreenshot",
+            "value2": null,
+            "value1": "[opt] Crop values in pixels (left,right,top,bottom)",
+            "acol1": "col-lg-8",
+            "value3": null,
+            "fatal": null
+        },
         {"type": "getPageSource", "value2": null, "value1": null, "value3": null, "fatal": null}
     ]
 };
