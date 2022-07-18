@@ -392,7 +392,7 @@ public final class StringUtil {
             // No refix so we put http:// by default.
             newHost = "http://" + host;
         }
-        LOG.debug("Cleaned host from " + host + " to " + newHost);
+        LOG.debug("Cleaned host from {} to {}", host, newHost);
         return newHost;
 
     }
@@ -408,7 +408,7 @@ public final class StringUtil {
     public static String removeProtocolFromHostURL(String host) {
         String newHost = host;
         newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
-        LOG.debug("Removed protocol host from " + host + " to " + newHost);
+        LOG.debug("Removed protocol host from {} to {}", host, newHost);
         return newHost;
 
     }
