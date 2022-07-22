@@ -49,8 +49,8 @@
         <!-- jsonpath -->
         <jsonxpath.version>2.7.0</jsonxpath.version>
         <!-- Groovy Version -->
-        <groovy.version>2.4.21</groovy.version>
-        <groovy-sandbox.version>1.10</groovy-sandbox.version>
+        <groovy.version>3.0.11</groovy.version>
+        <groovy-sandbox.version>1.19</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
         <appium.version>7.2.0</appium.version>
         <selenium.version>3.141.59</selenium.version>
