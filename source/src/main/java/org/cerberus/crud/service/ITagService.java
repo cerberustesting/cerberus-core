@@ -176,6 +176,14 @@ public interface ITagService {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    int lockXRayTestExecution(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @param campaign
      * @param user
      * @param reqEnvironmentList

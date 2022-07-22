@@ -6,6 +6,9 @@ Cerberus integrate with Xray on both Cloud and DC versions.
 ** A JIRA platform with Xray app installed.
 ** A few Cerberus Tescases and at least a campaign
 
+If you are using a JIRA Cloud platform, you will have to configure the authentification detailed on chapter 1. and then define the testcase links between Cerberus and Xray on chapter 3.
+If you are using a JIRA DC platform, you will have to configure the authentification detailed on chapter 2. and then also define the testcase links between Cerberus and Xray on chapter 3.
+
 
 *1. Configure Cerberus with JIRA Authentification (if using JIRA Cloud)* 
 
@@ -51,7 +54,7 @@ image:jiradc6.png[FR,300,800]
 
 image:jiradc7.png[FR,400,800]
 
-* On Cerberus Side, set the 2 parameters *_cerberus_xraydc_token_* with the previously created API Key and  *_cerberus_xraydc_url_* with the URL to your JIRA instance (following the schema : __http://yourserver/rest/raven/2.0/api__).
+* On Cerberus Side, set the 2 parameters *_cerberus_xraydc_token_* with the previously created API Key and  *_cerberus_xraydc_url_* with the URL to your JIRA instance (following the schema : __http://yourserver__ /rest/raven/2.0/api will be added by Cerberus in order to access the API).
 
 image:jiradc8.png[FR,400,800]
 
@@ -62,7 +65,9 @@ image:jiradc8.png[FR,400,800]
 * Edit Testcase header of every of your testcase that you want to link with JIRA Xray in order to 
 ** feed _External provider_ to *JiraXray-Cloud* if using a Cloud version of Xray or *JiraXray-DC* if you are using the DC version.
 ** feed External Reference to the Epic reference (ex : **CER-1**)
-* Execute your campaign that contain the executions. After a while you will see on the Tag Detail section the reference of the *Test Execution* Epic on JIRA side with a button that will bring you to the new Epic Xray screen
+* Execute your campaign that contain the executions. After a while you will see on the Tag Detail section the reference of the *Test Execution* Epic on JIRA side with a button that will bring you to the new Epic Xray screen.
+
+At the end of every testcase execution, Cerberus will make API call to Xray in order to create the 'Test Execution' Epic if it doesn't exist and add the Cerberus execution inside it as a test run.
 
 image:jiracloud4.png[FR,400,800]
 

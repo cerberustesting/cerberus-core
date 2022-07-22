@@ -6140,3 +6140,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_xraydc_url', '','JIRA XRay DC Site URL. Ex : http://yourserver/rest/raven/2.0/api'),
         ('', 'cerberus_xraydc_token', '','JIRA XRay DC Token value.');
+
+-- 1733
+UPDATE `parameter` SET `description` = 'JIRA XRay DC Site URL. Ex : http://yourserver In order to access the API, /rest/raven/2.0/api will be added in order to have the format http://yourserver/rest/raven/2.0/api' 
+    WHERE (`system` = '') and (`param` = 'cerberus_xraydc_url');
