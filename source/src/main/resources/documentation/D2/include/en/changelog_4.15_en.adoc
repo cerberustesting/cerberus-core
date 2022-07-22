@@ -12,6 +12,7 @@
 * Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
 * Added Documentation usecase on how to use test data from Google drive file.
 * JIRA Xray connector for both Cloud and DC versions. #2108
+* The maximum number of characters for a campaign name has been increased from 45 to 200. #2373
  
 *Warning to be considered before applying the version (deprecated features)*
 [square]
