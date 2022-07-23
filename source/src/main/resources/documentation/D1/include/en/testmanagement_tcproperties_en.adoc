@@ -88,7 +88,7 @@ Properties can be called in action or control values field or in another propert
 
 | getFromCommand |  | 
 
-| getFromGroovy | Execute the specified Groovy script and get the last defined variable | `'%property.date%'.replace('\','-').substring(0,10)`
+| getFromGroovy | Execute the specified Groovy script and get the last defined variable. Test your scripts easily using the  https://groovyconsole.appspot.com[online console] | `'%property.date%'.replace('\','-').substring(0,10)`
 
 |===
 

@@ -1331,7 +1331,7 @@ public class WebDriverService implements IWebDriverService {
                     } else {
                         //the key enterer is not valid
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
-                        LOG.debug("Key " + keyToPress + "is not available in the current context");
+                        LOG.debug("Key " + keyToPress + " is not available in the current context");
                     }
 
                     message.setDescription(message.getDescription().replace("%KEY%", keyToPress));

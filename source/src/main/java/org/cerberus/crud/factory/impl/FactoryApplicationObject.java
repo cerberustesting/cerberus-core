@@ -36,7 +36,7 @@ public class FactoryApplicationObject implements IFactoryApplicationObject {
         ao.setApplication(application);
         ao.setObject(object);
         ao.setValue(value);
-        ao.setScreenShotFileName(screenshotfilename);
+        ao.setScreenshotFilename(screenshotfilename);
         ao.setUsrCreated(usrcreated);
         ao.setDateCreated(datecreated);
         ao.setUsrModif(usrmodif);

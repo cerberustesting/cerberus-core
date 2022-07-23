@@ -231,7 +231,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject) a.getItem();
                 if (ao != null) {
-                    File picture = new File(uploadPath + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName());
+                    File picture = new File(uploadPath + File.separator + ao.getID() + File.separator + ao.getScreenshotFilename());
                     try {
                         image = ImageIO.read(picture);
                     } catch (IOException e) {
@@ -597,7 +597,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(1, object.getApplication());
             preStat.setString(2, object.getObject());
             preStat.setString(3, object.getValue());
-            preStat.setString(4, object.getScreenShotFileName());
+            preStat.setString(4, object.getScreenshotFilename());
             preStat.setString(5, object.getUsrCreated());
             preStat.setString(6, object.getDateCreated());
             preStat.setString(7, object.getUsrModif());
@@ -657,7 +657,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(i++, object.getApplication());
             preStat.setString(i++, object.getObject());
             preStat.setString(i++, object.getValue());
-            preStat.setString(i++, object.getScreenShotFileName());
+            preStat.setString(i++, object.getScreenshotFilename());
             preStat.setString(i++, object.getUsrCreated());
             preStat.setString(i++, object.getDateCreated());
             preStat.setString(i++, object.getUsrModif());

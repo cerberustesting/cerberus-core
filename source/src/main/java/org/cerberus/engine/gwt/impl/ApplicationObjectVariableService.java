@@ -20,6 +20,8 @@
 package org.cerberus.engine.gwt.impl;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +66,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         String stringToDecodeInit = stringToDecode;
         String application = "";
         String system = "";
-        
+
         if (tCExecution != null) {
             system = tCExecution.getApplicationObj().getSystem();
             application = tCExecution.getApplicationObj().getApplication();
@@ -100,9 +102,12 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     ApplicationObject ao = (ApplicationObject) ans.getItem();
                     String val = null;
                     if ("picturepath".equals(valueA[2])) {
-                        val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName();
+                        val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenshotFilename();
                     } else if ("pictureurl".equals(valueA[2])) {
-                        val = parameterService.getParameterStringByKey("cerberus_url", system, "") + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
+                        val = parameterService.getParameterStringByKey("cerberus_url", system, "")
+                                + "/ReadApplicationObjectImage?application=" + URLEncoder.encode(ao.getApplication(), StandardCharsets.UTF_8)
+                                + "&object=" + URLEncoder.encode(ao.getObject(), StandardCharsets.UTF_8);
+//                                + "#xoffset=12|yoffset=50";
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
                     }

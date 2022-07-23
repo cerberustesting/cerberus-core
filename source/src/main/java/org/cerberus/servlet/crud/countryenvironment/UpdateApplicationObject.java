@@ -162,7 +162,7 @@ public class UpdateApplicationObject extends HttpServlet {
                  */
                 ApplicationObject applicationData = (ApplicationObject) resp.getItem();
 
-                String fileName = applicationData.getScreenShotFileName();
+                String fileName = applicationData.getScreenshotFilename();
                 if (file != null) {
                     ans = applicationObjectService.uploadFile(applicationData.getID(), file);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -171,7 +171,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 }
 
                 applicationData.setValue(value);
-                applicationData.setScreenShotFileName(fileName);
+                applicationData.setScreenshotFilename(fileName);
                 applicationData.setUsrModif(usrmodif);
                 applicationData.setDateModif(datemodif);
                 ans = applicationObjectService.update(applicationData.getApplication(), applicationData.getObject(), applicationData);
