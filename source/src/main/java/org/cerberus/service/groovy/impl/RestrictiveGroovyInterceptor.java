@@ -39,15 +39,15 @@ import java.util.Set;
 
 import org.codehaus.groovy.runtime.GStringImpl;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.runtime.ScriptBytecodeAdapter;
 import org.kohsuke.groovy.sandbox.GroovyInterceptor;
 
 /**
  * {@link GroovyInterceptor} which allows some basic classes but is pretty
  * restrictive. Constructor offers parameters to allow more classes.
  *
- * Edit Aurélien Bourdon:
- *  - Removed Google collect as allowed package
- * 
+ * Edit Aurélien Bourdon: - Removed Google collect as allowed package
+ *
  * @author Kai Schwierczek
  * @author Aurelien Bourdon
  */
@@ -119,6 +119,7 @@ public class RestrictiveGroovyInterceptor extends GroovyInterceptor {
         allowedClasses.add(HashMap.class);
         allowedClasses.add(HashSet.class);
         allowedClasses.add(Collections.class);
+        allowedClasses.add(ScriptBytecodeAdapter.class);
 
         // Binding classes
         allowedClasses.add(Timestamp.class);
