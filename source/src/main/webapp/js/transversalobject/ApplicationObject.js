@@ -37,7 +37,7 @@ function openModalApplicationObject(applicationObject, value, mode, page) {
 }
 
 function initModalApplicationObject(page, application) {
-    console.info("init");
+
     var doc = new Doc();
     $("[name='buttonClose']").html(
             doc.getDocLabel("page_global", "buttonClose"));
@@ -260,7 +260,11 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 
         formEdit.find("#object").prop("value", applicationObject.object);
         formEdit.find("#value").prop("value", cleanErratum(applicationObject.value));
+        formEdit.find("#xOffset").prop("value", applicationObject.xOffset);
+        formEdit.find("#yOffset").prop("value", applicationObject.yOffset);
 
+        pictureUrl = "ReadApplicationObjectImage?application=" + applicationObject.application + "&object=" + applicationObject.object + "&time=" + new Date().getTime()
+        formEdit.find("#selectedPicture").attr("src", pictureUrl + "&h=400&w=800");
 
     }
 
@@ -358,10 +362,17 @@ function handlePictureSend(items, idModal) {
             //image from clipboard found
             var blob = items[i].getAsFile();
             imagePasteFromClipboard = blob;
+
+            // Crossbrowser support for URL
             var URLObj = window.URL || window.webkitURL;
+
+            // Creates a DOMString containing a URL representing the object given in the parameter
+            // namely the original Blob
+            $(idModal).find("#selectedPicture").attr("src", URLObj.createObjectURL(imagePasteFromClipboard));
+
             var source = URLObj.createObjectURL(blob);
             var nameToDisplay = blob.name;
-            updateDropzone(nameToDisplay, idModal);
+            updateDropzone(nameToDisplay, idModal, blob.lastModifiedDate);
             return true;
         } else {
             var message = new Message("danger", "The file input is not a picture");
@@ -409,11 +420,11 @@ function listennerForInputTypeFile(idModal) {
  * @param {boolean} is the picture upload should be taken from the clipboard
  * @returns {void}
  */
-function updateDropzone(messageToDisplay, idModal) {
+function updateDropzone(messageToDisplay, idModal, modifDate) {
 
     var dropzoneText = $(idModal).find("#dropzoneText");
     var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
-    dropzoneText.html(messageToDisplay + " " + glyphIconUpload);
+    dropzoneText.html(messageToDisplay + " " + glyphIconUpload + " <br><i>" + getDateMedium(modifDate) + "</i> ");
     if (imagePasteFromClipboard !== undefined) {
         //reset value inside the input
         var inputs = $(idModal).find("#inputFile")[0];

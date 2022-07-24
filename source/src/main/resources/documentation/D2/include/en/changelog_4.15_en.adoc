@@ -16,7 +16,12 @@
 * Added Documentation usecase on how to use test data from Google drive file.
 * JIRA Xray connector for both Cloud and DC versions. #2108
 * The maximum number of characters for a campaign name has been increased from 45 to 200. #2373
+* Add the possibility to define an offset for Sikuli testing #1877
+* Visual improvements on Application Object modal (display the content immediately when paste or drop is done).
+* Allow to configure typeDelay when using Sikuli keyPress (from parameter or at action level).
+* Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require 1.7 version of cerberus-extension-sikuli
  
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Updated Groovy version from 2.4.21 to latest 3.0.11 and Groovy sandbox from 1.10 to 1.19
+* That release require cerberus-extension-sikuli v1.7

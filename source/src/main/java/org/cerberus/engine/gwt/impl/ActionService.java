@@ -265,6 +265,10 @@ public class ActionService implements IActionService {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
         }
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX).isEmpty()) {
+            String typeDelay = optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX);
+            robotServerService.setOptionsTypeDelay(tCExecution.getSession(), typeDelay);
+        }
 
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);

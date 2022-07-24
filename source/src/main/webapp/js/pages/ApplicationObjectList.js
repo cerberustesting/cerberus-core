@@ -216,8 +216,7 @@ function aoColumnsFunc(tableId) {
             "data": "application",
             "sName": "obj.application",
             "sWidth": "60px",
-            "title": doc.getDocOnline("page_applicationObject",
-                    "Application")
+            "title": doc.getDocOnline("page_applicationObject", "Application")
         },
         {
             "data": "object",
@@ -248,11 +247,24 @@ function aoColumnsFunc(tableId) {
                 var currentCase = "<image "
                         + "onclick ='displayPictureOfMinitature(this)' "
                         + "style ='height: 25px;cursor:  pointer;'"
-                        + "src='ReadApplicationObjectImage?application="
-                        + obj["application"] + "&object=" + obj["object"]
-                        + "&time=" + new Date().getTime() + "'></image>"
+                        + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() 
+                        + "'></image>"
                 return currentCase;
             }
+        },
+        {
+            "data": "xOffset",
+            "sName": "xOffset",
+            "like": true,
+            "sWidth": "30px",
+            "title": doc.getDocOnline("page_applicationObject", "XOffset")
+        },
+        {
+            "data": "yOffset",
+            "sName": "yOffset",
+            "like": true,
+            "sWidth": "30px",
+            "title": doc.getDocOnline("page_applicationObject", "YOffset")
         },
         {
             "data": "usrCreated",

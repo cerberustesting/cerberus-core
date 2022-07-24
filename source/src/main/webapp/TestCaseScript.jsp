@@ -192,6 +192,15 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="form-group col-sm-2"><input id="typeDelayAct" type="checkbox"  class="form-control input-sm"></div>
+                                                        <div class="form-group col-sm-4"><input class="form-control input-sm" readonly value='typeDelay'></div>
+                                                        <div class="form-group col-sm-6"><input id="typeDelayVal" class="form-control input-sm"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                     <div id="firstRowOptions"></div>
@@ -216,6 +225,7 @@
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
                                         <button class="btn btn-info btn-block marginTop25" id="addStep" disabled>Add Step</button>
+<!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
                                     </div>
                                 </div>
                             </nav>

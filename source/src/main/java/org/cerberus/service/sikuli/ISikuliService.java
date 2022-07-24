@@ -196,17 +196,19 @@ public interface ISikuliService {
      *
      * @param session
      * @param locator
+     * @param text
      * @return
      */
-    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator);
+    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator, String text);
 
     /**
      *
      * @param session
      * @param locator
+     * @param text
      * @return
      */
-    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator);
+    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator, String text);
 
     /**
      *

@@ -70,7 +70,7 @@ public class ConditionService implements IConditionService {
     private static final Logger LOG = LogManager.getLogger(ConditionService.class);
 
     @Override
-    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, JSONArray options) {
+    public AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution execution, JSONArray options) {
 
         LOG.debug("Starting Evaluation condition : {}", conditionOperator);
 
@@ -82,17 +82,21 @@ public class ConditionService implements IConditionService {
 
         // Define Options
         HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(options);
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)) {
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX).isEmpty()) {
             Integer newTimeout = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
-            robotServerService.setOptionsTimeout(tCExecution.getSession(), newTimeout);
+            robotServerService.setOptionsTimeout(execution.getSession(), newTimeout);
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)) {
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX).isEmpty()) {
             Integer newHighlightElement = Integer.valueOf(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX));
-            robotServerService.setOptionsHighlightElement(tCExecution.getSession(), newHighlightElement);
+            robotServerService.setOptionsHighlightElement(execution.getSession(), newHighlightElement);
         }
-        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX)) {
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX).isEmpty()) {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
-            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
+            robotServerService.setOptionsMinSimilarity(execution.getSession(), minSimilarity);
+        }
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX).isEmpty()) {
+            String typeDelay = optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX);
+            robotServerService.setOptionsTypeDelay(execution.getSession(), typeDelay);
         }
 
         /*
@@ -107,32 +111,32 @@ public class ConditionService implements IConditionService {
                 break;
 
             case CONDITIONOPERATOR_IFELEMENTPRESENT:
-                ans = evaluateCondition_ifElementPresent(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifElementPresent(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFELEMENTNOTPRESENT:
-                ans = evaluateCondition_ifElementNotPresent(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifElementNotPresent(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFELEMENTVISIBLE:
-                ans = evaluateCondition_ifElementVisible(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifElementVisible(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
-                ans = evaluateCondition_ifElementNotVisible(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifElementNotVisible(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFPROPERTYEXIST:
-                ans = evaluateCondition_ifPropertyExist(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifPropertyExist(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFPROPERTYNOTEXIST:
-                ans = evaluateCondition_ifPropertyNotExist(conditionToEvaluate.getCondition(), conditionValue1, tCExecution);
+                ans = evaluateCondition_ifPropertyNotExist(conditionToEvaluate.getCondition(), conditionValue1, execution);
                 mes = ans.getResultMessage();
                 break;
 
@@ -182,12 +186,12 @@ public class ConditionService implements IConditionService {
                 break;
 
             case CONDITIONOPERATOR_IFTEXTINELEMENT:
-                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionValue3);
+                ans = evaluateCondition_ifTextInElement(execution, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
             case CONDITIONOPERATOR_IFTEXTNOTINELEMENT:
-                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionValue3);
+                ans = evaluateCondition_ifTextNotInElement(execution, conditionValue1, conditionValue2, conditionValue3);
                 mes = ans.getResultMessage();
                 break;
 
@@ -198,7 +202,7 @@ public class ConditionService implements IConditionService {
         LOG.debug("Finished Evaluation condition : {}", mes.getCodeString());
 
         // Reset Timeout to default
-        robotServerService.setOptionsToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(execution.getSession());
 
         // the decision whether we execute the action/control/step is taken from the codeString of the message.
         isOperationToBeExecuted = mes.getCodeString().equals("OK");
@@ -358,37 +362,62 @@ public class ConditionService implements IConditionService {
                 case Application.TYPE_IPA:
                     try {
 
-                        if (identifier.getIdentifier().equals("picture")) {
-                            mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
-                            if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
-                                conditionResult = true;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
-                                conditionResult = false;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            }
-
-                        } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
                             mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                        } else {
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
                             mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                         }
-                    } catch (WebDriverException exception) {
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            conditionResult = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            conditionResult = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
+
+                    } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        conditionResult = true;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                    } else {
                         conditionResult = false;
-                        mes = parseWebDriverException(exception);
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                     }
-                    break;
+                } catch (WebDriverException exception) {
+                    conditionResult = false;
+                    mes = parseWebDriverException(exception);
+                }
+                break;
 
                 case Application.TYPE_FAT:
 
-                    if (identifier.getIdentifier().equals("picture")) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        LOG.debug("Sikuli : {}", mes.getCode());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            conditionResult = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            conditionResult = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = true;
@@ -493,36 +522,61 @@ public class ConditionService implements IConditionService {
                 case Application.TYPE_APK:
                 case Application.TYPE_IPA:
                     try {
-                        if (identifier.getIdentifier().equals("picture")) {
-                            mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
-                            if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
-                                conditionResult = true;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
-                                conditionResult = false;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            }
-
-                        } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
                             mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                        } else {
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
                             conditionResult = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
                             mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                         }
-                    } catch (WebDriverException exception) {
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            conditionResult = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            conditionResult = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
+
+                    } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        conditionResult = true;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                    } else {
                         conditionResult = false;
-                        mes = parseWebDriverException(exception);
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                     }
-                    break;
+                } catch (WebDriverException exception) {
+                    conditionResult = false;
+                    mes = parseWebDriverException(exception);
+                }
+                break;
 
                 case Application.TYPE_FAT:
-                    if (identifier.getIdentifier().equals("picture")) {
-                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), null);
+                        LOG.debug("Sikuli : {}", mes.getCode());
+                        if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
+                            conditionResult = true;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        } else if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT))) {
+                            conditionResult = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        }
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        mes = sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), null, identifier.getLocator());
                         LOG.debug("Sikuli : {}", mes.getCode());
                         if (mes.equals(new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT))) {
                             conditionResult = true;
@@ -562,20 +616,20 @@ public class ConditionService implements IConditionService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                                 try {
-                                    if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
-                                        conditionResult = true;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    } else {
-                                        conditionResult = false;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    }
-                                } catch (Exception ex) {
-                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
-                                    mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
+                                    conditionResult = true;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                } else {
+                                    conditionResult = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                                 }
-                                break;
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                            }
+                            break;
 
                             default:
                                 conditionResult = false;
@@ -903,45 +957,39 @@ public class ConditionService implements IConditionService {
         switch (conditionOperator) {
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICEQUAL:
-                mes = Objects.equals(value1, value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICEQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICEQUAL);
+                mes = Objects.equals(value1, value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICEQUAL)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICEQUAL);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICDIFFERENT:
-                mes = Objects.equals(value1, value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICDIFFERENT)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICDIFFERENT);
+                mes = Objects.equals(value1, value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICDIFFERENT)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICDIFFERENT);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICGREATER:
-                mes = (value1 > value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATER)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATER);
+                mes = (value1 > value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATER)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATER);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICGREATEROREQUAL:
-                mes = (value1 >= value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATEROREQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATEROREQUAL);
+                mes = (value1 >= value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATEROREQUAL)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATEROREQUAL);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICMINOR:
-                mes = (value1 < value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOR)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOR);
+                mes = (value1 < value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOR)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOR);
                 break;
 
             case TestCaseStepAction.CONDITIONOPERATOR_IFNUMERICMINOROREQUAL:
-                mes = (value1 <= value2) ?
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOROREQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOROREQUAL);
+                mes = (value1 <= value2)
+                        ? new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOROREQUAL)
+                        : new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOROREQUAL);
                 break;
         }
         mes.setDescription(mes.getDescription()

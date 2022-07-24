@@ -106,8 +106,8 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     } else if ("pictureurl".equals(valueA[2])) {
                         val = parameterService.getParameterStringByKey("cerberus_url", system, "")
                                 + "/ReadApplicationObjectImage?application=" + URLEncoder.encode(ao.getApplication(), StandardCharsets.UTF_8)
-                                + "&object=" + URLEncoder.encode(ao.getObject(), StandardCharsets.UTF_8);
-//                                + "#xoffset=12|yoffset=50";
+                                + "&object=" + URLEncoder.encode(ao.getObject(), StandardCharsets.UTF_8)
+                                + "#xoffset=" + ao.getXOffset() + "|yoffset=" + ao.getYOffset();
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
                     }

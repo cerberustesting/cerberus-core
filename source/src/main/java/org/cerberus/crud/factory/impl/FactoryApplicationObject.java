@@ -30,13 +30,17 @@ import org.springframework.stereotype.Service;
 public class FactoryApplicationObject implements IFactoryApplicationObject {
 
     @Override
-    public ApplicationObject create(int ID, String application, String object, String value, String screenshotfilename, String usrcreated, String datecreated, String usrmodif, String datemodif) {
+    public ApplicationObject create(int ID, String application, String object, String value, String screenshotfilename,
+            String xOffset, String yOffset,
+            String usrcreated, String datecreated, String usrmodif, String datemodif) {
         ApplicationObject ao = new ApplicationObject();
         ao.setID(ID);
         ao.setApplication(application);
         ao.setObject(object);
         ao.setValue(value);
         ao.setScreenshotFilename(screenshotfilename);
+        ao.setXOffset(xOffset);
+        ao.setYOffset(yOffset);
         ao.setUsrCreated(usrcreated);
         ao.setDateCreated(datecreated);
         ao.setUsrModif(usrmodif);

@@ -87,6 +87,13 @@ public interface IRobotServerService {
     /**
      *
      * @param session
+     * @param typeDelay
+     */
+    public void setOptionsTypeDelay(Session session, String typeDelay);
+
+    /**
+     *
+     * @param session
      */
     public void setOptionsToDefault(Session session);
 

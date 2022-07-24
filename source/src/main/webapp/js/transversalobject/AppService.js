@@ -77,7 +77,7 @@ function initModalAppService() {
     }
     );
 
-    setUpDragAndDrop('#editSoapLibraryModal');
+    srv_setUpDragAndDrop('#editSoapLibraryModal');
 
 
 }
@@ -107,8 +107,8 @@ function editAppServiceClick(service, page) {
     $('#addSoapLibraryButton').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "EDIT");
-    listennerForInputTypeFile('#editSoapLibraryModal')
-    pasteListennerForClipboardPicture('#editSoapLibraryModal');
+    srv_listennerForInputTypeFile('#editSoapLibraryModal')
+    srv_pasteListennerForClipboardPicture('#editSoapLibraryModal');
 }
 
 /***
@@ -133,8 +133,8 @@ function duplicateAppServiceClick(service) {
     $('#addSoapLibraryButton').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "DUPLICATE");
-    listennerForInputTypeFile('#editSoapLibraryModal')
-    pasteListennerForClipboardPicture('#editSoapLibraryModal');
+    srv_listennerForInputTypeFile('#editSoapLibraryModal')
+    srv_pasteListennerForClipboardPicture('#editSoapLibraryModal');
 }
 
 /***
@@ -158,8 +158,8 @@ function addAppServiceClick(service, page) {
     $('#addSoapLibraryButton').removeProp('hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
-    listennerForInputTypeFile('#editSoapLibraryModal')
-    pasteListennerForClipboardPicture('#editSoapLibraryModal');
+    srv_listennerForInputTypeFile('#editSoapLibraryModal')
+    srv_pasteListennerForClipboardPicture('#editSoapLibraryModal');
     $('#service').val("");
 
 }
@@ -575,9 +575,9 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#kafkaFilterHeaderPath").prop("value", service.kafkaFilterHeaderPath);
         formEdit.find("#kafkaFilterHeaderValue").prop("value", service.kafkaFilterHeaderValue);
         if (service.fileName === "") {
-            updateDropzone("Drag and drop Files", "#" + modalId);
+            srv_updateDropzone("Drag and drop Files", "#" + modalId);
         } else {
-            updateDropzone(service.fileName, "#" + modalId);
+            srv_updateDropzone(service.fileName, "#" + modalId);
         }
 
         // Feed the content table.
@@ -833,7 +833,7 @@ function addNewHeaderRow() {
  * @param {DataTransferItemList} items
  * @returns {boolean}
  */
-function handlePictureSend(items, idModal) {
+function srv_handlePictureSend(items, idModal) {
     if (!items)
         return false;
     //access data directly
@@ -843,7 +843,7 @@ function handlePictureSend(items, idModal) {
         var URLObj = window.URL || window.webkitURL;
         var source = URLObj.createObjectURL(blob);
         var nameToDisplay = blob.name;
-        updateDropzone(nameToDisplay, idModal);
+        srv_updateDropzone(nameToDisplay, idModal);
         return true
     }
 }
@@ -852,7 +852,7 @@ function handlePictureSend(items, idModal) {
  * add a listenner for a paste event to catch clipboard if it's a picture
  * @returns {void}
  */
-function pasteListennerForClipboardPicture(idModal) {
+function srv_pasteListennerForClipboardPicture(idModal) {
     var _self = this;
     //handlers
     document.addEventListener('paste', function (e) {
@@ -863,7 +863,7 @@ function pasteListennerForClipboardPicture(idModal) {
         //handle paste event if the user do not select an input;
         if (e.clipboardData && !$(e.target).is("input")) {
             var items = e.clipboardData.items;
-            handlePictureSend(items, idModal);
+            srv_handlePictureSend(items, idModal);
             e.preventDefault();
         }
     };
@@ -874,12 +874,12 @@ function pasteListennerForClipboardPicture(idModal) {
  * set up the event listenner to make a drag and drop dropzone
  * @returns {void}
  */
-function setUpDragAndDrop(idModal) {
+function srv_setUpDragAndDrop(idModal) {
     var dropzone = $(idModal).find("#dropzone")[0];
-    dropzone.addEventListener("dragenter", dragenter, false);
-    dropzone.addEventListener("dragover", dragover, false);
+    dropzone.addEventListener("dragenter", srv_dragenter, false);
+    dropzone.addEventListener("dragover", src_dragover, false);
     dropzone.addEventListener("drop", function (event) {
-        drop(event, idModal);
+        srv_drop(event, idModal);
     });
 }
 
@@ -887,7 +887,7 @@ function setUpDragAndDrop(idModal) {
  * prevent the browser to open the file drag into an other tab
  * @returns {void}
  */
-function dragenter(e) {
+function srv_dragenter(e) {
     e.stopPropagation();
     e.preventDefault();
 }
@@ -896,7 +896,7 @@ function dragenter(e) {
  * prevent the browser to open the file drag into an other tab
  * @returns {void}
  */
-function dragover(e) {
+function src_dragover(e) {
     e.stopPropagation();
     e.preventDefault();
 }
@@ -905,12 +905,12 @@ function dragover(e) {
  * prevent the browser to open the file drag into an other tab and handle the file when the user put his file
  * @returns {void}
  */
-function drop(e, idModal) {
+function srv_drop(e, idModal) {
     e.stopPropagation();
     e.preventDefault();
     var dt = e.dataTransfer;
     var items = dt.items;
-    handlePictureSend(items, idModal);
+    srv_handlePictureSend(items, idModal);
 }
 
 
@@ -919,7 +919,7 @@ function drop(e, idModal) {
  * @returns {void}
  */
 
-function listennerForInputTypeFile(idModal) {
+function srv_listennerForInputTypeFile(idModal) {
 
     var inputs = $(idModal).find("#Filename");
     if (inputs[0] !== undefined) {
@@ -931,7 +931,7 @@ function listennerForInputTypeFile(idModal) {
             else
                 fileName = e.target.value.split('\\').pop();
             if (fileName) {
-                updateDropzone(fileName, idModal);
+                srv_updateDropzone(fileName, idModal);
             }
         });
     }
@@ -944,7 +944,7 @@ function listennerForInputTypeFile(idModal) {
  * @param {boolean} is the picture upload should be taken from the clipboard
  * @returns {void}
  */
-function updateDropzone(messageToDisplay, idModal) {
+function srv_updateDropzone(messageToDisplay, idModal) {
 
     var dropzoneText = $(idModal).find("#dropzoneText");
     var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";

@@ -80,6 +80,7 @@ public class Parameter {
     public static final String VALUE_cerberus_xraycloud_clientid = "cerberus_xraycloud_clientid";
     public static final String VALUE_cerberus_xraydc_url = "cerberus_xraydc_url";
     public static final String VALUE_cerberus_xraydc_token = "cerberus_xraydc_token";
+    public static final String VALUE_cerberus_sikuli_typeDelay = "cerberus_sikuli_typeDelay";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
             + "\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\",\"cerberus_xraycloud_clientsecret\",\"cerberus_xraycloud_clientid\",\"cerberus_xraydc_token\")";

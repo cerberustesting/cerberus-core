@@ -32,8 +32,8 @@ public class ApplicationObject {
     private String object;
     private String value;
     private String screenshotFilename;
-    private String xoffset;
-    private String yoffset;
+    private String xOffset;
+    private String yOffset;
     private String usrCreated;
     private String dateCreated;
     private String usrModif;

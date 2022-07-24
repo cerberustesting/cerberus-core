@@ -26,12 +26,12 @@ var Tags = [];
 
 
 $.when($.getScript("js/global/global.js")
-    , $.getScript("js/global/autocomplete.js")
-    , $.getScript("js/testcase/action.js")
-    , $.getScript("js/testcase/property.js")
-    , $.getScript("js/testcase/condition.js")
-    , $.getScript("js/testcase/control.js")
-).then(function () {
+        , $.getScript("js/global/autocomplete.js")
+        , $.getScript("js/testcase/action.js")
+        , $.getScript("js/testcase/property.js")
+        , $.getScript("js/testcase/condition.js")
+        , $.getScript("js/testcase/control.js")
+        ).then(function () {
     $(document).ready(function () {
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function (ev) {
@@ -169,6 +169,7 @@ $.when($.getScript("js/global/global.js")
                     // Manage authorities when data is fully loadable.
                     $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
                     $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#duplicateStep").attr("disabled", !data.hasPermissionsUpdate);
                     $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
                     $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
                     $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
@@ -239,6 +240,20 @@ $.when($.getScript("js/global/global.js")
                 // Restore the saveScript button status
                 $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
             });
+
+//            $("#duplicateStep").click({steps: steps}, function (event) {
+//                // Store the current saveScript button status and disable it
+//                var saveScriptOldStatus = $("#saveScript").attr("disabled");
+//                $("#saveScript").attr("disabled", true);
+//
+//                // Really do add step action
+////                console.info(event);
+//                duplicateStep(event);
+//
+//                // Restore the saveScript button status
+//                $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+//            });
+
             $('#addStepModal').on('hidden.bs.modal', function () {
                 $("#importDetail").find("[name='importInfo']").removeData("stepInfo");
                 $("[name='importInfo']").empty();
@@ -346,9 +361,9 @@ $.when($.getScript("js/global/global.js")
         closeEveryNavbarMenu();
 
         $('[data-toggle="popover"]').popover({
-                'placement': 'auto',
-                'container': 'body'
-            }
+            'placement': 'auto',
+            'container': 'body'
+        }
         );
 
         // open Run navbar Menu
@@ -1120,7 +1135,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1141,7 +1156,7 @@ function sortSecondaryProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1188,8 +1203,8 @@ function getTestCaseCountry(countries, countriesToCheck, isDisabled) {
         }
 
         div.append($("<label></label>").addClass("checkbox-inline")
-            .append(input)
-            .append(country));
+                .append(input)
+                .append(country));
 
         cpt++;
         html.push(div);
@@ -1245,15 +1260,15 @@ function showImportStepDetail(element) {
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-            '<div id="' + importInfoId + '" class="row">' +
-            '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-            '   <div name="importInfo" class="col-sm-5"></div>' +
-            '   <div class="col-sm-2">' +
-            '    <label class="checkbox-inline">' +
-            '        <input type="checkbox" name="useStep" checked> Use Step' +
-            '    </label>' +
-            '   </div>' +
-            '</div>';
+                '<div id="' + importInfoId + '" class="row">' +
+                '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+                '   <div name="importInfo" class="col-sm-5"></div>' +
+                '   <div class="col-sm-2">' +
+                '    <label class="checkbox-inline">' +
+                '        <input type="checkbox" name="useStep" checked> Use Step' +
+                '    </label>' +
+                '   </div>' +
+                '</div>';
 
         $("#importDetail").append(importInfo);
         $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
@@ -1345,6 +1360,22 @@ function addStep(event) {
     });
 }
 
+
+function duplicateStep(event) {
+    var steps = event.data.steps;
+
+    var step = initStep();
+    var step = steps[0];
+    step.description = "New Step";
+    var stepObj = new Step(step, steps, true);
+    console.info(stepObj);
+    stepObj.draw();
+    steps.push(stepObj);
+    stepObj.html.trigger("click");
+
+}
+
+
 function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     // If the testcase has no steps, we create an empty one.
     if (data.length === 0) {
@@ -1430,7 +1461,7 @@ function loadLibraryStep(search, system) {
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
                         $("#lib").append(listGr);
@@ -1440,7 +1471,7 @@ function loadLibraryStep(search, system) {
                     if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                            .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
@@ -1461,8 +1492,8 @@ function loadLibraryStep(search, system) {
 
             $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
-                    .toggleClass('glyphicon-chevron-right')
-                    .toggleClass('glyphicon-chevron-down');
+                        .toggleClass('glyphicon-chevron-right')
+                        .toggleClass('glyphicon-chevron-down');
             });
 
             $("#addStepModal #search").unbind("input").on("input", function (e) {
@@ -1525,13 +1556,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
     showModalConfirmation(function () {
         $('#confirmationModal').modal('hide');
     }, undefined, doc.getDocLabel("page_global", "warning"),
-        doc.getDocLabel("page_testcasescript", "cant_detach_library") +
-        "<br/>" +
-        "<div id='otherStepThatUseIt' style='width:100%;'>" +
-        "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
-        "<span class='glyphicon glyphicon-refresh spin'></span>" +
-        "</div>" +
-        "</div>", "", "", "", "");
+            doc.getDocLabel("page_testcasescript", "cant_detach_library") +
+            "<br/>" +
+            "<div id='otherStepThatUseIt' style='width:100%;'>" +
+            "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
+            "<span class='glyphicon glyphicon-refresh spin'></span>" +
+            "</div>" +
+            "</div>", "", "", "", "");
 }
 
 
@@ -1587,7 +1618,7 @@ function handleDragEnter(event) {
             $(target).parent(".action-group").before(source.parentNode);
         }
     } else if (sourceData instanceof Control &&
-        (targetData instanceof Action || targetData instanceof Control)) {
+            (targetData instanceof Action || targetData instanceof Control)) {
         if (isBefore(source, target) || targetData instanceof Action) {
             $(target).after(source);
         } else {
@@ -1718,7 +1749,7 @@ Step.prototype.draw = function () {
     var htmlElement = this.html;
     var col1 = $("<div></div>").addClass("col-sm-1")
     var drag = $("<div></div>").addClass("drag-step").css("padding-left", "5px").css("padding-right", "2px").prop("draggable", true)
-        .append($("<span></span>").addClass("fa fa-ellipsis-v"));
+            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
     var loopIcon = $("<div></div>").addClass("col-sm-1 loop-Icon");
     var libraryIcon = $("<div></div>").addClass("col-sm-1 library-Icon");
@@ -1732,13 +1763,13 @@ Step.prototype.draw = function () {
     if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
         loopIcon = $("<span class='loopIcon' title='Step will loop.'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     } else if ((this.conditionOperator !== "never")
-        && (this.conditionOperator !== "always")) {
+            && (this.conditionOperator !== "always")) {
 
         infoIcon = getClassWithCondition("Step", "info-Icon");
 
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
-        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
         infoIcon = getClassNever("Step", "info-Icon");
     }
 
@@ -2138,10 +2169,10 @@ Action.prototype.draw = function (afterAction) {
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").css("height", "100%")
-        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px"))
-            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px")));
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px")));
 
     if ((action.conditionOperator !== 'always')) {
         plusBtn.removeClass("btn-default").addClass("btn-primary");
@@ -2359,8 +2390,8 @@ Action.prototype.generateContent = function () {
 
 
     var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.conditionOptions) + "' type='button'></button>")
-        .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
-        .append("<span class='glyphicon glyphicon-list'></span>");
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
+            .append("<span class='glyphicon glyphicon-list'></span>");
     conditionOptions.val(JSON.stringify(this.conditionOptions));
     conditionOptions.off("click").on("click", function () {
 
@@ -2387,8 +2418,8 @@ Action.prototype.generateContent = function () {
     });
 
     var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.options) + "' type='button'></button>")
-        .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
-        .append("<span class='glyphicon glyphicon-list'></span>");
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
+            .append("<span class='glyphicon glyphicon-list'></span>");
     options.val(JSON.stringify(this.options));
     options.off("click").on("click", function () {
 
@@ -2505,6 +2536,12 @@ function getOptionValuesFromModal() {
         "option": "highlightElement"
     };
     newOpts.push(opt1);
+    opt1 = {
+        "act": $("#typeDelayAct").prop("checked"),
+        "value": $("#typeDelayVal").val(),
+        "option": "typeDelay"
+    };
+    newOpts.push(opt1);
     return newOpts;
 }
 
@@ -2515,6 +2552,8 @@ function initOptionModal() {
     $("#highlightAct").prop("checked", false);
     $("#minSimilarityVal").val("");
     $("#minSimilarityAct").prop("checked", false);
+    $("#typeDelayVal").val("");
+    $("#typeDelayAct").prop("checked", false);
 }
 
 function setOptionModal(valObj) {
@@ -2532,6 +2571,10 @@ function setOptionModal(valObj) {
             case "minSimilarity":
                 $("#minSimilarityVal").val(valObj[item].value);
                 $("#minSimilarityAct").prop("checked", valObj[item].act);
+                break;
+            case "typeDelay":
+                $("#typeDelayVal").val(valObj[item].value);
+                $("#typeDelayAct").prop("checked", valObj[item].act);
                 break;
             default:
                 break;
@@ -2677,10 +2720,10 @@ Control.prototype.draw = function (afterControl) {
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp1 = $("<div></div>").css("height", "100%")
-        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
     var content = this.generateContent();
 
     if ((control.conditionOperator !== 'always')) {
@@ -2891,8 +2934,8 @@ Control.prototype.generateContent = function () {
 
 
     var conditionOptions = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.conditionOptions) + "' type='button'></button>")
-        .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
-        .append("<span class='glyphicon glyphicon-list'></span>");
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.conditionOptions))
+            .append("<span class='glyphicon glyphicon-list'></span>");
     conditionOptions.val(JSON.stringify(this.conditionOptions));
     conditionOptions.off("click").on("click", function () {
 
@@ -2919,8 +2962,8 @@ Control.prototype.generateContent = function () {
     });
 
     var options = $("<button data-toggle='modal' data-target='#modalOptions' title='" + getTitleFromOptionsActive(this.options) + "' type='button'></button>")
-        .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
-        .append("<span class='glyphicon glyphicon-list'></span>");
+            .addClass("buttonObject btn input-sm " + getClassFromOptions(this.options))
+            .append("<span class='glyphicon glyphicon-list'></span>");
     options.val(JSON.stringify(this.options));
     options.off("click").on("click", function () {
 
@@ -3258,16 +3301,16 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 name = name.slice(1, name.length - 1);
                                 if ($(this).hasClass("v1")) {
                                     $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg1")
-                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 } else if ($(this).hasClass("v2")) {
                                     $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg2")
-                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 } else if ($(this).hasClass("v3")) {
                                     $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg3")
-                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 }
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\

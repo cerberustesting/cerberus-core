@@ -131,6 +131,7 @@ public class RobotServerService implements IRobotServerService {
     public static final String OPTIONS_TIMEOUT_SYNTAX = "timeout";
     public static final String OPTIONS_HIGHLIGHTELEMENT_SYNTAX = "highlightElement";
     public static final String OPTIONS_MINSIMILARITY_SYNTAX = "minSimilarity";
+    public static final String OPTIONS_TYPEDELAY_SYNTAX = "typeDelay";
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
@@ -155,6 +156,7 @@ public class RobotServerService implements IRobotServerService {
                     cerberus_selenium_highlightElement, cerberus_sikuli_highlightElement;
             boolean cerberus_selenium_autoscroll;
             String cerberus_sikuli_minSimilarity;
+            String cerberus_sikuli_typeDelay;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -177,6 +179,7 @@ public class RobotServerService implements IRobotServerService {
             cerberus_selenium_highlightElement = parameterService.getParameterIntegerByKey("cerberus_selenium_highlightElement", "", 0);
             cerberus_sikuli_highlightElement = parameterService.getParameterIntegerByKey("cerberus_sikuli_highlightElement", "", 0);
             cerberus_sikuli_minSimilarity = parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", "");
+            cerberus_sikuli_typeDelay = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_sikuli_typeDelay, "", "0.1");
 
             LOG.debug("TimeOut defined on session : {}", cerberus_selenium_wait_element);
 
@@ -203,6 +206,10 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_sikuli_highlightElement(cerberus_sikuli_highlightElement);
             session.setCerberus_sikuli_highlightElement_default(cerberus_sikuli_highlightElement);
 
+            // typeDelay parameters
+            session.setCerberus_sikuli_typeDelay(cerberus_sikuli_typeDelay);
+            session.setCerberus_sikuli_typeDelay_default(cerberus_sikuli_typeDelay);
+            
             // auto scroll parameters
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
@@ -1241,6 +1248,14 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
+    public void setOptionsTypeDelay(Session session, String typeDelay) {
+        if (session != null) {
+            LOG.debug("Setting Robot Option typeDelay to : {}", typeDelay);
+            session.setCerberus_sikuli_typeDelay(typeDelay);
+        }
+    }
+
+    @Override
     public void setOptionsToDefault(Session session) {
         if (session != null) {
             LOG.debug("Setting Robot Timeout back to default values : Selenium {} Appium {} Sikuli {}",
@@ -1257,6 +1272,8 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_sikuli_highlightElement(session.getCerberus_sikuli_highlightElement_default());
             LOG.debug("Setting Robot minSimilarity back to default values : {}", session.getCerberus_sikuli_minSimilarity_default());
             session.setCerberus_sikuli_minSimilarity(session.getCerberus_sikuli_minSimilarity_default());
+            LOG.debug("Setting Robot typeDelay back to default values : {}", session.getCerberus_sikuli_typeDelay_default());
+            session.setCerberus_sikuli_typeDelay(session.getCerberus_sikuli_typeDelay_default());
         }
     }
 

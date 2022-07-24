@@ -102,7 +102,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Create a new {@link ApplicationObject}
          */
-        String CREATE = "INSERT INTO `applicationobject` (`application`,`object`,`value`,`screenshotfilename`,`usrcreated`,`datecreated`,`usrmodif`,`datemodif`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String CREATE = "INSERT INTO `applicationobject` (`application`,`object`,`value`,`screenshotfilename`,`XOffset`,`YOffset`,`usrcreated`,`datecreated`,`usrmodif`,`datemodif`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         /**
          * Remove an existing {@link ApplicationObject}
@@ -594,14 +594,17 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
-            preStat.setString(1, object.getApplication());
-            preStat.setString(2, object.getObject());
-            preStat.setString(3, object.getValue());
-            preStat.setString(4, object.getScreenshotFilename());
-            preStat.setString(5, object.getUsrCreated());
-            preStat.setString(6, object.getDateCreated());
-            preStat.setString(7, object.getUsrModif());
-            preStat.setString(8, object.getDateModif());
+            int i=1;
+            preStat.setString(i++, object.getApplication());
+            preStat.setString(i++, object.getObject());
+            preStat.setString(i++, object.getValue());
+            preStat.setString(i++, object.getScreenshotFilename());
+            preStat.setString(i++, object.getXOffset());
+            preStat.setString(i++, object.getYOffset());
+            preStat.setString(i++, object.getUsrCreated());
+            preStat.setString(i++, object.getDateCreated());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i++, object.getDateModif());
             preStat.executeUpdate();
 
             // Set the final message
@@ -647,7 +650,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public Answer update(String application, String appObject, ApplicationObject object) {
         Answer ans = new Answer();
         MessageEvent msg = null;
-        String query = "UPDATE `applicationobject` SET `application` = ?, `object` = ?, `value` = ?, `screenshotfilename` = ?, `usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
+        String query = "UPDATE `applicationobject` SET `application` = ?, `object` = ?, `value` = ?, `screenshotfilename` = ?, `XOffset` = ?, `YOffset` = ?, "
+                + "`usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
                 + " WHERE `application` = ? AND `object` = ?";
 
         try (Connection connection = databaseSpring.connect();
@@ -658,6 +662,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(i++, object.getObject());
             preStat.setString(i++, object.getValue());
             preStat.setString(i++, object.getScreenshotFilename());
+            preStat.setString(i++, object.getXOffset());
+            preStat.setString(i++, object.getYOffset());
             preStat.setString(i++, object.getUsrCreated());
             preStat.setString(i++, object.getDateCreated());
             preStat.setString(i++, object.getUsrModif());
@@ -911,11 +917,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         String object = ParameterParserUtil.parseStringParam(rs.getString("Object"), "");
         String value = ParameterParserUtil.parseStringParam(rs.getString("Value"), "");
         String screenshotfilename = ParameterParserUtil.parseStringParam(rs.getString("ScreenshotFileName"), "");
+        String xOffset = ParameterParserUtil.parseStringParam(rs.getString("XOffset"), "");
+        String yOffset = ParameterParserUtil.parseStringParam(rs.getString("YOffset"), "");
         String usrcreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
         String datecreated = ParameterParserUtil.parseStringParam(rs.getString("DateCreated"), "");
         String usrmodif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         String datemodif = ParameterParserUtil.parseStringParam(rs.getString("DateModif"), "");
 
-        return factoryApplicationObject.create(ID, application, object, value, screenshotfilename, usrcreated, datecreated, usrmodif, datemodif);
+        return factoryApplicationObject.create(ID, application, object, value, screenshotfilename, xOffset, yOffset, usrcreated, datecreated, usrmodif, datemodif);
     }
 }

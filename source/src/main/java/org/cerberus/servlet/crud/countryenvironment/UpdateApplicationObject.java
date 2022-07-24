@@ -117,6 +117,8 @@ public class UpdateApplicationObject extends HttpServlet {
         String application = ParameterParserUtil.parseStringParamAndDecode(fileData.get("application"), null, charset);
         String object = ParameterParserUtil.parseStringParamAndDecode(fileData.get("object"), null, charset);
         String value = ParameterParserUtil.parseStringParam(fileData.get("value"), null);
+        String xOffset = ParameterParserUtil.parseStringParam(fileData.get("xOffset"), null);
+        String yOffset = ParameterParserUtil.parseStringParam(fileData.get("yOffset"), null);
 
         String usrmodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
         String datemodif = new Timestamp(new java.util.Date().getTime()).toString();
@@ -172,6 +174,8 @@ public class UpdateApplicationObject extends HttpServlet {
 
                 applicationData.setValue(value);
                 applicationData.setScreenshotFilename(fileName);
+                applicationData.setXOffset(xOffset);
+                applicationData.setYOffset(yOffset);
                 applicationData.setUsrModif(usrmodif);
                 applicationData.setDateModif(datemodif);
                 ans = applicationObjectService.update(applicationData.getApplication(), applicationData.getObject(), applicationData);

@@ -446,6 +446,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_ELEMENTDIFFERENT(389, "KO", "Element in path '%XPATH%' is not different from '%DIFFERENT_ELEMENT%'.", true, true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(384, "FA", "Control '%CONTROL%' is not supported for application type '%APPLICATIONTYPE%'.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE(362, "FA", "Message type %TYPE% not supported for control '%CONTROL%'.", true, false, true, MessageGeneralEnum.EXECUTION_FA),
+    CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER(384, "FA", "Control '%CONTROL%' is not supported for application type '%APPLICATIONTYPE% with Identifier %IDENTIFIER%'.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_NOOBJECTINMEMORY(362, "FA", "Cannot perform the control because no successful Service/Page/Screen was accessed previously.", true, false, true, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_GENERIC(362, "FA", "Cannot perform the control. %ERROR%", true, false, true, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_WAITINGEXECUTION(398, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
