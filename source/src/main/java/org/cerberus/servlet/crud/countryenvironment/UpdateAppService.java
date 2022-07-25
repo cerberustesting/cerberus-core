@@ -125,6 +125,7 @@ public class UpdateAppService extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
+        String originalService = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("originalService"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
         String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), null, charset);
@@ -157,7 +158,7 @@ public class UpdateAppService extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(service)) {
+        if (StringUtil.isNullOrEmpty(originalService)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                     .replace("%OPERATION%", "Update")
@@ -173,7 +174,7 @@ public class UpdateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
 
-            AnswerItem resp = appServiceService.readByKey(service);
+            AnswerItem resp = appServiceService.readByKey(originalService);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -194,6 +195,7 @@ public class UpdateAppService extends HttpServlet {
                     }
                 }
 
+                appService.setService(service);
                 appService.setGroup(group);
                 appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
@@ -214,8 +216,8 @@ public class UpdateAppService extends HttpServlet {
                 appService.setAvroEnable(isAvroEnable);
                 appService.setSchemaRegistryURL(schemaRegistryUrl);
                 appService.setParentContentService(parentContentService);
-                LOG.debug(appService.toString());
-                ans = appServiceService.update(appService.getService(), appService);
+
+                ans = appServiceService.update(originalService, appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -223,7 +225,7 @@ public class UpdateAppService extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     logEventService = appContext.getBean(ILogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + originalService + "']", request);
                 }
 
                 // Update content

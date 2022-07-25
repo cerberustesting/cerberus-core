@@ -44,6 +44,8 @@ public interface ITestCaseStepActionService {
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
 
+    public void updateService(String oldService, String service) throws CerberusException;
+
     public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;
 
     public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException;
@@ -63,7 +65,8 @@ public interface ITestCaseStepActionService {
     /**
      * Get the highest actionId from the given actions
      *
-     * @param actions a collection of actions from which get the highest actionId
+     * @param actions a collection of actions from which get the highest
+     * actionId
      * @return the highest actionId from the given actions
      */
     int getMaxActionId(Collection<TestCaseStepAction> actions);

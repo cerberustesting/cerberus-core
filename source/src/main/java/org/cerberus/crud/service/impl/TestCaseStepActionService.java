@@ -97,6 +97,11 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
+    public void updateService(String oldService, String service) throws CerberusException {
+        testCaseStepActionDAO.updateService(oldService, service);
+    }
+
+    @Override
     public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException {
         for (TestCaseStepAction tcsa : tcsaToDelete) {
             deleteTestCaseStepAction(tcsa);

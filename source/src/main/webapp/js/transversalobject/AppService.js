@@ -217,9 +217,9 @@ function confirmAppServiceModalHandler(mode, page) {
     showLoaderInModal('#editSoapLibraryModal');
 
     // Enable the test combo before submit the form.
-    if (mode === 'EDIT') {
-        formEdit.find("#service").removeAttr("disabled");
-    }
+//    if (mode === 'EDIT') {
+//        formEdit.find("#service").removeAttr("disabled");
+//    }
     // Calculate servlet name to call.
     var myServlet = "UpdateAppService";
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
@@ -304,13 +304,16 @@ function confirmAppServiceModalHandler(mode, page) {
         },
         error: showUnexpectedError
     });
-    if (mode === 'EDIT') { // Disable back the test combo before submit the form.
-        formEdit.find("#service").prop("disabled", "disabled");
-    }
+//    if (mode === 'EDIT') { // Disable back the test combo before submit the form.
+//        formEdit.find("#service").prop("disabled", "disabled");
+//    }
 
 }
 
 function refreshDisplayOnTypeChange(newValue) {
+
+    $('#editSoapLibraryModal #typeLogo').attr('src', './images/logo-' + newValue + '.png').attr('alt', newValue);
+
 
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
@@ -514,6 +517,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         appendApplicationListServiceModal(service.application);
         appendAppServiceListServiceModal(service.parentContentService);
         formEdit.find("#service").prop("value", service.service);
+        formEdit.find("#originalService").prop("value", service.service);
         formEdit.find("#usrcreated").prop("value", service.UsrCreated);
         formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
         formEdit.find("#usrmodif").prop("value", service.UsrModif);
@@ -526,9 +530,11 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         if (mode === "ADD") {
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_create"));
             formEdit.find("#service").prop("value", service.service);
+            formEdit.find("#originalService").prop("value", service.service);
         } else { // DUPLICATE
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
             formEdit.find("#service").prop("value", service.service);
+            formEdit.find("#originalService").prop("value", service.service);
         }
     }
     if (isEmpty(service)) {
@@ -603,15 +609,16 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     });
 
     // Authorities
-    if (mode === "EDIT") {
-        formEdit.find("#service").prop("readonly", "readonly");
-    } else {
-        formEdit.find("#service").removeAttr("readonly");
-        formEdit.find("#service").removeProp("readonly");
-        formEdit.find("#service").removeAttr("disabled");
-    }
+//    if (mode === "EDIT") {
+//        formEdit.find("#service").prop("readonly", "readonly");
+//    } else {
+//        formEdit.find("#service").removeAttr("readonly");
+//        formEdit.find("#service").removeProp("readonly");
+//        formEdit.find("#service").removeAttr("disabled");
+//    }
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
+        formEdit.find("#service").prop("readonly", "readonly");
         formEdit.find("#application").prop("readonly", "readonly");
         formEdit.find("#parentContentService").prop("readonly", "readonly");
         formEdit.find("#type").prop("disabled", "disabled");
@@ -633,6 +640,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         $('#editSoapLibraryButton').attr('class', '');
         $('#editSoapLibraryButton').attr('hidden', 'hidden');
     } else {
+        formEdit.find("#service").removeProp("readonly");
         formEdit.find("#application").removeProp("readonly");
         formEdit.find("#parentContentService").removeProp("readonly");
         formEdit.find("#type").removeProp("disabled");

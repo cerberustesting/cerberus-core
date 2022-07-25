@@ -32,10 +32,10 @@ function initPage() {
 
     // configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("soapLibrarysTable",
-        "ReadAppService", "contentTable",
-        aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
+            "ReadAppService", "contentTable",
+            aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForAppService,
-        "#soapLibraryList", undefined, true);
+            "#soapLibraryList", undefined, true);
 
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
 }
@@ -57,10 +57,10 @@ function renderOptionsForAppService(data) {
         if ($("#createSoapLibraryButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createSoapLibraryButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> "
-                + doc.getDocLabel("page_appservice", "button_create")
-                + "</button></div>";
+                    + doc.getDocLabel("page_appservice", "button_create")
+                    + "</button></div>";
             $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
-                .before(contentToAdd);
+                    .before(contentToAdd);
             $('#soapLibraryList #createSoapLibraryButton').off("click");
             $('#soapLibraryList #createSoapLibraryButton').click(function () {
                 openModalAppService(undefined, "ADD");
@@ -70,7 +70,7 @@ function renderOptionsForAppService(data) {
         if ($("#blankSpace").length === 0) {
             var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'></div>";
             $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
-                .before(contentToAdd);
+                    .before(contentToAdd);
         }
     }
 }
@@ -78,33 +78,33 @@ function renderOptionsForAppService(data) {
 function removeEntryClick(service) {
     var doc = new Doc();
     showModalConfirmation(function (ev) {
-            var name = $('#confirmationModal #hiddenField1').prop("value");
-            $.ajax({
-                url: "DeleteAppService?service=" + name,
-                async: true,
-                dataType: "json",
-                method: "GET",
-                success: function (data) {
+        var name = $('#confirmationModal #hiddenField1').prop("value");
+        $.ajax({
+            url: "DeleteAppService?service=" + name,
+            async: true,
+            dataType: "json",
+            method: "GET",
+            success: function (data) {
 
-                    var messageType = getAlertType(data.messageType);
-                    if (messageType === "success") {
+                var messageType = getAlertType(data.messageType);
+                if (messageType === "success") {
 
-                    }
-                    hideLoaderInModal('#removeSoapLibraryModal');
-                    var oTable = $("#soapLibrarysTable").dataTable();
-                    oTable.fnDraw(false);
-                    $('#removeSoapLibraryModal').modal('hide');
-                    showMessageMainPage(messageType, data.message, false);
+                }
+                hideLoaderInModal('#removeSoapLibraryModal');
+                var oTable = $("#soapLibrarysTable").dataTable();
+                oTable.fnDraw(false);
+                $('#removeSoapLibraryModal').modal('hide');
+                showMessageMainPage(messageType, data.message, false);
 
-                },
-                error: showUnexpectedError
-            });
+            },
+            error: showUnexpectedError
+        });
 
-            $('#confirmationModal').modal('hide');
-        }, undefined, doc.getDocLabel("page_appservice", "title_remove"), doc
+        $('#confirmationModal').modal('hide');
+    }, undefined, doc.getDocLabel("page_appservice", "title_remove"), doc
             .getDocLabel("page_appservice", "message_remove").replace(
-                '%SERVICE%', service), service, undefined, undefined,
-        undefined);
+            '%SERVICE%', service), service, undefined, undefined,
+            undefined);
 }
 
 /**
@@ -151,8 +151,8 @@ function getTestCasesUsingService(service) {
                 htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;height: 50px;">';
                 htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span></br>';
                 htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
-                    + doc.getDocLabel("testcase", "IsActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
-                    doc.getDocLabel("invariant", "TESTCASE_TYPE") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
+                        + doc.getDocLabel("testcase", "IsActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
+                        doc.getDocLabel("invariant", "TESTCASE_TYPE") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
                 htmlContent += '</span>';
             });
 
@@ -180,37 +180,37 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId)
-                    .attr("hasPermissions");
+                        .attr("hasPermissions");
 
                 var editEntry = '<button id="editEntry" onclick="openModalAppService(\''
-                    + obj["service"]
-                    + '\', \'EDIT\'  );"\n\
+                        + obj["service"]
+                        + '\', \'EDIT\'  );"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="'
-                    + doc.getDocLabel("page_appservice", "button_edit")
-                    + '" type="button">\n\
+                        + doc.getDocLabel("page_appservice", "button_edit")
+                        + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
                 var duplicateEntry = '<button class="btn btn-default btn-xs margin-right5" \n\
 					                    	 name="duplicateApplicationObject" title="'
-                    + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")
-                    + '" type="button" onclick="openModalAppService(\'' + obj["service"] + '\', \'DUPLICATE\'  )">\n\
+                        + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry")
+                        + '" type="button" onclick="openModalAppService(\'' + obj["service"] + '\', \'DUPLICATE\'  )">\n\
 					                        <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var viewEntry = '<button id="editEntry" onclick="openModalAppService(\''
-                    + obj["service"]
-                    + '\',\'EDIT\');"\n\
+                        + obj["service"]
+                        + '\',\'EDIT\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="'
-                    + doc.getDocLabel("page_appservice", "button_edit")
-                    + '" type="button">\n\
+                        + doc.getDocLabel("page_appservice", "button_edit")
+                        + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\''
-                    + obj["service"]
-                    + '\');" \n\
+                        + obj["service"]
+                        + '\');" \n\
                                     class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplicationObject" title="'
-                    + doc.getDocLabel("page_appservice",
-                        "button_delete")
-                    + '" type="button">\n\
+                        + doc.getDocLabel("page_appservice",
+                                "button_delete")
+                        + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
 
 
@@ -221,12 +221,24 @@ function aoColumnsFunc(tableId) {
 
                 if (hasPermissions === "true") {
                     return '<div class="center btn-group width250">'
-                        + editEntry + duplicateEntry + deleteEntry + viewTestCase
-                        + '</div>';
+                            + editEntry + duplicateEntry + deleteEntry + viewTestCase
+                            + '</div>';
                 }
                 return '<div class="center btn-group width250">'
-                    + viewEntry + '</div>';
+                        + viewEntry + '</div>';
 
+            }
+        },
+        {
+            "sName": "srv.Type",
+            "data": "type",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("appservice", "type"),
+            "mRender": function (data, type, obj) {
+//                console.info(obj);
+                return $("<div></div>")
+                        .append($("<img style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.type).attr('src', './images/logo-' + obj.type + '.png'))
+                        .html();
             }
         },
         {
@@ -240,12 +252,6 @@ function aoColumnsFunc(tableId) {
             "data": "application",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "application")
-        },
-        {
-            "sName": "srv.Type",
-            "data": "type",
-            "sWidth": "150px",
-            "title": doc.getDocLabel("appservice", "type")
         },
         {
             "sName": "ServicePath",
@@ -263,11 +269,11 @@ function aoColumnsFunc(tableId) {
             "sWidth": "350px",
             "mRender": function (data, type, obj) {
                 return $("<div></div>")
-                    .append(
-                        $(
-                            "<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>")
-                            .text(obj['serviceRequest']))
-                    .html();
+                        .append(
+                                $(
+                                        "<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>")
+                                .text(obj['serviceRequest']))
+                        .html();
             }
         }, {
             "sName": "srv.operation",
@@ -292,7 +298,7 @@ function aoColumnsFunc(tableId) {
             "sName": "srv.Description",
             "like": true,
             "data": "description",
-            "sWidth": "150px",
+            "sWidth": "200px",
             "title": doc.getDocLabel("appservice", "description")
         }, {
             "sName": "srv.DateCreated",
@@ -326,7 +332,7 @@ function aoColumnsFunc(tableId) {
 
 function deleteEntryHandlerClick() {
     var application = $('#confirmationModal').find('#hiddenField1').prop(
-        "value");
+            "value");
     var object = $('#confirmationModal').find('#hiddenField2').prop("value");
     var jqxhr = $.post("DeleteApplicationService", {
         service: service
@@ -370,7 +376,7 @@ function afterTableLoad() {
         var editor = ace.edit($(e).get(0));
         editor.setTheme("ace/theme/chrome");
         editor.getSession().setMode(
-            defineAceMode(editor.getSession().getDocument().getValue()));
+                defineAceMode(editor.getSession().getDocument().getValue()));
         editor.setOptions({
             maxLines: 1,
             showLineNumbers: false,

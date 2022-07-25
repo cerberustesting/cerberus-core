@@ -550,6 +550,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         LOG.debug(SQL_MESSAGE, query);
         LOG.debug("SQL.param.application : {}", object.getApplication());
+        LOG.debug("SQL.param.service : {}", service);
 
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query)) {

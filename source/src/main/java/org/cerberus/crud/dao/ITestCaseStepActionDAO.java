@@ -45,6 +45,8 @@ public interface ITestCaseStepActionDAO {
 
     void update(TestCaseStepAction tcsa) throws CerberusException;
 
+    void updateService(String oldService, String service) throws CerberusException;
+
     void delete(TestCaseStepAction tcsa) throws CerberusException;
 
     AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
