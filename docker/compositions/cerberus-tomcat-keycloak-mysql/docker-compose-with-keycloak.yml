@@ -51,9 +51,9 @@ services:
     environment:
       - DATABASE_HOST=database
       - DATABASE_PORT=3306
-      - KEYCLOACK_URL=http://localhost:38080/auth
-      - KEYCLOACK_REALM=Cerberus
-      - KEYCLOACK_CLIENT=cerberus
+      - KEYCLOAK_URL=http://localhost:38080/auth
+      - KEYCLOAK_REALM=Cerberus
+      - KEYCLOAK_CLIENT=cerberus
     ports:
       - "8080:8080"
     volumes:
