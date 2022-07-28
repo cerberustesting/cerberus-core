@@ -230,22 +230,21 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
+            "sName": "srv.Service",
+            "data": "service",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "service")
+        },
+        {
             "sName": "srv.Type",
             "data": "type",
             "sWidth": "50px",
             "title": doc.getDocLabel("appservice", "type"),
             "mRender": function (data, type, obj) {
-//                console.info(obj);
                 return $("<div></div>")
                         .append($("<img style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.type).attr('src', './images/logo-' + obj.type + '.png'))
                         .html();
             }
-        },
-        {
-            "sName": "srv.Service",
-            "data": "service",
-            "sWidth": "150px",
-            "title": doc.getDocLabel("appservice", "service")
         },
         {
             "sName": "srv.Application",

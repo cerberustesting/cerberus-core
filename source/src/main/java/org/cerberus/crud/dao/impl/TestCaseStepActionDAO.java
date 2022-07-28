@@ -441,6 +441,34 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
+    public void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException {
+        final String query = new StringBuilder("UPDATE testcasestepaction tca ")
+                .append("INNER JOIN testcase tc ON tc.test = tca.test AND tc.testcase = tca.testcase ")
+                .append("SET tca.").append(field).append(" = replace(tca." + field + ", '%object." + oldObject + ".', '%object." + newObject + ".'), tca.`dateModif` = CURRENT_TIMESTAMP ")
+                .append("where tc.application = ? and tca.").append(field).append(" like ? ;")
+                .toString();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL " + query);
+            LOG.debug("SQL.param.service " + field);
+            LOG.debug("SQL.param.service " + application);
+            LOG.debug("SQL.param.service " + "%\\%object." + oldObject + ".%");
+        }
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            int i = 1;
+            preStat.setString(i++, application);
+            preStat.setString(i++, "%\\%object." + oldObject + ".%");
+
+            preStat.executeUpdate();
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+    }
+
+    @Override
     public void delete(TestCaseStepAction tcsa) throws CerberusException {
         boolean throwExcep = false;
         final String query = "DELETE FROM testcasestepaction WHERE test = ? and testcase = ? and stepId = ? and `actionId` = ?";

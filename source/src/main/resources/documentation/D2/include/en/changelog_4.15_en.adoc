@@ -21,6 +21,8 @@
 * Allow to configure typeDelay when using Sikuli keyPress (from parameter or at action level).
 * Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require 1.7 version of cerberus-extension-sikuli
 * Services can be renamed (corresponding callService actions will be updated with the new reference) #2042
+* Application Objects can be renamed (corresponding steps, actions, control and properties will be refactored with the new reference) #1944
+* Visual improvements on Robot and Service page.
  
 *Warning to be considered before applying the version (deprecated features)*
 [square]

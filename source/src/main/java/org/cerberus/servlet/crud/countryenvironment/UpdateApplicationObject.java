@@ -116,6 +116,8 @@ public class UpdateApplicationObject extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String application = ParameterParserUtil.parseStringParamAndDecode(fileData.get("application"), null, charset);
         String object = ParameterParserUtil.parseStringParamAndDecode(fileData.get("object"), null, charset);
+        String originalApplication = ParameterParserUtil.parseStringParamAndDecode(fileData.get("originalApplication"), null, charset);
+        String originalObject = ParameterParserUtil.parseStringParamAndDecode(fileData.get("originalObject"), null, charset);
         String value = ParameterParserUtil.parseStringParam(fileData.get("value"), null);
         String xOffset = ParameterParserUtil.parseStringParam(fileData.get("xOffset"), null);
         String yOffset = ParameterParserUtil.parseStringParam(fileData.get("yOffset"), null);
@@ -150,7 +152,7 @@ public class UpdateApplicationObject extends HttpServlet {
              */
             IApplicationObjectService applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
-            AnswerItem resp = applicationObjectService.readByKey(application, object);
+            AnswerItem resp = applicationObjectService.readByKey(originalApplication, originalObject);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -162,23 +164,25 @@ public class UpdateApplicationObject extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-                ApplicationObject applicationData = (ApplicationObject) resp.getItem();
+                ApplicationObject applicationObject = (ApplicationObject) resp.getItem();
 
-                String fileName = applicationData.getScreenshotFilename();
+                String fileName = applicationObject.getScreenshotFilename();
                 if (file != null) {
-                    ans = applicationObjectService.uploadFile(applicationData.getID(), file);
+                    ans = applicationObjectService.uploadFile(applicationObject.getID(), file);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         fileName = file.getName();
                     }
                 }
 
-                applicationData.setValue(value);
-                applicationData.setScreenshotFilename(fileName);
-                applicationData.setXOffset(xOffset);
-                applicationData.setYOffset(yOffset);
-                applicationData.setUsrModif(usrmodif);
-                applicationData.setDateModif(datemodif);
-                ans = applicationObjectService.update(applicationData.getApplication(), applicationData.getObject(), applicationData);
+                applicationObject.setApplication(application);
+                applicationObject.setObject(object);
+                applicationObject.setValue(value);
+                applicationObject.setScreenshotFilename(fileName);
+                applicationObject.setXOffset(xOffset);
+                applicationObject.setYOffset(yOffset);
+                applicationObject.setUsrModif(usrmodif);
+                applicationObject.setDateModif(datemodif);
+                ans = applicationObjectService.update(originalApplication, originalObject, applicationObject);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

@@ -34,6 +34,9 @@ import org.springframework.stereotype.Service;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.enums.MessageEventEnum;
 
 /**
  *
@@ -44,6 +47,10 @@ public class ApplicationObjectService implements IApplicationObjectService {
 
     @Autowired
     private IApplicationObjectDAO ApplicationObjectDAO;
+    @Autowired
+    private ITestCaseStepActionService actionService;
+    @Autowired
+    private ITestCaseStepActionControlService controlService;
 
     private static final Logger LOG = LogManager.getLogger("ApplicationObjectService");
 
@@ -95,8 +102,15 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public Answer update(String application, String appObject, ApplicationObject object) {
-        return ApplicationObjectDAO.update(application, appObject, object);
+    public Answer update(String originalApplication, String originalObject, ApplicationObject object) {
+        Answer resp = ApplicationObjectDAO.update(originalApplication, originalObject, object);
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (originalObject != null && !originalObject.equals(object.getObject())) {
+                actionService.updateApplicationObject(originalApplication, originalObject, object.getObject());
+                controlService.updateApplicationObject(originalApplication, originalObject, object.getObject());
+            }
+        }
+        return resp;
     }
 
     @Override

@@ -119,6 +119,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public AnswerItem<ApplicationObject> readByKeyTech(int id) {
         AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
+        LOG.debug("SQL : " + Query.READ_BY_KEY);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
@@ -145,6 +146,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public AnswerItem<ApplicationObject> readByKey(String application, String object) {
         AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
+        LOG.debug("SQL : " + Query.READ_BY_KEY1);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
@@ -161,14 +163,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 // Set the final message
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "READ_BY_KEY");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
             } finally {
-            	if(rs != null) {
-            		rs.close();
-            	}
+                if (rs != null) {
+                    rs.close();
+                }
             }
         } catch (Exception e) {
             LOG.warn("Unable to read by key: " + e.getMessage());
@@ -185,13 +187,15 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         AnswerList<ApplicationObject> ans = new AnswerList<>();
         MessageEvent msg = null;
 
+        LOG.debug("SQL : " + Query.READ_BY_APP);
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
             // Prepare and execute query
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
             try {
-            	List<ApplicationObject> al = new ArrayList<>();
+                List<ApplicationObject> al = new ArrayList<>();
                 while (rs.next()) {
                     al.add(loadFromResultSet(rs));
                 }
@@ -199,14 +203,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 // Set the final message
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "READ_BY_APP");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
             } finally {
-            	if(rs != null) {
-            		rs.close();
-            	}
+                if (rs != null) {
+                    rs.close();
+                }
             }
         } catch (Exception e) {
             LOG.warn("Unable to read by app: " + e.getMessage());
@@ -342,8 +346,6 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-
-
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
@@ -358,11 +360,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -377,9 +379,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -411,7 +413,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -468,10 +470,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             searchSQL.append(" and (").append(SqlUtil.generateInClause("app.`System`", systems)).append(") ");
         }
 
-        searchSQL.append( " AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
+        searchSQL.append(" AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
 
         query.append(searchSQL);
-
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -594,7 +595,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
-            int i=1;
+            int i = 1;
             preStat.setString(i++, object.getApplication());
             preStat.setString(i++, object.getObject());
             preStat.setString(i++, object.getValue());
@@ -654,6 +655,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 + "`usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
                 + " WHERE `application` = ? AND `object` = ?";
 
+        LOG.debug("SQL : " + query);
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
@@ -703,7 +706,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append("WHERE 1=1 ");
 
-    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -722,22 +725,22 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
             searchSQL.append(" )");
         }
-        
+
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            
-        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -750,15 +753,15 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
                 //get the total number of rows
-                
+
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -777,12 +780,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -845,7 +848,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(application)) {
@@ -865,9 +868,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -891,7 +894,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));

@@ -32,22 +32,89 @@ import java.util.List;
  */
 public interface ITestCaseStepActionControlService {
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param actionId
+     * @param control
+     * @return
+     */
     TestCaseStepActionControl findTestCaseStepActionControlByKey(String test, String testcase, int stepId, int actionId, int control);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param actionId
+     * @return
+     */
     List<TestCaseStepActionControl> findControlByTestTestCaseStepIdActionId(String test, String testcase, int stepId, int actionId);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     List<TestCaseStepActionControl> findControlByTestTestCaseStepId(String test, String testcase, int stepId);
 
+    /**
+     *
+     * @param testCaseStepActionControl
+     * @return
+     */
     public boolean update(TestCaseStepActionControl testCaseStepActionControl);
+    
+    /**
+     *
+     * @param application
+     * @param oldObject
+     * @param newObject
+     */
+    public void updateApplicationObject(String application, String oldObject, String newObject);
 
+    /**
+     *
+     * @param initialTest
+     * @param initialTestCase
+     * @return
+     * @throws CerberusException
+     */
     public List<TestCaseStepActionControl> findControlByTestTestCase(String initialTest, String initialTestCase) throws CerberusException;
 
+    /**
+     *
+     * @param tcsacToDelete
+     * @throws CerberusException
+     */
     public void deleteList(List<TestCaseStepActionControl> tcsacToDelete) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseStepActionControl
+     * @throws CerberusException
+     */
     public void delete(TestCaseStepActionControl testCaseStepActionControl) throws CerberusException;
 
+    /**
+     *
+     * @param newList
+     * @param oldList
+     * @param duplicate
+     * @throws CerberusException
+     */
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepActionControl> newList, List<TestCaseStepActionControl> oldList, boolean duplicate) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     public AnswerList<TestCaseStepActionControl> readByTestTestCase(String test, String testcase);
 
     /**
@@ -59,10 +126,27 @@ public interface ITestCaseStepActionControlService {
      */
     public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int stepId, int actionId);
 
+    /**
+     *
+     * @param testCaseStepActionControl
+     * @return
+     */
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 
+    /**
+     *
+     * @param testCaseStepActionControls
+     * @return
+     */
     Answer createList(List<TestCaseStepActionControl> testCaseStepActionControls);
 
+    /**
+     *
+     * @param testCaseStepActionControls
+     * @param test
+     * @param testcase
+     * @return
+     */
     Answer duplicateList(List<TestCaseStepActionControl> testCaseStepActionControls, String test, String testcase);
 
     /**

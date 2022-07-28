@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author bcivel
@@ -70,6 +71,24 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void updateApplicationObject(String application, String oldObject, String newObject) {
+
+        try {
+            testCaseStepActionControlDao.updateApplicationObject("Value1", application, oldObject, newObject);
+            testCaseStepActionControlDao.updateApplicationObject("Value2", application, oldObject, newObject);
+            testCaseStepActionControlDao.updateApplicationObject("Value3", application, oldObject, newObject);
+
+            testCaseStepActionControlDao.updateApplicationObject("ConditionValue1", application, oldObject, newObject);
+            testCaseStepActionControlDao.updateApplicationObject("ConditionValue2", application, oldObject, newObject);
+            testCaseStepActionControlDao.updateApplicationObject("ConditionValue3", application, oldObject, newObject);
+
+            testCaseStepActionControlDao.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
     }
 
     @Override

@@ -44,6 +44,8 @@ public interface ITestCaseStepActionService {
 
     public boolean updateTestCaseStepAction(TestCaseStepAction tcsa);
 
+    public void updateApplicationObject(String application, String oldObject, String newObject);
+
     public void updateService(String oldService, String service) throws CerberusException;
 
     public void deleteTestCaseStepAction(TestCaseStepAction tcsa) throws CerberusException;

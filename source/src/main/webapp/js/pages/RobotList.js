@@ -40,7 +40,7 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"), [1, 'asc']);
 
     createDataTableWithPermissions(configurations, renderOptionsForRobot, "#robotList", undefined, true);
-    
+
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
         'container': 'body'}
@@ -162,11 +162,29 @@ function aoColumnsFunc(tableId) {
         {"data": "platform",
             "sName": "platform",
             "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "platform")},
+            "title": doc.getDocOnline("robot", "platform"),
+            "mRender": function (data, type, obj) {
+                return $("<div></div>")
+                        .append($("<img style='height:30px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.platform).attr('src', './images/platform-' + obj.platform + '.png'))
+                        .append($("<span></span>").text(" " + obj.platform))
+                        .html();
+            }
+        },
         {"data": "browser",
             "sName": "browser",
             "sWidth": "50px",
-            "title": doc.getDocOnline("robot", "browser")},
+            "title": doc.getDocOnline("robot", "browser"),
+            "mRender": function (data, type, obj) {
+                if (obj.browser !== "") {
+                    return $("<div></div>")
+                            .append($("<img style='height:30px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.browser).attr('src', './images/browser-' + obj.browser + '.png'))
+                            .append($("<span></span>").text(" " + obj.browser))
+                            .html();
+                } else {
+                    return "";
+                }
+            }
+        },
         {"data": "version",
             "sName": "version",
             "visible": false,

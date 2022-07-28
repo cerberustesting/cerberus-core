@@ -226,15 +226,13 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
             || (mode === "ADD"));
     // Data Feed.
     if (mode === "EDIT") {
-        $("[name='editApplicationObjectField']").html(
-                doc.getDocOnline("page_global", "btn_edit"));
-        formEdit.find("#application").attr("disabled", true);
-        formEdit.find("#object").prop("readonly", true);
+        $("[name='editApplicationObjectField']").html(doc.getDocOnline("page_global", "btn_edit"));
+//        formEdit.find("#application").attr("disabled", true);
+//        formEdit.find("#object").prop("readonly", true);
     } else if (mode === "ADD") { // DUPLICATE or ADD
-        $("[name='editApplicationObjectField']").html(
-                doc.getDocOnline("page_global", "btn_add"));
-        formEdit.find("#application").attr("readonly", false);
-        formEdit.find("#object").prop("readonly", false);
+        $("[name='editApplicationObjectField']").html(doc.getDocOnline("page_global", "btn_add"));
+//        formEdit.find("#application").attr("readonly", false);
+//        formEdit.find("#object").prop("readonly", false);
     }
 
     if (isEmpty(applicationObject)) {
@@ -244,6 +242,8 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         formEdit.find("#inputFile").val("Drag and drop Files");
 
     } else {
+        formEdit.find("#originalApplication").prop("value", applicationObject.application);
+        
         if (applicationObject.application === undefined) {
             formEdit.find("#application")[0].selectedIndex = 0;
         } else {
@@ -258,6 +258,7 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
             updateDropzone(applicationObject.screenshotfilename, "#" + modalId);
         }
 
+        formEdit.find("#originalObject").prop("value", applicationObject.object);
         formEdit.find("#object").prop("value", applicationObject.object);
         formEdit.find("#value").prop("value", cleanErratum(applicationObject.value));
         formEdit.find("#xOffset").prop("value", applicationObject.xOffset);
