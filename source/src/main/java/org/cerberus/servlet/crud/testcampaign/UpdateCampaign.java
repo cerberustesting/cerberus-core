@@ -76,10 +76,10 @@ public class UpdateCampaign extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -102,7 +102,8 @@ public class UpdateCampaign extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         int cID = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("CampaignID"), 0, charset);
-        String campaignName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
+        String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
+        String originalCampaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("OriginalCampaign"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
         String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
@@ -124,7 +125,7 @@ public class UpdateCampaign extends HttpServlet {
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
         // Getting list of application from JSON Call
-        if (StringUtil.isNullOrEmpty(campaignName)) {
+        if (StringUtil.isNullOrEmpty(originalCampaign)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
                     .replace("%OPERATION%", "Update")
@@ -138,7 +139,7 @@ public class UpdateCampaign extends HttpServlet {
 
             ICampaignService campaignService = appContext.getBean(ICampaignService.class);
 
-            AnswerItem resp = campaignService.readByKey(campaignName);
+            AnswerItem resp = campaignService.readByKey(originalCampaign);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -146,6 +147,7 @@ public class UpdateCampaign extends HttpServlet {
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, resp);
             } else {
                 Campaign camp = (Campaign) resp.getItem();
+                camp.setCampaign(campaign);
                 camp.setDescription(desc);
                 camp.setLongDescription(longDesc);
                 camp.setGroup1(group1);
@@ -169,7 +171,7 @@ public class UpdateCampaign extends HttpServlet {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
                 schedAns.setResultMessage(msg);
 
-                finalAnswer = campaignService.update(camp);
+                finalAnswer = campaignService.update(originalCampaign, camp);
 
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
@@ -177,15 +179,15 @@ public class UpdateCampaign extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : ['" + campaignName + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : ['" + originalCampaign + "']", request);
 
                     if (request.getParameter("ScheduledEntries") != null) {
                         // Getting list of Schedule Entries from JSON Call
                         IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
                         JSONArray objScheduleArray = new JSONArray(request.getParameter("ScheduledEntries"));
                         List<ScheduleEntry> schList = new ArrayList<>();
-                        schList = getScheduleEntryListFromParameter(request, appContext, campaignName, objScheduleArray);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, scheduleEntryService.compareSchedListAndUpdateInsertDeleteElements(campaignName, schList));
+                        schList = getScheduleEntryListFromParameter(request, appContext, campaign, objScheduleArray);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, scheduleEntryService.compareSchedListAndUpdateInsertDeleteElements(originalCampaign, schList));
                     }
 
                     if (request.getParameter("EventEntries") != null) {
@@ -193,8 +195,8 @@ public class UpdateCampaign extends HttpServlet {
                         IEventHookService eventHookService = appContext.getBean(IEventHookService.class);
                         JSONArray objEventHookArray = new JSONArray(request.getParameter("EventEntries"));
                         List<EventHook> schList = new ArrayList<>();
-                        schList = getEventHookEntryListFromParameter(request, appContext, campaignName, objEventHookArray);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, eventHookService.compareListAndUpdateInsertDeleteElements(campaignName, schList));
+                        schList = getEventHookEntryListFromParameter(request, appContext, campaign, objEventHookArray);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, eventHookService.compareListAndUpdateInsertDeleteElements(originalCampaign, schList));
                     }
 
                     if (parameter != null) {
@@ -204,10 +206,10 @@ public class UpdateCampaign extends HttpServlet {
                         ArrayList<CampaignParameter> arr = new ArrayList<>();
                         for (int i = 0; i < parameters.length(); i++) {
                             JSONArray bat = parameters.getJSONArray(i);
-                            CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
+                            CampaignParameter co = factoryCampaignParameter.create(0, campaign, bat.getString(2), bat.getString(3));
                             arr.add(co);
                         }
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, campaignParameterService.compareListAndUpdateInsertDeleteElements(campaignName, arr));
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, campaignParameterService.compareListAndUpdateInsertDeleteElements(campaign, arr));
                     }
 
                     if (label != null) {
@@ -217,10 +219,10 @@ public class UpdateCampaign extends HttpServlet {
                         ArrayList<CampaignLabel> arr = new ArrayList<>();
                         for (int i = 0; i < labels.length(); i++) {
                             JSONArray bat = labels.getJSONArray(i);
-                            CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                            CampaignLabel co = factoryCampaignLabel.create(0, campaign, Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
                             arr.add(co);
                         }
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, campaignLabelService.compareListAndUpdateInsertDeleteElements(campaignName, arr));
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, campaignLabelService.compareListAndUpdateInsertDeleteElements(campaign, arr));
                     }
 
                 } else {
@@ -320,16 +322,14 @@ public class UpdateCampaign extends HttpServlet {
         return evtList;
     }
 
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -346,10 +346,10 @@ public class UpdateCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

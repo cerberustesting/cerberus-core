@@ -316,8 +316,6 @@ function editEntryClick(param) {
     $('#editTestcampaignButton').attr('class', 'btn btn-primary');
     $('#editTestcampaignButton').removeAttr('hidden');
 
-    $("#editTestcampaignModal #campaign").attr("readonly", true);
-
     var formEdit = $('#editTestcampaignModal');
 
     showLoader("#testcampaignList");
@@ -339,6 +337,7 @@ function editEntryClick(param) {
         }
 
         formEdit.find("#campaign").prop("value", obj["campaign"]);
+        formEdit.find("#originalCampaign").prop("value", obj["campaign"]);
         formEdit.find("#notifystart").val(obj["notifyStartTagExecution"]);
         formEdit.find("#notifyend").val(obj["notifyEndTagExecution"]);
         formEdit.find("#distriblist").prop("value", obj["distribList"]);
@@ -536,6 +535,7 @@ function editEntryModalSaveHandler() {
         method: "POST",
         data: {
             Campaign: data.campaign,
+            OriginalCampaign: data.originalCampaign,
             CampaignID: data.id,
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
@@ -595,6 +595,7 @@ function addEntryClick() {
     $('#addTestcampaignButton').removeAttr('hidden');
 
     $("#editTestcampaignModal #campaign").empty();
+    $("#editTestcampaignModal #originalCampaign").empty();
 
     $("#editTestcampaignModal #campaign").removeAttr("readonly");
 

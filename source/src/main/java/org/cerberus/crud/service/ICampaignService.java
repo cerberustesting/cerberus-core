@@ -80,10 +80,11 @@ public interface ICampaignService {
     Answer create(Campaign object);
 
     /**
+     * @param originalCampaign
      * @param object the {@link Campaign} to Update
      * @return {@link AnswerItem}
      */
-    Answer update(Campaign object);
+    Answer update(String originalCampaign, Campaign object);
 
     /**
      * @param object the {@link Campaign} to Delete

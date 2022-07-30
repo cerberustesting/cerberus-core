@@ -222,30 +222,27 @@ function feedApplicationObjectModal(application, object, modalId, mode) {
 function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
-            || (mode === "ADD"));
+    var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT")) || (mode === "ADD"));
+
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editApplicationObjectField']").html(doc.getDocOnline("page_global", "btn_edit"));
-//        formEdit.find("#application").attr("disabled", true);
-//        formEdit.find("#object").prop("readonly", true);
     } else if (mode === "ADD") { // DUPLICATE or ADD
         $("[name='editApplicationObjectField']").html(doc.getDocOnline("page_global", "btn_add"));
-//        formEdit.find("#application").attr("readonly", false);
-//        formEdit.find("#object").prop("readonly", false);
     }
 
-    if (isEmpty(applicationObject)) {
-        formEdit.find("#application")[0].selectedIndex = applicationObject.application;
+    if (applicationObject === undefined) {
+        formEdit.find('#application').val("").trigger('change');
+        formEdit.find('#application').trigger('change');
         formEdit.find("#object").prop("value", "");
         formEdit.find("#value").prop("value", "");
         formEdit.find("#inputFile").val("Drag and drop Files");
 
     } else {
         formEdit.find("#originalApplication").prop("value", applicationObject.application);
-        
+
         if (applicationObject.application === undefined) {
-            formEdit.find("#application")[0].selectedIndex = 0;
+            formEdit.find('#application').val("").trigger('change');
         } else {
             //formEdit.find("#application").val(applicationObject.application);
             var newOption = new Option(applicationObject.application, applicationObject.application, true, true);
@@ -255,7 +252,7 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
         if (applicationObject.screenshotfilename == "") {
             updateDropzone("Drag and drop Files", "#" + modalId);
         } else {
-            updateDropzone(applicationObject.screenshotfilename, "#" + modalId);
+            updateDropzone(applicationObject.screenshotFilename, "#" + modalId);
         }
 
         formEdit.find("#originalObject").prop("value", applicationObject.object);

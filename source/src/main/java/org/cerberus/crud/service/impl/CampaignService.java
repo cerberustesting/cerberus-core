@@ -89,8 +89,8 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public Answer update(Campaign object) {
-        return campaignDAO.update(object);
+    public Answer update(String originalCampaign, Campaign object) {
+        return campaignDAO.update(originalCampaign, object);
     }
 
     @Override

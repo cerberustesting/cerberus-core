@@ -444,7 +444,7 @@ public class CampaignDAO implements ICampaignDAO {
     }
 
     @Override
-    public Answer update(Campaign object) {
+    public Answer update(String originalCampaign, Campaign object) {
         MessageEvent msg = null;
         final String query = "UPDATE campaign cpg SET campaign = ?"
                 + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, Video = ?, PageSource = ?, RobotLog = ?, ConsoleLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
@@ -453,6 +453,8 @@ public class CampaignDAO implements ICampaignDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.campaign : " + object.getCampaign());
+            LOG.debug("SQL.param.campaignid : " + object.getCampaignID());
         }
         Connection connection = this.databaseSpring.connect();
         try {

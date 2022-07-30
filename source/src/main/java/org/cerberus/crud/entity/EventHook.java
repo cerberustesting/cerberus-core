@@ -48,9 +48,13 @@ public class EventHook {
     private String hookRecipient;
     private String hookChannel;
     private String description;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
     // External Database model
 
@@ -183,7 +187,6 @@ public class EventHook {
 //    public void setDateModif(Timestamp dateModif) {
 //        this.dateModif = dateModif;
 //    }
-
     public boolean hasSameKey(EventHook obj) {
         if (obj == null) {
             return false;
@@ -213,7 +216,6 @@ public class EventHook {
 //        hash = 29 * hash + Objects.hashCode(this.description);
 //        return hash;
 //    }
-
 //    @Override
 //    public boolean equals(Object obj) {
 //        if (obj == null) {
@@ -252,7 +254,6 @@ public class EventHook {
 //        }
 //        return true;
 //    }
-
     public JSONObject toJson() {
         JSONObject labelJson = new JSONObject();
         try {
