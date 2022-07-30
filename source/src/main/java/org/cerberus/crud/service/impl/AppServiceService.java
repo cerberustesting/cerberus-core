@@ -210,16 +210,19 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public Answer update(String service, AppService object) {
-        if (!service.equals(object.getService())) {
-            try {
-                // Key is modified, we updte all testcase actions that call that service
-                actionService.updateService(service, object.getService());
-            } catch (CerberusException ex) {
-                LOG.error(ex, ex);
+    public Answer update(String originalService, AppService object) {
+        Answer resp = appServiceDao.update(originalService, object);
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (originalService != null && !originalService.equals(object.getService())) {
+                try {
+                    // Key is modified, we updte all testcase actions that call that service
+                    actionService.updateService(originalService, object.getService());
+                } catch (CerberusException ex) {
+                    LOG.warn(ex, ex);
+                }
             }
         }
-        return appServiceDao.update(service, object);
+        return resp;
     }
 
     @Override
