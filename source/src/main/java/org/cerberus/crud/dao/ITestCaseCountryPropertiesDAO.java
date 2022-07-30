@@ -146,6 +146,18 @@ public interface ITestCaseCountryPropertiesDAO {
     Answer update(TestCaseCountryProperties object);
 
     /**
+     * Update @field on database replacing %object.oldObject% to
+     * %object.newObject% on all lines that belong to @application
+     *
+     * @param field
+     * @param application
+     * @param oldObject
+     * @param newObject
+     * @throws CerberusException
+     */
+    void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
+
+    /**
      * @param oldName
      * @param newName
      * @return

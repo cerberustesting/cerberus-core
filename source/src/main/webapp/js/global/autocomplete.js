@@ -272,7 +272,7 @@ function initTags(configs, context) {
         ];
         var availableObjectProperties = [
             "value",
-            "picturepath",
+//            "picturepath",
             "pictureurl"
         ];
         var availableSystemValues = [

@@ -3811,7 +3811,7 @@ function configureAceEditor(editor, mode, property) {
 function createAllKeywordList(objectList, propertyList) {
     var availableObjectProperties = [
         "value",
-        "picturepath",
+//        "picturepath",
         "pictureurl"
     ];
     var availableSystemValues = [
@@ -3927,7 +3927,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                 if (!allKeywordCorrect && keywordInputList[0] === "object" && keywordInputList.length < 4) {
                     var availableObjectProperties = [
                         "value",
-                        "picturepath",
+//                        "picturepath",
                         "pictureurl"
                     ];
                     // if the user want to defined a new object
@@ -4076,7 +4076,7 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                                 var thirdKeyword = keywordsListCurrentlyCheck[2];
                                 var availableObjectProperties = [
                                     "value",
-                                    "picturepath",
+//                                    "picturepath",
                                     "pictureurl"
                                 ];
                                 if (availableObjectProperties.indexOf(thirdKeyword) === -1) {

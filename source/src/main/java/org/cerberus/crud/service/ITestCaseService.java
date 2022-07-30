@@ -117,6 +117,14 @@ public interface ITestCaseService {
     boolean updateTestCaseInformation(TestCase testCase);
 
     /**
+     *
+     * @param application
+     * @param oldObject
+     * @param newObject
+     */
+    public void updateApplicationObject(String application, String oldObject, String newObject);
+
+    /**
      * @param tCase
      * @param text
      * @param system

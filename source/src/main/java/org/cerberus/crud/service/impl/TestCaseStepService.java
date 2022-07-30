@@ -86,6 +86,19 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
+    public void updateApplicationObject(String application, String oldObject, String newObject) {
+        try {
+            testCaseStepDAO.updateApplicationObject("ConditionValue1", application, oldObject, newObject);
+            testCaseStepDAO.updateApplicationObject("ConditionValue2", application, oldObject, newObject);
+            testCaseStepDAO.updateApplicationObject("ConditionValue3", application, oldObject, newObject);
+
+            testCaseStepDAO.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
+    }
+
+    @Override
     public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException {
         for (TestCaseStep tcs : tcsToDelete) {
             deleteTestCaseStep(tcs);

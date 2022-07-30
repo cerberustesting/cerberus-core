@@ -193,6 +193,18 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
+    public void updateApplicationObject(String application, String oldObject, String newObject) {
+        try {
+            testCaseCountryPropertiesDAO.updateApplicationObject("Value1", application, oldObject, newObject);
+            testCaseCountryPropertiesDAO.updateApplicationObject("Value2", application, oldObject, newObject);
+
+            testCaseCountryPropertiesDAO.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
+    }
+
+    @Override
     public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
         return testCaseCountryPropertiesDAO.findCountryByPropertyNameAndTestCase(test, testcase, property);
     }

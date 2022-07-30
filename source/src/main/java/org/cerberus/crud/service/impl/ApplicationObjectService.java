@@ -34,8 +34,11 @@ import org.springframework.stereotype.Service;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 
 /**
@@ -51,6 +54,12 @@ public class ApplicationObjectService implements IApplicationObjectService {
     private ITestCaseStepActionService actionService;
     @Autowired
     private ITestCaseStepActionControlService controlService;
+    @Autowired
+    private ITestCaseStepService stepService;
+    @Autowired
+    private ITestCaseService testcaseService;
+    @Autowired
+    private ITestCaseCountryPropertiesService propertiesService;
 
     private static final Logger LOG = LogManager.getLogger("ApplicationObjectService");
 
@@ -108,6 +117,9 @@ public class ApplicationObjectService implements IApplicationObjectService {
             if (originalObject != null && !originalObject.equals(object.getObject())) {
                 actionService.updateApplicationObject(originalApplication, originalObject, object.getObject());
                 controlService.updateApplicationObject(originalApplication, originalObject, object.getObject());
+                stepService.updateApplicationObject(originalApplication, originalObject, object.getObject());
+                testcaseService.updateApplicationObject(originalApplication, originalObject, object.getObject());
+                propertiesService.updateApplicationObject(originalApplication, originalObject, object.getObject());
             }
         }
         return resp;

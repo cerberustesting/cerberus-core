@@ -35,13 +35,31 @@ import java.util.List;
  */
 public interface ITestCaseStepDAO {
 
-
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
 
+    /**
+     *
+     * @return
+     */
     List<TestCaseStep> findAllTestcaseSteps();
 
+    /**
+     *
+     * @return
+     */
     List<TestCaseStep> findAllLibrarySteps();
 
+    /**
+     *
+     * @param testFolderId
+     * @return
+     */
     List<TestCaseStep> findTestcaseStepsByTestFolderId(String testFolderId);
 
     /**
@@ -52,24 +70,101 @@ public interface ITestCaseStepDAO {
      */
     TestCaseStep findTestCaseStep(String test, String testcase, Integer StepId);
 
+    /**
+     *
+     * @param tcs
+     * @throws CerberusException
+     */
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
+    /**
+     *
+     * @param tcs
+     * @throws CerberusException
+     */
     public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
+    /**
+     * Update @field on database replacing %object.oldObject% to
+     * %object.newObject% on all lines that belong to @application
+     *
+     * @param field
+     * @param application
+     * @param oldObject
+     * @param newObject
+     * @throws CerberusException
+     */
+    void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param stepId
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int stepId) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepsUsingTestInParameter(final String test) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
