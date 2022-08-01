@@ -74,6 +74,8 @@ public class UserDAO implements IUserDAO {
         User result = null;
         final String query = "SELECT * FROM user usr WHERE usr.login = ? ";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -114,6 +116,8 @@ public class UserDAO implements IUserDAO {
         List<User> list = null;
         final String query = "SELECT * FROM user usr ORDER BY userid";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -153,6 +157,8 @@ public class UserDAO implements IUserDAO {
     public boolean insertUser(User user) {
         boolean bool = false;
         final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '')";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -205,6 +211,8 @@ public class UserDAO implements IUserDAO {
         boolean bool = false;
         final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences) VALUES (?, 'NOAUTH', ?, ?, ?, ?, ?, ?, ?, ?, '')";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -256,6 +264,8 @@ public class UserDAO implements IUserDAO {
         boolean bool = false;
         final String query = "DELETE FROM user WHERE userid = ?";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -290,6 +300,8 @@ public class UserDAO implements IUserDAO {
         query.append("Team = ?, Language = ?, DefaultSystem = ?, Email= ? , robotPort = ?, ");
         query.append("robotPlatform = ?, ");
         query.append("robotBrowser = ?, robotVersion = ? , robot = ? , userPreferences = ?  WHERE userid = ?");
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -337,11 +349,13 @@ public class UserDAO implements IUserDAO {
         AnswerItem<User> answer = new AnswerItem<>();
         MessageEvent msg;
         boolean res = false;
-        final String sql = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
+        final String query = "UPDATE user SET Password = SHA(?) , Request = ? WHERE Login LIKE ?";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, password);
                 preStat.setString(2, requestNewPassword);
@@ -380,7 +394,7 @@ public class UserDAO implements IUserDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User").
                     replace("%OPERATION%", "Update Password").replace("%REASON%", "Your password was not updated. "
-                            + "Please contact your Cerberus' administrator to learn more information."));
+                    + "Please contact your Cerberus' administrator to learn more information."));
         }
 
         answer.setResultMessage(msg);
@@ -391,9 +405,11 @@ public class UserDAO implements IUserDAO {
     public Answer clearResetPasswordToken(User user) {
         Answer ans = new Answer();
         MessageEvent msg = null;
-        final String sql = "UPDATE user SET resetPasswordToken = '' WHERE Login LIKE ?";
+        final String query = "UPDATE user SET resetPasswordToken = '' WHERE Login LIKE ?";
 
-        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql)) {
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, user.getLogin());
             preStat.executeUpdate();
@@ -415,11 +431,13 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean verifyPassword(User user, String password) {
         boolean bool = false;
-        final String sql = "SELECT Password, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
+        final String query = "SELECT Password, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, password);
                 preStat.setString(2, user.getLogin());
@@ -456,11 +474,13 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean verifyResetPasswordToken(User user, String resetPasswordToken) {
         boolean bool = false;
-        final String sql = "SELECT resetPasswordToken, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
+        final String query = "SELECT resetPasswordToken, SHA(?) AS currentPassword FROM user WHERE Login LIKE ?";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, resetPasswordToken);
                 preStat.setString(2, user.getLogin());
@@ -497,11 +517,13 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean verifyAPIKey(String apiKey) {
         boolean bool = false;
-        final String sql = "SELECT login FROM user WHERE apiKey = ?";
+        final String query = "SELECT login FROM user WHERE apiKey = ?";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+            PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, apiKey);
                 ResultSet rs = preStat.executeQuery();
@@ -588,6 +610,8 @@ public class UserDAO implements IUserDAO {
 
         User user;
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -664,6 +688,8 @@ public class UserDAO implements IUserDAO {
 
         query.append(searchSQL);
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -711,6 +737,8 @@ public class UserDAO implements IUserDAO {
                 + "AND us.system = ? "
                 + "ORDER BY usr.login";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -755,6 +783,8 @@ public class UserDAO implements IUserDAO {
         final String query = "SELECT * FROM `user` usr WHERE usr.`login` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -850,9 +880,8 @@ public class UserDAO implements IUserDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -999,9 +1028,8 @@ public class UserDAO implements IUserDAO {
         }
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1102,9 +1130,8 @@ public class UserDAO implements IUserDAO {
         query.append("  VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '', ?)");
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1160,9 +1187,8 @@ public class UserDAO implements IUserDAO {
         final String query = "DELETE FROM user WHERE userid = ? ";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -1208,9 +1234,8 @@ public class UserDAO implements IUserDAO {
         query.append(" WHERE userid = ?");
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());

@@ -235,10 +235,10 @@ public class UserService implements IUserService {
 
     @Override
     public Answer delete(User user) {
-        if (User.USER_SERVICEACCOUNT.equals(user.getLogin())) {
+        if (User.CERBERUS_SERVICEACCOUNT_LOGIN.equals(user.getLogin())) {
 
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_ERROR);
-            msg.setDescription(msg.getDescription().replace("%REASON%", "You cannot delete Cerberus service account '" + User.USER_SERVICEACCOUNT + "'!"));
+            msg.setDescription(msg.getDescription().replace("%REASON%", "You cannot delete Cerberus service account '" + User.CERBERUS_SERVICEACCOUNT_LOGIN + "'!"));
             return new Answer(msg);
 
         } else {
@@ -249,10 +249,10 @@ public class UserService implements IUserService {
 
     @Override
     public Answer update(User user) {
-        if (User.USER_SERVICEACCOUNT.equals(user.getLogin()) && user.getApiKey().length() < 15) {
+        if (User.CERBERUS_SERVICEACCOUNT_LOGIN.equals(user.getLogin()) && user.getApiKey().length() < 15) {
 
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_ERROR);
-            msg.setDescription(msg.getDescription().replace("%REASON%", "Cerberus service account '" + User.USER_SERVICEACCOUNT + "' must have an APIKey larger than 15 digits!"));
+            msg.setDescription(msg.getDescription().replace("%REASON%", "Cerberus service account '" + User.CERBERUS_SERVICEACCOUNT_LOGIN + "' must have an APIKey larger than 15 digits!"));
             return new Answer(msg);
 
         } else {
