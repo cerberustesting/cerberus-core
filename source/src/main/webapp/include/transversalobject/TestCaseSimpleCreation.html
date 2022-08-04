@@ -1,0 +1,110 @@
+<!--Edit test page-->
+<div data-backdrop="static" class="modal fade center" id="editTestCaseSimpleCreationModal" role="dialog" aria-labelledby="editTestCaseSimpleCreationModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom center modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editTestCaseSimpleCreationModalLabel" name="editTestCaseSimpleCreationField">Edit Test Case</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid center">
+                    <!-- messages area-->
+                    <div id="DialogMessagesArea">
+                        <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!--edit form-->
+                <form id="editTestCaseSimpleCreationModalForm" name="editTestCaseSimpleCreationModalForm"  title="EditTestCase" role="form">
+                    <div class="container-fluid center">
+                        <div class="row">
+                            <div class="pill80 light-primary col-sm-1 marginTop10">
+                                <span class="card-img-top glyphicon glyphicon-modal-window"
+                                                                        style="font-size:20px;"></span>
+                            </div>
+                            <div class="col-sm-11">
+                                <div class="col-sm-12 panel" id="ApplicationPanel">
+                                    <div class="panel-heading bold" id="ChooseApplicationLabel">
+                                        Choose (or Create) the application that you gonna test
+                                    </div>
+                                <div class="panel-body" id="chooseApplication">
+                                    <div class="form-group form-group-sm col-sm-12">
+                                        <select type="text" class="form-control input-sm" name="application" id="application"></select>
+                                    </div>
+                                    <div id="newApplication" style="display:none">
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label for="type" name="applicationTypeField">Application Type</label>
+                                            <select type="text" class="form-control input-sm" name="type" id="type"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-5">
+                                            <label for="url" name="applicationHostField">URL</label>
+                                            <input type="text" class="form-control input-sm" name="url" id="url"/>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-2">
+                                            <label for="country" name="countryField">Country</label>
+                                            <select type="text" class="form-control input-sm" name="country" id="country"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-2">
+                                            <label for="environment" name="environmentField">Environment</label>
+                                            <select type="text" class="form-control input-sm" name="environment" id="environment"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="pill80 light-primary col-sm-1 marginTop10">
+                                <span class="card-img-top glyphicon glyphicon-edit"
+                                      style="font-size:20px;"></span>
+                            </div>
+                            <div class="col-sm-11">
+                                <div class="col-sm-12 panel" id="describeTestcasePanel">
+                                    <div class="panel-heading bold" id="describeTestcaseLabel">
+                                        Describe shortly what your TestCase is created for
+                                    </div>
+                                    <div class="panel-body" id="describeTestcase">
+                                        <div class="form-group form-group-sm col-sm-12">
+                                            <input type="text" class="form-control input-sm" name="description" id="description" placeholder="As a user, when I do something, then I should see the result"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="pill80 light-primary col-sm-1 marginTop10">
+                                <span class="card-img-top glyphicon glyphicon-folder-open"
+                                      style="font-size:20px;"></span>
+                            </div>
+                            <div class="col-sm-11">
+                                <div class="col-sm-12 panel" id="defineTestcasePanel">
+                                    <div class="panel-heading bold" id="defineTestcaseLabel">
+                                        Choose (or Create) a folder to store your TestCase
+                                    </div>
+                                    <div class="panel-body" id="defineTestcase">
+                                        <div class="form-group form-group-sm col-sm-9">
+                                            <label class="control-label" for="test" name="testField">Test</label>
+                                            <select type="text" class="form-control input-sm" name="testFolderId" id="test"></select>
+                                        </div>
+                                        <div class="form-group form-group-sm col-sm-3">
+                                            <label class="control-label" for="testCase" name="testCaseField" id="testId">Test Case ID</label>
+                                            <input type="text" class="form-control input-sm" name="testcaseId" id="testCase">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addTestCaseSimpleCreationButton" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -236,7 +236,7 @@ function editTestCaseClick(test, testCase) {
 
     $("#originalTest").prop("value", test);
     $("#originalTestCase").prop("value", testCase);
-    $("#testCase").prop("value", testCase);
+    $("#editTestCaseModalForm #testCase").prop("value", testCase);
 
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
     $('#editTestCaseModalForm select[name="test"]').off("change");

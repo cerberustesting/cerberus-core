@@ -1,0 +1,159 @@
+<!--Edit test page-->
+<div data-backdrop="static" class="modal fade center" id="testCaseSimpleExecutionModal" role="dialog" aria-labelledby="executeTestCaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom center modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="executeTestCaseModalLabel" name="executeTestCaseField">Run Test Case</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid center">
+                    <!-- messages area-->
+                    <div id="DialogMessagesArea">
+                        <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!--edit form-->
+                <form id="executeTestCaseModalForm" name="executeTestCaseModalForm"  title="ExecuteTestCase" role="form">
+                    <div class="container-fluid center">
+                        <div class="row">
+                            <div class="col-sm-11 panel" id="EditScriptPanel">
+                                <div class="pill40 light-primary pull-left">
+                                        <span class="card-img-top glyphicon glyphicon-edit"
+                                              style="font-size:15px;"></span>
+                                </div>
+                                <div class="panel-heading bold" id="testToExecuteLabel">
+                                    Testcase to launch :
+                                </div>
+                                <div class="panel-heading marginBottom20" id="testCaseToExecute">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row row-divided">
+                            <div class="col-xs-4 column-one">
+                                <div>
+                                    <div class="pill40 light-primary pull-left">
+                                        <span class="card-img-top glyphicon glyphicon-edit"
+                                              style="font-size:15px;"></span>
+                                    </div>
+                                    <div class="panel-heading bold" id="chooseEnvLabel">
+                                            Choose your Environment
+                                    </div>
+                                </div>
+                                <div class="list-group marginTop10" id="environmentList" name="environmentList">
+                                </div>
+                            </div>
+                            <div class="col-xs-4 column-two">
+                                <div>
+                                    <div class="pill40 light-primary pull-left">
+                                        <span class="card-img-top glyphicon glyphicon-edit"
+                                              style="font-size:15px;"></span>
+                                    </div>
+                                    <div class="panel-heading bold" id="chooseRobotLabel">
+                                        Choose your Robot<span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
+                                                               style="font-size:15px;">
+                                    </div>
+                                </div>
+                                <div class="list-group marginTop10" id="robotList" name="robotList">
+                                </div>
+                            </div>
+                            <div class="col-xs-4 column-two">
+                                <div>
+                                    <div class="pill40 light-primary pull-left">
+                                        <span class="card-img-top glyphicon glyphicon-cog"
+                                              style="font-size:15px;"></span>
+                                    </div>
+                                    <div class="panel-heading bold" id="customizeExecutionSettings">
+                                        Customize execution settings
+                                        <span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
+                                              style="font-size:15px;"></span>
+                                    </div>
+                                </div>
+                                <div class="form-horizontal" id="executionSettings">
+                                    <div class="list-group marginTop10">
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-tag pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                <input type="text" placeholder="Define your own execution tag"  class="form-control input-sm" id="tag" name="Tag" maxlength="255"/>
+                                            </div>
+                                        </button>
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-list pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                <div class="btn-group btn-group-toggle" id="verbose" data-toggle="buttons">
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="verbose" id="verbose1" data-verbose="0" autocomplete="off"> Minimum
+                                                    </label>
+                                                    <label class="btn btn-default active">
+                                                        <input type="radio" name="verbose" id="verbose2" data-verbose="1" autocomplete="off"> Standard
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="verbose" id="verbose3" data-verbose="2" autocomplete="off"> Maximum
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-time pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                    <input type="text" placeholder="Override timeout (in ms)" class="form-control input-sm" id="timeout" name="timeout"/>
+                                            </div>
+                                        </button>
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-repeat pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                <div class="btn-group btn-group-toggle" id="retries" data-toggle="buttons">
+                                                    <label class="btn btn-default active">
+                                                        <input type="radio" name="retries" id="retries0" data-retries="0" autocomplete="off"> 0
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="retries" id="retries1" data-retries="1" autocomplete="off" > 1
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="retries" id="retries2" data-retries="2" autocomplete="off"> 2
+                                                    </label>
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="retries" id="retries3" data-retries="3" autocomplete="off"> 3
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-arrow-up pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                <input type="text" placeholder="Override priority (default 1000, 1 highest priority)"  class="form-control input-sm" id="priority" name="priority"/>
+                                            </div>
+                                        </button>
+                                        <button type="button" class="list-group-item list-group-item-action">
+                                            <span class='glyphicon glyphicon-hand-left pull-left marginTop10'></span>
+                                            <div class="col-sm-11">
+                                                <div class="btn-group btn-group-toggle" id="manual" data-toggle="buttons">
+                                                    <label class="btn btn-default">
+                                                        <input type="radio" name="options" id="man1" data-manual="Y" autocomplete="off"> Manual
+                                                    </label>
+                                                    <label class="btn btn-default active">
+                                                        <input type="radio" name="options" id="man2" data-manual="A" autocomplete="off"> Auto
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <footer>Need more configuration, open it on <a id="linkToRunPageWithInformation">Run Page</a></footer>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Cancel</button>
+                <button type="button" id="executeTestCaseButton" class="btn btn-primary">Run</button>
+            </div>
+        </div>
+    </div>
+</div>

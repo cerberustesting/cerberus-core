@@ -84,6 +84,7 @@ $.when($.getScript("js/global/global.js")
         var step = GetURLParameter("step");
         var property = GetURLParameter("property");
         var tabactive = GetURLParameter("tabactive");
+        var oneclickcreation = GetURLParameter("oneclickcreation");
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
@@ -125,6 +126,8 @@ $.when($.getScript("js/global/global.js")
 
             var stepsObject;
             var testcaseObject;
+            let application;
+            let description;
             $.ajax({
                 url: "ReadTestCase",
                 data: {test: test, testCase: testcase, withSteps: true, system: getSys()},
@@ -144,6 +147,8 @@ $.when($.getScript("js/global/global.js")
                     canUpdate = data.hasPermissionsUpdate;
                     loadLibraryStep(undefined, data.contentTable[0].system);
 
+                    application = data.contentTable[0].application;
+                    description = data.contentTable[0].description;
                     testcaseObject = data.contentTable[0];
                     loadTestCaseInfo(testcaseObject);
                     stepsObject = testcaseObject.steps;
@@ -290,7 +295,10 @@ $.when($.getScript("js/global/global.js")
             // CONTEXT GOTO & RUN MENU
             $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + encodeURI(test) + "&TestCase=" + encodeURI(testcase));
             $("#seeTest").parent().attr("href", "./TestCaseList.jsp?test=" + encodeURI(test));
-            $("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
+            //$("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
+            $("#runTestCase").on('click', function () {
+                openModalExecutionSimple(application, test, testcase, description);
+            });
 
             $.ajax({
                 url: "ReadTestCaseExecution",
@@ -353,6 +361,31 @@ $.when($.getScript("js/global/global.js")
 
         // open Run navbar Menu
         openNavbarMenu("navMenuTest");
+
+        if (oneclickcreation === "true"){
+            var message = "TestCase has been successfully created.";
+            showMessageMainPage("success", message, false, 2000);
+
+            $("#runTestCasePopover").attr('data-toggle','popover');
+            $("#runTestCasePopover").attr('data-trigger','manual');
+            $("#runTestCasePopover").attr('title', doc.getDocLabel("page_testcasescript", "runtestcasepopover_title"));
+            $("#runTestCasePopover").attr('data-placement','bottom');
+            $("#runTestCasePopover").attr('data-container','body');
+            $("#runTestCasePopover").attr("data-content",doc.getDocLabel("page_testcasescript", "runtestcasepopover_content"));
+
+            $("#runTestCasePopover").popover('show');
+            $("#runTestCase").attr('style', 'margin-left: 5px; background-color:#5cb85c; color:white');
+
+            $("#runTestCasePopover").fadeTo(5000, 1, function () {
+                $("#runTestCasePopover").popover('hide');
+                $("#runTestCase").attr('style', 'margin-left: 5px;');
+            });
+
+
+        }
+
+
+
     });
 });
 
@@ -372,20 +405,18 @@ function displayPageLabel(doc) {
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
 
     // CONTEXT MENU
-    $("#btnGroupDrop1").html(doc.getDocLabel("page_testcasescript", "goto") + " <span class='caret'></span>");
-    $("#seeLastExecUniq").html("<span class='glyphicon glyphicon-saved'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexecuniq"));
-    $("#seeLastExec").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
-    $("#seeTest").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_test"));
-    $("#seeLogs").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
+    $("#btnGroupDrop1").html("<span class='glyphicon glyphicon-option-horizontal'></span>");
+    $("#seeLastExecUniq").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexecuniq")).html("<span class='glyphicon glyphicon-saved'> " + doc.getDocLabel('page_testcasescript', 'see_lastexecuniq')+"</span>");
+    $("#seeLastExec").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexec")).html("<span class='glyphicon glyphicon-list'> " + doc.getDocLabel("page_testcasescript", "see_lastexec")+"</span>");
+    $("#seeTest").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_test")).html("<span class='glyphicon glyphicon-list'> " + doc.getDocLabel("page_testcasescript", "see_test")+"</span>");
+    $("#seeLogs").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_logs")).html("<span class='glyphicon glyphicon-list'> " + doc.getDocLabel("page_testcasescript", "see_logs")+"</span>");
     $("#btnGroupDrop2").html(doc.getDocLabel("page_testcasescript", "run") + " <span class='caret'></span>");
-    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
-    $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
-    $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueue_testcase"));
-    $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
-    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
-    $("#saveScript").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
-    $("#saveScriptAs").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
-    $("#deleteTestCase").html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
+    $("#runTestCase").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "run_testcase")).html("<span class='glyphicon glyphicon-play'> " +doc.getDocLabel("page_testcasescript", "run_testcase")+"</span>");
+    $("#rerunFromQueueandSee").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "rerunqueueandsee_testcase")).html("<span class='glyphicon glyphicon-forward'> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase") +"</span>");
+    $("#editTcInfo").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "edit_testcase")).html("<span class='glyphicon glyphicon-pencil'> " +doc.getDocLabel("page_testcasescript", "edit_testcase")+"</span>");
+    $("#saveScript").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "save_script")).html("<span class='glyphicon glyphicon-floppy-disk'> " + doc.getDocLabel("page_testcasescript", "save_script")+"</span>");
+    $("#saveScriptAs").attr('data-toggle','tooltip').attr('data-original-title',doc.getDocDescription("page_testcasescript", "saveas_script")).html("<span class='glyphicon glyphicon-floppy-disk'> " + doc.getDocLabel("page_testcasescript", "saveas_script")+"</span>");
+    $("#deleteTestCase").attr('data-toggle','tooltip').attr('data-original-title',doc.getDocDescription("page_testcasescript", "delete")).html("<span class='glyphicon glyphicon-trash'> " + doc.getDocLabel("page_testcasescript", "delete")+"</span>");
 
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
@@ -2348,7 +2379,7 @@ Action.prototype.generateContent = function () {
     });
     actionconditionval3.val(this.conditionValue3);
 
-    actions = getSelectInvariant("ACTION", false, false).css("width", "100%").attr("id", "actionSelect");
+    actions = getSelectInvariant("ACTION", false, false).css("width", "80%").attr("id", "actionSelect");
     actions.val(this.action);
     actions.off("change").on("change", function () {
         setModif(true);
@@ -2882,7 +2913,7 @@ Control.prototype.generateContent = function () {
 
     controls = getSelectInvariant("CONTROL", false, false).attr("id", "controlSelect");
     controls.val(this.control);
-    controls.css("width", "100%");
+    controls.css("width", "80%");
     controls.on("change", function () {
         setModif(true);
         obj.control = controls.val();

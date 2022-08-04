@@ -36,6 +36,7 @@
         <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body>
@@ -51,8 +52,8 @@
             <%@ include file="include/transversalobject/AppService.html"%>
             <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
             <%@ include file="include/utils/modal-generic.html"%>
-
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
@@ -71,46 +72,33 @@
 
                                         <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
 
-                                            <div class="btn-group ">
-                                                <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Go To <span class="caret"></span>
+                                            <div class="btn-group marginRight5">
+                                                <button id="btnGroupDrop1" style="border-radius:4px" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span class="glyphicon glyphicon-option-horizontal"></span>
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                    <a><button class="btn btn-default pull-left" id="seeLastExecUniq" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-saved"></span> Last Execution</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="saveScriptAs" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-floppy-disk"></span>Save As</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="deleteTestCase" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeLastExec" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeTest" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Test</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeLogs" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Logs</button></a>
                                                 </div>
                                             </div>
-
-                                            <div class="btn-group">
-                                                <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Run <span class="caret"></span>
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
-                                                    <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
-                                                    <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
-                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
-                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue and See</button></a>
-                                                </div>
-                                            </div>
-
                                             <div class="btn-group ">
                                                 <a><button class="btn btn-default pull-right" id="editTcInfo">Edit Test Case Header</button></a>
                                             </div>
-
-                                            <div class="btn-group ">
-                                                <button class="btn btn-default" id="saveScript" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
-                                                <button id="btnGroupDrop3" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <span class="caret"></span>
-                                                    <span class="sr-only">Toggle Dropdown</span>
-                                                </button>
-                                                <div class="dropdown-menu"  aria-labelledby="btnGroupDrop3">
-                                                    <a><button class="btn btn-default pull-left" id="saveScriptAs" style="margin-left: 5px; margin-left: 5px;" ><span class="glyphicon glyphicon-floppy-disk"></span>Save As</button></a>
-                                                    <a><button class="btn btn-default pull-left" id="deleteTestCase" style="margin-left: 5px; margin-left: 5px;" disabled><span class="glyphicon glyphicon-trash"></span>Delete</button></a>
-                                                </div>
+                                            <div class="btn-group" id="runTestCasePopover">
+                                                <a><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span></button></a>
                                             </div>
-
+                                            <div class="btn-group">
+                                                <a><button class="btn btn-default pull-right" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span></button></a>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a><button class="btn btn-default pull-left" id="seeLastExecUniq" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-saved"></span></button></a>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a><button class="btn btn-default" id="saveScript" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span></button></a>
+                                            </div>
                                         </div>
 
                                     </div>

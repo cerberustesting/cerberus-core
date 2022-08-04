@@ -149,6 +149,109 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
 }
 
 /**
+ * Method that display a list-group-item with the value retrieved from the Application IP list
+ * @param {String} selectName value name of the list-group in the html to append the items
+ * @param {String} system value to filter.
+ * @param {String} application value to filter.
+ * @returns {void}
+ */
+function displayRobotList(selectName, idName, forceReload, defaultValue) {
+
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    const cacheEntryName = "ROBOTLIST";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    let list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadRobot",
+            async: false,
+            success: function (data) {
+                list = data.contentTable;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var line = $("<button type='button' data-robot='"+list[index].robot+"' class='list-group-item list-group-item-action' name='robotItem'>" +
+                        "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
+                        "<img class='col-lg-2' src='"+getIconForOs(list[index].platform)+"'/>" +
+                        "<img class='col-lg-2' src='"+getIconForBrowser(list[index].browser)+"'/>" +
+                        "<span class='col-lg-2 grayscale'> v "+list[index].version+" </span>" +
+                        "</button>");
+                    $("[name='" + selectName + "']").append(line);
+
+                }
+                if (defaultValue !== undefined) {
+                    $("[name='" + selectName + "']").val(defaultValue);
+                }
+
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var line = $("<button type='button' class='list-group-item list-group-item-action' data-robot='"+list[index].robot+"' name='robotItem'>" +
+                "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
+                "<img class='col-lg-2' src='"+getIconForOs(list[index].platform)+"'/>" +
+                "<img class='col-lg-2' src='"+getIconForBrowser(list[index].browser)+"'/>" +
+                "<span class='col-lg-2 grayscale'> "+list[index].version+" </span>" +
+                "</button>");
+            $("[name='" + selectName + "']").append(line);
+        }
+    }
+
+    $("[name='robotItem']").each(function () {
+        $(this).on("click", function () {
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+            } else {
+                $(this).addClass("active");
+            }
+        });
+    });
+}
+
+/**
+ * Method that convert the OS value into the path to the icon
+ * @param {String} os value.
+ * @returns {String} the path of the icon
+ */
+function getIconForOs(os){
+    switch (os) {
+        case 'WINDOWS':
+            return 'images/windows.png';
+        case 'LINUX':
+            return 'images/linux.png';
+        default:
+            return 'images/linux.png';
+    }
+}
+
+/**
+ * Method that convert the Browser value into the path to the icon
+ * @param {String} browser value.
+ * @returns {String} the path of the icon
+ */
+function getIconForBrowser(browser){
+    switch (browser) {
+        case 'chrome':
+            return 'images/chrome.png';
+        case 'firefox':
+            return 'images/firefox.png';
+        case 'safari':
+            return 'images/safari.png';
+        case 'ie':
+            return 'images/ie.png';
+        case 'opera':
+            return 'images/opera.png';
+        default:
+            return 'images/chrome.png';
+    }
+}
+
+/**
  * Method that return a list of value retrieved from the invariant list
  * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
  * @param {String} forceReload true in order to force the reload of list from database.
@@ -441,6 +544,39 @@ function displayEnvList(selectName, system, defaultValue) {
 
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
+        }
+    });
+}
+
+/**
+ * Method that display a list-group-item with the value retrieved from the Application IP list
+ * @param {String} selectName value name of the list-group in the html to append the items
+ * @param {String} system value to filter.
+ * @param {String} application value to filter.
+ * @returns {void}
+ */
+function displayApplicationIpList(selectName, system, application) {
+    $.when($.getJSON("ReadCountryEnvironmentParameters", "system=" + system + "&application=" + application)).then(function (data) {
+        for (var option in data.contentTable) {
+            var line = $("<button type='button' data-country='" + data.contentTable[option].country + "' data-environment='" + data.contentTable[option].environment + "' name='applicationIpItem' class='list-group-item list-group-item-action'>" +
+                "<span class='col-lg-8 grayscale'>" + data.contentTable[option].ip + "</span>" +
+                "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].country+"</span>" +
+                "<span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].environment+"</span></div>" +
+                "</button>");
+            $("[name='" + selectName + "']").append(line);
+        }
+            $("[name='applicationIpItem']").each(function () {
+                $(this).on("click", function () {
+                    if ($(this).hasClass("active")) {
+                        $(this).removeClass("active");
+                    } else {
+                        $(this).addClass("active");
+                    }
+                });
+            });
+
+        if($("[name='applicationIpItem']").size()===1){
+            $("[name='applicationIpItem']").addClass("active");
         }
     });
 }
@@ -1473,6 +1609,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }
         } : false;
+        filtrableColumns = undefined;
         if (filtrableColumns !== undefined) {
             configs["fnServerParams"] = function (aoData) {
 
@@ -2743,6 +2880,7 @@ function getComboConfigApplication() {
             cache: true,
             allowClear: true
         },
+        tags: true,
         width: "100%",
         minimumInputLength: 0,
         templateResult: comboConfigApplication_format, // omitted for brevity, see the source of this page

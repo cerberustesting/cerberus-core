@@ -21,6 +21,7 @@
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a name="menu" id="menuTestCaseCreate">Create TestCase</a></li>
                     <li><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp">TestCase</a></li>
                     <li><a name="menu" id="menuEditTestCase" href="TestCaseScript.jsp">Edit TestCase</a></li>
                     <li class="Label navlist" style="display: none"><a name="menu" id="menuLabel" href="Label.jsp" >Label</a></li>
@@ -115,7 +116,7 @@
             </li>
             <li class ="navbar-side-choice TestRO navlist" id="navMenuDev" style="display:none">
                 <a href="#">
-                    <i class="fa fa-question-circle"></i>
+                    <i class="fa fa-rocket "></i>
                     <span name="menu" id="menuDev" class="nav-text">Developer</span>
                     <span class="fa arrow"></span>
                 </a>
@@ -137,7 +138,7 @@
                     <li><a name="menu" id="menuDocumentationD1" target="_blank" href="./documentation/D1/documentation_en.html">Documentation</a></li>
                     <li><a name="menu" id="menuDocumentationD2" target="_blank" href="./documentation/D2/documentation_en.html">Documentation</a></li>
                     <li><a name="menu" id="menuDocumentationD3" target="_blank" href="./documentation/D3/documentation_en.html">Documentation</a></li>
-                    <li><a class="btn btn-primary" role="button" style="text-align:left" id="openInteractiveTutoModal" >Interactive Tutorials</a></li>
+                    <li><a name="menu"  role="button" style="text-align:left" id="openInteractiveTutoModal" >Interactive Tutorials</a></li>
                 </ul>
 
             </li>
@@ -155,7 +156,7 @@
 <nav class="navbar navbar-static-top" role="navigation" id="topbar">
     <ul class="nav navbar-top-links navbar-right">
         <li class="userConnected" id="formSystem">
-            <span class=" glyphicon glyphicon-folder-open marginRight3px"></span>
+            <span class="glyphicon glyphicon-folder-open marginRight3px"></span>
             <form id="SysFilter" class="form-group marginRight3px">
                 <select class="multiselectelement form-control" multiple="multiple" id="MySystem">
                 </select>
@@ -188,3 +189,4 @@
 </nav>
 
 <%@ include file="/include/transversalobject/InteractiveTutoList.html"%>
+<%@ include file="/include/transversalobject/TestCaseSimpleCreation.html"%>

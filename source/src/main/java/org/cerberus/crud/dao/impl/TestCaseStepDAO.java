@@ -671,29 +671,35 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`StepId`,`Sort`,`Description`,`isUsingLibraryStep` ");
-
+        LOG.warn("SQL : " + query.toString());
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",`libraryStepTest` ");
         }
+        LOG.warn("SQL2 : " + query.toString());
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestcase())) {
             query.append(",`libraryStepTestcase` ");
         }
+        LOG.warn("SQL3 : " + query.toString());
         if (testCaseStep.getLibraryStepStepId() >= 0) {
             query.append(",`libraryStepStepId` ");
         }
+        LOG.warn("SQL4 : " + query.toString());
         query.append(", `isLibraryStep`, `loop`, `conditionOperator`, `conditionOptions`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `isExecutionForced`, `usrCreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?");
+        LOG.warn("SQL5 : " + query.toString());
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTest())) {
             query.append(",?");
         }
+        LOG.warn("SQL6 : " + query.toString());
         if (!StringUtil.isNullOrEmpty(testCaseStep.getLibraryStepTestcase())) {
             query.append(",?");
         }
+        LOG.warn("SQL7 : " + query.toString());
         if (testCaseStep.getLibraryStepStepId() >= 0) {
             query.append(",?");
         }
         query.append(",?,?,?,?,?,?,?)");
-
+        LOG.warn("SQL8 : " + query.toString());
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.libraryStepTest : " + testCaseStep.getLibraryStepTest());
