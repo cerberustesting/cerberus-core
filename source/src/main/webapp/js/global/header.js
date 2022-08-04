@@ -55,6 +55,10 @@ $(document).ready(function () {
         }
     });
 
+    $('#navMenuTest #menuTestCaseCreate').on('click', function () {
+        openModalTestCaseSimple();
+    });
+
 });
 
 /*

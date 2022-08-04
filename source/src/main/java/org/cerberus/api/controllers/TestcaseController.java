@@ -24,15 +24,22 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.api.dto.v001.ApplicationDTOV001;
 import org.cerberus.api.dto.v001.TestcaseDTOV001;
+import org.cerberus.api.dto.v001.TestcaseSimplifiedCreationDTOV001;
 import org.cerberus.api.dto.views.View;
 import org.cerberus.api.mappers.v001.TestcaseMapperV001;
 import org.cerberus.api.services.PublicApiAuthenticationService;
-import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.entity.*;
+import org.cerberus.crud.service.*;
 import org.cerberus.exception.CerberusException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -48,6 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +71,14 @@ public class TestcaseController {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "X-API-KEY";
+    private final IInvariantService invariantService;
     private final ITestCaseService testCaseService;
+    private final ITestCaseCountryService testCaseCountryService;
+    private final ITestCaseStepService testCaseStepService;
+    private final ITestCaseStepActionService testCaseStepActionService;
+    private final ITestCaseStepActionControlService testCaseStepActionControlService;
+    private final IApplicationService applicationService;
+    private final ICountryEnvironmentParametersService countryEnvironmentParametersService;
     private final TestcaseMapperV001 testcaseMapper;
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
@@ -123,6 +138,150 @@ public class TestcaseController {
                         )
                 )
         );
+    }
+
+    @ApiOperation("Create a new Testcase with only few information")
+    @ApiResponse(code = 200, message = "ok")
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "/create", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String createSimplifiedTestcase(
+            @Valid @JsonView(View.Public.POST.class) @RequestBody TestcaseSimplifiedCreationDTOV001 newTestcase,
+            Principal principal) throws CerberusException {
+
+        JSONObject jsonResponse = new JSONObject();
+
+        if (!this.applicationService.exist(newTestcase.getApplication())) {
+
+            this.applicationService.create(
+                    Application.builder()
+                            .application(newTestcase.getApplication())
+                            .description("")
+                            .sort(10)
+                            .type(newTestcase.getType())
+                            .system(newTestcase.getSystem())
+                            .subsystem("")
+                            .svnurl("")
+                            .bugTrackerNewUrl("")
+                            .bugTrackerNewUrl("")
+                            .UsrCreated(principal.getName())
+                            .build());
+
+            this.countryEnvironmentParametersService.create(
+                    CountryEnvironmentParameters.builder()
+                            .system(newTestcase.getSystem())
+                            .country(newTestcase.getCountry())
+                            .environment(newTestcase.getEnvironment())
+                            .application(newTestcase.getApplication())
+                            .ip(newTestcase.getUrl())
+                            .domain("")
+                            .url("")
+                            .urlLogin("")
+                            .var1("")
+                            .var2("")
+                            .var3("")
+                            .var4("")
+                            .build());
+        }
+
+        this.testCaseService.create(
+                TestCase.builder()
+                        .test(newTestcase.getTestFolderId())
+                        .testcase(newTestcase.getTestcaseId())
+                        .application(newTestcase.getApplication())
+                        .description(newTestcase.getDescription())
+                        .priority(1)
+                        .status("WORKING")
+                        .conditionOperator("always")
+                        .conditionValue1("")
+                        .conditionValue2("")
+                        .conditionValue3("")
+                        .type("AUTOMATED")
+                        .isActive(true)
+                        .isActivePROD(true)
+                        .isActiveQA(true)
+                        .isActiveUAT(true)
+                        .usrCreated(principal.getName())
+                        .build());
+
+        List<Invariant> countryInvariantList = this.invariantService.readByIdName("COUNTRY");
+        for(Invariant countryInvariant : countryInvariantList){
+
+            this.testCaseCountryService.create(
+                    TestCaseCountry.builder()
+                            .test(newTestcase.getTestFolderId())
+                            .testcase(newTestcase.getTestcaseId())
+                            .country(countryInvariant.getValue())
+                            .usrCreated(principal.getName())
+                            .build());
+        }
+
+
+
+        this.testCaseStepService.create(
+                TestCaseStep.builder()
+                        .test(newTestcase.getTestFolderId())
+                        .testcase(newTestcase.getTestcaseId())
+                        .stepId(0)
+                        .sort(1)
+                        .isUsingLibraryStep(false)
+                        .libraryStepStepId(0)
+                        .loop("onceIfConditionTrue")
+                        .conditionOperator("always")
+                        .description("Go to the homepage and take a screenshot")
+                        .usrCreated(principal.getName())
+                        .build());
+
+        this.testCaseStepActionService.create(
+                TestCaseStepAction.builder()
+                        .test(newTestcase.getTestFolderId())
+                        .testcase(newTestcase.getTestcaseId())
+                        .stepId(0)
+                        .actionId(0)
+                        .sort(1)
+                        .conditionOperator("always")
+                        .conditionValue1("")
+                        .conditionValue2("")
+                        .conditionValue3("")
+                        .action("openUrlWithBase")
+                        .value1("/")
+                        .value2("")
+                        .value3("")
+                        .description("Open the homepage")
+                        .conditionOperator("always")
+                        .usrCreated(principal.getName())
+                        .build());
+
+        this.testCaseStepActionControlService.create(
+                TestCaseStepActionControl.builder()
+                        .test(newTestcase.getTestFolderId())
+                        .testcase(newTestcase.getTestcaseId())
+                        .stepId(0)
+                        .actionId(0)
+                        .controlId(0)
+                        .sort(1)
+                        .conditionOperator("always")
+                        .conditionValue1("")
+                        .conditionValue2("")
+                        .conditionValue3("")
+                        .control("takeScreenshot")
+                        .value1("")
+                        .value2("")
+                        .value3("")
+                        .description("Take a screenshot")
+                        .usrCreated(principal.getName())
+                        .build());
+
+        try {
+            jsonResponse.put("test", newTestcase.getTestFolderId());
+            jsonResponse.put("testcase", newTestcase.getTestcaseId());
+            jsonResponse.put("messageType", "OK");
+            jsonResponse.put("message", "success");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonResponse.toString();
     }
 
     @ApiOperation("Update a Testcase")

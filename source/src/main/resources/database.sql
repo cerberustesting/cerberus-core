@@ -6142,7 +6142,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
         ('', 'cerberus_xraydc_token', '','JIRA XRay DC Token value.');
 
 -- 1733
-UPDATE `parameter` SET `description` = 'JIRA XRay DC Site URL. Ex : http://yourserver In order to access the API, /rest/raven/2.0/api will be added in order to have the format http://yourserver/rest/raven/2.0/api' 
+UPDATE `parameter` SET `description` = 'JIRA XRay DC Site URL. Ex : http://yourserver In order to access the API, /rest/raven/2.0/api will be added in order to have the format http://yourserver/rest/raven/2.0/api'
     WHERE (`system` = '') and (`param` = 'cerberus_xraydc_url');
 
 -- 1734
@@ -6150,7 +6150,13 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_sikuli_typeDelay', '0.1', 'Insert a delay between every keystroke. Ex : 0.5 correspond to 500 msec delay between every keystroke.');
 
 -- 1735
-ALTER TABLE `applicationobject` 
+ALTER TABLE `applicationobject`
     ADD COLUMN `XOffset` VARCHAR(45) NULL AFTER `ScreenshotFileName`,
     ADD COLUMN `YOffset` VARCHAR(45) NULL AFTER `XOffset`;
 
+-- 1733 - 1736
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
+    VALUES ('CONTROL', 'verifyElementTextArrayContains', 4910, 'Verify if a specific string is in the array retrieved using JSONPath or Xpath','verifyElementTextArrayContains'),
+    ('CONTROL', 'verifyElementNumericArrayContains', 4920, 'Verify if a specific numeric is in the array retrieved using JSONPath or Xpath','verifyElementNumericArrayContains'),
+    ('CONTROL', 'verifyStringArrayContains', 1450, 'Verify if a specific string is in the array','verifyStringArrayContains'),
+    ('CONTROL', 'verifyNumericArrayContains', 1800, 'Verify if a specific numeric is in the array','verifyNumericArrayContains');

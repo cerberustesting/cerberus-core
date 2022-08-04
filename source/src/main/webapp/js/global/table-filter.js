@@ -211,15 +211,16 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     }
 
     //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='row alert alert-warning pull-center' style='padding:0px; margin-top: 50px;'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
+    var showFilteredColumnsAlertMessage = "<br><div id='filterAlertDiv' class='row pull-center col-sm-8'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
     $("#filterAlertDiv").remove();
-    if ($("#" + tableId + "_paginate").length !== 0) {
+    $("#" + tableId + "_filter").after($(showFilteredColumnsAlertMessage).hide());
+    //if ($("#" + tableId + "_paginate").length !== 0) {
         //Hide filtered alert message displayed when filtered column
-        $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
-    } else {
+      //  $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
+    //} else {
         //Hide filtered alert message displayed when filtered column
-        $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
-    }
+      //  $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+    //}
 
     //Load the table
     var table = $("#" + tableId).dataTable().api();
@@ -229,12 +230,12 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //Start building the Alert Message for filtered column information
     //TODO : Replace with data from doc table
     var filteredInformation = new Array();
-    filteredInformation.push("<div class=\"col-sm-2 alert-warning\" style=\"margin-bottom:0px; padding:15px\">Showing information filtering : </div>");
+    //filteredInformation.push("<div class=\"col-sm-2 alert-warning\" style=\"margin-bottom:0px; padding:15px\">Showing information filtering : </div>");
     if (table.search() !== "") {
-        filteredInformation.push("<div class=\"col-sm-2 alert alert-warning\" style=\"margin-bottom:0px\">");
+        filteredInformation.push("<div class=\"col-sm-2 label label-primary\" style=\"margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px\">");
         filteredInformation.push("<span id='clearFilterButtonGlobal' onclick='" + fctClearIndividualFilter + "(\"" + tableId + "\", null, true)'  data-toggle='tooltip' title='Clear global filter' class='glyphicon glyphicon-remove-sign pull-right'  style='cursor:pointer;'></span>");
         filteredInformation.push("<div data-toggle='tooltip' data-html='true' title=" + table.search() + " style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
-        filteredInformation.push("<strong>all columns</strong> containing <br>[" + table.search() + "]</div></div>");
+        filteredInformation.push("[" + table.search() + "]</div></div>");
         filteredInformation.push(" ");
     }
     //Get the column name in the right order TODO check if it's correct
@@ -313,8 +314,8 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             });
             filteredColumnInformation.pop();
             filteredTooltip += '</div>';
-            filteredInformation.push("<div class=\"col-sm-2 alert alert-warning\" style=\"margin-bottom:0px;\">");
-            filteredInformation.push("<span id='clearFilterButton" + index + "' onclick='" + fctClearIndividualFilter + "(\"" + tableId + "\", \"" + index + "\", false)' data-toggle='tooltip' title='Clear filter " + title + "' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;'></span>");
+            filteredInformation.push("<div class=\"col-sm-2 label label-primary\" style=\"margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px\">");
+            filteredInformation.push("<span id='clearFilterButton" + index + "' onclick='" + fctClearIndividualFilter + "(\"" + tableId + "\", \"" + index + "\", false)' data-toggle='tooltip' title='Clear filter " + title + "' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;margin-top:8px'></span>");
             filteredInformation.push("<div style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
             if (oSettings.aoColumns[index].like) {
                 filteredInformation.push("<strong>" + title + "</strong> LIKE <br>");

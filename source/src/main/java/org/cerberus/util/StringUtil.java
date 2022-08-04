@@ -19,19 +19,9 @@
  */
 package org.cerberus.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -39,6 +29,18 @@ import org.json.JSONException;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class centralizing string utility methods
@@ -68,7 +70,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param in
      * @return
      */
@@ -81,7 +82,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param ex
      * @return
      */
@@ -170,10 +170,7 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmpty(String str) {
-        if ((str == null) || (str.trim().isEmpty())) {
-            return true;
-        }
-        return false;
+        return (str == null) || (str.trim().isEmpty());
     }
 
     /**
@@ -183,16 +180,13 @@ public final class StringUtil {
      * @return true if the parameter is a "null" or empty string.
      */
     public static boolean isNullOrEmptyOrNull(String str) {
-        if ((str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"))) {
-            return true;
-        }
-        return false;
+        return (str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"));
     }
 
     /**
      * Generate a random string using current time and charset
      *
-     * @param length of the random string to generate
+     * @param length  of the random string to generate
      * @param charset use to generate random value
      * @return random string, empty if charset is null or length <= 0
      */
@@ -216,7 +210,7 @@ public final class StringUtil {
      * Return left part of the String.
      *
      * @param string1 String to treat.
-     * @param length nb of characters to keep.
+     * @param length  nb of characters to keep.
      * @return the {length} first caracter of the string1.
      */
     public static String getLeftString(String string1, int length) {
@@ -233,7 +227,7 @@ public final class StringUtil {
      * Return left part of the string adding ... at the end.
      *
      * @param string1 String to treat.
-     * @param length nb of characters to keep.
+     * @param length  nb of characters to keep.
      * @return the {length} first caracter of the string1.
      */
     public static String getLeftStringPretty(String string1, int length) {
@@ -250,7 +244,7 @@ public final class StringUtil {
     /**
      * Remove last n char from a string
      *
-     * @param s String to treat.
+     * @param s      String to treat.
      * @param length nb of characters to remove.
      * @return a string on which the last {length} characters has been removed.
      */
@@ -262,7 +256,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param textIn
      * @return a clean string.
      */
@@ -271,7 +264,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param inputString
      * @return
      */
@@ -281,7 +273,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @return
      */
@@ -296,7 +287,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @param secrets
      * @return
@@ -324,7 +314,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @return
      */
@@ -336,7 +325,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @return
      */
@@ -382,7 +370,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * This method is used in order to clean the host to make it compatible with
      * Selenium. Selenium require a fully qualitied host (including prefix
      * http://). Cerberus is more flexible and allow simple host such as
@@ -399,13 +386,12 @@ public final class StringUtil {
             // No refix so we put http:// by default.
             newHost = "http://" + host;
         }
-        LOG.debug("Cleaned host from " + host + " to " + newHost);
+        LOG.debug("Cleaned host from {} to {}", host, newHost);
         return newHost;
 
     }
 
     /**
-     *
      * This method is used in order to remove from full URL host the protocol
      * part. Ex if host = http://www.laredoute.fr/ Method return
      * www.laredoute.fr
@@ -414,15 +400,13 @@ public final class StringUtil {
      * @return formated host
      */
     public static String removeProtocolFromHostURL(String host) {
-        String newHost = host;
-        newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
-        LOG.debug("Removed protocol host from " + host + " to " + newHost);
+        String newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
+        LOG.debug("Removed protocol host from {} to {}", host, newHost);
         return newHost;
 
     }
 
     /**
-     *
      * This method is used in determine if an URL is relevant.
      *
      * @param url
@@ -437,7 +421,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * This method is used to build an URL from host, contextroot and uri by
      * managing the /.<br>
      * For Ex : host = www.laredoute.fr/, contextroot = /fr/, uri = /toto.jsp
@@ -518,7 +501,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @param suffix
      * @return
@@ -532,7 +514,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param text
      * @param prefix
      * @return
@@ -546,7 +527,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param jsonResult
      * @param separator
      * @return
@@ -573,7 +553,6 @@ public final class StringUtil {
     }
 
     /**
-     *
      * @param listString
      * @param separator
      * @return
@@ -588,7 +567,7 @@ public final class StringUtil {
             return "";
         }
         for (String string : listString) {
-            if (first == true) {
+            if (first) {
                 first = false;
                 result = string;
             } else {
@@ -633,6 +612,33 @@ public final class StringUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Convert a string structure in a list
+     *
+     * @param array Structure of the list in string format
+     * @return String mapped to a list of strings
+     * @throws JsonProcessingException When the array structure is not correct
+     */
+    public static List<String> convertStringToStringArray(String array) throws JsonProcessingException {
+        return new ObjectMapper().readValue(array, new TypeReference<ArrayList<String>>() {
+        });
+    }
+
+    /**
+     * Convert a string structure in a list
+     *
+     * @param array Structure of the list in string format
+     * @return String mapped to a list of doubles
+     * @throws JsonProcessingException When the array structure is not correct
+     * @throws NumberFormatException   When an element of the list is a text and not a number
+     */
+    public static List<Double> convertStringToDoubleArray(String array) throws NumberFormatException, JsonProcessingException {
+        List<String> strings = convertStringToStringArray(array);
+        return strings.stream()
+                .map(Double::parseDouble)
+                .collect(Collectors.toList());
     }
 
 }

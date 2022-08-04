@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -340,6 +341,18 @@ public class ControlService implements IControlService {
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTMATCHREGEX:
                     res = this.verifyElementTextMatchRegex(execution, value1, controlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGARRAYCONTAINS:
+                    res = this.verifyStringArrayContains(value1, value2, value3);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICARRAYCONTAINS:
+                    res = this.verifyNumericArrayContains(value1, value2);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS:
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS, execution, value1, value2, value3);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS:
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS, execution, value1, value2, value3);
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
                     res = this.verifyTextInPage(execution, value1);
@@ -1059,6 +1072,14 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
                 mes = verifyElementTextContainsCaseSensitiveCheck(actual, expected, isCaseSensitive);
                 break;
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS:
+                //We use verifyStringArrayContains because it's the same behaviour. Difference is that here we retrieve array using json path or xpath
+                mes = this.verifyElementTextArrayContains(actual, expected, isCaseSensitive);
+                break;
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS:
+                //We use verifyStringArrayContains because it's the same behaviour. Difference is that here we retrieve array using json path or xpath
+                mes = this.verifyElementNumericArrayContains(actual, expected);
+                break;
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER:
@@ -1243,6 +1264,76 @@ public class ControlService implements IControlService {
             mes.resolveDescription("ELEMENT", path);
         } catch (WebDriverException exception) {
             return parseWebDriverException(exception);
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyStringArrayContains(String array, String valueToSearch, String isCaseSensitive) {
+        MessageEvent mes;
+        try {
+            List<String> strings = StringUtil.convertStringToStringArray(array);
+            //When user choose case sensitive option
+            boolean isContained = ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)
+                    ? strings.stream().anyMatch(valueToSearch::equals)
+                    : strings.stream().anyMatch(valueToSearch::equalsIgnoreCase);
+
+            mes = isContained
+                    ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_STRINGARRAYCONTAINS)
+                    : new MessageEvent(MessageEventEnum.CONTROL_FAILED_STRINGARRAYCONTAINS);
+            mes.resolveDescription("ELEMENT", array);
+            mes.resolveDescription("VALUE", valueToSearch);
+            mes.resolveDescription("CASESENSITIVE", caseSensitiveMessageValue(isCaseSensitive));
+        } catch (JsonProcessingException exception) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.resolveDescription("ERROR", "Incorrect array structure.");
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyNumericArrayContains(String array, String numberToSearch) {
+        MessageEvent mes;
+        try {
+            List<Double> doubles = StringUtil.convertStringToDoubleArray(array);
+            Double number = Double.parseDouble(numberToSearch);
+            mes = doubles.stream().anyMatch(number::equals)
+                    ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NUMERICARRAYCONTAINS)
+                    : new MessageEvent(MessageEventEnum.CONTROL_FAILED_NUMERICARRAYCONTAINS);
+            mes.resolveDescription("ELEMENT", array);
+            mes.resolveDescription("VALUE", numberToSearch);
+        } catch (JsonProcessingException exception) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+            mes.resolveDescription("ERROR", "Incorrect array structure.");
+        } catch (NumberFormatException exception) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC)
+                    .resolveDescription("ERROR", "Value to search must be a number and the array must be an array of numbers.");
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyElementTextArrayContains(String array, String valueToSearch, String isCaseSensitive) {
+        //We use verifyStringArrayContains because it's the same behaviour. The difference is that here we have an array retrieved using json path or xpath.
+        MessageEvent mes = this.verifyStringArrayContains(array, valueToSearch, isCaseSensitive);
+        //Change the message event to adapt to this control.
+        if (!mes.getSource().equals(MessageEventEnum.CONTROL_FAILED_GENERIC)) {
+            if (mes.getCodeString().equals("OK")) {
+                mes.setDescription(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTARRAYCONTAINS.getDescription());
+            } else {
+                mes.setDescription(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTARRAYCONTAINS.getDescription());
+            }
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyElementNumericArrayContains(String array, String numberToSearch) {
+        //We use verifyStringArrayContains because it's the same behaviour. The difference is that here we have an array retrieved using json path or xpath.
+        MessageEvent mes = this.verifyNumericArrayContains(array, numberToSearch);
+        //Change the message event to adapt to this control.
+        if (!mes.getSource().equals(MessageEventEnum.CONTROL_FAILED_GENERIC)) {
+            if (mes.getCodeString().equals("OK")) {
+                mes.setDescription(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICARRAYCONTAINS.getDescription());
+            } else {
+                mes.setDescription(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICARRAYCONTAINS.getDescription());
+            }
         }
         return mes;
     }

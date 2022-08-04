@@ -20,10 +20,7 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -35,8 +32,12 @@ import java.sql.Timestamp;
 /**
  * @author bcivel
  */
+@Data
+@Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class TestCaseStepActionControl {
@@ -100,6 +101,10 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYELEMENTTEXTDIFFERENT = "verifyElementTextDifferent";
     public static final String CONTROL_VERIFYELEMENTTEXTCONTAINS = "verifyElementTextContains";
     public static final String CONTROL_VERIFYELEMENTTEXTMATCHREGEX = "verifyElementTextMatchRegex";
+    public static final String CONTROL_VERIFYSTRINGARRAYCONTAINS = "verifyStringArrayContains";
+    public static final String CONTROL_VERIFYNUMERICARRAYCONTAINS = "verifyNumericArrayContains";
+    public static final String CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS = "verifyElementTextArrayContains";
+    public static final String CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS = "verifyElementNumericArrayContains";
     public static final String CONTROL_VERIFYELEMENTNUMERICEQUAL = "verifyElementNumericEqual";
     public static final String CONTROL_VERIFYELEMENTNUMERICDIFFERENT = "verifyElementNumericDifferent";
     public static final String CONTROL_VERIFYELEMENTNUMERICGREATER = "verifyElementNumericGreater";

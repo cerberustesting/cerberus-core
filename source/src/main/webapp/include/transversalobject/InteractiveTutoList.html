@@ -2,30 +2,39 @@
 <div data-backdrop="static" class="modal fade center" id="interactiveTutoModal" role="dialog" aria-labelledby="editRobotModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="border-bottom:0px">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="interactiveTutoButton" name="interactiveTutoButton">Interactive Tutorials</h4>
+                <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body">
                 <div id="interactiveWelcome">
-                    <img src="images/Logo-cerberus_login.png" width="200" class="img-responsive center-block logo-login"></img>
-                    <h1 style="text-align:center;color: #337ab7;font-weight: bold" id="tutoWelcome1">Line 1</h1>
-                    <div style="font-size: 18px;text-align: center" id="tutoWelcome2">Line 2</div>
-                    <br>
-                    <div style="font-size: 18px;text-align: center" id="tutoWelcome3">Line 3</div>
-                    <br><br>
-                    <div style="font-size: 18px;color: #337ab7;text-align: center" id="tutoWelcome4">Line 4</div>
-
+                    <div class="row">
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-3">
+                            <img src="images/Logo-cerberus_login.png" width="150" class="img-responsive center-block logo-login pull-right"/>
+                        </div>
+                        <div class="col-lg-7">
+                            <h1 class="pull-left col-lg-12" style="color: #337ab7;font-weight: bold" id="tutoWelcome1">Line 1</h1>
+                            <div class="pull-left col-lg-12" style="font-size: 18px;" id="tutoWelcome2">Line 2</div>
+                            <div class="pull-left col-lg-12" style="font-size: 18px;" id="tutoWelcome3">Line 3</div>
+                            </div>
+                        <div class="col-lg-1"></div>
+                    </div>
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-8">
+                        <h2 class="pull-left"  style="font-size: 18px;color: #337ab7;margin-bottom:40px" id="tutoWelcome4">Line 4</h2>
+                    </div>
                 </div>
                 <div id="interactiveTutoList">
                 </div>
                 <div id="interactiveFooter">
                     <br>
-                    <div style="font-size: 18px;text-align: center"><a href="#" id="byPassTuto" >I Just want to take a look around first.</a></div>
+
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose" id="byPassTuto" >Never show me again</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">See it later</button>
             </div>
         </div>
     </div>

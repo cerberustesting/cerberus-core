@@ -20,14 +20,15 @@
 package org.cerberus.crud.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -35,9 +36,18 @@ import java.util.List;
  * @author bcivel
  */
 @Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class TestCaseStep {
+    @Id
     private String test;
+    @Id
     private String testcase;
+    @Id
     private int stepId;
     private int sort;
     private String loop;
@@ -45,7 +55,6 @@ public class TestCaseStep {
     private String conditionValue1;
     private String conditionValue2;
     private String conditionValue3;
-    @EqualsAndHashCode.Exclude
     private JSONArray conditionOptions;
     private String description;
     private boolean isUsingLibraryStep;  //  true if the stepId use a stepId from another test
@@ -54,7 +63,6 @@ public class TestCaseStep {
     private Integer libraryStepStepId;   //  the stepId of the original step
     private boolean isLibraryStep;
     private boolean isExecutionForced;
-    @EqualsAndHashCode.Exclude
     private String usrCreated;
     @EqualsAndHashCode.Exclude
     private String dateCreated;
