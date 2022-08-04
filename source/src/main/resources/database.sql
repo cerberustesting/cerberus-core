@@ -6154,7 +6154,7 @@ ALTER TABLE `applicationobject`
     ADD COLUMN `XOffset` VARCHAR(45) NULL AFTER `ScreenshotFileName`,
     ADD COLUMN `YOffset` VARCHAR(45) NULL AFTER `XOffset`;
 
--- 1733 - 1736
+-- 1736
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
     VALUES ('CONTROL', 'verifyElementTextArrayContains', 4910, 'Verify if a specific string is in the array retrieved using JSONPath or Xpath','verifyElementTextArrayContains'),
     ('CONTROL', 'verifyElementNumericArrayContains', 4920, 'Verify if a specific numeric is in the array retrieved using JSONPath or Xpath','verifyElementNumericArrayContains'),

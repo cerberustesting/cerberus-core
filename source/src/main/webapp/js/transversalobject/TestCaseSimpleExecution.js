@@ -75,7 +75,7 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
 
 //Feed ApplicationEnvironment and Robot List
     displayRobotList("robotList", "ROBOTLIST", true);
-    displayApplicationIpList("environmentList", "DEFAULT", application);
+    displayApplicationIpList("environmentList", "", application);
 
     $("#testToExecuteLabel").html(doc.getDocLabel("page_testcaseexecutionmodal", "testToExecuteLabel"));
     $("#chooseEnvLabel").html(doc.getDocLabel("page_testcaseexecutionmodal", "chooseEnvLabel"));
