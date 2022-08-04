@@ -191,6 +191,8 @@ public class ScheduleEntryService implements IScheduleEntryService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
+        boolean scheduledChanged = false;
+
         List<ScheduleEntry> oldList = new ArrayList<>();
         oldList = schedulerDao.readByName(campaign).getDataList();
         List<ScheduleEntry> listToUpdateOrInsert = new ArrayList<>(newList);
@@ -204,6 +206,7 @@ public class ScheduleEntryService implements IScheduleEntryService {
             for (ScheduleEntry objectInDatabase : oldList) {
                 if (objectDifference.schedHasSameKey(objectInDatabase)) {
                     ans = this.update(objectDifference);
+                    scheduledChanged = true;
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }
@@ -226,16 +229,18 @@ public class ScheduleEntryService implements IScheduleEntryService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteListSched(listToDelete);
+            scheduledChanged = true;
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
         // We insert only at the end (after deletion of all potencial enreg)
         if (!listToUpdateOrInsert.isEmpty()) {
             ans = this.createListSched(listToUpdateOrInsert);
+            scheduledChanged = true;
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
         }
 
-        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && scheduledChanged) {
             myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
             schedulerInit.init();
         }

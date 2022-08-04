@@ -41,18 +41,70 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseDAO {
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     List<TestCase> findTestCaseByTest(String test);
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     boolean updateTestCaseInformation(TestCase testCase);
 
+    /**
+     *
+     * @param tc
+     * @return
+     */
     boolean updateTestCaseInformationCountries(TestCase tc);
 
+    /**
+     * Update @field on database replacing %object.oldObject% to
+     * %object.newObject% on all lines that belong to @application
+     *
+     * @param field
+     * @param application
+     * @param oldObject
+     * @param newObject
+     * @throws CerberusException
+     */
+    void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
+
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     boolean createTestCase(TestCase testCase);
 
+    /**
+     *
+     * @param application
+     * @return
+     */
     List<TestCase> findTestCaseByApplication(String application);
 
+    /**
+     *
+     * @param test
+     * @param application
+     * @param country
+     * @param isActive
+     * @return
+     */
     List<TestCase> findTestCaseByCriteria(String test, String application, String country, String isActive);
 
     /**
@@ -93,10 +145,26 @@ public interface ITestCaseDAO {
      */
     AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn);
 
+    /**
+     *
+     * @param tc
+     * @throws CerberusException
+     */
     public void updateTestCase(TestCase tc) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     String getMaxTestcaseIdByTestFolder(String test);
 
+    /**
+     *
+     * @param test
+     * @param system
+     * @return
+     */
     public List<TestCase> findTestCaseByTestSystem(String test, String system);
 
     /**
@@ -116,8 +184,20 @@ public interface ITestCaseDAO {
      */
     List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] isActive, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     /**

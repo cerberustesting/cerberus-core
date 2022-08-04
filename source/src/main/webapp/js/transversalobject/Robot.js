@@ -120,6 +120,24 @@ function initModalRobot() {
         confirmRobotModalHandler("DUPLICATE");
     });
 
+    // when type is changed we enable / disable type field.
+    $("#platform").off("change");
+    $("#platform").change(function () {
+        if ($(this).val() !== "") {
+            $('#platformLogo').attr('src', './images/platform-' + $(this).val() + '.png');
+        } else {
+            $('#platformLogo').attr('src', '');
+        }
+    });
+    $("#browser").off("change");
+    $("#browser").change(function () {
+        if ($(this).val() !== "") {
+            $('#browserLogo').attr('src', './images/browser-' + $(this).val() + '.png');
+        } else {
+            $('#browserLogo').attr('src', '');
+        }
+    });
+
 }
 
 /***
@@ -391,7 +409,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
-        || (mode === "DUPLICATE") || (mode === "ADD"));
+            || (mode === "DUPLICATE") || (mode === "ADD"));
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -427,7 +445,13 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#robotName").prop("value", robot.robot);
         formEdit.find("#active").val(robot.active);
         formEdit.find("#platform").val(robot.platform);
+        if (robot.platform !== "") {
+            $('#platformLogo').attr('src', './images/platform-' + robot.platform + '.png');
+        }
         formEdit.find("#browser").val(robot.browser);
+        if (robot.platform !== "") {
+            $('#browserLogo').attr('src', './images/browser-' + robot.browser + '.png');
+        }
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);

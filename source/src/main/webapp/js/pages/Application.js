@@ -646,34 +646,34 @@ function aoColumnsFunc_object(tableId) {
             "title": doc.getDocOnline("applicationObject", "Value")
         },
         {
-            "data": "screenshotfilename",
-            "sName": "screenshotfilename",
+            "data": "screenshotFilename",
+            "sName": "screenshotFilename",
             "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")
         },
         {
-            "data": "usrcreated",
-            "sName": "usrcreated",
+            "data": "usrCreated",
+            "sName": "usrCreated",
             "visible" : false,
             "title": doc.getDocOnline("transversal", "UsrCreated")
         },
         {
-            "data": "datecreated",
+            "data": "dateCreated",
             "like": true,
             "visible" : false,
-            "sName": "datecreated",
+            "sName": "dateCreated",
             "title": doc.getDocOnline("transversal", "DateCreated")
         },
         {
-            "data": "usrmodif",
+            "data": "usrModif",
             "visible" : false,
-            "sName": "usrmodif",
+            "sName": "usrModif",
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {
-            "data": "datemodif",
+            "data": "dateModif",
             "like": true,
             "visible" : false,
-            "sName": "datemodif",
+            "sName": "dateModif",
             "title": doc.getDocOnline("transversal", "DateModif")
         }
     ];

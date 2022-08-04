@@ -247,6 +247,11 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public int lockXRayTestExecution(String tag, Tag object) {
+        return tagDAO.lockXRayTestExecution(tag, object);
+    }
+
+    @Override
     public Answer createAuto(String tagS, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);

@@ -72,6 +72,9 @@ public class Session {
 
     private String cerberus_sikuli_minSimilarity;
     private String cerberus_sikuli_minSimilarity_default;
+    
+    private String cerberus_sikuli_typeDelay;
+    private String cerberus_sikuli_typeDelay_default;
 
     private MutableCapabilities desiredCapabilities;
 
@@ -139,6 +142,22 @@ public class Session {
 
     public void setCerberus_sikuli_minSimilarity(String cerberus_sikuli_minSimilarity) {
         this.cerberus_sikuli_minSimilarity = cerberus_sikuli_minSimilarity;
+    }
+
+    public String getCerberus_sikuli_typeDelay() {
+        return cerberus_sikuli_typeDelay;
+    }
+
+    public void setCerberus_sikuli_typeDelay(String cerberus_sikuli_typeDelay) {
+        this.cerberus_sikuli_typeDelay = cerberus_sikuli_typeDelay;
+    }
+
+    public String getCerberus_sikuli_typeDelay_default() {
+        return cerberus_sikuli_typeDelay_default;
+    }
+
+    public void setCerberus_sikuli_typeDelay_default(String cerberus_sikuli_typeDelay_default) {
+        this.cerberus_sikuli_typeDelay_default = cerberus_sikuli_typeDelay_default;
     }
 
     public String getNodeHost() {

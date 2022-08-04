@@ -102,7 +102,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Create a new {@link ApplicationObject}
          */
-        String CREATE = "INSERT INTO `applicationobject` (`application`,`object`,`value`,`screenshotfilename`,`usrcreated`,`datecreated`,`usrmodif`,`datemodif`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String CREATE = "INSERT INTO `applicationobject` (`application`,`object`,`value`,`screenshotfilename`,`XOffset`,`YOffset`,`usrcreated`,`datecreated`,`usrmodif`,`datemodif`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         /**
          * Remove an existing {@link ApplicationObject}
@@ -119,6 +119,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public AnswerItem<ApplicationObject> readByKeyTech(int id) {
         AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
+        LOG.debug("SQL : " + Query.READ_BY_KEY);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
@@ -145,6 +146,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public AnswerItem<ApplicationObject> readByKey(String application, String object) {
         AnswerItem<ApplicationObject> ans = new AnswerItem<>();
         MessageEvent msg = null;
+        LOG.debug("SQL : " + Query.READ_BY_KEY1);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
@@ -161,14 +163,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 // Set the final message
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "READ_BY_KEY");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
             } finally {
-            	if(rs != null) {
-            		rs.close();
-            	}
+                if (rs != null) {
+                    rs.close();
+                }
             }
         } catch (Exception e) {
             LOG.warn("Unable to read by key: " + e.getMessage());
@@ -185,13 +187,15 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         AnswerList<ApplicationObject> ans = new AnswerList<>();
         MessageEvent msg = null;
 
+        LOG.debug("SQL : " + Query.READ_BY_APP);
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
             // Prepare and execute query
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
             try {
-            	List<ApplicationObject> al = new ArrayList<>();
+                List<ApplicationObject> al = new ArrayList<>();
                 while (rs.next()) {
                     al.add(loadFromResultSet(rs));
                 }
@@ -199,14 +203,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 // Set the final message
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "READ_BY_APP");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
             } finally {
-            	if(rs != null) {
-            		rs.close();
-            	}
+                if (rs != null) {
+                    rs.close();
+                }
             }
         } catch (Exception e) {
             LOG.warn("Unable to read by app: " + e.getMessage());
@@ -231,7 +235,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject) a.getItem();
                 if (ao != null) {
-                    File picture = new File(uploadPath + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName());
+                    File picture = new File(uploadPath + File.separator + ao.getID() + File.separator + ao.getScreenshotFilename());
                     try {
                         image = ImageIO.read(picture);
                     } catch (IOException e) {
@@ -342,8 +346,6 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-
-
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
@@ -358,11 +360,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -377,9 +379,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -411,7 +413,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -468,10 +470,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             searchSQL.append(" and (").append(SqlUtil.generateInClause("app.`System`", systems)).append(") ");
         }
 
-        searchSQL.append( " AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
+        searchSQL.append(" AND ").append(UserSecurity.getSystemAllowForSQL("app.`System`")).append(" ");
 
         query.append(searchSQL);
-
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -594,14 +595,17 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
-            preStat.setString(1, object.getApplication());
-            preStat.setString(2, object.getObject());
-            preStat.setString(3, object.getValue());
-            preStat.setString(4, object.getScreenShotFileName());
-            preStat.setString(5, object.getUsrCreated());
-            preStat.setString(6, object.getDateCreated());
-            preStat.setString(7, object.getUsrModif());
-            preStat.setString(8, object.getDateModif());
+            int i = 1;
+            preStat.setString(i++, object.getApplication());
+            preStat.setString(i++, object.getObject());
+            preStat.setString(i++, object.getValue());
+            preStat.setString(i++, object.getScreenshotFilename());
+            preStat.setString(i++, object.getXOffset());
+            preStat.setString(i++, object.getYOffset());
+            preStat.setString(i++, object.getUsrCreated());
+            preStat.setString(i++, object.getDateCreated());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i++, object.getDateModif());
             preStat.executeUpdate();
 
             // Set the final message
@@ -647,8 +651,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public Answer update(String application, String appObject, ApplicationObject object) {
         Answer ans = new Answer();
         MessageEvent msg = null;
-        String query = "UPDATE `applicationobject` SET `application` = ?, `object` = ?, `value` = ?, `screenshotfilename` = ?, `usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
+        String query = "UPDATE `applicationobject` SET `application` = ?, `object` = ?, `value` = ?, `screenshotfilename` = ?, `XOffset` = ?, `YOffset` = ?, "
+                + "`usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
                 + " WHERE `application` = ? AND `object` = ?";
+
+        LOG.debug("SQL : " + query);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query)) {
@@ -657,7 +664,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             preStat.setString(i++, object.getApplication());
             preStat.setString(i++, object.getObject());
             preStat.setString(i++, object.getValue());
-            preStat.setString(i++, object.getScreenShotFileName());
+            preStat.setString(i++, object.getScreenshotFilename());
+            preStat.setString(i++, object.getXOffset());
+            preStat.setString(i++, object.getYOffset());
             preStat.setString(i++, object.getUsrCreated());
             preStat.setString(i++, object.getDateCreated());
             preStat.setString(i++, object.getUsrModif());
@@ -697,7 +706,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append("WHERE 1=1 ");
 
-    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -716,22 +725,22 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
             searchSQL.append(" )");
         }
-        
+
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            
-        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -744,15 +753,15 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
                 //get the total number of rows
-                
+
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -771,12 +780,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -839,7 +848,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(application)) {
@@ -859,9 +868,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -885,7 +894,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -911,11 +920,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         String object = ParameterParserUtil.parseStringParam(rs.getString("Object"), "");
         String value = ParameterParserUtil.parseStringParam(rs.getString("Value"), "");
         String screenshotfilename = ParameterParserUtil.parseStringParam(rs.getString("ScreenshotFileName"), "");
+        String xOffset = ParameterParserUtil.parseStringParam(rs.getString("XOffset"), "");
+        String yOffset = ParameterParserUtil.parseStringParam(rs.getString("YOffset"), "");
         String usrcreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
         String datecreated = ParameterParserUtil.parseStringParam(rs.getString("DateCreated"), "");
         String usrmodif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         String datemodif = ParameterParserUtil.parseStringParam(rs.getString("DateModif"), "");
 
-        return factoryApplicationObject.create(ID, application, object, value, screenshotfilename, usrcreated, datecreated, usrmodif, datemodif);
+        return factoryApplicationObject.create(ID, application, object, value, screenshotfilename, xOffset, yOffset, usrcreated, datecreated, usrmodif, datemodif);
     }
 }

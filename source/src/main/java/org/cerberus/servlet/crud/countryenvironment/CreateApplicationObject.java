@@ -124,6 +124,8 @@ public class CreateApplicationObject extends HttpServlet {
         String application = ParameterParserUtil.parseStringParamAndDecode(fileData.get("application"), null, charset);
         String object = ParameterParserUtil.parseStringParamAndDecode(fileData.get("object"), null, charset);
         String value = ParameterParserUtil.parseStringParam(fileData.get("value"), null);
+        String xOffset = ParameterParserUtil.parseStringParam(fileData.get("xOffset"), null);
+        String yOffset = ParameterParserUtil.parseStringParam(fileData.get("yOffset"), null);
 
         String usrcreated = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
         String datecreated = new Timestamp(new java.util.Date().getTime()).toString();
@@ -158,7 +160,7 @@ public class CreateApplicationObject extends HttpServlet {
                 fileName = file.getName();
             }
 
-            ApplicationObject applicationData = factoryApplicationobject.create(-1, application, object, value, fileName, usrcreated, datecreated, usrmodif, datemodif);
+            ApplicationObject applicationData = factoryApplicationobject.create(-1, application, object, value, fileName, xOffset, yOffset, usrcreated, datecreated, usrmodif, datemodif);
             ans = applicationobjectService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

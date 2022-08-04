@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.service.ITestCaseStepActionService;
 
 /**
  * @author cte
@@ -56,9 +57,10 @@ import java.util.Map;
 public class AppServiceService implements IAppServiceService {
 
     private static final Logger LOG = LogManager.getLogger(AppServiceService.class);
-    IAppServiceDAO appServiceDao;
+    private IAppServiceDAO appServiceDao;
     private IAppServiceContentService appServiceContentService;
     private IAppServiceHeaderService appServiceHeaderService;
+    private ITestCaseStepActionService actionService;
 
     @Override
     public AppService findAppServiceByKey(String name) throws CerberusException {
@@ -208,8 +210,19 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public Answer update(String service, AppService object) {
-        return appServiceDao.update(service, object);
+    public Answer update(String originalService, AppService object) {
+        Answer resp = appServiceDao.update(originalService, object);
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (originalService != null && !originalService.equals(object.getService())) {
+                try {
+                    // Key is modified, we updte all testcase actions that call that service
+                    actionService.updateService(originalService, object.getService());
+                } catch (CerberusException ex) {
+                    LOG.warn(ex, ex);
+                }
+            }
+        }
+        return resp;
     }
 
     @Override

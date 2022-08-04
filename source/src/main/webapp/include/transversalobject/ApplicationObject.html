@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" href="css/pages/ApplicationObject.css">
 <!--Add an applicationObject -->
 <div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" role="dialog" aria-labelledby="editApplicationObjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
+    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -11,10 +11,10 @@
             <div class="modal-body">
 
                 <!--add form-->
-                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  title="Edit Application Object" role="form">
+                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  role="form">
                     <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -26,12 +26,14 @@
                             <div class="form-group col-xs-12">
                                 <label for="application" name="applicationField">Application</label>
                                 <select class="form-control" name="application" id="application" aria-describedby="basic-editon1" maxlength="200"></select>
+                                <input type="text" class="form-control input-sm" name="originalApplication" id="originalApplication" style="display:none;"/>
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="object" name="objectField">Object</label>
                                 <input type="text" class="form-control" name="object" id="object" aria-describedby="basic-addon1" maxlength="150">
+                                <input type="text" class="form-control input-sm" name="originalObject" id="originalObject" style="display:none;"/>
                             </div>
                         </div>
                         <div class="row">
@@ -41,7 +43,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">                                
+                            <div class="form-group col-xs-9">
                                 <!-- Drop Zone -->                                
                                 <label for="screenshotfilenameLabel" name="screenshotfilenameField">Screenshot File</label>
                                 <label  for="inputFile" id="dropzone" class="upload-drop-zone" >
@@ -51,7 +53,33 @@
                                 <input type="file" name="screenshotfilename" id="inputFile" class="hidden"/> 
                                 <div class ="text-muted" id="DropzoneClipboardPasteMessage"><kbd>Ctrl+v</kbd> to paste it from your clipboard </div>
                             </div>
+
+                            <div class="form-group col-xs-3">
+                                <div class="row">
+                                    <div class="form-group col-xl-12">
+                                        <label for="xOffset" name="xOffsetField">X Offset</label>
+                                        <input type="text" class="form-control" name="xOffset" id="xOffset" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xl-12">
+                                        <label for="yOffset" name="yOffsetField">Y Offset</label>
+                                        <input type="text" class="form-control" name="yOffset" id="yOffset" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
+
+                        <label name="pictureField">Picture</label>
+                        <div class="well well-sm">
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <img class="selectedPicture" id="selectedPicture" src="">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>

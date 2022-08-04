@@ -19,86 +19,25 @@
  */
 package org.cerberus.crud.entity;
 
+import lombok.Data;
+
 /**
  * @author vertigo
  */
+@Data
 public class ApplicationObject {
 
     private int ID;
     private String application;
     private String object;
     private String value;
-    private String screenshotfilename;
-    private String usrcreated;
-    private String datecreated;
-    private String usrmodif;
-    private String datemodif;
-
-
-
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getObject() {
-        return object;
-    }
-
-    public void setObject(String object) {
-        this.object = object;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getScreenShotFileName() {
-        return screenshotfilename;
-    }
-
-    public void setScreenShotFileName(String screenshotfilename) {
-        this.screenshotfilename = screenshotfilename;
-    }
-
-    public String getUsrCreated() { return usrcreated; }
-
-    public void setUsrCreated(String usrcreated) {
-        this.usrcreated = usrcreated;
-    }
-
-    public String getDateCreated() { return datecreated; }
-
-    public void setDateCreated(String datecreated) {
-        this.datecreated = datecreated;
-    }
-
-    public String getUsrModif() { return usrmodif; }
-
-    public void setUsrModif(String usrmodif) {
-        this.usrmodif = usrmodif;
-    }
-
-    public String getDateModif() { return datemodif; }
-
-    public void setDateModif(String datemodif) {
-        this.datemodif = datemodif;
-    }
+    private String screenshotFilename;
+    private String xOffset;
+    private String yOffset;
+    private String usrCreated;
+    private String dateCreated;
+    private String usrModif;
+    private String dateModif;
 
     @Override
     public String toString() {

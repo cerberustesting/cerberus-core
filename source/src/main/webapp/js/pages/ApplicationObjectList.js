@@ -216,8 +216,7 @@ function aoColumnsFunc(tableId) {
             "data": "application",
             "sName": "obj.application",
             "sWidth": "60px",
-            "title": doc.getDocOnline("page_applicationObject",
-                    "Application")
+            "title": doc.getDocOnline("page_applicationObject", "Application")
         },
         {
             "data": "object",
@@ -238,8 +237,8 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "screenshotfilename",
-            "sName": "screenshotfilename",
+            "data": "screenshotFilename",
+            "sName": "screenshotFilename",
             "like": true,
             "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject",
@@ -248,45 +247,55 @@ function aoColumnsFunc(tableId) {
                 var currentCase = "<image "
                         + "onclick ='displayPictureOfMinitature(this)' "
                         + "style ='height: 25px;cursor:  pointer;'"
-                        + "src='ReadApplicationObjectImage?application="
-                        + obj["application"] + "&object=" + obj["object"]
-                        + "&time=" + new Date().getTime() + "'></image>"
+                        + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() 
+                        + "'></image>"
                 return currentCase;
             }
         },
         {
-            "data": "usrcreated",
-            "visible": false,
-            "sName": "usrcreated",
-            "sWidth": "60px",
-            "title": doc.getDocOnline("page_applicationObject",
-                    "UsrCreated")
+            "data": "xOffset",
+            "sName": "xOffset",
+            "like": true,
+            "sWidth": "30px",
+            "title": doc.getDocOnline("page_applicationObject", "XOffset")
         },
         {
-            "data": "datecreated",
+            "data": "yOffset",
+            "sName": "yOffset",
+            "like": true,
+            "sWidth": "30px",
+            "title": doc.getDocOnline("page_applicationObject", "YOffset")
+        },
+        {
+            "data": "usrCreated",
+            "visible": false,
+            "sName": "usrCreated",
+            "sWidth": "60px",
+            "title": doc.getDocOnline("page_applicationObject", "UsrCreated")
+        },
+        {
+            "data": "dateCreated",
             "visible": false,
             "like": true,
-            "sName": "datecreated",
+            "sName": "dateCreated",
             "sWidth": "80px",
-            "title": doc.getDocOnline("page_applicationObject",
-                    "DateCreated")
+            "title": doc.getDocOnline("page_applicationObject", "DateCreated")
         },
         {
-            "data": "usrmodif",
+            "data": "usrModif",
             "visible": false,
-            "sName": "usrmodif",
+            "sName": "usrModif",
             "sWidth": "60px",
             "title": doc
                     .getDocOnline("page_applicationObject", "UsrModif")
         },
         {
-            "data": "datemodif",
+            "data": "dateModif",
             "like": true,
             "visible": false,
-            "sName": "datemodif",
+            "sName": "dateModif",
             "sWidth": "80px",
-            "title": doc.getDocOnline("page_applicationObject",
-                    "DateModif")
+            "title": doc.getDocOnline("page_applicationObject", "DateModif")
         }];
     return aoColumns;
 }

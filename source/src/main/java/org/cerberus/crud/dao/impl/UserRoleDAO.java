@@ -96,6 +96,8 @@ public class UserRoleDAO implements IUserRoleDAO {
         boolean bool = false;
         final String query = "INSERT INTO userrole (Login, Role) VALUES (?, ?)";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -129,6 +131,8 @@ public class UserRoleDAO implements IUserRoleDAO {
         boolean bool = false;
         final String query = "DELETE FROM userrole WHERE login = ? AND Role = ?";
 
+        LOG.debug("SQL : {}", query);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -161,6 +165,8 @@ public class UserRoleDAO implements IUserRoleDAO {
     public List<UserRole> findRoleByKey(String login) {
         List<UserRole> list = null;
         final String query = "SELECT Role FROM userrole WHERE login = ? ORDER BY Role";
+
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -204,6 +210,8 @@ public class UserRoleDAO implements IUserRoleDAO {
         AnswerList<UserRole> ans = new AnswerList<>();
         MessageEvent msg = null;
 
+        LOG.debug("SQL : {}", Query.READ_BY_USER);
+
         try (Connection connection = databaseSpring.connect();
             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
             // Prepare and execute query
@@ -238,6 +246,8 @@ public class UserRoleDAO implements IUserRoleDAO {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
+        LOG.debug("SQL : {}", Query.CREATE);
+        
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
@@ -264,6 +274,8 @@ public class UserRoleDAO implements IUserRoleDAO {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
+        LOG.debug("SQL : {}", Query.DELETE);
+        
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query

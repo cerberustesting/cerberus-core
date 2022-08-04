@@ -237,7 +237,10 @@ public class ControlService implements IControlService {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
             robotServerService.setOptionsMinSimilarity(execution.getSession(), minSimilarity);
         }
-
+        if (optionsMap.containsKey(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX).isEmpty()) {
+            String typeDelay = optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX);
+            robotServerService.setOptionsTypeDelay(execution.getSession(), typeDelay);
+        }
 
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
@@ -598,12 +601,17 @@ public class ControlService implements IControlService {
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
-                    if (identifier.getIdentifier().equals("picture")) {
-                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                         mes.resolveDescription("STRING1", elementPath);
                         return mes;
+
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                         mes.resolveDescription("STRING1", elementPath);
@@ -660,7 +668,20 @@ public class ControlService implements IControlService {
                 }
             } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
 
-                return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+
+                } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
+                    mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
+                    mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    return mes;
+
+                }
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -673,21 +694,26 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String elementPath) {
+    private MessageEvent verifyElementNotPresent(TestCaseExecution execution, String elementPath) {
         LOG.debug("Control: verifyElementNotPresent on: {}", elementPath);
         MessageEvent mes;
         if (!StringUtil.isNull(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
                     if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
-                    } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+
+                    } else if (!this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                     }
@@ -697,15 +723,29 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
 
-            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
 
-            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+                if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
 
-                if (tCExecution.getLastServiceCalled() != null) {
+                } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
 
-                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
+                    mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
+                    mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    return mes;
+
+                }
+
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_SRV)) {
+
+                if (execution.getLastServiceCalled() != null) {
+
+                    String responseBody = execution.getLastServiceCalled().getResponseHTTPBody();
+                    switch (execution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!(xmlUnitService.isElementPresent(responseBody, elementPath))) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
@@ -737,7 +777,7 @@ public class ControlService implements IControlService {
                         }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
+                            mes.resolveDescription("TYPE", execution.getLastServiceCalled().getResponseHTTPBodyContentType());
                             mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
                             return mes;
                     }
@@ -750,7 +790,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
                 return mes;
             }
         } else {
@@ -1109,35 +1149,29 @@ public class ControlService implements IControlService {
     private MessageEvent checkNumericVerifyElement(String control, Double actual, Double expected) {
         switch (control) {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
-                return actual.equals(expected) ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICEQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICEQUAL);
+                return actual.equals(expected)
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICEQUAL)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICEQUAL);
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT:
-                return !actual.equals(expected) ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICDIFFERENT)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICDIFFERENT);
+                return !actual.equals(expected)
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICDIFFERENT)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICDIFFERENT);
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER:
-                return actual > expected ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICGREATER)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICGREATER);
+                return actual > expected
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICGREATER)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICGREATER);
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATEROREQUAL:
-                return actual >= expected ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICGREATEROREQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICGREATEROREQUAL);
+                return actual >= expected
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICGREATEROREQUAL)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICGREATEROREQUAL);
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR:
-                return actual < expected ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICMINOR)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICMINOR);
+                return actual < expected
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICMINOR)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICMINOR);
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL:
-                return actual <= expected ?
-                        new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICMINOROREQUAL)
-                        :
-                        new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICMINOROREQUAL);
+                return actual <= expected
+                        ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTNUMERICMINOROREQUAL)
+                        : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTNUMERICMINOROREQUAL);
             default:
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 return mes.resolveDescription("CONTROL", "checkNumericVerifyElement-" + control);
@@ -1174,13 +1208,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                                pathContent = jsonService.getFromJson(responseBody, null, path);
-                            } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.resolveDescription("ERROR", ex.toString());
-                                return mes;
-                            }
-                            break;
+                            pathContent = jsonService.getFromJson(responseBody, null, path);
+                        } catch (Exception ex) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                            mes.resolveDescription("ERROR", ex.toString());
+                            return mes;
+                        }
+                        break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1503,8 +1537,7 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyXmlTreeStructure(TestCaseExecution tCExecution, String controlProperty, String
-            controlValue) {
+    private MessageEvent verifyXmlTreeStructure(TestCaseExecution tCExecution, String controlProperty, String controlValue) {
         LOG.debug("Control: verifyXmlTreeStructure on: {}", controlProperty);
         MessageEvent mes;
         if (Application.TYPE_SRV.equalsIgnoreCase(tCExecution.getAppTypeEngine())) {
@@ -1597,15 +1630,12 @@ public class ControlService implements IControlService {
     }
 
     private String caseSensitiveMessageValue(String isCaseSensitive) {
-        return (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) ?
-                "(case sensitive)"
-                :
-                "(case insensitive)";
+        return (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false))
+                ? "(case sensitive)"
+                : "(case insensitive)";
     }
 
-    private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution
-            testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String
-                                                cropValues) {
+    private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String cropValues) {
         MessageEvent message;
         if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
@@ -1622,8 +1652,7 @@ public class ControlService implements IControlService {
         return message;
     }
 
-    private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution
-            testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
         if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)

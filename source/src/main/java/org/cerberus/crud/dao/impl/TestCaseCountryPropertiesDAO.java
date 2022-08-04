@@ -140,7 +140,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, test);
@@ -172,7 +172,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseCountryProperties.getTest());
@@ -219,7 +219,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         }
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, test);
@@ -249,7 +249,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             int i = 1;
             preStat.setString(i++, test);
@@ -287,7 +287,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseCountryProperties.getTest());
@@ -338,7 +338,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setBytes(i++, testCaseCountryProperties.getDescription().getBytes("UTF-8"));
@@ -379,7 +379,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, newName);
@@ -413,7 +413,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, test);
@@ -447,7 +447,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, tccp.getTest());
@@ -485,7 +485,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, propertyType);
@@ -589,7 +589,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             for (TestCaseCountryProperties testCaseCountryProperties : testCaseCountryPropertiesList) {
 
@@ -648,7 +648,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseCountryProperties.getTest());
@@ -695,7 +695,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, object.getTest());
@@ -737,7 +737,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         loggingQuery(query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseCountryProperties.getDescription());
@@ -768,6 +768,35 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
         return new Answer(msg);
     }
+
+    @Override
+    public void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException {
+        final String query = new StringBuilder("UPDATE testcasecountryproperties tcp ")
+                .append("INNER JOIN testcase tc ON tc.test = tcp.test AND tc.testcase = tcp.testcase ")
+                .append("SET tcp.").append(field).append(" = replace(tcp." + field + ", '%object." + oldObject + ".', '%object." + newObject + ".'), tcp.`dateModif` = CURRENT_TIMESTAMP ")
+                .append("where tc.application = ? and tcp.").append(field).append(" like ? ;")
+                .toString();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL " + query);
+            LOG.debug("SQL.param.service " + field);
+            LOG.debug("SQL.param.service " + application);
+            LOG.debug("SQL.param.service " + "%\\%object." + oldObject + ".%");
+        }
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            int i = 1;
+            preStat.setString(i++, application);
+            preStat.setString(i++, "%\\%object." + oldObject + ".%");
+
+            preStat.executeUpdate();
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+    }
+
 
     @Override
     public TestCaseCountryProperties loadFromResultSet(ResultSet resultSet) throws SQLException {
@@ -823,4 +852,5 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             LOG.debug("SQL : " + query);
         }
     }
+
 }

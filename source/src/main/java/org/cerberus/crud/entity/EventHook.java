@@ -48,9 +48,13 @@ public class EventHook {
     private String hookRecipient;
     private String hookChannel;
     private String description;
+    @EqualsAndHashCode.Exclude
     private String usrCreated;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
     private String usrModif;
+    @EqualsAndHashCode.Exclude
     private Timestamp dateModif;
     // External Database model
 
@@ -80,110 +84,6 @@ public class EventHook {
 
     private static final Logger LOG = LogManager.getLogger(EventHook.class);
 
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
-//
-//    public String getEventReference() {
-//        return eventReference;
-//    }
-//
-//    public void setEventReference(String eventReference) {
-//        this.eventReference = eventReference;
-//    }
-//
-//    public String getObjectKey1() {
-//        return objectKey1;
-//    }
-//
-//    public void setObjectKey1(String objectKey1) {
-//        this.objectKey1 = objectKey1;
-//    }
-//
-//    public String getObjectKey2() {
-//        return objectKey2;
-//    }
-//
-//    public void setObjectKey2(String objectKey2) {
-//        this.objectKey2 = objectKey2;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    public boolean isActive() {
-//        return isActive;
-//    }
-//
-//    public void setActive(boolean isActive) {
-//        this.isActive = isActive;
-//    }
-//
-//    public String getHookConnector() {
-//        return hookConnector;
-//    }
-//
-//    public void setHookConnector(String HookConnector) {
-//        this.hookConnector = HookConnector;
-//    }
-//
-//    public String getHookRecipient() {
-//        return hookRecipient;
-//    }
-//
-//    public void setHookRecipient(String HookRecipient) {
-//        this.hookRecipient = HookRecipient;
-//    }
-//
-//    public String getHookChannel() {
-//        return hookChannel;
-//    }
-//
-//    public void setHookChannel(String HookChannel) {
-//        this.hookChannel = HookChannel;
-//    }
-//
-//    public String getUsrCreated() {
-//        return usrCreated;
-//    }
-//
-//    public void setUsrCreated(String usrCreated) {
-//        this.usrCreated = usrCreated;
-//    }
-//
-//    public String getUsrModif() {
-//        return usrModif;
-//    }
-//
-//    public void setUsrModif(String usrModif) {
-//        this.usrModif = usrModif;
-//    }
-//
-//    public Timestamp getDateCreated() {
-//        return dateCreated;
-//    }
-//
-//    public void setDateCreated(Timestamp dateCreated) {
-//        this.dateCreated = dateCreated;
-//    }
-//
-//    public Timestamp getDateModif() {
-//        return dateModif;
-//    }
-//
-//    public void setDateModif(Timestamp dateModif) {
-//        this.dateModif = dateModif;
-//    }
-
     public boolean hasSameKey(EventHook obj) {
         if (obj == null) {
             return false;
@@ -199,59 +99,6 @@ public class EventHook {
         return true;
     }
 
-//    @Override
-//    public int hashCode() {
-//        int hash = 5;
-//        hash = 29 * hash + Objects.hashCode(this.id);
-//        hash = 29 * hash + Objects.hashCode(this.eventReference);
-//        hash = 29 * hash + Objects.hashCode(this.objectKey1);
-//        hash = 29 * hash + Objects.hashCode(this.objectKey2);
-//        hash = 29 * hash + (this.isActive ? 1 : 0);
-//        hash = 29 * hash + Objects.hashCode(this.hookConnector);
-//        hash = 29 * hash + Objects.hashCode(this.hookRecipient);
-//        hash = 29 * hash + Objects.hashCode(this.hookChannel);
-//        hash = 29 * hash + Objects.hashCode(this.description);
-//        return hash;
-//    }
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        if (obj == null) {
-//            return false;
-//        }
-//        if (getClass() != obj.getClass()) {
-//            return false;
-//        }
-//        final EventHook other = (EventHook) obj;
-//        if (!Objects.equals(this.id, other.id)) {
-//            return false;
-//        }
-//        if ((this.eventReference == null) ? (other.eventReference != null) : !this.eventReference.equals(other.eventReference)) {
-//            return false;
-//        }
-//        if ((this.hookChannel == null) ? (other.hookChannel != null) : !this.hookChannel.equals(other.hookChannel)) {
-//            return false;
-//        }
-//        if ((this.hookConnector == null) ? (other.hookConnector != null) : !this.hookConnector.equals(other.hookConnector)) {
-//            return false;
-//        }
-//        if ((this.hookRecipient == null) ? (other.hookRecipient != null) : !this.hookRecipient.equals(other.hookRecipient)) {
-//            return false;
-//        }
-//        if ((this.objectKey1 == null) ? (other.objectKey1 != null) : !this.objectKey1.equals(other.objectKey1)) {
-//            return false;
-//        }
-//        if ((this.objectKey2 == null) ? (other.objectKey2 != null) : !this.objectKey2.equals(other.objectKey2)) {
-//            return false;
-//        }
-//        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
-//            return false;
-//        }
-//        if (this.isActive != other.isActive) {
-//            return false;
-//        }
-//        return true;
-//    }
 
     public JSONObject toJson() {
         JSONObject labelJson = new JSONObject();

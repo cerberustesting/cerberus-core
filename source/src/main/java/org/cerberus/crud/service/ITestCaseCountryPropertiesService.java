@@ -104,6 +104,14 @@ public interface ITestCaseCountryPropertiesService {
     void updateTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException;
 
     /**
+     *
+     * @param application
+     * @param oldObject
+     * @param newObject
+     */
+    public void updateApplicationObject(String application, String oldObject, String newObject);
+
+    /**
      * @param testCaseCountryPropertiesList
      * @return
      */

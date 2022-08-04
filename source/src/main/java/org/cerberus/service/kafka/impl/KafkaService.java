@@ -407,14 +407,19 @@ public class KafkaService implements IKafkaService {
                                 try {
                                     recordJSON = new JSONObject(record.value());
                                 } catch (JSONException ex) {
-                                    LOG.error(ex, ex);
+                                    LOG.warn("Failed to convert message to JSON Format : {}", record.value());
+                                    LOG.warn(ex, ex);
                                     recordError = true;
                                 }
 
                                 // Complete event with headers.
                                 JSONObject messageJSON = new JSONObject();
                                 messageJSON.put("key", record.key());
-                                messageJSON.put("value", recordJSON);
+                                if (recordError) {
+                                    messageJSON.put("value", record.value());
+                                } else {
+                                    messageJSON.put("value", recordJSON);
+                                }
                                 messageJSON.put("offset", record.offset());
                                 messageJSON.put("partition", record.partition());
                                 messageJSON.put("header", headerJSON);
@@ -552,7 +557,7 @@ public class KafkaService implements IKafkaService {
     // Method to determine if the record match the filter criterias.
     private boolean isRecordMatch(String jsomEventMessage, String filterPath, String filterValue, String jsomMessage, String filterHeaderPath, String filterHeaderValue) {
         boolean match = true;
-        
+
         if (!StringUtil.isNullOrEmpty(filterPath)) {
             String recordJSONfiltered = "";
             try {

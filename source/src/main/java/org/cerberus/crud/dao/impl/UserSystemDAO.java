@@ -91,11 +91,9 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "SELECT uss.* FROM usersystem u WHERE u.`login` = ? and u.`system` = ?";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.login : " + login);
-            LOG.debug("SQL.param.system : " + system);
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.login : {}", login);
+        LOG.debug("SQL.param.system : {}", system);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -139,9 +137,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "SELECT uss.* FROM usersystem uss ORDER BY `login`";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -184,10 +180,8 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "SELECT uss.* FROM usersystem uss JOIN invariant inv ON inv.value=uss.system and inv.idname='SYSTEM' WHERE  uss.`login` = ? order by inv.sort;";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.login : " + login);
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.login : {}", login);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -232,10 +226,8 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "SELECT uss.* FROM usersystem uss WHERE uss.`system` = ? ";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.system : " + system);
-        }
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.system : {}", system);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -279,12 +271,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "INSERT INTO usersystem (`login`, `system`) VALUES (?, ?)";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -304,12 +294,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         final String query = "DELETE FROM usersystem WHERE `login` = ? and `system` = ?";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -336,13 +324,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         String query = "SELECT uss.* FROM usersystem uss JOIN invariant inv ON inv.value=uss.system and inv.idname='SYSTEM' WHERE  uss.`login` = ? order by inv.sort;";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.login : " + login);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, login);
 
@@ -381,12 +366,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         String query = Query.CREATE;
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());
@@ -414,12 +397,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and " + SqlUtil.generateInClause("value", Arrays.asList(systemList)) + ";";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, user);
@@ -451,12 +432,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and value not like 'US-%';";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
+        LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, user);
             preStat.executeUpdate();
@@ -481,12 +460,10 @@ public class UserSystemDAO implements IUserSystemDAO {
         MessageEvent msg = null;
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + Query.DELETE);
-        }
+        LOG.debug("SQL : {}", Query.DELETE);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());

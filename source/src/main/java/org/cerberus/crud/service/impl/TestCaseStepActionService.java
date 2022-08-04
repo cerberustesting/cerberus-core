@@ -97,6 +97,28 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
+    public void updateApplicationObject(String application, String oldObject, String newObject) {
+        try {
+            testCaseStepActionDAO.updateApplicationObject("Value1", application, oldObject, newObject);
+            testCaseStepActionDAO.updateApplicationObject("Value2", application, oldObject, newObject);
+            testCaseStepActionDAO.updateApplicationObject("Value3", application, oldObject, newObject);
+
+            testCaseStepActionDAO.updateApplicationObject("ConditionValue1", application, oldObject, newObject);
+            testCaseStepActionDAO.updateApplicationObject("ConditionValue2", application, oldObject, newObject);
+            testCaseStepActionDAO.updateApplicationObject("ConditionValue3", application, oldObject, newObject);
+
+            testCaseStepActionDAO.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
+    }
+
+    @Override
+    public void updateService(String oldService, String service) throws CerberusException {
+        testCaseStepActionDAO.updateService(oldService, service);
+    }
+
+    @Override
     public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException {
         for (TestCaseStepAction tcsa : tcsaToDelete) {
             deleteTestCaseStepAction(tcsa);

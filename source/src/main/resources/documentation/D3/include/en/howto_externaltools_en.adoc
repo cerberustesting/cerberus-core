@@ -1,0 +1,1 @@
+This section will cover integration configuration for external tools such as other test management systems.

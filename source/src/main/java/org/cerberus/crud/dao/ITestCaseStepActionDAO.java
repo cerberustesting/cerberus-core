@@ -35,21 +35,98 @@ import java.util.List;
  */
 public interface ITestCaseStepActionDAO {
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @param actionId
+     * @return
+     */
     TestCaseStepAction readByKey(String test, String testcase, int stepId, int actionId);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepId);
 
+    /**
+     *
+     * @param testCaseStepAction
+     * @throws CerberusException
+     */
     void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepid
+     * @param oldActionId
+     * @param newActionId
+     * @return
+     */
     boolean changeTestCaseStepActionActionId(String test, String testcase, int stepid, int oldActionId, int newActionId);
 
+    /**
+     *
+     * @param tcsa
+     * @throws CerberusException
+     */
     void update(TestCaseStepAction tcsa) throws CerberusException;
 
+    /**
+     *
+     * @param oldService
+     * @param service
+     * @throws CerberusException
+     */
+    void updateService(String oldService, String service) throws CerberusException;
+
+    /**
+     * Update @field on database replacing %object.oldObject% to
+     * %object.newObject% on all lines that belong to @application
+     *
+     * @param field
+     * @param application
+     * @param oldObject
+     * @param newObject
+     * @throws CerberusException
+     */
+    void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
+
+    /**
+     *
+     * @param tcsa
+     * @throws CerberusException
+     */
     void delete(TestCaseStepAction tcsa) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int stepId);
 
+    /**
+     *
+     * @param testCaseStepAction
+     * @return
+     */
     Answer create(TestCaseStepAction testCaseStepAction);
 }

@@ -64,7 +64,7 @@ function readDocFromDatabase(lang) {
         data: {lang: lang},
         async: false,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             var doc = data["labelTable"];
             sessionStorage.setItem("doc", JSON.stringify(doc));
         }
@@ -99,7 +99,7 @@ function Doc() {
  * @param {docField} Field of the documentation data.
  * @returns {String} text value of the field name from the documentation
  */
-Doc.prototype.getDocLabel = function(docTable, docField) {
+Doc.prototype.getDocLabel = function (docTable, docField) {
     try {
         if (!(this.table.hasOwnProperty(docTable)))
             throw "docTable " + docTable + " not found";
@@ -119,7 +119,7 @@ Doc.prototype.getDocLabel = function(docTable, docField) {
  * @param {docField} Field of the documentation data.
  * @returns {String} text value of the Description from the documentation
  */
-Doc.prototype.getDocDescription = function(docTable, docField) {
+Doc.prototype.getDocDescription = function (docTable, docField) {
     try {
         if (!(this.table.hasOwnProperty(docTable)))
             throw "docTable " + docTable + " not found";
@@ -139,7 +139,7 @@ Doc.prototype.getDocDescription = function(docTable, docField) {
  * @param {docField} Field of the documentation data.
  * @returns {String} html value of the field name from the documentation
  */
-Doc.prototype.getDocOnline = function(docTable, docField) {
+Doc.prototype.getDocOnline = function (docTable, docField) {
     var res;
     var user = getUser();
 

@@ -356,7 +356,12 @@ function loadReportingData(selectTag) {
                 $("#xRayTestExecutionBlock").removeClass("hidden");
                 $("#xRayTestExecutionBlockBtn").removeClass("hidden");
                 $("#xRayTestExecution").val(data.tagObject.xRayTestExecution);
-                $("#buttonJIRAXray").attr("href", data.tagObject.xRayURL + "/browse/" + data.tagObject.xRayTestExecution).attr("target", "_blank");
+                if (data.tagObject.xRayTestExecution !== "PENDING") {
+                    $("#buttonJIRAXray").removeClass("hidden");
+                    $("#buttonJIRAXray").attr("href", data.tagObject.xRayURL + "/browse/" + data.tagObject.xRayTestExecution).attr("target", "_blank");
+                } else {
+                    $("#buttonJIRAXray").addClass("hidden");
+                }
             }
             $("#durExe").val(data.tagDuration);
             if (data.tagDuration >= 0) {

@@ -107,9 +107,9 @@ public class APIKeyService implements IAPIKeyService {
     @Override
     public String getServiceAccountAPIKey() {
         try {
-            return userService.findUserByKey(User.USER_SERVICEACCOUNT).getApiKey();
+            return userService.findUserByKey(User.CERBERUS_SERVICEACCOUNT_LOGIN).getApiKey();
         } catch (CerberusException ex) {
-            LOG.error("Error when trying to get APIKey of service account : " + User.USER_SERVICEACCOUNT);
+            LOG.error("Error when trying to get APIKey of service account : " + User.CERBERUS_SERVICEACCOUNT_LOGIN);
         }
         return null;
     }

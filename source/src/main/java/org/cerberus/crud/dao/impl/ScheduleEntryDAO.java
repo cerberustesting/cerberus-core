@@ -134,6 +134,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         // Debug message on SQL.        
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.name : " + name);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -444,6 +445,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.parm.id : " + object.getID());
         }
         Connection connection = this.databaseSpring.connect();
         try {

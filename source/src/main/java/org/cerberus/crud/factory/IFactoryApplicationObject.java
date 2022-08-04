@@ -32,13 +32,15 @@ public interface IFactoryApplicationObject {
      * @param object
      * @param value
      * @param screenshotfilename
+     * @param xOffset
+     * @param yOffset
      * @param usrcreated
      * @param datecreated
      * @param usrmodif
      * @param datemodif
      * @return
      */
-    ApplicationObject create(int ID, String application, String object, String value, String screenshotfilename, String usrcreated, String datecreated, String usrmodif, String datemodif);
+    ApplicationObject create(int ID, String application, String object, String value, String screenshotfilename, String xOffset, String yOffset, String usrcreated, String datecreated, String usrmodif, String datemodif);
     
     /**
      * Return Application object with only application and object defined

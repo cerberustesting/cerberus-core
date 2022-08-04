@@ -1,18 +1,31 @@
 *Bug fixes*
 [square]
-* verifyElementPresent and verifyElementNotPresent are now working with JSON content.
-* Network stats are now displayed even if the results are not OK. #2199
-* Har file for traffic content is empty when using index. #2371
+* [ENGINE] verifyElementPresent and verifyElementNotPresent are now working with JSON content.
+* [ENGINE] Har file for traffic content is empty when using index. #2371
+* [ENGINE] Fixed Groovy digest method allowing syntax value.digest('SHA-256') #2398
+* [ENGINE] Allow ScriptBytecodeAdapter class on Groovy #1940
+* [ENGINE] Fixed issue when using image recognition picture on application that contains space characters
+* [UX] Network stats are now displayed even if the results are not OK. #2199
 
 *Improvements / New features*
 [square]
-* You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
-* Avro support for KAFKA SEARCH method.
-* KAFKA Filter during SEARCH method can now also be filtered on Headers
-* Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
-* Added Documentation usecase on how to use test data from Google drive file.
-* JIRA Xray connector for both Cloud and DC versions. #2108
-
+* [ENGINE] Avro support for KAFKA SEARCH method. #2349
+* [ENGINE] KAFKA Filter during SEARCH method can now also be done on Headers data.
+* [ENGINE] Service Content and KAFKA Props heritage. You can now link 2 Services in order to centralize the definition of KAFKA Props inside one service and reduce maintenance.
+* [ENGINE] JIRA Xray connector for both Cloud and DC versions. #2108
+* [ENGINE] Add the possibility to define an offset for Sikuli testing #1877
+* [ENGINE] Allow to configure typeDelay when using Sikuli keyPress (from parameter or at action level).
+* [ENGINE] Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require version 1.7 of cerberus-extension-sikuli
+* [UX] You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
+* [UX] The maximum number of characters for a campaign name has been increased from 45 to 200. #2373
+* [UX] Services can be renamed (corresponding callService actions will be updated with the new reference) #2042
+* [UX] Application Objects can be renamed (corresponding steps, actions, control and properties will be refactored with the new reference) #1944
+* [UX] Campaigns can be renamed #2352
+* [UI] Visual improvements on Application Object modal (display the content immediately when paste or drop is done).
+* [UI] Visual improvements on Robot and Service page.
+* [DOC] Added Documentation usecase on how to use test data from Google drive file.
+ 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Updated Groovy version from 2.4.21 to latest 3.0.11 and Groovy sandbox from 1.10 to 1.19
+* That release require cerberus-extension-sikuli v1.7

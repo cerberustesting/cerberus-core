@@ -85,7 +85,7 @@ public class XRayGenerationService implements IXRayGenerationService {
             xRayMessage.put("tests", testsMessage);
 
             // Adding Test Execution in case it aalready exist.
-            if (!StringUtil.isNullOrEmpty(tag.getXRayTestExecution())) {
+            if (!StringUtil.isNullOrEmpty(tag.getXRayTestExecution()) && !"PENDING".equals(tag.getXRayTestExecution())) {
                 xRayMessage.put("testExecutionKey", tag.getXRayTestExecution());
             }
 

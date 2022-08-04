@@ -1050,6 +1050,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_applicationObject','Value','','en','Value','',NULL)");
         b.append(",('page_applicationObject','Value','','ru','Значение','',NULL)");
         b.append(",('page_applicationObject','Value','','fr','Valeur','',NULL)");
+        b.append(",('page_applicationObject','XOffset','','en','X Offset','Used to offset the interactions. Higher value goes to the right of the screen.',NULL)");
+        b.append(",('page_applicationObject','XOffset','','fr','Décalage X','Utilisé pour décaler horizontalement l\\'interaction avec un élément. Plus la valeur est grande, plus on va à droite de l\\'écran.',NULL)");
+        b.append(",('page_applicationObject','YOffset','','en','Y Offset','Used to offset the interactions. Higher value goes to the bottom of the screen.',NULL)");
+        b.append(",('page_applicationObject','YOffset','','fr','Décalage Y','Utilisé pour décaler verticalement l\\'interaction avec un élément. Plus la valeur est grande, plus on va vers le bas de l\\'écran.',NULL)");
         b.append(",('page_applicationObject','valuefield','','en','Value','',NULL)");
         b.append(",('page_applicationObject','valuefield','','ru','Значение','',NULL)");
         b.append(",('page_applicationObject','valuefield','','fr','Valeur','',NULL)");

@@ -279,11 +279,6 @@ public class TestCaseService implements ITestCaseService {
         return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, type, status, length);
     }
 
-    /**
-     * @param column
-     * @return
-     * @since 0.9.1
-     */
     @Override
     public List<String> findUniqueDataOfColumn(String column) {
         return this.testCaseDao.findUniqueDataOfColumn(column);
@@ -532,6 +527,19 @@ public class TestCaseService implements ITestCaseService {
             eventService.triggerEvent(EventHook.EVENTREFERENCE_TESTCASE_UPDATE, testcase, keyTest, keyTestcase, null);
         }
         return ans;
+    }
+
+    @Override
+    public void updateApplicationObject(String application, String oldObject, String newObject) {
+        try {
+            testCaseDao.updateApplicationObject("ConditionValue1", application, oldObject, newObject);
+            testCaseDao.updateApplicationObject("ConditionValue2", application, oldObject, newObject);
+            testCaseDao.updateApplicationObject("ConditionValue3", application, oldObject, newObject);
+
+            testCaseDao.updateApplicationObject("Description", application, oldObject, newObject);
+        } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
     }
 
     @Override
@@ -823,6 +831,7 @@ public class TestCaseService implements ITestCaseService {
         return this.findTestCaseByKeyWithDependencies(newTestcase.getTest(), newTestcase.getTestcase(), true).getItem();
     }
 
+    @Override
     public TestCase updateTestcaseAPI(String testFolderId, String testcaseId, TestCase newTestcaseVersion) throws CerberusException {
 
         if (testFolderId == null || testFolderId.isEmpty()) {

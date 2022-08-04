@@ -61,30 +61,121 @@ public interface ITestCaseStepService {
      */
     TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep);
 
+    /**
+     *
+     * @param tcsLeft
+     * @throws CerberusException
+     */
     public void updateTestCaseStep(TestCaseStep tcsLeft) throws CerberusException;
 
+    /**
+     *
+     * @param application
+     * @param oldObject
+     * @param newObject
+     */
+    public void updateApplicationObject(String application, String oldObject, String newObject);
+
+    /**
+     *
+     * @param tcs
+     * @throws CerberusException
+     */
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
+    /**
+     *
+     * @param tcsToDelete
+     * @throws CerberusException
+     */
     public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param stepId
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int stepId) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getTestCaseStepsUsingTestInParameter(String test) throws CerberusException;
 
+    /**
+     *
+     * @param newList
+     * @param oldList
+     * @param duplicate
+     * @throws CerberusException
+     */
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList, boolean duplicate) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @param testCase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
     List<TestCaseStep> readByTestTestCaseAPI(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     AnswerList<TestCaseStep> readByLibraryUsed(String test, String testcase, int stepId);
 
     /**
@@ -94,8 +185,22 @@ public interface ITestCaseStepService {
      */
     AnswerList<TestCaseStep> readByTestTestCaseStepsWithDependencies(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     TestCaseStep readTestcaseStepWithDependencies(String test, String testcase, int stepId);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param stepId
+     * @return
+     */
     TestCaseStep readTestcaseStepWithDependenciesAPI(String test, String testcase, int stepId);
 
     /**

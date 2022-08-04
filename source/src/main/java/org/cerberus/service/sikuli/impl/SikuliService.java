@@ -34,6 +34,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
+import java.util.logging.Level;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
@@ -95,55 +97,34 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
 
-    private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2, long defaultWait, String minSimilarity, Integer highlightElement) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+    private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2,
+            long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
+        int xOffset = 0;
+        int yOffset = 0;
         String picture2 = "";
         String extension2 = "";
+        int xOffset2 = 0;
+        int yOffset2 = 0;
         /**
          * Get Picture from URL and convert to Base64
          */
-        if (locator != null && !"".equals(locator)) {
-            URL url = new URL(locator);
-            URLConnection connection = url.openConnection();
+        JSONObject pic = getContentBase64FromLocator(locator);
+        JSONObject pic2 = getContentBase64FromLocator(locator2);
 
-            InputStream istream = new BufferedInputStream(connection.getInputStream());
-
-            /**
-             * Get the MimeType and the extension
-             */
-            String mimeType = URLConnection.guessContentTypeFromStream(istream);
-            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-            MimeType mt = allTypes.forName(mimeType);
-            extension = mt.getExtension();
-
-            /**
-             * Encode in Base64
-             */
-            byte[] bytes = IOUtils.toByteArray(istream);
-            picture = Base64.encodeBase64URLSafeString(bytes);
+        if (pic != null) {
+            picture = pic.getString("content");
+            extension = pic.getString("extension");
+            xOffset = pic.getInt("xOffset");
+            yOffset = pic.getInt("yOffset");
         }
-
-        if (locator2 != null && !"".equals(locator2)) {
-            URL url = new URL(locator2);
-            URLConnection connection = url.openConnection();
-
-            InputStream istream = new BufferedInputStream(connection.getInputStream());
-
-            /**
-             * Get the MimeType and the extension
-             */
-            String mimeType = URLConnection.guessContentTypeFromStream(istream);
-            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-            MimeType mt = allTypes.forName(mimeType);
-            extension2 = mt.getExtension();
-
-            /**
-             * Encode in Base64
-             */
-            byte[] bytes = IOUtils.toByteArray(istream);
-            picture2 = Base64.encodeBase64URLSafeString(bytes);
+        if (pic2 != null) {
+            picture2 = pic2.getString("content");
+            extension2 = pic2.getString("extension");
+            xOffset2 = pic2.getInt("xOffset");
+            yOffset2 = pic2.getInt("yOffset");
         }
 
         /**
@@ -154,15 +135,104 @@ public class SikuliService implements ISikuliService {
          */
         result.put("action", action);
         result.put("picture", picture);
-        result.put("picture2", picture2);
         result.put("text", text);
+        result.put("xOffset", xOffset);
+        result.put("yOffset", yOffset);
+        result.put("picture2", picture2);
         result.put("text2", text2);
+        result.put("xOffset2", xOffset2);
+        result.put("yOffset2", yOffset2);
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
         result.put("picture2Extension", extension2);
         result.put("minSimilarity", minSimilarity);
         result.put("highlightElement", highlightElement);
+        result.put("typeDelay", typeDelay);
         return result;
+    }
+
+    private JSONObject getContentBase64FromLocator(String locator) {
+        String extension = "";
+        String picture = "";
+        int xOffset = 0;
+        int yOffset = 0;
+        String xOffsetS = null;
+        String yOffsetS = null;
+
+        JSONObject result = new JSONObject();
+        if (locator != null && !"".equals(locator)) {
+            URL url;
+            try {
+                url = new URL(locator);
+
+                // Get the x and y Offsets from URL.
+                String[] offsets = locator.split("#");
+                if (offsets.length > 1) {
+                    String offsetsR = offsets[offsets.length - 1];
+                    String[] offsetsRs = offsetsR.split("\\|");
+                    for (String offsetsR1 : offsetsRs) {
+                        if (offsetsR1.contains("xoffset=")) {
+                            xOffsetS = offsetsR1.replace("xoffset=", "");
+                        }
+                        if (offsetsR1.contains("yoffset=")) {
+                            yOffsetS = offsetsR1.replace("yoffset=", "");
+                        }
+                    }
+                    if (!StringUtil.isNullOrEmpty(xOffsetS)) {
+                        try {
+                            xOffset = Integer.valueOf(xOffsetS);
+                        } catch (NumberFormatException e) {
+                            LOG.warn("Failed to convert xOffset : " + xOffsetS, e);
+                        }
+                    }
+                    if (!StringUtil.isNullOrEmpty(yOffsetS)) {
+                        try {
+                            yOffset = Integer.valueOf(yOffsetS);
+                        } catch (NumberFormatException e) {
+                            LOG.warn("Failed to convert xOffset : " + yOffsetS, e);
+                        }
+                    }
+                }
+
+                URLConnection connection = url.openConnection();
+
+                InputStream istream = new BufferedInputStream(connection.getInputStream());
+
+                /**
+                 * Get the MimeType and the extension
+                 */
+                String mimeType = URLConnection.guessContentTypeFromStream(istream);
+                MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+                MimeType mt = allTypes.forName(mimeType);
+                extension = mt.getExtension();
+
+                /**
+                 * Encode in Base64
+                 */
+                byte[] bytes = IOUtils.toByteArray(istream);
+                picture = Base64.encodeBase64URLSafeString(bytes);
+
+            } catch (MalformedURLException ex) {
+                picture = "";
+            } catch (IOException ex) {
+                LOG.error(ex, ex);
+            } catch (MimeTypeException ex) {
+                LOG.error(ex, ex);
+            } finally {
+                try {
+                    result.put("content", picture);
+                    result.put("extension", extension);
+                    result.put("xOffset", xOffset);
+                    result.put("yOffset", yOffset);
+                    return result;
+                } catch (JSONException ex) {
+                    LOG.error(ex, ex);
+                }
+
+            }
+        }
+        return null;
+
     }
 
     @Override
@@ -272,9 +342,9 @@ public class SikuliService implements ISikuliService {
                 LOG.info("Open Connection to : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
-            // We let Sikuli extension the sikuli timeout + 10 s to perform the action/control.
-            connection.setReadTimeout(session.getCerberus_sikuli_wait_element() + 10000);
-            connection.setConnectTimeout(session.getCerberus_sikuli_wait_element() + 10000);
+            // We let Sikuli extension the sikuli timeout + 60 s to perform the action/control.
+            connection.setReadTimeout(session.getCerberus_sikuli_wait_element() + 60000);
+            connection.setConnectTimeout(session.getCerberus_sikuli_wait_element() + 60000);
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -283,7 +353,9 @@ public class SikuliService implements ISikuliService {
             JSONObject postParameters = generatePostParameters(action, locator, locator2, text, text2,
                     session.getCerberus_sikuli_wait_element(),
                     session.getCerberus_sikuli_minSimilarity(),
-                    session.getCerberus_selenium_highlightElement());
+                    session.getCerberus_selenium_highlightElement(),
+                    session.getCerberus_sikuli_typeDelay()
+            );
             connection.setDoOutput(true);
 
             // Send post request
@@ -665,22 +737,22 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTPRESENT, locator, null, "", "");
+    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator, String text) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, SikuliService.SIKULI_VERIFYELEMENTPRESENT, locator, null, text, "");
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            message.setDescription(message.getDescription().replace("%STRING1%", locator == null ? text : locator));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator == null ? text : locator));
             return mes;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator == null ? text : locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -688,22 +760,22 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTNOTPRESENT, locator, null, "", "");
+    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator, String text) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTNOTPRESENT, locator, null, text, "");
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            message.setDescription(message.getDescription().replace("%STRING1%", locator == null ? text : locator));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            message.setDescription(message.getDescription().replace("%STRING1%", locator == null ? text : locator));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-            mes.setDescription(mes.getDescription().replace("%ERROR%", locator) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%ERROR%", locator == null ? text : locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 

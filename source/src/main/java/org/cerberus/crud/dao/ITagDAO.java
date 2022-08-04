@@ -156,6 +156,14 @@ public interface ITagDAO {
     /**
      *
      * @param tag
+     * @param object
+     * @return
+     */
+    int lockXRayTestExecution(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
      * @return
      */
     Answer updateDateEndQueue(Tag tag);
