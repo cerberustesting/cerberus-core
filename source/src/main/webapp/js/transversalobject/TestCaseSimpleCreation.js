@@ -65,8 +65,8 @@ function initModalTestCaseSimpleCreation() {
     $("[name='testCaseDescriptionField']").html(doc.getDocLabel("testcase", "Description"));
     $("[name='applicationField']").html(doc.getDocLabel("application", "Application"));
     $("[name='applicationNameField']").html(doc.getDocLabel("application", "Application"));
-    $("[name='applicationTypeField']").html(doc.getDocLabel("invariant", "APPLICATION_TYPE"));
-    $("[name='applicationHostField']").html(doc.getDocLabel("invariant", "PRIORITY"));
+    $("[name='applicationTypeField']").html(doc.getDocLabel("application", "type"));
+    $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationGuiHost"));
     $("[name='countryField']").html(doc.getDocLabel("testcase", "countriesLabel"));
     $("[name='environmentField']").html(doc.getDocLabel("invariant", "ENVIRONMENT"));
 
@@ -77,6 +77,29 @@ function initModalTestCaseSimpleCreation() {
     displayInvariantList("type", "APPLITYPE", false);
     displayInvariantList("country", "COUNTRY", false);
     displayInvariantList("environment", "ENVIRONMENT", false);
+
+
+    $("#newApplication #type").change(function(){
+        switch ($(this).val()) {
+            case 'GUI':
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationGuiHost"));
+                break;
+            case 'SRV':
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationSrvHost"));
+                break;
+            case 'APK':
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationApkHost"));
+                break;
+            case 'IPA':
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationIpaHost"));
+                break;
+            case 'FAT':
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationFatHost"));
+                break;
+            default:
+                $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationGuiHost"));
+        }
+    });
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',

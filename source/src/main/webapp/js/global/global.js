@@ -177,9 +177,9 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
                 for (var index = 0; index < list.length; index++) {
                     var line = $("<button type='button' data-robot='"+list[index].robot+"' class='list-group-item list-group-item-action' name='robotItem'>" +
                         "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
-                        "<img class='col-lg-2' src='"+getIconForOs(list[index].platform)+"'/>" +
-                        "<img class='col-lg-2' src='"+getIconForBrowser(list[index].browser)+"'/>" +
-                        "<span class='col-lg-2 grayscale'> v "+list[index].version+" </span>" +
+                        "<img class='col-lg-2' src='images/platform-"+list[index].platform+".png'/>" +
+                        "<img class='col-lg-2' src='images/browser-"+list[index].browser+".png'/>" +
+                        "<span class='col-lg-2 grayscale'> "+list[index].version+" </span>" +
                         "</button>");
                     $("[name='" + selectName + "']").append(line);
 
@@ -194,8 +194,8 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
         for (var index = 0; index < list.length; index++) {
             var line = $("<button type='button' class='list-group-item list-group-item-action' data-robot='"+list[index].robot+"' name='robotItem'>" +
                 "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
-                "<img class='col-lg-2' src='"+getIconForOs(list[index].platform)+"'/>" +
-                "<img class='col-lg-2' src='"+getIconForBrowser(list[index].browser)+"'/>" +
+                "<img class='col-lg-2' src='images/platform-"+list[index].platform+".png'/>" +
+                "<img class='col-lg-2' src='images/browser-"+list[index].browser+".png'/>" +
                 "<span class='col-lg-2 grayscale'> "+list[index].version+" </span>" +
                 "</button>");
             $("[name='" + selectName + "']").append(line);
@@ -213,43 +213,7 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
     });
 }
 
-/**
- * Method that convert the OS value into the path to the icon
- * @param {String} os value.
- * @returns {String} the path of the icon
- */
-function getIconForOs(os){
-    switch (os) {
-        case 'WINDOWS':
-            return 'images/windows.png';
-        case 'LINUX':
-            return 'images/linux.png';
-        default:
-            return 'images/linux.png';
-    }
-}
 
-/**
- * Method that convert the Browser value into the path to the icon
- * @param {String} browser value.
- * @returns {String} the path of the icon
- */
-function getIconForBrowser(browser){
-    switch (browser) {
-        case 'chrome':
-            return 'images/chrome.png';
-        case 'firefox':
-            return 'images/firefox.png';
-        case 'safari':
-            return 'images/safari.png';
-        case 'ie':
-            return 'images/ie.png';
-        case 'opera':
-            return 'images/opera.png';
-        default:
-            return 'images/chrome.png';
-    }
-}
 
 /**
  * Method that return a list of value retrieved from the invariant list

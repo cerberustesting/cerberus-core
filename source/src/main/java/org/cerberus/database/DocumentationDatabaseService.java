@@ -2280,6 +2280,16 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcase','txt_property_not_defined','','fr','** Propriété non définie **',NULL,NULL)");
         b.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','',NULL)");
         b.append(",('page_testcase','undefined_error_message','','fr','Il y a des propriétés indéfinies, veuillez les vérifier avant de procéder',NULL,NULL)");
+        b.append(",('page_testcasecreate','applicationApkHost','','en','URL address to download the APK file','',NULL)");
+        b.append(",('page_testcasecreate','applicationApkHost','','fr','URL de téléchargement de l\\'APK','',NULL)");
+        b.append(",('page_testcasecreate','applicationFatHost','','en','Application command to launch','',NULL)");
+        b.append(",('page_testcasecreate','applicationFatHost','','fr','Commande de l\\'application à lancer','',NULL)");
+        b.append(",('page_testcasecreate','applicationGuiHost','','en','URL address of the web site','',NULL)");
+        b.append(",('page_testcasecreate','applicationGuiHost','','fr','Adresse du site web','',NULL)");
+        b.append(",('page_testcasecreate','applicationIpaHost','','en','URL address to download the IPA file','',NULL)");
+        b.append(",('page_testcasecreate','applicationIpaHost','','fr','URL de téléchargement de l\\'IPA','',NULL)");
+        b.append(",('page_testcasecreate','applicationSrvHost','','en','Host of the webservice','',NULL)");
+        b.append(",('page_testcasecreate','applicationSrvHost','','fr','Host du service web','',NULL)");
         b.append(",('page_testcasecreate','chooseOrCreateApplicationLabel','','en','Choose (or Create) the application that you gonna test','',NULL)");
         b.append(",('page_testcasecreate','chooseOrCreateApplicationLabel','','fr','Choisir (ou Créer) l\\'application à tester','',NULL)");
         b.append(",('page_testcasecreate','chooseOrCreateFolderLabel','','en','Choose (or Create) a folder to store your TestCase','',NULL)");
