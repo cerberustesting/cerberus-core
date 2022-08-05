@@ -176,10 +176,10 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
                     var line = $("<button type='button' data-robot='"+list[index].robot+"' class='list-group-item list-group-item-action' name='robotItem'>" +
-                        "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
-                        "<img class='col-lg-2' src='images/platform-"+list[index].platform+".png'/>" +
-                        "<img class='col-lg-2' src='images/browser-"+list[index].browser+".png'/>" +
-                        "<span class='col-lg-2 grayscale'> "+list[index].version+" </span>" +
+                        "<span class='col-xs-6 grayscale'>"+list[index].robot+"</span>" +
+                        "<img class='col-xs-2' style='width:60px;height:30px' src='images/platform-"+list[index].platform+".png'/>" +
+                        "<img class='col-xs-2' style='width:60px;height:30px' src='images/browser-"+list[index].browser+".png'/>" +
+                        "<span class='col-xs-2 grayscale'> "+list[index].version+" </span>" +
                         "</button>");
                     $("[name='" + selectName + "']").append(line);
 
@@ -2817,7 +2817,7 @@ function getComboConfigTest() {
     };
 }
 
-function getComboConfigApplication() {
+function getComboConfigApplication(editable) {
     return {
         ajax: {
             url: "ReadApplication",
@@ -2844,24 +2844,24 @@ function getComboConfigApplication() {
             cache: true,
             allowClear: true
         },
-        tags: true,
+        tags: editable,
         width: "100%",
         minimumInputLength: 0,
-        templateResult: comboConfigApplication_format, // omitted for brevity, see the source of this page
-        templateSelection: comboConfigApplication_formatSelection // omitted for brevity, see the source of this page
+        templateResult: comboConfigApplication_format // omitted for brevity, see the source of this page
     };
 }
 
-function comboConfigApplication_formatSelection(application) {
-    if (!isEmpty(application.type)) {
-        return `${application.id} [${application.type}]`;
-    }
-    return application.id;
-}
+function comboConfigApplication_format(application){
+    var doc = new Doc();
+    var color = "success";
+    var appType = "NEW APPLICATION ? : CLICK HERE TO CREATE IT";
 
-function comboConfigApplication_format(app) {
-    return `${app.id} [${app.type}]`;
-}
+    if (!isEmpty(application.type)){
+        color = "primary";
+        appType = doc.getDocLabel("comboApplicationType", application.type);
+    }
+    return $('<span name="appNameLabel">'+application.id+' <span name="appTypeLabel" class="label label-'+color+'">'+appType+'</span></span>');
+};
 
 
 function getBugIdList(data, appUrl) {

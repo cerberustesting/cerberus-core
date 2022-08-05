@@ -603,7 +603,7 @@ function importTestCasesFromSIDEMenuClick() {
     $('#importTestCaseFromSIDEModalForm #targetTest').select2(getComboConfigTest());
 
     $('#importTestCaseFromSIDEModalForm #targetApplication').empty();
-    $('#importTestCaseFromSIDEModalForm #targetApplication').select2(getComboConfigApplication());
+    $('#importTestCaseFromSIDEModalForm #targetApplication').select2(getComboConfigApplication(false));
 
     $('#importTestCaseFromSIDEModal').modal('show');
 }

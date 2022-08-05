@@ -261,7 +261,7 @@ function SimpleCreationFeedTestCaseField(modalForm) {
 function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 
     $('#editTestCaseSimpleCreationModal [name="application"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="application"]').select2(getComboConfigApplication());
+    $('#editTestCaseSimpleCreationModal [name="application"]').select2(getComboConfigApplication(true));
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);

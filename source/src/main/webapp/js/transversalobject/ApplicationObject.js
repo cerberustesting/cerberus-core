@@ -54,7 +54,7 @@ function initModalApplicationObject(page, application) {
     $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
 
     //displayApplicationList('application', undefined, application, undefined);
-    $('[name="application"]').select2(getComboConfigApplication());
+    $('[name="application"]').select2(getComboConfigApplication(false));
 
 
     $("#editApplicationObjectButton").off("click");
