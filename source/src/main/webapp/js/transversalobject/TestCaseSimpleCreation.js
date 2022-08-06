@@ -32,7 +32,7 @@ function openModalTestCaseSimple(defaultTest) {
 
     // Init the Saved data to false.
     $('#editTestCaseSimpleCreationModal').data("Saved", false);
-    $('#editTestCaseSimpleCreationModal').data("testcase", undefined);
+    $('#editTestCaseSimpleCreationModal').data("testcasesimplecreation", undefined);
 
     //Add event on Save button.
     $("#addTestCaseSimpleCreationButton").off("click");
@@ -44,7 +44,7 @@ function openModalTestCaseSimple(defaultTest) {
     $('#addTestCaseSimpleCreationButton').attr('class', 'btn btn-primary');
     $('#addTestCaseSimpleCreationButton').removeProp('hidden');
 
-    $('#editTestCaseSimpleCreationModalForm select[name="testFolderId"]').change(function () {
+    $('#editTestCaseSimpleCreationTestFolderId').change(function () {
         SimpleCreationFeedTestCaseField("editTestCaseSimpleCreationModalForm");
     });
 
@@ -52,7 +52,7 @@ function openModalTestCaseSimple(defaultTest) {
     feedNewTestCaseSimpleCreationModal("editTestCaseSimpleCreationModal", defaultTest);
 
     //Clean response messages
-    $('#editTestCaseSimpleCreationModalForm #application').parents("div.form-group").removeClass("has-error");
+    $('#editTestCaseSimpleCreationApplication').parents("div.form-group").removeClass("has-error");
     clearResponseMessage($('#editTestCaseSimpleCreationModal'));
 }
 
@@ -60,23 +60,23 @@ function openModalTestCaseSimple(defaultTest) {
 function initModalTestCaseSimpleCreation() {
     var doc = new Doc();
 
-    $("[name='testField']").html(doc.getDocLabel("test", "Test"));
-    $("[name='testCaseField']").html(doc.getDocLabel("testcase", "TestCase"));
-    $("[name='testCaseDescriptionField']").html(doc.getDocLabel("testcase", "Description"));
-    $("[name='applicationField']").html(doc.getDocLabel("application", "Application"));
-    $("[name='applicationNameField']").html(doc.getDocLabel("application", "Application"));
-    $("[name='applicationTypeField']").html(doc.getDocLabel("application", "type"));
-    $("[name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationGuiHost"));
-    $("[name='countryField']").html(doc.getDocLabel("testcase", "countriesLabel"));
-    $("[name='environmentField']").html(doc.getDocLabel("invariant", "ENVIRONMENT"));
+    $("#editTestCaseSimpleCreationModalForm [name='testField']").html(doc.getDocLabel("test", "Test"));
+    $("#editTestCaseSimpleCreationModalForm [name='testCaseField']").html(doc.getDocLabel("testcase", "TestCase"));
+    $("#editTestCaseSimpleCreationModalForm [name='testCaseDescriptionField']").html(doc.getDocLabel("testcase", "Description"));
+    $("#editTestCaseSimpleCreationModalForm [name='applicationField']").html(doc.getDocLabel("application", "Application"));
+    $("#editTestCaseSimpleCreationModalForm [name='applicationNameField']").html(doc.getDocLabel("application", "Application"));
+    $("#editTestCaseSimpleCreationModalForm [name='applicationTypeField']").html(doc.getDocLabel("application", "type"));
+    $("#editTestCaseSimpleCreationModalForm [name='applicationHostField']").html(doc.getDocLabel("page_testcasecreate", "applicationGuiHost"));
+    $("#editTestCaseSimpleCreationModalForm [name='countryField']").html(doc.getDocLabel("testcase", "countriesLabel"));
+    $("#editTestCaseSimpleCreationModalForm [name='environmentField']").html(doc.getDocLabel("invariant", "ENVIRONMENT"));
 
-    $("#ChooseApplicationLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateApplicationLabel"));
-    $("#describeTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "describeTestCaseLabel"));
-    $("#defineTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateFolderLabel"));
+    $("#editTestCaseSimpleCreationModalForm #ChooseApplicationLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateApplicationLabel"));
+    $("#editTestCaseSimpleCreationModalForm #describeTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "describeTestCaseLabel"));
+    $("#editTestCaseSimpleCreationModalForm #defineTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateFolderLabel"));
 
-    displayInvariantList("type", "APPLITYPE", false);
-    displayInvariantList("country", "COUNTRY", false);
-    displayInvariantList("environment", "ENVIRONMENT", false);
+    displayInvariantList("editTestCaseSimpleCreationApplicationType", "APPLITYPE", false);
+    displayInvariantList("editTestCaseSimpleCreationCountry", "COUNTRY", false);
+    displayInvariantList("editTestCaseSimpleCreationEnvironment", "ENVIRONMENT", false);
 
 
     $("#newApplication #type").change(function(){
@@ -113,14 +113,14 @@ function checkFormSimpleCreationBeforeSubmit() {
 
     var formEdit = $('#editTestCaseSimpleCreationModalForm');
 
-    var nameElement = formEdit.find("#application");
+    var nameElement = formEdit.find("#editTestCaseSimpleCreationApplication");
     var nameElementEmpty = nameElement.prop("value") === '';
 
-    var testElement = formEdit.find("#test");
+    var testElement = formEdit.find("#editTestCaseSimpleCreationTestFolderId");
     var testElementInvalid = testElement.prop("value").search("&");
     var testElementEmpty = testElement.prop("value") === '';
 
-    var testIdElement = formEdit.find("#testCase");
+    var testIdElement = formEdit.find("#editTestCaseSimpleCreationTestcaseId");
     var testIdElementInvalid = testIdElement.prop("value").search("&");
     var testIdElementEmpty = testIdElement.prop("value") === '';
 
@@ -174,10 +174,15 @@ function submitSimpleCreationForm() {
     var myServlet = "api/public/testcases/create";
 
     var data = {};
-        $.each(formEdit.serializeArray(), function(i, field) {
-            data[field.name] = field.value;
-        });
-        data['system'] = getUser().defaultSystem;
+    data['application'] = $('#editTestCaseSimpleCreationApplication').val();
+    data['type'] = $('#editTestCaseSimpleCreationApplicationType').val();
+    data['url'] = $('#editTestCaseSimpleCreationUrl').val();
+    data['country'] = $('#editTestCaseSimpleCreationCountry').val();
+    data['environment'] = $('#editTestCaseSimpleCreationEnvironment').val();
+    data['description'] = $('#editTestCaseSimpleCreationDescription').val();
+    data['testFolderId'] = $('#editTestCaseSimpleCreationTestFolderId').val();
+    data['testcaseId'] = $('#editTestCaseSimpleCreationTestcaseId').val();
+    data['system'] = getUser().defaultSystem;
 
     // Get the header data from the form.
     showLoaderInModal('#editTestCaseSimpleCreationModal');
@@ -222,8 +227,8 @@ function feedNewTestCaseSimpleCreationModal(modalId, defaultTest) {
     SimpleCreationFeedTestCaseField("editTestCaseSimpleCreationModalForm");
     SimpleCreationAppendApplicationList(undefined, undefined);
 
-    $('#editTestCaseSimpleCreationModal [name="application"]').change(function() {
-        if ($('#editTestCaseSimpleCreationModal [name="application"] option[data-select2-tag=true]')[0]!==undefined) {
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').change(function() {
+        if ($('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"] option[data-select2-tag=true]')[0]!==undefined) {
             $("#newApplication").attr('style', 'display:block');
         } else {
             $("#newApplication").attr('style', 'display:none');
@@ -243,7 +248,7 @@ function feedNewTestCaseSimpleCreationModal(modalId, defaultTest) {
  */
 function SimpleCreationFeedTestCaseField(modalForm) {
 
-    let test = $('#editTestCaseSimpleCreationModalForm select[name="testFolderId"]').val();
+    let test = $('#editTestCaseSimpleCreationModalForm select[name="editTestCaseSimpleCreationTestFolderId"]').val();
 
     $.ajax({
         url: "ReadTestCase",
@@ -251,7 +256,7 @@ function SimpleCreationFeedTestCaseField(modalForm) {
         data: {test: encodeURIComponent(test), getMaxTC: true},
         dataType: "json",
         success: function (data) {
-            $('#' + modalForm + ' [name="testcaseId"]').val(data.nextAvailableTestcaseId);
+            $('#' + modalForm + ' [name="editTestCaseSimpleCreationTestcaseId"]').val(data.nextAvailableTestcaseId);
         },
         error: showUnexpectedError
     });
@@ -260,21 +265,21 @@ function SimpleCreationFeedTestCaseField(modalForm) {
 //Feed Application Combo and select default value if defined
 function SimpleCreationAppendApplicationList(defaultValue, mySystem) {
 
-    $('#editTestCaseSimpleCreationModal [name="application"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="application"]').select2(getComboConfigApplication(true));
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').empty();
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').select2(getComboConfigApplication(true));
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);
-    $('#editTestCaseSimpleCreationModal [name="application"]').append(option).trigger('change'); // append the option and update Select2
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').append(option).trigger('change'); // append the option and update Select2
 
 }
 
 //Feed Test Combo and select default value if defined
 function SimpleCreationAppendTestList(defaultValue) {
-    $('#editTestCaseSimpleCreationModal [name="testFolderId"]').empty();
-    $('#editTestCaseSimpleCreationModal [name="testFolderId"]').select2(getComboConfigTest());
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').empty();
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').select2(getComboConfigTest());
 
     // Set Select2 Value.
     let option = $('<option></option>').text(defaultValue).val(defaultValue);
-    $('#editTestCaseSimpleCreationModal [name="testFolderId"]').append(option).trigger('change'); // append the option and update Select2
+    $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationTestFolderId"]').append(option).trigger('change'); // append the option and update Select2
 }
