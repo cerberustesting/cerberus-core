@@ -23,12 +23,10 @@ import org.cerberus.util.datatable.DataTableInformation;
 import com.google.gson.Gson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Test;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.service.ILogEventService;
@@ -63,7 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
 
-    private static final Logger LOG = LogManager.getLogger(TestCaseExecution.class);
+    private static final Logger LOG = LogManager.getLogger(TestController.class);
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired

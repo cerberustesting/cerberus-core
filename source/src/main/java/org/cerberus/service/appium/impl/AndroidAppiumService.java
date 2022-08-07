@@ -35,7 +35,7 @@ import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
-import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.service.appium.SwipeAction;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.JSONUtil;
 import org.cerberus.util.StringUtil;

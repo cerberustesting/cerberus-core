@@ -62,7 +62,7 @@ public class TestcaseStepActionControlController {
     private final ITestCaseStepActionControlService controlService;
     private final PublicApiAuthenticationService apiAuthenticationService;
 
-    @ApiOperation("Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
+    @ApiOperation("Find a Testcase Control by its key (testFolderId, testcaseId, stepId, actionId, controlId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)

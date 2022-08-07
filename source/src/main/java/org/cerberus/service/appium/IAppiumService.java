@@ -22,8 +22,7 @@ package org.cerberus.service.appium;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
-import org.cerberus.engine.entity.SwipeAction;
-import org.cerberus.engine.entity.SwipeAction.Direction;
+import org.cerberus.service.appium.SwipeAction.Direction;
 
 /**
  *

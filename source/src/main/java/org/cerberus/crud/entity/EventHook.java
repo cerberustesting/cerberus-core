@@ -82,6 +82,9 @@ public class EventHook {
     public static final String EVENTREFERENCE_TESTCASE_UPDATE = "TESTCASE_UPDATE";
     public static final String EVENTREFERENCE_TESTCASE_DELETE = "TESTCASE_DELETE";
 
+    public static final String EVENTREFERENCE_ENVIRONMENT_DISABLE = "ENVIRONMENT_DISABLE";
+    public static final String EVENTREFERENCE_ENVIRONMENT_REVISIONCHANGE = "ENVIRONMENT_REVISIONCHANGE";
+    
     private static final Logger LOG = LogManager.getLogger(EventHook.class);
 
     public boolean hasSameKey(EventHook obj) {

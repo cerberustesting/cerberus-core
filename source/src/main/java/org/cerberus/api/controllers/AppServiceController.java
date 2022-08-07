@@ -64,7 +64,7 @@ public class AppServiceController {
     private final AppServiceMapperV001 appServiceMapper;
     private final IAppServiceService appServiceService;
 
-    @ApiOperation("Get a service by service name")
+    @ApiOperation("Get a service by its service name")
     @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)

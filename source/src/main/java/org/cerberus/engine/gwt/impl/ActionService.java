@@ -38,7 +38,7 @@ import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.service.appium.SwipeAction;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.IRobotServerService;

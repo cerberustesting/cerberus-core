@@ -21,7 +21,6 @@ package org.cerberus.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.exception.CerberusException;
 import org.json.JSONArray;
@@ -41,26 +40,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/testcaseexecution")
 public class TestCaseExecutionController {
 
-    private static final Logger LOG = LogManager.getLogger(TestCaseExecution.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionController.class);
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-    
+
     @Autowired
     TestCaseExecutionService testCaseExecutionService;
 
     @GetMapping("/getLastByCriteria")
     public String getLastByCriteria(
-            @RequestParam (name = "test", value="test") String test, 
-            @RequestParam (name = "testCase", value="testCase") String testCase,
-            @RequestParam(name = "numberOfExecution", value="Number of execution expected. If empty, all execution matching the criteria will be returned" , required = false) Integer numberOfExecution, 
-            @RequestParam(name = "tag", value="Tag of the execution expected" , required = false) String tag,
-            @RequestParam(name = "campaign", value="Campaign name of the execution expected" , required = false) String campaign) {
-        
+            @RequestParam(name = "test", value = "test") String test,
+            @RequestParam(name = "testCase", value = "testCase") String testCase,
+            @RequestParam(name = "numberOfExecution", value = "Number of execution expected. If empty, all execution matching the criteria will be returned", required = false) Integer numberOfExecution,
+            @RequestParam(name = "tag", value = "Tag of the execution expected", required = false) String tag,
+            @RequestParam(name = "campaign", value = "Campaign name of the execution expected", required = false) String campaign) {
+
         try {
             test = policy.sanitize(test);
             testCase = policy.sanitize(testCase);
             tag = policy.sanitize(tag);
             campaign = policy.sanitize(campaign);
-            
+
             JSONArray ja = testCaseExecutionService.getLastByCriteria(test, testCase, tag, campaign, numberOfExecution);
             return ja.toString();
         } catch (CerberusException ex) {
@@ -69,8 +68,4 @@ public class TestCaseExecutionController {
         }
     }
 
-    @GetMapping("/toto")
-    public String toto() {
-        return "it works too";
-    }
 }

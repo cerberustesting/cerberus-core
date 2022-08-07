@@ -23,15 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data transfer object that retrieves the list of tests that have test cases that use the property
+ * Data transfer object that retrieves the list of tests that have test cases
+ * that use the property
+ *
  * @author FNogueira
  */
 public class TestListDTO {
+
     private String test;
     private String description;
-    
+
     public List<TestCaseListDTO> testCaseList;
-    public TestListDTO(){
+
+    public TestListDTO() {
         this.testCaseList = new ArrayList<>();
     }
 
@@ -58,5 +62,5 @@ public class TestListDTO {
     public void setTestCaseList(List<TestCaseListDTO> testCaseList) {
         this.testCaseList = testCaseList;
     }
-    
+
 }

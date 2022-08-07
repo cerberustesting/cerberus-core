@@ -66,7 +66,7 @@ public class TestcaseStepController {
 
     private static final Logger LOG = LogManager.getLogger(TestcaseStepController.class);
 
-    @ApiOperation("Get all TestcaseSteps")
+    @ApiOperation("Get all Testcase Steps")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -86,7 +86,7 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all testcase steps from a test folder")
+    @ApiOperation("Get all Testcase Steps from a test folder")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -104,7 +104,7 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all testcase steps of a testcase")
+    @ApiOperation("Get all Testcase Steps of a testcase")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -123,7 +123,7 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get a Testcase Step by key (testFolderId and testcaseId and stepId)")
+    @ApiOperation("Get a Testcase Step by its key (testFolderId and testcaseId and stepId)")
     @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class)
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)

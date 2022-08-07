@@ -63,7 +63,7 @@ public class UserController {
     private final UserMapperV001 userMapper;
     private final IUserService userService;
 
-    @ApiOperation("Get a user by login name")
+    @ApiOperation("Get a user by its login name")
     @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
