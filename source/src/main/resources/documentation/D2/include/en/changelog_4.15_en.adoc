@@ -16,6 +16,7 @@
 * [ENGINE] Add the possibility to define an offset for Sikuli testing #1877
 * [ENGINE] Allow to configure typeDelay when using Sikuli keyPress (from parameter or at action level).
 * [ENGINE] Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require version 1.7 of cerberus-extension-sikuli
+* [ENGINE] Added 4 new controls: verifyStringArrayContains, verifyNumericArrayContains, verifyElementTextArrayContains, verifyElementNumericArrayContains
 * [UX] You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
 * [UX] The maximum number of characters for a campaign name has been increased from 45 to 200. #2373
 * [UX] Services can be renamed (corresponding callService actions will be updated with the new reference) #2042
