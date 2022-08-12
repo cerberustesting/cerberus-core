@@ -120,6 +120,9 @@ public class TestCaseStepAction {
     public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
+    public static final String ACTION_CLEANROBOTFILE = "cleanRobotFile";
+    public static final String ACTION_UPLOADROBOTFILE = "uploadRobotFile";
+    public static final String ACTION_GETROBOTFILE = "getRobotFile";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_SETNETWORKTRAFFICCONTENT = "setNetworkTrafficContent";
     public static final String ACTION_INDEXNETWORKTRAFFIC = "indexNetworkTraffic";

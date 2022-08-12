@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.executor;
+package org.cerberus.service.robotproxy;
 
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageEvent;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
  *
  * @author vertigo17
  */
-public interface IExecutorService {
+public interface IRobotProxyService {
 
     /**
      *

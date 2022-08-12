@@ -80,12 +80,11 @@ import org.cerberus.enums.Video;
 import org.cerberus.event.IEventService;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.robotproviders.IBrowserstackService;
 import org.cerberus.service.robotproviders.IKobitonService;
 import org.cerberus.service.robotproviders.ILambdaTestService;
-import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
@@ -104,6 +103,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.cerberus.service.xray.IXRayService;
+import org.cerberus.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -150,7 +150,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private IKobitonService kobitonService;
     private ILambdaTestService lambdaTestService;
     private IKafkaService kafkaService;
-    private IExecutorService executorService;
+    private IRobotProxyService executorService;
     private IEventService eventService;
     private IXRayService xRayService;
 

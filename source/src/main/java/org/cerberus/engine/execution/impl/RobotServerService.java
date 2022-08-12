@@ -44,12 +44,11 @@ import org.cerberus.engine.execution.IRobotServerService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.robotproviders.ILambdaTestService;
-import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONArray;
@@ -84,6 +83,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import org.cerberus.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -114,7 +114,7 @@ public class RobotServerService implements IRobotServerService {
     @Autowired
     private ILambdaTestService lambdaTestService;
     @Autowired
-    private IExecutorService executorService;
+    private IRobotProxyService executorService;
 
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;

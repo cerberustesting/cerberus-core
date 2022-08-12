@@ -34,7 +34,6 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appservice.IServiceService;
-import org.cerberus.service.file.IFileService;
 import org.cerberus.service.ftp.IFtpService;
 import org.cerberus.service.kafka.IKafkaService;
 import org.cerberus.service.rest.IRestService;
@@ -47,6 +46,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.service.csvfile.ICsvFileService;
 
 /**
  * @author bcivel
@@ -58,7 +58,7 @@ public class ServiceService implements IServiceService {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ServiceService.class);
 
     @Autowired
-    IFileService fileService;
+    ICsvFileService fileService;
     @Autowired
     private IParameterService parameterService;
     @Autowired

@@ -293,11 +293,13 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public String guessContentType(AppService service, String defaultValue) {
 
+        // If service is null, Type is not defined.
         if (service == null || StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
             // Service is null so we don't know the format.
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
 
+        // We guess type from Header first.
         for (AppServiceHeader object : service.getResponseHeaderList()) {
             if ((object != null) && (object.getKey().equalsIgnoreCase("Content-Type"))) {
                 if (object.getValue().contains("application/json")) {
@@ -310,12 +312,13 @@ public class AppServiceService implements IAppServiceService {
             }
         }
 
-        if (XmlUtil.isXmlWellFormed(service.getResponseHTTPBody())) {
-            LOG.debug("XML format guessed from successful parsing.");
-            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-        } else if (JSONUtil.isJSONValid(service.getResponseHTTPBody())) {
+        // We guess type from the content.
+        if (JSONUtil.isJSONValid(service.getResponseHTTPBody())) {
             LOG.debug("JSON format guessed from successful parsing.");
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        } else if (XmlUtil.isXmlWellFormed(service.getResponseHTTPBody())) {
+            LOG.debug("XML format guessed from successful parsing.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
         }
 
         // Header did not define the format and could not guess from file content.
@@ -323,6 +326,23 @@ public class AppServiceService implements IAppServiceService {
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
         return defaultValue;
+    }
+
+    @Override
+    public String guessContentType(String content) {
+        if (StringUtil.isNullOrEmpty(content)) {
+            // Service is null so we don't know the format.
+            return null;
+        }
+        
+        if (JSONUtil.isJSONValid(content)) {
+            LOG.debug("JSON format guessed from successful parsing.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        } else if (XmlUtil.isXmlWellFormed(content)) {
+            LOG.debug("XML format guessed from successful parsing.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+        }
+        return null;
     }
 
     @Override

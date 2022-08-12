@@ -6160,3 +6160,13 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
     ('CONTROL', 'verifyElementNumericArrayContains', 4920, 'Verify if a specific numeric is in the array retrieved using JSONPath or Xpath','verifyElementNumericArrayContains'),
     ('CONTROL', 'verifyStringArrayContains', 1450, 'Verify if a specific string is in the array','verifyStringArrayContains'),
     ('CONTROL', 'verifyNumericArrayContains', 1800, 'Verify if a specific numeric is in the array','verifyNumericArrayContains');
+
+-- 1737
+UPDATE `invariant` SET `sort` = '4310' WHERE (`idname` = 'CONTROL') and (`value` = 'verifyElementTextArrayContains');
+
+-- 1738
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES 
+    ('ACTION', 'cleanRobotFile', '24300', 'Clean a folder or file pattern', 'Remove robot files', 'Path/Pattern to clean', '', ''),
+    ('ACTION', 'uploadRobotFile', '24320', 'Upload a file to the robot', 'Upload a robot file', 'Filename', 'Content (base64 format)', 'Option'),
+    ('ACTION', 'getRobotFile', '24340', 'Get a list of files from the robot', 'Get robot files', 'Path/Pattern to retrieved', 'Nb of files', 'Option');
+

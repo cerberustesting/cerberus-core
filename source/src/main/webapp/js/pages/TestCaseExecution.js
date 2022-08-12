@@ -82,9 +82,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             loadExecutionInformation(executionId, steps, sockets);
 
             $('[data-toggle="popover"]').popover({
-                    'placement': 'auto',
-                    'container': 'body'
-                }
+                'placement': 'auto',
+                'container': 'body'
+            }
             );
         }
     });
@@ -691,10 +691,10 @@ function drawChart_HttpStatus(target) {
         type: 'pie',
         data: {
             datasets: [{
-                data: [],
-                backgroundColor: [],
-                label: 'Hits'
-            }],
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Hits'
+                }],
             labels: []
         },
         options: {
@@ -790,10 +790,10 @@ function drawChart_SizePerType(target) {
         type: 'pie',
         data: {
             datasets: [{
-                data: [],
-                backgroundColor: [],
-                label: 'Size'
-            }],
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Size'
+                }],
             labels: []
         },
         options: {
@@ -1130,31 +1130,31 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         },
         scales: {
             xAxes: [{
-                label: "Duration",
-                ticks: {
-                    beginAtZero: true,
-                    fontFamily: "'Open Sans Bold', sans-serif",
-                    fontSize: 11
-                },
-                scaleLabel: {
-                    display: false
-                },
-                gridLines: {},
-                stacked: true
-            }],
+                    label: "Duration",
+                    ticks: {
+                        beginAtZero: true,
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    scaleLabel: {
+                        display: false
+                    },
+                    gridLines: {},
+                    stacked: true
+                }],
             yAxes: [{
-                gridLines: {
-                    display: false,
-                    color: "#fff",
-                    zeroLineColor: "#fff",
-                    zeroLineWidth: 0
-                },
-                ticks: {
-                    fontFamily: "'Open Sans Bold', sans-serif",
-                    fontSize: 11
-                },
-                stacked: true
-            }]
+                    gridLines: {
+                        display: false,
+                        color: "#fff",
+                        zeroLineColor: "#fff",
+                        zeroLineWidth: 0
+                    },
+                    ticks: {
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    stacked: true
+                }]
         },
         legend: {
             display: true
@@ -1171,12 +1171,12 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
             labels: [],
 
             datasets: [{
-                label: "Start",
-                data: [],
-                backgroundColor: "rgba(63,103,126,0)",
-                hoverBackgroundColor: "rgba(50,90,100,0)"
+                    label: "Start",
+                    data: [],
+                    backgroundColor: "rgba(63,103,126,0)",
+                    hoverBackgroundColor: "rgba(50,90,100,0)"
 
-            },
+                },
                 {
                     label: "Duration",
                     data: [],
@@ -1283,27 +1283,27 @@ function createVideo(videos) {
         menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
-            "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
+                "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
 
         videoIndex++;
     });
 
     $("#testCaseDetails > div").append(
-        "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
-        "   <div class=\"row\">" +
-        "       <div class=\"col-md-2\">\n" +
-        "           <div class=\"list-group step-list side-item\">" +
-        menuEntry +
-        "           </div>\n" +
-        "       </div>" +
-        "       <div class=\"col-md-10\">" +
-        "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
-        videoEntry +
-        "           Your browser does not support the video tag." +
-        "           </video>\n" +
-        "       </div>" +
-        "   </div>" +
-        "</div>");
+            "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
+            "   <div class=\"row\">" +
+            "       <div class=\"col-md-2\">\n" +
+            "           <div class=\"list-group step-list side-item\">" +
+            menuEntry +
+            "           </div>\n" +
+            "       </div>" +
+            "       <div class=\"col-md-10\">" +
+            "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
+            videoEntry +
+            "           Your browser does not support the video tag." +
+            "           </video>\n" +
+            "       </div>" +
+            "   </div>" +
+            "</div>");
 
 
     var myvid = $('#videoTest').get(0);
@@ -1383,6 +1383,18 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
+
+    var favicon = new Favico({
+        animation: 'slide',
+        bgColor:getExeStatusRowColor(data.controlStatus)
+//        textColor: "green"
+    });
+    favicon.badge(data.controlStatus);
+//    if (data.controlStatus === "OK") {
+//        // Change FaviIcon to notify the testcase is finished
+//        var fi = document.getElementById("favicon");
+//        fi.setAttribute("href", "logo-REST.png");
+//    }
     if (data.controlStatus !== "PE") {
         configPanel.find("#duration").text("(" + (data.end - data.start) / 1000 + " s)");
     }
@@ -1636,7 +1648,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
-            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+                bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -3602,7 +3614,7 @@ function addFileLink(fileList, container, manual, idStep) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
@@ -3619,32 +3631,32 @@ function addFileLink(fileList, container, manual, idStep) {
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             }
             container.append(linkBoxtxt);
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {

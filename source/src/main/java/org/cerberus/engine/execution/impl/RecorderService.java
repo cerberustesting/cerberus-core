@@ -33,7 +33,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.datalib.IDataLibService;
-import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;

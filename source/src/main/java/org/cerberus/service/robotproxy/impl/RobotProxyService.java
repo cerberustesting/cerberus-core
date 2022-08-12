@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.executor.impl;
+package org.cerberus.service.robotproxy.impl;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -31,7 +31,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
@@ -40,13 +39,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.service.robotproxy.IRobotProxyService;
 
 /**
  *
  * @author vertigo17
  */
 @Service
-public class ExecutorService implements IExecutorService {
+public class RobotProxyService implements IRobotProxyService {
 
     @Autowired
     private IParameterService parameterService;
@@ -55,7 +55,7 @@ public class ExecutorService implements IExecutorService {
     @Autowired
     private IHarService harService;
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutorService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RobotProxyService.class);
 
     @Override
     public void startRemoteProxy(TestCaseExecution tce) {

@@ -38,7 +38,7 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} List with the given Criteria
      *
-     * @param name  the name of the service
+     * @param name the name of the service
      * @param limit the number of {@link AppService} to get
      * @return
      */
@@ -50,11 +50,11 @@ public interface IAppServiceService {
      * Get the {@link AppService} List of the given {@link System} with the
      * given Criteria
      *
-     * @param startPosition    the start index to look for
-     * @param length           the number of {@link AppService} to get
-     * @param columnName       the Column name to sort
+     * @param startPosition the start index to look for
+     * @param length the number of {@link AppService} to get
+     * @param columnName the Column name to sort
      * @param sort
-     * @param searchParameter  the string to search in the {@link AppService}
+     * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
      * @param systems
      * @return
@@ -72,14 +72,15 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} of the given key
      *
-     * @param key the key of the {@link AppService} to getY will load detail only with Active data on header
-     *            and content. null wil load all data.
+     * @param key the key of the {@link AppService} to getY will load detail
+     * only with Active data on header and content. null wil load all data.
      * @return
      */
     AnswerItem<AppService> readByKeyWithDependency(String key);
 
     /**
-     * Get the {@link AppService} of the given key with filtered by active contents and headers
+     * Get the {@link AppService} of the given key with filtered by active
+     * contents and headers
      *
      * @param key
      * @param activeDetail
@@ -90,8 +91,8 @@ public interface IAppServiceService {
     /**
      * Get the distinctValue of the column
      *
-     * @param columnName       the Column name to get
-     * @param searchParameter  the string to search in the {@link AppService}
+     * @param columnName the Column name to get
+     * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -111,7 +112,7 @@ public interface IAppServiceService {
 
     /**
      * @param service
-     * @param object  the {@link AppService} to Update
+     * @param object the {@link AppService} to Update
      * @return {@link AnswerItem}
      */
     Answer update(String service, AppService object);
@@ -157,6 +158,13 @@ public interface IAppServiceService {
      * @return
      */
     String guessContentType(AppService service, String defaultValue);
+
+    /**
+     *
+     * @param content
+     * @return
+     */
+    String guessContentType(String content);
 
     /**
      * This method convert the list of active content service (key/value) to

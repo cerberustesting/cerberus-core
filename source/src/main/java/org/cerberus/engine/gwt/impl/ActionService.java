@@ -54,12 +54,12 @@ import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.service.consolelog.IConsolelogService;
-import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.service.rest.IRestService;
-import org.cerberus.service.sikuli.ISikuliService;
-import org.cerberus.service.sikuli.impl.SikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
+import org.cerberus.service.robotextension.IFilemanagementService;
+import org.cerberus.service.robotextension.impl.SikuliService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
@@ -75,10 +75,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
+import org.apache.commons.codec.binary.Base64;
+import org.cerberus.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -105,6 +108,8 @@ public class ActionService implements IActionService {
     @Autowired
     private ISikuliService sikuliService;
     @Autowired
+    private IFilemanagementService filemanagementService;
+    @Autowired
     private IIdentifierService identifierService;
     @Autowired
     @Qualifier("AndroidAppiumService")
@@ -128,7 +133,7 @@ public class ActionService implements IActionService {
     @Autowired
     private IConsolelogService consolelogService;
     @Autowired
-    private IExecutorService executorService;
+    private IRobotProxyService executorService;
     @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
@@ -144,7 +149,7 @@ public class ActionService implements IActionService {
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution actionExecution) {
         MessageEvent res;
-        TestCaseExecution tCExecution = actionExecution.getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution execution = actionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
@@ -152,10 +157,10 @@ public class ActionService implements IActionService {
          */
         try {
             // When starting a new action, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getDescription(),
-                    tCExecution, actionExecution, false);
+                    execution, actionExecution, false);
             actionExecution.setDescription(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -180,10 +185,10 @@ public class ActionService implements IActionService {
         try {
 
             // When starting a new action, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(),
-                    tCExecution, actionExecution, false);
+                    execution, actionExecution, false);
             actionExecution.setValue1(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -205,10 +210,10 @@ public class ActionService implements IActionService {
         try {
 
             // When starting a new action, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(),
-                    tCExecution, actionExecution, false);
+                    execution, actionExecution, false);
             actionExecution.setValue2(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -239,14 +244,14 @@ public class ActionService implements IActionService {
         LOG.debug("Doing Action : " + actionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2 + " and value3 : " + value3);
 
         // When starting a new action, we reset the property list that was already calculated.
-        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+        execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         // Define Timeout
         HashMap<String, String> optionsMap = robotServerService.getMapFromOptions(actionExecution.getOptions());
         if (optionsMap.containsKey(RobotServerService.OPTIONS_TIMEOUT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX).isEmpty()) {
             Optional<Integer> timeoutOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX)));
             if (timeoutOptionValue.isPresent()) {
-                robotServerService.setOptionsTimeout(tCExecution.getSession(), timeoutOptionValue.get());
+                robotServerService.setOptionsTimeout(execution.getSession(), timeoutOptionValue.get());
             } else {
                 //TODO return a message alerting about the failed cast
                 LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
@@ -255,7 +260,7 @@ public class ActionService implements IActionService {
         if (optionsMap.containsKey(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX).isEmpty()) {
             Optional<Integer> highlightOptionValue = Optional.ofNullable(Ints.tryParse(optionsMap.get(RobotServerService.OPTIONS_HIGHLIGHTELEMENT_SYNTAX)));
             if (highlightOptionValue.isPresent()) {
-                robotServerService.setOptionsHighlightElement(tCExecution.getSession(), highlightOptionValue.get());
+                robotServerService.setOptionsHighlightElement(execution.getSession(), highlightOptionValue.get());
             } else {
                 //TODO return a message alerting about the failed cast
                 LOG.debug("failed to parse option value : {}", optionsMap.get(RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
@@ -263,11 +268,11 @@ public class ActionService implements IActionService {
         }
         if (optionsMap.containsKey(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX).isEmpty()) {
             String minSimilarity = optionsMap.get(RobotServerService.OPTIONS_MINSIMILARITY_SYNTAX);
-            robotServerService.setOptionsMinSimilarity(tCExecution.getSession(), minSimilarity);
+            robotServerService.setOptionsMinSimilarity(execution.getSession(), minSimilarity);
         }
         if (optionsMap.containsKey(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX) && !optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX).isEmpty()) {
             String typeDelay = optionsMap.get(RobotServerService.OPTIONS_TYPEDELAY_SYNTAX);
-            robotServerService.setOptionsTypeDelay(tCExecution.getSession(), typeDelay);
+            robotServerService.setOptionsTypeDelay(execution.getSession(), typeDelay);
         }
 
         // Record picture= files at action level.
@@ -286,137 +291,146 @@ public class ActionService implements IActionService {
         try {
             switch (actionExecution.getAction()) {
                 case TestCaseStepAction.ACTION_CLICK:
-                    res = this.doActionClick(tCExecution, value1, value2);
+                    res = this.doActionClick(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_LONGPRESS:
-                    res = this.doActionLongPress(tCExecution, value1, value2);
+                    res = this.doActionLongPress(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
-                    res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
+                    res = this.doActionMouseLeftButtonPress(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
-                    res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
+                    res = this.doActionMouseLeftButtonRelease(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSEMOVE:
-                    res = this.doActionMouseMove(tCExecution, value1, value2);
+                    res = this.doActionMouseMove(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_DOUBLECLICK:
-                    res = this.doActionDoubleClick(tCExecution, value1, value2);
+                    res = this.doActionDoubleClick(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_RIGHTCLICK:
-                    res = this.doActionRightClick(tCExecution, value1, value2);
+                    res = this.doActionRightClick(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSEOVER:
-                    res = this.doActionMouseOver(tCExecution, value1, value2);
+                    res = this.doActionMouseOver(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
-                    res = this.doActionFocusToIframe(tCExecution, value1, value2);
+                    res = this.doActionFocusToIframe(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME:
-                    res = this.doActionFocusDefaultIframe(tCExecution);
+                    res = this.doActionFocusDefaultIframe(execution);
                     break;
                 case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
-                    res = this.doActionSwitchToWindow(tCExecution, value1, value2);
+                    res = this.doActionSwitchToWindow(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MANAGEDIALOG:
-                    res = this.doActionManageDialog(tCExecution, value1, value2);
+                    res = this.doActionManageDialog(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MANAGEDIALOGKEYPRESS:
-                    res = this.doActionManageDialogKeyPress(tCExecution, value1);
+                    res = this.doActionManageDialogKeyPress(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_OPENURLWITHBASE:
-                    res = this.doActionOpenURL(tCExecution, value1, value2, true);
+                    res = this.doActionOpenURL(execution, value1, value2, true);
                     break;
                 case TestCaseStepAction.ACTION_OPENURLLOGIN:
                     actionExecution.setValue1(actionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
-                    res = this.doActionUrlLogin(tCExecution);
+                    res = this.doActionUrlLogin(execution);
                     break;
                 case TestCaseStepAction.ACTION_OPENURL:
-                    res = this.doActionOpenURL(tCExecution, value1, value2, false);
+                    res = this.doActionOpenURL(execution, value1, value2, false);
                     break;
                 case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
-                    res = this.doActionRefreshCurrentPage(tCExecution);
+                    res = this.doActionRefreshCurrentPage(execution);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTEJS:
-                    res = this.doActionExecuteJS(tCExecution, value1, value2);
+                    res = this.doActionExecuteJS(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTECOMMAND:
-                    res = this.doActionExecuteCommand(tCExecution, value1, value2);
+                    res = this.doActionExecuteCommand(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
-                    res = this.doActionExecuteCerberusCommand(tCExecution, value1);
+                    res = this.doActionExecuteCerberusCommand(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_OPENAPP:
-                    res = this.doActionOpenApp(tCExecution, value1, value2);
+                    res = this.doActionOpenApp(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CLOSEAPP:
-                    res = this.doActionCloseApp(tCExecution, value1);
+                    res = this.doActionCloseApp(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
-                    res = this.doActionDragAndDrop(tCExecution, value1, value2);
+                    res = this.doActionDragAndDrop(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SELECT:
-                    res = this.doActionSelect(tCExecution, value1, value2);
+                    res = this.doActionSelect(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_KEYPRESS:
-                    res = this.doActionKeyPress(tCExecution, value1, value2, value3);
+                    res = this.doActionKeyPress(execution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_TYPE:
-                    res = this.doActionType(tCExecution, value1, value2, propertyName);
+                    res = this.doActionType(execution, value1, value2, propertyName);
                     break;
                 case TestCaseStepAction.ACTION_CLEARFIELD:
-                    res = this.doActionClearField(tCExecution, value1);
+                    res = this.doActionClearField(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_HIDEKEYBOARD:
-                    res = this.doActionHideKeyboard(tCExecution);
+                    res = this.doActionHideKeyboard(execution);
                     break;
                 case TestCaseStepAction.ACTION_SWIPE:
-                    res = this.doActionSwipe(tCExecution, value1, value2);
+                    res = this.doActionSwipe(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
-                    res = this.doActionScrollTo(tCExecution, value1, value2);
+                    res = this.doActionScrollTo(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_INSTALLAPP:
-                    res = this.doActionInstallApp(tCExecution, value1);
+                    res = this.doActionInstallApp(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_REMOVEAPP:
-                    res = this.doActionRemoveApp(tCExecution, value1);
+                    res = this.doActionRemoveApp(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_WAIT:
-                    res = this.doActionWait(tCExecution, value1, value2);
+                    res = this.doActionWait(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_WAITVANISH:
-                    res = this.doActionWaitVanish(tCExecution, value1);
+                    res = this.doActionWaitVanish(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
-                    res = this.doActionWaitNetworkTrafficIdle(tCExecution);
+                    res = this.doActionWaitNetworkTrafficIdle(execution);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
                     res = this.doActionCallService(actionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
-                    res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
+                    res = this.doActionExecuteSQLUpdate(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
-                    res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
+                    res = this.doActionExecuteSQLStoredProcedure(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
                     res = this.doActionCalculateProperty(actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
-                    res = this.doActionSetNetworkTrafficContent(tCExecution, actionExecution, value1, value2);
+                    res = this.doActionSetNetworkTrafficContent(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
-                    res = this.doActionIndexNetworkTraffic(tCExecution, actionExecution, value1);
+                    res = this.doActionIndexNetworkTraffic(execution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
-                    res = this.doActionSetConsoleContent(tCExecution, actionExecution, value1);
+                    res = this.doActionSetConsoleContent(execution, actionExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
-                    res = this.doActionSetServiceCallContent(tCExecution, actionExecution);
+                    res = this.doActionSetServiceCallContent(execution, actionExecution);
                     break;
                 case TestCaseStepAction.ACTION_SETCONTENT:
-                    res = this.doActionSetContent(tCExecution, actionExecution, value1);
+                    res = this.doActionSetContent(execution, actionExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_CLEANROBOTFILE:
+                    res = this.doActionCleanRobotFile(execution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
+                    res = this.doActionUploadRobotFile(execution, value1, value2, value3);
+                    break;
+                case TestCaseStepAction.ACTION_GETROBOTFILE:
+                    res = this.doActionGetRobotFile(execution, actionExecution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -425,7 +439,7 @@ public class ActionService implements IActionService {
                  * DEPRECATED ACTIONS FROM HERE.
                  */
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
-                    res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
+                    res = this.doActionMouseOverAndWait(execution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
                     logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
                     LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
@@ -449,7 +463,7 @@ public class ActionService implements IActionService {
         LOG.debug("Result of the action : " + res.getCodeString() + " " + res.getDescription());
 
         // Reset Timeout to default
-        robotServerService.setOptionsToDefault(tCExecution.getSession());
+        robotServerService.setOptionsToDefault(execution.getSession());
 
         /**
          * In case 1/ the action is flagged as not fatal with a specific return
@@ -485,42 +499,212 @@ public class ActionService implements IActionService {
         return actionExecution;
     }
 
-    private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
+    private MessageEvent doActionCleanRobotFile(TestCaseExecution execution, String filename) {
         MessageEvent message;
 
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.installApp(tCExecution.getSession(), appPath);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.installApp(tCExecution.getSession(), appPath);
+
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                return filemanagementService.doFilemanagementActionCleanRobotFile(execution.getSession(), filename);
+
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CLEANROBOTFILE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
+
         } catch (Exception e) {
+
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running " + TestCaseStepAction.ACTION_CLEANROBOTFILE + "  :" + messageString, e);
+            return message;
+
+        }
+    }
+
+    private MessageEvent doActionGetRobotFile(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, String filename, String nbFiles, String option) {
+        MessageEvent message;
+
+        try {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                AnswerItem<JSONObject> ans = new AnswerItem<>();
+
+                ans = filemanagementService.doFilemanagementActionGetRobotFile(execution.getSession(), filename, Integer.valueOf(nbFiles), option);
+
+                JSONObject contentJSON = ans.getItem();
+                if (contentJSON == null) {
+                    return ans.getResultMessage();
+                }
+                LOG.debug(contentJSON.toString(1));
+
+                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", null, "", null, "");
+                JSONObject contentJSONnew = new JSONObject();
+
+                // We copy the header values for the service answered.
+                if (contentJSON.has("totalFilesAvailable")) {
+                    contentJSONnew.put("totalFilesAvailable", contentJSON.getString("totalFilesAvailable"));
+                }
+                if (contentJSON.has("totalFilesDownloaded")) {
+                    contentJSONnew.put("totalFilesDownloaded", contentJSON.getString("totalFilesDownloaded"));
+                }
+
+                // We copy the file contents decoding content when it is in a compatible format.
+                JSONArray newFiles = new JSONArray();
+                JSONArray files = new JSONArray();
+                if (contentJSON.has("files")) {
+
+                    files = contentJSON.getJSONArray("files");
+                    for (int i = 0; i < files.length(); i++) {
+                        JSONObject file = new JSONObject();
+                        file.put("filename", files.getJSONObject(i).getString("filename"));
+                        file.put("path", files.getJSONObject(i).getString("path"));
+                        file.put("size", files.getJSONObject(i).getString("size"));
+                        file.put("lastModified", files.getJSONObject(i).getString("lastModified"));
+                        // Getting the Base64 content in order to convert it back and guess its content.
+                        String fileContentBase64 = files.getJSONObject(i).getString("contentBase64");
+                        byte[] filecontent = Base64.decodeBase64(fileContentBase64);
+                        String sFileContent = new String(filecontent, StandardCharsets.UTF_8);
+                        String contentType = appServiceService.guessContentType(sFileContent);
+                        if (null == contentType) {
+                            file.put("content-type", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
+                            file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
+                        } else {
+                            switch (contentType) {
+                                case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                                    file.put("content-type", contentType);
+                                    if (sFileContent.startsWith("[")) {
+                                        JSONArray contentFileJSON = new JSONArray(sFileContent);
+                                        file.put("content", contentFileJSON);
+                                    } else {
+                                        JSONObject contentFileJSON = new JSONObject(sFileContent);
+                                        file.put("content", contentFileJSON);
+                                    }
+                                    break;
+                                case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                                    file.put("content-type", contentType);
+                                    file.put("content", sFileContent);
+                                    break;
+                                default:
+                                    file.put("content-type", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
+                                    file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
+                                    break;
+                            }
+                        }
+                        newFiles.put(file);
+                    }
+                }
+                contentJSONnew.put("files", newFiles);
+
+                String content = contentJSONnew.toString();
+                appSrv.setResponseHTTPBody(content);
+                appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+                appSrv.setRecordTraceFile(false);
+
+                execution.setLastServiceCalled(appSrv);
+
+                /**
+                 * Record the Request and Response in file system.
+                 */
+                actionExecution.addFileList(recorderService.recordContent(execution, actionExecution, 0, null, content, appSrv.getResponseHTTPBodyContentType()));
+
+                // Forcing the apptype to SRV in order to allow all controls to plug to the json context of the har.
+                execution.setAppTypeEngine(Application.TYPE_SRV);
+
+                return ans.getResultMessage();
+
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_GETROBOTFILE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
+            return message;
+
+        } catch (Exception e) {
+
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running " + TestCaseStepAction.ACTION_GETROBOTFILE + " :" + messageString, e);
+            return message;
+
+        }
+    }
+
+    private MessageEvent doActionUploadRobotFile(TestCaseExecution execution, String filename, String contentBase64, String option) {
+        MessageEvent message;
+
+        try {
+
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                return filemanagementService.doFilemanagementActionUploadRobotFile(execution.getSession(), filename, contentBase64, option);
+
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "cleanRobotFile"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
+            return message;
+
+        } catch (Exception e) {
+
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
             LOG.debug("Exception Running install app  :" + messageString, e);
             return message;
+
         }
     }
 
-    private MessageEvent doActionRemoveApp(TestCaseExecution tCExecution, String appPackage) {
+    private MessageEvent doActionInstallApp(TestCaseExecution execution, String appPath) {
         MessageEvent message;
 
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.removeApp(tCExecution.getSession(), appPackage);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.removeApp(tCExecution.getSession(), appPackage);
+
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.installApp(execution.getSession(), appPath);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.installApp(execution.getSession(), appPath);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
+            return message;
+
+        } catch (Exception e) {
+
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running install app  :" + messageString, e);
+            return message;
+
+        }
+    }
+
+    private MessageEvent doActionRemoveApp(TestCaseExecution execution, String appPackage) {
+        MessageEvent message;
+
+        try {
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.removeApp(execution.getSession(), appPackage);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.removeApp(execution.getSession(), appPackage);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);

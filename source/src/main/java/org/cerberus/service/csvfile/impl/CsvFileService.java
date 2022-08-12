@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.file.impl;
+package org.cerberus.service.csvfile.impl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -33,19 +33,19 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.file.IFileService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.stereotype.Service;
+import org.cerberus.service.csvfile.ICsvFileService;
 
 /**
  *
  * @author bcivel
  */
 @Service
-public class FileService implements IFileService {
+public class CsvFileService implements ICsvFileService {
 
-    private static final Logger LOG = LogManager.getLogger(FileService.class);
+    private static final Logger LOG = LogManager.getLogger(CsvFileService.class);
 
     @Override
     public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution) {

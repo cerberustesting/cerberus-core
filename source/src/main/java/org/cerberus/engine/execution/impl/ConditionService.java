@@ -31,7 +31,7 @@ import org.cerberus.engine.execution.enums.ConditionOperatorEnum;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.json.IJsonService;
-import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;

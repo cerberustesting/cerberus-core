@@ -46,7 +46,6 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.datalib.IDataLibService;
-import org.cerberus.service.file.IFileService;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
@@ -63,6 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.cerberus.service.csvfile.ICsvFileService;
 
 /**
  *
@@ -76,7 +76,7 @@ public class DataLibService implements IDataLibService {
     private static final Logger LOG = LogManager.getLogger(DataLibService.class);
 
     @Autowired
-    private IFileService fileService;
+    private ICsvFileService fileService;
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired

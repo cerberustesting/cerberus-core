@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.sikuli.impl;
+package org.cerberus.service.robotextension.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -34,7 +34,6 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
-import java.util.logging.Level;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -43,13 +42,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.robotextension.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -362,7 +360,7 @@ public class SikuliService implements ISikuliService {
             os = new PrintStream(connection.getOutputStream());
             LOG.debug("Sending JSON : " + postParameters.toString());
             os.println(postParameters.toString());
-            os.println("|ENDS|");
+//            os.println("|ENDS|");
 
             if (connection == null) {
                 LOG.warn("No response to the request !!");
@@ -371,7 +369,7 @@ public class SikuliService implements ISikuliService {
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_NOT_REACHABLE);
             }
 
             in = new BufferedReader(
@@ -379,11 +377,11 @@ public class SikuliService implements ISikuliService {
             String inputLine = "";
 
             /**
-             * Wait here until receiving |ENDR| String
+             * Wait here until all data received
              */
             while (inputLine != null) {
                 inputLine = in.readLine();
-                if (inputLine != null && !"|ENDR|".equals(inputLine)) {
+                if (inputLine != null) {
                     response.append(inputLine);
                 } else {
                     break;
@@ -403,6 +401,7 @@ public class SikuliService implements ISikuliService {
                         msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     } else if ("KO".equals(objReceived.getString("status"))) {
                         msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
+                        msg.resolveDescription("DETAIL", "");
                     } else {
                         if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
@@ -421,15 +420,15 @@ public class SikuliService implements ISikuliService {
             in.close();
         } catch (MalformedURLException ex) {
             LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (FileNotFoundException ex) {
             LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (IOException ex) {
             LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (JSONException ex) {
             LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
@@ -439,7 +438,7 @@ public class SikuliService implements ISikuliService {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (Exception ex) {
             LOG.warn(ex, ex);
-            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_NOT_REACHABLE);
             msg.resolveDescription("URL", urlToConnect);
         } finally {
             if (os != null) {

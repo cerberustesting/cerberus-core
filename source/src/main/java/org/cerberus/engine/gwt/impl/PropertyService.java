@@ -49,7 +49,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appium.impl.AndroidAppiumService;
 import org.cerberus.service.appium.impl.IOSAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
-import org.cerberus.service.executor.IExecutorService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.service.har.IHarService;
 import org.cerberus.service.json.IJsonService;
@@ -75,6 +74,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import org.cerberus.service.robotproxy.IRobotProxyService;
 
 /**
  * {Insert class description here}
@@ -128,7 +128,7 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private IOSAppiumService iosAppiumService;
     @Autowired
-    private IExecutorService executorService;
+    private IRobotProxyService executorService;
     @Autowired
     private IHarService harService;
 
