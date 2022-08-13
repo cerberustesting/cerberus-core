@@ -803,7 +803,7 @@
         <profile>
             <id>delivery-deploy</id>
             <properties>
-                <env>qa-demo</env>
+                <env>qa</env>
                 <cerberus.delivery.host>vm.cerberus-testing.org</cerberus.delivery.host>
                 <cerberus.delivery.upload.path>/opt/delivery</cerberus.delivery.upload.path>
                 <cerberus.delivery.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.delivery.tomcat.deploy>
@@ -824,7 +824,7 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to QA server..." />
+                                        <echo message="Uploading artifact to Cerberus Delivery server..." />
                                         <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}" password="${cerberus.delivery.password}" trust="yes" />
                                         <!--
                                             Deploy artifact by:
@@ -832,7 +832,7 @@
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying..." />
+                                        <echo message="Deploying to QA..." />
                                         <sshexec host="${cerberus.delivery.host}" username="${cerberus.delivery.username}" password="${cerberus.delivery.password}" trust="yes" command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
                                     </target>
                                 </configuration>
