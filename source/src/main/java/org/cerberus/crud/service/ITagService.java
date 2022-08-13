@@ -143,11 +143,37 @@ public interface ITagService {
     Answer update(String tag, Tag object);
 
     /**
+     * When the end of the tag execution occurs, that method calculate the ci
+     * score result and trigger the corresponding event
      *
      * @param tag
      * @return
      */
     Answer updateEndOfQueueData(String tag);
+
+    /**
+     * Pause all non executed executions of the current tag.
+     *
+     * @param tag
+     * @return
+     */
+    Answer pauseExecution(String tag);
+
+    /**
+     * Resume all paused executions of the current tag.
+     *
+     * @param tag
+     * @return
+     */
+    Answer resumeExecution(String tag);
+
+    /**
+     * Cancel all executions of the current tag.
+     *
+     * @param tag
+     * @return
+     */
+    Answer cancelExecution(String tag);
 
     /**
      *
@@ -166,6 +192,8 @@ public interface ITagService {
     Answer updateComment(String tag, Tag object);
 
     /**
+     * That method update the XRay reference to the real data coming from JIRA
+     * Xray.
      *
      * @param tag
      * @param object
@@ -174,10 +202,12 @@ public interface ITagService {
     Answer updateXRayTestExecution(String tag, Tag object);
 
     /**
+     * That method update the XRay reference to PENDING.
      *
      * @param tag
      * @param object
-     * @return
+     * @return 1 if the Update occurs and 0 in case the tag was already updated
+     * before.
      */
     int lockXRayTestExecution(String tag, Tag object);
 
@@ -244,7 +274,6 @@ public interface ITagService {
      * and no more executions are in the queue, <br>
      * we trigger : <br>
      * 1/ The update of the EndExeQueue of the tag <br>
-     * 2/ We notify the Distribution List with execution report status
      *
      * @param tag
      * @throws org.cerberus.exception.CerberusException
@@ -256,8 +285,8 @@ public interface ITagService {
      * ex : 10 Executions(s) - 5 KO - 2 FA - 3 NE<br>
      * All 0 control status are omitted.
      *
-     * @param taag
+     * @param tag
      * @return
      */
-    String formatResult(Tag taag);
+    String formatResult(Tag tag);
 }

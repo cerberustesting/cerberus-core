@@ -232,6 +232,24 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer pauseExecution(String tag) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public Answer resumeExecution(String tag) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public Answer cancelExecution(String tag) {
+        // TODO
+        return null;
+    }
+
+    @Override
     public Answer updateDescription(String tag, Tag object) {
         return tagDAO.updateDescription(tag, object);
     }
