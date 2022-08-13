@@ -28,7 +28,7 @@
     <version>4.15-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Cerberus Testing</name>
+    <name>Cerberus Core Master</name>
 
     <properties>
         <maven-release-plugin.version>2.5</maven-release-plugin.version>
