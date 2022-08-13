@@ -23,11 +23,11 @@
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.springframework.context.ApplicationContext" %>
 <%@page import="org.springframework.web.context.WebApplicationContext" %>
-<%@page import="org.cerberus.crud.entity.Invariant" %>
-<%@page import="org.cerberus.session.SessionCounter" %>
+<%@page import="org.cerberus.core.crud.entity.Invariant" %>
+<%@page import="org.cerberus.core.session.SessionCounter" %>
 <%@page import="java.util.List" %>
-<%@page import="org.cerberus.crud.service.IInvariantService" %>
-<%@page import="org.cerberus.database.IDatabaseVersioningService" %>
+<%@page import="org.cerberus.core.crud.service.IInvariantService" %>
+<%@page import="org.cerberus.core.database.IDatabaseVersioningService" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>

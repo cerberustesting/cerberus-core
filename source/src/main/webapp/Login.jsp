@@ -19,13 +19,13 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
-<%@page import="org.cerberus.crud.factory.impl.FactoryLogEvent"%>
-<%@page import="org.cerberus.crud.factory.IFactoryLogEvent"%>
-<%@page import="org.cerberus.crud.service.impl.LogEventService"%>
-<%@page import="org.cerberus.crud.service.ILogEventService"%>
-<%@page import="org.cerberus.version.Infos"%>
-<%@page import="org.cerberus.crud.service.IParameterService"%>
+<%@page import="org.cerberus.core.database.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.core.crud.factory.impl.FactoryLogEvent"%>
+<%@page import="org.cerberus.core.crud.factory.IFactoryLogEvent"%>
+<%@page import="org.cerberus.core.crud.service.impl.LogEventService"%>
+<%@page import="org.cerberus.core.crud.service.ILogEventService"%>
+<%@page import="org.cerberus.core.version.Infos"%>
+<%@page import="org.cerberus.core.crud.service.IParameterService"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 

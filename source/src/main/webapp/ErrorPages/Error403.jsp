@@ -26,7 +26,7 @@
 --%>
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
-<%@page import="org.cerberus.version.Infos"%>
+<%@page import="org.cerberus.core.version.Infos"%>
 <%!
     Date DatePageStart = new Date();
 

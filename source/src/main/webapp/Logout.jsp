@@ -21,7 +21,7 @@
 --%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.session.SessionCounter"%>
+<%@page import="org.cerberus.core.session.SessionCounter"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

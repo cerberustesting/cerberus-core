@@ -19,19 +19,19 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.cerberus.database.DocumentationDatabaseService"%>
+<%@page import="org.cerberus.core.database.DocumentationDatabaseService"%>
 <%@page import="org.apache.logging.log4j.LogManager"%>
 <%@page import="org.apache.logging.log4j.Logger"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
-<%@page import="org.cerberus.crud.factory.IFactoryMyversion"%>
-<%@page import="org.cerberus.crud.factory.impl.FactoryMyversion"%>
-<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
-<%@page import="org.cerberus.crud.entity.MyVersion"%>
-<%@page import="org.cerberus.crud.service.IMyVersionService"%>
-<%@page import="org.cerberus.crud.service.ILogEventService"%>
+<%@page import="org.cerberus.core.crud.factory.IFactoryMyversion"%>
+<%@page import="org.cerberus.core.crud.factory.impl.FactoryMyversion"%>
+<%@page import="org.cerberus.core.database.IDatabaseVersioningService"%>
+<%@page import="org.cerberus.core.crud.entity.MyVersion"%>
+<%@page import="org.cerberus.core.crud.service.IMyVersionService"%>
+<%@page import="org.cerberus.core.crud.service.ILogEventService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
