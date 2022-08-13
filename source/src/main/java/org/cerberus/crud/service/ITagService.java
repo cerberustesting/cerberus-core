@@ -143,7 +143,7 @@ public interface ITagService {
     Answer update(String tag, Tag object);
 
     /**
-     * When the end of the tag execution occurs, that method calculate the ci
+     * When the end of the tag execution occurs, that method calculate the CI
      * score result and trigger the corresponding event
      *
      * @param tag
