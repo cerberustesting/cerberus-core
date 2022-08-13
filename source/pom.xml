@@ -803,7 +803,7 @@
         <profile>
             <id>delivery-deploy</id>
             <properties>
-                <env>qa</env>
+                <env>qa-demo</env>
                 <cerberus.delivery.host>vm.cerberus-testing.org</cerberus.delivery.host>
                 <cerberus.delivery.upload.path>/opt/delivery</cerberus.delivery.upload.path>
                 <cerberus.delivery.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.delivery.tomcat.deploy>
