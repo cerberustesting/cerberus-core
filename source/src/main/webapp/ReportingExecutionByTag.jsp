@@ -241,7 +241,6 @@
                                             <button id="saveTagComment" class="btn btn-primary" style="display : none;">Save</button>
                                         </span>
                                     </div>
-                                    <!--                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >-->
                                 </div>
                             </div>
                         </div>
@@ -256,22 +255,26 @@
 
 
                             <div class="row" id="panelDuration">
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-6">
                                     <label for="TagUsrCreated">Created by :</label>
                                     <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-6" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
-                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly
-                                           aria-describedby="basic-addon1">
+                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1">
+                                </div>
+                                <div class="col-sm-6" id="TagcampaignCICel1">
+                                    <label for="tagDetailCI">CI Result :</label>
+                                    <div class="marginTop10" id="tagDetailCI">
+                                    </div>
                                 </div>
                             </div>
                             <div class="marginTop10" id="tagDetailBar">

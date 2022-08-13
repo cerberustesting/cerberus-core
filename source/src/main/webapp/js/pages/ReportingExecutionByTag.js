@@ -371,7 +371,11 @@ function loadReportingData(selectTag) {
                 $("#panelDuration").addClass("hidden");
                 $("#durExe").addClass("hidden");
             }
+
             buildTagBar(data.tagObject);
+
+            buildDetailCI(data.tagObject);
+
             hideLoader($("#TagDetail"));
 
             // Report By Status
@@ -566,6 +570,14 @@ function getHistoryCampaign(object) {
     return result;
 }
 
+function buildDetailCI(obj) {
+
+    $("#tagDetailCI").empty();
+    let ciScoreBar = '<div style="display: inline; color: ' + getExeStatusRowColor(obj.ciResult) + '"><b>' + obj.ciResult + ' (Score : ' + obj.ciScore + ' / ' + obj.ciScoreThreshold + ')</b></div>';
+    $("#tagDetailCI").append(ciScoreBar);
+
+}
+
 function buildTagBar(obj) {
     var buildBar;
 
@@ -580,7 +592,6 @@ function buildTagBar(obj) {
 
     for (var i = 0; i < len; i++) {
         var status = "nb" + statusOrder[i];
-        console.info(status + " " + statusOrder[i]);
         if (obj[status] !== 0) {
             var percent = (obj[status] / obj.nbExeUsefull) * 100;
             var roundPercent = Math.round(percent * 10) / 10;
@@ -1083,9 +1094,16 @@ function loadReportTestFolderChart(dataset) {
     if (dataset.axis.length > 0) {
         $("#ReportByTestFolderPanel").show();
 
-        var margin = {top: 20, right: 20, bottom: 200, left: 150},
-                width = 1200 - margin.left - margin.right,
-                height = 600 - margin.top - margin.bottom;
+        var offsetW = document.getElementById('testFolderChart').offsetWidth;
+        if (offsetW === 0) {
+            offsetW = 1200;
+        }
+        var offsetH = 600;
+
+
+        var margin = {top: 20, right: 20, bottom: 100, left: 50},
+                width = offsetW - margin.left - margin.right,
+                height = offsetH - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal()
                 .rangeRoundBands([0, width], .1);

@@ -26,6 +26,7 @@
 * [UI] Visual improvements on Application Object modal (display the content immediately when paste or drop is done).
 * [UI] Visual improvements on Robot and Service page.
 * [UI] Contextual favicon that display the execution status when loading a testcase execution.
+* [UI] On ReportByTag screen : Display CI Result and score + Make the report by test folder more responsive on small screens.
 * [DOC] Added Documentation usecase on how to use test data from Google drive file.
  
 *Warning to be considered before applying the version (deprecated features)*
