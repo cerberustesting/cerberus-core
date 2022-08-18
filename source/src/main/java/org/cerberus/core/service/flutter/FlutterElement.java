@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * To have a look : <br>
+ * https://github.com/renjujv/appium-flutterfinder-java
+ * https://github.com/appium-userland/appium-flutter-driver
  *
  * @author vertigo
  */

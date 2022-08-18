@@ -72,13 +72,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <label id="countryLabel" class="bold">Country :</label>
-                                    <button id="countrySelectAll" class="glyphicon glyphicon-check"
-                                            title="select all countries"></button>
-                                    <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
-                                            title="unselect all countries"></button>
-                                    <div class="form-group" id="countryFilter">
+                                    <div class="row" id="tagFilter">
+                                        <label id="countryLabel" class="bold">Country :</label>
+                                        <button id="countrySelectAll" class="glyphicon glyphicon-check"
+                                                title="select all countries"></button>
+                                        <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
+                                                title="unselect all countries"></button>
+                                        <button class="btn pull-right" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1"><span class="glyphicon glyphicon-chevron-down"></span></button>
+
+                                        <div class="form-group collapse in" id="countryFilter">
+                                        </div>
                                     </div>
+
                                     <label id="statusLabel" class="bold">Status :</label>
                                     <button id="statusSelectAll" class="glyphicon glyphicon-check"
                                             title="select all status"></button>

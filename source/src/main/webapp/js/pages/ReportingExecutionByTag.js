@@ -187,13 +187,9 @@ function loadCountryFilter() {
 
                 //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
-                    cb = '<label class="checkbox-inline">\n\
-                        <input type="checkbox" name="' + data[i].value + '"/>\n\
-                        ' + data[i].value + '</label>';
+                    cb = '<label class="checkbox-inline">\n<input type="checkbox" name="' + data[i].value + '"/>\n' + data[i].value + '</label>';
                 } else {
-                    cb = '<label class="checkbox-inline">\n\
-                        <input type="checkbox" name="' + data[i].value + '" checked/>\n\
-                        ' + data[i].value + '</label>';
+                    cb = '<label class="checkbox-inline">\n<input type="checkbox" name="' + data[i].value + '" checked/>\n' + data[i].value + '</label>';
                 }
                 countryFilter.append(cb);
             }
@@ -203,6 +199,13 @@ function loadCountryFilter() {
                 var obj = convertSerialToJSONObject(serial);
                 sessionStorage.setItem("countryFilter", JSON.stringify(obj));
             });
+            // If more than 20 countries, we hide the country list by default.
+            if (len > 20) {
+                $('#countryFilter').collapse('hide');
+            } else {
+                $('#countryFilter').collapse('show');
+            }
+
         },
         error: showUnexpectedError
     });
@@ -759,6 +762,11 @@ function loadEnvCountryBrowserReport(data) {
     } else {
         $("#reportByEnvCountryBrowser").hide();
     }
+    if (len >= 10) {
+        $('#reportEnvCountryBrowser').collapse('hide');
+    } else {
+        $('#reportEnvCountryBrowser').collapse('show');
+    }
     hideLoader($("#reportEnvCountryBrowser"));
 
 }
@@ -1098,7 +1106,7 @@ function loadReportTestFolderChart(dataset) {
         if (offsetW === 0) {
             offsetW = 1200;
         }
-        var offsetH = 600;
+        var offsetH = 300;
 
 
         var margin = {top: 20, right: 20, bottom: 100, left: 50},
