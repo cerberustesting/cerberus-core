@@ -157,7 +157,15 @@ function renderOptionsForTestCaseList(data) {
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'>";
-            contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button>";
+
+            contentToAdd += "<div class='btn-group marginRight10'>";
+            contentToAdd += "<button id='createTestCaseButtonSimple' type='button' class='btn btn-default' onclick='openModalTestCaseSimple();'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button>";
+            contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+            contentToAdd += "<div class='dropdown-menu'>";
+            contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + " (From Header)</button>";
+            contentToAdd += "</div>";
+            contentToAdd += "</div>";
+
             contentToAdd += "<div class='btn-group'>";
             contentToAdd += "<button id='btnGroupDropIO' type='button' class='btn btn-secondary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Import / Export <span class='caret'></span></button>";
             contentToAdd += "<div class='dropdown-menu' aria-labelledby='btnGroupDropIO'>";

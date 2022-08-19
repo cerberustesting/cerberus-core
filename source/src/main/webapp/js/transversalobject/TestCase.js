@@ -137,7 +137,6 @@ function initModalTestCase() {
     displayInvariantList("status", "TCSTATUS", false);
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
-    $('[name="origin"]').append('<option value="All">All</option>');
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -146,20 +145,29 @@ function initModalTestCase() {
 
     var availableOrigin = getInvariantArray("EXTERNALPROVIDER", false);
     $('#editTestCaseModal').find("#origin").autocomplete({
-        source: availableOrigin
+        source: availableOrigin,
+        minLength: 0
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
-        source: availableUserAgent
+        source: availableUserAgent,
+        minLength: 0
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $('#editTestCaseModal').find("#screenSize").autocomplete({
-        source: availableScreenSize
+        source: availableScreenSize,
+        minLength: 0
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
-    var availableFunctions = getInvariantArray("FUNCTION", false);
-    $('#editTestCaseModal').find("#function").autocomplete({
-        source: availableFunctions
-    });
+//    var availableFunctions = getInvariantArray("FUNCTION", false);
+//    $('#editTestCaseModal').find("#function").autocomplete({
+//        source: availableFunctions
+//    });
     $("#select_all").change(function () {  //"select all" change
         $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
@@ -685,8 +693,8 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             var currentSys = getUser().defaultSystem;
             var t = appData.contentTable;
             bugTrackerUrl = t.bugTrackerUrl;
-            
-            
+
+
 
             feedTestCaseData(testCase, modalId, mode, testperm, undefined, bugTrackerUrl);
 
@@ -1188,7 +1196,7 @@ function appendTestCaseDepList(testCase) {
 
     testCase.dependencies.forEach((dep) => {
         addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description);
-        });
+    });
 }
 
 
