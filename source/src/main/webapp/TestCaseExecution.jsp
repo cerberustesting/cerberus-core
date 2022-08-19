@@ -56,7 +56,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-lg-7 pull-left">
-                                    <div class="text-nowrap">
+                                    <div class="text-rap">
                                         <span id="idlabel"></span>
                                         <span name="Separator">Loading...</span>
                                         <span id="test"></span>
@@ -75,6 +75,12 @@
                                     </div>
                                     <div class="text-wrap" id="returnMessage">
                                         <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
+                                    </div>
+                                    <div class="text-wrap" id="returnMessage">
+                                        <img id="exBrowserLogo" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0" src="">
+                                        <span id="exBrowser" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
+                                        <img id="exOSLogo" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0" src="">
+                                        <span id="exOS" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
                                     </div>
                                 </div>
                                 <div class="col-lg-5" style="padding: 0px;">
@@ -473,16 +479,15 @@
                                         <input type="text" class="form-control" id="robotport" placeholder="Robot Port" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-4">
                                     <div class="form-group">
                                         <label for="robotsessionid">Robot Session</label>
-                                        <input type="text" class="form-control" id="robotsessionid" placeholder="Robot Session Id" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-1">
-                                    <div class="form-group">
-                                        <label for="sessionLink"></label>
-                                        <a><button class="btn btn-default pull-left" id="sessionLink" style="margin-left: 5px; margin-right: 5px;">Link External Provider</button></a>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="robotsessionid" placeholder="Robot Session Id" readonly>
+                                            <span class="input-group-btn">
+                                                <a><button class="btn btn-default pull-left" id="sessionLink">Link External Provider</button></a>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

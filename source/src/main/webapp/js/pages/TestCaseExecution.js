@@ -1386,7 +1386,7 @@ function setConfigPanel(data) {
 
     var favicon = new Favico({
         animation: 'slide',
-        bgColor:getExeStatusRowColor(data.controlStatus)
+        bgColor: getExeStatusRowColor(data.controlStatus)
 //        textColor: "green"
     });
     favicon.badge(data.controlStatus);
@@ -1436,7 +1436,15 @@ function setConfigPanel(data) {
     configPanel.find("input#robothost").val(data.robotHost);
     configPanel.find("input#robotport").val(data.robotPort);
     configPanel.find("input#platform").val(data.platform);
+    if (data.platform !== "") {
+        $("#exOS").text(data.platform);
+        $("#exOSLogo").attr("src", "./images/platform-" + data.platform + ".png");
+    }
     configPanel.find("input#browser").val(data.browser);
+    if (data.browser !== "") {
+        $("#exBrowser").text(data.browser + " " + data.version);
+        $("#exBrowserLogo").attr("src", "./images/browser-" + data.browser + ".png");
+    }
     configPanel.find("input#version").val(data.version);
     configPanel.find("input#cerberusversion").val(data.crbVersion);
     if (isTheExecutionManual) {
