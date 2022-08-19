@@ -286,30 +286,28 @@
                             </div>
 
                             <div class="marginTop10" class="row" id="TagcampaignCel2">
-                                <div class="col-sm-4">
-                                    <div class="input-group-btn">
-                                        <a id="buttonSeeStatsCampaign">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button>
-                                        </a>
+                                <div class="col-sm-5" id="xRayTestExecutionBlock">
+                                    <label for="xRayTestExecution">JIRA Xray :</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="xRayTestExecution" id="xRayTestExecution" readonly aria-describedby="basic-addon1">
+                                        <span class="input-group-btn">
+                                            <a id="buttonJIRAXray">
+                                                <button type="button" class="btn btn-default" >
+                                                    <img src="./images/jira.png" width="20">
+                                                </button>
+                                            </a>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-7">
                                     <div class="input-group-btn">
-                                        <a id="buttonRunCampaign">
+                                        <a id="buttonSeeStatsCampaign" class="pull-right">
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button>
+                                        </a>
+                                        <a id="buttonRunCampaign" class="pull-right">
                                             <button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button>
                                         </a>
                                     </div>
-                                </div>
-                                <div class="col-sm-2" id="xRayTestExecutionBlock">
-                                    <label for="xRayTestExecution">JIRA Xray :</label>
-                                    <input type="text" class="form-control" name="xRayTestExecution" id="xRayTestExecution" readonly aria-describedby="basic-addon1">
-                                </div>
-                                <div class="col-sm-2" id="xRayTestExecutionBlockBtn">
-                                    <a id="buttonJIRAXray">
-                                        <button type="button" class="btn btn-default" style="margin-left: 10px;">
-                                            <img src="./images/jira.png" width="20">
-                                        </button>
-                                    </a>
                                 </div>
                             </div>
 

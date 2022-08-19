@@ -68,7 +68,7 @@ function renderOptionsForAppService(data) {
         }
     } else {
         if ($("#blankSpace").length === 0) {
-            var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'></div>";
+            var contentToAdd = "<div class='marginBottom10' id='blankSpace'></div>";
             $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length")
                     .before(contentToAdd);
         }

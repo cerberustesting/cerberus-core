@@ -20,6 +20,9 @@
 /* global handleErrorAjaxAfterTimeout */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
+// Define if execution detail must automaticly hide OK records.
+var isRefreshAutoHide = true;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -314,15 +317,24 @@ function loadReportingData(selectTag) {
     $("#Tagcampaign").val("");
 
     var fullL = "";
-    var fullListSelected = "";
-    if (document.getElementById("fullList") !== null) {
-        var fullL = "fullList=" + document.getElementById("fullList").checked;
-        if (document.getElementById("fullList").checked === true) {
-            fullListSelected = "checked";
-        } else {
-            fullListSelected = "";
-        }
-    }
+    fullL = "fullList=" + !isRefreshAutoHide;
+
+//    var fullListSelected = "";
+//    if (!isRefreshAutoHide) {
+//        fullListSelected = "checked";
+//    } else {
+//        fullListSelected = "";
+//    }
+
+//    if (document.getElementById("fullList") !== null) {
+//        var fullL = "fullList=" + document.getElementById("fullList").checked;
+//        if (document.getElementById("fullList").checked === true) {
+//            fullListSelected = "checked";
+//        } else {
+//            fullListSelected = "";
+//        }
+//    }
+
     var param = "?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
 
     //Retrieve data for charts and draw them
@@ -354,10 +366,8 @@ function loadReportingData(selectTag) {
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");
-                $("#xRayTestExecutionBlockBtn").addClass("hidden");
             } else {
                 $("#xRayTestExecutionBlock").removeClass("hidden");
-                $("#xRayTestExecutionBlockBtn").removeClass("hidden");
                 $("#xRayTestExecution").val(data.tagObject.xRayTestExecution);
                 if (data.tagObject.xRayTestExecution !== "PENDING") {
                     $("#buttonJIRAXray").removeClass("hidden");
@@ -406,7 +416,7 @@ function loadReportingData(selectTag) {
             loadLabelReport(data.labelStat);
 
             // Detailed Test Case List Report
-            loadReportList(data.table, selectTag, fullListSelected);
+            loadReportList(data.table, selectTag);
 
         } else {
 
@@ -788,7 +798,7 @@ function loadLabelReport(data) {
 
 }
 
-function loadReportList(data2, selectTag, fullListSelected) {
+function loadReportList(data2, selectTag) {
     if (data2.tableColumns) {
         showLoader($("#listReport"));
 
@@ -807,7 +817,7 @@ function loadReportList(data2, selectTag, fullListSelected) {
             var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
             hideLoader($("#listReport"));
-            renderOptionsForExeList(selectTag, fullListSelected);
+            renderOptionsForExeList(selectTag);
         }
 
     } else {
@@ -1530,7 +1540,7 @@ function refreshNbChecked() {
     }
 }
 
-function renderOptionsForExeList(selectTag, fullListSelected) {
+function renderOptionsForExeList(selectTag) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10' id='statusFilterList'>";
@@ -1552,8 +1562,29 @@ function renderOptionsForExeList(selectTag, fullListSelected) {
         contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginRight10'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
-        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default marginLeft20' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+//        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
+        contentToAdd += "<div class='btn-group marginRight10'>";
+
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
+
+
+        if (isRefreshAutoHide) {
+            contentToAdd += buttonrefresh;
+        } else {
+            contentToAdd += buttonrefreshAll;
+        }
+//        contentToAdd += "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        contentToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentToAdd += "<div class='dropdown-menu'>";
+        if (isRefreshAutoHide) {
+            contentToAdd += buttonrefreshAll;
+        } else {
+            contentToAdd += buttonrefresh;
+        }
+//        contentToAdd += "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        contentToAdd += "</div>";
+        contentToAdd += "</div>";
         contentToAdd += "</div>";
 
 
