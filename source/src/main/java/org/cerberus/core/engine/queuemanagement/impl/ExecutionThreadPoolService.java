@@ -185,7 +185,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         HashMap<String, Integer> robot_poolsize = new HashMap<>();
         robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
         HashMap<String, Integer> robotext_poolsize = new HashMap<>();
-        robotext_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
+        robotext_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTPROXYHOST", poolSizeExecutorExt);
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreatOrRunning();
@@ -359,7 +359,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     robothost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
                     // Getting CerberusExecutorHost PoolSize
-                    executorexthost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("EXECUTOREXTENSIONHOST", poolSizeExecutorExt);
+                    executorexthost_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTPROXYHOST", poolSizeExecutorExt);
 
                     // Getting the list of robot in scope of the queue entries. This is to avoid getting all robots from database.
                     LOG.debug("Getting List of Robot Executor.");

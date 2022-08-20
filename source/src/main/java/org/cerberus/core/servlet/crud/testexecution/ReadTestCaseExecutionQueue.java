@@ -357,7 +357,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                                 if ((data[1] == null) || (data[1].equalsIgnoreCase("null"))) {
                                     jsonObject.put("invariantExist", false);
                                 } else {
-                                    jsonObject.put("invariantExist", invariantService.isInvariantExist("EXECUTOREXTENSIONHOST", data[1]));
+                                    jsonObject.put("invariantExist", invariantService.isInvariantExist("ROBOTPROXYHOST", data[1]));
                                 }
                             } else {
                                 jsonObject.put("robot", "");
@@ -368,7 +368,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", "");
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
-                            jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("EXECUTOREXTENSIONHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
+                            jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("ROBOTPROXYHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
                             break;
                     }
                     jsonArray.put(jsonObject);

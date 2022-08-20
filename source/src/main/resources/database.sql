@@ -6170,3 +6170,6 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
     ('ACTION', 'uploadRobotFile', '24320', 'Upload a file to the robot', 'Upload a robot file', 'Filename', 'Content (base64 format)', 'Option'),
     ('ACTION', 'getRobotFile', '24340', 'Get a list of files from the robot', 'Get robot files', 'Path/Pattern to retrieved', 'Nb of files', 'Option');
 
+-- 1739-1740
+UPDATE invariant set idname = 'ROBOTPROXYHOST' where idname = 'EXECUTOREXTENSIONHOST';
+UPDATE invariant set value = 'ROBOTPROXYHOST' where idname = 'INVARIANTPUBLIC' and value = 'EXECUTOREXTENSIONHOST' ;

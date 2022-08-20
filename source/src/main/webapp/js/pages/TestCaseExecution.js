@@ -52,7 +52,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var availableUsers = getUserArray(true);
         $("#tabDetail input#executor").autocomplete({
-            source: availableUsers
+            source: availableUsers,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
         });
 
         var executionId = GetURLParameter("executionId");

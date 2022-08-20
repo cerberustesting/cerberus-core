@@ -89,15 +89,33 @@ function initModalRobot() {
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $("#editRobotModal [name='useragent']").autocomplete({
-        source: availableUserAgent
+        source: availableUserAgent,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $("#editRobotModal [name='screensize']").autocomplete({
-        source: availableScreenSize
+        source: availableScreenSize,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
     // Load invariant into cache.
     getInvariantArray("ROBOTHOST", false);
-    getInvariantArray("EXECUTOREXTENSIONHOST", false);
+    getInvariantArray("ROBOTPROXYHOST", false);
 
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);
@@ -533,13 +551,32 @@ function loadExecutorsTable(tableBody, executors) {
 function appendCapabilityRow(tableBody, capability) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectCapability = getSelectInvariant("CAPABILITY", false, false);
-    var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
+    var inputCapability = $("<input  maxlength=\"45\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityCapability") + " --\">").addClass("form-control input-sm").val(capability.capability);
+//    var inputCapability = getSelectInvariant("CAPABILITY", false, false);
+    var valueInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
     var table = $("#" + tableBody);
+
+
+    inputCapability.autocomplete({
+        source: getInvariantArray("CAPABILITY", false),
+        minLength: 0,
+        select: function (event, ui) {
+            capability.capability = ui.item.value;
+        },
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
 
     var row = $("<tr></tr>");
     var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var cap = $("<td></td>").append(selectCapability.val(capability.capability));
+    var cap = $("<td></td>").append(inputCapability);
     var value = $("<td></td>").append(valueInput);
     deleteBtn.click(function () {
         capability.toDelete = (capability.toDelete) ? false : true;
@@ -549,7 +586,7 @@ function appendCapabilityRow(tableBody, capability) {
             row.removeClass("danger");
         }
     });
-    selectCapability.change(function () {
+    inputCapability.change(function () {
         capability.capability = $(this).val();
     });
     valueInput.change(function () {
@@ -558,7 +595,7 @@ function appendCapabilityRow(tableBody, capability) {
     row.append(deleteBtnRow);
     row.append(cap);
     row.append(value);
-    capability.capability = selectCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo values so we take the real selected value.
+//    capability.capability = inputCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo values so we take the real selected value.
     row.data("capability", capability);
     table.append(row);
 }
@@ -614,10 +651,12 @@ function appendExecutorRow(tableBody, executor) {
     var drow1 = $("<div class='row'></div>").append(active).append(rank).append(expandName);
     var drow2 = $("<div class='row'></div>").append(host).append(port).append(hostuser).append(hostpass);
 //    var drow3 = $("<div class='row'></div>").append(hostuser).append(hostpass);
-    var drow4 = $("<div class='row'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
-    var drow5 = $("<div class='row'></div>").append(epActive).append(eehost).append(eeport).append(ephost).append(epport);
+    var drow4 = $("<div class='row alert alert-warning'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
+    var drow5 = $("<div class='row alert alert-warning'></div>").append(epActive).append(eehost).append(eeport).append(ephost).append(epport);
     var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
+
+
 
     deleteBtn.click(function () {
         executor.toDelete = (executor.toDelete) ? false : true;
@@ -675,11 +714,44 @@ function appendExecutorRow(tableBody, executor) {
     executorProxyActiveInput.change(function () {
         executor.executorProxyActive = $(this).prop("checked");
     });
+
     hostInput.autocomplete({
-        source: getInvariantArray("ROBOTHOST", false)
+        source: getInvariantArray("ROBOTHOST", false),
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
+
     executorExtensionHostInput.autocomplete({
-        source: getInvariantArray("EXECUTOREXTENSIONHOST", false)
+        source: getInvariantArray("ROBOTPROXYHOST", false),
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
+    executorProxyHostInput.autocomplete({
+        source: getInvariantArray("ROBOTPROXYHOST", false),
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
 
     row.append(td1);
@@ -719,7 +791,7 @@ function addNewExecutorRow(tableBody) {
         deviceLockUnlock: false,
         description: "",
         executorExtensionHost: "",
-        executorExtensionPort: "",
+        executorExtensionPort: "8093",
         executorProxyHost: "",
         executorProxyPort: "",
         executorProxyActive: false

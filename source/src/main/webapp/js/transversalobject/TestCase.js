@@ -72,10 +72,22 @@ function initModalTestCase() {
 
     var availableUsers = getUserArray(true);
     $("#editTestCaseModal input#executor").autocomplete({
-        source: availableUsers
+        source: availableUsers,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     });
     $("#editTestCaseModal input#implementer").autocomplete({
-        source: availableUsers
+        source: availableUsers,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     });
 
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
@@ -146,21 +158,39 @@ function initModalTestCase() {
     var availableOrigin = getInvariantArray("EXTERNALPROVIDER", false);
     $('#editTestCaseModal').find("#origin").autocomplete({
         source: availableOrigin,
-        minLength: 0
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
         source: availableUserAgent,
-        minLength: 0
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $('#editTestCaseModal').find("#screenSize").autocomplete({
         source: availableScreenSize,
-        minLength: 0
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });

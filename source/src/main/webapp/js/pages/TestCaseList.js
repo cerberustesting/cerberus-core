@@ -52,7 +52,13 @@ function initPage() {
 
     var availableUsers = getUserArray(true);
     $("input#massExecutor").autocomplete({
-        source: availableUsers
+        source: availableUsers,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
     });
 
 }

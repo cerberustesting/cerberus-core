@@ -841,11 +841,11 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
+                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
+                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';
