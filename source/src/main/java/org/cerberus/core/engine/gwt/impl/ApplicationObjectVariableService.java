@@ -19,14 +19,6 @@
  */
 package org.cerberus.core.engine.gwt.impl;
 
-import java.io.File;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.ApplicationObject;
@@ -39,6 +31,15 @@ import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * {Insert class description here}
@@ -104,10 +105,14 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     if ("picturepath".equals(valueA[2])) {
                         val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenshotFilename();
                     } else if ("pictureurl".equals(valueA[2])) {
-                        val = parameterService.getParameterStringByKey("cerberus_url", system, "")
-                                + "/ReadApplicationObjectImage?application=" + URLEncoder.encode(ao.getApplication(), StandardCharsets.UTF_8)
-                                + "&object=" + URLEncoder.encode(ao.getObject(), StandardCharsets.UTF_8)
-                                + "#xoffset=" + ao.getXOffset() + "|yoffset=" + ao.getYOffset();
+                        try {
+                            val = parameterService.getParameterStringByKey("cerberus_url", system, "")
+                                    + "/ReadApplicationObjectImage?application=" + URLEncoder.encode(ao.getApplication(), "UTF-8")
+                                    + "&object=" + URLEncoder.encode(ao.getObject(), "UTF-8")
+                                    + "#xoffset=" + ao.getXOffset() + "|yoffset=" + ao.getYOffset();
+                        } catch (UnsupportedEncodingException ex) {
+                            LOG.error("Error when encoding string in URL : ", ex);
+                        }
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
                     }
@@ -131,9 +136,9 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
      * A property is defined by including its name between two '%' character.
      * </p>
      *
-     * @see #PROPERTY_VARIABLE_PATTERN
      * @param str the {@link String} to get all properties
      * @return a list of properties contained into the given {@link String}
+     * @see #PROPERTY_VARIABLE_PATTERN
      */
     private List<String> getApplicationObjectsStringListFromString(String str) {
         List<String> properties = new ArrayList<>();
