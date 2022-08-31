@@ -1,0 +1,163 @@
+<div class="modal fade center"  id="modalOptions" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Options</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12" id="EditScriptPanel">
+                        <div class="panel panel-default">
+                            <div class="pill40 light-primary pull-left">
+                                                    <span class="card-img-top glyphicon glyphicon-edit"
+                                                          style="font-size:15px;"></span>
+                            </div>
+                            <div class="panel-heading bold" id="overrideActionParameterLabel">
+                                Action Parameters :
+                            </div>
+                        </div>
+                        <div class="form-horizontal" id="overrideActionParameter">
+                            <div class="list-group marginTop10">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Stop the execution if it fail</span>
+                                            <input type="text" class="form-control" disabled style="border-left: 0px;" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="fatalCheckbox"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <span> </span>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Timeout</span>
+                                            <input type="text" class="form-control" id="timeoutVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="timeoutAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Min Similarity</span>
+                                            <input type="text" class="form-control" id="minSimilarityVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="minSimilarityAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Highlight</span>
+                                            <input type="text" class="form-control" id="highlightVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="highlightAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> TypeDelay</span>
+                                            <input type="text" class="form-control" id="typeDelayVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="typeDelayAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" id="EditScriptPanel">
+                        <div class="panel panel-default">
+                            <div class="pill40 light-primary pull-left">
+                                                    <span class="card-img-top glyphicon glyphicon-edit"
+                                                          style="font-size:15px;"></span>
+                            </div>
+                            <div class="panel-heading bold" id="conditionParameterLabel">
+                                Condition :
+                            </div>
+                        </div>
+                        <div class="panel-heading" id="conditionParameter">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <div class="col-lg-3 form-group" id="conditionSelectContainer">
+                                    <label>Condition Operator</label>
+                                    <select class="form-control input-sm" id="conditionSelect"></select>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label>actionconditionval1</label>
+                                    <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
+                                           data-placement="top" type="text" class="form-control input-sm" id="actionconditionval1"/>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label>actionconditionval2</label>
+                                    <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
+                                           data-placement="top" type="text" class="form-control input-sm" id="actionconditionval2"/>
+                                </div>
+                                <div class="col-lg-3 form-group">
+                                    <label>actionconditionval3</label>
+                                    <input data-toggle="tooltip" data-trigger="manual" data-animation="false" data-html="true" data-container="body"
+                                           data-placement="top" type="text" class="form-control input-sm" id="actionconditionval3"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" id="EditScriptPanel">
+                        <div class="panel panel-default">
+                            <div class="pill40 light-primary pull-left">
+                                                    <span class="card-img-top glyphicon glyphicon-edit"
+                                                          style="font-size:15px;"></span>
+                            </div>
+                            <div class="panel-heading bold" id="overrideConditionParameterLabel">
+                                Condition Parameters :
+                            </div>
+                        </div>
+                        <div class="form-horizontal" id="overrideConditionParameter">
+                            <div class="list-group marginTop10">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Timeout</span>
+                                            <input type="text" class="form-control" id="timeoutConditionVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="timeoutConditionAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Min Similarity</span>
+                                            <input type="text" class="form-control" id="minSimilarityConditionVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="minSimilarityConditionAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Highlight</span>
+                                            <input type="text" class="form-control" id="highlightConditionVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="highlightConditionAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div class="input-group marginBottom10">
+                                            <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> TypeDelay</span>
+                                            <input type="text" class="form-control" id="typeDelayConditionVal" aria-describedby="timeoutGroup">
+                                            <span class="input-group-addon"><input type="checkbox" id="typeDelayConditionAct"  aria-label="..."></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="firstRowOptions"></div>
+                <div id="secondRowOptions"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id='optionsSave'>OK</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

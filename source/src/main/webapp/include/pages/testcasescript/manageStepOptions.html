@@ -1,0 +1,110 @@
+<div class="modal fade center"  id="modalStepOptions" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Options</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="fieldRow row marginTop25" id="stepHiddenRow">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="input-group marginBottom10">
+                            <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Force execution even if fatal event triggered</span>
+                            <input type="text" class="form-control" disabled style="border-left: 0px;" aria-describedby="timeoutGroup">
+                            <span class="input-group-addon"><input type="checkbox" id="stepForceExe"  aria-label="..."></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-sm-12">
+                            <div class="panel panel-default">
+                                <div class="pill40 light-primary pull-left">
+                                                        <span class="card-img-top glyphicon glyphicon-edit"
+                                                              style="font-size:15px;"></span>
+                                </div>
+                                <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
+                                    Loop :
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-lg-3 col-md-6 col-sm-12 form-group">
+                                    <label>Step Loop:</label>
+                                    <select class="form-control input-sm" id="stepLoop"></select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                                <div class="col-lg-3 col-md-6 col-sm-12 form-group">
+                                    <label>Step Condition Operation:</label>
+                                    <select class="form-control input-sm" id="stepConditionOperator"></select>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12 form-group">
+                                    <label>Step Condition Parameter:</label>
+                                    <input class="form-control input-sm" id="stepConditionVal1">
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12 form-group">
+                                    <label>Step Condition Parameter:</label>
+                                    <input class="form-control input-sm" id="stepConditionVal2">
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-sm-12 form-group">
+                                    <label>Step Condition Parameter:</label>
+                                    <input class="form-control input-sm" id="stepConditionVal3">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12" id="EditScriptPanel">
+                    <div class="panel panel-default">
+                        <div class="pill40 light-primary pull-left">
+                                                    <span class="card-img-top glyphicon glyphicon-edit"
+                                                          style="font-size:15px;"></span>
+                        </div>
+                        <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
+                            Condition Parameters :
+                        </div>
+                    </div>
+                    <div class="form-horizontal" id="overrideStepConditionParameter">
+                        <div class="list-group marginTop10">
+                            <div class="col-sm-12">
+                                <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="input-group marginBottom10">
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Timeout</span>
+                                        <input type="text" class="form-control" id="timeoutStepConditionVal" aria-describedby="timeoutGroup">
+                                        <span class="input-group-addon"><input type="checkbox" id="timeoutStepConditionAct"  aria-label="..."></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="input-group marginBottom10">
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Min Similarity</span>
+                                        <input type="text" class="form-control" id="minSimilarityStepConditionVal" aria-describedby="timeoutGroup">
+                                        <span class="input-group-addon"><input type="checkbox" id="minSimilarityStepConditionAct"  aria-label="..."></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="input-group marginBottom10">
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> Highlight</span>
+                                        <input type="text" class="form-control" id="highlightStepConditionVal" aria-describedby="timeoutGroup">
+                                        <span class="input-group-addon"><input type="checkbox" id="highlightStepConditionAct"  aria-label="..."></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-4 col-lg-3">
+                                    <div class="input-group marginBottom10">
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;" id="timeoutGroup"><span class='glyphicon glyphicon-tag pull-left'></span> TypeDelay</span>
+                                        <input type="text" class="form-control" id="typeDelayStepConditionVal" aria-describedby="timeoutGroup">
+                                        <span class="input-group-addon"><input type="checkbox" id="typeDelayStepConditionAct"  aria-label="..."></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id='optionStepSave'>OK</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -129,25 +129,25 @@ function checkFormSimpleCreationBeforeSubmit() {
     if (nameElementEmpty) {
         localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
+        displayErrorMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
     } else if (testElementInvalid !== -1) {
         localMessage = new Message("danger", "The test name cannot contains the symbol : &");
         // only the Test label will be put in red
         testElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
+        displayErrorMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
     } else if (testIdElementInvalid !== -1) {
         localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
         // only the TestId label will be put in red
         testIdElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
+        displayErrorMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
     } else if (testElementEmpty) {
         localMessage = new Message("danger", "Please specify the name of the test!");
         testElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
+        displayErrorMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
     } else if (testIdElementEmpty) {
         localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
         testIdElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
+        displayErrorMessage(localMessage, $('#editTestCaseSimpleCreationModal'));
     } else {
         nameElement.parents("div.form-group").removeClass("has-error");
         testIdElement.parents("div.form-group").removeClass("has-error");
@@ -159,6 +159,15 @@ function checkFormSimpleCreationBeforeSubmit() {
         return false;
     }
     return true;
+}
+
+function displayErrorMessage(localMessage) {
+    var elementAlert = $('#editTestCaseSimpleCreationModal').find("div[id*='DialogMessagesAlert']");
+    var elementAlertDescription = $('#editTestCaseSimpleCreationModal').find("span[id*='DialogAlertDescription']");
+
+    elementAlertDescription.html(localMessage.message);
+    elementAlert.addClass("alert-" + localMessage.messageType);
+    elementAlert.fadeIn();
 }
 
 /***
