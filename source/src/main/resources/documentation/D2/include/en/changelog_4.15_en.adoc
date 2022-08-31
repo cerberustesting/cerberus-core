@@ -15,7 +15,9 @@
 * [ENGINE] JIRA Xray connector for both Cloud and DC versions. #2108
 * [ENGINE] Add the possibility to define an offset for Sikuli testing #1877
 * [ENGINE] Allow to configure typeDelay when using Sikuli keyPress (from parameter or at action level).
-* [ENGINE] Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require version 1.7 of cerberus-extension-sikuli
+* [ENGINE] Better support of Sikuli text actions (click, doubleClick, hover, rightClick) and controls (verifyElementPresent). That require version 1.7 of cerberus-robot-extension
+* [ENGINE] Added 4 new controls: verifyStringArrayContains, verifyNumericArrayContains, verifyElementTextArrayContains, verifyElementNumericArrayContains
+* [ENGINE] New actions in order to manage and improve automation of upload/download file use cases. 3 actions were added : cleanRobotFile, uploadRobotFile and getRobotFile. require version 1.7 of cerberus-robot-extension
 * [UX] You can now select a complete line or column of executions in Campaign Execution Reporting to submit again. #1691
 * [UX] The maximum number of characters for a campaign name has been increased from 45 to 200. #2373
 * [UX] Services can be renamed (corresponding callService actions will be updated with the new reference) #2042
@@ -23,9 +25,11 @@
 * [UX] Campaigns can be renamed #2352
 * [UI] Visual improvements on Application Object modal (display the content immediately when paste or drop is done).
 * [UI] Visual improvements on Robot and Service page.
+* [UI] Contextual favicon that display the execution status when loading a testcase execution.
+* [UI] On ReportByTag screen : Display CI Result and score + Make the report by test folder more responsive on small screens + Collapse country filter list when too big (above 20 countries) + Collapse Application/Env/country/Robot report list when too big (above 20 lines).
 * [DOC] Added Documentation usecase on how to use test data from Google drive file.
  
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Updated Groovy version from 2.4.21 to latest 3.0.11 and Groovy sandbox from 1.10 to 1.19
-* That release require cerberus-extension-sikuli v1.7
+* That release require cerberus-robot-extension v1.7. Uncompatible changes to prio versions were introduced.

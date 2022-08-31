@@ -24,11 +24,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cerberus</groupId>
-    <artifactId>cerberus</artifactId>
+    <artifactId>cerberus-core</artifactId>
     <version>4.15-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>Cerberus</name>
+    <name>Cerberus Core</name>
 
     <properties>
         <!-- Project properties -->
@@ -543,7 +543,7 @@
     </repositories>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
 
         <resources>
             <!-- Filter the lang property files -->
@@ -805,16 +805,16 @@
             Additional configuration for deployment process on the qualification server
 
             /!\ Prerequisites: Beware to correctly declared the following properties into your Maven settings:
-                - cerberus.demo.qa.username, which is the Cerberus demonstration server's user
-                - cerberus.demo.qa.password, which is the Cerberus demonstration server's password
+                - cerberus.delivery.username, which is the Cerberus demonstration server's user
+                - cerberus.delivery.password, which is the Cerberus demonstration server's password
         -->
         <profile>
-            <id>qa-demo-deploy</id>
+            <id>delivery-deploy</id>
             <properties>
-                <env>qa-demo</env>
-                <cerberus.demo.host>vm.cerberus-testing.org</cerberus.demo.host>
-                <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
-                <cerberus.demo.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.demo.tomcat.deploy>
+                <env>qa</env>
+                <cerberus.delivery.host>vm.cerberus-testing.org</cerberus.delivery.host>
+                <cerberus.delivery.upload.path>/opt/delivery</cerberus.delivery.upload.path>
+                <cerberus.delivery.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.delivery.tomcat.deploy>
             </properties>
             <build>
                 <plugins>
@@ -824,7 +824,7 @@
                         <executions>
                             <!-- Upload built artifacts into our infra during the deploy phase -->
                             <execution>
-                                <id>qa-demo-deploy</id>
+                                <id>delivery-deploy</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -832,16 +832,16 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to QA server..." />
-                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}" password="${cerberus.demo.qa.password}" trust="yes" />
+                                        <echo message="Uploading artifact to Cerberus Delivery server..." />
+                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}" password="${cerberus.delivery.password}" trust="yes" />
                                         <!--
                                             Deploy artifact by:
                                                 1. Extracting distribution package to the server's upload path;
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command="unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp; ( ${cerberus.demo.tomcat.deploy} ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
+                                        <echo message="Deploying to QA..." />
+                                        <sshexec host="${cerberus.delivery.host}" username="${cerberus.delivery.username}" password="${cerberus.delivery.password}" trust="yes" command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
                                     </target>
                                 </configuration>
                             </execution>

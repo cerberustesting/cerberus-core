@@ -221,7 +221,7 @@ function forceExecution() {
 function renderOptionsForExeQueue(data) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
-        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
+        var contentToAdd = "<div class='marginBottom10' id='blankSpace'>";
         contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default margin-right5'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
         contentToAdd += "<button id='refreshExecutionButton' type='button' class='btn btn-default margin-right5'><span class='glyphicon glyphicon-refresh'></span> " + doc.getDocLabel("page_global", "refresh") + "</button>";
         contentToAdd += "<button id='selectDepButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPendingWithDep") + "</button>";
@@ -841,11 +841,11 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
+                var editRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'EXECUTOREXTENSIONHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
+                var addRobotExtInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTPROXYHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';

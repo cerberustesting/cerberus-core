@@ -559,6 +559,144 @@ Will allow you to execute SQL stored procedure.
 
 *[blue]#Value2#* : SQL to be executed.
 
+==== cleanRobotFile
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Will clean and remove files based on a given pattern on the robot side. That allow to prepare that a file do not exist before downloading it, preventing that it name is changed when downloaded.
+
+*[blue]#Value1#* : Folder and pattern to be deleted
+
+.Clean all files of a folder
+====
+*[blue]#Value1#* /home/seluser/Downloads/
+
+====
+
+.Clean all json files of a folder
+====
+*[blue]#Value1#* /home/seluser/Downloads/*.json
+
+====
+
+==== uploadRobotFile
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Will upload a file to a folder located on the robot side. That allow to implement use case where a file needs to be uploaded from the robot side to the tested application.
+
+*[blue]#Value1#* : Full name of the target file on the robot side.
+
+*[blue]#Value2#* : Content of the file to upload. (in plain text or base64 format)
+
+*[blue]#Value3#* : Option in order to trigger a specific behavior. _EMPTYFOLDER_ will empty the folder where the file is located in order to secure that its selection is to be performed in the exact same way (more and more files appearing on the folder may make its selection quite complex).
+
+.Upload a file
+====
+*[blue]#Value1#* /home/seluser/Downloads/test.json
+
+*[blue]#Value2#* {"content" : "test"}
+
+*[blue]#Value3#* 
+
+Will dynamicaly create the file /home/seluser/Downloads/test.json on the robot side with content '{"content" : "test"}'
+====
+
+.Upload a file and empty the folder content before.
+====
+*[blue]#Value1#* /home/seluser/Downloads/test.json
+
+*[blue]#Value2#* eyJjb250ZW50IiA6ICJ0ZXN0In0K
+
+*[blue]#Value3#* EMPTYFOLDER
+
+Will dynamicaly purge the content of /home/seluser/Downloads/ and then create the file /home/seluser/Downloads/test.json on the robot side with content FILE1
+====
+
+[TIP]
+====
+In order to encode the content of a file to Base64, you can use a tools such as https://base64.guru/converter
+====
+
+==== getRobotFile
+|=== 
+
+| *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
+
+|=== 
+Will get a list of files located on the robot side. That allow to implement use case where you want to test the content of a file downloaded on the robot side from the tested application.
+
+*[blue]#Value1#* : Filename pattern to download.
+
+*[blue]#Value2#* : number of files to download.
+
+*[blue]#Value3#* : Option in order to trigger a specific sorting behavior when selecting the files.
+
+* *_LASTMODIFIED_* will sort files by latest modification time, 
+* *_IGNORECASEDESC_* will sort them in descending order by name ignoring case.
+* *_IGNORECASEASC_* will sort them in ascending order by name ignoring case.
+* *_DESC_* will sort them in descending order by name.
+* *_ASC_* will sort them in ascending order by name. (this is the default value)
+
+The Action will return a json file that follow the below json format:
+
+    {
+        "totalFilesAvailable": "3",
+        "totalFilesDownloaded": "2",
+        "files": [
+        {
+            "path": "/home/seluser/Downloads/toto/titi/testnew1.json",
+            "filename": "testnew1.json",
+            "size": "5018",
+            "content-type": "JSON",
+            "lastModified": "2022.08.12:07.05.57",
+            "content": {
+                "content": "test"
+            }
+        }, 
+        {
+            "path": "/home/seluser/Downloads/toto/titi/testnew2.json",
+            "filename": "testnew2.json",
+            "size": "0",
+            "content-type": "UNKNOWN",
+            "lastModified": "2022.08.12:07.05.57",
+            "content": ""
+        }
+        ]
+    }
+[NOTE]
+====
+Please note that on the above example, the 1st file is a json file that contain:
+
+    {"content": "test"} 
+====
+
+.get 2 files
+====
+*[blue]#Value1#* /home/seluser/Downloads/*.json
+
+*[blue]#Value2#* 2
+
+*[blue]#Value3#* LASTMODIFIED
+
+Will get the last 2 json files from /home/seluser/Downloads/ on the robot side.
+====
+
+.get 1 file.
+====
+*[blue]#Value1#* /home/seluser/Downloads/test.json
+
+*[blue]#Value2#* 
+
+*[blue]#Value3#* 
+
+Will get /home/seluser/Downloads/test.json file on the robot side.
+====
+
 ==== calculateProperty
 |=== 
 

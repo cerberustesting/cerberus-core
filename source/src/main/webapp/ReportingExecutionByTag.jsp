@@ -72,13 +72,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <label id="countryLabel" class="bold">Country :</label>
-                                    <button id="countrySelectAll" class="glyphicon glyphicon-check"
-                                            title="select all countries"></button>
-                                    <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
-                                            title="unselect all countries"></button>
-                                    <div class="form-group" id="countryFilter">
+                                    <div class="row" id="tagFilter">
+                                        <label id="countryLabel" class="bold">Country :</label>
+                                        <button id="countrySelectAll" class="glyphicon glyphicon-check"
+                                                title="select all countries"></button>
+                                        <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
+                                                title="unselect all countries"></button>
+                                        <button class="btn pull-right" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1"><span class="glyphicon glyphicon-chevron-down"></span></button>
+
+                                        <div class="form-group collapse in" id="countryFilter">
+                                        </div>
                                     </div>
+
                                     <label id="statusLabel" class="bold">Status :</label>
                                     <button id="statusSelectAll" class="glyphicon glyphicon-check"
                                             title="select all status"></button>
@@ -241,7 +246,6 @@
                                             <button id="saveTagComment" class="btn btn-primary" style="display : none;">Save</button>
                                         </span>
                                     </div>
-                                    <!--                                    <input type="text" class="form-control" name="TagComment" id="TagComment" readonly aria-describedby="basic-addon1" >-->
                                 </div>
                             </div>
                         </div>
@@ -256,52 +260,54 @@
 
 
                             <div class="row" id="panelDuration">
-                                <div class="col-sm-12">
+                                <div class="col-sm-6">
                                     <label for="endLastExe">Last Execution :</label>
                                     <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-6">
                                     <label for="TagUsrCreated">Created by :</label>
                                     <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-6" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
-                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly
-                                           aria-describedby="basic-addon1">
+                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1">
+                                </div>
+                                <div class="col-sm-6" id="TagcampaignCICel1">
+                                    <label for="tagDetailCI">CI Result :</label>
+                                    <div class="marginTop10" id="tagDetailCI">
+                                    </div>
                                 </div>
                             </div>
                             <div class="marginTop10" id="tagDetailBar">
                             </div>
 
                             <div class="marginTop10" class="row" id="TagcampaignCel2">
-                                <div class="col-sm-4">
-                                    <div class="input-group-btn">
-                                        <a id="buttonSeeStatsCampaign">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button>
-                                        </a>
+                                <div class="col-sm-5" id="xRayTestExecutionBlock">
+                                    <label for="xRayTestExecution">JIRA Xray :</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="xRayTestExecution" id="xRayTestExecution" readonly aria-describedby="basic-addon1">
+                                        <span class="input-group-btn">
+                                            <a id="buttonJIRAXray">
+                                                <button type="button" class="btn btn-default" >
+                                                    <img src="./images/jira.png" width="20">
+                                                </button>
+                                            </a>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-7">
                                     <div class="input-group-btn">
-                                        <a id="buttonRunCampaign">
+                                        <a id="buttonSeeStatsCampaign" class="pull-right">
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button>
+                                        </a>
+                                        <a id="buttonRunCampaign" class="pull-right">
                                             <button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button>
                                         </a>
                                     </div>
-                                </div>
-                                <div class="col-sm-2" id="xRayTestExecutionBlock">
-                                    <label for="xRayTestExecution">JIRA Xray :</label>
-                                    <input type="text" class="form-control" name="xRayTestExecution" id="xRayTestExecution" readonly aria-describedby="basic-addon1">
-                                </div>
-                                <div class="col-sm-2" id="xRayTestExecutionBlockBtn">
-                                    <a id="buttonJIRAXray">
-                                        <button type="button" class="btn btn-default" style="margin-left: 10px;">
-                                            <img src="./images/jira.png" width="20">
-                                        </button>
-                                    </a>
                                 </div>
                             </div>
 

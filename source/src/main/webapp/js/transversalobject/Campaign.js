@@ -451,12 +451,12 @@ function editEntryClick(param) {
         $("[name='lbl_cronexp']").html(doc.getDocOnline("scheduler", "cronexp"));
 
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-        $('#addscheduler').off('click');
-        $('#addscheduler').click(addNewSchedulerRow);
+//        $('#addscheduler').off('click');
+//        $('#addscheduler').click(addNewSchedulerRow);
         $('#addScheduleEntry').off('click');
         $('#addScheduleEntry').click(addNewSchedulerRow);
-        $('#schedulerinput').val('0 0 12 1/1 * ? *');
-        loadCronList();
+//        $('#schedulerinput').val('0 0 12 1/1 * ? *');
+//        loadCronList();
         loadSchedulerTable(obj);
 
         /* EVENTHOOK */
@@ -472,15 +472,23 @@ function editEntryClick(param) {
 
 }
 
-function loadCronList() {
+function loadCronList(field) {
     var cronList = [];
     cronList.push("0 0 12 1/1 * ? *");
     cronList.push("0 0 12 ? * MON-FRI *");
     cronList.push("0 0/10 * 1/1 * ? *");
-    $("#schedulerinput").autocomplete({
-        source: cronList
+    field.autocomplete({
+        source: cronList,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
     });
-
 }
 
 function editEntryModalSaveHandler() {
@@ -635,12 +643,12 @@ function addEntryClick() {
     /* SCHEDULER */
     var doc = new Doc();
     $('#schedulerTableBody tr').remove();
-    $('#addscheduler').off('click');
-    $('#addscheduler').click(addNewSchedulerRow);
+//    $('#addscheduler').off('click');
+//    $('#addscheduler').click(addNewSchedulerRow);
     $('#addScheduleEntry').off('click');
     $('#addScheduleEntry').click(addNewSchedulerRow);
-    $('#schedulerinput').val('0 0 12 1/1 * ? *');
-    loadCronList();
+//    $('#schedulerinput').val('0 0 12 1/1 * ? *');
+//    loadCronList();
     loadSchedulerTable("");
 
     /* EVENTHOOK */
@@ -1139,6 +1147,7 @@ function appendSchedulerRow(scheduler) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-s").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var cronInput = $("<input name=\"cronDefinition\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.cronDefinition);
+    loadCronList(cronInput);
     var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
     var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
     var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(scheduler.lastExecution);
@@ -1316,7 +1325,7 @@ function getClass(connector) {
 
 function addNewSchedulerRow() {
     var newScheduler = {
-        cronDefinition: $('#schedulerinput').val(),
+        cronDefinition: "",
         isActive: "Y",
         lastExecution: "",
         description: "",

@@ -37,9 +37,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             selector: '[data-toggle="tooltip"]'
         });
         $('[data-toggle="popover"]').popover({
-                'placement': 'auto',
-                'container': 'body'
-            }
+            'placement': 'auto',
+            'container': 'body'
+        }
         );
 
         $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
@@ -375,28 +375,28 @@ function getHPOptionsExeBar(title, unit) {
         },
         scales: {
             xAxes: [{
-                offset: true,
-                type: 'time',
-                stacked: true,
-                time: {
-                    tooltipFormat: 'll',
-                    unit: 'day',
-                    round: 'day',
-                    displayFormats: {
-                        day: 'MMM D'
+                    offset: true,
+                    type: 'time',
+                    stacked: true,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
                     }
-                },
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Date'
-                }
-            }],
+                }],
             yAxes: [{
-                stacked: true,
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
         }
     };
     return option;
@@ -413,28 +413,28 @@ function getHPOptionsTcGraph(title, unit) {
         },
         scales: {
             xAxes: [{
-                offset: false,
-                type: 'time',
-                stacked: false,
-                time: {
-                    tooltipFormat: 'll',
-                    unit: 'day',
-                    round: 'day',
-                    displayFormats: {
-                        day: 'MMM D'
+                    offset: false,
+                    type: 'time',
+                    stacked: false,
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'day',
+                        round: 'day',
+                        displayFormats: {
+                            day: 'MMM D'
+                        }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
                     }
-                },
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Date'
-                }
-            }],
+                }],
             yAxes: [{
-                stacked: false,
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
+                    stacked: false,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
         }
     };
     return option;
@@ -465,7 +465,7 @@ function generateTagReport(data, tag, rowId) {
     var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="xs-only" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
+    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="hidden-xs" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
                                                         <div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];

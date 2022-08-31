@@ -4,3 +4,4 @@ target/
 .project
 /src/main/webapp/documentation/
 localdata
+nb-configuration.xml
