@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * @author mlombard
  */
-@RestControllerAdvice(basePackages = "org.cerberus.api")
+@RestControllerAdvice(basePackages = "org.cerberus.core.api")
 public class RestExceptionHandler {
 
     public RestExceptionHandler() {

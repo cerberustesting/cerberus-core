@@ -31,7 +31,6 @@ import org.cerberus.core.api.dto.views.View;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -51,7 +50,6 @@ public class TestcaseDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(example = "0001A", position = 1)
-    @Pattern(regexp = "^[0-9]{4}[AB]$")
     private String testcaseId;
 
     @NotBlank(message = "Application attribute is mandatory")

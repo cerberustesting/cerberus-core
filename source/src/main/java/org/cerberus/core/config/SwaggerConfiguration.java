@@ -64,7 +64,7 @@ public class SwaggerConfiguration {
                 .groupName("public API version " + version)
                 .ignoredParameterTypes(Principal.class)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.cerberus.api.controller"))
+                .apis(RequestHandlerSelectors.basePackage("org.cerberus.core.api.controller"))
                 .apis(p -> {
                     if (p.headers() != null) {
                         for (NameValueExpression<String> nve : p.headers()) {
