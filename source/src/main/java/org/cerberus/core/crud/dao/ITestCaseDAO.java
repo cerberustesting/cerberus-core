@@ -19,11 +19,6 @@
  */
 package org.cerberus.core.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.factory.impl.FactoryTestCase;
 import org.cerberus.core.dto.TestListDTO;
@@ -31,6 +26,12 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -42,14 +43,12 @@ import org.cerberus.core.util.answer.AnswerList;
 public interface ITestCaseDAO {
 
     /**
-     *
      * @param test
      * @return
      */
     List<TestCase> findTestCaseByTest(String test);
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -58,14 +57,12 @@ public interface ITestCaseDAO {
     TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
     /**
-     *
      * @param testCase
      * @return
      */
     boolean updateTestCaseInformation(TestCase testCase);
 
     /**
-     *
      * @param tc
      * @return
      */
@@ -84,21 +81,18 @@ public interface ITestCaseDAO {
     void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
 
     /**
-     *
      * @param testCase
      * @return
      */
     boolean createTestCase(TestCase testCase);
 
     /**
-     *
      * @param application
      * @return
      */
     List<TestCase> findTestCaseByApplication(String application);
 
     /**
-     *
      * @param test
      * @param application
      * @param country
@@ -117,7 +111,6 @@ public interface ITestCaseDAO {
     List<TestCase> findTestCaseByCriteria(TestCase testCase, String text, String system);
 
     /**
-     *
      * @param column
      * @return
      */
@@ -130,37 +123,34 @@ public interface ITestCaseDAO {
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     * @param campaign the campaign name
-     * @param countries arrays of country to filter
+     * @param campaign    the campaign name
+     * @param countries   arrays of country to filter
      * @param labelIdList
-     * @param status arrays of status to filter
-     * @param system arrays of system to filter
+     * @param status      arrays of status to filter
+     * @param system      arrays of system to filter
      * @param application arrays of application to filter
-     * @param priority arrays of priority to filter
-     * @param type arrays of type to filter
-     * @param maxReturn nd max of records to return. (Prevent from returning too
-     * large list)
+     * @param priority    arrays of priority to filter
+     * @param type        arrays of type to filter
+     * @param maxReturn   nd max of records to return. (Prevent from returning too
+     *                    large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
     AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn);
 
     /**
-     *
      * @param tc
      * @throws CerberusException
      */
     public void updateTestCase(TestCase tc) throws CerberusException;
 
     /**
-     *
      * @param test
      * @return
      */
     String getMaxTestcaseIdByTestFolder(String test);
 
     /**
-     *
      * @param test
      * @param system
      * @return
@@ -168,7 +158,6 @@ public interface ITestCaseDAO {
     public List<TestCase> findTestCaseByTestSystem(String test, String system);
 
     /**
-     *
      * @param test
      * @param app
      * @param isActive
@@ -185,7 +174,6 @@ public interface ITestCaseDAO {
     List<TestCase> findTestCaseByCriteria(String[] test, String[] app, String[] isActive, String[] priority, String[] status, String[] type, String[] targetMajor, String[] targetMinor, String[] creator, String[] implementer, String[] campaign);
 
     /**
-     *
      * @param test
      * @param testcase
      * @return
@@ -193,15 +181,8 @@ public interface ITestCaseDAO {
      */
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
-    /**
-     *
-     * @param test
-     * @return
-     */
-    AnswerList readTestCaseByStepsInLibrary(String test);
 
     /**
-     *
      * @param system
      * @param test
      * @param start
@@ -214,7 +195,6 @@ public interface ITestCaseDAO {
     public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param test
      * @param app
      * @param creator
@@ -229,10 +209,9 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
+                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -240,7 +219,6 @@ public interface ITestCaseDAO {
     public AnswerItem<TestCase> readByKey(String test, String testCase);
 
     /**
-     *
      * @param system
      * @param test
      * @param searchParameter
@@ -251,7 +229,6 @@ public interface ITestCaseDAO {
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
-     *
      * @param systems
      * @param to
      * @return
@@ -259,23 +236,20 @@ public interface ITestCaseDAO {
     public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to);
 
     /**
-     *
      * @param keyTest
      * @param keyTestCase
-     * @param testCase target object value.
+     * @param testCase    target object value.
      * @return
      */
     public Answer update(String keyTest, String keyTestCase, TestCase testCase);
 
     /**
-     *
      * @param testCase
      * @return
      */
     public Answer create(TestCase testCase);
 
     /**
-     *
      * @param testCase
      * @return
      */
@@ -287,20 +261,18 @@ public interface ITestCaseDAO {
      * @param resultSet ResultSet relative to select from table TestCase
      * @return object {@link TestCase}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
 
     /**
-     *
      * @param service
      * @return
      */
     public AnswerList<TestListDTO> findTestCaseByService(String service);
 
     /**
-     *
      * @param service
      * @return
      */

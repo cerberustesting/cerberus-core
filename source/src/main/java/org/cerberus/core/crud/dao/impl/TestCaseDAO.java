@@ -982,7 +982,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
     }
 
-    
+
     @Override
     public void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException {
         final String query = new StringBuilder("UPDATE testcase tc ")
@@ -998,7 +998,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+             PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, application);
@@ -1010,7 +1010,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
     }
 
-    
+
     @Override
     public String getMaxTestcaseIdByTestFolder(String test) {
         String max = "";
@@ -1249,63 +1249,6 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList<TestCase> readTestCaseByStepsInLibrary(String test) {
-        AnswerList<TestCase> response = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCase> list = new ArrayList<>();
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcase tec ");
-        query.append("LEFT OUTER JOIN application app ON app.application=tec.application ");
-        query.append("INNER JOIN testcasestep  tcs ON tec.test = tcs.test and tec.testcase = tcs.testcase ");
-        query.append("WHERE tec.test= ? and tcs.isLibraryStep = true ");
-        query.append("GROUP BY tec.testcase order by tec.testcase ");
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-
-            preStat.setString(1, test);
-
-            try (ResultSet resultSet = preStat.executeQuery();) {
-                list = new ArrayList<>();
-
-                while (resultSet.next()) {
-                    list.add(loadFromResultSet(resultSet));
-                }
-
-                if (list.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                    LOG.error("Partial Result in the query.");
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    response = new AnswerList<>(list, list.size());
-                } else if (list.size() <= 0) {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    response = new AnswerList<>(list, list.size());
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    response = new AnswerList<>(list, list.size());
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        }
-        response.setDataList(list);
-        response.setResultMessage(msg);
-        return response;
-    }
-
-    @Override
     public AnswerList<TestCase> readStatsBySystem(List<String> systems, Date to) {
         AnswerList<TestCase> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1418,7 +1361,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : {}" + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
