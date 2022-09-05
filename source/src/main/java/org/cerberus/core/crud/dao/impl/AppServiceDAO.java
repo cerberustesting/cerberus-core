@@ -81,7 +81,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         final String query = "SELECT * FROM appservice srv WHERE `service` = ?";
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, service);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -111,7 +111,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug(SQL_MESSAGE, query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setString(1, "%" + service + "%");
             preStat.setInt(2, limit);
@@ -230,7 +230,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug(SQL_MESSAGE, query.toString());
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
 
@@ -330,7 +330,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug("SQL.param.service : {}", key);
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -395,7 +395,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
 
         query.append(searchSQL);
-        query.append(" group by ifnull(").append(columnName).append(",'')");
+        query.append(" group by ").append(columnName);
         query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
@@ -403,8 +403,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             LOG.debug(SQL_MESSAGE, query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement()) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -425,7 +425,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 //gets the data
                 while (resultSet.next()) {
@@ -482,7 +482,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug(SQL_MESSAGE, query);
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
@@ -553,7 +553,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug("SQL.param.service : {}", service);
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
@@ -605,7 +605,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug(SQL_MESSAGE, query);
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setString(1, object.getService());
 

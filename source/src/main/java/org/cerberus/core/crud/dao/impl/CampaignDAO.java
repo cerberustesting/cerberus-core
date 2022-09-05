@@ -19,17 +19,8 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ICampaignDAO;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.factory.IFactoryCampaign;
@@ -44,6 +35,16 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author memiks
@@ -209,7 +210,7 @@ public class CampaignDAO implements ICampaignDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             preStat.setString(1, key);
 
@@ -250,7 +251,7 @@ public class CampaignDAO implements ICampaignDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             preStat.setInt(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -306,7 +307,7 @@ public class CampaignDAO implements ICampaignDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(").append(columnName).append(",'')");
+        query.append(" group by ").append(columnName);
         query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
@@ -314,8 +315,8 @@ public class CampaignDAO implements ICampaignDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -327,7 +328,7 @@ public class CampaignDAO implements ICampaignDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

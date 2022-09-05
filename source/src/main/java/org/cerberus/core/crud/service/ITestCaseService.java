@@ -117,7 +117,6 @@ public interface ITestCaseService {
     boolean updateTestCaseInformation(TestCase testCase);
 
     /**
-     *
      * @param application
      * @param oldObject
      * @param newObject
@@ -220,11 +219,6 @@ public interface ITestCaseService {
      */
     AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
 
-    /**
-     * @param test
-     * @return
-     */
-    AnswerList readTestCaseByStepsInLibrary(String test);
 
     /**
      * @param system

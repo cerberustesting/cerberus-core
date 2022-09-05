@@ -476,11 +476,6 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readTestCaseByStepsInLibrary(String test) {
-        return testCaseDao.readTestCaseByStepsInLibrary(test);
-    }
-
-    @Override
     public AnswerList<TestCase> readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseDao.readByTestByCriteria(system, test, start, amount, sortInformation, searchTerm, individualSearch);
     }
