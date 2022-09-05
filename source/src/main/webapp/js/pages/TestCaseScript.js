@@ -1835,7 +1835,7 @@ Step.prototype.draw = function () {
 // END OF LABEL CONTAINERS
 
 // BUTTON CONTAINERS
-    var stepButtonContainer = $("<div class='col-sm-1 stepButtonContainer' style='padding-left:0px'></div>");
+    var stepButtonContainer = $("<div class='col-sm-12'></div>").append("<div class='stepButtonContainer pull-right' style='padding-left:0px'></div>");
 // END OF BUTTON CONTAINERS
     var useStepContainer = $("<div class='col-sm-12 fieldRow row' class='useStepContainer' id='UseStepRow' style='display: none;'></div>");
     if (this.isUsingLibraryStep) {
@@ -1845,7 +1845,7 @@ Step.prototype.draw = function () {
 
     }
 
-    htmlElement.append($("<div class='col-sm-11' style='padding-left: 0px;'></div>").append($("<div></div>").append(descContainer).append(stepLabelContainer).append(useStepContainer)));
+    htmlElement.append($("<div class='col-sm-12' style='padding-left: 0px;'></div>").append($("<div></div>").append(descContainer).append(stepLabelContainer).append(useStepContainer)));
     //htmlElement.append(stepLabelContainer);
     //htmlElement.append(useStepContainer);
     htmlElement.append(stepButtonContainer);
@@ -2268,61 +2268,11 @@ function getClassWithCondition(object, addClass) {
 Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
-    var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
-    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
-    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("cursor", "pointer").css("margin-top", "10px")));
 
+    //var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
 
-    if ((!this.parentStep.isUsingLibraryStep) && (action.hasPermissionsUpdate)) {
-        drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
-        drag.on("dragstart", handleDragStart);
-        drag.on("dragenter", handleDragEnter);
-        drag.on("dragover", handleDragOver);
-        drag.on("dragleave", handleDragLeave);
-        drag.on("drop", handleDrop);
-        drag.on("dragend", handleDragEnd);
-    } else {
-        addBtn.prop("disabled", true);
-        addABtn.prop("disabled", true);
-        supprBtn.prop("disabled", true);
-    }
+    var row = this.generateContent();
 
-    var scope = this;
-    addBtn.click(function () {
-        addControlAndFocus(scope);
-    });
-    addABtn.click(function () {
-        addActionAndFocus(scope);
-    });
-
-    supprBtn.click(function () {
-        setModif(true);
-        action.toDelete = (action.toDelete) ? false : true;
-
-        if (action.toDelete) {
-            action.html.find(".step-action").addClass("danger");
-        } else {
-            action.html.find(".step-action").removeClass("danger");
-        }
-    });
-
-    plusBtn.click(function(){
-        displayOverrideOptionsModal(action,htmlElement);
-    });
-
-    row.append(this.generateContent());
-    row.append(imgGrp);
-    row.append(btnGrp);
-    row.data("item", this);
     htmlElement.prepend(row);
 
     setPlaceholderAction(htmlElement);
@@ -2457,11 +2407,10 @@ function displayOverrideOptionsModal(action,htmlElement) {
             setModif(true);
         }
 
-        printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newOpts,"actionOption");
-        printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newConditionOpts,"conditionOption");
-        printLabelForCondition($($(htmlElement)[0]).find(".secondRow"),action.conditionOperator);
+        printLabelForOptions($($(htmlElement)[0]).find(".thirdRow"),newOpts,newConditionOpts,"optionLabel");
+        printLabelForCondition($($(htmlElement)[0]).find(".thirdRow"),action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
         //printLabelForFatal(action.isFatal, $($(htmlElement)[0]).find(".secondRow"));
-        printLabel($($(htmlElement)[0]).find(".secondRow"), action.isFatal, "actionFatalLabel", "labelOrange", "Kill Execution if Action Fail")
+        printLabel($($(htmlElement)[0]).find(".thirdRow"), action.isFatal, "actionFatalLabel", "labelOrangeRevert", "Kill Execution if Action Fail")
 
 
     });
@@ -2515,12 +2464,44 @@ Action.prototype.refreshSort = function () {
 };
 
 Action.prototype.generateContent = function () {
-    var obj = this;
+    var action = this;
     var doc = new Doc();
-    var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row form-group");
+    var row = $("<div></div>").addClass("step-action row").addClass("action");
+    var content = $("<div></div>").addClass("content col-lg-10");
+    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
-    //var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow").hide();
+    var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
+
+
+    //FIRST ROW
+    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
+
+    addBtn.click(function () {
+        addControlAndFocus(action);
+    });
+    addABtn.click(function () {
+        addActionAndFocus(action);
+    });
+
+    supprBtn.click(function () {
+        setModif(true);
+        action.toDelete = (action.toDelete) ? false : true;
+
+        if (action.toDelete) {
+            action.html.find(".step-action").addClass("danger");
+        } else {
+            action.html.find(".step-action").removeClass("danger");
+        }
+    });
+
+    plusBtn.click(function(){
+        displayOverrideOptionsModal(action,action.htmlElement);
+    });
+
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
@@ -2538,7 +2519,7 @@ Action.prototype.generateContent = function () {
     descriptionField.css("width", "100%");
     descriptionField.on("change", function () {
         setModif(true);
-        obj.description = descriptionField.val();
+        action.description = descriptionField.val();
     });
 // END OF DESCRIPTION
 
@@ -2562,7 +2543,7 @@ Action.prototype.generateContent = function () {
     actions.val(this.action);
     actions.off("change").on("change", function () {
         setModif(true);
-        obj.action = actions.val();
+        action.action = actions.val();
         setPlaceholderAction($(this).parents(".action"));
     });
 // END OF ACTION FIELD
@@ -2571,7 +2552,7 @@ Action.prototype.generateContent = function () {
     var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
     value1Field.val(cleanErratum(this.value1));
     value1Field.on("change", function () {
-        obj.value1 = convertValueWithErratum(obj.value1, value1Field.val());
+        action.value1 = convertValueWithErratum(action.value1, value1Field.val());
     });
 
     var field1Container = $("<div class='input-group'></div>");
@@ -2585,7 +2566,7 @@ Action.prototype.generateContent = function () {
     var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
     value2Field.val(cleanErratum(this.value2));
     value2Field.on("change", function () {
-        obj.value2 = convertValueWithErratum(obj.value2, value2Field.val());
+        action.value2 = convertValueWithErratum(action.value2, value2Field.val());
     });
 
     var field2Container = $("<div class='input-group'></div>");
@@ -2599,7 +2580,7 @@ Action.prototype.generateContent = function () {
     var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
     value3Field.val(cleanErratum(this.value3));
     value3Field.on("change", function () {
-        obj.value3 = convertValueWithErratum(obj.value3, value3Field.val());
+        action.value3 = convertValueWithErratum(action.value3, value3Field.val());
     });
 
     var field3Container = $("<div class='input-group'></div>");
@@ -2612,29 +2593,37 @@ Action.prototype.generateContent = function () {
 
 //STRUCTURE
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append(actions));
-    secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group").append(field1Container));
-    secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group").append(field2Container));
-    secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group").append(field3Container));
+    secondRow.append($("<div></div>").addClass("col-lg-8 form-group marginBottom10").append(actions));
+    secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group marginBottom10").append(field1Container));
+    secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group marginBottom10").append(field2Container));
+    secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group marginBottom10").append(field3Container));
 
-    printLabelForOptions(secondRow,obj.options,"actionOption");
-    printLabelForOptions(secondRow,obj.conditionOptions,"conditionOption");
-    printLabelForCondition(secondRow,obj.conditionOperator);
-    //printLabelForFatal(obj.isFatal, secondRow);
-    printLabel(secondRow, obj.isFatal, "actionFatalLabel", "labelOrange", "Kill Execution if Action Fail")
 
-    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
+
+    if ((this.parentStep.isUsingLibraryStep) || (!action.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
         value3Field.prop("readonly", true);
         actions.prop("disabled", "disabled");
+        btnGrp.find('.boutonGroup').hide();
     }
 
     content.append(firstRow);
     content.append(secondRow);
+    content.append(thirdRow);
 
-    return content;
+
+    row.append(content);
+    row.append(btnGrp);
+    row.data("item", this);
+
+    printLabelForOptions(btnGrp,action.options,action.conditionOptions,"optionLabel");
+    printLabelForCondition(btnGrp,action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
+    //printLabelForFatal(obj.isFatal, secondRow);
+    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelOrangeRevert", "Stop Execution on Failure")
+
+    return row;
 };
 
 
@@ -2682,43 +2671,59 @@ function hasOneOptionActive(options) {
     return false;
 }
 
-function printLabelForOptions(secondRow, newOpts, context){
-    let className = context + 'Label';
-    $(secondRow).find('.'+className).remove();
+function printLabelForOptions(element, newOpts, newOptsCondition, className){
+    $(element).find('.'+className).remove();
+    let overrideOption = false;
+    let title = "";
+
     for(optionObject in newOpts){
         if(newOpts[optionObject].act){
-            var labelOptions=$('<span class="label label-primary labelBlue optionLabel '+className+'">'+newOpts[optionObject].option+' : '+newOpts[optionObject].value+'</span>');
-            $(secondRow).append(labelOptions[0]);
+            title = title + "option : " + newOpts[optionObject].option + "=" + newOpts[optionObject].value + " \n\ ";
+            overrideOption = true;
         }
     }
+    for(optionObject in newOptsCondition){
+        if(newOptsCondition[optionObject].act){
+            title = title + "condition option : " + newOptsCondition[optionObject].option + "=" + newOptsCondition[optionObject].value + " \n\ ";
+            overrideOption = true;
+        }
+    }
+    if (overrideOption) {
+        var labelOptions = $('<span data-toggle="tooltip" data-original-title="' + title + '" class="label label-primary labelBlueRevert pull-right optionLabel ' + className + '"><span class="glyphicon glyphicon-cog"></span> Override Parameter</span>');
+        $(element).append(labelOptions[0]);
+    }
 }
 
-function printLabelForCondition(secondRow,conditionOperator){
-    $(secondRow).find('.conditionLabel').remove();
+function printLabelForCondition(element,conditionOperator,conditionValue1,conditionValue2,conditionValue3){
+    $(element).find('.conditionLabel').remove();
     if (conditionOperator === 'never') {
-        var labelOptions = $('<span class="label label-primary labelRed optionLabel conditionLabel">Do not execute</span>');
-        $(secondRow).append(labelOptions[0]);
+        var labelOptions = $('<span class="label label-primary labelRedRevert optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
+        $(element).append(labelOptions[0]);
     } else if (conditionOperator !== 'always'){
-        var title = "Execute if "+conditionOperator;
-        var labelOptions = $('<span data-toggle="tooltip" data-original-title="'+title+'" class="label label-primary labelGreen optionLabel conditionLabel">Execute only if condition is true</span>');
-        $(secondRow).append(labelOptions[0]);
+        var title = "<div>Execution Condition : </div>";
+        title += "<div>" + conditionOperator + "</div>";
+        title += "<div>val1" + conditionValue1 + "</div>";
+        title += "<div>val2" + conditionValue2 + "</div>";
+        title += "<div>val3" + conditionValue3+ "</div>";
+        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="'+title+'" class="label label-primary labelGreenRevert pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
+        $(element).append(labelOptions[0]);
     }
 }
 
-function printLabelForFatal(isFatal, secondRow){
-    $(secondRow).find('.actionFatalLabel').remove();
+function printLabelForFatal(isFatal, element){
+    $(element).find('.actionFatalLabel').remove();
     if (isFatal) {
-        var labelOptions = $('<span class="label label-primary labelOrange optionLabel actionFatalLabel">Stop execution if it Fail</span>');
-        $(secondRow).append(labelOptions[0]);
+        var labelOptions = $('<span class="label label-primary labelOrangeRevert optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
+        $(element).append(labelOptions[0]);
     }
 }
 
 
-function printLabel(row, displayBoolean, identifierClass, colorClass, text){
-    $(row).find('.'+identifierClass).remove();
+function printLabel(element, displayBoolean, identifierClass, colorClass, text){
+    $(element).find('.'+identifierClass).remove();
     if (displayBoolean) {
-        var labelOptions = $('<span class="label label-primary '+ colorClass +' optionLabel '+ identifierClass +'">'+ text +'</span>');
-        $(row).append(labelOptions[0]);
+        var labelOptions = $('<span class="label label-primary '+ colorClass +' optionLabel '+ identifierClass +' pull-right "><span class="glyphicon glyphicon-cog"></span> '+ text +'</span>');
+        $(element).append(labelOptions[0]);
     }
 }
 
@@ -2835,86 +2840,10 @@ function Control(json, parentAction, canUpdate) {
 Control.prototype.draw = function (afterControl) {
     var htmlElement = this.html;
     var control = this;
-    //var col1 = $("<div></div>").addClass("col-lg-1").prop("draggable", true);
-    var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
-    //var extra = $("<div></div>").addClass("extra-info");
 
-    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
-    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp1 = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
-    var content = this.generateContent();
+    var row = this.generateContent();
 
-   // if ((control.conditionOperator !== 'always')) {
-      //  plusBtn.removeClass("btn-default").addClass("btn-primary");
-      //  var container = plusBtn.parent().parent().parent();
-
-     //   if ((control.conditionOperator === 'never')) {
-      //      extra.append(getClassNever("Control", ""));
-     //   } else {
-      //      extra.append(getClassWithCondition("Control", ""));
-     //   }
-  //  }
-
-   // if (control.isFatal) {
-     //   extra.append(getClassFatal("Control", ""));
-  //  }
-    if ((!this.parentAction.parentStep.isUsingLibraryStep) && (control.hasPermissionsUpdate)) {
-        drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
-        drag.on("dragstart", handleDragStart);
-        drag.on("dragenter", handleDragEnter);
-        drag.on("dragover", handleDragOver);
-        drag.on("dragleave", handleDragLeave);
-        drag.on("drop", handleDrop);
-        drag.on("dragend", handleDragEnd);
-    }
-
-    var scope = this;
-
-    addABtn.click(function () {
-        addActionAndFocus(scope.parentAction);
-    });
-
-    addBtn.click(function () {
-        addControlAndFocus(scope.parentAction, scope);
-    });
-    supprBtn.click(function () {
-        setModif(true);
-        control.toDelete = (control.toDelete) ? false : true;
-
-        if (control.toDelete) {
-            control.html.addClass("danger");
-        } else {
-            control.html.removeClass("danger");
-        }
-    });
-
-    plusBtn.click(function () {
-        displayOverrideOptionsModal(control,htmlElement);
-    });
-
-    if ((this.parentStep.isUsingLibraryStep) || (!control.hasPermissionsUpdate)) {
-
-        supprBtn.attr("disabled", true);
-        addBtn.attr("disabled", true);
-        addABtn.attr("disabled", true);
-    }
-
-
-
-    //col1.append(drag).append(extra);
-
-    //htmlElement.append(col1);
-    htmlElement.append(content);
-    htmlElement.append(imgGrp1);
-    htmlElement.append(btnGrp);
-    htmlElement.data("item", this);
+    htmlElement.append(row);
 
     //setPlaceholderControl(htmlElement);
     setPlaceholderCondition(htmlElement);
@@ -2963,13 +2892,43 @@ Control.prototype.refreshSort = function () {
 };
 
 Control.prototype.generateContent = function () {
-    var obj = this;
+    var control = this;
     var doc = new Doc();
-    var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row form-group");
+    var row = this.html;
+    var content = $("<div></div>").addClass("content col-lg-10");
+    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
-    secondRow.css("width", "120%");
-    var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
+    var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
+
+
+    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("marginRight10 boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
+
+    addABtn.click(function () {
+        addActionAndFocus(control.parentAction);
+    });
+
+    addBtn.click(function () {
+        addControlAndFocus(control.parentAction, control);
+    });
+    supprBtn.click(function () {
+        setModif(true);
+        control.toDelete = (control.toDelete) ? false : true;
+
+        if (control.toDelete) {
+            control.html.addClass("danger");
+        } else {
+            control.html.removeClass("danger");
+        }
+    });
+
+    plusBtn.click(function () {
+        displayOverrideOptionsModal(control,htmlElement);
+    });
+
 
 //DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
@@ -2991,7 +2950,7 @@ Control.prototype.generateContent = function () {
     descriptionField.css("width", "100%");
     descriptionField.on("change", function () {
         setModif(true);
-        obj.description = descriptionField.val();
+        control.description = descriptionField.val();
     });
 //END OF DESCRIPTION
 
@@ -3003,26 +2962,6 @@ Control.prototype.generateContent = function () {
     for (var key in newControlOptList) {
         controls.append($("<option></option>").text(newControlOptList[key].label[user.language]).val(newControlOptList[key].value));
     }
-
-    //operator.append($("<option></option>").text(operatorOptList["chooseControl"].label[user.language]).val(operatorOptList["chooseControl"].value));
-
-    /*
-
-    for (var i = 0; i < newControlOptList.length; i++) {
-        controls.append($("<optGroup></optGroup>").attr("label", controlOptGroupList[i].label[user.language]).attr("data-group", controlOptGroupList[i].name).attr("data-picto",controlOptGroupList[i].picto));
-    }
-
-    for (var key in controlOptList) {
-        if(controlOptList[key].group !== 'none'){
-            controls.find("[data-group='"+controlOptList[key].group+"']").append($("<option></option>").text(controlOptList[key].label[user.language]).val(controlOptList[key].value));
-        } else {
-            controls.prepend($("<option></option>").text(controlOptList[key].label[user.language]).val(controlOptList[key].value));
-        }
-    }
-
-     */
-
-    //controls = getSelectInvariant("CONTROL", false, false).attr("id", "controlSelect");
 // END OF CONTROL FIELD
 
 //VALUE1 FIELD
@@ -3030,7 +2969,7 @@ Control.prototype.generateContent = function () {
     controlValue1Field.val(cleanErratum(this.value1));
     controlValue1Field.on("change", function () {
         setModif(true);
-        obj.value1 = convertValueWithErratum(obj.value1, controlValue1Field.val());
+        control.value1 = convertValueWithErratum(control.value1, controlValue1Field.val());
     });
     var controlField1Container = $("<div class='input-group'></div>");
     var controlField1Addon = $("<span></span>").attr("id","controlField1Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
@@ -3045,7 +2984,7 @@ Control.prototype.generateContent = function () {
     controlValue2Field.css("width", "84%");
     controlValue2Field.on("change", function () {
         setModif(true);
-        obj.value2 = convertValueWithErratum(obj.value2, controlValue2Field.val());
+        control.value2 = convertValueWithErratum(control.value2, controlValue2Field.val());
     });
     var controlField2Container = $("<div class='input-group'></div>");
     var controlField2Addon = $("<span></span>").attr("id","controlField2Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
@@ -3060,7 +2999,7 @@ Control.prototype.generateContent = function () {
     controlValue3Field.css("width", "84%");
     controlValue3Field.on("change", function () {
         setModif(true);
-        obj.value3 = controlValue3Field.val();
+        control.value3 = controlValue3Field.val();
     });
     var controlField3Container = $("<div class='input-group'></div>");
     var controlField3Addon = $("<span></span>").attr("id","controlField3Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
@@ -3070,29 +3009,33 @@ Control.prototype.generateContent = function () {
 //END OF VALUE3 FIELD
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append(controls));
-    secondRow.append($("<div></div>").addClass("v1 col-lg-3 form-group").append(controlField1Container));
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append(operator));
-    secondRow.append($("<div></div>").addClass("v2 col-lg-3 form-group").append(controlField2Container));
-    secondRow.append($("<div></div>").addClass("v3 col-lg-3 form-group").append(controlField3Container));
+    secondRow.append($("<div></div>").addClass("col-lg-8 form-group marginBottom10").append(controls));
+    secondRow.append($("<div></div>").addClass("v1 col-lg-3 form-group marginBottom10").append(controlField1Container));
+    secondRow.append($("<div></div>").addClass("col-lg-2 form-group marginBottom10").append(operator));
+    secondRow.append($("<div></div>").addClass("v2 col-lg-3 form-group marginBottom10").append(controlField2Container));
+    secondRow.append($("<div></div>").addClass("v3 col-lg-3 form-group marginBottom10").append(controlField3Container));
 
-    printLabelForOptions(secondRow,obj.options,"actionOption");
-    printLabelForOptions(secondRow,obj.conditionOptions,"conditionOption");
-    printLabelForCondition(secondRow,obj.conditionOperator);
-    printLabel(secondRow, obj.isFatal, "actionFatalLabel", "labelOrange", "Kill Execution if Action Fail")
 
-    //printLabelForFatal(obj.isFatal, secondRow);
-
-    if ((this.parentStep.isUsingLibraryStep) || (!obj.hasPermissionsUpdate)) {
+    if ((this.parentStep.isUsingLibraryStep) || (!control.hasPermissionsUpdate)) {
         descriptionField.prop("readonly", true);
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);
         controlValue3Field.prop("readonly", true);
         controls.prop("disabled", "disabled");
+        btnGrp.find('.boutonGroup').hide();
     }
 
     content.append(firstRow);
     content.append(secondRow);
+    content.append(thirdRow);
+
+    row.append(content);
+    row.append(btnGrp);
+    row.data("item", this);
+
+    printLabelForOptions(btnGrp,control.options,control.conditionOptions,"controlOptionLabel");
+    printLabelForCondition(btnGrp,control.conditionOperator);
+    printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelOrangeRevert", "Stop Execution on Failure")
 
     if (typeof convertToGui[this.control] !== 'undefined') {
         controls.val(convertToGui[this.control].control);
@@ -3116,7 +3059,7 @@ Control.prototype.generateContent = function () {
                 $(this).parents(".control").find(".operator").append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
             }
         }
-        obj.control = newControlOptList[$(this).find(":selected").val()][$(this).parents(".control").find(".operator").val()];
+        control.control = newControlOptList[$(this).find(":selected").val()][$(this).parents(".control").find(".operator").val()];
         //operator.val(convertToGui["none"].operator);
         setPlaceholderControl($(this).parents(".control"));
     });
@@ -3125,10 +3068,10 @@ Control.prototype.generateContent = function () {
         setModif(true);
         var controlSelect = $(this).parents(".control").find(".controlType");
         var operatorSelect = $(this).find(":selected");
-        obj.control = newControlOptList[controlSelect.val()][operatorSelect.val()];
+        control.control = newControlOptList[controlSelect.val()][operatorSelect.val()];
     });
 
-    return content;
+    return row;
 };
 
 Control.prototype.getJsonData = function () {
@@ -3365,16 +3308,16 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
-                                if ($(this).hasClass("v1")) {
-                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg1")
+                                if (false) {
+                                    $(htmlElement).parents(".step-action").find("#ApplicationObjectImg1")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
-                                } else if ($(this).hasClass("v2")) {
-                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg2")
+                                } else if (false) {
+                                    $(htmlElement).parents(".step-action").find("#ApplicationObjectImg2")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
-                                } else if ($(this).hasClass("v3")) {
-                                    $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg3")
+                                } else if (false) {
+                                    $(htmlElement).parents(".step-action").find("#ApplicationObjectImg3")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 }
@@ -3391,8 +3334,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 	                                class="buttonObject btn btn-default input-sm " \n\
 	                                title="' + name + '" type="button">\n\
-	                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
-                                    $(htmlElement).attr("style","width:80%").parent().append(editEntry);
+	                                <span class="glyphicon glyphicon-pencil"></span></button>\
+	                                <button class="buttonObject btn btn-default input-sm" type="button">\
+	                                <img width="20px" height="20px" src="ReadApplicationObjectImage?application=' + tcInfo.application + '&object=' + name + '&time=' + new Date().getTime()+'"' +
+                                        ' onclick="displayPictureOfMinitature1(this)"/></button></span>';
+                                    $(htmlElement).attr("style","width:70%").parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
                                 let data = loadGuiProperties();

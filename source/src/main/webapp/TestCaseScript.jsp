@@ -61,7 +61,7 @@
             <div class="panel" style="margin-top: 10px;">
                 <div style="min-height:150px">
                     <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:white">
-                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 10px;background-color: white;border: 1px solid #eee;" id="testCaseTitle">
+                        <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;" id="testCaseTitle">
                             <div class="" style="width:100%">
                                 <div class="col-lg-4" style="padding: 0px;">
                                     <div class="testTestCase" style="margin-top:4px; margin-bottom: 4px;">
@@ -108,7 +108,7 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div style="height:40px; background-color: white">
+                        <div style="height:40px; background-color: white; padding-top:20px">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" class="tabSteps" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" class="tabSteps"  name="tabProperties">Properties</a></li>
@@ -121,7 +121,7 @@
                 <div class="panel-body" id="tcBody" style="display:none;">
                     <div class="tab-content">
                         <div class="center tab-pane fade in active" id="tabSteps">
-                            <nav class="col-lg-4" id="nav-execution" style="z-index:1;padding-left: 0px;">
+                            <nav class="col-lg-4 col-md-12" id="nav-execution" style="z-index:1;padding-left: 0px;">
                                 <div id="list-wrapper" style="top:107px;">
                                     <div id="stepsWrapper">
                                         <!--<h4>Steps</h4>-->
@@ -134,7 +134,7 @@
                                     </div>
                                 </div>
                             </nav>
-                            <div class="col-lg-8" id="contentWrapper" style="padding-left: 30px;border-left: 1px solid rgb(39,188,253);">
+                            <div class="col-lg-8 col-md-12" id="contentWrapper" style="padding-left: 30px;border-left: 1px solid rgb(39,188,253);">
                                 <div id="stepHeader" style="margin-bottom: 15px; display:none;">
                                     <div class="row step">
                                         <div class="content col-lg-10">

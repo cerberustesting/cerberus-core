@@ -309,8 +309,8 @@
 
 .optionLabel{
     display: inline-block;
-    margin-bottom: 10px;
-    margin-left: 15px;
+    margin-bottom: 5px;
+    margin-right: 10px;
     border-radius: 10px;
     padding-bottom: 5px;
     padding-top: 5px;
@@ -622,20 +622,11 @@ background-color: #1d1d1d;
 color:#fff;
 }
 
-
-
 .boutonGroup {
-width:169px;
-margin-right: auto;
-margin-left: auto;
-margin-bottom: 26px;
-}
-
-@media (min-width: 1200px) {
-.boutonGroup {
-    width:85px;
-    margin-top: 26px;
-}
+width:85px;
+margin-top: 26px;
+margin-right : 5px;
+margin-bottom : 5px;
 }
 
 .action-group.toDelete,
