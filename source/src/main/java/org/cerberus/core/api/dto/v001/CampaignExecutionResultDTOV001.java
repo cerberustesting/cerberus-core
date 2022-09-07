@@ -35,7 +35,7 @@ import org.cerberus.core.api.dto.views.View;
 @Builder
 @Jacksonized
 @ApiModel(value = "CampaignExecutionResults")
-public class CampaignExecutionResultsDTOV001 {
+public class CampaignExecutionResultDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 0)
