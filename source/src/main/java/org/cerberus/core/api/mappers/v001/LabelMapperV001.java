@@ -34,6 +34,7 @@ import org.mapstruct.Mapping;
 public interface LabelMapperV001 {
 
     @Mapping(source = "requirementCriticity", target = "requirementCriticality")
+    @Mapping(source = "longDescription", target = "detailedDescription")
     LabelDTOV001 toDTO(Label label);
 
     @InheritInverseConfiguration

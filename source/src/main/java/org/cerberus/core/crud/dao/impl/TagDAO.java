@@ -19,12 +19,13 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITagDAO;
 import org.cerberus.core.crud.entity.Tag;
-import org.cerberus.core.crud.factory.IFactoryTag;
-import org.cerberus.core.crud.factory.impl.FactoryTag;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -34,7 +35,6 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -55,78 +55,46 @@ import java.util.Map;
  * @version 1.0, 15/10/13
  * @since 0.9.0
  */
+@AllArgsConstructor
 @Repository
 public class TagDAO implements ITagDAO {
 
-    @Autowired
-    private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryTag factoryTag;
-
+    private final DatabaseSpring databaseSpring;
     private static final Logger LOG = LogManager.getLogger(TagDAO.class);
-
-    private final String OBJECT_NAME = "Tag";
-    private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 100000;
+    private static final String OBJECT_NAME = "Tag";
+    private static final String SQL_DUPLICATED_CODE = "23000";
+    private static final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem<Tag> readByKey(String tag) {
         AnswerItem<Tag> ans = new AnswerItem<>();
-        Tag result = null;
-        final String query = "SELECT * FROM `tag` tag WHERE `tag` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + tag);
-        }
+        final String query = "SELECT * FROM `tag` WHERE `tag` = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            try {
-                preStat.setString(1, tag);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString(), exception);
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", tag);
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            preStat.setString(1, tag);
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    Tag result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString(), exception);
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
-        //sets the message
         ans.setResultMessage(msg);
         return ans;
     }
@@ -134,61 +102,34 @@ public class TagDAO implements ITagDAO {
     @Override
     public AnswerItem<Tag> readByKeyTech(long id) {
         AnswerItem<Tag> ans = new AnswerItem<>();
-        Tag result = null;
-        final String query = "SELECT * FROM `tag` tag WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        final String query = "SELECT * FROM `tag` WHERE `id` = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            try {
-                preStat.setLong(1, id);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.id : {}", id);
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+
+            preStat.setLong(1, id);
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    Tag result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
-        //sets the message
         ans.setResultMessage(msg);
         return ans;
     }
@@ -200,12 +141,11 @@ public class TagDAO implements ITagDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
-        //were applied -- used for pagination p
-        if (systems != null && !systems.isEmpty()) {
+
+        if (CollectionUtils.isNotEmpty(systems)) {
             query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
             searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
         } else {
@@ -213,28 +153,28 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(" where 1=1 ");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (tag.`id` like ?");
             searchSQL.append(" or tag.`tag` like ?");
             searchSQL.append(" or tag.`description` like ?");
             searchSQL.append(" or tag.`campaign` like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(campaign)) {
+        if (StringUtil.isNotEmpty(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (StringUtil.isNotEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -244,97 +184,60 @@ public class TagDAO implements ITagDAO {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                if (systems != null && !systems.isEmpty()) {
-                    for (String system : systems) {
-                        preStat.setString(i++, system);
-                    }
-                }
+        LOG.debug("SQL : {}", query);
 
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
-                for (String individualColumnSearchValue : individalColumnSearchValues) {
-                    preStat.setString(i++, individualColumnSearchValue);
-                }
-                if (!StringUtil.isNullOrEmpty(campaign)) {
-                    preStat.setString(i++, campaign);
-                }
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
+            int i = 1;
+            if (systems != null && !systems.isEmpty()) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
                 }
             }
 
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+            if (!StringUtil.isNullOrEmpty(campaign)) {
+                preStat.setString(i, campaign);
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -349,13 +252,10 @@ public class TagDAO implements ITagDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
         Timestamp t1;
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
-        //were applied -- used for pagination p
-        if (systems != null && !systems.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(systems)) {
             query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
             searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
         } else {
@@ -364,95 +264,56 @@ public class TagDAO implements ITagDAO {
         }
 
         searchSQL.append(" and tag.`DateCreated` > ? and tag.`DateCreated` < ? ");
-
         query.append(searchSQL);
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-            LOG.debug("SQL.from : " + from.toString());
-            LOG.debug("SQL.to : " + to.toString());
-            LOG.debug("SQL.system : " + systems);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                if (systems != null && !systems.isEmpty()) {
-                    for (String system : systems) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                t1 = new Timestamp(from.getTime());
-                preStat.setTimestamp(i++, t1);
-                t1 = new Timestamp(to.getTime());
-                preStat.setTimestamp(i++, t1);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.from : {}", from);
+        LOG.debug("SQL.to : {}", to);
+        LOG.debug("SQL.system {}: ", systems);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
                 }
             }
+            t1 = new Timestamp(from.getTime());
+            preStat.setTimestamp(i++, t1);
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i++, t1);
 
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -467,34 +328,30 @@ public class TagDAO implements ITagDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Tag> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
         Timestamp t1;
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
-        //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN campaign cap ON cap.campaign=tag.campaign ");
-
         searchSQL.append(" where nbExe>0 ");
-        if (campaigns != null && !campaigns.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(campaigns)) {
             searchSQL.append(SqlUtil.generateInClause("and tag.campaign", campaigns));
         }
-        if (group1s != null && !group1s.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(group1s)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.group1", group1s));
         }
-        if (group2s != null && !group2s.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(group2s)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.group2", group2s));
         }
-        if (group3s != null && !group3s.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(group3s)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.group3", group3s));
         }
-        if (environments != null && !environments.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(environments)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.environmentlist", environments));
         }
-        if (countries != null && !countries.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(countries)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.countrylist", countries));
         }
-        if (robotDeclis != null && !robotDeclis.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(robotDeclis)) {
             searchSQL.append(SqlUtil.generateInClause("and cap.robotdeclilist", robotDeclis));
         }
 
@@ -503,122 +360,84 @@ public class TagDAO implements ITagDAO {
 
         query.append(searchSQL);
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-            LOG.debug("SQL.from : " + from.toString());
-            LOG.debug("SQL.to : " + to.toString());
-            LOG.debug("SQL.campaigns : " + campaigns);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                if (campaigns != null && !campaigns.isEmpty()) {
-                    for (String system : campaigns) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (group1s != null && !group1s.isEmpty()) {
-                    for (String system : group1s) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (group2s != null && !group2s.isEmpty()) {
-                    for (String system : group2s) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (group3s != null && !group3s.isEmpty()) {
-                    for (String system : group3s) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (environments != null && !environments.isEmpty()) {
-                    for (String system : environments) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (countries != null && !countries.isEmpty()) {
-                    for (String system : countries) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                if (robotDeclis != null && !robotDeclis.isEmpty()) {
-                    for (String system : robotDeclis) {
-                        preStat.setString(i++, system);
-                    }
-                }
-                t1 = new Timestamp(from.getTime());
-                preStat.setTimestamp(i++, t1);
-                t1 = new Timestamp(to.getTime());
-                preStat.setTimestamp(i++, t1);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.from : {}", from);
+        LOG.debug("SQL.to : {}", to);
+        LOG.debug("SQL.campaigns : {}", campaigns);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(campaigns)) {
+                for (String campaign : campaigns) {
+                    preStat.setString(i++, campaign);
                 }
             }
+            if (CollectionUtils.isNotEmpty(group1s)) {
+                for (String group : group1s) {
+                    preStat.setString(i++, group);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(group2s)) {
+                for (String group : group2s) {
+                    preStat.setString(i++, group);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(group3s)) {
+                for (String group : group3s) {
+                    preStat.setString(i++, group);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(environments)) {
+                for (String environment : environments) {
+                    preStat.setString(i++, environment);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(countries)) {
+                for (String country : countries) {
+                    preStat.setString(i++, country);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(robotDeclis)) {
+                for (String robotDecli : robotDeclis) {
+                    preStat.setString(i++, robotDecli);
+                }
+            }
+            t1 = new Timestamp(from.getTime());
+            preStat.setTimestamp(i++, t1);
+            t1 = new Timestamp(to.getTime());
+            preStat.setTimestamp(i, t1);
 
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -628,83 +447,64 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public Answer create(Tag object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        StringBuilder queryV = new StringBuilder();
+        StringBuilder valuesQuery = new StringBuilder();
         query.append("INSERT INTO tag (`tag`, `description`");
-        queryV.append("VALUES (?,?");
-        if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
+        valuesQuery.append("VALUES (?,?");
+        if (StringUtil.isNotEmpty(object.getCampaign())) {
             query.append(", `campaign`");
-            queryV.append(",?");
+            valuesQuery.append(",?");
         }
-        if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+        if (StringUtil.isNotEmpty(object.getUsrCreated())) {
             query.append(", `usrcreated`");
-            queryV.append(",?");
+            valuesQuery.append(",?");
         }
-        if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
+        if (StringUtil.isNotEmpty(object.getReqCountryList())) {
             query.append(", `ReqCountryList`");
-            queryV.append(",?");
+            valuesQuery.append(",?");
         }
-        if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
+        if (StringUtil.isNotEmpty(object.getReqEnvironmentList())) {
             query.append(", `ReqEnvironmentList`");
-            queryV.append(",?");
+            valuesQuery.append(",?");
         }
         query.append(") ");
-        queryV.append(");");
-        query.append(queryV);
+        valuesQuery.append(");");
+        query.append(valuesQuery);
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getTag());
-                preStat.setString(i++, object.getDescription());
-                if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
-                    preStat.setString(i++, object.getCampaign());
-                }
-                if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
-                    preStat.setString(i++, object.getUsrCreated());
-                }
-                if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
-                    preStat.setString(i++, object.getReqCountryList());
-                }
-                if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
-                    preStat.setString(i++, object.getReqEnvironmentList());
-                }
+        LOG.debug("SQL : {}", query);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
+            int i = 1;
+            preStat.setString(i++, object.getTag());
+            preStat.setString(i++, object.getDescription());
+            if (StringUtil.isNotEmpty(object.getCampaign())) {
+                preStat.setString(i++, object.getCampaign());
             }
+            if (StringUtil.isNotEmpty(object.getUsrCreated())) {
+                preStat.setString(i++, object.getUsrCreated());
+            }
+            if (StringUtil.isNotEmpty(object.getReqCountryList())) {
+                preStat.setString(i++, object.getReqCountryList());
+            }
+            if (StringUtil.isNotEmpty(object.getReqEnvironmentList())) {
+                preStat.setString(i, object.getReqEnvironmentList());
+            }
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
         return new Answer(msg);
@@ -712,436 +512,353 @@ public class TagDAO implements ITagDAO {
 
     @Override
     public Answer delete(Tag object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "DELETE FROM tag WHERE tag = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, object.getTag());
+        LOG.debug("SQL : {}", query);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setString(1, object.getTag());
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer update(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET tag = ?, description = ?, dateModif = NOW(), usrModif= ?";
-        if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
-            query += ", campaign = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET tag = ?, description = ?, dateModif = NOW(), usrModif= ?");
+        if (StringUtil.isNotEmpty(object.getCampaign())) {
+            query.append(", campaign = ?");
         }
-        query += "  WHERE Tag = ?";
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getTag());
-                preStat.setString(i++, object.getDescription());
-                if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
-                    preStat.setString(i++, object.getCampaign());
-                }
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, object.getTag());
+            preStat.setString(i++, object.getDescription());
+            if (StringUtil.isNotEmpty(object.getCampaign())) {
+                preStat.setString(i++, object.getCampaign());
             }
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer updateBrowserStackBuild(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET browserstackBuildHash = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET browserstackBuildHash = ?, dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getBrowserstackBuildHash());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            int i = 1;
+            preStat.setString(i++, object.getBrowserstackBuildHash());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer updateLambdatestBuild(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET LambdaTestBuild = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET LambdaTestBuild = ?, dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getLambdaTestBuild());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, object.getLambdaTestBuild());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer updateDescription(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET description = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET description = ?, dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            int i = 1;
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer updateComment(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET comment = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET comment = ?, dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getComment());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, object.getComment());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer updateXRayTestExecution(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET XRayTestExecution = ?, XRayURL = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET XRayTestExecution = ?, XRayURL = ?, dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getXRayTestExecution());
-                preStat.setString(i++, object.getXRayURL());
-                preStat.setString(i++, "");
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, object.getXRayTestExecution());
+            preStat.setString(i++, object.getXRayURL());
+            preStat.setString(i++, "");
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public int lockXRayTestExecution(String tag, Tag object) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET XRayTestExecution = 'PENDING', dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ? and XRayTestExecution != 'PENDING'";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET XRayTestExecution = 'PENDING', dateModif = NOW(), usrModif= ?");
+        query.append(" WHERE Tag = ? and XRayTestExecution != 'PENDING'");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + object.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, "");
-                preStat.setString(i++, tag);
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", object.getTag());
 
-                return preStat.executeUpdate();
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            int i = 1;
+            preStat.setString(i++, "");
+            preStat.setString(i, tag);
+            return preStat.executeUpdate();
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return 0;
     }
 
     @Override
     public Answer updateDateEndQueue(Tag tag) {
-        MessageEvent msg = null;
-        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?"
-                + ", CIScore = ?, CIScoreThreshold = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, RobotDecliList = ?, SystemList = ?, ApplicationList = ?  WHERE Tag = ?";
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, ");
+        query.append("  nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, ");
+        query.append("  CIScore = ?, CIScoreThreshold = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, ");
+        query.append("  RobotDecliList = ?, SystemList = ?, ApplicationList = ?  ");
+        query.append("WHERE Tag = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + tag.getTag());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setTimestamp(i++, tag.getDateEndQueue());
-                preStat.setInt(i++, tag.getNbExe());
-                preStat.setInt(i++, tag.getNbExeUsefull());
-                preStat.setInt(i++, tag.getNbOK());
-                preStat.setInt(i++, tag.getNbKO());
-                preStat.setInt(i++, tag.getNbFA());
-                preStat.setInt(i++, tag.getNbNA());
-                preStat.setInt(i++, tag.getNbNE());
-                preStat.setInt(i++, tag.getNbWE());
-                preStat.setInt(i++, tag.getNbPE());
-                preStat.setInt(i++, tag.getNbQU());
-                preStat.setInt(i++, tag.getNbQE());
-                preStat.setInt(i++, tag.getNbCA());
-                preStat.setInt(i++, tag.getCiScore());
-                preStat.setInt(i++, tag.getCiScoreThreshold());
-                preStat.setString(i++, tag.getCiResult());
-                preStat.setString(i++, tag.getEnvironmentList());
-                preStat.setString(i++, tag.getCountryList());
-                preStat.setString(i++, tag.getRobotDecliList());
-                preStat.setString(i++, tag.getSystemList());
-                preStat.setString(i++, tag.getApplicationList());
-                preStat.setString(i++, tag.getTag());
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", tag.getTag());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setTimestamp(i++, tag.getDateEndQueue());
+            preStat.setInt(i++, tag.getNbExe());
+            preStat.setInt(i++, tag.getNbExeUsefull());
+            preStat.setInt(i++, tag.getNbOK());
+            preStat.setInt(i++, tag.getNbKO());
+            preStat.setInt(i++, tag.getNbFA());
+            preStat.setInt(i++, tag.getNbNA());
+            preStat.setInt(i++, tag.getNbNE());
+            preStat.setInt(i++, tag.getNbWE());
+            preStat.setInt(i++, tag.getNbPE());
+            preStat.setInt(i++, tag.getNbQU());
+            preStat.setInt(i++, tag.getNbQE());
+            preStat.setInt(i++, tag.getNbCA());
+            preStat.setInt(i++, tag.getCiScore());
+            preStat.setInt(i++, tag.getCiScoreThreshold());
+            preStat.setString(i++, tag.getCiResult());
+            preStat.setString(i++, tag.getEnvironmentList());
+            preStat.setString(i++, tag.getCountryList());
+            preStat.setString(i++, tag.getRobotDecliList());
+            preStat.setString(i++, tag.getSystemList());
+            preStat.setString(i++, tag.getApplicationList());
+            preStat.setString(i, tag.getTag());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
+    }
+
+    @Override
+    public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList<String> answer = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<String> distinctValues = new ArrayList<>();
+        StringBuilder searchSQL = new StringBuilder();
+        List<String> individualColumnSearchValues = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT distinct ");
+        query.append(columnName);
+        query.append(" as distinctValues FROM tag ");
+        searchSQL.append("WHERE 1=1");
+        if (StringUtil.isNotEmpty(campaign)) {
+            searchSQL.append(" and (`campaign` = ? )");
+        }
+        if (StringUtil.isNotEmpty(searchTerm)) {
+            searchSQL.append(" and (`tag` like ?");
+            searchSQL.append(" or `id` like ?");
+            searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `campaign` like ?)");
+        }
+        if (MapUtils.isNotEmpty(individualSearch)) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individualColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
+        }
+        query.append(searchSQL);
+        query.append(" order by ").append(columnName).append(" asc");
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
+
+            int i = 1;
+            if (StringUtil.isNotEmpty(campaign)) {
+                preStat.setString(i++, campaign);
+            }
+            if (StringUtil.isNotEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+                }
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+                if (distinctValues.size() >= MAX_ROW_SELECTED) {
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (distinctValues.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                answer = new AnswerList<>(distinctValues, nrTotalRows);
+            }
+        } catch (Exception exception) {
+            LOG.warn("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    exception.toString());
+        }
+        answer.setResultMessage(msg);
+        answer.setDataList(distinctValues);
+        return answer;
     }
 
     @Override
@@ -1172,130 +889,31 @@ public class TagDAO implements ITagDAO {
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
         String ciResult = rs.getString("tag.ciResult");
-        String envList = rs.getString("tag.EnvironmentList");
+        String environmentList = rs.getString("tag.EnvironmentList");
         String countryList = rs.getString("tag.CountryList");
         String robotDecliList = rs.getString("tag.RobotDecliList");
         String systemList = rs.getString("tag.SystemList");
         String applicationList = rs.getString("tag.ApplicationList");
-        String reqEnvList = rs.getString("tag.ReqEnvironmentList");
+        String reqEnvironmentList = rs.getString("tag.ReqEnvironmentList");
         String reqCountryList = rs.getString("tag.ReqCountryList");
         String browserstackBuildHash = rs.getString("tag.BrowserstackBuildHash");
         String lambdaTestBuild = rs.getString("tag.LambdaTestBuild");
         String xRayTestExecution = rs.getString("tag.XRayTestExecution");
         String xRayURL = rs.getString("tag.XRayURL");
-        factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, comment, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA,
-                ciScore, ciScoreThreshold, ciResult,
-                envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList,
-                browserstackBuildHash, lambdaTestBuild, xRayTestExecution, xRayURL,
-                usrCreated, dateCreated, usrModif, dateModif);
 
-        return newTag;
-    }
-
-    @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList<String> answer = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<String> distinctValues = new ArrayList<>();
-        StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
-
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT distinct ");
-        query.append(columnName);
-        query.append(" as distinctValues FROM tag ");
-
-        searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(campaign)) {
-            searchSQL.append(" and (`campaign` = ? )");
-        }
-
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`tag` like ?");
-            searchSQL.append(" or `id` like ?");
-            searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `campaign` like ?)");
-        }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
-            searchSQL.append(" and ( 1=1 ");
-            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
-            }
-            searchSQL.append(" )");
-        }
-        query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
-
-            int i = 1;
-            if (!StringUtil.isNullOrEmpty(campaign)) {
-                preStat.setString(i++, campaign);
-            }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
-
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-                //gets the data
-                while (resultSet.next()) {
-                    distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
-                }
-
-                //get the total number of rows
-                int nrTotalRows = 0;
-
-                if (rowSet != null && rowSet.next()) {
-                    nrTotalRows = rowSet.getInt(1);
-                }
-
-                if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                    LOG.error("Partial Result in the query.");
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else if (distinctValues.size() <= 0) {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            }
-        } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
-        }
-
-        answer.setResultMessage(msg);
-        answer.setDataList(distinctValues);
-        return answer;
+        return Tag.builder()
+                .id(id).tag(tag).description(description).comment(comment)
+                .campaign(campaign).dateEndQueue(dateEndQueue).nbExe(nbExe)
+                .nbExeUsefull(nbExeUsefull).nbOK(nbOK).nbKO(nbKO).nbFA(nbFA)
+                .nbNA(nbNA).nbNE(nbNE).nbWE(nbWE).nbPE(nbPE).nbQU(nbQU).nbQE(nbQE)
+                .nbCA(nbCA).ciScore(ciScore).ciScoreThreshold(ciScoreThreshold)
+                .ciResult(ciResult).environmentList(environmentList)
+                .countryList(countryList).robotDecliList(robotDecliList)
+                .systemList(systemList).applicationList(applicationList)
+                .reqEnvironmentList(reqEnvironmentList).reqCountryList(reqCountryList)
+                .browserstackBuildHash(browserstackBuildHash).lambdaTestBuild(lambdaTestBuild)
+                .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL)
+                .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif)
+                .dateModif(dateModif).build();
     }
 }

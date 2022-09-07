@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -37,8 +36,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-import java.util.regex.Matcher;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -174,13 +176,24 @@ public final class StringUtil {
     }
 
     /**
+     * Check for not null or empty content
+     *
+     * @param str
+     * @return true if the parameter is NOT "null" or empty string.
+     */
+    public static boolean isNotEmpty(String str) {
+        return !isNullOrEmpty(str);
+    }
+
+
+    /**
      * Check for null or empty string content
      *
      * @param str
      * @return true if the parameter is a "null" or empty string.
      */
-    public static boolean isNullOrEmptyOrNull(String str) {
-        return (str == null) || (str.trim().isEmpty()) || (str.trim().equalsIgnoreCase("null"));
+    public static boolean isNotEmptyOrNullValue(String str) {
+        return isNotEmpty(str) && !NULL.equalsIgnoreCase(str.trim());
     }
 
     /**
@@ -211,7 +224,7 @@ public final class StringUtil {
      *
      * @param string1 String to treat.
      * @param length  nb of characters to keep.
-     * @return the {length} first caracter of the string1.
+     * @return the {length} first character of the string1.
      */
     public static String getLeftString(String string1, int length) {
         if (string1 == null) {
@@ -228,7 +241,7 @@ public final class StringUtil {
      *
      * @param string1 String to treat.
      * @param length  nb of characters to keep.
-     * @return the {length} first caracter of the string1.
+     * @return the {length} first character of the string1.
      */
     public static String getLeftStringPretty(String string1, int length) {
         int lengthminus3 = length - 3;
@@ -244,11 +257,10 @@ public final class StringUtil {
     /**
      * Remove last n char from a string
      *
-     * @param s      String to treat.
-     * @param length nb of characters to remove.
+     * @param s String to treat.
      * @return a string on which the last {length} characters has been removed.
      */
-    public static String removeLastChar(String s, int length) {
+    public static String removeLastChar(String s) {
         if (s == null || s.length() == 0) {
             return s;
         }
@@ -274,20 +286,6 @@ public final class StringUtil {
 
     /**
      * @param text
-     * @return
-     */
-    public static String replaceUrlByLinkInString(String text) {
-        if (text != null && !text.isEmpty()) {
-            Matcher matcher = urlMatch.matcher(text);
-            if (matcher.matches()) {
-                return matcher.replaceAll("$1<a href=\\\"$2\\\">$2</a>$3");
-            }
-        }
-        return text;
-    }
-
-    /**
-     * @param text
      * @param secrets
      * @return
      */
@@ -299,44 +297,16 @@ public final class StringUtil {
             return text;
         }
         for (Map.Entry<String, String> entry : secrets.entrySet()) {
-            /**
+            /*
              * Secrets with less than 3 Characters are not really secrets. We
              * avoid to clean text with secrets that are lower than 3 characters
              * in order to replace some relevant parts of text by mistake.
              */
-
             if (entry.getKey().length() > 3) {
                 text = text.replace(entry.getKey(), SECRET_STRING);
             }
-
         }
         return text;
-    }
-
-    /**
-     * @param text
-     * @return
-     */
-    public static String replaceInvisibleCharbyString(String text) {
-        if (text != null && !text.isEmpty()) {
-            return text.replace("\n", "\\n");
-        }
-        return text;
-    }
-
-    /**
-     * @param text
-     * @return
-     */
-    public static String textToHtmlConvertingURLsToLinks(String text) {
-        if (text == null) {
-            return text;
-        }
-
-        String escapedText = HtmlUtils.htmlEscape(text);
-
-        return escapedText.replaceAll("(\\A|\\s)((http|https|ftp|mailto):\\S+)(\\s|\\z)",
-                "$1<a href=\"$2\">$2</a>$4");
     }
 
     /**

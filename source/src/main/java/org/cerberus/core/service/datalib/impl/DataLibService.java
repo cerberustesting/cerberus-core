@@ -19,10 +19,6 @@
  */
 package org.cerberus.core.service.datalib.impl;
 
-import java.io.File;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -45,6 +41,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appservice.IServiceService;
+import org.cerberus.core.service.csvfile.ICsvFileService;
 import org.cerberus.core.service.datalib.IDataLibService;
 import org.cerberus.core.service.json.IJsonService;
 import org.cerberus.core.service.sql.ISQLService;
@@ -62,13 +59,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.cerberus.core.service.csvfile.ICsvFileService;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- *
  * @author bcivel
  * @author vertigo17
- *
  */
 @Service
 public class DataLibService implements IDataLibService {
@@ -102,7 +106,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty,
-            TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
+                                                              TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
         AnswerItem<HashMap<String, String>> resultColumns;
         AnswerList<HashMap<String, String>> resultData;
         AnswerList<HashMap<String, String>> result;
@@ -237,9 +241,9 @@ public class DataLibService implements IDataLibService {
     /**
      * This method route to the method regarding the nature
      *
-     * @param nature : Nature of the property
-     * @param dataObjectList : List of dataObject
-     * @param tCExecution : TestCaseExecution
+     * @param nature                    : Nature of the property
+     * @param dataObjectList            : List of dataObject
+     * @param tCExecution               : TestCaseExecution
      * @param testCaseCountryProperties : TestCaseCountryProperties
      * @return List of items (dataObject) from the dataObjectList filtered out
      * of records depending on the nature.
@@ -312,7 +316,7 @@ public class DataLibService implements IDataLibService {
             selectedList += Integer.toString(j) + ",";
             resultObject.add(dataObjectList.getDataList().get(i));
         }
-        selectedList = StringUtil.removeLastChar(selectedList, 1);
+        selectedList = StringUtil.removeLastChar(selectedList);
         result.setDataList(resultObject);
 
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOM)
@@ -376,7 +380,7 @@ public class DataLibService implements IDataLibService {
                     selectedList += Integer.toString(j) + ",";
                     resultObject.add(dataObjectList.getDataList().get(i));
                 }
-                selectedList = StringUtil.removeLastChar(selectedList, 1);
+                selectedList = StringUtil.removeLastChar(selectedList);
                 result.setDataList(resultObject);
 
                 result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOMNEW)
@@ -442,7 +446,7 @@ public class DataLibService implements IDataLibService {
                         selectedList += Integer.toString(j) + ",";
                         resultObject.add(dataObjectList.getDataList().get(i));
                     }
-                    selectedList = StringUtil.removeLastChar(selectedList, 1);
+                    selectedList = StringUtil.removeLastChar(selectedList);
                     result.setDataList(resultObject);
 
                     result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURENOTINUSE)

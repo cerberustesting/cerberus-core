@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
@@ -63,6 +64,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -627,9 +629,6 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public void createTestcaseWithDependencies(TestCase testCase) throws CerberusException {
 
-        //TODO ------------------------
-        //Check Cerberus version compatibility. If not stop
-        //-------------------------------
         //insert testcase
         Answer newTestcase = this.create(testCase);
 
@@ -707,20 +706,17 @@ public class TestCaseService implements ITestCaseService {
 
         final String FAILED_TO_INSERT = "Failed to insert the testcase in the database";
 
-        if (newTestcase.getTest() == null || newTestcase.getTest().isEmpty()) {
+        if (StringUtil.isNullOrEmpty(newTestcase.getTest())) {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
-        if (newTestcase.getApplication() == null || newTestcase.getApplication().isEmpty()) {
+        if (StringUtil.isNullOrEmpty(newTestcase.getApplication())) {
             throw new InvalidRequestException("application is required to create a Testcase");
         }
 
-        if (newTestcase.getTestcase() != null) {
-            throw new InvalidRequestException("testcaseId forbidden to create Testcase");
+        if (StringUtil.isNullOrEmpty(newTestcase.getTestcase())) {
+            newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
         }
-
-
-        newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
         Answer testcaseCreationAnswer = this.create(newTestcase);
 
         if (!testcaseCreationAnswer.getResultMessage().getSource().equals(MessageEventEnum.DATA_OPERATION_OK)) {
@@ -767,12 +763,11 @@ public class TestCaseService implements ITestCaseService {
                         }
                     }
                 }
-
             }
         }
 
         this.fillTestcaseCountriesFromInvariantsCountry(newTestcase);
-        if (newTestcase.getTestCaseCountryProperties() != null && !newTestcase.getTestCaseCountryProperties().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcase.getTestCaseCountryProperties())) {
             newTestcase.setTestCaseCountryProperties(
                     this.testCaseCountryPropertiesService.getFlatListOfTestCaseCountryPropertiesFromAggregate(
                             newTestcase.getTestCaseCountryProperties()
@@ -801,7 +796,7 @@ public class TestCaseService implements ITestCaseService {
         }
 
         //insert testcasedependencies
-        if (newTestcase.getDependencies() != null) {
+        if (CollectionUtils.isNotEmpty(newTestcase.getDependencies())) {
             for (TestCaseDep tcd : newTestcase.getDependencies()) {
                 tcd.setTest(newTestcase.getTest());
                 tcd.setTestcase(newTestcase.getTestcase());
@@ -814,7 +809,7 @@ public class TestCaseService implements ITestCaseService {
         }
 
         //insert testcaselabel
-        if (newTestcase.getLabels() != null && !newTestcase.getLabels().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcase.getLabels())) {
             newTestcase.setTestCaseLabels(
                     this.getTestcaseLabelsFromLabels(
                             newTestcase.getLabels(), newTestcase.getTest(), newTestcase.getTestcase(), newTestcase.getUsrCreated()
@@ -852,7 +847,7 @@ public class TestCaseService implements ITestCaseService {
             LOG.debug(this.updateTestCaseInformation(newTestcaseVersion));
         }
 
-        if (newTestcaseVersion.getSteps() != null && !newTestcaseVersion.getSteps().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcaseVersion.getSteps())) {
             this.testCaseStepService.compareListAndUpdateInsertDeleteElements(newTestcaseVersion.getSteps(), oldTestcaseVersion.getSteps(), false);
 
             List<TestCaseStepAction> newActions = this.getAllActionsFromTestcase(newTestcaseVersion);
@@ -871,15 +866,14 @@ public class TestCaseService implements ITestCaseService {
                 newTestcaseVersion.getTestCaseCountries()
         );
 
-        if (newTestcaseVersion.getTestCaseCountryProperties() != null && !newTestcaseVersion.getTestCaseCountryProperties().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcaseVersion.getTestCaseCountryProperties())) {
             newTestcaseVersion.setTestCaseCountryProperties(
                     this.testCaseCountryPropertiesService
                             .getFlatListOfTestCaseCountryPropertiesFromAggregate(newTestcaseVersion.getTestCaseCountryProperties())
             );
         }
 
-        LOG.debug(newTestcaseVersion.getTestCaseCountryProperties());
-        if (newTestcaseVersion.getTestCaseCountryProperties() != null && !newTestcaseVersion.getTestCaseCountryProperties().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcaseVersion.getTestCaseCountryProperties())) {
             this.testCaseCountryPropertiesService.compareListAndUpdateInsertDeleteElements(
                     newTestcaseVersion.getTest(),
                     newTestcaseVersion.getTestcase(),
@@ -887,7 +881,7 @@ public class TestCaseService implements ITestCaseService {
             );
         }
 
-        if (newTestcaseVersion.getDependencies() != null && !newTestcaseVersion.getDependencies().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcaseVersion.getDependencies())) {
             this.testCaseDepService.compareListAndUpdateInsertDeleteElements(
                     newTestcaseVersion.getTest(),
                     newTestcaseVersion.getTestcase(),
@@ -895,10 +889,13 @@ public class TestCaseService implements ITestCaseService {
             );
         }
 
-        if (newTestcaseVersion.getLabels() != null && !newTestcaseVersion.getLabels().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(newTestcaseVersion.getLabels())) {
             newTestcaseVersion.setTestCaseLabels(
                     this.getTestcaseLabelsFromLabels(
-                            newTestcaseVersion.getLabels(), newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), newTestcaseVersion.getUsrCreated()
+                            newTestcaseVersion.getLabels(),
+                            newTestcaseVersion.getTest(),
+                            newTestcaseVersion.getTestcase(),
+                            newTestcaseVersion.getUsrCreated()
                     )
             );
             this.testCaseLabelService.compareListAndUpdateInsertDeleteElements(

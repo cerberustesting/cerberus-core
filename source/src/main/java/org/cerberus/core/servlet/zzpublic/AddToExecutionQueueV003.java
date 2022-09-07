@@ -19,19 +19,8 @@
  */
 package org.cerberus.core.servlet.zzpublic;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URLDecoder;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.CampaignParameter;
@@ -41,36 +30,53 @@ import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.factory.IFactoryRobot;
-import org.cerberus.core.crud.service.ICampaignParameterService;
-import org.cerberus.core.crud.service.ICampaignService;
-import org.cerberus.core.crud.service.ILogEventService;
-import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.exception.FactoryCreationException;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.answer.AnswerList;
-import org.cerberus.core.util.servlet.ServletUtil;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ICampaignParameterService;
+import org.cerberus.core.crud.service.ICampaignService;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.crud.service.IInvariantService;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.IRobotService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseCountryService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.exception.FactoryCreationException;
 import org.cerberus.core.service.authentification.IAPIKeyService;
+import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -206,31 +212,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Parsing all parameters.
             // Execution scope parameters : Campaign, TestCases, Countries, Environment, Browser.
             String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_CAMPAIGN), null, charset);
-
-            List<String> selectTest;
-            selectTest = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TEST), null, charset);
-            List<String> selectTestCase;
-            selectTestCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TESTCASE), null, charset);
-            List<String> countries;
-            countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
-            List<String> environments;
-            environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
-
-            JSONArray countryJSONArray = new JSONArray(countries);
-            JSONArray envJSONArray = new JSONArray(environments);
-
-            List<String> robots = new ArrayList<>();
-            robots = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ROBOT), robots, charset);
-
-            // Execution parameters.
-            String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), DEFAULT_VALUE_TAG);
-            try {
-                tag = URLDecoder.decode(tag, "UTF-8");
-            } catch (Exception ex) {
-                // In case exception is raized, we keep the original string.
-                LOG.debug(ex, ex);
-            }
-
+            List<String> selectTest = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TEST), null, charset);
+            List<String> selectTestCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TESTCASE), null, charset);
+            List<String> countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
+            List<String> environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+            List<String> robots = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ROBOT), new ArrayList<>(), charset);
+            String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), DEFAULT_VALUE_TAG); // Execution parameters.
             String robotIP = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
             String robotPort = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
             String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER), null, charset);
@@ -244,6 +231,16 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
             String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
             String executor = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_EXECUTOR), null, charset);
+
+            JSONArray countryJSONArray = new JSONArray(countries);
+            JSONArray envJSONArray = new JSONArray(environments);
+
+            try {
+                tag = URLDecoder.decode(tag, "UTF-8");
+            } catch (Exception ex) {
+                // In case exception is raized, we keep the original string.
+                LOG.debug(ex, ex);
+            }
 
             int screenshot = DEFAULT_VALUE_SCREENSHOT;
             int video = DEFAULT_VALUE_VIDEO;
@@ -259,9 +256,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // The rest of the parameter depend on the campaign values.
             Campaign mCampaign = null;
             if (!StringUtil.isNullOrEmpty(campaign)) {
-                @SuppressWarnings("unchecked")
-                AnswerItem<Campaign> vCampaign = campaignService.readByKey(campaign);
-                mCampaign = vCampaign.getItem();
+                mCampaign = campaignService.readByKey(campaign).getItem();
             }
             if (mCampaign == null) {
                 // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values
@@ -285,10 +280,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
                 manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
                 priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
-
             } else {
                 // Campaign defined and exist so we parse parameter from 1/ servlet 2/ campaign definition 3/ Servlet default values.
-
                 screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT),
                         ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getScreenshot(), DEFAULT_VALUE_SCREENSHOT, charset), charset);
                 video = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VIDEO),
@@ -309,7 +302,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                         ParameterParserUtil.parseStringParamAndDecode(mCampaign.getManualExecution(), DEFAULT_VALUE_MANUAL_EXECUTION, charset), charset);
                 priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY),
                         ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPriority(), DEFAULT_VALUE_PRIORITY, charset), charset);
-
             }
 
             // Defining help message.
@@ -348,7 +340,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n"
                     + "- " + PARAMETER_EXECUTOR + " : Name of the user who trigger the execution. Value only used if servlet call is not authenticated [" + executor + "]\n";
 
-//        try {
             // Checking the parameter validity.
             StringBuilder errorMessage = new StringBuilder();
             boolean error = false;
@@ -458,7 +449,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             int nbrobotmissing = 0;
             boolean tagAlreadyAdded = false;
 
-            Map<String, String> myHostMap = new HashMap<>();
+            Map<String, String> myHostMap;
             myHostMap = getManualHostMap(manualHost);
 
             int nbrobot = 0;
@@ -496,8 +487,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
             // Starting the request only if previous parameters exist.
             if (!error) {
-
-                int nbtescase = selectTest.size();
                 if (environments == null) {
                     environments = new ArrayList<>();
                     environments.add("MANUAL");
@@ -530,7 +519,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     LOG.debug("Nb of TestCase : " + selectTest.size());
                     for (int i = 0; i < selectTest.size(); i++) {
 
-//                for (String localTest : selectTest) {
                         String test = selectTest.get(i);
                         String testCase = selectTestCase.get(i);
                         TestCase tc = testCaseService.convert(testCaseService.readByKey(test, testCase));
@@ -671,7 +659,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                         String errorMessageTmp = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
                         LOG.warn(errorMessageTmp);
                         errorMessages.add(errorMessageTmp);
-                        continue;
                     } catch (JSONException ex) {
                         LOG.error(ex, ex);
                     }
@@ -699,7 +686,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 }
 
                 errorMessage.append(nbExe);
-                errorMessage.append(" execution(s) succesfully inserted to queue. ");
+                errorMessage.append(" execution(s) successfully inserted to queue. ");
 
                 if (testcases != null && testcases.getResultMessage().getSource() == MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT) {
                     errorMessage.append(testcases.getResultMessage().getDescription());
@@ -712,39 +699,39 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 LOG.info("No execution triggered from AddToExecutionQueue : " + errorMessage.toString());
             }
 
-            // Init Answer with potencial error from Parsing parameter.
+            // Init Answer with potential error from Parsing parameter.
             AnswerItem answer = new AnswerItem<>(msg);
 
             switch (outputFormat) {
                 case "json":
-                try {
-                    JSONObject jsonResponse = new JSONObject();
-                    jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-                    jsonResponse.put("message", errorMessage.toString());
-                    if (error) {
-                        // Only display help message if error.
-                        jsonResponse.put("helpMessage", helpMessage);
-                    }
-                    jsonResponse.put("tag", tag);
-                    jsonResponse.put("nbExe", nbExe);
-                    jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
-                    jsonResponse.put("nbErrorTCNotExist", nbtestcasenotexist);
-                    jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
-                    jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
-                    jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
-                    jsonResponse.put("queueList", jsonArray);
+                    try {
+                        JSONObject jsonResponse = new JSONObject();
+                        jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                        jsonResponse.put("message", errorMessage.toString());
+                        if (error) {
+                            // Only display help message if error.
+                            jsonResponse.put("helpMessage", helpMessage);
+                        }
+                        jsonResponse.put("tag", tag);
+                        jsonResponse.put("nbExe", nbExe);
+                        jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
+                        jsonResponse.put("nbErrorTCNotExist", nbtestcasenotexist);
+                        jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
+                        jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
+                        jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
+                        jsonResponse.put("queueList", jsonArray);
 
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(jsonResponse.toString());
-                } catch (JSONException e) {
-                    LOG.warn(e);
-                    //returns a default error message with the json format that is able to be parsed by the client-side
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf8");
-                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
-                }
-                break;
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
+                        response.getWriter().print(jsonResponse.toString());
+                    } catch (JSONException e) {
+                        LOG.warn(e);
+                        //returns a default error message with the json format that is able to be parsed by the client-side
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf8");
+                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                    }
+                    break;
                 default:
                     response.setContentType("text");
                     response.setCharacterEncoding("utf8");
@@ -837,13 +824,14 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -854,10 +842,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

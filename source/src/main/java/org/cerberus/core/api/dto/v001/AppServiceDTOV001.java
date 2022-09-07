@@ -80,7 +80,7 @@ public class AppServiceDTOV001 {
 
     @ApiModelProperty(position = 8)
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    private String attachementURL;
+    private String attachmentURL;
 
     @ApiModelProperty(position = 9)
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})

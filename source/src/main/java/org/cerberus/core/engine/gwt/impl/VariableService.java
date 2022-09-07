@@ -19,12 +19,6 @@
  */
 package org.cerberus.core.engine.gwt.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -41,6 +35,13 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by corentin on 20/10/16.
@@ -61,7 +62,7 @@ public class VariableService implements IVariableService {
 
     @Override
     public AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+                                                    TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
         AnswerItem<String> answer = new AnswerItem<>();
@@ -173,7 +174,7 @@ public class VariableService implements IVariableService {
             for (String var : variableList) {
                 messageList += var + " ,";
             }
-            messageList = StringUtil.removeLastChar(messageList, 2);
+            messageList = StringUtil.removeLastChar(messageList);
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DECODE_FAILED_VARIABLENOTDECODED)
                     .resolveDescription("NB", String.valueOf(variableList.size()))
                     .resolveDescription("VAR", messageList));

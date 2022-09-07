@@ -19,25 +19,24 @@
  */
 package org.cerberus.core.service.notifications.teams.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.service.notifications.teams.ITeamsGenerationService;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.core.service.notifications.teams.ITeamsGenerationService;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Timestamp;
 
 /**
- *
  * @author vertigo17
  */
 @Service

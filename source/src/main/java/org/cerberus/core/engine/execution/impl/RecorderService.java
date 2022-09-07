@@ -22,6 +22,13 @@ package org.cerberus.core.engine.execution.impl;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.cerberus.core.crud.entity.AppService;
+import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.RobotCapability;
+import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionFile;
+import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionFileService;
@@ -44,20 +51,24 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.RobotCapability;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionFile;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 
 /**
  * @author bcivel
@@ -1129,7 +1140,7 @@ public class RecorderService implements IRecorderService {
                 sbfileName.append(filename).append("-");
             }
 
-            String fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
+            String fileName = StringUtil.removeLastChar(sbfileName.toString()) + "." + extention;
             fileName = fileName.replace(" ", "");
             newRecorder.setFileName(fileName);
 
