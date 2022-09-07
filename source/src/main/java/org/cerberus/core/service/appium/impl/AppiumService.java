@@ -26,30 +26,35 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
-import org.cerberus.core.service.appium.SwipeAction;
-import org.cerberus.core.service.appium.SwipeAction.Direction;
-import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.service.appium.IAppiumService;
+import org.cerberus.core.service.appium.SwipeAction;
+import org.cerberus.core.service.appium.SwipeAction.Direction;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
-import org.openqa.selenium.*;
+import org.json.JSONException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
+import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
-import java.util.Set;
-import java.time.Duration;
-import org.json.JSONException;
 
 /**
  * @author bcivel
@@ -122,7 +127,7 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName) {
         MessageEvent message;
         try {
-            if (!StringUtil.isNull(valueToType)) {
+            if (!StringUtil.isEmptyOrNullValue(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
                 if (elmt instanceof MobileElement) {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(valueToType);
@@ -139,7 +144,7 @@ public abstract class AppiumService implements IAppiumService {
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            if (!StringUtil.isNull(valueToType)) {
+            if (!StringUtil.isEmptyOrNullValue(valueToType)) {
                 message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
             } else {
                 message.setDescription(message.getDescription().replace("%DATA%", "No property"));
@@ -180,9 +185,9 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     /**
-     * @author vertigo17
      * @param exception the exception need to be parsed by Cerberus
      * @return A new Event Message with selenium related description
+     * @author vertigo17
      */
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
@@ -196,11 +201,11 @@ public abstract class AppiumService implements IAppiumService {
      * Get the {@link Coordinates} represented by the given {@link Identifier}
      *
      * @param identifier the {@link Identifier} to parse to get the
-     * {@link Coordinates}
+     *                   {@link Coordinates}
      * @return the {@link Coordinates} represented by the given
      * {@link Identifier}
      * @throws NoSuchElementException if no {@link Coordinates} can be found
-     * inside the given {@link Identifier}
+     *                                inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
         if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
@@ -278,7 +283,6 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     /**
-     *
      * @param session
      * @param action
      * @return

@@ -101,7 +101,7 @@ public interface ITestCaseExecutionService {
      * parameter and that match the other criteria.
      * @throws CerberusException when no Execution match the criteria.
      */
-    List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
+    List<TestCaseExecution> findTCExecutionByCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
 
     /**
      * @param system
@@ -209,13 +209,13 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    Integer readNbByTag(String tag) throws CerberusException;
+    int readNbByTag(String tag) throws CerberusException;
 
     /**
      * @param tag
      * @return
      */
-    AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
+    AnswerList<TestCaseExecution> readDistinctEnvCountryBrowserByTag(String tag);
 
 
     /**

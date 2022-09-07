@@ -19,14 +19,6 @@
  */
 package org.cerberus.core.servlet.zzpublic;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -46,6 +38,15 @@ import org.cerberus.core.util.servlet.ServletUtil;
 import org.cerberus.core.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * This servlet is for monitoring purpose. It reports the number of execution of
@@ -77,10 +78,10 @@ public class GetNumberOfExecutions extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -157,7 +158,7 @@ public class GetNumberOfExecutions extends HttpServlet {
 
                     // Getting the lists of test cases the follow the criterias.
                     try {
-                        myList = MyTestExecutionService.findTCExecutionbyCriteria1(dateLimitFrom, test, "", application, country, environment, controlStatus, "WORKING");
+                        myList = MyTestExecutionService.findTCExecutionByCriteria1(dateLimitFrom, test, "", application, country, environment, controlStatus, "WORKING");
                         out.println(myList.size());
                     } catch (CerberusException e) {
                         out.println("0");
@@ -180,13 +181,14 @@ public class GetNumberOfExecutions extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -197,10 +199,10 @@ public class GetNumberOfExecutions extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

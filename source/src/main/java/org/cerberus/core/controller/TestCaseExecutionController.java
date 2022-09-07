@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
  * @author bcivel
  */
 @RestController
@@ -58,9 +57,7 @@ public class TestCaseExecutionController {
             test = policy.sanitize(test);
             testCase = policy.sanitize(testCase);
             tag = policy.sanitize(tag);
-            campaign = policy.sanitize(campaign);
-
-            JSONArray ja = testCaseExecutionService.getLastByCriteria(test, testCase, tag, campaign, numberOfExecution);
+            JSONArray ja = testCaseExecutionService.getLastByCriteria(test, testCase, tag, numberOfExecution);
             return ja.toString();
         } catch (CerberusException ex) {
             LOG.warn(ex);

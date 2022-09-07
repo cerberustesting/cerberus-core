@@ -1082,12 +1082,12 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     webElement.clear();
-                    if (!StringUtil.isNull(valueToType)) {
+                    if (!StringUtil.isEmptyOrNullValue(valueToType)) {
                         webElement.sendKeys(valueToType);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                    if (!StringUtil.isNull(valueToType)) {
+                    if (!StringUtil.isEmptyOrNullValue(valueToType)) {
                         message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
                     } else {
                         message.setDescription(message.getDescription().replace("%DATA%", "No property"));
@@ -1376,7 +1376,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         String url = "";
         try {
-            if (!StringUtil.isNull(identifier.getLocator())) {
+            if (!StringUtil.isEmptyOrNullValue(identifier.getLocator())) {
                 if (withBase) {
                     host = StringUtil.cleanHostURL(host);
                     url = StringUtil.getURLFromString(host, "", identifier.getLocator(), "");

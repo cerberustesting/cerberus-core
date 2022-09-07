@@ -19,11 +19,7 @@
  */
 package org.cerberus.core.crud.entity;
 
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.Map;
+import lombok.Data;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,12 +29,18 @@ import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author bcivel
  */
+@Data
 public class TestCaseExecution {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecution.class);
@@ -204,7 +206,9 @@ public class TestCaseExecution {
 
     public enum ControlStatus {
         OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
-    };
+    }
+
+    ;
 
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
@@ -215,56 +219,9 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_LAMBDATEST = "LAMBDATEST";
     public static final String ROBOTPROVIDER_NONE = "NONE";
 
-    public Invariant getEnvironmentObj() {
-        return environmentObj;
-    }
-
-    public void setEnvironmentObj(Invariant environmentObj) {
-        this.environmentObj = environmentObj;
-    }
-
-    public Invariant getPriorityObj() {
-        return priorityObj;
-    }
-
-    public void setPriorityObj(Invariant priorityObj) {
-        this.priorityObj = priorityObj;
-    }
-
-    public JSONArray getConditionOptions() {
-        return conditionOptions;
-    }
-
-    public void setConditionOptions(JSONArray conditionOptions) {
-        this.conditionOptions = conditionOptions;
-    }
-
-    public String getRobotProviderSessionID() {
-        return robotProviderSessionID;
-    }
-
-    public void setRobotProviderSessionID(String robotProviderSessionID) {
-        this.robotProviderSessionID = robotProviderSessionID;
-    }
-
-    public List<NetworkTrafficIndex> getNetworkTrafficIndexList() {
-        return networkTrafficIndexList;
-    }
-
-    public void setNetworkTrafficIndexList(List<NetworkTrafficIndex> networkTrafficIndexList) {
-        this.networkTrafficIndexList = networkTrafficIndexList;
-    }
 
     public void appendNetworkTrafficIndexList(NetworkTrafficIndex newIndex) {
         this.networkTrafficIndexList.add(newIndex);
-    }
-
-    public HashMap<String, String> getSecrets() {
-        return secrets;
-    }
-
-    public void setSecrets(HashMap<String, String> secrets) {
-        this.secrets = secrets;
     }
 
     public void appendSecret(String secret) {
@@ -279,525 +236,12 @@ public class TestCaseExecution {
         });
     }
 
-    public TestCaseExecutionHttpStat getHttpStat() {
-        return httpStat;
-    }
-
-    public void setHttpStat(TestCaseExecutionHttpStat httpStat) {
-        this.httpStat = httpStat;
-    }
-
-    public String getAppTypeEngine() {
-        return appTypeEngine;
-    }
-
-    public void setAppTypeEngine(String appTypeEngine) {
-        this.appTypeEngine = appTypeEngine;
-    }
-
-    public HashMap<String, Map<TopicPartition, Long>> getKafkaLatestOffset() {
-        return kafkaLatestOffset;
-    }
-
-    public void setKafkaLatestOffset(HashMap<String, Map<TopicPartition, Long>> kafkaLatestOffset) {
-        this.kafkaLatestOffset = kafkaLatestOffset;
-    }
-
-    public boolean isRemoteProxyStarted() {
-        return remoteProxyStarted;
-    }
-
-    public void setRemoteProxyStarted(boolean remoteProxyStarted) {
-        this.remoteProxyStarted = remoteProxyStarted;
-    }
-
-    public String getRobotSessionID() {
-        return robotSessionID;
-    }
-
-    public void setRobotSessionID(String robotSessionID) {
-        this.robotSessionID = robotSessionID;
-    }
-
-    public String getRobotProvider() {
-        return robotProvider;
-    }
-
-    public void setRobotProvider(String robotProvider) {
-        this.robotProvider = robotProvider;
-    }
-
-    public long getPreviousExeId() {
-        return previousExeId;
-    }
-
-    public void setPreviousExeId(long previousExeId) {
-        this.previousExeId = previousExeId;
-    }
-
-    public String getPreviousExeStatus() {
-        return previousExeStatus;
-    }
-
-    public void setPreviousExeStatus(String previousExeStatus) {
-        this.previousExeStatus = previousExeStatus;
-    }
-
-    public RobotExecutor getRobotExecutorObj() {
-        return robotExecutorObj;
-    }
-
-    public void setRobotExecutorObj(RobotExecutor robotExecutorObj) {
-        this.robotExecutorObj = robotExecutorObj;
-    }
-
-    public Robot getRobotObj() {
-        return robotObj;
-    }
-
-    public void setRobotObj(Robot robotObj) {
-        this.robotObj = robotObj;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
-    public String getRobotDecli() {
-        return robotDecli;
-    }
-
-    public void setRobotDecli(String robotDecli) {
-        this.robotDecli = robotDecli;
-    }
-
-    public Integer getNbExecutions() {
-        return nbExecutions;
-    }
-
-    public void setNbExecutions(Integer nbExecutions) {
-        this.nbExecutions = nbExecutions;
-    }
-
-    public String getQueueState() {
-        return queueState;
-    }
-
-    public void setQueueState(String queueState) {
-        this.queueState = queueState;
-    }
-
-    public TestCaseExecutionQueue getTestCaseExecutionQueue() {
-        return testCaseExecutionQueue;
-    }
-
-    public void setTestCaseExecutionQueue(TestCaseExecutionQueue testCaseExecutionQueue) {
-        this.testCaseExecutionQueue = testCaseExecutionQueue;
-    }
-
-    public String getUsrCreated() {
-        return UsrCreated;
-    }
-
-    public void setUsrCreated(String UsrCreated) {
-        this.UsrCreated = UsrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return DateCreated;
-    }
-
-    public void setDateCreated(Timestamp DateCreated) {
-        this.DateCreated = DateCreated;
-    }
-
-    public String getUsrModif() {
-        return UsrModif;
-    }
-
-    public void setUsrModif(String UsrModif) {
-        this.UsrModif = UsrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return DateModif;
-    }
-
-    public void setDateModif(Timestamp DateModif) {
-        this.DateModif = DateModif;
-    }
-
-    public long getQueueID() {
-        return queueID;
-    }
-
-    public void setQueueID(long queueID) {
-        this.queueID = queueID;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getRecursiveAlreadyCalculatedPropertiesList() {
-        return recursiveAlreadyCalculatedPropertiesList;
-    }
-
-    public void setRecursiveAlreadyCalculatedPropertiesList(List<String> recursiveAlreadyCalculatedPropertiesList) {
-        this.recursiveAlreadyCalculatedPropertiesList = recursiveAlreadyCalculatedPropertiesList;
-    }
-
-    public TreeMap<String, TestCaseExecutionData> getTestCaseExecutionDataMap() {
-        return testCaseExecutionDataMap;
-    }
-
-    public void setTestCaseExecutionDataMap(TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
-        this.testCaseExecutionDataMap = testCaseExecutionDataMap;
-    }
-
-    public AppService getLastServiceCalled() {
-        return lastServiceCalled;
-    }
-
-    public void setLastServiceCalled(AppService lastServiceCalled) {
-        this.lastServiceCalled = lastServiceCalled;
-    }
-
-    public String getOriginalLastServiceCalled() {
-        return originalLastServiceCalled;
-    }
-
-    public void setOriginalLastServiceCalled(String originalLastServiceCalled) {
-        LOG.debug("TOTO set.");
-        this.originalLastServiceCalled = originalLastServiceCalled;
-    }
-
-    public String getOriginalLastServiceCalledContent() {
-        return originalLastServiceCalledContent;
-    }
-
-    public void setOriginalLastServiceCalledContent(String originalLastServiceCalledContent) {
-        this.originalLastServiceCalledContent = originalLastServiceCalledContent;
-    }
-
-    public long getLastWebsocketPush() {
-        return lastWebsocketPush;
-    }
-
-    public void setLastWebsocketPush(long lastWebsocketPush) {
-        this.lastWebsocketPush = lastWebsocketPush;
-    }
-
-    public String getConditionOperator() {
-        return conditionOperator;
-    }
-
-    public void setConditionOperator(String conditionOperator) {
-        this.conditionOperator = conditionOperator;
-    }
-
-    public String getConditionVal1Init() {
-        return conditionVal1Init;
-    }
-
-    public void setConditionVal1Init(String conditionVal1Init) {
-        this.conditionVal1Init = conditionVal1Init;
-    }
-
-    public String getConditionVal2Init() {
-        return conditionVal2Init;
-    }
-
-    public void setConditionVal2Init(String conditionVal2Init) {
-        this.conditionVal2Init = conditionVal2Init;
-    }
-
-    public String getConditionVal3Init() {
-        return conditionVal3Init;
-    }
-
-    public void setConditionVal3Init(String conditionVal3Init) {
-        this.conditionVal3Init = conditionVal3Init;
-    }
-
-    public String getConditionVal1() {
-        return conditionVal1;
-    }
-
-    public void setConditionVal1(String conditionVal1) {
-        this.conditionVal1 = conditionVal1;
-    }
-
-    public String getConditionVal2() {
-        return conditionVal2;
-    }
-
-    public void setConditionVal2(String conditionVal2) {
-        this.conditionVal2 = conditionVal2;
-    }
-
-    public String getConditionVal3() {
-        return conditionVal3;
-    }
-
-    public void setConditionVal3(String conditionVal3) {
-        this.conditionVal3 = conditionVal3;
-    }
-
-    public long getCerberus_featureflipping_websocketpushperiod() {
-        return cerberus_featureflipping_websocketpushperiod;
-    }
-
-    public void setCerberus_featureflipping_websocketpushperiod(long cerberus_featureflipping_websocketpushperiod) {
-        this.cerberus_featureflipping_websocketpushperiod = cerberus_featureflipping_websocketpushperiod;
-    }
-
-    public boolean isCerberus_featureflipping_activatewebsocketpush() {
-        return cerberus_featureflipping_activatewebsocketpush;
-    }
-
-    public void setCerberus_featureflipping_activatewebsocketpush(boolean cerberus_featureflipping_activatewebsocketpush) {
-        this.cerberus_featureflipping_activatewebsocketpush = cerberus_featureflipping_activatewebsocketpush;
-    }
-
-    public Integer getCerberus_action_wait_default() {
-        return cerberus_action_wait_default;
-    }
-
-    public void setCerberus_action_wait_default(Integer cerberus_action_wait_default) {
-        this.cerberus_action_wait_default = cerberus_action_wait_default;
-    }
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public Integer getNumberOfRetries() {
-        return numberOfRetries;
-    }
-
-    public void setNumberOfRetries(Integer numberOfRetries) {
-        this.numberOfRetries = numberOfRetries;
-    }
-
-    public void decreaseNumberOfRetries() {
-        this.numberOfRetries--;
-    }
-
-    public List<TestCaseCountryProperties> getTestCaseCountryPropertyList() {
-        return testCaseCountryPropertyList;
-    }
-
-    public void setTestCaseCountryPropertyList(List<TestCaseCountryProperties> testCaseCountryPropertyList) {
-        this.testCaseCountryPropertyList = testCaseCountryPropertyList;
-    }
-
-    public String getManualExecution() {
-        return manualExecution;
-    }
-
-    public void setManualExecution(String manualExecution) {
-        this.manualExecution = manualExecution;
-    }
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    public Integer getPageSource() {
-        return pageSource;
-    }
-
-    public void setPageSource(Integer pageSource) {
-        this.pageSource = pageSource;
-    }
-
-    public Integer getRobotLog() {
-        return robotLog;
-    }
-
-    public void setRobotLog(Integer robotLog) {
-        this.robotLog = robotLog;
-    }
-
-    public Integer getConsoleLog() {
-        return consoleLog;
-    }
-
-    public void setConsoleLog(Integer consoleLog) {
-        this.consoleLog = consoleLog;
-    }
-
-    public boolean isSynchroneous() {
-        return synchroneous;
-    }
-
-    public void setSynchroneous(boolean synchroneous) {
-        this.synchroneous = synchroneous;
-    }
-
-    public String getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(String timeout) {
-        this.timeout = timeout;
-    }
-
-    public String getExecutionUUID() {
-        return executionUUID;
-    }
-
-    public void setExecutionUUID(String executionUUID) {
-        this.executionUUID = executionUUID;
-    }
-
-    public Selenium getSelenium() {
-        return selenium;
-    }
-
-    public void setSelenium(Selenium selenium) {
-        this.selenium = selenium;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public Invariant getCountryObj() {
-        return CountryObj;
-    }
-
-    public void setCountryObj(Invariant CountryObj) {
-        this.CountryObj = CountryObj;
-    }
-
-    public Invariant getEnvironmentDataObj() {
-        return environmentDataObj;
-    }
-
-    public void setEnvironmentDataObj(Invariant environmentDataObj) {
-        this.environmentDataObj = environmentDataObj;
-    }
-
-    public String getEnvironmentData() {
-        return environmentData;
-    }
-
-    public void setEnvironmentData(String environmentData) {
-        this.environmentData = environmentData;
-    }
-
-    public int getManualURL() {
-        return manualURL;
-    }
-
-    public void setManualURL(int manualURL) {
-        this.manualURL = manualURL;
-    }
-
-    public String getMyHost() {
-        return myHost;
-    }
-
-    public void setMyHost(String myHost) {
-        this.myHost = myHost;
-    }
-
-    public String getMyContextRoot() {
-        return myContextRoot;
-    }
-
-    public void setMyContextRoot(String myContextRoot) {
-        this.myContextRoot = myContextRoot;
-    }
-
-    public String getMyLoginRelativeURL() {
-        return myLoginRelativeURL;
-    }
-
-    public void setMyLoginRelativeURL(String myLoginRelativeURL) {
-        this.myLoginRelativeURL = myLoginRelativeURL;
-    }
-
-    public String getOutputFormat() {
-        return outputFormat;
-    }
-
-    public void setOutputFormat(String outputFormat) {
-        this.outputFormat = outputFormat;
-    }
-
-    public int getScreenshot() {
-        return screenshot;
-    }
-
-    public void setScreenshot(int screenshot) {
-        this.screenshot = screenshot;
-    }
-
-    public int getVideo() {
-        return video;
-    }
-
-    public void setVideo(int video) {
-        this.video = video;
-    }
-
-    public MessageGeneral getResultMessage() {
-        return resultMessage;
-    }
-
     public void setResultMessage(MessageGeneral resultMessage) {
         this.resultMessage = resultMessage;
         if (resultMessage != null) {
             this.setControlMessage(resultMessage.getDescription());
             this.setControlStatus(resultMessage.getCodeString());
         }
-    }
-
-    public List<TestCaseExecutionFile> getFileList() {
-        return fileList;
-    }
-
-    public void setFileList(List<TestCaseExecutionFile> fileList) {
-        this.fileList = fileList;
     }
 
     public void addFileList(TestCaseExecutionFile file) {
@@ -814,14 +258,6 @@ public class TestCaseExecution {
         }
     }
 
-    public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
-        return testCaseStepExecutionList;
-    }
-
-    public void setTestCaseStepExecutionList(List<TestCaseStepExecution> stepExecutionList) {
-        this.testCaseStepExecutionList = stepExecutionList;
-    }
-
     public void addStepExecutionList(TestCaseStepExecution stepExecution) {
         if (stepExecution != null) {
             this.testCaseStepExecutionList.add(stepExecution);
@@ -836,333 +272,13 @@ public class TestCaseExecution {
         }
     }
 
-    public String getSeleniumIPUser() {
-        return seleniumIPUser;
-    }
-
-    public void setSeleniumIPUser(String seleniumIPUser) {
-        this.seleniumIPUser = seleniumIPUser;
-    }
-
-    public String getSeleniumIPPassword() {
-        return seleniumIPPassword;
-    }
-
-    public void setSeleniumIPPassword(String seleniumIPPassword) {
-        this.seleniumIPPassword = seleniumIPPassword;
-    }
-
-    public String getSeleniumIP() {
-        return seleniumIP;
-    }
-
-    public void setSeleniumIP(String seleniumIP) {
-        this.seleniumIP = seleniumIP;
-    }
-
-    public String getSeleniumPort() {
-        return seleniumPort;
-    }
-
-    public void setSeleniumPort(String seleniumPort) {
-        this.seleniumPort = seleniumPort;
-    }
-
-    public CountryEnvParam getCountryEnvParam() {
-        return countryEnvParam;
-    }
-
-    public void setCountryEnvParam(CountryEnvParam countryEnvParam) {
-        this.countryEnvParam = countryEnvParam;
-    }
-
-    public CountryEnvironmentParameters getCountryEnvironmentParameters() {
-        return countryEnvironmentParameters;
-    }
-
-    public void setCountryEnvironmentParameters(CountryEnvironmentParameters countryEnvironmentParameters) {
-        this.countryEnvironmentParameters = countryEnvironmentParameters;
-    }
-
-    public Test getTestObj() {
-        return testObj;
-    }
-
-    public void setTestObj(Test testObj) {
-        this.testObj = testObj;
-    }
-
-    public TestCase getTestCaseObj() {
-        return testCaseObj;
-    }
-
-    public void setTestCaseObj(TestCase testCase) {
-        this.testCaseObj = testCase;
-    }
-
-    public Application getApplicationObj() {
-        return applicationObj;
-    }
-
-    public void setApplicationObj(Application applicationObj) {
-        this.applicationObj = applicationObj;
-    }
-
-    public String getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
-    }
-
-    public String getBuild() {
-        return build;
-    }
-
-    public void setBuild(String build) {
-        this.build = build;
-    }
-
-    public String getControlMessage() {
-        return controlMessage;
-    }
-
-    public void setControlMessage(String controlMessage) {
-        this.controlMessage = controlMessage;
-    }
-
-    public String getControlStatus() {
-        return controlStatus;
-    }
-
-    public void setControlStatus(String controlStatus) {
-        this.controlStatus = controlStatus;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCrbVersion() {
-        return crbVersion;
-    }
-
-    public void setCrbVersion(String crbVersion) {
-        this.crbVersion = crbVersion;
-    }
-
-    public long getEnd() {
-        return end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getRobot() {
-        return robot;
-    }
-
-    public void setRobot(String robot) {
-        this.robot = robot;
-    }
-
-    public String getRobotExecutor() {
-        return robotExecutor;
-    }
-
-    public void setRobotExecutor(String robotExecutor) {
-        this.robotExecutor = robotExecutor;
-    }
-
-    public String getRobotHost() {
-        return robotHost;
-    }
-
-    public void setRobotHost(String robotHost) {
-        this.robotHost = robotHost;
-    }
-
-    public String getRobotPort() {
-        return robotPort;
-    }
-
-    public void setRobotPort(String robotPort) {
-        this.robotPort = robotPort;
-    }
-
-    public String getRevision() {
-        return revision;
-    }
-
-    public void setRevision(String revision) {
-        this.revision = revision;
-    }
-
-    public long getStart() {
-        return start;
-    }
-
-    public void setStart(long start) {
-        this.start = start;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public Tag getTagObj() {
-        return tagObj;
-    }
-
-    public void setTagObj(Tag tagObj) {
-        this.tagObj = tagObj;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
-    public String getTestCase() {
-        return testCase;
-    }
-
-    public void setTestCase(String testCase) {
-        this.testCase = testCase;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public int getVerbose() {
-        return verbose;
-    }
-
-    public void setVerbose(int verbose) {
-        this.verbose = verbose;
-    }
-
-    public String getExecutor() {
-        return executor;
-    }
-
-    public void setExecutor(String executor) {
-        this.executor = executor;
-    }
-
-    public String getScreenSize() {
-        return screenSize;
-    }
-
-    public void setScreenSize(String screenSize) {
-        this.screenSize = screenSize;
-    }
-
-    public int getTestCaseVersion() {
-        return this.testCaseVersion;
-    }
-
-    public void setTestCaseVersion(int testCaseVersion) {
-        this.testCaseVersion = testCaseVersion;
-    }
-
-    public int getTestCasePriority() {
-        return testCasePriority;
-    }
-
-    public void setTestCasePriority(int testCasePriority) {
-        this.testCasePriority = testCasePriority;
-    }
-
-    public List<String> getVideos() {
-        return videos;
-    }
-
-    public void setVideos(List<String> videos) {
-        this.videos = videos;
-    }
-
-    public List<TestCaseExecutionQueueDep> getTestCaseExecutionQueueDepList() {
-        return testCaseExecutionQueueDepList;
-    }
-
-    public void setTestCaseExecutionQueueDep(List<TestCaseExecutionQueueDep> testCaseExecutionQueueDep) {
-        this.testCaseExecutionQueueDepList = testCaseExecutionQueueDep;
-    }
-
-    public Integer getRemoteProxyPort() {
-        return remoteProxyPort;
-    }
-
-    public void setRemoteProxyPort(Integer remoteProxyPort) {
-        this.remoteProxyPort = remoteProxyPort;
-    }
-
-    public String getRemoteProxyUUID() {
-        return remoteProxyUUID;
-    }
-
-    public void setRemoteProxyUUID(String remoteProxyUUID) {
-        this.remoteProxyUUID = remoteProxyUUID;
-    }
-
-    public String getRemoteProxyLastHarMD5() {
-        return remoteProxyLastHarMD5;
-    }
-
-    public void setRemoteProxyLastHarMD5(String remoteProxyLastHarMD5) {
-        this.remoteProxyLastHarMD5 = remoteProxyLastHarMD5;
-    }
-
     /**
      * Convert the current TestCaseExecution into JSON format
      *
-     * @param withChilds boolean that define if childs should be included
+     * @param withChildren boolean that define if childs should be included
      * @return TestCaseExecution in JSONObject format
      */
-    public JSONObject toJson(boolean withChilds) {
+    public JSONObject toJson(boolean withChildren) {
         JSONObject result = new JSONObject();
         try {
             result.put("type", "testCaseExecution");
@@ -1220,20 +336,20 @@ public class TestCaseExecution {
             result.put("usrModif", this.getUsrModif());
             result.put("dateModif", this.getDateModif());
 
-            if (withChilds) {
+            if (withChildren) {
                 // Looping on ** Step **
                 JSONArray array = new JSONArray();
                 if (this.getTestCaseStepExecutionList() != null) {
-                    for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
-                        array.put(((TestCaseStepExecution) testCaseStepExecution).toJson(true, false, this.getSecrets()));
+                    for (TestCaseStepExecution testCaseStepExecution : this.getTestCaseStepExecutionList()) {
+                        array.put(testCaseStepExecution.toJson(true, false, this.getSecrets()));
                     }
                 }
                 result.put("testCaseStepExecutionList", array);
 
                 array = new JSONArray();
                 if (this.getTestCaseExecutionQueueDepList() != null) {
-                    for (Object tceQDep : this.getTestCaseExecutionQueueDepList()) {
-                        array.put(((TestCaseExecutionQueueDep) tceQDep).toJson());
+                    for (TestCaseExecutionQueueDep tceQDep : this.getTestCaseExecutionQueueDepList()) {
+                        array.put(tceQDep.toJson());
                     }
                 }
                 result.put("testCaseExecutionQueueDepList", array);
@@ -1261,8 +377,8 @@ public class TestCaseExecution {
                 // Looping on ** Media File Execution **
                 array = new JSONArray();
                 if (this.getFileList() != null) {
-                    for (Object testCaseFileExecution : this.getFileList()) {
-                        array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                    for (TestCaseExecutionFile testCaseFileExecution : this.getFileList()) {
+                        array.put(testCaseFileExecution.toJson());
                     }
                 }
                 result.put("fileList", array);
@@ -1273,8 +389,6 @@ public class TestCaseExecution {
 
             }
 
-        } catch (JSONException ex) {
-            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }
@@ -1285,12 +399,12 @@ public class TestCaseExecution {
      * Convert the current TestCaseExecution into a public JSON format.
      *
      * @param cerberusURL
-     * @param prioritiesList : send the invariant list of priorities to the
-     * method (this is to avoid getting value from database for every entries)
-     * @param countriesList : send the invariant list of countries to the method
-     * (this is to avoid getting value from database for every entries)
+     * @param prioritiesList   : send the invariant list of priorities to the
+     *                         method (this is to avoid getting value from database for every entries)
+     * @param countriesList    : send the invariant list of countries to the method
+     *                         (this is to avoid getting value from database for every entries)
      * @param environmentsList : send the invariant list of environments to the
-     * method (this is to avoid getting value from database for every entries)
+     *                         method (this is to avoid getting value from database for every entries)
      * @return TestCaseExecution in JSONObject format
      */
     public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {
@@ -1395,8 +509,6 @@ public class TestCaseExecution {
             result.put("usrModif", this.getUsrModif());
             result.put("dateModif", this.getDateModif());
 
-        } catch (JSONException ex) {
-            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }

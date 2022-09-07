@@ -117,21 +117,22 @@ public interface ITestCaseExecutionDAO {
      * parameter and following the other criteria.
      * @throws CerberusException when no executions can be found.
      */
-    List<TestCaseExecution> findExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException;
+    List<TestCaseExecution> findExecutionByCriteria1(String dateLimitFrom, String test, String testCase,
+                                                     String application, String country, String environment, String controlStatus, String status);
 
     /**
      * @param id of the test case execution
      * @return the test case execution object
      * @throws CerberusException
      */
-    TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
+    TestCaseExecution findTCExecutionByKey(long id);
 
     /**
      * @param withUUIDTag determine of we must retreive UUID tag or not
      * @return a list of String tag
      * @throws CerberusException when no tags can be found.
      */
-    List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException;
+    List<String> findDistinctTag(boolean withUUIDTag);
 
     /**
      * @param test
@@ -139,7 +140,7 @@ public interface ITestCaseExecutionDAO {
      * @return
      * @throws CerberusException
      */
-    TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException;
+    TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase);
 
     /**
      * @param test
@@ -200,7 +201,7 @@ public interface ITestCaseExecutionDAO {
      * enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException;
+    public AnswerList<TestCaseExecution> readByTag(String tag);
 
     /**
      * Read TestCaseExecution By Tag
@@ -219,17 +220,17 @@ public interface ITestCaseExecutionDAO {
      * @param searchTerm
      * @param individualSearch
      * @param individualLike
-     * @param system
+     * @param systems
      * @return
      * @throws CerberusException
      */
-    AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
+    AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> systems) throws CerberusException;
 
     /**
      * @param tag
      * @return
      */
-    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag);
+    public AnswerList<TestCaseExecution> readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      * @param executionId

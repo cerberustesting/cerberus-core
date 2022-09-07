@@ -20,15 +20,6 @@
 package org.cerberus.core.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Invariant;
@@ -38,6 +29,7 @@ import org.cerberus.core.crud.entity.TestCaseLabel;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.core.crud.service.IInvariantService;
+import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseLabelService;
 import org.cerberus.core.crud.service.ITestCaseService;
@@ -60,10 +52,24 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- *
  * @author cerberus
  */
 @WebServlet(name = "ReadTestCaseExecution", urlPatterns = {"/ReadTestCaseExecution"})
@@ -83,10 +89,10 @@ public class ReadTestCaseExecution extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws ServletException                              if a servlet-specific error occurs
+     * @throws IOException                                   if an I/O error occurs
      * @throws org.cerberus.core.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -176,13 +182,14 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -199,10 +206,10 @@ public class ReadTestCaseExecution extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -239,7 +246,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        testCaseExecutionList = testCaseExecutionService.readDistinctEnvCoutnryBrowserByTag(Tag);
+        testCaseExecutionList = testCaseExecutionService.readDistinctEnvCountryBrowserByTag(Tag);
         List<TestCaseExecution> testCaseExecutions = testCaseExecutionList.getDataList();
 
         /**

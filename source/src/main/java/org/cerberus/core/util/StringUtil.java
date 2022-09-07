@@ -37,7 +37,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -156,13 +155,25 @@ public final class StringUtil {
     }
 
     /**
-     * Check for null string content
+     * Check for null or empty string content
      *
      * @param str
-     * @return true if the parameter is a "null"
+     * @return null safe method that returns
+     * true if the parameter is a "null" string or an empty string
      */
-    public static boolean isNull(String str) {
-        return (str == null || NULL.equalsIgnoreCase(str) || "".equalsIgnoreCase(str));
+    public static boolean isEmptyOrNullValue(String str) {
+        return (isNullOrEmpty(str) || NULL.equalsIgnoreCase(str.trim()));
+    }
+
+    /**
+     * Check for not null or not empty string content
+     *
+     * @param str
+     * @return null safe method that returns
+     * true if the parameter is NOT a "null" string or empty string.
+     */
+    public static boolean isNotEmptyOrNullValue(String str) {
+        return !isEmptyOrNullValue(str);
     }
 
     /**
@@ -183,17 +194,6 @@ public final class StringUtil {
      */
     public static boolean isNotEmpty(String str) {
         return !isNullOrEmpty(str);
-    }
-
-
-    /**
-     * Check for null or empty string content
-     *
-     * @param str
-     * @return true if the parameter is a "null" or empty string.
-     */
-    public static boolean isNotEmptyOrNullValue(String str) {
-        return isNotEmpty(str) && !NULL.equalsIgnoreCase(str.trim());
     }
 
     /**
@@ -289,7 +289,7 @@ public final class StringUtil {
      * @param secrets
      * @return
      */
-    public static String secureFromSecrets(String text, HashMap<String, String> secrets) {
+    public static String secureFromSecrets(String text, Map<String, String> secrets) {
         if (secrets == null) {
             return text;
         }

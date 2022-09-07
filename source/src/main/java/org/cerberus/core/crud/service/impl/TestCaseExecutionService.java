@@ -33,7 +33,6 @@ import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.core.crud.entity.TestCaseStepExecution;
 import org.cerberus.core.crud.factory.IFactoryTagSystem;
-import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITagSystemService;
 import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
@@ -43,8 +42,6 @@ import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.core.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -60,7 +57,6 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,25 +72,19 @@ import java.util.Map;
 public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Autowired
-    ITestCaseExecutionDAO testCaseExecutionDao;
+    private ITestCaseExecutionDAO testCaseExecutionDao;
     @Autowired
-    ITestCaseStepExecutionService testCaseStepExecutionService;
+    private ITestCaseStepExecutionService testCaseStepExecutionService;
     @Autowired
-    ITestCaseExecutionFileService testCaseExecutionFileService;
+    private ITestCaseExecutionFileService testCaseExecutionFileService;
     @Autowired
-    IParameterService parameterService;
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired
-    ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
+    private ITestCaseService testCaseService;
     @Autowired
-    ITestCaseExecutionDataService testCaseExecutionDataService;
+    private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     @Autowired
-    ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
-    @Autowired
-    ITestCaseService testCaseService;
-    @Autowired
-    ITestCaseExecutionQueueService testCaseExecutionInQueueService;
-    @Autowired
-    ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
+    private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
     @Autowired
     private ITagSystemService tagSystemService;
     @Autowired
@@ -109,10 +99,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         // We create the link between the tag and the system if it does not exist yet.
-        if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && !StringUtil.isNullOrEmpty(tCExecution.getSystem())) {
-            if (!tagSystemService.exist(tCExecution.getTag(), tCExecution.getSystem())) {
-                tagSystemService.create(factoryTagSystem.create(tCExecution.getTag(), tCExecution.getSystem(), tCExecution.getUsrCreated(), null, "", null));
-            }
+        if (!StringUtil.isNullOrEmpty(tCExecution.getTag())
+                && !StringUtil.isNullOrEmpty(tCExecution.getSystem())
+                && !tagSystemService.exist(tCExecution.getTag(), tCExecution.getSystem())) {
+            tagSystemService.create(factoryTagSystem.create(tCExecution.getTag(), tCExecution.getSystem(), tCExecution.getUsrCreated(), null, "", null));
         }
         return testCaseExecutionDao.insertTCExecution(tCExecution);
     }
@@ -141,7 +131,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> findTCExecutionbyCriteria1(String dateLimitFrom, String test, String testCase, String application, String country, String environment, String controlStatus, String status) throws CerberusException {
+    public List<TestCaseExecution> findTCExecutionByCriteria1(String dateLimitFrom, String test, String testCase,
+                                                              String application, String country, String environment, String controlStatus, String status) {
         // Transform empty parameter in % in order to remove from SQL filter (thanks to the like operator).
         test = ParameterParserUtil.wildcardIfEmpty(test);
         testCase = ParameterParserUtil.wildcardIfEmpty(testCase);
@@ -150,21 +141,20 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         environment = ParameterParserUtil.wildcardIfEmpty(environment);
         controlStatus = ParameterParserUtil.wildcardIfEmpty(controlStatus);
         status = ParameterParserUtil.wildcardIfEmpty(status);
-        return testCaseExecutionDao.findExecutionbyCriteria1(dateLimitFrom, test, testCase, application, country, environment, controlStatus, status);
+        return testCaseExecutionDao.findExecutionByCriteria1(dateLimitFrom, test, testCase, application, country, environment, controlStatus, status);
     }
 
     @Override
-    public List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException {
+    public List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments,
+                                                  List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException {
         return this.convert(testCaseExecutionDao.readByCriteria(system, countries, environments, robotDecli, testcases, from, to));
     }
 
     @Override
     public long registerRunID(TestCaseExecution tCExecution) throws CerberusException {
 
-        /**
-         * Insert TestCaseExecution
-         */
-        long runID = 0;
+        // Insert TestCaseExecution
+        long runID;
         try {
             runID = this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
@@ -175,7 +165,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
+    public TestCaseExecution findTCExecutionByKey(long id) {
         return testCaseExecutionDao.findTCExecutionByKey(id);
     }
 
@@ -187,12 +177,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
+    public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) {
         return testCaseExecutionDao.findLastTestCaseExecutionNotPE(test, testCase);
     }
 
     @Override
-    public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
+    public List<String> findDistinctTag(boolean withUUIDTag) {
         return testCaseExecutionDao.findDistinctTag(withUUIDTag);
     }
 
@@ -202,7 +192,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) {
         return AnswerUtil.convertToAnswerList(() -> testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch));
     }
 
@@ -212,18 +202,18 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public AnswerList<TestCaseExecution> readByTag(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecution> readByTag(String tag) {
         return testCaseExecutionDao.readByTag(tag);
     }
 
     @Override
-    public Integer readNbByTag(String tag) throws CerberusException {
+    public int readNbByTag(String tag) throws CerberusException {
         return testCaseExecutionDao.readNbByTag(tag);
     }
 
     @Override
-    public AnswerList<TestCaseExecution> readDistinctEnvCoutnryBrowserByTag(String tag) {
-        return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
+    public AnswerList<TestCaseExecution> readDistinctEnvCountryBrowserByTag(String tag) {
+        return testCaseExecutionDao.readDistinctEnvCountryBrowserByTag(tag);
     }
 
     @Override
@@ -284,9 +274,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         if (testCaseExecution.getQueueID() > 0) {
             try {
                 List<TestCaseExecutionQueueDep> a = testCaseExecutionQueueDepService.convert(testCaseExecutionQueueDepService.readByExeQueueId(testCaseExecution.getQueueID()));
-                testCaseExecution.setTestCaseExecutionQueueDep(a);
+                testCaseExecution.setTestCaseExecutionQueueDepList(a);
             } catch (CerberusException e) {
-                LOG.error("An erreur occured while getting execution dependency", e);
+                LOG.error("An error occurred while getting execution dependency", e);
             }
         }
 
@@ -297,7 +287,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             videosAnswer.forEach(tcef -> videos.add(tcef.getFileName()));
             testCaseExecution.setVideos(videos);
         } catch (CerberusException e) {
-            LOG.error("An erreur occured while getting video file", e);
+            LOG.error("An error occurred while getting video file", e);
         }
 
         // We first add the 'Pres Testing' testcase execution steps.
@@ -319,9 +309,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecution.setHttpStat(httpStat.getItem());
 
         // Set Final response.
-        AnswerItem<TestCaseExecution> response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
-
-        return response;
+        return new AnswerItem<>(testCaseExecution, tce.getResultMessage());
     }
 
     @Override
@@ -357,18 +345,14 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException {
+    public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws CerberusException {
         AnswerList<TestCaseExecution> testCaseExecution;
         AnswerList<TestCaseExecutionQueue> testCaseExecutionInQueue;
 
-        /**
-         * Get list of execution by tag
-         */
+        //Get list of execution by tag
         testCaseExecution = this.readByTag(tag);
         List<TestCaseExecution> testCaseExecutions = testCaseExecution.getDataList();
-        /**
-         * Get list of Execution in Queue by Tag
-         */
+        // Get list of Execution in Queue by Tag
         List<String> stateList = new ArrayList<>();
         // We select here the list of state where no execution exist yet (or will never exist).
         stateList.add(TestCaseExecutionQueue.State.QUWITHDEP.name());
@@ -378,7 +362,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         stateList.add(TestCaseExecutionQueue.State.ERROR.name());
         testCaseExecutionInQueue = testCaseExecutionInQueueService.readByVarious1(tag, stateList, true);
         List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
-        /**
+        /*
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
          */
@@ -390,7 +374,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return testCaseExecutions;
     }
 
-    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
+    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) {
         LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String key = testCaseExecution.getRobotDecli() + "_"
@@ -400,11 +384,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTestCase();
             if ((testCaseExecutionsList.containsKey(key))) {
                 testCaseExecution.setNbExecutions(testCaseExecutionsList.get(key).getNbExecutions() + 1);
-                if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
-                    if (testCaseExecutionsList.get(key) != null) {
-                        testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
-                        testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
-                    }
+                if (TestCaseExecution.CONTROLSTATUS_PE.equalsIgnoreCase(testCaseExecution.getControlStatus())
+                        && testCaseExecutionsList.get(key) != null) {
+                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
                 }
             }
             testCaseExecutionsList.put(key, testCaseExecution);
@@ -416,31 +399,26 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getEnvironment() + "_"
                     + testCaseExecution.getTest() + "_"
                     + testCaseExecution.getTestCase();
-            if ((testCaseExecutionsList.containsKey(key) && testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime())
-                    || !testCaseExecutionsList.containsKey(key)) {
-                if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())) {
-                    if (testCaseExecutionsList.get(key) != null) {
-                        testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
-                        testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
-                    }
+            if (!testCaseExecutionsList.containsKey(key) || testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime()) {
+                if (TestCaseExecution.CONTROLSTATUS_QU.equalsIgnoreCase(testCaseExecution.getControlStatus())
+                        && testCaseExecutionsList.get(key) != null) {
+                    testCaseExecution.setPreviousExeId(testCaseExecutionsList.get(key).getId());
+                    testCaseExecution.setPreviousExeStatus(testCaseExecutionsList.get(key).getControlStatus());
                 }
-
                 testCaseExecutionsList.put(key, testCaseExecution);
             }
         }
-        List<TestCaseExecution> result = new ArrayList<>(testCaseExecutionsList.values());
-
-        return result;
+        return new ArrayList<>(testCaseExecutionsList.values());
     }
 
-    public JSONArray getLastByCriteria(String test, String testCase, String tag, String campaign, Integer numberOfExecution) throws CerberusException {
+    public JSONArray getLastByCriteria(String test, String testCase, String tag, Integer numberOfExecution) throws CerberusException {
 
         Map<String, List<String>> map = new HashMap<>();
-        AddElementToMap(map, "test", test);
-        AddElementToMap(map, "testCase", testCase);
+        addElementToMap(map, "test", test);
+        addElementToMap(map, "testCase", testCase);
 
         if (tag != null) {
-            AddElementToMap(map, "tag", tag);
+            addElementToMap(map, "tag", tag);
         }
 
         AnswerList<TestCaseExecution> list = readByCriteria(0, numberOfExecution, " exe.`id` desc ", null, map, null, null);
@@ -453,7 +431,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return ja;
     }
 
-    private void AddElementToMap(Map<String, List<String>> map, String key, String value) {
+    private void addElementToMap(Map<String, List<String>> map, String key, String value) {
         List<String> element = new ArrayList<>();
         element.add(value);
         map.put(key, element);

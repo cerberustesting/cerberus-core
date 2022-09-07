@@ -24,6 +24,13 @@ import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.AppService;
+import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionFile;
+import org.cerberus.core.crud.entity.TestCaseStepActionControl;
+import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -51,19 +58,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionFile;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 
 /**
  * {Insert class description here}
@@ -599,7 +604,7 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementPresent on: {}", elementPath);
         MessageEvent mes;
 
-        if (!StringUtil.isNull(elementPath)) {
+        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
@@ -703,7 +708,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotPresent(TestCaseExecution execution, String elementPath) {
         LOG.debug("Control: verifyElementNotPresent on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isNull(elementPath)) {
+        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
             if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
@@ -811,7 +816,7 @@ public class ControlService implements IControlService {
         if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
 
-            if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
+            if (!StringUtil.isEmptyOrNullValue(element) && !StringUtil.isEmptyOrNullValue(childElement)) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
                     Identifier childIdentifier = identifierService.convertStringToIdentifier(childElement);
@@ -847,7 +852,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementVisible on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
+        if (!StringUtil.isEmptyOrNullValue(html)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -877,7 +882,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotVisible(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementNotVisible on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
+        if (!StringUtil.isEmptyOrNullValue(html)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -1214,13 +1219,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path);
-                        } catch (Exception ex) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.resolveDescription("ERROR", ex.toString());
-                            return mes;
-                        }
-                        break;
+                                pathContent = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.resolveDescription("ERROR", ex.toString());
+                                return mes;
+                            }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1582,7 +1587,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementClickable(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementClickable: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
+        if (!StringUtil.isEmptyOrNullValue(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
@@ -1610,7 +1615,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotClickable(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementNotClickable on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
+        if (!StringUtil.isEmptyOrNullValue(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
