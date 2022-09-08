@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ICampaignDAO;
@@ -33,7 +35,6 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -49,19 +50,17 @@ import java.util.Map;
 /**
  * @author memiks
  */
+@AllArgsConstructor
 @Repository
 public class CampaignDAO implements ICampaignDAO {
 
+    private final DatabaseSpring databaseSpring;
+    private final IFactoryCampaign factoryCampaign;
+
     private static final Logger LOG = LogManager.getLogger(CampaignDAO.class);
-
-    @Autowired
-    private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryCampaign factoryCampaign;
-
-    private final String OBJECT_NAME = "Campaign";
-    private final int MAX_ROW_SELECTED = 100000;
-    private final int SQL_DUPLICATED_CODE = 23000;
+    private static final String OBJECT_NAME = "Campaign";
+    private static final int MAX_ROW_SELECTED = 100000;
+    private static final int SQL_DUPLICATED_CODE = 23000;
 
     @Override
     public AnswerList<Campaign> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
@@ -70,19 +69,17 @@ public class CampaignDAO implements ICampaignDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Campaign> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
-        StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
-        //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM campaign cpg ");
-        query.append(" WHERE 1=1");
+        StringBuilder query = new StringBuilder()
+                .append("SELECT SQL_CALC_FOUND_ROWS * FROM campaign cpg ")
+                .append(" WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (cpg.campaign like ?");
             searchSQL.append(" or cpg.description like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
@@ -91,105 +88,64 @@ public class CampaignDAO implements ICampaignDAO {
                     q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
 
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (StringUtil.isNotEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
-
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
+        LOG.debug("SQL : {}", query);
 
-                if (!StringUtil.isEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
-                for (String individualColumnSearchValue : individalColumnSearchValues) {
-                    preStat.setString(i++, individualColumnSearchValue);
-                }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
+            int i = 1;
+            if (StringUtil.isNotEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
             }
 
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (objectList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(objectList, nrTotalRows);
+            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
 
         response.setResultMessage(msg);
@@ -200,59 +156,40 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public AnswerItem<Campaign> readByKey(String key) {
         AnswerItem<Campaign> ans = new AnswerItem<>();
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM campaign cpg WHERE campaign = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-
+        LOG.debug("SQL : {}", query);
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString())) {
-            // Prepare and execute query
             preStat.setString(1, key);
-
-            try (ResultSet resultSet = preStat.executeQuery();) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
                     ans.setItem(loadFromResultSet(resultSet));
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.warn("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
-        } finally {
-            // We always set the result message
-            ans.setResultMessage(msg);
         }
-
+        ans.setResultMessage(msg);
         return ans;
     }
 
     @Override
     public AnswerItem<Campaign> readByKeyTech(int key) {
         AnswerItem<Campaign> ans = new AnswerItem<>();
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM campaign cpg WHERE campaignid = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-
+        LOG.debug("SQL : {}", query);
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString())) {
-            // Prepare and execute query
             preStat.setInt(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
@@ -260,20 +197,13 @@ public class CampaignDAO implements ICampaignDAO {
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.error("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
-        } finally {
-            // We always set the result message
-            ans.setResultMessage(msg);
         }
+        ans.setResultMessage(msg);
         return ans;
     }
 
@@ -284,25 +214,24 @@ public class CampaignDAO implements ICampaignDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
-        StringBuilder query = new StringBuilder();
+        StringBuilder query = new StringBuilder()
+                .append("SELECT distinct ")
+                .append(columnName)
+                .append(" as distinctValues FROM campaign cpg")
+                .append(" WHERE 1=1");
 
-        query.append("SELECT distinct ");
-        query.append(columnName);
-        query.append(" as distinctValues FROM campaign cpg");
-        query.append(" WHERE 1=1");
-
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (campaign like ?");
             searchSQL.append(" or description like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
@@ -310,32 +239,27 @@ public class CampaignDAO implements ICampaignDAO {
         query.append(" group by ").append(columnName);
         query.append(" order by ").append(columnName).append(" asc");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-                //gets the data
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 int nrTotalRows = 0;
-
                 if (rowSet != null && rowSet.next()) {
                     nrTotalRows = rowSet.getInt(1);
                 }
@@ -344,28 +268,18 @@ public class CampaignDAO implements ICampaignDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else if (distinctValues.size() <= 0) {
+                } else if (distinctValues.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
+                answer = new AnswerList<>(distinctValues, nrTotalRows);
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.warn("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
         }
 
         answer.setResultMessage(msg);
@@ -375,177 +289,114 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public Answer create(Campaign object) {
-        MessageEvent msg = null;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO campaign (`campaign`"
-                + ", CIScoreThreshold, Tag, Verbose, Screenshot, Video, PageSource, RobotLog, ConsoleLog, Timeout, Retries, Priority, ManualExecution"
-                + ", `Description`, LongDescription, Group1, Group2, Group3, UsrCreated) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder()
+                .append("INSERT INTO campaign (`campaign`")
+                .append(", CIScoreThreshold, Tag, Verbose, Screenshot, Video, PageSource, RobotLog, ConsoleLog, Timeout, Retries, Priority, ManualExecution")
+                .append(", `Description`, LongDescription, Group1, Group2, Group3, UsrCreated) ")
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getCampaign());
-                preStat.setString(i++, object.getCIScoreThreshold());
-                preStat.setString(i++, object.getTag());
-                preStat.setString(i++, object.getVerbose());
-                preStat.setString(i++, object.getScreenshot());
-                preStat.setString(i++, object.getVideo());
-                preStat.setString(i++, object.getPageSource());
-                preStat.setString(i++, object.getRobotLog());
-                preStat.setString(i++, object.getConsoleLog());
-                preStat.setString(i++, object.getTimeout());
-                preStat.setString(i++, object.getRetries());
-                preStat.setString(i++, object.getPriority());
-                preStat.setString(i++, object.getManualExecution());
-                preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getLongDescription());
-                preStat.setString(i++, object.getGroup1());
-                preStat.setString(i++, object.getGroup2());
-                preStat.setString(i++, object.getGroup3());
-                preStat.setString(i++, object.getUsrCreated());
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+            int i = 1;
+            preStat.setString(i++, object.getCampaign());
+            preStat.setString(i++, object.getCIScoreThreshold());
+            preStat.setString(i++, object.getTag());
+            preStat.setString(i++, object.getVerbose());
+            preStat.setString(i++, object.getScreenshot());
+            preStat.setString(i++, object.getVideo());
+            preStat.setString(i++, object.getPageSource());
+            preStat.setString(i++, object.getRobotLog());
+            preStat.setString(i++, object.getConsoleLog());
+            preStat.setString(i++, object.getTimeout());
+            preStat.setString(i++, object.getRetries());
+            preStat.setString(i++, object.getPriority());
+            preStat.setString(i++, object.getManualExecution());
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getLongDescription());
+            preStat.setString(i++, object.getGroup1());
+            preStat.setString(i++, object.getGroup2());
+            preStat.setString(i++, object.getGroup3());
+            preStat.setString(i, object.getUsrCreated());
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
-            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer update(String originalCampaign, Campaign object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "UPDATE campaign cpg SET campaign = ?"
                 + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, Video = ?, PageSource = ?, RobotLog = ?, ConsoleLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
                 + ", Description = ?, LongDescription = ?, Group1 = ?, Group2 = ?, Group3 = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.campaign : " + object.getCampaign());
-            LOG.debug("SQL.param.campaignid : " + object.getCampaignID());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getCampaign());
-                preStat.setString(i++, object.getCIScoreThreshold());
-                preStat.setString(i++, object.getTag());
-                preStat.setString(i++, object.getVerbose());
-                preStat.setString(i++, object.getScreenshot());
-                preStat.setString(i++, object.getVideo());
-                preStat.setString(i++, object.getPageSource());
-                preStat.setString(i++, object.getRobotLog());
-                preStat.setString(i++, object.getConsoleLog());
-                preStat.setString(i++, object.getTimeout());
-                preStat.setString(i++, object.getRetries());
-                preStat.setString(i++, object.getPriority());
-                preStat.setString(i++, object.getManualExecution());
-                preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getLongDescription());
-                preStat.setString(i++, object.getGroup1());
-                preStat.setString(i++, object.getGroup2());
-                preStat.setString(i++, object.getGroup3());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setInt(i++, object.getCampaignID());
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.campaign : {}", object.getCampaign());
+        LOG.debug("SQL.param.campaignid : {}", object.getCampaignID());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            int i = 1;
+            preStat.setString(i++, object.getCampaign());
+            preStat.setString(i++, object.getCIScoreThreshold());
+            preStat.setString(i++, object.getTag());
+            preStat.setString(i++, object.getVerbose());
+            preStat.setString(i++, object.getScreenshot());
+            preStat.setString(i++, object.getVideo());
+            preStat.setString(i++, object.getPageSource());
+            preStat.setString(i++, object.getRobotLog());
+            preStat.setString(i++, object.getConsoleLog());
+            preStat.setString(i++, object.getTimeout());
+            preStat.setString(i++, object.getRetries());
+            preStat.setString(i++, object.getPriority());
+            preStat.setString(i++, object.getManualExecution());
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getLongDescription());
+            preStat.setString(i++, object.getGroup1());
+            preStat.setString(i++, object.getGroup2());
+            preStat.setString(i++, object.getGroup3());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setInt(i, object.getCampaignID());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer delete(Campaign object) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "DELETE FROM campaign WHERE campaignID = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setInt(1, object.getCampaignID());
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setInt(1, object.getCampaignID());
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
@@ -566,13 +417,11 @@ public class CampaignDAO implements ICampaignDAO {
         String retries = ParameterParserUtil.parseStringParam(rs.getString("cpg.Retries"), "");
         String priority = ParameterParserUtil.parseStringParam(rs.getString("cpg.Priority"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.ManualExecution"), "");
-
         String desc = ParameterParserUtil.parseStringParam(rs.getString("cpg.description"), "");
         String longDesc = ParameterParserUtil.parseStringParam(rs.getString("cpg.LongDescription"), "");
         String group1 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group1"), "");
         String group2 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group2"), "");
         String group3 = ParameterParserUtil.parseStringParam(rs.getString("cpg.Group3"), "");
-
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("cpg.DateModif");
@@ -584,5 +433,4 @@ public class CampaignDAO implements ICampaignDAO {
                 desc, longDesc, group1, group2, group3,
                 usrCreated, dateCreated, usrModif, dateModif);
     }
-
 }
