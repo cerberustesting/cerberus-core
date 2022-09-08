@@ -193,7 +193,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`seq` like ?");
             searchSQL.append(" or `level` like ?");
             searchSQL.append(" or `versionname` like ? )");
@@ -219,7 +219,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -238,7 +238,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -503,7 +503,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         query.append(" AND ");
         query.append(UserSecurity.getSystemAllowForSQL("`System`"));
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`seq` like ?");
             searchSQL.append(" or `level` like ?");
             searchSQL.append(" or `versionname` like ? )");
@@ -534,7 +534,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     preStat.setString(i++, sys);
                 }
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

@@ -96,7 +96,7 @@ public class UpdateUser extends HttpServlet {
         String comment = request.getParameter("comment");
         String defaultSystem = request.getParameter("defaultSystem");
         
-        if (StringUtil.isNullOrEmpty(login) || StringUtil.isNullOrEmpty(id)) {
+        if (StringUtil.isEmpty(login) || StringUtil.isEmpty(id)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
                     .replace("%OPERATION%", "Update")

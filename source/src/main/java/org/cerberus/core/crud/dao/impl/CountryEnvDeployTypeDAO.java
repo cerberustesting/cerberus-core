@@ -70,31 +70,31 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`system` like ?");
             searchSQL.append(" or `Country` like ?");
             searchSQL.append(" or `Environment` like ?");
             searchSQL.append(" or `deploytype` like ?");
             searchSQL.append(" or `jenkinsAgent` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+        if (!StringUtil.isEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (!StringUtil.isEmpty(country)) {
             searchSQL.append(" and (`Country` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (!StringUtil.isEmpty(environment)) {
             searchSQL.append(" and (`Environment` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(deployType)) {
+        if (!StringUtil.isEmpty(deployType)) {
             searchSQL.append(" and (`deploytype` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -113,26 +113,26 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                if (!StringUtil.isEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(country)) {
+                if (!StringUtil.isEmpty(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isNullOrEmpty(environment)) {
+                if (!StringUtil.isEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isNullOrEmpty(deployType)) {
+                if (!StringUtil.isEmpty(deployType)) {
                     preStat.setString(i++, deployType);
                 }
                 ResultSet resultSet = preStat.executeQuery();

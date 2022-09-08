@@ -69,7 +69,7 @@ public class SetTagToExecution extends HttpServlet {
             executionService.setTagToExecution(Long.valueOf(id), tag);
 
             // Create Tag when exist.
-            if (!StringUtil.isNullOrEmpty(tag)) {
+            if (!StringUtil.isEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
                 tagService.createAuto(tag, "", request.getRemoteUser(), null, null);

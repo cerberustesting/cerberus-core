@@ -147,7 +147,7 @@ public class TagSystemDAO implements ITagSystemDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (tas.`tag` like ?");
             searchSQL.append(" or tas.`system` like ?)");
         }
@@ -161,12 +161,12 @@ public class TagSystemDAO implements ITagSystemDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`system` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -185,14 +185,14 @@ public class TagSystemDAO implements ITagSystemDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -273,7 +273,7 @@ public class TagSystemDAO implements ITagSystemDAO {
         StringBuilder queryV = new StringBuilder();
         query.append("INSERT INTO tagsystem (`tag`, `system`");
         queryV.append("VALUES (?,?");
-        if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+        if (!StringUtil.isEmpty(object.getUsrCreated())) {
             query.append(", `usrcreated`");
             queryV.append(",?");
         }
@@ -292,7 +292,7 @@ public class TagSystemDAO implements ITagSystemDAO {
                 int i = 1;
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getSystem());
-                if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+                if (!StringUtil.isEmpty(object.getUsrCreated())) {
                     preStat.setString(i++, object.getUsrCreated());
                 }
 
@@ -452,7 +452,7 @@ public class TagSystemDAO implements ITagSystemDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`tag` like ?");
             searchSQL.append(" or `system` like ?)");
         }
@@ -477,7 +477,7 @@ public class TagSystemDAO implements ITagSystemDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }

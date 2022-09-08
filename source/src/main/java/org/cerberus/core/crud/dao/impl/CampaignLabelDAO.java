@@ -77,7 +77,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     public AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID) {
         AnswerItem<CampaignLabel> ans = new AnswerItem<>();
         CampaignLabel result = null;
-        final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlabelid` = ? JOIN label lab ON lab.id = cpl.labelid ";
+        final String query = "SELECT * FROM `campaignlabel` cpl WHERE `campaignlabelid` = ? JOIN label lab ON lab.id = cpl.labelid ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -217,7 +217,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (cpl.`campaignlabelid` like ?");
             searchSQL.append(" or cpl.`campaign` like ?");
             searchSQL.append(" or cpl.`labelid` like ?");
@@ -236,12 +236,12 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(campaign)) {
+        if (!StringUtil.isEmpty(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -260,7 +260,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -272,7 +272,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(campaign)) {
+                if (!StringUtil.isEmpty(campaign)) {
                     preStat.setString(i++, campaign);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -540,11 +540,11 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         query.append(" as distinctValues FROM campaignlabel ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(campaign)) {
+        if (!StringUtil.isEmpty(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (cpl.`campaignlabelid` like ?");
             searchSQL.append(" or cpl.`campaign` like ?");
             searchSQL.append(" or cpl.`labelid` like ?");
@@ -574,10 +574,10 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(campaign)) {
+            if (!StringUtil.isEmpty(campaign)) {
                 preStat.setString(i++, campaign);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

@@ -26,22 +26,23 @@ import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.android.nativekey.PressesKey;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
-import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.util.JSONUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Specific Android implementation of the {@link AppiumService}
@@ -67,7 +68,7 @@ public class AndroidAppiumService extends AppiumService {
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been
+     * AppiumService.CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER has been
      * defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
@@ -125,7 +126,7 @@ public class AndroidAppiumService extends AppiumService {
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
                     = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
-                            .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
+                    .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
@@ -159,7 +160,7 @@ public class AndroidAppiumService extends AppiumService {
 
         Object value;
         String valueString = "";
-        if (StringUtil.isNullOrEmpty(args)) {
+        if (StringUtil.isEmpty(args)) {
             value = session.getAppiumDriver().executeScript(cmd, new HashMap<>());
         } else {
             value = session.getAppiumDriver().executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
@@ -169,7 +170,7 @@ public class AndroidAppiumService extends AppiumService {
             valueString = value.toString();
         }
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if (!StringUtil.isNullOrEmpty(valueString)) {
+        if (!StringUtil.isEmpty(valueString)) {
             if (valueString.endsWith("\r\n")) {
                 valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }

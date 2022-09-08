@@ -223,7 +223,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`deploytype` like ?");
             searchSQL.append(" or `description`  like ?)");
         }
@@ -238,7 +238,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append("order by `").append(column).append("` ").append(dir);
         }
 
@@ -257,7 +257,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
@@ -492,7 +492,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`application` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `sort` like ?");
@@ -526,7 +526,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

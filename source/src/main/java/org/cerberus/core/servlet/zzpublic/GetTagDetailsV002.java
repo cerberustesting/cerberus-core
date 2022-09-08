@@ -87,7 +87,7 @@ public class GetTagDetailsV002 extends HttpServlet {
 
                 Tag tag = tagService.convert(tagService.readByKey(tagParameter));
                 String cerberusUrlParameter = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-                if (StringUtil.isNullOrEmpty(cerberusUrlParameter)) {
+                if (StringUtil.isEmpty(cerberusUrlParameter)) {
                     cerberusUrlParameter = parameterService.getParameterStringByKey("cerberus_url", "", "");
                 }
 

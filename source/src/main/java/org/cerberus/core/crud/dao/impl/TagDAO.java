@@ -197,7 +197,7 @@ public class TagDAO implements ITagDAO {
                 }
             }
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -206,7 +206,7 @@ public class TagDAO implements ITagDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (!StringUtil.isNullOrEmpty(campaign)) {
+            if (!StringUtil.isEmpty(campaign)) {
                 preStat.setString(i, campaign);
             }
 

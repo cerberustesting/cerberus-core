@@ -255,7 +255,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
             // The rest of the parameter depend on the campaign values.
             Campaign mCampaign = null;
-            if (!StringUtil.isNullOrEmpty(campaign)) {
+            if (!StringUtil.isEmpty(campaign)) {
                 mCampaign = campaignService.readByKey(campaign).getItem();
             }
             if (mCampaign == null) {
@@ -344,7 +344,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             StringBuilder errorMessage = new StringBuilder();
             boolean error = false;
 
-            if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
+            if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isEmpty(mCampaign.getTag())) {
                 tag = mCampaign.getTag();
             } else if (tag == null || tag.isEmpty()) {
                 if (request.getRemoteUser() != null) {
@@ -440,7 +440,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             int nbExe = 0;
             JSONArray jsonArray = new JSONArray();
             String user = myuser;
-            user = StringUtil.isNullOrEmpty(user) && !StringUtil.isNullOrEmpty(executor) ? executor : user;
+            user = StringUtil.isEmpty(user) && !StringUtil.isEmpty(executor) ? executor : user;
 
             int nbtestcasenotactive = 0;
             int nbtestcasenotexist = 0;
@@ -454,7 +454,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
             int nbrobot = 0;
             Map<String, Robot> robotsMap = new HashMap<>();
-            if (StringUtil.isNullOrEmpty(robotIP)) {
+            if (StringUtil.isEmpty(robotIP)) {
                 if (robots == null || robots.isEmpty()) {
                     // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
                     if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
@@ -508,7 +508,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                         envMap.put(envParam.getSystem() + LOCAL_SEPARATOR + envParam.getCountry() + LOCAL_SEPARATOR + envParam.getEnvironment(), envParam);
                     }
 
-                    if (!StringUtil.isNullOrEmpty(campaign)) {
+                    if (!StringUtil.isEmpty(campaign)) {
                         LOG.info("Campaign [" + campaign + "] asked to triggered.");
                         LOG.info(" [" + campaign + "] tests : " + selectTest);
                         LOG.info(" [" + campaign + "] testcases : " + selectTestCase);
@@ -544,7 +544,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                         || (environment.equals("MANUAL"))) {
 
                                                     // Create Tag only if not already done and defined.
-                                                    if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
+                                                    if (!StringUtil.isEmpty(tag) && !tagAlreadyAdded) {
                                                         // We create or update it.
                                                         tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                         tagAlreadyAdded = true;
@@ -568,10 +568,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                                     LOG.debug("Insert Queue Entry.");
                                                                     // We get here the corresponding robotDecli value from robot.
                                                                     String robotDecli = robot.getRobotDecli();
-                                                                    if (StringUtil.isNullOrEmpty(robotDecli)) {
+                                                                    if (StringUtil.isEmpty(robotDecli)) {
                                                                         robotDecli = robot.getRobot();
                                                                     }
-                                                                    if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
+                                                                    if ("".equals(robot.getRobot()) && StringUtil.isEmpty(robotIP)) {
                                                                         // We don't insert the execution for robot application that have no robot and robotIP defined.
                                                                         nbrobotmissing++;
                                                                     } else {
@@ -782,7 +782,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
      */
     private Map<String, String> getManualHostMap(String manualHost) {
         Map<String, String> myHostMap = new HashMap<>();
-        if (StringUtil.isNullOrEmpty(manualHost)) {
+        if (StringUtil.isEmpty(manualHost)) {
             LOG.debug("Converting from empty.");
             myHostMap.put("", "");
             return myHostMap;
@@ -800,17 +800,17 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // parameter could not be converted to JSON Array so we try with the : and ; separators.
             String newManualHost = "";
             // Remove the http:// and https:// in order to avoid conflict with : split that will be done
-            if (!StringUtil.isNullOrEmpty(manualHost)) {
+            if (!StringUtil.isEmpty(manualHost)) {
                 newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
                 newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
             }
-            if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
+            if (!StringUtil.isEmpty(manualHost) && !newManualHost.contains(":")) {
                 LOG.debug("Converting from string.");
                 myHostMap.put("", manualHost);
                 return myHostMap; // if no :, just return manual host (case 1)
             }
             // (case 2)
-            if (!StringUtil.isNullOrEmpty(manualHost)) {
+            if (!StringUtil.isEmpty(manualHost)) {
                 LOG.debug("Converting from separator.");
                 String[] manualHostByApp = newManualHost.split(";");
                 for (String appManualHost : manualHostByApp) {

@@ -19,21 +19,9 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationObjectDAO;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.ApplicationObject;
@@ -52,6 +40,19 @@ import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -122,7 +123,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : " + Query.READ_BY_KEY);
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
             // Prepare and execute query
             preStat.setInt(1, id);
             ResultSet rs = preStat.executeQuery();
@@ -149,7 +150,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : " + Query.READ_BY_KEY1);
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
             ApplicationObject ao = null;
             // Prepare and execute query
             preStat.setString(1, application);
@@ -190,7 +191,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : " + Query.READ_BY_APP);
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
             // Prepare and execute query
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
@@ -324,7 +325,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -346,7 +347,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -362,11 +363,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -381,7 +382,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -441,7 +442,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (obj.`Application` like ?");
             searchSQL.append(" or obj.`Object` like ?");
             searchSQL.append(" or obj.`Value` like ?");
@@ -461,7 +462,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(application)) {
+        if (!StringUtil.isEmpty(application)) {
             searchSQL.append(" and (obj.`Application` = ? )");
         }
 
@@ -474,7 +475,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -493,7 +494,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -506,7 +507,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(application)) {
+                if (!StringUtil.isEmpty(application)) {
                     preStat.setString(i++, application);
                 }
 
@@ -593,7 +594,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, object.getApplication());
@@ -628,7 +629,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setInt(1, object.getID());
             preStat.executeUpdate();
@@ -658,7 +659,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : " + query);
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, object.getApplication());
@@ -706,7 +707,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append("WHERE 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -735,12 +736,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -755,7 +756,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -816,11 +817,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         query.append(" as distinctValues FROM applicationobject obj ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(application)) {
+        if (!StringUtil.isEmpty(application)) {
             searchSQL.append(" and (`Application` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -847,14 +848,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(application)) {
+            if (!StringUtil.isEmpty(application)) {
                 preStat.setString(i++, application);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -869,7 +870,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

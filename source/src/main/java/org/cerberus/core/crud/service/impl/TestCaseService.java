@@ -706,15 +706,15 @@ public class TestCaseService implements ITestCaseService {
 
         final String FAILED_TO_INSERT = "Failed to insert the testcase in the database";
 
-        if (StringUtil.isNullOrEmpty(newTestcase.getTest())) {
+        if (StringUtil.isEmpty(newTestcase.getTest())) {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
-        if (StringUtil.isNullOrEmpty(newTestcase.getApplication())) {
+        if (StringUtil.isEmpty(newTestcase.getApplication())) {
             throw new InvalidRequestException("application is required to create a Testcase");
         }
 
-        if (StringUtil.isNullOrEmpty(newTestcase.getTestcase())) {
+        if (StringUtil.isEmpty(newTestcase.getTestcase())) {
             newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
         }
         Answer testcaseCreationAnswer = this.create(newTestcase);

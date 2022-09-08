@@ -201,13 +201,13 @@ public class ReadCampaign extends HttpServlet {
 
             for (Campaign campaign : answer.getDataList()) {
                 jsonArray.put(convertToJSONObject(campaign));
-                if (!StringUtil.isNullOrEmpty(campaign.getGroup1())) {
+                if (!StringUtil.isEmpty(campaign.getGroup1())) {
                     gp1.put(campaign.getGroup1(), true);
                 }
-                if (!StringUtil.isNullOrEmpty(campaign.getGroup2())) {
+                if (!StringUtil.isEmpty(campaign.getGroup2())) {
                     gp2.put(campaign.getGroup2(), true);
                 }
-                if (!StringUtil.isNullOrEmpty(campaign.getGroup3())) {
+                if (!StringUtil.isEmpty(campaign.getGroup3())) {
                     gp3.put(campaign.getGroup3(), true);
                 }
             }

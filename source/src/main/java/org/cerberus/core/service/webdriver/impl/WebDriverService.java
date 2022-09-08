@@ -208,7 +208,7 @@ public class WebDriverService implements IWebDriverService {
         WebElement webElement = null;
 
         try {
-            if (StringUtil.isNullOrEmpty(text)) {
+            if (StringUtil.isEmpty(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     webElement = (WebElement) answer.getItem();
@@ -220,7 +220,7 @@ public class WebDriverService implements IWebDriverService {
             if (webElement != null) {
 
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
-                if (StringUtil.isNullOrEmpty(text)) {
+                if (StringUtil.isEmpty(text)) {
                     scrollElement(session, webElement);
                 } else {
                     scrollText(session, webElement);
@@ -285,7 +285,7 @@ public class WebDriverService implements IWebDriverService {
             }
             String newXpath = getNewXPathFromErratum(session, identifier);
             LOG.debug("NEW XPATH = " + newXpath);
-            if (!StringUtil.isNullOrEmpty(newXpath)) {
+            if (!StringUtil.isEmpty(newXpath)) {
                 locator = By.xpath(newXpath);
                 identifier.setIdentifier(Identifier.IDENTIFIER_XPATH);
                 identifier.setLocator(newXpath);
@@ -477,7 +477,7 @@ public class WebDriverService implements IWebDriverService {
                 /**
                  * If return is empty, we search for hidden tags
                  */
-                if (StringUtil.isNullOrEmpty(result)) {
+                if (StringUtil.isEmpty(result)) {
                     String script = "return arguments[0].innerHTML";
                     try {
                         result = (String) ((JavascriptExecutor) session.getDriver()).executeScript(script, webElement);
@@ -644,7 +644,7 @@ public class WebDriverService implements IWebDriverService {
             try {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
-                if (!StringUtil.isNullOrEmpty(cropValues)) {
+                if (!StringUtil.isEmpty(cropValues)) {
                     BufferedImage fullImg = ImageIO.read(image);
                     // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
                     //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
@@ -1284,7 +1284,7 @@ public class WebDriverService implements IWebDriverService {
 
         MessageEvent message;
         try {
-            if (!StringUtil.isNullOrEmpty(identifier.getLocator())) {
+            if (!StringUtil.isEmpty(identifier.getLocator())) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();

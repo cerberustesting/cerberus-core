@@ -160,7 +160,7 @@ public class CreateTestDataLib extends HttpServlet {
             MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
             Answer finalAnswer = new Answer(msg1);
 
-            if (StringUtil.isNullOrEmpty(name)) {
+            if (StringUtil.isEmpty(name)) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
                         .replace("%OPERATION%", "Create")
@@ -218,13 +218,13 @@ public class CreateTestDataLib extends HttpServlet {
                         int y = 1;
                         TestDataLibData firstLineLibData = tdldList.get(0);
                         tdldList = new ArrayList<>();
-                        if (StringUtil.isNullOrEmpty(firstLineLibData.getColumnPosition())) {
+                        if (StringUtil.isEmpty(firstLineLibData.getColumnPosition())) {
                             firstLineLibData.setColumnPosition("1");
                         }
-                        if (StringUtil.isNullOrEmpty(firstLineLibData.getValue())) {
+                        if (StringUtil.isEmpty(firstLineLibData.getValue())) {
                             firstLineLibData.setValue(secondLineSubData[0]);
                         }
-                        if (StringUtil.isNullOrEmpty(firstLineLibData.getColumn())) {
+                        if (StringUtil.isEmpty(firstLineLibData.getColumn())) {
                             firstLineLibData.setColumn(firstLineSubData[0]);
                         }
                         tdldList.add(firstLineLibData);

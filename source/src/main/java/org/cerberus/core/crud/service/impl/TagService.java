@@ -210,7 +210,7 @@ public class TagService implements ITagService {
             mytag.setNbCA(jsonResponse.getInt("status_CA_nbOfExecution"));
             mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
 
-            if (!StringUtil.isNullOrEmpty(mytag.getCampaign())) {
+            if (!StringUtil.isEmpty(mytag.getCampaign())) {
                 // We get the campaig here and potencially trigger the event.
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END, mytag, null, null, null);
                 if (mytag.getCiResult().equalsIgnoreCase("KO")) {
@@ -279,12 +279,12 @@ public class TagService implements ITagService {
                     reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
             Answer ans = tagDAO.create(newTag);
             // If campaign is not empty, we can notify the Start of campaign execution.
-            if (!StringUtil.isNullOrEmpty(campaign)) {
+            if (!StringUtil.isEmpty(campaign)) {
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_START, newTag, null, null, null);
             }
             return ans;
         } else {
-            if ((StringUtil.isNullOrEmpty(tag.getCampaign())) && !StringUtil.isNullOrEmpty(campaign)) {
+            if ((StringUtil.isEmpty(tag.getCampaign())) && !StringUtil.isEmpty(campaign)) {
                 tag.setCampaign(campaign);
                 return tagDAO.update(tag.getTag(), tag);
             }
@@ -295,7 +295,7 @@ public class TagService implements ITagService {
     @Override
     public String enrichTagWithCloudProviderBuild(String provider, String system, String tagS, String user, String pass) {
         LOG.debug("Trying to enrish tag '" + tagS + "' with Cloud service provider Build (" + provider + ").");
-        if (StringUtil.isNullOrEmpty(tagS)) {
+        if (StringUtil.isEmpty(tagS)) {
             return null;
         }
         AnswerItem answerTag;
@@ -303,7 +303,7 @@ public class TagService implements ITagService {
         Tag tag = (Tag) answerTag.getItem();
         switch (provider) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
-                if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
+                if ((tag != null) && (StringUtil.isEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
                     String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
                     tag.setBrowserstackBuildHash(newBuildHash);
                     Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
@@ -311,7 +311,7 @@ public class TagService implements ITagService {
                 }
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
-                if ((tag != null) && (StringUtil.isNullOrEmpty(tag.getLambdaTestBuild()))) {
+                if ((tag != null) && (StringUtil.isEmpty(tag.getLambdaTestBuild()))) {
                     String newBuildHash = lambdatestService.getBuildValue(tagS, user, pass, system);
                     tag.setLambdaTestBuild(newBuildHash);
                     Answer ans = tagDAO.updateLambdatestBuild(tagS, tag);
@@ -359,7 +359,7 @@ public class TagService implements ITagService {
     public void manageCampaignEndOfExecution(String tag) throws CerberusException {
 
         try {
-            if (!StringUtil.isNullOrEmpty(tag)) {
+            if (!StringUtil.isEmpty(tag)) {
                 Tag currentTag = this.convert(this.readByKey(tag));
                 if ((currentTag != null)) {
                     if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {

@@ -274,7 +274,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `Build` like ?");
             searchSQL.append(" or `Revision` like ?");
@@ -301,21 +301,21 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             }
             searchSQL.append(" )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and application in (SELECT application FROM application WHERE `System` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(application)) {
+        if (!StringUtil.isEmpty(application)) {
             searchSQL.append(" and (`Application`= ? )");
         }
-        if (!StringUtil.isNullOrEmpty(build)) {
+        if (!StringUtil.isEmpty(build)) {
             searchSQL.append(" and (`Build`= ? )");
         }
-        if (!StringUtil.isNullOrEmpty(revision)) {
+        if (!StringUtil.isEmpty(revision)) {
             searchSQL.append(" and (`Revision`= ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -334,7 +334,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -355,16 +355,16 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(application)) {
+                if (!StringUtil.isEmpty(application)) {
                     preStat.setString(i++, application);
                 }
-                if (!StringUtil.isNullOrEmpty(build)) {
+                if (!StringUtil.isEmpty(build)) {
                     preStat.setString(i++, build);
                 }
-                if (!StringUtil.isNullOrEmpty(revision)) {
+                if (!StringUtil.isEmpty(revision)) {
                     preStat.setString(i++, revision);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -459,7 +459,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) { // If last version is on the same build.
-            if (StringUtil.isNullOrEmpty(lastRevision)) { // Same build and revision some we filter only the current content.
+            if (StringUtil.isEmpty(lastRevision)) { // Same build and revision some we filter only the current content.
                 query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -494,7 +494,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
+                    if (StringUtil.isEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                         preStat.setString(i++, system);
                         preStat.setString(i++, revision);
                     } else { // 2 different revisions inside the same build, we take the content between the 2.
@@ -600,7 +600,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" and a.`system` = ? ");
         query.append(" and brp.build = ? ");
         if (lastBuild.equalsIgnoreCase(build)) {
-            if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
+            if (StringUtil.isEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                 query.append(" and bri.seq = (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // revision
             } else { // 2 different revisions inside the same build, we take the content between the 2.
                 query.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = ? and `level` = 2 and `versionname` = ? ) "); // lastRevision
@@ -635,7 +635,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 preStat.setString(i++, system);
                 preStat.setString(i++, build);
                 if (lastBuild.equalsIgnoreCase(build)) {
-                    if (StringUtil.isNullOrEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
+                    if (StringUtil.isEmpty(lastRevision)) { // if lastRevision is not defined, we filter only the current content.
                         preStat.setString(i++, system);
                         preStat.setString(i++, revision);
                     } else { // 2 different revisions inside the same build, we take the content between the 2.
@@ -928,11 +928,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" as distinctValues FROM buildrevisionparameters ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and application in (SELECT application FROM application WHERE `System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `Build` like ?");
             searchSQL.append(" or `Revision` like ?");
@@ -971,10 +971,10 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (!StringUtil.isEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

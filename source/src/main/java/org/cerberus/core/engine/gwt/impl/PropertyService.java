@@ -473,7 +473,7 @@ public class PropertyService implements IPropertyService {
                 String[] ramProp1 = rawProperty.split("\\(");
                 // Removes the variable part of the property eg : .subdata
                 String[] ramProp2 = ramProp1[0].split("\\.");
-                if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim())) // Avoid getting empty Property names.
+                if (!(StringUtil.isEmpty(ramProp2[0].trim())) // Avoid getting empty Property names.
                         && ramProp2[0].trim().length() <= TestCaseCountryProperties.MAX_PROPERTY_LENGTH // Properties cannot be bigger than n caracters.
                         && !ramProp2[0].trim().contains("\n")) { // Properties cannot contain \n.
                     properties.add(ramProp2[0].trim());
@@ -812,7 +812,7 @@ public class PropertyService implements IPropertyService {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_FROMCACHE).resolveDescription("ID", String.valueOf(testCaseExecutionDataFromCache.getId())).resolveDescription("DATE", df.format(testCaseExecutionDataFromCache.getStart()));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
-                if (!StringUtil.isNullOrEmpty(testCaseExecutionDataFromCache.getJsonResult())) {
+                if (!StringUtil.isEmpty(testCaseExecutionDataFromCache.getJsonResult())) {
 
                     // Convert json to HashMap.
                     List<HashMap<String, String>> result = null;
@@ -886,7 +886,7 @@ public class PropertyService implements IPropertyService {
                 String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
-                if (!StringUtil.isNullOrEmpty(message)) {
+                if (!StringUtil.isEmpty(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -896,7 +896,7 @@ public class PropertyService implements IPropertyService {
                 String message = iosAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
-                if (!StringUtil.isNullOrEmpty(message)) {
+                if (!StringUtil.isEmpty(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -934,7 +934,7 @@ public class PropertyService implements IPropertyService {
                 String message = androidAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
-                if (!StringUtil.isNullOrEmpty(message)) {
+                if (!StringUtil.isEmpty(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -943,7 +943,7 @@ public class PropertyService implements IPropertyService {
                 String message = iosAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
-                if (!StringUtil.isNullOrEmpty(message)) {
+                if (!StringUtil.isEmpty(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -984,7 +984,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, boolean forceCalculation) {
         if ("Y".equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyActive())) {
             String jsonPath = testCaseExecutionData.getValue2();
-            if (StringUtil.isNullOrEmpty(jsonPath)) {
+            if (StringUtil.isEmpty(jsonPath)) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);
                 testCaseExecutionData.setPropertyResultMessage(res);
                 return testCaseExecutionData;
@@ -1049,7 +1049,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getOTP(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
 
-        if (StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1())) {
+        if (StringUtil.isEmpty(testCaseExecutionData.getValue1())) {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETOTP_MISSINGPARAMETER);
             testCaseExecutionData.setPropertyResultMessage(res);
             testCaseExecutionData.setEnd(new Date().getTime());
@@ -1354,7 +1354,7 @@ public class PropertyService implements IPropertyService {
         // 1. Get XML value to parse
         String xmlToParse = null;
         // If value2 is defined, then take it as XML value to parse
-        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
             xmlToParse = testCaseExecutionData.getValue2();
         } // Else try to get the last known response from service call
         else if (tCExecution.getLastServiceCalled() != null) {
@@ -1399,7 +1399,7 @@ public class PropertyService implements IPropertyService {
         // 1. Get XML value to parse
         String xmlToParse = null;
         // If value2 is defined, then take it as XML value to parse
-        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
             xmlToParse = testCaseExecutionData.getValue2();
         } // Else try to get the last known response from service call
         else if (tCExecution.getLastServiceCalled() != null) {
@@ -1511,7 +1511,7 @@ public class PropertyService implements IPropertyService {
             jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
         }
 
-        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
             try {
                 jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
 
@@ -1558,7 +1558,7 @@ public class PropertyService implements IPropertyService {
             jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
         }
 
-        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
             try {
                 jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
 

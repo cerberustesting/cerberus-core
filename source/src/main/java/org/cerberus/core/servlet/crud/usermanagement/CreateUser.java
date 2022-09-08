@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.LinkedList;
 import javax.servlet.annotation.WebServlet;
 import org.cerberus.core.config.Property;
@@ -116,7 +115,7 @@ public class CreateUser extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(login)) {
+        if (StringUtil.isEmpty(login)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
                     .replace("%OPERATION%", "Create")

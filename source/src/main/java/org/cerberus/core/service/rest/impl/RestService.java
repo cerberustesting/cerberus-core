@@ -182,18 +182,18 @@ public class RestService implements IRestService {
         serviceREST.setTimeoutms(timeOutMs);
         MessageEvent message = null;
 
-        if (StringUtil.isNullOrEmpty(servicePath)) {
+        if (StringUtil.isEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SERVICEPATHMISSING);
             result.setResultMessage(message);
             return result;
         }
-        if (StringUtil.isNullOrEmpty(method)) {
+        if (StringUtil.isEmpty(method)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_METHODMISSING);
             result.setResultMessage(message);
             return result;
         }
         // If token is defined, we add 'cerberus-token' on the http header.
-        if (!StringUtil.isNullOrEmpty(token)) {
+        if (!StringUtil.isEmpty(token)) {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
@@ -340,7 +340,7 @@ public class RestService implements IRestService {
                     httpPost.setConfig(requestConfig);
 
                     // Content
-                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                    if (!(StringUtil.isEmpty(requestString))) {
                         // If requestString is defined, we POST it.
                         httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
@@ -394,7 +394,7 @@ public class RestService implements IRestService {
                     httpDelete.setConfig(requestConfig);
 
                     // Content
-                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                    if (!(StringUtil.isEmpty(requestString))) {
                         // If requestString is defined, we POST it.
                         httpDelete.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
@@ -439,7 +439,7 @@ public class RestService implements IRestService {
                     httpPut.setConfig(requestConfig);
 
                     // Content
-                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                    if (!(StringUtil.isEmpty(requestString))) {
                         // If requestString is defined, we PUT it.
                         httpPut.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
@@ -492,7 +492,7 @@ public class RestService implements IRestService {
                     httpPatch.setConfig(requestConfig);
 
                     // Content
-                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                    if (!(StringUtil.isEmpty(requestString))) {
                         // If requestString is defined, we PATCH it.
                         httpPatch.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);

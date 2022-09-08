@@ -139,7 +139,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -149,21 +149,21 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
             searchSQL.append(" or `Batch` like ?");
             searchSQL.append(" or `DateBatch` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+        if (!StringUtil.isEmpty(individualSearch)) {
             searchSQL.append(" and ( ? )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`system` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (!StringUtil.isEmpty(country)) {
             searchSQL.append(" and (`country` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (!StringUtil.isEmpty(environment)) {
             searchSQL.append(" and (`environment` = ?)");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -192,16 +192,16 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                if (!StringUtil.isEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(country)) {
+                if (!StringUtil.isEmpty(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isNullOrEmpty(environment)) {
+                if (!StringUtil.isEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -448,11 +448,11 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
         query.append(" as distinctValues FROM buildrevisionbatch ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -483,10 +483,10 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (!StringUtil.isEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

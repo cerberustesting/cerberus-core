@@ -203,7 +203,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
             // Getting Robot Host PoolSize from invariant hashmap.
             int robot_poolsize_final = 0;
-            if (!StringUtil.isNullOrEmpty(exe.getSelectedRobotHost())) {
+            if (!StringUtil.isEmpty(exe.getSelectedRobotHost())) {
                 if (robot_poolsize.containsKey(exe.getSelectedRobotHost())) {
                     robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getSelectedRobotHost()), poolSizeRobot);
                 } else {
@@ -214,7 +214,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
             // Getting Robot Host PoolSize from invariant hashmap.
             int robotext_poolsize_final = 0;
-            if (!StringUtil.isNullOrEmpty(exe.getSelectedRobotExtensionHost())) {
+            if (!StringUtil.isEmpty(exe.getSelectedRobotExtensionHost())) {
                 if (robotext_poolsize.containsKey(exe.getSelectedRobotExtensionHost())) {
                     robotext_poolsize_final = ParameterParserUtil.parseIntegerParam(robotext_poolsize.get(exe.getSelectedRobotExtensionHost()), poolSizeExecutorExt);
                 } else {
@@ -364,7 +364,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     // Getting the list of robot in scope of the queue entries. This is to avoid getting all robots from database.
                     LOG.debug("Getting List of Robot Executor.");
                     for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
-                        if (!StringUtil.isNullOrEmpty(exe.getQueueRobot())) {
+                        if (!StringUtil.isEmpty(exe.getQueueRobot())) {
                             robot_executor.put(exe.getQueueRobot(), new ArrayList<>());
                         }
                     }
@@ -406,7 +406,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     appType = exe.getAppType();
                     if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
                         // Application require a robot so we can get the list of executors.
-                        if (StringUtil.isNullOrEmpty(robot)) {
+                        if (StringUtil.isEmpty(robot)) {
                             robotExelist = new ArrayList<>();
                             robotExelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", 0, "", "", null, "", "", 0, "", 0, "", "", "", null, "", null));
                         } else {
@@ -427,7 +427,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
                             robotExtHost = robotExecutor1.getExecutorExtensionHost();
-                            if (StringUtil.isNullOrEmpty(robotExtHost)) {
+                            if (StringUtil.isEmpty(robotExtHost)) {
                                 robotExtHost = robotExecutor1.getHost();
                             }
                         } else {
@@ -441,7 +441,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         // RobotHost PoolSize if retreived from invariant hashmap.
                         int robothost_poolsize_final = 0;
-                        if (!StringUtil.isNullOrEmpty(robotHost)) {
+                        if (!StringUtil.isEmpty(robotHost)) {
                             if (robothost_poolsize.containsKey(robotHost)) {
                                 robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
                             } else {
@@ -451,7 +451,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         // RobotExtensionHost PoolSize if retreived from invariant hashmap.
                         int robotexthost_poolsize_final = 0;
-                        if (!StringUtil.isNullOrEmpty(robotExtHost)) {
+                        if (!StringUtil.isEmpty(robotExtHost)) {
                             if (executorexthost_poolsize.containsKey(robotExtHost)) {
                                 robotexthost_poolsize_final = ParameterParserUtil.parseIntegerParam(executorexthost_poolsize.get(robotExtHost), poolSizeExecutorExt);
                             } else {

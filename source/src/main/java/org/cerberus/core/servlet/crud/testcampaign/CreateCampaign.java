@@ -119,7 +119,7 @@ public class CreateCampaign extends HttpServlet {
         String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
         String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
-        if (StringUtil.isNullOrEmpty(campaignName)) {
+        if (StringUtil.isEmpty(campaignName)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
                     .replace("%OPERATION%", "Create")

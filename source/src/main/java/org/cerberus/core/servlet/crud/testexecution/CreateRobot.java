@@ -151,13 +151,13 @@ public class CreateRobot extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(robot)) {
+        if (StringUtil.isEmpty(robot)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot name is missing."));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(platform)) {
+        } else if (StringUtil.isEmpty(platform)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
@@ -239,24 +239,24 @@ public class CreateRobot extends HttpServlet {
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
             Integer devicePort = null;
-            if (reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
+            if (reJson.has("devicePort") && !StringUtil.isEmpty(reJson.getString("devicePort"))) {
                 devicePort = reJson.getInt("devicePort");
             }
             String executorProxyHost = "";
-            if (reJson.has("executorProxyHost") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyHost"))) {
+            if (reJson.has("executorProxyHost") && !StringUtil.isEmpty(reJson.getString("executorProxyHost"))) {
                 executorProxyHost = reJson.getString("executorProxyHost");
             }
             Integer executorProxyPort = null;
-            if (reJson.has("executorProxyPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorProxyPort"))) {
+            if (reJson.has("executorProxyPort") && !StringUtil.isEmpty(reJson.getString("executorProxyPort"))) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
             String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
             Integer executorExtensionPort = null;
             String executorExtensionHost = "";
-            if (reJson.has("executorExtensionHost") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionHost"))) {
+            if (reJson.has("executorExtensionHost") && !StringUtil.isEmpty(reJson.getString("executorExtensionHost"))) {
                 executorExtensionHost = reJson.getString("executorExtensionHost");
             }
-            if (reJson.has("executorExtensionPort") && !StringUtil.isNullOrEmpty(reJson.getString("executorExtensionPort"))) {
+            if (reJson.has("executorExtensionPort") && !StringUtil.isEmpty(reJson.getString("executorExtensionPort"))) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }
             String description = reJson.getString("description");

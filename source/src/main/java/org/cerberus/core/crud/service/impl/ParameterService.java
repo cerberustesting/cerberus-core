@@ -69,7 +69,7 @@ public class ParameterService implements IParameterService {
 
     @Override
     public void purgeCacheEntry(String parameter) {
-        if (StringUtil.isNullOrEmpty(parameter)) {
+        if (StringUtil.isEmpty(parameter)) {
             cacheEntry.clear();
             LOG.debug("All Parameter cache entries purged.");
         } else {

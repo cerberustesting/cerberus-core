@@ -86,7 +86,7 @@ public class UpdateDeployType extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(deployType)) {
+        if (StringUtil.isEmpty(deployType)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
                     .replace("%OPERATION%", "Update")

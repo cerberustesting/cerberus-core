@@ -650,7 +650,7 @@ public class DataLibService implements IDataLibService {
                 // Trying making an URL with database context path.
                 if (!StringUtil.isURL(servicePathCsv)) {
                     // Url is not valid, we try to get the corresponding DatabaseURL CsvURL to prefix.
-                    if (!(StringUtil.isNullOrEmpty(lib.getDatabaseCsv()))) {
+                    if (!(StringUtil.isEmpty(lib.getDatabaseCsv()))) {
 
                         try {
                             countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
@@ -668,7 +668,7 @@ public class DataLibService implements IDataLibService {
 
                             } else {
                                 String csvURL = countryEnvironmentDatabase.getCsvUrl();
-                                if (StringUtil.isNullOrEmpty(csvURL)) {
+                                if (StringUtil.isEmpty(csvURL)) {
                                     msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLEMPTY);
                                     msg.setDescription(msg.getDescription()
                                             .replace("%SERVICEURL%", lib.getCsvUrl())
@@ -746,7 +746,7 @@ public class DataLibService implements IDataLibService {
                 String db = lib.getDatabase();
                 try {
 
-                    if (StringUtil.isNullOrEmpty(db)) {
+                    if (StringUtil.isEmpty(db)) {
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQLDATABASEEMPTY);
 
                     } else {
@@ -763,7 +763,7 @@ public class DataLibService implements IDataLibService {
 
                             connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
-                            if (!(StringUtil.isNullOrEmpty(connectionName))) {
+                            if (!(StringUtil.isEmpty(connectionName))) {
 
                                 // Get list of columns to hide.
                                 columnsToHide = getListOfSecrets(lib.getTestDataLibID());

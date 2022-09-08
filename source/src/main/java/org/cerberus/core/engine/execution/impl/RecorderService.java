@@ -533,7 +533,7 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = execution.getId();
         int propertyIndex = 0;
-        if (!(StringUtil.isNullOrEmpty(property))) {
+        if (!(StringUtil.isEmpty(property))) {
             propertyIndex = 1;
         }
         try {
@@ -549,7 +549,7 @@ public class RecorderService implements IRecorderService {
             objectFileList.add(object);
 
             // REQUEST.
-            if (!(StringUtil.isNullOrEmpty(service.getServiceRequest()))) {
+            if (!(StringUtil.isEmpty(service.getServiceRequest()))) {
                 String messageFormatExt = "txt";
                 String messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
                 if (service.getServiceRequest().startsWith("{")) { // TODO find a better solution to guess the format of the request.
@@ -567,7 +567,7 @@ public class RecorderService implements IRecorderService {
                 objectFileList.add(object);
             }
             // RESPONSE if exists.
-            if (!(StringUtil.isNullOrEmpty(service.getResponseHTTPBody()))) {
+            if (!(StringUtil.isEmpty(service.getResponseHTTPBody()))) {
                 String messageFormatExt = "txt";
                 String messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
                 switch (service.getResponseHTTPBodyContentType()) {
@@ -674,14 +674,14 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = execution.getId();
         int propertyIndex = 0;
-        if (!(StringUtil.isNullOrEmpty(property))) {
+        if (!(StringUtil.isEmpty(property))) {
             propertyIndex = 1;
         }
         try {
 
             // Full Network Traffic.
             if (withDetail) {
-                if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
+                if (!(StringUtil.isEmpty(se.getResponseHTTPBody()))) {
                     Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_content", "json", false);
                     recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody(), execution.getSecrets());
 
@@ -696,7 +696,7 @@ public class RecorderService implements IRecorderService {
             // Stat.
             LOG.debug("Size of HAR message : {}", se.getResponseHTTPBody().length());
             // If JSON Size is higher than 1 Meg, we save the stat.
-            if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody())) && se.getResponseHTTPBody().length() > 1000000) {
+            if (!(StringUtil.isEmpty(se.getResponseHTTPBody())) && se.getResponseHTTPBody().length() > 1000000) {
                 JSONObject stat = new JSONObject(se.getResponseHTTPBody());
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "networktraffic_stat", "json", false);
                 if (stat.has("stat")) {
@@ -740,7 +740,7 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = execution.getId();
         int propertyIndex = 0;
-        if (!(StringUtil.isNullOrEmpty(property))) {
+        if (!(StringUtil.isEmpty(property))) {
             propertyIndex = 1;
         }
         try {
@@ -782,7 +782,7 @@ public class RecorderService implements IRecorderService {
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = execution.getId();
         int propertyIndex = 0;
-        if (!(StringUtil.isNullOrEmpty(property))) {
+        if (!(StringUtil.isEmpty(property))) {
             propertyIndex = 1;
         }
         try {
@@ -1112,31 +1112,31 @@ public class RecorderService implements IRecorderService {
 
             //  Filename. If filename is not define, we assign it from the test, testcase, step action and control.
             StringBuilder sbfileName = new StringBuilder();
-            if (!StringUtil.isNullOrEmpty(test)) {
+            if (!StringUtil.isEmpty(test)) {
                 sbfileName.append(test).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(testCase)) {
+            if (!StringUtil.isEmpty(testCase)) {
                 sbfileName.append(testCase).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(stepID)) {
+            if (!StringUtil.isEmpty(stepID)) {
                 sbfileName.append("S").append(stepID).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(index)) {
+            if (!StringUtil.isEmpty(index)) {
                 sbfileName.append("I").append(index).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(ctionID)) {
+            if (!StringUtil.isEmpty(ctionID)) {
                 sbfileName.append("A").append(ctionID).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(controlID)) {
+            if (!StringUtil.isEmpty(controlID)) {
                 sbfileName.append("C").append(controlID).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(property)) {
+            if (!StringUtil.isEmpty(property)) {
                 sbfileName.append(property).append("-");
             }
             if (propertyIndex != 0) {
                 sbfileName.append(propertyIndex).append("-");
             }
-            if (!StringUtil.isNullOrEmpty(filename)) {
+            if (!StringUtil.isEmpty(filename)) {
                 sbfileName.append(filename).append("-");
             }
 
@@ -1152,13 +1152,13 @@ public class RecorderService implements IRecorderService {
              * Property level --> property+index
              */
             String level = "";
-            if (!(StringUtil.isNullOrEmpty(controlID))) {
+            if (!(StringUtil.isEmpty(controlID))) {
                 level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID + "-" + controlID;
-            } else if (!(StringUtil.isNullOrEmpty(ctionID))) {
+            } else if (!(StringUtil.isEmpty(ctionID))) {
                 level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID;
-            } else if (!(StringUtil.isNullOrEmpty(stepID))) {
+            } else if (!(StringUtil.isEmpty(stepID))) {
                 level = test + "-" + testCase + "-" + stepID + "-" + index;
-            } else if (!(StringUtil.isNullOrEmpty(property))) {
+            } else if (!(StringUtil.isEmpty(property))) {
                 level = property + "-" + propertyIndex;
             }
             newRecorder.setLevel(level);

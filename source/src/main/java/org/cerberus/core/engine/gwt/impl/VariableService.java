@@ -77,7 +77,7 @@ public class VariableService implements IVariableService {
         /**
          * Nothing to decode if null or empty string.
          */
-        if (StringUtil.isNullOrEmpty(result)) {
+        if (StringUtil.isEmpty(result)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Decoding : Nothing to decode on : " + result);
             }

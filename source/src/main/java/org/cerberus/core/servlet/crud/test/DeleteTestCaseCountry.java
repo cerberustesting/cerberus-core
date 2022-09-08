@@ -93,7 +93,7 @@ public class DeleteTestCaseCountry extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (testcase == null || (StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(country))) {
+        if (testcase == null || (StringUtil.isEmpty(test)) || (StringUtil.isEmpty(country))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry")
                     .replace("%OPERATION%", "Delete")

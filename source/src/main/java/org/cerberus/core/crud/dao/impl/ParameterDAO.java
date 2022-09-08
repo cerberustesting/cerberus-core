@@ -291,7 +291,7 @@ public class ParameterDAO implements IParameterDAO {
         query.append(" LEFT OUTER JOIN ( SELECT * from parameter WHERE `system` = ? ) as par1 ON par1.`param` = par.`param` ");
         query.append(" WHERE par.`system` = ?");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
             searchSQL.append(" or par.`value` like ?");
             searchSQL.append(" or par1.`value` like ?");
@@ -313,7 +313,7 @@ public class ParameterDAO implements IParameterDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -343,7 +343,7 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.setString(i++, system1);
                 preStat.setString(i++, system);
 
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -521,7 +521,7 @@ public class ParameterDAO implements IParameterDAO {
             searchSQL.append(" and par.param not in " + Parameter.SECUREDPARAMINSQLCLAUSE);
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
             searchSQL.append(" or par.`value` like ?");
             searchSQL.append(" or par1.`value` like ?");
@@ -548,11 +548,11 @@ public class ParameterDAO implements IParameterDAO {
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system1)) {
+            if (!StringUtil.isEmpty(system1)) {
                 preStat.setString(i++, system1);
             }
             preStat.setString(i++, system);
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

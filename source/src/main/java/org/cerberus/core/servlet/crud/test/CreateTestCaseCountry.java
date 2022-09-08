@@ -99,7 +99,7 @@ public class CreateTestCaseCountry extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if ((StringUtil.isNullOrEmpty(testcase)) || (StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(country))) {
+        if ((StringUtil.isEmpty(testcase)) || (StringUtil.isEmpty(test)) || (StringUtil.isEmpty(country))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry")
                     .replace("%OPERATION%", "Create")

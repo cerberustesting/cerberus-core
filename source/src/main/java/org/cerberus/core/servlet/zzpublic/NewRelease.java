@@ -153,7 +153,7 @@ public class NewRelease extends HttpServlet {
             if (error == false) {
 
                 // In case the bugID is not defined, we try to guess it from the subject. should be between # and a space or CR.
-                if (StringUtil.isNullOrEmpty(bug)) {
+                if (StringUtil.isEmpty(bug)) {
                     String[] columns = subject.split("#");
                     if (columns.length >= 2) {
                         for (int i = 1; i < columns.length; i++) {

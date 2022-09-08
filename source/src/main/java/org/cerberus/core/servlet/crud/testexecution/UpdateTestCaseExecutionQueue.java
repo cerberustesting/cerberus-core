@@ -138,7 +138,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         long id = 0;
 
         // Create Tag when exist.
-        if (!StringUtil.isNullOrEmpty(tag)) {
+        if (!StringUtil.isEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
             List<String> envList = new ArrayList<>();

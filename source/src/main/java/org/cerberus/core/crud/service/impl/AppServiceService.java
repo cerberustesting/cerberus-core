@@ -92,7 +92,7 @@ public class AppServiceService implements IAppServiceService {
             if (appService != null) {
                 AnswerList<AppServiceContent> content;
                 // Add first the inherited values.
-                if (!StringUtil.isNullOrEmpty(appService.getParentContentService())) {
+                if (!StringUtil.isEmpty(appService.getParentContentService())) {
                     content = appServiceContentService.readByVarious(appService.getParentContentService());
                     if (content != null) {
                         List<AppServiceContent> contentList = content.getDataList();
@@ -172,7 +172,7 @@ public class AppServiceService implements IAppServiceService {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             if (CollectionUtils.isNotEmpty(newAppService.getContentList())) {
                 newAppService.getContentList().forEach(appServiceContent -> {
-                    if (StringUtil.isNullOrEmpty(appServiceContent.getKey())) {
+                    if (StringUtil.isEmpty(appServiceContent.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceContent");
                     }
                     appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "defaultUser" : newAppService.getUsrCreated());
@@ -292,7 +292,7 @@ public class AppServiceService implements IAppServiceService {
     public String guessContentType(AppService service, String defaultValue) {
 
         // If service is null, Type is not defined.
-        if (service == null || StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
+        if (service == null || StringUtil.isEmpty(service.getResponseHTTPBody())) {
             // Service is null so we don't know the format.
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
@@ -320,7 +320,7 @@ public class AppServiceService implements IAppServiceService {
         }
 
         // Header did not define the format and could not guess from file content.
-        if (StringUtil.isNullOrEmpty(defaultValue)) {
+        if (StringUtil.isEmpty(defaultValue)) {
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
         return defaultValue;
@@ -328,7 +328,7 @@ public class AppServiceService implements IAppServiceService {
 
     @Override
     public String guessContentType(String content) {
-        if (StringUtil.isNullOrEmpty(content)) {
+        if (StringUtil.isEmpty(content)) {
             // Service is null so we don't know the format.
             return null;
         }

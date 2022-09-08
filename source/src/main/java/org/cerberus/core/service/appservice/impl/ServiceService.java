@@ -96,7 +96,7 @@ public class ServiceService implements IServiceService {
             AppService appService;
 
             // If Service information is not defined, we create it from request, servicePath and operation parameters forcing in SOAP mode.
-            if (StringUtil.isNullOrEmpty(service)) {
+            if (StringUtil.isEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "", "", "Automatically created Service from datalib.",
                         servicePathParam, true, "", operation, false, "", null, null, null, null, null, null);
@@ -116,7 +116,7 @@ public class ServiceService implements IServiceService {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service does not exist !!"));
 
-            } else if (StringUtil.isNullOrEmpty(appService.getServicePath())) {
+            } else if (StringUtil.isEmpty(appService.getServicePath())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE).resolveDescription("DESCRIPTION", "Service path is not defined");
 
             } else {
@@ -154,7 +154,7 @@ public class ServiceService implements IServiceService {
                         // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
                         // the data from tCExecution of related database.
 
-                        if (StringUtil.isNullOrEmpty(database)) {
+                        if (StringUtil.isEmpty(database)) {
 
                             // We reformat servicePath in order to add the context from the application execution.
                             servicePath = StringUtil.getURLFromString(tCExecution.getUrl(),
@@ -180,7 +180,7 @@ public class ServiceService implements IServiceService {
 
                                 } else {
                                     String soapURL = countryEnvironmentDatabase.getSoapUrl();
-                                    if (StringUtil.isNullOrEmpty(soapURL)) {
+                                    if (StringUtil.isEmpty(soapURL)) {
                                         message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLEMPTY);
                                         message.setDescription(message.getDescription()
                                                 .replace("%SERVICEURL%", appService.getServicePath())

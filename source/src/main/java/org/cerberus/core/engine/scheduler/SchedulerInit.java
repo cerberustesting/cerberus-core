@@ -123,7 +123,7 @@ public class SchedulerInit {
                                     long schedulerId = sched.getID();
 
                                     String user = "";
-                                    if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {
+                                    if (!StringUtil.isEmpty(sched.getUsrModif())) {
                                         user = sched.getUsrModif();
                                     } else {
                                         user = sched.getUsrCreated();

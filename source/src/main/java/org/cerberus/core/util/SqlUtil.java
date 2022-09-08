@@ -233,7 +233,7 @@ public class SqlUtil {
         String colValueString = resultSet.getString(columnName);
         JSONArray colValue = new JSONArray();
         try {
-            if (!StringUtil.isNullOrEmpty(colValueString)) {
+            if (!StringUtil.isEmpty(colValueString)) {
                 colValue = new JSONArray(colValueString);
             } else {
                 colValue = new JSONArray();

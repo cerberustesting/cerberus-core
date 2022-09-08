@@ -158,7 +158,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
 
         // Create Tag when exist.
-        if (!StringUtil.isNullOrEmpty(tag)) {
+        if (!StringUtil.isEmpty(tag)) {
             // We create or update it.
             tagService = appContext.getBean(ITagService.class);
             List<String> envList = new ArrayList<>();

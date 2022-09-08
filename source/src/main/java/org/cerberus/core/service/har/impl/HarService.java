@@ -19,20 +19,6 @@
  */
 package org.cerberus.core.service.har.impl;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.crud.service.IInvariantService;
@@ -48,8 +34,22 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -231,7 +231,7 @@ public class HarService implements IHarService {
         try {
 
             String configFile = parameterService.getParameterStringByKey("cerberus_webperf_thirdpartyfilepath", "", "");
-            if (StringUtil.isNullOrEmpty(configFile)) {
+            if (StringUtil.isEmpty(configFile)) {
                 LOG.warn("Could not load config file of Web Third Party. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
@@ -307,7 +307,7 @@ public class HarService implements IHarService {
 
             // We ignore some requests.
             for (String string : ingoreRules) {
-                if ((!StringUtil.isNullOrEmpty(string)) && (myURL.getHost().toLowerCase().endsWith(string.toLowerCase()))) {
+                if ((!StringUtil.isEmpty(string)) && (myURL.getHost().toLowerCase().endsWith(string.toLowerCase()))) {
                     return PROVIDER_IGNORE;
                 }
             }
@@ -406,7 +406,7 @@ public class HarService implements IHarService {
                         JSONObject pA = new JSONObject();
                         for (int i = 0; i < pData.length(); i++) {
                             pA = pData.getJSONObject(i);
-                            if ((pA.has("name")) && (!StringUtil.isNullOrEmpty(pA.getString("name").trim()))) {
+                            if ((pA.has("name")) && (!StringUtil.isEmpty(pA.getString("name").trim()))) {
                                 pD.put(pA.getString("name").trim(), pA.getString("value"));
                             }
                         }
@@ -421,7 +421,7 @@ public class HarService implements IHarService {
                     JSONObject pA = new JSONObject();
                     for (int i = 0; i < pData.length(); i++) {
                         pA = pData.getJSONObject(i);
-                        if ((pA.has("name")) && (!StringUtil.isNullOrEmpty(pA.getString("name").trim()))) {
+                        if ((pA.has("name")) && (!StringUtil.isEmpty(pA.getString("name").trim()))) {
                             pD.put(pA.getString("name").trim(), pA.getString("value"));
                         }
                     }
@@ -577,11 +577,6 @@ public class HarService implements IHarService {
     /**
      * Transform the HarStat Object to a JSONObject and add it to stat Object
      * under statKey value.
-     *
-     * @param har
-     * @param domains
-     * @param system
-     * @return
      */
     private JSONObject addStat(String statKey, HarStat harStat, JSONObject stat, Date firstEver) {
 
@@ -974,7 +969,7 @@ public class HarService implements IHarService {
     @Override
     public JSONObject removeFirstHitsandFilterURL(JSONObject har, Integer indexStart, String urlFilter) {
         LOG.debug("Remove First entries from HAR file from index " + indexStart + " and Filter using : " + urlFilter);
-        if ((indexStart < 1) && StringUtil.isNullOrEmpty(urlFilter)) {
+        if ((indexStart < 1) && StringUtil.isEmpty(urlFilter)) {
             return har;
         }
         try {
@@ -985,8 +980,8 @@ public class HarService implements IHarService {
             for (int i = 0; i < harEntries.length(); i++) {
                 if (i >= indexStart) {
                     // Only add the entries if index is reached
-                    if ((!StringUtil.isNullOrEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter))
-                            || StringUtil.isNullOrEmpty(urlFilter)) {
+                    if ((!StringUtil.isEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter))
+                            || StringUtil.isEmpty(urlFilter)) {
                         // Only add the entries if the url to filter is defined and url contains it.
                         newLogEntries.put(harEntries.getJSONObject(i));
                     }

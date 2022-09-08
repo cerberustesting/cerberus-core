@@ -19,18 +19,8 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationDAO;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.database.DatabaseSpring;
@@ -44,6 +34,17 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -142,7 +143,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (app.`application` like ?");
             searchSQL.append(" or app.`description` like ?");
             searchSQL.append(" or app.`sort` like ?");
@@ -171,7 +172,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -190,7 +191,7 @@ public class ApplicationDAO implements IApplicationDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -388,7 +389,7 @@ public class ApplicationDAO implements IApplicationDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `poolSize`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
         query.append(", `mavengroupid`, `usrcreated` ) ");
-        if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
+        if (StringUtil.isEmpty(object.getDeploytype())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?)");
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -414,7 +415,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
-                if (!StringUtil.isNullOrEmpty(object.getDeploytype())) {
+                if (!StringUtil.isEmpty(object.getDeploytype())) {
                     preStat.setString(i++, object.getDeploytype());
                 }
                 preStat.setString(i++, object.getMavengroupid());
@@ -497,7 +498,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public Answer update(String application, Application object) {
         MessageEvent msg = null;
-        if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
+        if (StringUtil.isEmpty(object.getDeploytype())) {
             object.setDeploytype(null);
         }
         final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, poolSize = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
@@ -680,7 +681,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(SqlUtil.generateInClause("`System`", system));
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`application` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `sort` like ?");
@@ -710,8 +711,8 @@ public class ApplicationDAO implements IApplicationDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (system != null && !system.isEmpty()) {
@@ -719,7 +720,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     preStat.setString(i++, string);
                 }
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -737,7 +738,7 @@ public class ApplicationDAO implements IApplicationDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

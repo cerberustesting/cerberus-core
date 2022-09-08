@@ -122,7 +122,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (src.`service` like ?");
             searchSQL.append(" or src.`key` like ?");
             searchSQL.append(" or src.`value` like ?");
@@ -144,7 +144,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(service)) {
+        if (!StringUtil.isEmpty(service)) {
             searchSQL.append(" and (`service` = ? )");
         }
         if (withActiveCriteria) {
@@ -152,7 +152,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -170,7 +170,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -185,7 +185,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (!StringUtil.isNullOrEmpty(service)) {
+            if (!StringUtil.isEmpty(service)) {
                 preStat.setString(i++, service);
             }
             if (withActiveCriteria) {
@@ -368,11 +368,11 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         query.append(" as distinctValues FROM appservicecontent ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (src.`service` like ?");
             searchSQL.append(" or src.`key` like ?");
             searchSQL.append(" or src.`value` like ?");
@@ -403,10 +403,10 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (!StringUtil.isEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

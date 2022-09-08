@@ -19,6 +19,14 @@
  */
 package org.cerberus.core.util;
 
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -28,15 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 
 /**
  * Class used in jsp or servlet in order to centralize all the parameter
@@ -74,7 +73,6 @@ public final class ParameterParserUtil {
     }
 
     /**
-     *
      * @param column
      * @param inString
      * @return
@@ -90,7 +88,6 @@ public final class ParameterParserUtil {
     }
 
     /**
-     *
      * @param column
      * @param inInt
      * @return
@@ -122,12 +119,11 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes and Sanitize the given inParam
      *
-     * @see #parseStringParam(String, String)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseStringParam(String, String)
      */
     public static String parseStringParamAndDecodeAndSanitize(String inParam, String defaultVal, String charset) {
         if (inParam == null) {
@@ -144,12 +140,11 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes and Sanitize the given inParam
      *
-     * @see #parseStringParam(String, String)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseStringParam(String, String)
      */
     public static String parseStringParamAndDecode(String inParam, String defaultVal, String charset) {
         if (inParam == null) {
@@ -166,16 +161,15 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes and Sanitize the given inParam
      *
-     * @see #parseStringParam(String, String)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseStringParam(String, String)
      */
     public static JSONArray parseJSONArrayParamAndDecode(String inParam, JSONArray defaultVal, String charset) {
 
-        if (StringUtil.isNullOrEmpty(inParam)) {
+        if (StringUtil.isEmpty(inParam)) {
             return defaultVal;
         }
 
@@ -198,7 +192,6 @@ public final class ParameterParserUtil {
     }
 
     /**
-     *
      * @param inParam
      * @param defaultValue
      * @return
@@ -372,12 +365,11 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes the {@link Integer} contained into the given inParam.
      *
-     * @see #parseIntegerParam(String, int)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseIntegerParam(String, int)
      */
     public static int parseIntegerParamAndDecode(String inParam, int defaultVal, String charset) {
         if ((inParam == null) || (inParam.isEmpty())) {
@@ -409,12 +401,11 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes the {@link Long} contained into the given inParam.
      *
-     * @see #parseLongParam(String, int)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseLongParam(String, long)
      */
     public static long parseLongParamAndDecode(String inParam, long defaultVal, String charset) {
         if (inParam == null) {
@@ -452,12 +443,11 @@ public final class ParameterParserUtil {
     /**
      * Parses and decodes the {@link Boolean} contained into the given inParam.
      *
-     * @see #parseBooleanParam(String, int)
-     *
      * @param inParam
      * @param defaultVal
      * @param charset
      * @return
+     * @see #parseBooleanParam(String, boolean)
      */
     public static boolean parseBooleanParamAndDecode(String inParam, boolean defaultVal, String charset) {
         if (inParam == null) {

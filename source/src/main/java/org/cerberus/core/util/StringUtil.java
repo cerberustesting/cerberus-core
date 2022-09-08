@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -52,28 +51,21 @@ import java.util.stream.Collectors;
  */
 public final class StringUtil {
 
-    /**
-     * Represent null string
-     */
+    // Represent null string
     public static final String NULL = "null";
-
-    private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
-
+    public static final String HTTP_PREFIX = "http://";
+    public static final String HTTPS_PREFIX = "https://";
+    public static final String FILE_PREFIX = "file:/";
+    public static final String FTP_PREFIX = "ftp://";
+    public static final String FTPS_PREFIX = "ftps://";
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
-
     private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
     private static final String SECRET_STRING = "XXXXXX";
 
-    /**
-     * To avoid instantiation of utility class
-     */
+    // To avoid instantiation of utility class
     private StringUtil() {
     }
 
-    /**
-     * @param in
-     * @return
-     */
     public static String getShortenVersionOfString(String in) {
 
         if (in.length() > MAX_STRING_SIZE_IN_MESSAGE) {
@@ -82,10 +74,6 @@ public final class StringUtil {
         return in;
     }
 
-    /**
-     * @param ex
-     * @return
-     */
     public static String getExceptionCauseFromString(Throwable ex) {
 
         StringWriter sw = new StringWriter();
@@ -118,7 +106,6 @@ public final class StringUtil {
     /**
      * Check for numeric data type
      *
-     * @param str
      * @return true if str is a numeric value, else false
      */
     public static boolean isInteger(String str) {
@@ -133,7 +120,6 @@ public final class StringUtil {
     /**
      * Check for boolean data type
      *
-     * @param str
      * @return true if str is "true" or "false"
      */
     public static boolean isBoolean(String str) {
@@ -143,9 +129,6 @@ public final class StringUtil {
     /**
      * This method just reformat a string in order to increase the change it can
      * get converted to float. For ex, it replace , with .
-     *
-     * @param str
-     * @return
      */
     public static String prepareToNumeric(String str) {
         if (str.contains(",")) {
@@ -155,20 +138,18 @@ public final class StringUtil {
     }
 
     /**
-     * Check for null or empty string content
+     * Check for "null" string or empty string content
      *
-     * @param str
      * @return null safe method that returns
      * true if the parameter is a "null" string or an empty string
      */
     public static boolean isEmptyOrNullValue(String str) {
-        return (isNullOrEmpty(str) || NULL.equalsIgnoreCase(str.trim()));
+        return (isEmpty(str) || NULL.equalsIgnoreCase(str.trim()));
     }
 
     /**
-     * Check for not null or not empty string content
+     * Check for not "null" string or not empty string content
      *
-     * @param str
      * @return null safe method that returns
      * true if the parameter is NOT a "null" string or empty string.
      */
@@ -179,21 +160,19 @@ public final class StringUtil {
     /**
      * Check for null or empty string content
      *
-     * @param str
-     * @return true if the parameter is a "null" or empty string.
+     * @return Null safe method that returns true if the parameter is null or an empty string.
      */
-    public static boolean isNullOrEmpty(String str) {
+    public static boolean isEmpty(String str) {
         return (str == null) || (str.trim().isEmpty());
     }
 
     /**
-     * Check for not null or empty content
+     * Check for not null or empty string content
      *
-     * @param str
-     * @return true if the parameter is NOT "null" or empty string.
+     * @return Null safe method that returns true if the parameter is NOT null or an empty string.
      */
     public static boolean isNotEmpty(String str) {
-        return !isNullOrEmpty(str);
+        return !isEmpty(str);
     }
 
     /**
@@ -244,13 +223,13 @@ public final class StringUtil {
      * @return the {length} first character of the string1.
      */
     public static String getLeftStringPretty(String string1, int length) {
-        int lengthminus3 = length - 3;
+        int lengthMinus3 = length - 3;
         if (string1 == null) {
             return "";
         } else if (length >= string1.length()) {
             return string1;
         } else {
-            return string1.substring(0, lengthminus3) + "...";
+            return string1.substring(0, lengthMinus3) + "...";
         }
     }
 
@@ -267,33 +246,16 @@ public final class StringUtil {
         return s.substring(0, s.length() - 1);
     }
 
-    /**
-     * @param textIn
-     * @return a clean string.
-     */
-    public static String getCleanCSVTextField(String textIn) {
-        return textIn.replaceAll("\"", "\"\"");
-    }
-
-    /**
-     * @param inputString
-     * @return
-     */
     public static String sanitize(String inputString) {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         return policy.sanitize(inputString);
     }
 
-    /**
-     * @param text
-     * @param secrets
-     * @return
-     */
     public static String secureFromSecrets(String text, Map<String, String> secrets) {
         if (secrets == null) {
             return text;
         }
-        if (isNullOrEmpty(text)) {
+        if (isEmpty(text)) {
             return text;
         }
         for (Map.Entry<String, String> entry : secrets.entrySet()) {
@@ -320,15 +282,15 @@ public final class StringUtil {
         try {
             ScriptEngineManager factory = new ScriptEngineManager();
             ScriptEngine engine = factory.getEngineByName("JavaScript");
-            //characters we special meaning need to be encoded before applying
+            //characters with special meaning need to be encoded before applying
             //the javascript function
             stringToEncode = stringToEncode.replace("\"", "%22");
             stringToEncode = stringToEncode.replace("&", "%26");
             stringToEncode = stringToEncode.replace("#", "%23");
             stringToEncode = stringToEncode.replace("+", "%2B");
             stringToEncode = engine.eval("encodeURIComponent(\"" + stringToEncode + "\")").toString();
-            //the previous special characteres were encoded and additional %25 were added, therefore 
-            //we need to restore them and replace the each adicional %25 with the decoded character %
+            //the previous special characters were encoded and additional %25 were added, therefore
+            //we need to restore them and replace each additional %25 with the decoded character %
             stringToEncode = stringToEncode.replace("%2522", "%22");
             stringToEncode = stringToEncode.replace("%2526", "%26");
             stringToEncode = stringToEncode.replace("%2523", "%23");
@@ -341,20 +303,19 @@ public final class StringUtil {
 
     /**
      * This method is used in order to clean the host to make it compatible with
-     * Selenium. Selenium require a fully qualitied host (including prefix
+     * Selenium. Selenium require a fully qualified host (including prefix
      * http://). Cerberus is more flexible and allow simple host such as
      * www.laredoute.fr This function checks that the host is prefixed by
      * http:// or https:// or ftp://. If protocol prefix is missing it adds by
      * default http:// if not it leave the existing host.
      *
-     * @param host
-     * @return formated host
+     * @return formatted host
      */
     public static String cleanHostURL(String host) {
         String newHost = host;
-        if (!(host.startsWith("http://") || host.startsWith("https://") || host.startsWith("ftp://") || host.startsWith("ftps://"))) {
-            // No refix so we put http:// by default.
-            newHost = "http://" + host;
+        if (!(host.startsWith(HTTP_PREFIX) || host.startsWith(HTTPS_PREFIX) || host.startsWith(FTP_PREFIX) || host.startsWith(FTPS_PREFIX))) {
+            // No prefix so we put http:// by default.
+            newHost = HTTP_PREFIX + host;
         }
         LOG.debug("Cleaned host from {} to {}", host, newHost);
         return newHost;
@@ -366,90 +327,84 @@ public final class StringUtil {
      * part. Ex if host = http://www.laredoute.fr/ Method return
      * www.laredoute.fr
      *
-     * @param host
-     * @return formated host
+     * @return formatted host
      */
     public static String removeProtocolFromHostURL(String host) {
-        String newHost = host.replace("http://", "").replace("https://", "").replace("ftp://", "").replace("ftps://", "");
+        String newHost = host.replace(HTTP_PREFIX, "").replace(HTTPS_PREFIX, "").replace(FTP_PREFIX, "").replace(FTPS_PREFIX, "");
         LOG.debug("Removed protocol host from {} to {}", host, newHost);
         return newHost;
 
     }
 
     /**
-     * This method is used in determine if an URL is relevant.
+     * This method is used in determine if an url is relevant.
      *
-     * @param url
      * @return true is URL looks OK and false on any other cases.
      */
     public static boolean isURL(String url) {
-        return url.startsWith("http://")
-                || url.startsWith("https://")
+        return url.startsWith(HTTP_PREFIX)
+                || url.startsWith(HTTPS_PREFIX)
                 // File scheme can have no authority component, then only one slash is necessary
-                || url.startsWith("file:/")
-                || url.startsWith("ftp://");
+                || url.startsWith(FILE_PREFIX)
+                || url.startsWith(FTP_PREFIX);
     }
 
     /**
-     * This method is used to build an URL from host, contextroot and uri by
+     * This method is used to build an url from host, contextRoot and uri by
      * managing the /.<br>
-     * For Ex : host = www.laredoute.fr/, contextroot = /fr/, uri = /toto.jsp
+     * For Ex : host = www.laredoute.fr/, contextRoot = /fr/, uri = /toto.jsp
      * will provide the result : www.laredoute.fr/fr/toto.jsp<br>
      * in stead of www.laredoute.fr//fr//toto.jsp<br>
-     * host = www.laredoute.fr, contextroot = fr, uri = toto.jsp will provide
+     * host = www.laredoute.fr, contextRoot = fr, uri = toto.jsp will provide
      * the result : www.laredoute.fr/fr/toto.jsp<br>
      * in stead of www.laredoute.frfrtoto.jsp<br>
      * Protocol will be added in case host did not already have the protocol.
      *
-     * @param host
-     * @param contextRoot
-     * @param uri
-     * @param protocol
-     * @return URL correctly formated.
+     * @return URL correctly formatted.
      */
     public static String getURLFromString(String host, String contextRoot, String uri, String protocol) {
         String result = "";
-        if (!isNullOrEmpty(host)) {
+        if (!isEmpty(host)) {
             result += StringUtil.addSuffixIfNotAlready(host, "/");
         }
-        if (!isNullOrEmpty(contextRoot)) {
+        if (!isEmpty(contextRoot)) {
             if (contextRoot.startsWith("/")) {
                 contextRoot = contextRoot.substring(1);
             }
             result += StringUtil.addSuffixIfNotAlready(contextRoot, "/");
         }
-        if (!isNullOrEmpty(uri)) {
+        if (!isEmpty(uri)) {
             if (uri.startsWith("/")) {
                 uri = uri.substring(1);
             }
             result += uri;
         }
-        if (!(StringUtil.isURL(result))) { // If still does not look like an URL, we add protocol string ( ex : http://) by default.
+        if (!(StringUtil.isURL(result))) { // If still does not look like an url, we add protocol string ( ex : http://) by default.
             result = protocol + result;
         }
         return result;
     }
 
-    public static String addQueryString(String URL, String queryString) {
-        String result = "";
-        if (isNullOrEmpty(queryString)) {
-            return URL;
+    public static String addQueryString(String url, String queryString) {
+        String result;
+        if (isEmpty(queryString)) {
+            return url;
         }
-        URL = URL.trim();
-        if (URL.endsWith("?")) {
-            result = URL + queryString;
-        } else if (URL.contains("?")) {
-            result = URL + "&" + queryString;
+        url = url.trim();
+        if (url.endsWith("?")) {
+            result = url + queryString;
+        } else if (url.contains("?")) {
+            result = url + "&" + queryString;
         } else {
-            result = URL + "?" + queryString;
+            result = url + "?" + queryString;
         }
         return result;
     }
 
     public static String formatURLCredential(String user, String pass, String url) {
         String credential = "";
-        if (!StringUtil.isNullOrEmpty(user)) {
-            if (!StringUtil.isNullOrEmpty(pass)) {
+        if (!StringUtil.isEmpty(user)) {
+            if (!StringUtil.isEmpty(pass)) {
                 credential = user + ":" + pass + "@";
             } else {
                 credential = user + "@";
@@ -457,24 +412,19 @@ public final class StringUtil {
         }
 
         String firstPart = "";
-        String seccondPart = url;
+        String secondPart = url;
 
-        if (url.contains("http://")) {
-            firstPart = "http://";
-            seccondPart = url.split("http://")[1];
-        } else if (url.contains("https://")) {
-            firstPart = "https://";
-            seccondPart = url.split("https://")[1];
+        if (url.contains(HTTP_PREFIX)) {
+            firstPart = HTTP_PREFIX;
+            secondPart = url.split(HTTP_PREFIX)[1];
+        } else if (url.contains(HTTPS_PREFIX)) {
+            firstPart = HTTPS_PREFIX;
+            secondPart = url.split(HTTPS_PREFIX)[1];
         }
 
-        return firstPart + credential + seccondPart;
+        return firstPart + credential + secondPart;
     }
 
-    /**
-     * @param text
-     * @param suffix
-     * @return
-     */
     public static String addSuffixIfNotAlready(String text, String suffix) {
         if (text.toUpperCase().endsWith(suffix.toUpperCase())) {
             return text;
@@ -483,11 +433,6 @@ public final class StringUtil {
         }
     }
 
-    /**
-     * @param text
-     * @param prefix
-     * @return
-     */
     public static String addPrefixIfNotAlready(String text, String prefix) {
         if (text.toUpperCase().startsWith((prefix.toUpperCase()))) {
             return text;
@@ -496,13 +441,8 @@ public final class StringUtil {
         }
     }
 
-    /**
-     * @param jsonResult
-     * @param separator
-     * @return
-     */
     public static String convertToString(JSONArray jsonResult, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (separator == null) {
             separator = ",";
         }
@@ -510,48 +450,42 @@ public final class StringUtil {
             if (jsonResult.length() >= 1) {
                 for (int i = 0; i < jsonResult.length(); i++) {
                     if (i == 0) {
-                        result = jsonResult.getString(i);
+                        result.append(jsonResult.getString(i));
                     } else {
-                        result += separator + jsonResult.getString(i);
+                        result.append(separator).append(jsonResult.getString(i));
                     }
                 }
             }
         } catch (JSONException ex) {
             LOG.error("JSONException in convertToString.", ex);
         }
-        return result;
+        return result.toString();
     }
 
-    /**
-     * @param listString
-     * @param separator
-     * @return
-     */
     public static String convertToString(List<String> listString, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (separator == null) {
             separator = ",";
         }
-        boolean first = true;
         if (listString == null) {
             return "";
         }
-        for (String string : listString) {
+        boolean first = true;
+        for (String str : listString) {
             if (first) {
                 first = false;
-                result = string;
+                result.append(str);
             } else {
-                result += separator + string;
+                result.append(separator).append(str);
             }
-
         }
-        return result;
+        return result.toString();
     }
 
     public static String getDomainFromUrl(String appURL) {
         URL appMyURL = null;
         try {
-            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", "http://"));
+            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", HTTP_PREFIX));
         } catch (MalformedURLException ex) {
             LOG.warn("Exception when parsing Application URL.", ex);
         }
@@ -571,7 +505,7 @@ public final class StringUtil {
     public static String getPasswordFromUrl(String appURL) {
         URL appMyURL = null;
         try {
-            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", "http://"));
+            appMyURL = new URL(StringUtil.getURLFromString(appURL, "", "", HTTP_PREFIX));
         } catch (MalformedURLException ex) {
             LOG.warn("Exception when parsing Application URL.", ex);
         }
@@ -610,5 +544,4 @@ public final class StringUtil {
                 .map(Double::parseDouble)
                 .collect(Collectors.toList());
     }
-
 }

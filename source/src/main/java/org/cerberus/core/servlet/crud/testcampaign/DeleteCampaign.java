@@ -85,7 +85,7 @@ public class DeleteCampaign extends HttpServlet {
         String key = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("key"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
-        if (StringUtil.isNullOrEmpty(key)) {
+        if (StringUtil.isEmpty(key)) {
             /**
              * Missing key
              */

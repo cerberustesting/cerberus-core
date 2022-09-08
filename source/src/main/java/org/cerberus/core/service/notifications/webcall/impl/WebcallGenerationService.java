@@ -51,7 +51,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     public JSONObject generateNotifyStartTagExecution(Tag tag, JSONObject ceberusEventMessage) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
 
@@ -69,7 +69,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     public JSONObject generateNotifyEndTagExecution(Tag tag, JSONObject ceberusEventMessage, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         prioritiesList = invariantService.readByIdName("PRIORITY");
@@ -90,7 +90,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe, JSONObject ceberusEventMessage) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
 
@@ -108,7 +108,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe, JSONObject ceberusEventMessage) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
 
@@ -126,7 +126,7 @@ public class WebcallGenerationService implements IWebcallGenerationService {
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String originalTest, String originalTestcase, String eventReference, JSONObject ceberusEventMessage) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
 

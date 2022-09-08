@@ -537,7 +537,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
     // We hide is status is QU of OK and there were no previous execution.
     private boolean isToHide(String controlStatus, String previousControlStatus) {
-        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) && (StringUtil.isNullOrEmpty(previousControlStatus))
+        return (controlStatus.equals(TestCaseExecution.CONTROLSTATUS_QU) && (StringUtil.isEmpty(previousControlStatus))
                 || controlStatus.equals(TestCaseExecution.CONTROLSTATUS_OK));
     }
 
@@ -571,7 +571,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         totalManualExecution++;
 
                         String executor = "NoExecutorDefined";
-                        if (!StringUtil.isNullOrEmpty(testCaseExecution.getExecutor())) {
+                        if (!StringUtil.isEmpty(testCaseExecution.getExecutor())) {
                             executor = testCaseExecution.getExecutor();
                         }
 
@@ -952,13 +952,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 // Standard pills
                 List<String> attributList = new ArrayList<>();
                 if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
-                    if (!StringUtil.isNullOrEmpty(label.getRequirementType()) && !"unknown".equalsIgnoreCase(label.getRequirementType())) {
+                    if (!StringUtil.isEmpty(label.getRequirementType()) && !"unknown".equalsIgnoreCase(label.getRequirementType())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementType() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getRequirementStatus()) && !"unknown".equalsIgnoreCase(label.getRequirementStatus())) {
+                    if (!StringUtil.isEmpty(label.getRequirementStatus()) && !"unknown".equalsIgnoreCase(label.getRequirementStatus())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementStatus() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getRequirementCriticity()) && !"unknown".equalsIgnoreCase(label.getRequirementCriticity())) {
+                    if (!StringUtil.isEmpty(label.getRequirementCriticity()) && !"unknown".equalsIgnoreCase(label.getRequirementCriticity())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementCriticity() + "</span>");
                     }
                 }
