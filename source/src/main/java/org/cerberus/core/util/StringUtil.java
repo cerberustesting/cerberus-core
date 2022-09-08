@@ -154,7 +154,7 @@ public final class StringUtil {
      * true if the parameter is NOT a "null" string or empty string.
      */
     public static boolean isNotEmptyOrNullValue(String str) {
-        return !isEmptyOrNullValue(str);
+        return isNotEmpty(str) && !NULL.equalsIgnoreCase(str.trim());
     }
 
     /**
@@ -172,7 +172,7 @@ public final class StringUtil {
      * @return Null safe method that returns true if the parameter is NOT null or an empty string.
      */
     public static boolean isNotEmpty(String str) {
-        return !isEmpty(str);
+        return (str != null) && str.trim().isEmpty();
     }
 
     /**
