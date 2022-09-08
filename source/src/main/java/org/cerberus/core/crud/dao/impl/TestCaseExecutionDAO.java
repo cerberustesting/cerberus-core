@@ -926,7 +926,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
                 int nrTotalRows = 0;
                 if (rowSet != null && rowSet.next()) {
-                    nrTotalRows = resultSet.getInt(1);
+                    nrTotalRows = rowSet.getInt(1);
                 }
 
                 if (objectList.size() >= MAX_ROW_SELECTED) {
@@ -941,7 +941,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 }
                 response = new AnswerList<>(objectList, nrTotalRows);
             }
-
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
