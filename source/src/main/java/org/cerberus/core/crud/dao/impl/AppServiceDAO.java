@@ -20,6 +20,8 @@
 package org.cerberus.core.crud.dao.impl;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +29,6 @@ import org.cerberus.core.crud.dao.IAppServiceDAO;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.factory.IFactoryAppService;
-import org.cerberus.core.crud.factory.impl.FactoryAppService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -64,9 +65,9 @@ import java.util.Map;
 @Repository
 public class AppServiceDAO implements IAppServiceDAO {
 
-    private DatabaseSpring databaseSpring;
-    private IFactoryAppService factoryAppService;
-    private IParameterService parameterService;
+    private final DatabaseSpring databaseSpring;
+    private final IFactoryAppService factoryAppService;
+    private final IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(AppServiceDAO.class);
     private static final String OBJECT_NAME = "AppService";
@@ -88,12 +89,10 @@ public class AppServiceDAO implements IAppServiceDAO {
                 if (resultSet.next()) {
                     result = this.loadFromResultSet(resultSet);
                 }
-            } catch (SQLException exception) {
-                LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
         } catch (SQLException exception) {
             LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
 
         return result;
@@ -107,37 +106,28 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        LOG.debug(SQL_MESSAGE, query.toString());
+        LOG.debug(SQL_MESSAGE, query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query);
+             Statement stm = connection.createStatement()) {
 
             preStat.setString(1, "%" + service + "%");
             preStat.setInt(2, limit);
 
-            ResultSet resultSet = preStat.executeQuery();
-            try {
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
-
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
 
-                resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
                 int nrTotalRows = 0;
-
-                if (resultSet != null && resultSet.next()) {
-                    nrTotalRows = resultSet.getInt(1);
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
                 }
                 response = new AnswerList<>(objectList, nrTotalRows);
-            } catch (SQLException exception) {
-                LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
-            } finally {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
         } catch (SQLException exception) {
             LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
@@ -158,15 +148,13 @@ public class AppServiceDAO implements IAppServiceDAO {
         StringBuilder searchSQL = new StringBuilder();
         List<String> individualColumnSearchValues = new ArrayList<>();
 
-        StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disregarding the limit clauses that
-        //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ");
-        query.append("left outer JOIN application app ON srv.application = app.application");
+        StringBuilder query = new StringBuilder()
+                .append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ")
+                .append("left outer JOIN application app ON srv.application = app.application");
 
         query.append(" WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (srv.Service like ?");
             searchSQL.append(" or srv.Application like ?");
             searchSQL.append(" or srv.Type like ?");
@@ -189,7 +177,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.UsrModif like ?");
             searchSQL.append(" or srv.DateModif like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
@@ -205,7 +193,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         query.append(searchSQL);
 
-        if (systems != null && !systems.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(systems)) {
             systems.add(""); // authorize transversal object
             query.append(" and ( app.Application is null or ");
             query.append(SqlUtil.generateInClause("app.system", systems));
@@ -216,7 +204,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(UserSecurity.getSystemAllowForSQL("app.system"));
         query.append(" ) ");
 
-        if (!StringUtil.isEmpty(column)) {
+        if (StringUtil.isNotEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -226,15 +214,14 @@ public class AppServiceDAO implements IAppServiceDAO {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
-        // Debug message on SQL.
-        LOG.debug(SQL_MESSAGE, query.toString());
+        LOG.debug(SQL_MESSAGE, query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
-
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -261,52 +248,37 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            if (systems != null && !systems.isEmpty()) {
-                for (String sys : systems) {
-                    preStat.setString(i++, sys);
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
                 }
             }
 
-            ResultSet resultSet = preStat.executeQuery();
-            try {
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
 
-                //get the total number of rows
-                resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
                 int nrTotalRows = 0;
-
-                if (resultSet != null && resultSet.next()) {
-                    nrTotalRows = resultSet.getInt(1);
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
                 }
 
                 if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    response = new AnswerList<>(objectList, nrTotalRows);
                 } else if (objectList.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    response = new AnswerList<>(objectList, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    response = new AnswerList<>(objectList, nrTotalRows);
                 }
-
-            } catch (SQLException exception) {
-                LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-            } finally {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
+                response = new AnswerList<>(objectList, nrTotalRows);
             }
-
         } catch (SQLException exception) {
             LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -342,9 +314,6 @@ public class AppServiceDAO implements IAppServiceDAO {
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            } catch (SQLException exception) {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } catch (SQLException exception) {
             LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
@@ -371,7 +340,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(" as distinctValues FROM appservice srv");
         query.append(" where 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (srv.Service like ?");
             searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.ServicePath like ?");
@@ -384,7 +353,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.Description like ?");
             searchSQL.append(" or srv.ServiceRequest like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
@@ -398,10 +367,8 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(" group by ").append(columnName);
         query.append(" order by ").append(columnName).append(" asc");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(SQL_MESSAGE, query.toString());
-        }
+        LOG.debug(SQL_MESSAGE, query);
+
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
              Statement stm = connection.createStatement()) {
@@ -427,14 +394,11 @@ public class AppServiceDAO implements IAppServiceDAO {
             try (ResultSet resultSet = preStat.executeQuery();
                  ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
-                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
-                //get the total number of rows
                 int nrTotalRows = 0;
-
                 if (rowSet != null && rowSet.next()) {
                     nrTotalRows = rowSet.getInt(1);
                 }
@@ -452,17 +416,11 @@ public class AppServiceDAO implements IAppServiceDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
             }
         } catch (Exception e) {
-            LOG.warn(SQL_ERROR_UNABLETOEXECUTEQUERY, e.toString());
+            LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
                     .resolveDescription("DESCRIPTION", e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
         }
 
         answer.setResultMessage(msg);
@@ -473,11 +431,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer create(AppService object) {
         MessageEvent msg;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`,"
-                + " `isAvroEnable`, `SchemaRegistryUrl`, `ParentContentService`, `KafkaTopic`, `KafkaKey`,"
-                + " `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        StringBuilder query = new StringBuilder()
+                .append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, ")
+                .append("   `isAvroEnable`, `SchemaRegistryUrl`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
+                .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ")
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
@@ -487,7 +445,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             int i = 1;
             preStat.setString(i++, object.getService());
             preStat.setString(i++, object.getGroup());
-            if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
+            if (StringUtil.isNotEmpty(object.getApplication())) {
                 preStat.setString(i++, object.getApplication());
             } else {
                 preStat.setString(i++, null);
@@ -500,7 +458,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getServiceRequest());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
-            if ((object.getParentContentService() != null) && (!object.getParentContentService().isEmpty())) {
+            if (StringUtil.isNotEmpty(object.getParentContentService())) {
                 preStat.setString(i++, object.getParentContentService());
             } else {
                 preStat.setString(i++, null);
@@ -519,10 +477,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
-
         } catch (SQLException exception) {
             LOG.error(SQL_ERROR_UNABLETOEXECUTEQUERY, exception.toString());
-
             if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
@@ -538,22 +494,24 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer update(String service, AppService object) {
         MessageEvent msg;
-        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, `isAvroEnable` = ?, `SchemaRegistryUrl` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, "
-                + "KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, "
-                + "`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
+        StringBuilder query = new StringBuilder()
+                .append("UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, ")
+                .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
+                .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, ")
+                .append("`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
-            query += " ,Application = ?";
+            query.append(" ,Application = ?");
         } else {
-            query += " ,Application = null";
+            query.append(" ,Application = null");
         }
-        query += " WHERE `Service` = ?";
+        query.append(" WHERE `Service` = ?");
 
         LOG.debug(SQL_MESSAGE, query);
         LOG.debug("SQL.param.application : {}", object.getApplication());
         LOG.debug("SQL.param.service : {}", service);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
@@ -581,7 +539,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getMethod());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, object.getFileName());
-            if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
+            if (StringUtil.isNotEmpty(object.getApplication())) {
                 preStat.setString(i++, object.getApplication());
             }
             preStat.setString(i, service);
@@ -608,7 +566,6 @@ public class AppServiceDAO implements IAppServiceDAO {
              PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setString(1, object.getService());
-
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
@@ -688,7 +645,6 @@ public class AppServiceDAO implements IAppServiceDAO {
         boolean isAvroEnable = rs.getBoolean("srv.isAvroEnable");
         String schemaRegistryURL = ParameterParserUtil.parseStringParam(rs.getString("srv.SchemaRegistryUrl"), "");
         String parentContentService = ParameterParserUtil.parseStringParam(rs.getString("srv.ParentContentService"), "");
-        factoryAppService = new FactoryAppService();
         return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
                 description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
