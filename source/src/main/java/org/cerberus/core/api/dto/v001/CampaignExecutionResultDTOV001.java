@@ -79,9 +79,9 @@ public class CampaignExecutionResultDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
-    private int totalExecutionsWithRetries;
+    private int totalWithRetry;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 11)
-    private int totalExecutions;
+    private int total;
 }

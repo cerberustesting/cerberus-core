@@ -39,7 +39,7 @@ public class CampaignExecutionRobotDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 0)
-    private String name;
+    private String robotId;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 1)

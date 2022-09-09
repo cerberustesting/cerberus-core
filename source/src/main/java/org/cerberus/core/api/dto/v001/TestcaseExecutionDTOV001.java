@@ -39,7 +39,7 @@ public class TestcaseExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 0)
-    private long id;
+    private long testcaseExecutionId;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 1)
@@ -79,11 +79,11 @@ public class TestcaseExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
-    private long start;
+    private long startDate;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 11)
-    private long end;
+    private long endDate;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 12)
@@ -119,7 +119,7 @@ public class TestcaseExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 22)
-    private long queueID;
+    private long queueId;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 23)
