@@ -43,54 +43,50 @@ public class TestcaseExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 1)
-    private String testFolderId;
+    private TestcaseDTOV001 testcase;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 2)
-    private String testCaseId;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 3)
     private String description;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 4)
+    @ApiModelProperty(position = 3)
     private InvariantDTOV001 environment;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
+    @ApiModelProperty(position = 4)
     private InvariantDTOV001 environmentData;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @ApiModelProperty(position = 5)
     private InvariantDTOV001 country;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @ApiModelProperty(position = 6)
     private InvariantDTOV001 priority;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @ApiModelProperty(position = 7)
     private int testcaseVersion;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @ApiModelProperty(position = 8)
     private String build;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 10)
+    @ApiModelProperty(position = 9)
     private String revision;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
+    @ApiModelProperty(position = 10)
     private long start;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
+    @ApiModelProperty(position = 11)
     private long end;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 14)
+    @ApiModelProperty(position = 12)
     private long durationInMillis;
 
     @JsonView(value = {View.Public.GET.class})

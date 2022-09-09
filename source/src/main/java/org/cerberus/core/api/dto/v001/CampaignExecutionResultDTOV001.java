@@ -59,25 +59,29 @@ public class CampaignExecutionResultDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 5)
-    private int pe;
+    private int we;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 6)
-    private int qu;
+    private int pe;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 7)
-    private int qe;
+    private int qu;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 8)
-    private int ca;
+    private int qe;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 9)
-    private int totalExecutionsWithRetries;
+    private int ca;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
+    private int totalExecutionsWithRetries;
+
+    @JsonView(value = {View.Public.GET.class})
+    @ApiModelProperty(position = 11)
     private int totalExecutions;
 }
