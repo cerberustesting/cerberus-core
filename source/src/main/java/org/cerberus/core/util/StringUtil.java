@@ -172,7 +172,7 @@ public final class StringUtil {
      * @return Null safe method that returns true if the parameter is NOT null or an empty string.
      */
     public static boolean isNotEmpty(String str) {
-        return (str != null) && str.trim().isEmpty();
+        return (str != null) && !str.trim().isEmpty();
     }
 
     /**
