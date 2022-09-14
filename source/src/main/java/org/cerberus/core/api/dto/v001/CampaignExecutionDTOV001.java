@@ -69,7 +69,7 @@ public class CampaignExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 7)
-    private CampaignExecutionResultDTOV001 results;
+    private CampaignExecutionResultDTOV001 result;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 8)

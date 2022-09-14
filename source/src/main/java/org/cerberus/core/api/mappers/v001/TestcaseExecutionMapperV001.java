@@ -40,12 +40,14 @@ import org.mapstruct.Mapping;
         })
 public interface TestcaseExecutionMapperV001 {
 
+    @Mapping(source = "execution.id", target = "testcaseExecutionId")
     @Mapping(source = "execution.testCaseObj", target = "testcase")
     @Mapping(source = "execution.testCaseVersion", target = "testcaseVersion")
     @Mapping(source = "execution.executor", target = "usrExecuted")
-    @Mapping(source = "execution.robot", target = "robot.name")
+    @Mapping(source = "execution.robot", target = "robot.robotId")
     @Mapping(source = "execution.robotExecutor", target = "robot.executor")
     @Mapping(source = "execution.robotHost", target = "robot.host")
+    @Mapping(source = "execution.robotPort", target = "robot.port")
     @Mapping(source = "execution.robotDecli", target = "robot.declination")
     @Mapping(source = "execution.robotProviderSessionID", target = "robot.providerSessionId")
     @Mapping(source = "execution.robotProvider", target = "robot.provider")
@@ -58,8 +60,10 @@ public interface TestcaseExecutionMapperV001 {
     @Mapping(source = "execution.manualExecution", target = "isManualExecution")
     @Mapping(source = "execution.priorityObj", target = "priority")
     @Mapping(source = "execution.environmentObj", target = "environment")
-    @Mapping(source = "execution.environmentDataObj", target = "environmentData")
     @Mapping(source = "execution.countryObj", target = "country")
+    @Mapping(source = "execution.start", target = "startDate")
+    @Mapping(source = "execution.end", target = "endDate")
+    @Mapping(source = "execution.queueID", target = "queueId")
     @Mapping(target = "durationInMillis", expression = "java(execution.getEnd()-execution.getStart())")
     TestcaseExecutionDTOV001 toDTO(TestCaseExecution execution);
 }

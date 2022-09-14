@@ -37,11 +37,12 @@ import org.mapstruct.Mapping;
 public interface CampaignExecutionMapperV001 {
 
     @Mapping(source = "tag", target = "campaignExecutionId")
-    @Mapping(source = "campaign", target = "campaignName")
+    @Mapping(source = "campaign", target = "campaignId")
     @Mapping(source = "dateCreated", target = "startDate")
     @Mapping(source = "dateEndQueue", target = "endDate")
-    @Mapping(source = "nbExe", target = "result.totalExecutionsWithRetries")
-    @Mapping(source = "nbExeUsefull", target = "result.totalExecutions")
+    @Mapping(target = "durationInMillis", expression = "java(tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime())")
+    @Mapping(source = "nbExe", target = "result.totalWithRetries")
+    @Mapping(source = "nbExeUsefull", target = "result.total")
     @Mapping(source = "nbOK", target = "result.ok")
     @Mapping(source = "nbKO", target = "result.ko")
     @Mapping(source = "nbFA", target = "result.fa")

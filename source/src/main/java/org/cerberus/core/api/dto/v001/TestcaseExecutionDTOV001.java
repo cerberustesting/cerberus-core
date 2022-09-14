@@ -20,6 +20,7 @@
 
 package org.cerberus.core.api.dto.v001;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,97 +56,94 @@ public class TestcaseExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 4)
-    private InvariantDTOV001 environmentData;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 5)
     private InvariantDTOV001 country;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 6)
+    @ApiModelProperty(position = 5)
     private InvariantDTOV001 priority;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 7)
+    @ApiModelProperty(position = 6)
     private int testcaseVersion;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 8)
+    @ApiModelProperty(position = 7)
     private String build;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 9)
+    @ApiModelProperty(position = 8)
     private String revision;
 
     @JsonView(value = {View.Public.GET.class})
+    @ApiModelProperty(position = 9)
+    private String startDate;
+
+    @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
-    private long startDate;
+    private String endDate;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 11)
-    private long endDate;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 12)
     private long durationInMillis;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 15)
+    @ApiModelProperty(position = 12)
     private String controlStatus;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 16)
+    @ApiModelProperty(position = 13)
     private String controlMessage;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 17)
+    @ApiModelProperty(position = 14)
     private CampaignExecutionRobotDTOV001 robot;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 18)
+    @ApiModelProperty(position = 15)
     private String url;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 19)
+    @ApiModelProperty(position = 16)
     private String tag;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 20)
+    @ApiModelProperty(position = 17)
     private String status;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 21)
+    @ApiModelProperty(position = 18)
     private String usrExecuted;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 22)
+    @ApiModelProperty(position = 19)
     private long queueId;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 23)
+    @ApiModelProperty(position = 20)
+    @JsonProperty("isManualExecution")
     private boolean isManualExecution;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 24)
+    @ApiModelProperty(position = 21)
     private String system;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 25)
+    @ApiModelProperty(position = 22)
     private String application;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 26)
+    @ApiModelProperty(position = 23)
     private String usrCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 27)
+    @ApiModelProperty(position = 24)
     private String dateCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 28)
+    @ApiModelProperty(position = 25)
     private String usrModif;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 29)
+    @ApiModelProperty(position = 26)
     private String dateModif;
 }

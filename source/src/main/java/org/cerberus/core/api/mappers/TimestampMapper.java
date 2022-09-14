@@ -19,12 +19,12 @@
  */
 package org.cerberus.core.api.mappers;
 
+import org.cerberus.core.util.DateUtil;
+import org.mapstruct.Mapper;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import org.cerberus.core.util.DateUtil;
-import org.mapstruct.Mapper;
 
 /**
  * @author mlombard
@@ -39,5 +39,9 @@ public interface TimestampMapper {
 
     public default String toFormattedString(Timestamp timestamp) {
         return timestamp == null ? null : new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).format(timestamp);
+    }
+
+    public default String toFormattedString(long timestamp) {
+        return new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).format(timestamp);
     }
 }
