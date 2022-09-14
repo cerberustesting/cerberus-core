@@ -19,15 +19,8 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IInvariantDAO;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCaseCountry;
@@ -46,6 +39,14 @@ import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author bcivel
@@ -85,7 +86,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public Map<String, Invariant> readByIdNameToHash(String idName) throws CerberusException {       
+    public Map<String, Invariant> readByIdNameToHash(String idName) throws CerberusException {
         return this.readByIdName(idName)
                 .stream()
                 .collect(Collectors.toMap(Invariant::getValue, Function.identity()));
@@ -326,5 +327,29 @@ public class InvariantService implements IInvariantService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public Invariant findCountryInvariantFromCountries(String country, List<Invariant> countries) {
+        return countries
+                .stream()
+                .filter(invariant -> country.equals(invariant.getValue()))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public Invariant findEnvironmentInvariantFromEnvironments(String environment, List<Invariant> environments) {
+        return environments
+                .stream()
+                .filter(invariant -> environment.equals(invariant.getValue()))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public Invariant findPriorityInvariantFromPriorities(int priority, List<Invariant> priorities) {
+        return priorities
+                .stream()
+                .filter(invariant -> String.valueOf(priority).equals(invariant.getValue()))
+                .findFirst().orElse(null);
     }
 }
