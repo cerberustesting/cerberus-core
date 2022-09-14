@@ -21,8 +21,7 @@ package org.cerberus.api.dto.v001;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -37,64 +36,50 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "Invariant")
+@Schema(name = "Invariant")
 public class InvariantDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "ACTION", position = 0)
     private String idName;
 
     @NotBlank(message = "Value is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.POST.class})
-    @ApiModelProperty(example = "click", position = 1)
     private String value;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "3000", position = 2)
     private Integer sort;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "click", position = 3)
     private String description;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 4)
     private String shortDescription;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 5)
     private String attribute1;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 6)
     private String attribute2;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 7)
     private String attribute3;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 8)
     private String attribute4;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 9)
     private String attribute5;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 10)
     private String attribute6;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 11)
     private String attribute7;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 12)
     private String attribute8;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "null", position = 13)
     private String attribute9;
 }
  

@@ -20,9 +20,12 @@
 package org.cerberus.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 
@@ -48,8 +50,8 @@ import java.security.Principal;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Control")
-@ApiIgnore
+@Tag(name = "Testcase Control")
+@Hidden
 @RestController
 @RequestMapping(path = "/public/testcasestepactioncontrols")
 public class TestcaseStepActionControlController {
@@ -62,8 +64,9 @@ public class TestcaseStepActionControlController {
     private final ITestCaseStepActionControlService controlService;
     private final PublicApiAuthenticationService apiAuthenticationService;
 
-    @ApiOperation("Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
+    @Operation(summary = "Find a testcaseStepActionControl by key (testFolderId, testcaseId, stepId, actionId, controlId)")
+    @ApiResponse(responseCode = "200", description = "operation successful",
+            content = @Content(schema = @Schema(implementation = TestcaseStepActionControlDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}/{controlId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)

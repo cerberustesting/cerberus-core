@@ -96,8 +96,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <!-- Mappers -->
         <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <!-- Swagger generator -->
-        <springfox.version>2.9.2</springfox.version>
 
         <!-- Test scope -->
         <junit.version>4.12</junit.version>
@@ -470,14 +468,20 @@
 
         <!-- Swagger -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.8</version>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>1.6.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-security</artifactId>
+            <version>1.6.8</version>
         </dependency>
 
         <!-- Test scope -->

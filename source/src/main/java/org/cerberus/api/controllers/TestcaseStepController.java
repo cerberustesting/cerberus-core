@@ -20,9 +20,12 @@
 package org.cerberus.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +54,7 @@ import java.util.stream.Collectors;
  * @author MorganLmd
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Step")
+@Tag(name = "Testcase Step")
 @RestController
 @RequestMapping(path = "/public/testcasesteps")
 public class TestcaseStepController {
@@ -66,11 +69,14 @@ public class TestcaseStepController {
 
     private static final Logger LOG = LogManager.getLogger(TestcaseStepController.class);
 
-    @ApiOperation("Get all TestcaseSteps")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @Operation(summary = "Get all TestcaseSteps")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(
+                    schema = @Schema(implementation = TestcaseStepDTOV001.class)
+            ))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(headers = {API_VERSION_1}, produces = "application/json")
+    @GetMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<TestcaseStepDTOV001>> findAll(
             @RequestParam(name = "islibrarystep", defaultValue = "false") boolean isLibraryStep,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -86,8 +92,11 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all testcase steps from a test folder")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @Operation(summary = "Get all testcase steps from a test folder")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(
+                    schema = @Schema(implementation = TestcaseStepDTOV001.class)
+            ))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,8 +113,11 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get all testcase steps of a testcase")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class, responseContainer = "List")
+    @Operation(summary = "Get all testcase steps of a testcase")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(
+                    schema = @Schema(implementation = TestcaseStepDTOV001.class)
+            ))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -123,8 +135,9 @@ public class TestcaseStepController {
         );
     }
 
-    @ApiOperation("Get a Testcase Step by key (testFolderId and testcaseId and stepId)")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseStepDTOV001.class)
+    @Operation(summary = "Get a Testcase Step by key (testFolderId and testcaseId and stepId)")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = TestcaseStepDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)

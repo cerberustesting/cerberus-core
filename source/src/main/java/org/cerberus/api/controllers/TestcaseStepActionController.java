@@ -20,9 +20,12 @@
 package org.cerberus.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +52,7 @@ import java.util.stream.Collectors;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Testcase Action")
+@Tag(name = "Testcase Action")
 @RestController
 @RequestMapping(path = "/public/testcasestepactions")
 public class TestcaseStepActionController {
@@ -62,8 +65,9 @@ public class TestcaseStepActionController {
     private final ITestCaseStepActionService actionService;
     private final PublicApiAuthenticationService apiAuthenticationService;
 
-    @ApiOperation("Find a testcaseStepAction by key (testFolderId, testcaseId, stepId, actionId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @Operation(summary = "Find a testcaseStepAction by key (testFolderId, testcaseId, stepId, actionId)")
+    @ApiResponse(responseCode = "200", description = "operation successful",
+            content = @Content(schema = @Schema(implementation = TestcaseStepActionDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}/{actionId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,8 +87,11 @@ public class TestcaseStepActionController {
         );
     }
 
-    @ApiOperation("Find actions by testcase step (testFolderId, testcaseId, stepId)")
-    @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
+    @Operation(summary = "Find actions by testcase step (testFolderId, testcaseId, stepId)")
+    @ApiResponse(responseCode = "200", description = "operation successful",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(
+                    schema = @Schema(implementation = TestcaseStepActionDTOV001.class)
+            ))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}/{stepId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)

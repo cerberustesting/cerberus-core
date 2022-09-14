@@ -20,39 +20,56 @@
 
 package org.cerberus.config;
 
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.mvc.condition.NameValueExpression;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Tag;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.security.Principal;
-import java.util.Objects;
 
 /**
  * @author MorganLmd
  */
 @Configuration
-@EnableSwagger2
 public class SwaggerConfiguration {
 
     private static final String PUBLIC_API_VERSION_1 = "1";
 
+/*
     private static final Tag INVARIANT_TAG = new Tag("Invariant", "Description of Invariant endpoint");
     private static final Tag TESTCASE_TAG = new Tag("Testcase", "Description of Testcase endpoint");
     private static final Tag TESTCASEACTION_TAG = new Tag("Testcase Action", "Description of Testcase Control endpoint");
     private static final Tag TESTCASESTEP_TAG = new Tag("Testcase Step", "Description of Testcase Step endpoint");
+*/
 
     private static final String LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
     private static final String GITHUB_REPOSITORY = "https://github.com/cerberustesting/cerberus-source";
 
     @Bean
+    public OpenAPI springShopOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Cerberus public API")
+                        .description("Documentation for Cerberus testing public API")
+                        .version(PUBLIC_API_VERSION_1)
+                        .license(new License().name("GNU General Public License v3.0").url(LICENSE_URL)))
+                .externalDocs(new ExternalDocumentation()
+                        .description("Cerberus documentation")
+                        .url("https://cerberustesting.github.io/documentation_en.html")
+                );
+
+    }
+
+/*    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("public API version " + PUBLIC_API_VERSION_1)
+                .packagesToScan("org.cerberus.api.controller")
+                .pathsToMatch("/public/**")
+                .build();
+    }*/
+
+/*    @Bean
     public Docket swaggerDocV1() {
         return configureVersion(PUBLIC_API_VERSION_1);
     }
@@ -92,5 +109,5 @@ public class SwaggerConfiguration {
                 .licenseUrl(LICENSE_URL)
                 .termsOfServiceUrl(GITHUB_REPOSITORY)
                 .build();
-    }
+    }*/
 }

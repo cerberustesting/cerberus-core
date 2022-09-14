@@ -22,8 +22,7 @@ package org.cerberus.api.dto.v001;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -38,102 +37,79 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "TestcaseStepActionControl")
+@Schema(name = "TestcaseStepActionControl")
 public class TestcaseStepActionControlDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 0)
     private String testFolderId;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 1)
     private String testcaseId;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 2)
     private int stepId;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 3)
     private int actionId;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
-    @ApiModelProperty(position = 4)
     private int controlId;
 
     @NotNull
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 5)
     private int sort;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 6)
     private String conditionOperator;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 7)
     private String conditionValue1;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 8)
     private String conditionValue2;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 9)
     private String conditionValue3;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 10)
     private JsonNode conditionOptions;
 
     @NotBlank(message = "Control is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 11)
     private String control;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 12)
     private String value1;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 16)
     private String value2;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 14)
     private String value3;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 15)
     private JsonNode options;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 16)
     @JsonProperty("isFatal")
     private boolean isFatal;
 
     @NotBlank(message = "A description is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 17)
     private String description;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
-    @ApiModelProperty(position = 18)
     private String screenshotFilename;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 19)
     private String usrCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 20)
     private String dateCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 21)
     private String usrModif;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 22)
     private String dateModif;
 }

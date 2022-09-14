@@ -20,9 +20,12 @@
 package org.cerberus.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +53,7 @@ import java.util.stream.Collectors;
  * @author mlombard
  */
 @AllArgsConstructor
-@Api(tags = "Invariant")
+@Tag(name = "Invariant")
 @RestController
 @RequestMapping(path = "/public/invariants")
 public class InvariantController {
@@ -62,8 +65,10 @@ public class InvariantController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(InvariantController.class);
 
-    @ApiOperation("Get all invariants filtered by idName")
-    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class, responseContainer = "List")
+    @Operation(summary = "Get all invariants filtered by idName")
+    @ApiResponse(responseCode = "200", description = "operation successful",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema
+                    (schema = @Schema(implementation = InvariantDTOV001.class)))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,8 +85,10 @@ public class InvariantController {
         );
     }
 
-    @ApiOperation("Get all invariants filtered by idName and value")
-    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
+    @Operation(summary = "Get all invariants filtered by idName and value")
+    @ApiResponse(responseCode = "200", description = "operation successful",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = InvariantDTOV001.class))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{idName}/{value}", headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)

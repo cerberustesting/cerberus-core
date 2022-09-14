@@ -20,9 +20,12 @@
 package org.cerberus.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +58,7 @@ import java.util.stream.Collectors;
  * @author MorganLmd
  */
 @AllArgsConstructor
-@Api(tags = "Testcase")
+@Tag(name = "Testcase")
 @Validated
 @RestController
 @RequestMapping(path = "/public/testcases")
@@ -68,8 +71,11 @@ public class TestcaseController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
 
-    @ApiOperation("Get all testcases filtered by test")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
+    @Operation(summary = "Get all testcases filtered by test")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(
+                    schema = @Schema(implementation = TestcaseDTOV001.class)
+            ))})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,8 +92,9 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
-    @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
+    @Operation(summary = "Get a testcase filtered by testFolderId and testCaseFolderId")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = TestcaseDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -105,8 +112,9 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Create a new Testcase")
-    @ApiResponse(code = 200, message = "ok")
+    @Operation(summary = "Create a new Testcase")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = TestcaseDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -125,8 +133,9 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Update a Testcase")
-    @ApiResponse(code = 200, message = "ok")
+    @Operation(summary = "Update a Testcase")
+    @ApiResponse(responseCode = "200", description = "ok",
+            content = @Content(schema = @Schema(implementation = TestcaseDTOV001.class)))
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "/{testFolderId}/{testcaseId}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
