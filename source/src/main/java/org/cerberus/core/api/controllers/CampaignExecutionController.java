@@ -26,16 +26,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.v001.CampaignExecutionDTOV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.mappers.v001.CampaignExecutionMapperV001;
-import org.cerberus.core.api.mappers.v001.TestcaseExecutionMapperV001;
 import org.cerberus.core.api.services.CampaignExecutionService;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
-import org.cerberus.core.crud.service.ITagService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -56,15 +52,10 @@ public class CampaignExecutionController {
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "X-API-KEY";
 
-    private final ITagService tagService;
-
     private final CampaignExecutionMapperV001 campaignExecutionMapper;
-
-    private final TestcaseExecutionMapperV001 testcaseExecutionMapperV001;
 
     private final CampaignExecutionService campaignExecutionService;
     private final PublicApiAuthenticationService apiAuthenticationService;
-    private static final Logger LOG = LogManager.getLogger(CampaignExecutionController.class);
 
     @ApiOperation(value = "Get a campaign execution by id", response = CampaignExecutionDTOV001.class, notes = "Campaign execution must exists")
     @ApiResponses(value = {
