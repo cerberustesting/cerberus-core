@@ -27,6 +27,8 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.util.concurrent.Executor;
 
 /**
@@ -38,20 +40,22 @@ import java.util.concurrent.Executor;
 @ComponentScan("org.cerberus")
 public class CerberusConfiguration {
 
-    @Bean
+/*    @Bean
     public PropertiesResolver properties() {
         PropertiesResolver pr = new PropertiesResolver();
         pr.setOrder(1);
         pr.setIgnoreUnresolvablePlaceholders(false);
         return pr;
-    }
+    }*/
 
     @Bean
-    public JndiObjectFactoryBean dataSource() {
-        JndiObjectFactoryBean jpfb = new JndiObjectFactoryBean();
-        jpfb.setJndiName("jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT));
-        jpfb.setResourceRef(true);
-        return jpfb;
+    public DataSource dataSource() throws NamingException {
+        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+        jndiObjectFactoryBean.setJndiName("jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT));
+        jndiObjectFactoryBean.setResourceRef(true);
+        jndiObjectFactoryBean.setProxyInterface(DataSource.class);
+        jndiObjectFactoryBean.afterPropertiesSet();
+        return (DataSource) jndiObjectFactoryBean.getObject();  //NOT NULL
     }
 
     @Bean

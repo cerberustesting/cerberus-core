@@ -33,7 +33,7 @@
 
     <properties>
         <!-- Project properties -->
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <env>local</env>
@@ -78,7 +78,7 @@
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
         <poi.version>4.1.2</poi.version>
-        <asciidoctor.version>2.1.0</asciidoctor.version>
+        <asciidoctorj.version>2.5.3</asciidoctorj.version>
         <apache.tika.version>1.22</apache.tika.version>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         <!-- 2FA -->
@@ -99,26 +99,19 @@
         <!-- Swagger generator -->
         <springfox.version>2.9.2</springfox.version>
 
-        <!-- Test scope -->
-        <junit.version>4.12</junit.version>
-        <powermock.version>1.5.2</powermock.version>
-        <mockito-all.version>1.9.5</mockito-all.version>
-
         <!-- Maven plugin version -->
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
-        <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
-        <maven-war-plugin.version>3.2.0</maven-war-plugin.version>
-        <maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-        <maven-site-plugin.version>3.3</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-site-plugin.version>3.11.0</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.2.2</maven-project-info-reports-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
-        <ant-jsch.version>1.10.1</ant-jsch.version>
-        <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
+        <ant-jsch.version>1.10.12</ant-jsch.version>
+        <asciidoctor-maven-plugin.version>2.2.2</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
 
         <!-- Sonar Exclusion -->
@@ -426,11 +419,6 @@
             <version>${poi.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj</artifactId>
-            <version>${asciidoctor.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${apache.tika.version}</version>
@@ -459,61 +447,6 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${springfox.version}</version>
         </dependency>
-
-        <!-- Test scope -->
-        <!--        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>-->
-
-        <!-- Comment temporary the dependency -->
-        <!-- Jax-RS Scope-->
-        <!-- 
-    <dependency>
-        <groupId>org.glassfish.jersey.containers</groupId>
-        <artifactId>jersey-container-servlet</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.inject</groupId>
-        <artifactId>jersey-hk2</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-json-jackson</artifactId>
-        <version>2.28</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-jaxb</artifactId>
-        <version>2.28</version>
-    </dependency>
-        -->
-
     </dependencies>
 
     <repositories>
@@ -541,14 +474,6 @@
 
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
-                </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven-release-plugin.version}</version>
@@ -657,7 +582,7 @@
                         <configuration>
                             <sourceDirectory>${basedir}/src/main/resources/documentation/D1</sourceDirectory>
                             <outputDirectory>${basedir}/src/main/webapp/documentation/D1</outputDirectory>
-                            <backend>html</backend>
+                            <backend>html5</backend>
                             <doctype>book</doctype>
                         </configuration>
                     </execution>
@@ -670,7 +595,7 @@
                         <configuration>
                             <sourceDirectory>${basedir}/src/main/resources/documentation/D2</sourceDirectory>
                             <outputDirectory>${basedir}/src/main/webapp/documentation/D2</outputDirectory>
-                            <backend>html</backend>
+                            <backend>html5</backend>
                             <doctype>book</doctype>
                         </configuration>
                     </execution>
@@ -683,11 +608,18 @@
                         <configuration>
                             <sourceDirectory>${basedir}/src/main/resources/documentation/D3</sourceDirectory>
                             <outputDirectory>${basedir}/src/main/webapp/documentation/D3</outputDirectory>
-                            <backend>html</backend>
+                            <backend>html5</backend>
                             <doctype>book</doctype>
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj</artifactId>
+                        <version>${asciidoctorj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -754,27 +686,6 @@
     </build>
 
     <profiles>
-
-        <!-- Disable java8 Doclint -->
-        <profile>
-            <id>doclint-java8-disable</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-
         <!--
             Additional configuration for deployment process on the qualification server
 

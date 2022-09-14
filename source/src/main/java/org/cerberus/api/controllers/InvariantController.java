@@ -34,6 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -85,6 +87,30 @@ public class InvariantController {
             Principal principal) throws CerberusException {
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return this.invariantMapper.toDTO(this.invariantApiService.readByKey(idName, value));
+    }
+
+    @ApiOperation("Get all invariants")
+    @ApiResponse(code = 200, message = "operation successful", response = InvariantDTOV001.class)
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<InvariantDTOV001> findAll(
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) {
+        this.apiAuthenticationService.authenticate(principal, apiKey);
+        return this.invariantApiService.findAll()
+                .stream()
+                .map(invariantMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(headers = API_VERSION_1, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<InvariantDTOV001> create(@RequestBody InvariantDTOV001 invariantDTO) {
+        return this.invariantApiService.create(this.invariantMapper.toEntity(invariantDTO))
+                .stream()
+                .map(invariantMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
 }

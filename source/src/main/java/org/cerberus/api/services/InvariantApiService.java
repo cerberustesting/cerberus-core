@@ -20,6 +20,7 @@
 package org.cerberus.api.services;
 
 import lombok.AllArgsConstructor;
+import org.cerberus.api.dao.DAO;
 import org.cerberus.api.exceptions.EntityNotFoundException;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
@@ -36,20 +37,28 @@ import java.util.List;
 public class InvariantApiService {
 
     IInvariantDAO invariantDao;
+    DAO<Invariant> invariantDAOJdbcTemplate;
 
     public Invariant readByKey(String idName, String value) throws CerberusException {
-        Invariant invariant = this.invariantDao.readByKey(idName, value);
-        if (invariant == null) {
-            throw new EntityNotFoundException(Invariant.class, "idName", idName, "value", value);
-        }
-        return invariant;
+        return this.invariantDAOJdbcTemplate
+                .findByKey(idName, value)
+                .orElseThrow(() -> new EntityNotFoundException(Invariant.class, "idname", idName));
     }
 
-    public List<Invariant> readyByIdName(String idName) throws CerberusException {
-        List<Invariant> invariants = this.invariantDao.readByIdname(idName);
+    public List<Invariant> readyByIdName(String idName) {
+        List<Invariant> invariants = this.invariantDAOJdbcTemplate.findByIdName(idName);
         if (invariants == null || invariants.isEmpty()) {
             throw new EntityNotFoundException(Invariant.class, "idName", idName);
         }
         return invariants;
+    }
+
+    public List<Invariant> findAll() {
+        return this.invariantDAOJdbcTemplate.list();
+    }
+
+    public List<Invariant> create(Invariant invariant) {
+        this.invariantDAOJdbcTemplate.create(invariant);
+        return this.findAll();
     }
 }
