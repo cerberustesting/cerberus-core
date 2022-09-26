@@ -2232,25 +2232,25 @@ function getRowClass(status) {
 
 function getExeStatusRowColor(status) {
     if (status === "OK") {
-        return '#5CB85C';
+        return 'rgb(0,210,122)';
     } else if (status === "KO") {
-        return '#D9534F';
+        return 'rgb(230,55,87)';
     } else if (status === "FA") {
-        return '#F0AD4E';
+        return 'rgb(245,128,62)';
     } else if (status === "CA") {
-        return '#F0AD4E';
+        return '#c6a20d';
     } else if (status === "PE") {
-        return '#3498DB';
+        return 'rgb(44,123,229)';
     } else if (status === "NE") {
-        return '#aaa';
+        return '#FFFFFF';
     } else if (status === "WE") {
         return '#34495E';
     } else if (status === "NA") {
         return '#F1C40F';
     } else if (status === "QU") {
-        return '#BF00BF';
+        return '#727cf5';
     } else if (status === "QE") {
-        return '#5C025C';
+        return '#494f9b';
     } else {
         return 'lightgrey';
     }
@@ -2853,14 +2853,14 @@ function getComboConfigApplication(editable) {
 
 function comboConfigApplication_format(application){
     var doc = new Doc();
-    var color = "success";
+    var color = "labelGreen";
     var appType = "NEW APPLICATION ? : CLICK HERE TO CREATE IT";
 
     if (!isEmpty(application.type)){
-        color = "primary";
+        color = "labelBlue";
         appType = doc.getDocLabel("comboApplicationType", application.type);
     }
-    return $('<span name="appNameLabel">'+application.id+' <span name="appTypeLabel" class="label label-'+color+'">'+appType+'</span></span>');
+    return $('<span name="appNameLabel">'+application.id+' <span name="appTypeLabel" class="label '+color+'" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">'+appType+'</span></span>');
 };
 
 

@@ -478,18 +478,6 @@
     border-color: rgb(39,188,253);
 }
 
-.addAction-btn {
-    color: rgb(44,123,229);
-    background-color: rgb(230,239,252);
-    border-color: rgb(230,239,252);
-}
-
-.addAction-btn:hover {
-    color: rgb(230,239,252);
-    background-color: rgb(44,123,229);
-    border-color: rgb(44,123,229);
-}
-
 .addControl-btn {
     color: rgb(0,210,122);
     background-color: rgb(224,250,239);
@@ -544,77 +532,6 @@
     border-color: #727cf5;
 }
 
-.labelLightBlue {
-    color: rgb(39,188,253);
-    background-color: rgb(229,247,255);
-    border-color: rgb(229,247,255);
-}
-
-.labelLightBlueRevert {
-    color: rgb(229,247,255);
-    background-color: rgb(39,188,253);
-    border-color: rgb(39,188,253);
-}
-
-.labelBlue {
-    color: rgb(44,123,229);
-    background-color: rgb(230,239,252);
-    border-color: rgb(230,239,252);
-}
-
-.labelBlueRevert {
-    color: rgb(230,239,252);
-    background-color: rgb(44,123,229);
-    border-color: rgb(44,123,229);
-}
-
-.labelGreen {
-    color: rgb(0,210,122);
-    background-color: rgb(224,250,239);
-    border-color: rgb(224,250,239);
-}
-
-.labelGreenRevert {
-    color: rgb(224,250,239);
-    background-color: rgb(0,210,122);
-    border-color: rgb(0,210,122);
-}
-
-.labelRed {
-    color: rgb(230,55,87);
-    background-color: rgb(252,231,235);
-    border-color: rgb(252,231,235);
-}
-
-.labelRedRevert {
-    color: rgb(252,231,235);
-    background-color: rgb(230,55,87);
-    border-color: rgb(230,55,87);
-}
-
-.labelOrange {
-    color: rgb(245,128,62);
-    background-color: rgb(254,240,232);
-    border-color: rgb(254,240,232);
-}
-
-.labelOrangeRevert {
-    color: rgb(254,240,232);
-    background-color: rgb(245,128,62);
-    border-color: rgb(245,128,62);
-}
-
-.labelPurple {
-    color: #727cf5;
-    background-color: rgb(221, 223, 247);
-    border-color: rgb(221, 223, 247);
-}
-
-.labelPurpleRevert {
-    color: rgb(221, 223, 247);
-    background-color: #727cf5;
-    border-color: #727cf5;
-}
 
 .btn-default.btn-dark {
 border-color: #1F1F1F;

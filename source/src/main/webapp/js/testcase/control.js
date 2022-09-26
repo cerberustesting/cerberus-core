@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 var operatorOptList = {
-    "unknown":{"value":"unknown","label":{"en":"---","fr":"---"},"control_type":["unknown","title","url","text_in_page","text_not_in_page","text_in_dialog"]},
+    "unknown":{"value":"unknown","label":{"en":"---","fr":"---"},"control_type":["unknown","title","url","text_in_page","text_not_in_page","text_in_dialog","take_screenshot","get_page_source"]},
     "equals":{"value":"equals","label":{"en":"=","fr":"="},"control_type":["string_comparison","numeric_comparison","element","element_text"]},
     "different":{"value":"different","label":{"en":"!=","fr":"!="},"control_type":["string_comparison","numeric_comparison","element"]},
     "greater":{"value":"greater","label":{"en":">","fr":">"},"control_type":["string_comparison","numeric_comparison"]},

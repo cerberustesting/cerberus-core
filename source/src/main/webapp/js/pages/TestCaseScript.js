@@ -1809,12 +1809,12 @@ Step.prototype.draw = function () {
 // LABEL CONTAINERS
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
     if (this.isExecutionForced) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelOrangeRevert">Force Execution</span>');
+        var labelOptions=$('<span class="label label-primary optionLabel labelLightOrange">Force Execution</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
     if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
-        var labelOptions=$('<span class="label label-primary optionLabel labelGreenRevert">Loop</span>');
+        var labelOptions=$('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
         stepLabelContainer.append(labelOptions[0]);
     } else if ((this.conditionOperator !== "never")
         && (this.conditionOperator !== "always")) {
@@ -1823,12 +1823,12 @@ Step.prototype.draw = function () {
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
         || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelRedRevert">Do not execute</span>');
+        var labelOptions=$('<span class="label label-primary optionLabel labelLightRed">Do not execute</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
     if (this.isLibraryStep) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelPurpleRevert">is Library</span>');
+        var labelOptions=$('<span class="label label-primary optionLabel labelLightPurple">is Library</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
@@ -1854,6 +1854,13 @@ Step.prototype.draw = function () {
 
     $("#steps").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
+
+    $("[name='actionSelect']").select2({
+        minimumResultsForSearch: 20,
+        templateSelection: formatActionSelect2Result,
+        templateResult: formatActionSelect2Result
+    });
+
     this.refreshSort();
 };
 
@@ -2269,8 +2276,6 @@ Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
 
-    //var drag = $("<div></div>").addClass("drag-step-action").prop("draggable", true);
-
     var row = this.generateContent();
 
     htmlElement.prepend(row);
@@ -2407,12 +2412,9 @@ function displayOverrideOptionsModal(action,htmlElement) {
             setModif(true);
         }
 
-        printLabelForOptions($($(htmlElement)[0]).find(".thirdRow"),newOpts,newConditionOpts,"optionLabel");
-        printLabelForCondition($($(htmlElement)[0]).find(".thirdRow"),action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
-        //printLabelForFatal(action.isFatal, $($(htmlElement)[0]).find(".secondRow"));
-        printLabel($($(htmlElement)[0]).find(".thirdRow"), action.isFatal, "actionFatalLabel", "labelOrangeRevert", "Kill Execution if Action Fail")
-
-
+        printLabelForOptions($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(),newOpts,newConditionOpts,"optionLabel");
+        printLabelForCondition($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(),action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
+        printLabel($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
     });
 };
 
@@ -2476,7 +2478,7 @@ Action.prototype.generateContent = function () {
     //FIRST ROW
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
 
@@ -2499,7 +2501,7 @@ Action.prototype.generateContent = function () {
     });
 
     plusBtn.click(function(){
-        displayOverrideOptionsModal(action,action.htmlElement);
+        displayOverrideOptionsModal(action, action.html);
     });
 
 
@@ -2620,8 +2622,7 @@ Action.prototype.generateContent = function () {
 
     printLabelForOptions(btnGrp,action.options,action.conditionOptions,"optionLabel");
     printLabelForCondition(btnGrp,action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
-    //printLabelForFatal(obj.isFatal, secondRow);
-    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelOrangeRevert", "Stop Execution on Failure")
+    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
 
     return row;
 };
@@ -2689,7 +2690,7 @@ function printLabelForOptions(element, newOpts, newOptsCondition, className){
         }
     }
     if (overrideOption) {
-        var labelOptions = $('<span data-toggle="tooltip" data-original-title="' + title + '" class="label label-primary labelBlueRevert pull-right optionLabel ' + className + '"><span class="glyphicon glyphicon-cog"></span> Override Parameter</span>');
+        var labelOptions = $('<span data-toggle="tooltip" data-original-title="' + title + '" class="label label-primary labelLightBlue pull-right optionLabel ' + className + '"><span class="glyphicon glyphicon-cog"></span> Override Parameter</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2697,7 +2698,7 @@ function printLabelForOptions(element, newOpts, newOptsCondition, className){
 function printLabelForCondition(element,conditionOperator,conditionValue1,conditionValue2,conditionValue3){
     $(element).find('.conditionLabel').remove();
     if (conditionOperator === 'never') {
-        var labelOptions = $('<span class="label label-primary labelRedRevert optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
+        var labelOptions = $('<span class="label label-primary labelLightRed optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
         $(element).append(labelOptions[0]);
     } else if (conditionOperator !== 'always'){
         var title = "<div>Execution Condition : </div>";
@@ -2705,7 +2706,7 @@ function printLabelForCondition(element,conditionOperator,conditionValue1,condit
         title += "<div>val1" + conditionValue1 + "</div>";
         title += "<div>val2" + conditionValue2 + "</div>";
         title += "<div>val3" + conditionValue3+ "</div>";
-        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="'+title+'" class="label label-primary labelGreenRevert pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
+        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="'+title+'" class="label label-primary labelLightGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2713,7 +2714,7 @@ function printLabelForCondition(element,conditionOperator,conditionValue1,condit
 function printLabelForFatal(isFatal, element){
     $(element).find('.actionFatalLabel').remove();
     if (isFatal) {
-        var labelOptions = $('<span class="label label-primary labelOrangeRevert optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
+        var labelOptions = $('<span class="label label-primary labelLightOrange optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2903,7 +2904,7 @@ Control.prototype.generateContent = function () {
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn addAction-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("marginRight10 boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
 
@@ -2926,7 +2927,7 @@ Control.prototype.generateContent = function () {
     });
 
     plusBtn.click(function () {
-        displayOverrideOptionsModal(control,htmlElement);
+        displayOverrideOptionsModal(control,control.html);
     });
 
 
@@ -3035,7 +3036,7 @@ Control.prototype.generateContent = function () {
 
     printLabelForOptions(btnGrp,control.options,control.conditionOptions,"controlOptionLabel");
     printLabelForCondition(btnGrp,control.conditionOperator);
-    printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelOrangeRevert", "Stop Execution on Failure")
+    printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelLightOrange", "Stop Execution on Failure")
 
     if (typeof convertToGui[this.control] !== 'undefined') {
         controls.val(convertToGui[this.control].control);

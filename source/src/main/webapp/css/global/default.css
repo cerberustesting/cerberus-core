@@ -319,13 +319,13 @@ select option{
 .page-title-line {
     /*border-bottom: 2px solid #3D3D3D; */
     border-bottom: 1px solid #eee;
-    color: #3D3D3D;
+    color: #344050;
     font-size: 20px;
     /*font-size: 30px;*/
-    font-weight: 900;
+    font-weight: 700;
     /*font-weight: 600;*/
     margin-bottom: 30px;
-    margin-top:10px;
+    margin-top:20px;
     /*margin: 40px 0 20px;
     padding-bottom: 10px;*/
     text-transform: uppercase;

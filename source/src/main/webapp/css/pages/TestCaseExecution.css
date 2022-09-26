@@ -95,17 +95,25 @@
 
 .action {
     font-size: 12px;
+    background-color: #fff;
     border: 1px solid #e5e5e5;
-    border-left: 8px solid #3498db;
-    border-radius: 3px 3px 0 0;
+    border-left: 4px solid rgb(44,123,229);
+    border-radius: 4px;
+    margin-top: 4px;
 }
 
 .control {
-    margin-left: 25px;
-    font-size: 12px;
+    position:relative;
+    font-size: 11px;
+    margin-left: -4px;
     border: 1px solid #e5e5e5;
-    border-left: 8px solid #2ecc71;
-    border-radius: 1px 1px 0 0;
+    border-left: 4px solid rgb(0,210,122);
+    border-radius: 4px;
+}
+
+.no-border{
+    border: 0px;
+    box-shadow: 0 0px 0px;
 }
 
 .properties {
@@ -147,9 +155,27 @@
 }
 
 .description {
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
     line-height: 1.2;
+}
+
+.stepItem {
+    border-left: 4px solid rgb(39,188,253);
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.list-group-item-calm.active {
+    border-color:#46b8da;
+    background-color:#fff;
+    color:#555;
+}
+
+.list-group-item-calm.active:hover {
+    border-color:#46b8da;
+    background-color:#f8f8f8;
+    color:#555;
 }
 
 .step-action:hover {
@@ -162,6 +188,16 @@
     background-color: #f8f8f8;
 }
 
+.optionLabel{
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    border-radius: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    font-weight: 600;
+    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
 .step-action input::-webkit-input-placeholder {
     color: red !important;
 }
@@ -209,10 +245,7 @@
     color: #FFFFFF;
 }
 
-.step-list li.list-group-item-success:hover {
-    background-color: #3c763d;
-    color: #FFFFFF;
-}
+
 
 .step-list .list-group-item-grey {
     color: #666666;
@@ -294,4 +327,9 @@ h4{
     text-overflow: initial!important;
     word-wrap:break-word!important;
     height:inherit!important;
+}
+.tabSteps {
+    font-size: 13px;
+    font-weight: 500;
+    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }

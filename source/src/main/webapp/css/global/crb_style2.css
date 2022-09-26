@@ -1,4 +1,6 @@
 /**crb_style.css
+* - Variable
+* - Color
 * - Page (body / a / input / textarea)
 * - Table >> (TODO Refactor)
 * - Header
@@ -8,30 +10,545 @@
 * - Documentation >> crb_style_doc.css
 * - x-editor customisation
 */
+:root {
+    --crb-blue-color: rgb(44,123,229);
+    --crb-blue-light-color: rgb(230,239,252);
+    --crb-blue-dark-color: rgb(25, 72, 134);
+
+    --crb-green-color: rgb(0,210,122);
+    --crb-green-light-color: rgb(224,250,239);
+    --crb-green-dark-color: rgb(1, 131, 76);
+
+    --crb-orange-color: rgb(245,128,62);
+    --crb-orange-light-color: rgb(254,240,232);
+    --crb-orange-dark-color: rgb(171, 89, 43);
+
+    --crb-red-color: rgb(230,55,87);
+    --crb-red-light-color: rgb(252,231,235);
+    --crb-red-dark-color: rgb(171, 42, 65);
+
+    --crb-purple-color: #727cf5;
+    --crb-purple-light-color: rgb(221, 223, 247);
+    --crb-purple-dark-color: #494f9b;
+
+    --crb-turquoise-color: rgb(39,188,253);
+    --crb-turquoise-light-color: rgb(229, 247, 255);
+    --crb-turquoise-dark-color: rgb(29, 144, 195);
+
+    --crb-yellow-color: #f1c40f;
+    --crb-yellow-light-color: #fcf6e0;
+    --crb-yellow-dark-color: #c6a20d;
+
+    --crb-dark-color: #34495e;
+    --crb-light-color: #ffffff;
+
+    /*SYNTHESIS*/
+    --old-ok: #5CB85C;
+    --ok: var(--crb-green-color);
+    --old-ko: #D9534F;
+    --ko: var(--crb-red-color);
+    --old-fa: #F0AD4E;
+    --fa: var(--crb-orange-color);
+    --old-pe: #3498DB;
+    --pe: var(--crb-blue-color);
+    --old-na: #F1C40F;
+    --na: var(--crb-yellow-color);
+    --old-ne: #aaa;
+    --ne: var(--crb-light-color);
+    --old-qu: #BF00BF;
+    --qu: var(--crb-purple-color);
+    --old-qe: #5C025C;
+    --qe: var(--crb-purple-dark-color);
+    --old-we:#34495E;
+    --we: var(--crb-dark-color);
+    --old-ca:#F0AD4E;
+    --ca: var(--crb-yellow-dark-color);
+}
+
+/* BLUE */
+.labelBlue {
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+.btnBlue {
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+.btnBlue:hover {
+    color: var(--crb-blue-color);
+    background-color: var(--crb-blue-light-color);
+    border-color: var(--crb-blue-light-color);
+}
+/* LIGHT BLUE */
+.labelLightBlue {
+    color: var(--crb-blue-color);
+    background-color: var(--crb-blue-light-color);
+    border-color: var(--crb-blue-light-color);
+}
+.btnLightBlue {
+    color: var(--crb-blue-color);
+    background-color: var(--crb-blue-light-color);
+    border-color: var(--crb-blue-light-color);
+}
+.btnLightBlue:hover {
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+/* GREEN */
+.labelGreen {
+    color: var(--crb-green-light-color);
+    background-color: var(--crb-green-color);
+    border-color: var(--crb-green-color);
+}
+.btnGreen {
+    color: var(--crb-green-light-color);
+    background-color: var(--crb-green-color);
+    border-color: var(--crb-green-color);
+}
+.btnGreen:hover {
+    color: var(--crb-green-color);
+    background-color: var(--crb-green-light-color);
+    border-color: var(--crb-green-light-color);
+}
+/* LIGHT GREEN */
+.labelLightGreen {
+    color: var(--crb-green-color);
+    background-color: var(--crb-green-light-color);
+    border-color: var(--crb-green-light-color);
+}
+.btnLightGreen {
+    color: var(--crb-green-color);
+    background-color: var(--crb-green-light-color);
+    border-color: var(--crb-green-light-color);
+}
+.btnLightGreen:hover {
+    color: var(--crb-green-light-color);
+    background-color: var(--crb-green-color);
+    border-color: var(--crb-green-color);
+}
+/* ORANGE */
+.labelOrange {
+    color: var(--crb-orange-light-color);
+    background-color: var(--crb-orange-color);
+    border-color: var(--crb-orange-color);
+}
+.btnOrange {
+    color: var(--crb-orange-light-color);
+    background-color: var(--crb-orange-color);
+    border-color: var(--crb-orange-color);
+}
+.btnOrange:hover {
+    color: var(--crb-orange-color);
+    background-color: var(--crb-orange-light-color);
+    border-color: var(--crb-orange-light-color);
+}
+/* LIGHT ORANGE */
+.labelLightOrange {
+    color: var(--crb-orange-color);
+    background-color: var(--crb-orange-light-color);
+    border-color: var(--crb-orange-light-color);
+}
+.btnLightOrange {
+    color: var(--crb-orange-color);
+    background-color: var(--crb-orange-light-color);
+    border-color: var(--crb-orange-light-color);
+}
+.btnLightOrange:hover {
+    color: var(--crb-orange-light-color);
+    background-color: var(--crb-orange-color);
+    border-color: var(--crb-orange-color);
+}
+/* RED */
+.labelRed {
+    color: var(--crb-red-light-color);
+    background-color: var(--crb-red-color);
+    border-color: var(--crb-red-color);
+}
+.btnRed {
+    color: var(--crb-red-light-color);
+    background-color: var(--crb-red-color);
+    border-color: var(--crb-red-color);
+}
+.btnRed:hover {
+    color: var(--crb-red-color);
+    background-color: var(--crb-red-light-color);
+    border-color: var(--crb-red-light-color);
+}
+/* LIGHT RED */
+.labelLightRed {
+    color: var(--crb-red-color);
+    background-color: var(--crb-red-light-color);
+    border-color: var(--crb-red-light-color);
+}
+.btnLightRed {
+    color: var(--crb-red-color);
+    background-color: var(--crb-red-light-color);
+    border-color: var(--crb-red-light-color);
+}
+.btnLightRed:hover {
+    color: var(--crb-red-light-color);
+    background-color: var(--crb-red-color);
+    border-color: var(--crb-red-color);
+}
+/* PURPLE */
+.labelPurple {
+    color: var(--crb-purple-light-color);
+    background-color: var(--crb-purple-color);
+    border-color: var(--crb-purple-color);
+}
+.btnPurple {
+    color: var(--crb-purple-light-color);
+    background-color: var(--crb-purple-color);
+    border-color: var(--crb-purple-color);
+}
+.btnPurple:hover {
+    color: var(--crb-purple-color);
+    background-color: var(--crb-purple-light-color);
+    border-color: var(--crb-purple-light-color);
+}
+/* LIGHT PURPLE */
+.labelLightPurple {
+    color: var(--crb-purple-color);
+    background-color: var(--crb-purple-light-color);
+    border-color: var(--crb-purple-light-color);
+}
+.btnLightPurple {
+    color: var(--crb-purple-color);
+    background-color: var(--crb-purple-light-color);
+    border-color: var(--crb-purple-light-color);
+}
+.btnLightPurple:hover {
+    color: var(--crb-purple-light-color);
+    background-color: var(--crb-purple-color);
+    border-color: var(--crb-purple-color);
+}
+/* TURQUOISE */
+.labelTurquoise {
+    color: var(--crb-turquoise-light-color);
+    background-color: var(--crb-turquoise-color);
+    border-color: var(--crb-turquoise-color);
+}
+.btnTurquoise {
+    color: var(--crb-turquoise-light-color);
+    background-color: var(--crb-turquoise-color);
+    border-color: var(--crb-turquoise-color);
+}
+.btnTurquoise:hover {
+    color: var(--crb-turquoise-color);
+    background-color: var(--crb-turquoise-light-color);
+    border-color: var(--crb-turquoise-light-color);
+}
+/* LIGHT TURQUOISE */
+.labelLightTurquoise {
+    color: var(--crb-turquoise-color);
+    background-color: var(--crb-turquoise-light-color);
+    border-color: var(--crb-turquoise-light-color);
+}
+.btnLightTurquoise {
+    color: var(--crb-turquoise-color);
+    background-color: var(--crb-turquoise-light-color);
+    border-color: var(--crb-turquoise-light-color);
+}
+.btnLightTurquoise:hover {
+    color: var(--crb-turquoise-light-color);
+    background-color: var(--crb-turquoise-color);
+    border-color: var(--crb-turquoise-color);
+}
+/* DARK */
+.labelDark {
+    color: var(--crb-light-color);
+    background-color: var(--crb-dark-color);
+    border-color: var(--crb-dark-color);
+}
+.btnDark {
+    color: var(--crb-light-color);
+    background-color: var(--crb-dark-color);
+    border-color: var(--crb-dark-color);
+}
+.btnDark:hover {
+    color: var(--crb-dark-color);
+    background-color: var(--crb-light-color);
+    border-color: var(--crb-light-color);
+}
+/* LIGHT */
+.labelLight {
+    color: var(--crb-dark-color);
+    background-color: var(--crb-light-color);
+    border-color: var(--crb-light-color);
+}
+.btnLight {
+    color: var(--crb-dark-color);
+    background-color: var(--crb-light-color);
+    border-color: var(--crb-light-color);
+}
+.btnLight:hover {
+    color: var(--crb-light-color);
+    background-color: var(--crb-dark-color);
+    border-color: var(--crb-dark-color);
+}
+
+/* OK */
+.panelOK {
+    border-color: var(--crb-green-color);
+}
+.fontOK {
+    color: var(--crb-green-color);
+}
+.panelOK .panel-heading {
+    border-color: var(--crb-green-color);
+    color: var(--crb-green-light-color);
+    background-color: var(--crb-green-color);
+}
+.statusOK {
+    background-color: var(--crb-green-color);
+}
+
+/* KO */
+.panelKO {
+    border-color: var(--crb-red-color);
+}
+.fontKO {
+    color: var(--crb-red-color);
+}
+.panelKO .panel-heading {
+    border-color: var(--crb-red-color);
+    color: var(--crb-red-light-color);
+    background-color: var(--crb-red-color);
+}
+.statusKO {
+    background-color: var(--crb-red-color);
+}
+
+/* FA */
+
+.panelFA {
+    border-color: var(--crb-orange-color);
+}
+.fontFA {
+    color: var(--crb-orange-color);
+}
+.panelFA .panel-heading {
+    border-color: var(--crb-orange-color);
+    color: var(--crb-orange-light-color);
+    background-color: var(--crb-orange-color);
+}
+.statusFA {
+    background-color: var(--crb-orange-color);
+}
+
+/* CA */
+.panelCA {
+    border-color: var(--crb-yellow-dark-color);
+}
+.fontCA {
+    color: var(--crb-yellow-dark-color);
+}
+.panelCA .panel-heading {
+    border-color: var(--crb-yellow-dark-color);
+    color: var(--crb-yellow-light-color);
+    background-color: var(--crb-yellow-dark-color);
+}
+.statusCA {
+    background-color: var(--crb-yellow-dark-color);
+}
+
+/* NA */
+
+.panelNA {
+    border-color: var(--crb-yellow-color);
+}
+.fontNA {
+    color: var(--crb-yellow-color);
+}
+.panelNA .panel-heading {
+    border-color: var(--crb-yellow-color);
+    color: var(--crb-yellow-light-color);
+    background-color: var(--crb-yellow-color);
+}
+.statusNA {
+    background-color: var(--crb-yellow-color);
+}
+
+/* NE */
+
+.panelNE {
+    border-color: #aaa;
+}
+.fontNE {
+    color: #aaa;
+}
+.panelNE .panel-heading {
+    border-color: #aaa;
+    color: #FFF;
+    background-color: #aaa;
+}
+.statusNE {
+    background-color: #aaa;
+}
+
+
+/* WE */
+
+.panelWE {
+    border-color: var(--crb-dark-color);
+}
+.fontWE {
+    color: var(--crb-dark-color);
+}
+.panelWE .panel-heading {
+    border-color: var(--crb-dark-color);
+    color: var(--crb-light-color);
+    background-color: var(--crb-dark-color);
+}
+.statusWE {
+    background-color: var(--crb-dark-color);
+}
+
+/* PE */
+.panelPE {
+    border-color: var(--crb-blue-color);
+}
+.fontPE {
+    color: var(--crb-blue-color);
+}
+.panelPE .panel-heading {
+    border-color: var(--crb-blue-color);
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+}
+.statusPE {
+    background-color: var(--crb-blue-color);
+}
+
+/* QU */
+
+.panelQU {
+    border-color: var(--crb-purple-color);
+}
+.fontQU {
+    color: var(--crb-purple-color);
+}
+.panelQU .panel-heading {
+    border-color: var(--crb-purple-color);
+    color: var(--crb-purple-light-color);
+    background-color: var(--crb-purple-color);
+}
+.statusQU {
+    background-color: var(--crb-purple-color);
+}
+
+/* QE */
+
+.panelQE {
+    border-color: var(--crb-purple-dark-color);
+}
+.fontQE {
+    color: var(--crb-purple-dark-color);
+}
+.panelQE .panel-heading {
+    border-color: var(--crb-purple-dark-color);
+    color: var(--crb-purple-light-color);
+    background-color: var(--crb-purple-dark-color);
+}
+.statusQE {
+    background-color: var(--crb-purple-dark-color);
+}
+
+.statusBLACK {
+    background-color: black;
+}
+.execStatusFA{
+    background-color: var(--crb-orange-color);
+}
+.execStatusPE{
+    background-color: var(--crb-blue-color);
+}
+
+.noStatus{
+    background-color: #DDD;
+    color: #BBB;
+}
+
+.whiteCard{
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+}
+
+#page-layout > .panel-default{
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: 0 7px 14px 0 rgba(65, 69, 88, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+}
+
+.manualExecLeftButton{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.manualExecRightButton{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 body {
     font-size: 12px;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    background-color: #f5f6fa;
 }
-/*div{
-    border-style:solid;
-    border-width:thin;
-}*/
+.panel-default>.panel-heading {
+    color: #333;
+    background-color: #fff;
+    border-color: #fff;
+}
+.panel-default {
+    border-color: #fffd;
+}
+.btn-primary {
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+.btn-primary:hover {
+    color: var(--crb-blue-color);
+    background-color: var(--crb-blue-light-color);
+    border-color: var(--crb-blue-light-color);
+}
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    z-index: 3;
+    color: var(--crb-blue-light-color);
+    cursor: default;
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: var(--crb-blue-light-color);
+    background-color: var(--crb-blue-color);
+    border-color: var(--crb-blue-color);
+}
+
 input{
-    font-size:80%;
+    font-size:100%;
 }
 pre{
-    font-size:110%;
+    font-size:100%;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 .buttonAddStep{
     height:20px;
     font-weight:bold;
     font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    border-color:orange;
+    border-color:var(--crb-orange-color);
     border-width:1px;
     border-style:solid;
-    background-color:white;
-    color:orange;
+    background-color:var(--crb-light-color);
+    color:var(--crb-orange-color);
     text-align: center;
     border-radius: 5px;
 
@@ -50,7 +567,7 @@ pre{
 
 }
 select {
-    font-size:90%;
+    font-size:100%;
 }
 
 select[multiple] {
@@ -58,7 +575,7 @@ select[multiple] {
 }
 
 a {
-    color: #008CDA;
+    color: var(--crb-blue-color);
     text-decoration: none;
 }
 
@@ -67,7 +584,7 @@ a {
 }
 
 .delete {
-    color: #D9534F;
+    color: var(--crb-red-color);
     cursor: pointer;
     margin-right: 5px;
 }
@@ -318,18 +835,6 @@ h4 {
     -webkit-margin-end: 0px;
     font-weight: bold;
 }
-/*td { 
-    border-width:1px;
-    border-style:groove; 
-    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
-
-}*/
-/*th { 
-    border-width:1px;
-    border-style:groove; 
-    border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
-
-}*/
 td#toto {
     border-width:1px;
     border-style:groove; 
@@ -402,6 +907,13 @@ td#repsynthesis3 {
 input#submitButtonDuplicate {   
     background-color: #cad3f1;  
     border-color:#DCDCDC #696969 #696969 #DCDCDC;       
+}
+
+.filterTable {
+    border-width: 1px;
+    border-color: #ddd;
+    border-style: solid;
+    border-radius: 5px;
 }
 
 /** 3 - HEADER */
@@ -618,17 +1130,6 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     opacity: 0.35;
 }
 
-.smallbutton{
-
-    border-width: 1px;
-    -moz-border-radius: 20px;
-}
-
-.smallbutton:hover{
-    background-color: white; 
-    border-width: 1px;
-    border-color:#ccffcc #00ff00 #00ff00 #ccffcc;  
-}
 .buttonplus{
     background-image: url("../images/plus.png");
 
@@ -849,180 +1350,6 @@ table.dataTable thead th {
     height : 75px;
 }
 
-
-/* OK */
-
-.panelOK {
-    border-color: #5CB85C;
-}
-.fontOK {
-    color: #5CB85C;
-}
-.panelOK .panel-heading {
-    border-color: #5CB85C;
-    color: #FFF;
-    background-color: #5CB85C;
-}
-.statusOK {
-    background-color: #5CB85C;
-}
-
-/* KO */
-
-.panelKO {
-    border-color: #D9534F;
-}
-.fontKO {
-    color: #D9534F;
-}
-.panelKO .panel-heading {
-    border-color: #D9534F;
-    color: #FFF;
-    background-color: #D9534F;
-}
-.statusKO {
-    background-color: #D9534F; 
-}
-
-/* FA */
-
-.panelFA {
-    border-color: #F0AD4E;
-}
-.fontFA {
-    color: #F0AD4E;
-}
-.panelFA .panel-heading {
-    border-color: #F0AD4E;
-    color: #FFF;
-    background-color: #F0AD4E;
-}
-.statusFA {
-    background-color: #F0AD4E; 
-}
-
-/* CA */
-
-.panelCA {
-    border-color: #F0AD4E;
-}
-.fontCA {
-    color: #F0AD4E;
-}
-.panelCA .panel-heading {
-    border-color: #F0AD4E;
-    color: #FFF;
-    background-color: #F0AD4E;
-}
-.statusCA {
-    background-color: #F0AD4E; 
-}
-
-/* NA */
-
-.panelNA {
-    border-color: #F1C40F;
-}
-.fontNA {
-    color: #F1C40F;
-}
-.panelNA .panel-heading {
-    border-color: #F1C40F;
-    color: #FFF;
-    background-color: #F1C40F;
-}
-.statusNA {
-    background-color: #F1C40F; 
-}
-
-/* NE */
-
-.panelNE {
-    border-color: #aaa;
-}
-.fontNE {
-    color: #aaa;
-}
-.panelNE .panel-heading {
-    border-color: #aaa;
-    color: #FFF;
-    background-color: #aaa;
-}
-.statusNE {
-    background-color: #aaa; 
-}
-
-/* WE */
-
-.panelWE {
-    border-color: #34495E;
-}
-.fontWE {
-    color: #34495E;
-}
-.panelWE .panel-heading {
-    border-color: #34495E;
-    color: #FFF;
-    background-color: #34495E;
-}
-.statusWE {
-    background-color: #34495E; 
-}
-
-/* PE */
-
-.panelPE {
-    border-color: #3498DB;
-}
-.fontPE {
-    color: #3498DB;
-}
-.panelPE .panel-heading {
-    border-color: #3498DB;
-    color: #FFF;
-    background-color: #3498DB;
-}
-.statusPE {
-    background-color: #3498DB; 
-}
-
-/* QU */
-
-.panelQU {
-    border-color: #BF00BF;
-}
-.fontQU {
-    color: #BF00BF;
-}
-.panelQU .panel-heading {
-    border-color: #BF00BF;
-    color: #FFF;
-    background-color: #BF00BF;
-}
-.statusQU {
-    background-color: #BF00BF; 
-}
-
-/* QE */
-
-.panelQE {
-    border-color: #5C025C;
-}
-.fontQE {
-    color: #5C025C;
-}
-.panelQE .panel-heading {
-    border-color: #5C025C;
-    color: #FFF;
-    background-color: #5C025C;
-}
-.statusQE {
-    background-color: #5C025C; 
-}
-
-.statusBLACK {
-    background-color: black; 
-}
 
 /* HIDDEN FEATURES */
 

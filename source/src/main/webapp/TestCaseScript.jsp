@@ -58,9 +58,9 @@
             <%@ include file="include/utils/modal-generic.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
-            <div class="panel" style="margin-top: 10px;">
-                <div style="min-height:150px">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:white">
+            <div class="panel no-border" style="margin-top: 10px;">
+                <div style="min-height:150px;background-color:#f5f6fa">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:#f5f6fa">
                         <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;" id="testCaseTitle">
                             <div class="" style="width:100%">
                                 <div class="col-lg-4" style="padding: 0px;">
@@ -108,7 +108,7 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div style="height:40px; background-color: white; padding-top:20px">
+                        <div style="height:40px; background-color: #f5f6fa; padding-top:20px">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" class="tabSteps" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" class="tabSteps"  name="tabProperties">Properties</a></li>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-body" id="tcBody" style="display:none;">
+                <div class="panel-body" id="tcBody" style="display:none;background-color:white">
                     <div class="tab-content">
                         <div class="center tab-pane fade in active" id="tabSteps">
                             <nav class="col-lg-4 col-md-12" id="nav-execution" style="z-index:1;padding-left: 0px;">
@@ -168,7 +168,7 @@
                                 </div>
                                 <div id="actionContainer"></div>
                                 <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
-                                    <button id="addActionBottom" class="btn btn-block addAction-btn" disabled onclick="addActionAndFocus()">Add Action</button>
+                                    <button id="addActionBottom" class="btn btn-block btnBlue" disabled onclick="addActionAndFocus()">Add Action</button>
                                 </div>
                             </div>
                         </div>

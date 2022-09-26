@@ -138,6 +138,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         closeEveryNavbarMenu();
     });
 
+    updateStats();
+
 });
 
 function displayPageLabel() {
@@ -257,7 +259,10 @@ function buildExeBar(data) {
             barPercentage: 1.0,
             backgroundColor: getExeStatusRowColor(c.key.key),
             borderColor: getExeStatusRowColor(c.key.key),
-            data: c.points
+            data: c.points,
+            borderWidth: 3,
+            borderRadius: 3,
+            maxBarThickness: 6
         };
         timedatasets.push(dataset);
     }
@@ -320,8 +325,9 @@ function buildTcBar(data) {
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
             pointBackgroundColor: get_Color_fromindex(i),
-            pointRadius: 4,
-            pointHoverRadius: 6,
+            borderWidth: 2,
+            pointRadius: 2,
+            pointHoverRadius: 3,
             hitRadius: 10,
             fill: false,
             data: c.points
@@ -389,6 +395,9 @@ function getHPOptionsExeBar(title, unit) {
                     scaleLabel: {
                         display: true,
                         labelString: 'Date'
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
                     }
                 }],
             yAxes: [{
@@ -427,6 +436,9 @@ function getHPOptionsTcGraph(title, unit) {
                     scaleLabel: {
                         display: true,
                         labelString: 'Date'
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
                     }
                 }],
             yAxes: [{
@@ -466,7 +478,7 @@ function generateTagReport(data, tag, rowId) {
     var len = statusOrder.length;
 
     buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="hidden-xs" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
-                                                        <div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
+                                                        <div class="progress" style="height:8px" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
@@ -476,7 +488,7 @@ function generateTagReport(data, tag, rowId) {
 
             buildBar += '<div class="progress-bar status' + status + '" \n\
                 role="progressbar" \n\
-                style="width:' + percent + '%">' + roundPercent + '%</div>';
+                style="width:' + percent + '%;color:transparent">' + roundPercent + '%</div>';
         }
     }
     buildBar += '</div>';
@@ -622,7 +634,7 @@ function loadBuildRevTable() {
             });
 
         } else {
-            $("#ReportByStatusPanel").hide();
+            //$("#ReportByStatusPanel").hide();
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
@@ -660,4 +672,22 @@ function appendBuildRevRow(dtb) {
     table.append(row);
 }
 
+function updateStats() {
+
+    var jqxhr = $.getJSON("ReadTestCase", "iDisplayLength=1");
+    $.when(jqxhr).then(function (result) {
+        $("#hp_TestcaseNumber").text(result["iTotalRecords"] + " existing test cases");
+    }).fail(handleErrorAjaxAfterTimeout);
+
+    var jqxhr = $.getJSON("ReadTestCaseExecution", "iDisplayLength=1");
+    $.when(jqxhr).then(function (result) {
+        $("#hp_TestExecutionNumber").text(result["iTotalRecords"] + " launched test cases");
+    }).fail(handleErrorAjaxAfterTimeout);
+
+    var jqxhr = $.getJSON("ReadApplication", "iDisplayLength=1");
+    $.when(jqxhr).then(function (result) {
+        $("#hp_ApplicationNumber").text(result["iTotalRecords"] + " configured applications");
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
 

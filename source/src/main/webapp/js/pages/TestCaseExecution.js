@@ -414,7 +414,10 @@ function updatePage(data, steps) {
         });
 
         $("#runTestCase").attr("disabled", false);
-        $("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#runTestCase").on('click', function () {
+            openModalExecutionSimple(data.application, data.test, data.testcase, data.description);
+        });
+        //$("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#rerunTestCase").attr("disabled", false);
         $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&tag=" + data.tag);
     }
@@ -528,6 +531,8 @@ function updatePage(data, steps) {
 
         drawNetworkCharts();
     }
+
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 
@@ -1539,6 +1544,7 @@ function removeColorClass(element) {
  * @returns {undefined}
  */
 function showSaveTestCaseExecutionButton() {
+    $("#saveTestCaseExecution").attr("style","display:block");
     $("#saveTestCaseExecution").attr("disabled", false);
 }
 
@@ -1743,23 +1749,23 @@ function drawProperty(property, table, isSecondary) {
 
     if (property.RC === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-success");
+        htmlElement.addClass("row list-group-item");
         propContent.hide();
     } else if (property.RC === "PE") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
+        htmlElement.addClass("row list-group-item");
         propContent.hide();
     } else if (property.RC === "KO") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-danger");
+        htmlElement.addClass("row list-group-item");
         propContent.hide();
     } else if (property.RC === "NA") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
+        htmlElement.addClass("row list-group-item");
         propContent.hide();
     } else { // FA
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-warning");
+        htmlElement.addClass("row list-group-item");
         propContent.hide();
     }
 
@@ -2117,7 +2123,7 @@ function Step(json, steps, id) {
     this.steps = steps;
     this.toDelete = false;
 
-    this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
+    this.html = $("<a href='#'></a>").addClass("list-group-item list-group-item-calm row stepItem").css("margin-left", "0px").css("margin-right", "0px");
     $(this.html).data("index", id);
     let timeElapsedFormat = "...";
     if (this.timeElapsed !== undefined && this.timeElapsed > 0) {
@@ -2152,29 +2158,25 @@ Step.prototype.draw = function () {
     var object = htmlElement.data("item");
 
     if (object.returnCode === "OK") {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-ok pull-left"));
-        object.html.addClass("list-group-item-success");
+        htmlElement.prepend($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+    } else if (object.returnCode === "FA") {
+        htmlElement.prepend($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
     } else if (object.returnCode === "PE") {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-refresh spin pull-left"));
-        object.html.addClass("list-group-item-info");
+        htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
     } else if (object.returnCode === "KO") {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-remove pull-left"));
-        object.html.addClass("list-group-item-danger");
+        htmlElement.prepend($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
     } else if (object.returnCode === "NA") {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
+        htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-info");
     } else if (object.returnCode === "NE") {
-        htmlElement.append($("<span>").addClass("pull-left"));
-        object.html.addClass("list-group-item-grey");
-    } else if (object.returnCode === "FA") {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
-        object.html.addClass("list-group-item-warning");
+        htmlElement.prepend($("<span>").addClass("pull-left"));
+        //object.html.addClass("list-group-item-grey");
     } else if (object.returnCode === "WE" && isTheExecutionManual) {
-        htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
-        object.html.addClass("list-group-item-black");
+        htmlElement.prepend($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+        //object.html.addClass("list-group-item-black");
     } else {
-        htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
-        object.html.addClass("list-group-item-warning");
+        htmlElement.prepend($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+        //object.html.addClass("list-group-item-warning");
     }
 }
 
@@ -2182,41 +2184,6 @@ Step.prototype.draw = function () {
 //update display of the step
 Step.prototype.update = function (idStep) {
 
-
-    var glyphiconColor = "text-black";
-    var className = "list-group-item-black";
-    var glyphiconName = "glyphicon-question-sign";
-
-    if (this.returnCode === "KO") {
-        className = "list-group-item-danger";
-        glyphiconName = "glyphicon-remove";
-        glyphiconColor = "text-danger";
-    } else if (this.returnCode === "FA") {
-        className = "list-group-item-warning";
-        glyphiconName = "glyphicon-alert";
-        glyphiconColor = "text-warning";
-    } else if (this.returnCode === "OK") {
-        className = "list-group-item-success";
-        glyphiconName = "glyphicon-ok";
-        glyphiconColor = "text-success";
-    }
-
-    $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass(className);
-
-    $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass(glyphiconName);
-
-    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    });
-    //
-    removeColorClass(glyphIcon);
-    glyphIcon.addClass(glyphiconColor);
-    glyphIcon.addClass(glyphiconName);
-    //
     $("#stepRC").val(this.returnCode);
 };
 
@@ -2397,7 +2364,7 @@ Step.prototype.getJsonData = function () {
 };
 
 function Action(json, parentStep) {
-    this.html = $("<a href='#'></a>").addClass("action-group action");
+    this.html = $("<a href='#'></a>").addClass("action-group action row list-group-item");
     this.parentStep = parentStep;
 
     if (json !== null) {
@@ -2476,76 +2443,119 @@ function Action(json, parentStep) {
 
 Action.prototype.draw = function (idMotherStep, id) {
 
-    var fullActionElement = $("<div name='fullActionDiv'></div>");
-    var htmlElement = this.html;
     var action = this;
+    var fullActionElement = $("<div name='fullActionDiv' class='initialStatus'></div>");
+    //fullActionElement.data("item", action);
+    var htmlElement = this.html;
     var idCurrentElement = {stepId: idMotherStep, actionId: id, controlId: -1};
 
-    var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
-    var type = $("<div></div>").addClass("type");
+//DESCRIPTION
+    var description = $("<div class='description'></div>").addClass("col-sm-8");
+    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
+    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 13px;");
+    returnMessageField.append(safeLinkify(this.returnMessage));
+    descriptionField.append(this.description);
+    description.append(descriptionField);
+    description.append(returnMessageField);
+//END OF DESCRIPTION
 
-    var header = this.generateHeader(idCurrentElement);
+//MEDIA
+    var media = $("<div class='media'></div>").addClass("col-sm-3");
+//END OF MEDIA
 
-    row.append(header);
-    row.data("item", this);
-    //give the action an idid
-    row.data("id", idCurrentElement);
+// STATUS & BUTTON
+    var status = $("<div class='status'></div>").addClass("col-sm-1");
+    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    /**
+     * If returnCode is NE, display button, else display status & elapsed time
+     */
+    if (isTheExecutionManual) {
 
-    var button = $("<div></div>").addClass("marginLeft-15 col-xs-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+        var buttonUpload = $($("<button>").addClass("btn btnTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
 
-    htmlElement.prepend(button);
-    htmlElement.prepend(row);
+        var buttonGroup = $('<div class="btn-group" role="group">');
+        var buttonOK = $('<button name="buttonOK" class="btn btnGreen"><span class="glyphicon glyphicon-ok"></span></button>');
+        var buttonFA = $('<button class="btn btnOrange"><span class="glyphicon glyphicon-alert"></span></button>');
+        var inputStatus = $('<input style="display:none" name="returncode"/>');
+        var inputMessage = $('<input style="display:none" name="returnmessage"/>');
+        buttonGroup.append(buttonOK).append(inputStatus).append(inputMessage).append(buttonFA).css("float", "right");
 
-    var content = this.generateContent();
+        buttonOK.click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, id, "OK");
+        });
+        buttonFA.click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, id, "FA");
+        });
 
-    if (action.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-success");
-        content.hide();
-    } else if (action.returnCode === "PE") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
-        content.hide();
-    } else if (action.returnCode === "KO") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-danger");
-        content.hide();
-    } else if (action.returnCode === "NA") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
-        content.hide();
-    } else if (action.returnCode === "NE") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-grey");
-        content.hide();
-    } else if (action.returnCode === "WE" && isTheExecutionManual) {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-black");
-        content.hide();
+        buttonUpload.click(function (event) {
+            var idex = $("#idlabel").text();
+            openModalFile(true, action, "ADD", idex);
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        $(buttonUpload).css("float", "right");
+
+        media.append(buttonGroup).append(buttonUpload);
+        showSaveTestCaseExecutionButton();
     } else {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.hide();
+
+        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
+            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
+        } else {
+            elapsedTime.append("...");
+        }
     }
 
-    // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
-    // Adding all media attached to action execution.
+        if (action.returnCode === "OK") {
+            status.append($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+        } else if (action.returnCode === "FA") {
+            status.append($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+        } else if (action.returnCode === "PE") {
+            status.append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em"));
+        } else if (action.returnCode === "KO") {
+            status.append($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+        } else if (action.returnCode === "NA") {
+            status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+        } else if (action.returnCode === "NE") {
+            status.append($("<span>").attr("style", "font-size:1.5em"));
+        } else if (action.returnCode === "WE" && isTheExecutionManual) {
+            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+        } else {
+            status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+        }
+
+        status.append(elapsedTime);
+
+        var content = this.generateContent();
+        content.hide();
+
+// END OF STATUS & BUTTON
+
+    htmlElement.append(status);
+    htmlElement.append(description);
+    htmlElement.append(media);
+
+    htmlElement.data("item", this);
+    //give the action an idid
+    htmlElement.data("id", idCurrentElement);
 
     htmlElement.click(function () {
-        if ($(this).find(".glyphicon-chevron-down").length > 0) {
-            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-        } else {
-            $(this).find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
-        }
         content.toggle();
         return false;
     });
+
+    // Starting to reduce the size of the row by the length of elements.
+    //$(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
+    // Adding all media attached to action execution.
+
     fullActionElement.append(htmlElement);
     fullActionElement.append(content);
     this.parentStep.stepActionContainer.append(fullActionElement);
-    //this.parentStep.stepActionContainer.append(content);
-    addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
+    addFileLink(this.fileList, media, isTheExecutionManual, idMotherStep);
 };
 
 Action.prototype.setControls = function (controls, idMotherStep, idMotherAction) {
@@ -2596,358 +2606,111 @@ function returnMessageWritable(object, field) {
     }
 }
 
-Action.prototype.generateHeader = function (id) {
-    var scope = this;
-    var content = $("<div></div>").addClass("content");
-    var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-xs-12").attr("id", "contentField");
-    var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    returnMessageField.append(safeLinkify(this.returnMessage));
-    descriptionField.append(this.description);
-
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
-    } else {
-        elapsedTime.append("...");
-    }
-
-    /**
-     * If returnCode is NE, display button, else display elapsed time
-     */
-    if (isTheExecutionManual) {
-
-        var buttonFA = $($("<button>").addClass("btn btn statusFA btn-inverse").attr("type", "button").text("FA"));
-        var buttonOK = $($("<button>").addClass("btn btn statusOK btn-inverse").attr("type", "button").text("OK"));
-        var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-
-        buttonOK.click(function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            triggerActionExecution(this, id, "OK");
-        });
-        buttonFA.click(function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            triggerActionExecution(this, id, "FA");
-        });
-
-        buttonUpload.click(function (event) {
-            var indexStep = $("#nav-execution").find(".active").data("index");
-            var indexAction = $(this).parents("a").data('index')
-            var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
-            var idex = $("#idlabel").text()
-            openModalFile(true, currentActionOrControl, "ADD", idex)
-            event.preventDefault()
-            event.stopPropagation()
-        });
-        $(buttonUpload).css("float", "right");
-
-        contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
-        contentField.append(buttonUpload);
-        //hide save button
-        showSaveTestCaseExecutionButton();
-    } else {
-        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
-    }
-
-    contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
-
-    firstRow.append(contentField);
-
-    content.append(firstRow);
-
-    return content;
-
-};
-
 function triggerActionExecution(element, id, status) {
-    var currentElement = $($(element).closest(".action")[0]);
     var newReturnCode = "WE";
+    //update first all element of actionDiv in case of control change
+    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").val("OK").change();
+    $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").attr("data-modified", "true");
+    $(element).parents("[name='fullActionDiv']").removeClass("initialStatus");
+    $(element).parents("[name='fullActionDiv']").find(".action-group").data("item").returnCode = "OK";
+
+    // update element checked
     if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item\S+/g) || []).join(' ');
-        }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass("glyphicon-ok");
-        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
+        $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+        $(element).parents(".action-group").find("input[name='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else if (status === "FA") {
-        currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-        }).addClass("row list-group-item list-group-item-warning");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass("glyphicon-alert");
-        $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
+        $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightOrange optionLabel pull-left");
+        $(element).parents(".action-group").find("input[name='returncode']").val("FA").change();
         newReturnCode = "FA";
+    } else if (status === "KO") {
+        $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightRed optionLabel pull-left");
+        $(element).parents(".action-group").find("input[name='returncode']").val("KO").change();
+        newReturnCode = "KO";
     }
-    $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-    //$(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    $(element).parents(".action-group").data("item").returnCode = newReturnCode;
 
-    //Modify style of all previous action and control of the current step that have not been modified yet
-    var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass("row list-group-item list-group-item-success");
-    //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass("glyphicon-ok");
-    //Modify Status of all previous action and control of the current step that have not been modified yet
-    //$(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    //$(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
-    //Modify style of all previous action and control of the previous steps that have not been modified yet
-    var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass("row list-group-item list-group-item-success");
-    //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass("glyphicon-ok");
+    //Modify all previous action and control of the current step that have not been modified yet
+    var prevElementCurrentStep = $(element).parents("[name='fullActionDiv']").prevAll('.initialStatus');
+    prevElementCurrentStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+    prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    prevElementCurrentStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
+    prevElementCurrentStep.find("input[id='returnmessage']").val("Action manually executed").change();
+    prevElementCurrentStep.find(".action-group").each(function(i, obj){
+        if(typeof $(obj).data("item")!=="undefined") {
+            $(obj).data("item").returnCode = "OK";
+        }
+    });
+    prevElementCurrentStep.removeClass('initialStatus');
 
-    //Modify Status of all previous action and control of the previous step that have not been modified yet
-    //$(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    //$(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-    //update return code
-    updateActionControlReturnCode(id, newReturnCode);
-}
-
-/*
- * * Update the action focus by idElementTriggers and update the step and the testCase if there was a change in action
- * @param {type} idElementTriggers
- * @param {type} returnCodeElementTrigger
- * @returns {void}
- */
-function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
-    //go though every action or control to update them
-    $(".itemContainer").each(function () {
-
-        var idCurrentElement = $(this).data("id");
-        var isBeforeTheElementTrigger = false;
-        var isTheElementTrigger = (idCurrentElement === idElementTriggers);
-
-        var currentActionControlReturnCode = $(this).data("item").returnCode;
-        //if a change in return code is possible on this action or control
-        if (returnCodeElementTrigger !== currentActionControlReturnCode) {
-            //look if the current action or control is the one trigger
-            var isTheElementTrigger = (idCurrentElement === idElementTriggers);
-            //look if the current action or control is before the one trigger
-            if (!isTheElementTrigger) {
-                var idName = ["stepId", "actionId", "controlId"];
-                for (var i = 0; i < 3; i++) {
-                    if (idCurrentElement[idName[i]] !== idElementTriggers[idName[i]]) {
-                        if (idCurrentElement[idName[i]] < idElementTriggers[idName[i]]) {
-                            isBeforeTheElementTrigger = true;
-                        } else if (idCurrentElement[idName[i]] === -1 && idElementTriggers[idName[i]] !== -1) {
-                            isBeforeTheElementTrigger = true;
-                        }
-                        break;
-                    }
-                }
+    //Modify all previous action and control of the previous steps that have not been modified yet
+    var prevElementPreviousStep = $(element).parents("[name='fullActionDiv']").parent().prevAll().find('.initialStatus');
+    prevElementPreviousStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+    prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    prevElementPreviousStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
+    prevElementPreviousStep.find("input[id='returnmessage']").val("Action manually executed").change();
+    prevElementPreviousStep.find(".action-group").each( function(i, obj){
+            if(typeof $(obj).data("item")!=="undefined") {
+                $(obj).data("item").returnCode = "OK";
             }
-            var updateStepNeeded = false;
-            //change the returnCode of the one trigger
-            if (isTheElementTrigger) {
-                $(this).data("item").returnCode = returnCodeElementTrigger;
-                updateStepNeeded = true;
+        });
+    prevElementPreviousStep.removeClass('initialStatus');
+
+    // Modify Steps
+    var testCaseNewReturnCode = "WE";
+    $("#actionContainer").children().each(function (i) {
+        var returnCodes = $(this).find("[name='returncode']").map(function() {
+            return $(this).val();
+        }).get();
+        if(returnCodes.includes("KO")){
+            $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightRed optionLabel pull-left");
+            testCaseNewReturnCode = "KO";
+            if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
+                $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
-            if (isBeforeTheElementTrigger) {
-                //change the returnCode if it's untouched
-                if (currentActionControlReturnCode === "WE") {
-                    //change the return code
-                    $(this).data("item").returnCode = "OK";
-                    $(this).parent().next("div").find("input[id='returncode']").val("OK").change();
-                    updateStepNeeded = true;
-                }
+            //htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+
+        } else if(returnCodes.includes("FA")){
+            $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightOrange optionLabel pull-left");
+            testCaseNewReturnCode = "FA";
+            if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
+                $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
-            //An action or a control was changed the step need to be updated
-            if (updateStepNeeded) {
-                //update the element's step triggered
-                updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
-                //then update all the previous step if they are untouched
-                for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
-                    var currentStep = $("#steps").data("listOfStep")[idStep];
-                    //if previous element are untouch
-                    if (currentStep.returnCode === "WE") {
-                        updateStepExecutionReturnCode(idStep, "OK", false);
-                    }
-                }
-                updateTestCaseReturnCode();
+            //htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+
+        } else {
+            $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+            testCaseNewReturnCode = "OK";
+            if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
+                $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
         }
 
     });
 
-
+    // Modify Execution
+    var configPanel = $("#testCaseConfig");
+    configPanel.find("#controlstatus").text(testCaseNewReturnCode);
+    configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+    updateDataBarVisual(testCaseNewReturnCode);
 }
-
-/*
- * * Update the step focus by step id if needed
- * @param {type} stepId
- * @param {type} returnCodeActionControlTrigger
- * @param {type} isStepDisplayed
- * @returns {void}
- */
-function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed) {
-
-    var newStepReturnCode = null;
-    var currentStep = $("#steps").data("listOfStep")[stepId]
-    if (returnCodeActionControlTrigger !== currentStep.returnCode) {
-        if (returnCodeActionControlTrigger === "KO") {
-            newStepReturnCode = "KO";
-        } else if (returnCodeActionControlTrigger === "FA" && currentStep.returnCode !== "KO") {
-            newStepReturnCode = "FA";
-        } else if (returnCodeActionControlTrigger === "OK") {
-
-            var everyActionAndControlOK = true;
-            var returnMessageCanBeReset = true;
-
-            $(".itemContainer").each(function () {
-                var idCurrentActionControl = $(this).data("id");
-                var actionControBelongToCurrentStep = (stepId == idCurrentActionControl.stepId);
-                if (actionControBelongToCurrentStep) {
-
-                    if ($(this).data("item").returnCode === "KO") {
-                        newStepReturnCode = "KO";
-                        everyActionAndControlOK = false;
-                        returnMessageCanBeReset = false;
-                    } else if (newStepReturnCode !== "KO" && $(this).data("item").returnCode === "FA") {
-                        newStepReturnCode = "FA";
-                        everyActionAndControlOK = false;
-                        returnMessageCanBeReset = false;
-                    } else if (newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "WE") {
-                        everyActionAndControlOK = false;
-                    }
-                }
-            });
-            //the last step's action or control was check and no option FA or KO was selected we set the step to OK by default
-            if (everyActionAndControlOK) {
-                newStepReturnCode = "OK";
-                //reset to defaut
-            } else if (returnMessageCanBeReset) {
-                newStepReturnCode = "WE";
-            }
-        }
-        if (newStepReturnCode !== null) {
-            //update step return code
-            var stepUpdated = $("#steps").data("listOfStep")[stepId];
-            stepUpdated.returnCode = newStepReturnCode;
-
-            //update step visual
-            var glyphiconColor = "text-black";
-            var className = "list-group-item-black";
-            var glyphiconName = "glyphicon-question-sign";
-
-            if (newStepReturnCode === "KO") {
-                className = "list-group-item-danger";
-                glyphiconName = "glyphicon-remove";
-                glyphiconColor = "text-danger";
-            } else if (newStepReturnCode === "FA") {
-                className = "list-group-item-warning";
-                glyphiconName = "glyphicon-alert";
-                glyphiconColor = "text-warning";
-            } else if (newStepReturnCode === "OK") {
-                className = "list-group-item-success";
-                glyphiconName = "glyphicon-ok";
-                glyphiconColor = "text-success";
-            }
-
-            $($("#steps").find("a")[stepId]).removeClass(function (index, className) {
-                return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-            }).addClass(className);
-
-            $($("#steps").find("a")[stepId]).find("span").removeClass(function (index, className) {
-                return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-            }).addClass(glyphiconName);
-
-            //if the current step is the one displayed at the center of the screen
-            if (isStepDisplayed) {
-                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
-                    return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-                });
-
-                removeColorClass(glyphIcon);
-                glyphIcon.addClass(glyphiconColor);
-                glyphIcon.addClass(glyphiconName);
-                $("#stepRC").val(newStepReturnCode);
-            }
-        }
-    }
-}
-
 
 function setTestCaseReturnCodeToNA() {
     var testCaseNewReturnCode = "NA";
     var configPanel = $("#testCaseConfig");
 
     configPanel.find("#controlstatus").text(testCaseNewReturnCode);
-//        configPanel.find("#returnMessageEx").text(controlMessage);
     configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
     updateDataBarVisual(testCaseNewReturnCode);
-
-}
-
-/*
- * * Update the testCase focus if needed
- * @returns {void}
- */
-function updateTestCaseReturnCode() {
-    var testCaseNewReturnCode = null;
-    // go tough every step to see if the testCase need to be update
-    for (var idStep = 0; idStep < $("#steps").data("listOfStep").length; idStep++) {
-        var currentStep = $("#steps").data("listOfStep")[idStep];
-        //a step is not complete no need to go further in the list of step
-        if (currentStep.returnCode === "WE") {
-            if (testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
-                testCaseNewReturnCode = "WE";
-            break;//no need to continue
-        } else if (currentStep.returnCode === "OK" && testCaseNewReturnCode === null) {
-            testCaseNewReturnCode = "OK";
-        } else if (currentStep.returnCode === "FA" && testCaseNewReturnCode !== "KO") {
-            testCaseNewReturnCode = "FA";
-        } else if (currentStep.returnCode === "KO") {
-            testCaseNewReturnCode = "KO";
-        }
-    }
-
-    var configPanel = $("#testCaseConfig");
-    if (testCaseNewReturnCode !== null && testCaseNewReturnCode !== configPanel.find("#controlstatus").val()) {
-
-        removeColorClass(configPanel.find("#controlstatus"));
-//        removeColorClass(configPanel.find("#exReturnMessage"));
-//        var controlMessage = null;
-
-        if (testCaseNewReturnCode === "PE") {
-            configPanel.find("#controlstatus").addClass("text-primary");
-//            configPanel.find("#exReturnMessage").addClass("text-primary");
-//            controlMessage = "";
-        } else if (testCaseNewReturnCode === "OK") {
-            configPanel.find("#controlstatus").addClass("text-success");
-//            configPanel.find("#exReturnMessage").addClass("text-success");
-//            controlMessage = "The test case finished successfully."
-        } else if (testCaseNewReturnCode === "KO") {
-            configPanel.find("#controlstatus").addClass("text-danger");
-//            configPanel.find("#exReturnMessage").addClass("text-danger");
-//            controlMessage = "The test case failed on validations."
-        } else if (testCaseNewReturnCode === "WE") {
-            configPanel.find("#controlstatus").addClass("text-black");
-//            configPanel.find("#exReturnMessage").addClass("text-black");
-//            controlMessage = "The test case has not been executed.";
-        } else if (testCaseNewReturnCode === "FA") {
-            configPanel.find("#controlstatus").addClass("text-black");
-//            configPanel.find("#exReturnMessage").addClass("text-black");
-//            controlMessage = "The test case failed to be executed because of an action.";
-        }
-        configPanel.find("#controlstatus").text(testCaseNewReturnCode);
-//        configPanel.find("#returnMessageEx").text(controlMessage);
-        configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
-        updateDataBarVisual(testCaseNewReturnCode);
-    }
 }
 
 Action.prototype.generateContent = function () {
@@ -3202,73 +2965,125 @@ function Control(json, parentAction) {
 
     this.toDelete = false;
 
-    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "0px");
+    this.html = $("<a href='#'></a>").addClass("action-group control row list-group-item").css("margin-left", "0px");
     $(this.html).data("index", this.sort - 1)
 }
 
 Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
+    var control = this;
     var htmlElement = this.html;
     var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
     var currentControlId = {stepId: idMotherStep, actionId: idMotherAction, controlId: idControl};
 
-    var header = this.generateHeader(currentControlId);
-    row.append(header);
-    row.data("item", this);
-    row.data("id", currentControlId);
+//DESCRIPTION
+    var description = $("<div class='description'></div>").addClass("col-sm-8");
+    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
+    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 13px;");
+    returnMessageField.append(safeLinkify(this.returnMessage));
+    descriptionField.append(this.description);
+    description.append(descriptionField);
+    description.append(returnMessageField);
+//END OF DESCRIPTION
 
-    var button = $("<div></div>").addClass("col-xs-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+//MEDIA
+    var media = $("<div class='media'></div>").addClass("col-sm-3");
+//END OF MEDIA
 
-    htmlElement.prepend(button);
-    htmlElement.prepend(row);
+// STATUS & BUTTON
+    var status = $("<div class='status'></div>").addClass("col-sm-1");
+    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    var content = this.generateContent();
-    if (this.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-success");
-        content.hide();
-    } else if (this.returnCode === "PE") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
-        content.hide();
-    } else if (this.returnCode === "KO") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-danger");
-        content.hide();
-    } else if (this.returnCode === "NA") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
-        content.hide();
-    } else if (this.returnCode === "NE") {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-grey");
-        content.hide();
-    } else if (this.returnCode === "WE" && isTheExecutionManual) {
-        htmlElement.prepend($("<div>").addClass("marginLeft-15 col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-black");
-        content.hide();
+    /**
+     * If returnCode is NE, display button, else display status & elapsed time
+     */
+    if (isTheExecutionManual) {
+
+        var buttonUpload = $($("<button>").addClass("btn btnTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
+        var buttonGroup = $('<div class="btn-group" role="group">');
+        var buttonOK = $('<button name="buttonOK" class="btn btnGreen"><span class="glyphicon glyphicon-ok"></span></button>');
+        var buttonKO = $('<button class="btn btnRed"><span class="glyphicon glyphicon-alert"></span></button>');
+        var inputStatus = $('<input style="display:none" name="returncode"/>');
+        var inputMessage = $('<input style="display:none" name="returnmessage"/>');
+        buttonGroup.append(buttonOK).append(inputStatus).append(inputMessage).append(buttonKO).css("float", "right");
+
+        buttonOK.click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, id, "OK");
+        });
+        buttonKO.click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, id, "KO");
+        });
+        $(buttonUpload).click(function (event) {
+            var idex = $("#idlabel").text()
+            openModalFile(false, control, "ADD", idex)
+            event.preventDefault()
+            event.stopPropagation()
+        });
+        $(buttonUpload).css("float", "right");
+
+        media.append(buttonGroup).append(buttonUpload);
+        showSaveTestCaseExecutionButton();
     } else {
-        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.hide();
-    }
-    // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
-    // Adding all media attached to control execution.
-    addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 
-    $(this.parentAction.html).parent().append(htmlElement);
-    $(this.parentAction.html).parent().append(content);
-    htmlElement.click(function () {
-        if ($(this).find(".glyphicon-chevron-down").length > 0) {
-            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
+            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
         } else {
-            $(this).find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+            elapsedTime.append("...");
         }
+    }
+
+
+            if (control.returnCode === "OK") {
+                status.append($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+            } else if (control.returnCode === "FA") {
+                status.append($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+            } else if (control.returnCode === "PE") {
+                status.append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em"));
+            } else if (control.returnCode === "KO") {
+                status.append($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+            } else if (control.returnCode === "NA") {
+                status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+            } else if (control.returnCode === "NE") {
+                status.append($("<span>").attr("style", "font-size:1.5em"));
+            } else if (control.returnCode === "WE" && isTheExecutionManual) {
+                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+            } else {
+                status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+            }
+
+        status.append(elapsedTime);
+
+        var content = this.generateContent();
+        content.hide();
+
+
+// END OF STATUS & BUTTON
+
+    htmlElement.append(status);
+    htmlElement.append(description);
+    htmlElement.append(media);
+
+    htmlElement.data("item", this);
+    //give the action an id
+    htmlElement.data("id", currentControlId);
+
+    htmlElement.click(function () {
         content.toggle();
         return false;
     });
 
+    $(this.parentAction.html).parent().append(htmlElement);
+    $(this.parentAction.html).parent().append(content);
+
+    // Starting to reduce the size of the row by the length of elements.
+    //$(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
+    // Adding all media attached to control execution.
+    addFileLink(this.fileList, media, isTheExecutionManual, idMotherStep);
 };
 
 Control.prototype.setStep = function (step) {
@@ -3286,139 +3101,6 @@ Control.prototype.setControl = function (control) {
 Control.prototype.setReturnMessage = function (returnMessage) {
     this.returnMessage = returnMessage;
 };
-
-Control.prototype.generateHeader = function (id) {
-    var scope = this;
-    var content = $("<div></div>").addClass("content");
-    var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-xs-12").attr("id", "contentField");
-    var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-
-    returnMessageField.append(safeLinkify(this.returnMessage));
-    descriptionField.append(this.description);
-
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
-    } else {
-        elapsedTime.append("...");
-    }
-
-    if (isTheExecutionManual) {
-        var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO"));
-        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
-        var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-        $(buttonUpload).css("float", "right")
-        buttonOK.click(function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            triggerControlExecution(this, id, "OK");
-        });
-        buttonFA.click(function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            triggerControlExecution(this, id, "KO");
-        });
-        $(buttonUpload).click(function (event) {
-            var indexStep = $("#nav-execution").find(".active").data("index");
-            var indexAction = $(this).parents("a").parent().find(".action").data('index')
-            var indexControl = $(this).parents("a").data('index')
-            var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
-            var idex = $("#idlabel").text()
-            openModalFile(false, currentActionOrControl, "ADD", idex)
-            event.preventDefault()
-            event.stopPropagation()
-        })
-        contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
-        contentField.append(buttonUpload);
-        showSaveTestCaseExecutionButton();
-    } else {
-        contentField.append($("<div class='col-xs-2'>").append(elapsedTime));
-
-    }
-
-    contentField.append($("<div class='col-xs-10'>").append(descriptionField).append(returnMessageField));
-
-    firstRow.append(contentField);
-
-    content.append(firstRow);
-
-    return content;
-};
-
-function triggerControlExecution(element, id, status) {
-    var currentElement = $($(element).closest(".control")[0]);
-    var newReturnCode = "NE";
-    if (status === "OK") {
-        currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-        }).addClass("row list-group-item list-group-item-success");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass("glyphicon-ok");
-        //Modify Status of current action
-        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
-        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-        newReturnCode = "OK";
-    } else {
-        currentElement.removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-        }).addClass("row list-group-item list-group-item-danger");
-        $(currentElement.find("span")[0]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass("glyphicon-remove");
-        //Modify Status of current action
-        $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
-        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-        newReturnCode = "KO";
-    }
-
-    //Modify style of action of the current actiongroup that have not been modified yet
-    var prevElementCurrentActionGroup = $($($(element).closest(".control")[0]).prevAll(".list-group-item-black"));
-    prevElementCurrentActionGroup.removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass("row list-group-item list-group-item-success");
-    //Modify glyphicon of action of the current actiongroup that have not been modified yet
-    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass("glyphicon-ok");
-    //Modify Status of action of the current actiongroup that have not been modified yet
-    $(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-
-    //Modify style of all previous action and control of the current step that have not been modified yet
-    var prevElementCurrentStep = $($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item-black"));
-    prevElementCurrentStep.removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass("row list-group-item list-group-item-success");
-    //Modify glyphicon of all previous action and control of the current step that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass("glyphicon-ok");
-    //Modify Status of all previous action and control of the current step that have not been modified yet
-    $(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-
-
-    //Modify style of all previous action and control of the previous steps that have not been modified yet
-    var prevElementPreviousStep = $($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item-black"));
-    prevElementPreviousStep.removeClass(function (index, className) {
-        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-    }).addClass("row list-group-item list-group-item-success");
-    //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
-    $($($($(element).closest(".control")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
-        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-    }).addClass("glyphicon-ok");
-    //Modify Status of all previous action and control of the previous step that have not been modified yet
-    $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
-    $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-    //update return code
-    updateActionControlReturnCode(id, newReturnCode);
-
-}
 
 Control.prototype.generateContent = function () {
     var doc = new Doc();
@@ -3445,7 +3127,7 @@ Control.prototype.generateContent = function () {
     var row5 = $("<div></div>").addClass("row");
     var row6 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
     var row7 = $("<div></div>").addClass("row" + hideOnManual + hideCondition);
-    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "25px");
+    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "0px");
 
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
@@ -3627,8 +3309,9 @@ function addFileLink(fileList, container, manual, idStep) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                    .append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
@@ -3644,29 +3327,33 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3678,12 +3365,16 @@ function addFileLink(fileList, container, manual, idStep) {
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
-                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-3 col-sm-2").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
@@ -3801,14 +3492,14 @@ function getScriptInformationOfStep() {
         for (var j = 0; j < actions.length; j++) {
 
             var controlArr = [];
-            var action = $(actions[j]).find("div.itemContainer").data("item");
+            var action = $(actions[j]).find("a.action").data("item");
 
             // Get action's controls
             var controls = $(actions[j]).find("a.control");
 
             // Iterate over controls
             for (var k = 0; k < controls.length; k++) {
-                var control = $(controls[k]).find("div.itemContainer").data("item");
+                var control = $(controls[k]).data("item");
                 controlArr.push(control.getJsonData());
             }
             var actionJson = action.getJsonData();

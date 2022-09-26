@@ -73,11 +73,56 @@
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
 
+            <div class="row marginBottom20 hidden-xs">
+                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row" style="height: 100px;">
+                            <div class="col-sm-8">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-pencil"></span>  Test Cases</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_TestcaseNumber"></div>
+                                <a href="./TestCaseList.jsp" class="marginLeft15">See or Create TestCase</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row" style="height: 100px;">
+                            <div class="col-sm-8">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
+                                <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row" style="height: 100px;">
+                            <div class="col-sm-8">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
+                                <a href="./Application.jsp" class="marginLeft15">See or Create Application</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row">
+                            <div class="col-sm-8" style="height: 100px;">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-question-sign"></span>  Documentation</h5>
+                                <div class="marginLeft15 marginBottom10"></div>
+                                <a href="./documentation/D1/documentation_en.html" target="_blank" class="marginLeft15">See online documentation</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-lg-6" id="LastTagExecPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#tagExecStatus">
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                    <div class="panel panel-default whiteCard" style="height:420px">
+                        <div class="panel-heading card clearfix" data-target="#tagExecStatus">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
                                         onclick="stopPropagation(event); loadTagExec();"><span
@@ -94,87 +139,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 hidden-sm hidden-xs" id="MainActionsPanel">
-                    <div class="panel panel-default" style="padding: 30px;">
-
-                        <div class="row">
-                            <div class="row" id="tuto-line">
-                                <div class="col-sm-6 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut1">
-                                    <a href="./TestCaseList.jsp" class="btn btn-primary">
-                                        <div class="card" style="width: 18rem;">
-                                            <span class="card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">Create/Modify a Test</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-sm-6 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut2">
-                                    <a href="./RunTests.jsp" class="btn btn-primary">
-                                        <div class="card" style="width: 18rem;">
-                                            <span class="card-img-top glyphicon glyphicon-cog marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">Run a Test or a Campaign</p></div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut3">
-                                    <a href="Application.jsp" class="btn btn-primary">
-                                        <div class="card" style="width: 12rem;">
-                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">Create/Modify <br>an Application</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut4">
-                                    <a href="AppServiceList.jsp" class="btn btn-primary">
-                                        <div class="card" style="width: 12rem;">
-                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">Create/Modify <br>a Service</p></div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut5">
-                                    <a href="TestDataLibList.jsp" class="btn btn-primary">
-                                        <div class="card" style="width: 12rem;">
-                                            <span class="card-img-top glyphicon glyphicon-wrench  marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">Create/Modify <br>a Data Library</p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-sm-3 hidden-sm hidden-xs marginTop10 marginBottom10 text-center"
-                                     data-dismiss="modal" id="shortcut6">
-                                    <a href="./documentation/D1/documentation_en.html" target="_blank" class="btn btn-info">
-                                        <div class="card" style="width: 12rem;">
-                                            <span class="card-img-top glyphicon glyphicon-question-sign  marginBottom20 marginTop20"
-                                                  style="font-size:50px;"></span>
-                                            <div class="card-body"><p class="card-text">&nbsp;<br>Documentation</p></div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-lg-6" id="LastTagExecPanel">
-                    <div id="panelHistory" class="panel panel-default" style="display: block;">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#histoChart1">
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                    <div id="panelHistory" class="panel panel-default whiteCard" style="display: block;height:420px">
+                        <div class="panel-heading card" data-target="#histoChart1">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
                                         onclick="stopPropagation(event); loadTagHistoBar();"><span
@@ -188,10 +155,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-6" id="TcStatPanel">
-                    <div id="panelTcHistory" class="panel panel-default" style="display: block;">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#histoChart2">
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                    <div id="panelTcHistory" class="panel panel-default whiteCard" style="display: block;height:420px">
+                        <div class="panel-heading card" data-target="#histoChart2">
                             <div class="btn-group pull-right">
                                 <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
                                         onclick="stopPropagation(event); loadTcHistoBar();"><span
@@ -205,11 +173,43 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-6">
+                    <div id="ReportByStatusPanel">
+                        <div class="panel panel-default whiteCard" style="height:420px">
+                            <div class="panel-heading card" data-target="#EnvStatus">
+                                <span class="fa fa-pie-chart fa-fw"></span>
+                                <label id="reportStatus">Environment Status</label>
+                            </div>
+                            <div class="panel-body collapse in" id="EnvStatus">
+                                <div id="homePageTable1_wrapper" class="dataTables_scroll" style="position: relative">
+                                    <div class="row">
+                                        <div class="col-xs-12" id="EnvByBuildRevisionTable">
+                                            <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
+                                                <thead>
+                                                <tr>
+                                                    <th class="text-center" id="systemHeader" name="systemHeader">System</th>
+                                                    <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                    <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                    <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                                    <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                                    <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                                    <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="envTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div id="homeTableDiv" class="panel panel-default">
-                <div class="panel-heading card" data-toggle="collapse" data-target="#applicationPanel">
-                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+            <div id="homeTableDiv" class="panel panel-default whiteCard">
+                <div class="panel-heading card" data-target="#applicationPanel">
                     <span class="fa fa-retweet fa-fw"></span>
                     <label id="testCaseStatusByApp">Test Case Status by Application</label>
                 </div>
@@ -222,11 +222,10 @@
             <div class="row">
                 <div class="col-lg-6">
                     <div id="ChangelogPanel">
-                        <div class="panel panel-default">
-                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog41500">
+                        <div class="panel panel-default whiteCard">
+                            <div class="panel-heading card" data-target="#Changelog41500">
                                 <span class="fa fa-pie-chart fa-fw"></span>
                                 <label id="changelogLabel">Changelog</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
                             <div class="panel-body collapse in" id="Changelog41500">
                                 <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
@@ -235,40 +234,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div id="ReportByStatusPanel">
-                        <div class="panel panel-default">
-                            <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
-                                <span class="fa fa-pie-chart fa-fw"></span>
-                                <label id="reportStatus">Environment Status</label>
-                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            </div>
-                            <div class="panel-body collapse in" id="EnvStatus">
-                                <div id="homePageTable1_wrapper" class="dataTables_scroll" style="position: relative">
-                                    <div class="row">
-                                        <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                            <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center" id="systemHeader" name="systemHeader">System</th>
-                                                        <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
-                                                        <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
-                                                        <th class="text-center" id="devHeader" name="devHeader">DEV</th>
-                                                        <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
-                                                        <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
-                                                        <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="envTableBody">
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
 

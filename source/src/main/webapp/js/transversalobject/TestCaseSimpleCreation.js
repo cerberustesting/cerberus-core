@@ -70,9 +70,9 @@ function initModalTestCaseSimpleCreation() {
     $("#editTestCaseSimpleCreationModalForm [name='countryField']").html(doc.getDocLabel("testcase", "countriesLabel"));
     $("#editTestCaseSimpleCreationModalForm [name='environmentField']").html(doc.getDocLabel("invariant", "ENVIRONMENT"));
 
-    $("#editTestCaseSimpleCreationModalForm #ChooseApplicationLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateApplicationLabel"));
-    $("#editTestCaseSimpleCreationModalForm #describeTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "describeTestCaseLabel"));
-    $("#editTestCaseSimpleCreationModalForm #defineTestcaseLabel").html(doc.getDocLabel("page_testcasecreate", "chooseOrCreateFolderLabel"));
+    $("#editTestCaseSimpleCreationModalForm #ChooseApplicationLabel").html('<span class="card-img-top glyphicon glyphicon-modal-window" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcasecreate", "chooseOrCreateApplicationLabel"));
+    $("#editTestCaseSimpleCreationModalForm #describeTestcaseLabel").html('<span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcasecreate", "describeTestCaseLabel"));
+    $("#editTestCaseSimpleCreationModalForm #defineTestcaseLabel").html('<span class="card-img-top glyphicon glyphicon-folder-open" style="font-size:15px;"></span>   '+doc.getDocLabel("page_testcasecreate", "chooseOrCreateFolderLabel"));
 
     displayInvariantList("editTestCaseSimpleCreationApplicationType", "APPLITYPE", false);
     displayInvariantList("editTestCaseSimpleCreationCountry", "COUNTRY", false);
