@@ -109,7 +109,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "BuildRevisionInvariant")
                     .replace("%OPERATION%", "Update")

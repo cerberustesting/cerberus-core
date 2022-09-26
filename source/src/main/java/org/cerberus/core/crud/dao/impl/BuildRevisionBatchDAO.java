@@ -19,7 +19,8 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IBuildRevisionBatchDAO;
@@ -34,7 +35,6 @@ import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -50,76 +50,48 @@ import java.util.Map;
 /**
  * @author vertigo17
  */
+@AllArgsConstructor
 @Repository
 public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
 
-    @Autowired
-    private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryBuildRevisionBatch factoryBuildRevisionBatch;
+    private final DatabaseSpring databaseSpring;
+    private final IFactoryBuildRevisionBatch factoryBuildRevisionBatch;
 
     private static final Logger LOG = LogManager.getLogger(BuildRevisionBatchDAO.class);
-
-    private final String OBJECT_NAME = "BuildRevisionBatchDAO";
-    private final String SQL_DUPLICATED_CODE = "23000";
-    private final int MAX_ROW_SELECTED = 100000;
+    private static final String OBJECT_NAME = "BuildRevisionBatchDAO";
+    private static final String SQL_DUPLICATED_CODE = "23000";
+    private static final int MAX_ROW_SELECTED = 100000;
 
     @Override
     public AnswerItem<BuildRevisionBatch> readByKey(long id) {
         AnswerItem<BuildRevisionBatch> ans = new AnswerItem<>();
-        BuildRevisionBatch result = null;
+        BuildRevisionBatch result;
         final String query = "SELECT * FROM buildrevisionbatch WHERE id = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            try {
-                preStat.setLong(1, id);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            preStat.setLong(1, id);
+
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
-            }
         }
 
-        //sets the message
         ans.setResultMessage(msg);
         return ans;
     }
@@ -130,16 +102,13 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionBatch> resultList = new ArrayList<>();
+
         StringBuilder searchSQL = new StringBuilder();
-
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
-        //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM buildrevisionbatch ");
-
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -149,21 +118,21 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
             searchSQL.append(" or `Batch` like ?");
             searchSQL.append(" or `DateBatch` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+        if (StringUtil.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( ? )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isNotEmpty(system)) {
             searchSQL.append(" and (`system` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (StringUtil.isNotEmpty(country)) {
             searchSQL.append(" and (`country` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (StringUtil.isNotEmpty(environment)) {
             searchSQL.append(" and (`environment` = ?)");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (StringUtil.isNotEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -173,102 +142,63 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                if (!Strings.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
-                    preStat.setString(i++, individualSearch);
-                }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
-                }
-                if (!StringUtil.isNullOrEmpty(country)) {
-                    preStat.setString(i++, country);
-                }
-                if (!StringUtil.isNullOrEmpty(environment)) {
-                    preStat.setString(i++, environment);
-                }
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        resultList.add(this.loadFromResultSet(resultSet));
-                    }
+        LOG.debug("SQL : {}", query);
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
 
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (resultList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList<>(resultList, nrTotalRows);
-                    } else if (resultList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList<>(resultList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList<>(resultList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
+            int i = 1;
+            if (StringUtil.isNotEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
             }
+            if (StringUtil.isNotEmpty(individualSearch)) {
+                preStat.setString(i++, individualSearch);
+            }
+            if (StringUtil.isNotEmpty(system)) {
+                preStat.setString(i++, system);
+            }
+            if (StringUtil.isNotEmpty(country)) {
+                preStat.setString(i++, country);
+            }
+            if (StringUtil.isNotEmpty(environment)) {
+                preStat.setString(i, environment);
+            }
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                while (resultSet.next()) {
+                    resultList.add(this.loadFromResultSet(resultSet));
+                }
 
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+                if (resultList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (resultList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(resultList, nrTotalRows);
+            }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
-            }
         }
+
         response.setResultMessage(msg);
         response.setDataList(resultList);
         return response;
@@ -276,54 +206,36 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
 
     @Override
     public Answer create(BuildRevisionBatch buildRevisionBatch) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO buildrevisionbatch (`system`, `Country`, `Environment`, `Build`, `Revision`, `Batch` ) ");
         query.append("VALUES (?,?,?,?,?,?)");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, buildRevisionBatch.getSystem());
-                preStat.setString(2, buildRevisionBatch.getCountry());
-                preStat.setString(3, buildRevisionBatch.getEnvironment());
-                preStat.setString(4, buildRevisionBatch.getBuild());
-                preStat.setString(5, buildRevisionBatch.getRevision());
-                preStat.setString(6, buildRevisionBatch.getBatch());
+        LOG.debug("SQL : {}", query);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+            preStat.setString(1, buildRevisionBatch.getSystem());
+            preStat.setString(2, buildRevisionBatch.getCountry());
+            preStat.setString(3, buildRevisionBatch.getEnvironment());
+            preStat.setString(4, buildRevisionBatch.getBuild());
+            preStat.setString(5, buildRevisionBatch.getRevision());
+            preStat.setString(6, buildRevisionBatch.getBatch());
 
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
-            }
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
         return new Answer(msg);
@@ -331,89 +243,51 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
 
     @Override
     public Answer delete(BuildRevisionBatch buildRevisionBatch) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "DELETE FROM buildrevisionbatch WHERE id = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setLong(1, buildRevisionBatch.getId());
+        LOG.debug("SQL : {}", query);
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
+
+            preStat.setLong(1, buildRevisionBatch.getId());
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
 
     @Override
     public Answer update(BuildRevisionBatch buildRevisionBatch) {
-        MessageEvent msg = null;
+        MessageEvent msg;
         final String query = "UPDATE buildrevisionbatch SET system = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
                 + "Batch = ?  WHERE id = ? ";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, buildRevisionBatch.getSystem());
-                preStat.setString(2, buildRevisionBatch.getCountry());
-                preStat.setString(3, buildRevisionBatch.getEnvironment());
-                preStat.setString(4, buildRevisionBatch.getBuild());
-                preStat.setString(5, buildRevisionBatch.getRevision());
-                preStat.setString(6, buildRevisionBatch.getBatch());
-                preStat.setLong(7, buildRevisionBatch.getId());
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query)) {
 
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
+            preStat.setString(1, buildRevisionBatch.getSystem());
+            preStat.setString(2, buildRevisionBatch.getCountry());
+            preStat.setString(3, buildRevisionBatch.getEnvironment());
+            preStat.setString(4, buildRevisionBatch.getBuild());
+            preStat.setString(5, buildRevisionBatch.getRevision());
+            preStat.setString(6, buildRevisionBatch.getBatch());
+            preStat.setLong(7, buildRevisionBatch.getId());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : {}", exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
-            }
         }
         return new Answer(msg);
     }
@@ -421,7 +295,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
     @Override
     public BuildRevisionBatch loadFromResultSet(ResultSet resultSet) throws SQLException {
 
-        Long id = ParameterParserUtil.parseLongParam(resultSet.getString("id"), 0);
+        long id = ParameterParserUtil.parseLongParam(resultSet.getString("id"), 0);
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("system"), "");
         String country = ParameterParserUtil.parseStringParam(resultSet.getString("country"), "");
         String environment = ParameterParserUtil.parseStringParam(resultSet.getString("environment"), "");
@@ -439,20 +313,19 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<>();
+        List<String> individualColumnSearchValues = new ArrayList<>();
 
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT distinct ");
-        query.append(columnName);
-        query.append(" as distinctValues FROM buildrevisionbatch ");
+        StringBuilder query = new StringBuilder()
+                .append("SELECT distinct ")
+                .append(columnName)
+                .append(" as distinctValues FROM buildrevisionbatch ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isNotEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -462,31 +335,28 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
             searchSQL.append(" or `Batch` like ?");
             searchSQL.append(" or `DateBatch` like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+                individualColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
+        LOG.debug("SQL : {}", query);
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+             Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (StringUtil.isNotEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -496,19 +366,17 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
+            for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-                //gets the data
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 int nrTotalRows = 0;
-
                 if (rowSet != null && rowSet.next()) {
                     nrTotalRows = rowSet.getInt(1);
                 }
@@ -517,28 +385,18 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
-                } else if (distinctValues.size() <= 0) {
+                } else if (distinctValues.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
+                answer = new AnswerList<>(distinctValues, nrTotalRows);
             }
         } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
+            LOG.error("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
         }
 
         answer.setResultMessage(msg);

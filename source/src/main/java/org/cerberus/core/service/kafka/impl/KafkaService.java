@@ -20,7 +20,6 @@
 package org.cerberus.core.service.kafka.impl;
 
 import com.jayway.jsonpath.PathNotFoundException;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -72,8 +71,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
+
 import org.apache.avro.generic.GenericRecord;
 import org.json.JSONException;
 
@@ -123,7 +121,7 @@ public class KafkaService implements IKafkaService {
                 "", null, "", null, null);
 
         // If token is defined, we add 'cerberus-token' on the http header.
-        if (!StringUtil.isNullOrEmpty(token)) {
+        if (!StringUtil.isEmpty(token)) {
             serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
@@ -558,7 +556,7 @@ public class KafkaService implements IKafkaService {
     private boolean isRecordMatch(String jsomEventMessage, String filterPath, String filterValue, String jsomMessage, String filterHeaderPath, String filterHeaderValue) {
         boolean match = true;
 
-        if (!StringUtil.isNullOrEmpty(filterPath)) {
+        if (!StringUtil.isEmpty(filterPath)) {
             String recordJSONfiltered = "";
             try {
                 recordJSONfiltered = jsonService.getStringFromJson(jsomEventMessage, filterPath);
@@ -577,7 +575,7 @@ public class KafkaService implements IKafkaService {
             }
         }
 
-        if (!StringUtil.isNullOrEmpty(filterHeaderPath)) {
+        if (!StringUtil.isEmpty(filterHeaderPath)) {
             String recordJSONfiltered = "";
             try {
                 recordJSONfiltered = jsonService.getStringFromJson(jsomMessage, filterHeaderPath);

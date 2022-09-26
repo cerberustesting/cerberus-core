@@ -322,7 +322,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                 errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.\n");
                 error = true;
             }
-            if ((StringUtil.isNullOrEmpty(robot)) && (browsers == null || browsers.isEmpty())) {
+            if ((StringUtil.isEmpty(robot)) && (browsers == null || browsers.isEmpty())) {
                 errorMessage.append("Error - No Browser defined. You can either feed it with parameter '" + PARAMETER_BROWSER + "' or add it into the campaign definition.\n");
                 error = true;
             }
@@ -409,7 +409,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                             if (envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment)) {
 
                                                 // Create Tag only if not already done and defined.
-                                                if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
+                                                if (!StringUtil.isEmpty(tag) && !tagAlreadyAdded) {
                                                     // We create or update it.
                                                     ITagService tagService = appContext.getBean(ITagService.class);
                                                     tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);

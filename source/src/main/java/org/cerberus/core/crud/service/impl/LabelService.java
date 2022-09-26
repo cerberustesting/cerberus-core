@@ -168,7 +168,7 @@ public class LabelService implements ILabelService {
             AnswerItem<Label> answerLabelParent = readByKey(object.getParentLabelID());
             if ((answerLabelParent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (answerLabelParent.getItem() != null)) {
                 Label parentLabel = answerLabelParent.getItem();
-                if ((!parentLabel.getSystem().equals(object.getSystem())) && (!StringUtil.isNullOrEmpty(parentLabel.getSystem()))) {
+                if ((!parentLabel.getSystem().equals(object.getSystem())) && (!StringUtil.isEmpty(parentLabel.getSystem()))) {
                     // Parent Label system is not empty and different from child label system.
                     msg.setDescription(msg.getDescription()
                             .replace("%LABEL%", object.getLabel())

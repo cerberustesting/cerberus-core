@@ -139,7 +139,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -160,24 +160,24 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
             }
             searchSQL.append(" )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`system` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (!StringUtil.isEmpty(country)) {
             searchSQL.append(" and (`country` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (!StringUtil.isEmpty(environment)) {
             searchSQL.append(" and (`environment` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(build)) {
+        if (!StringUtil.isEmpty(build)) {
             searchSQL.append(" and (`build` = ?)");
         }
-        if (!StringUtil.isNullOrEmpty(revision)) {
+        if (!StringUtil.isEmpty(revision)) {
             searchSQL.append(" and (`revision` = ?)");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -211,19 +211,19 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(country)) {
+                if (!StringUtil.isEmpty(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isNullOrEmpty(environment)) {
+                if (!StringUtil.isEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isNullOrEmpty(build)) {
+                if (!StringUtil.isEmpty(build)) {
                     preStat.setString(i++, build);
                 }
-                if (!StringUtil.isNullOrEmpty(revision)) {
+                if (!StringUtil.isEmpty(revision)) {
                     preStat.setString(i++, revision);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -313,7 +313,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         query.append("JOIN invariant i on i.value=cl.Environment and i.idname='ENVIRONMENT'  ");
         query.append("WHERE cl.country = ?  ");
         query.append(" and TO_DAYS(NOW()) - TO_DAYS(cl.datecre) <= ? and cl.build != '' and `System`= ? ");
-        if (!(StringUtil.isNullOrEmpty(envGp))) {
+        if (!(StringUtil.isEmpty(envGp))) {
             query.append(" and i.gp1 = ? ");
         }
         query.append(" ORDER BY cl.id desc ; ");
@@ -334,7 +334,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
                 preStat.setString(i++, country);
                 preStat.setInt(i++, nbdays);
                 preStat.setString(i++, system);
-                if (!(StringUtil.isNullOrEmpty(envGp))) {
+                if (!(StringUtil.isEmpty(envGp))) {
                     preStat.setString(i++, envGp);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -587,11 +587,11 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
         query.append(" as distinctValues FROM countryenvparam_log ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -624,10 +624,10 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (!StringUtil.isEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

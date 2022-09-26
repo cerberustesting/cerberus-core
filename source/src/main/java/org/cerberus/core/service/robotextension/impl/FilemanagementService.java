@@ -179,7 +179,7 @@ public class FilemanagementService implements IFilemanagementService {
                                 break;
                         }
                     }
-                    if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
+                    if (objReceived.has("message") && !StringUtil.isEmpty(objReceived.getString("message"))) {
                         msg.resolveDescription("DETAIL", objReceived.getString("message"));
                     } else {
                         msg.resolveDescription("DETAIL", "");

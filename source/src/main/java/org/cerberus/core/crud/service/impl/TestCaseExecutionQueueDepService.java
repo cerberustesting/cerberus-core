@@ -19,11 +19,6 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestCaseExecutionQueueDepDAO;
@@ -42,8 +37,13 @@ import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -99,7 +99,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
         // modify directly the parameter variable
         for (Map.Entry<TestCaseExecution, List<TestCaseExecutionQueueDep>> entry : dependenciesByTestCaseExecution.entrySet()) {
-            entry.getKey().setTestCaseExecutionQueueDep(entry.getValue());
+            entry.getKey().setTestCaseExecutionQueueDepList(entry.getValue());
         }
     }
 
@@ -218,7 +218,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                     List<TestCaseExecutionQueueDep> queueIdLinkList = this.convert(this.readByExeQueueId(key));
                     // for each dependency found, we add the dependency to the FinalMap.
                     for (TestCaseExecutionQueueDep queueDepEntry : queueIdLinkList) {
-                            finalMap.put(queueDepEntry.getQueueId(), Long.valueOf(0));
+                        finalMap.put(queueDepEntry.getQueueId(), Long.valueOf(0));
                     }
                 }
                 finalSize = finalMap.size();

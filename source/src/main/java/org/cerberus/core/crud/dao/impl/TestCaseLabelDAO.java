@@ -182,7 +182,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (tel.`id` like ?");
             searchSQL.append(" or tel.`test` like ?");
             searchSQL.append(" or tel.`testcase` like ?");
@@ -204,7 +204,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -223,7 +223,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

@@ -88,19 +88,19 @@ public class DeleteCountryEnvParam extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "System is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(country)) {
+        } else if (StringUtil.isEmpty(country)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "Country is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(environment)) {
+        } else if (StringUtil.isEmpty(environment)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")

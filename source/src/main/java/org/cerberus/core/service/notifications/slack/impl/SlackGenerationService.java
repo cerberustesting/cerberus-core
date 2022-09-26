@@ -21,7 +21,7 @@ package org.cerberus.core.service.notifications.slack.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
@@ -53,13 +53,13 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         JSONObject slackMessage = new JSONObject();
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
         slackMessage.put("text", "Execution Tag '" + tag.getTag() + "' Started. <" + cerberusUrl + "|Click here> for details.");
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");
@@ -73,7 +73,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -100,7 +100,7 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         slackMessage.append("attachments", attachementObj);
 
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");
@@ -115,13 +115,13 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         JSONObject slackMessage = new JSONObject();
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
         cerberusUrl += "TestCaseExecution.jsp?executionId=" + exe.getId();
         slackMessage.put("text", "Execution '" + exe.getId() + "' Started. <" + cerberusUrl + "|Click here> for details.");
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");
@@ -135,7 +135,7 @@ public class SlackGenerationService implements ISlackGenerationService {
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe, String channel) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -161,7 +161,7 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         slackMessage.append("attachments", attachementObj);
 
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");
@@ -176,7 +176,7 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         JSONObject slackMessage = new JSONObject();
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -192,7 +192,7 @@ public class SlackGenerationService implements ISlackGenerationService {
                 slackMessage.put("text", "Testcase '" + testCase.getTest() + " - " + testCase.getTestcase() + "' was Updated to version " + testCase.getVersion() + ". <" + cerberusUrl + "|Click here> for details.");
                 break;
         }
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");

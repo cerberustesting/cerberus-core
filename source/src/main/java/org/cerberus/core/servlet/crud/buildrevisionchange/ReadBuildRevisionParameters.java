@@ -309,7 +309,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         appService = appContext.getBean(IApplicationService.class);
         cedtService = appContext.getBean(ICountryEnvDeployTypeService.class);
 
-        if (StringUtil.isNullOrEmpty(lastbuild)) {
+        if (StringUtil.isEmpty(lastbuild)) {
             lastbuild = build;
         }
 
@@ -355,7 +355,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
-        if (StringUtil.isNullOrEmpty(lastbuild)) {
+        if (StringUtil.isEmpty(lastbuild)) {
             lastbuild = build;
         }
 

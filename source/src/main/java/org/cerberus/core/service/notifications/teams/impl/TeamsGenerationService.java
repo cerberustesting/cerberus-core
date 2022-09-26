@@ -19,25 +19,24 @@
  */
 package org.cerberus.core.service.notifications.teams.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.service.notifications.teams.ITeamsGenerationService;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.core.service.notifications.teams.ITeamsGenerationService;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.sql.Timestamp;
 
 /**
- *
  * @author vertigo17
  */
 @Service
@@ -55,7 +54,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -96,7 +95,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -145,7 +144,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -158,7 +157,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
         teamsMessage.put("themeColor", "0078D7");
         teamsMessage.put("title", "Execution " + exe.getId() + " Started.");
         String summary = "Testcase '" + exe.getTest() + " - " + exe.getTestCase() + "' on " + exe.getEnvironment() + " - " + exe.getCountry();
-        if (StringUtil.isNullOrEmpty(exe.getRobotDecli())) {
+        if (StringUtil.isEmpty(exe.getRobotDecli())) {
             summary += exe.getRobotDecli();
         }
         teamsMessage.put("summary", summary);
@@ -190,7 +189,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -203,7 +202,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
         teamsMessage.put("themeColor", "0078D7");
         teamsMessage.put("title", "Execution '" + exe.getId() + "' Ended.");
         String summary = "Testcase '" + exe.getTest() + " - " + exe.getTestCase() + "' on " + exe.getEnvironment() + " - " + exe.getCountry();
-        if (StringUtil.isNullOrEmpty(exe.getRobotDecli())) {
+        if (StringUtil.isEmpty(exe.getRobotDecli())) {
             summary += exe.getRobotDecli();
         }
         teamsMessage.put("summary", summary);
@@ -243,7 +242,7 @@ public class TeamsGenerationService implements ITeamsGenerationService {
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String eventReference) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");

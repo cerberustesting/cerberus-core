@@ -20,6 +20,7 @@
 package org.cerberus.core.crud.dao.impl;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IAppServiceHeaderDAO;
@@ -92,11 +93,6 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : {}", exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : {}", exception.toString());
@@ -104,7 +100,6 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
 
-        //sets the message
         ans.setResultMessage(msg);
         return ans;
     }
@@ -119,13 +114,10 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder();
-        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disregarding the limit clauses that
-        //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appserviceheader srh ");
-
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (srh.`service` like ?");
             searchSQL.append(" or srh.`key` like ?");
             searchSQL.append(" or srh.`value` like ?");
@@ -137,7 +129,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
             searchSQL.append(" or srh.`dateModif` like ?");
             searchSQL.append(" or srh.`description` like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
@@ -147,7 +139,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(service)) {
+        if (StringUtil.isNotEmpty(service)) {
             searchSQL.append(" and (srh.`service` = ? )");
         }
 
@@ -156,7 +148,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (StringUtil.isNotEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -168,13 +160,12 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
         LOG.debug("SQL : {}", query);
 
-
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -189,7 +180,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (!StringUtil.isNullOrEmpty(service)) {
+            if (StringUtil.isNotEmpty(service)) {
                 preStat.setString(i++, service);
             }
             if (withActiveCriteria) {
@@ -198,14 +189,11 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
             try (ResultSet resultSet = preStat.executeQuery();
                  ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
-                //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
 
-                //get the total number of rows
                 int nrTotalRows = 0;
-
                 if (rowSet != null && rowSet.next()) {
                     nrTotalRows = rowSet.getInt(1);
                 }
@@ -223,10 +211,6 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     response = new AnswerList<>(objectList, nrTotalRows);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : {}", exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : {}", exception.toString());
@@ -247,7 +231,6 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         query.append("VALUES (?,?,?,?,?,?,?)");
 
         LOG.debug("SQL : {}", query);
-
 
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString())) {
@@ -291,8 +274,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)
-        ) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
@@ -345,24 +327,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         }
         return new Answer(msg);
     }
-
-    @Override
-    public AppServiceHeader loadFromResultSet(ResultSet rs) throws SQLException {
-        String service = ParameterParserUtil.parseStringParam(rs.getString("srh.service"), "");
-        String key = ParameterParserUtil.parseStringParam(rs.getString("srh.key"), "");
-        String value = ParameterParserUtil.parseStringParam(rs.getString("srh.value"), "");
-        int sort = ParameterParserUtil.parseIntegerParam(rs.getString("srh.sort"), 0);
-        boolean isActive = rs.getBoolean("srh.isActive");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("srh.description"), "");
-        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("srh.UsrModif"), "");
-        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("srh.UsrCreated"), "");
-        Timestamp dateModif = rs.getTimestamp("srh.DateModif");
-        Timestamp dateCreated = rs.getTimestamp("srh.DateCreated");
-
-        return factoryAppServiceHeader.create(service, key, value, isActive, sort, description,
-                usrCreated, dateCreated, usrModif, dateModif);
-    }
-
+    
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList<String> answer = new AnswerList<>();
@@ -379,11 +344,11 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         query.append(" as distinctValues FROM appserviceheader ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (StringUtil.isNotEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (srh.`service` like ?");
             searchSQL.append(" or srh.`key` like ?");
             searchSQL.append(" or srh.`value` like ?");
@@ -395,7 +360,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
             searchSQL.append(" or srh.`dateModif` like ?");
             searchSQL.append(" or srh.`description` like ?)");
         }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
+        if (MapUtils.isNotEmpty(individualSearch)) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
@@ -407,7 +372,6 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
-
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
@@ -415,10 +379,10 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (StringUtil.isNotEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -436,13 +400,11 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
 
             try (ResultSet resultSet = preStat.executeQuery();
                  ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
-                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 int nrTotalRows = 0;
-
                 if (rowSet != null && rowSet.next()) {
                     nrTotalRows = rowSet.getInt(1);
                 }
@@ -460,22 +422,31 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            } catch (Exception e) {
-                LOG.warn("Unable to execute query : {}", e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                        e.toString());
             }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : {}", e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
         }
-
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
         return answer;
+    }
+
+    @Override
+    public AppServiceHeader loadFromResultSet(ResultSet rs) throws SQLException {
+        String service = ParameterParserUtil.parseStringParam(rs.getString("srh.service"), "");
+        String key = ParameterParserUtil.parseStringParam(rs.getString("srh.key"), "");
+        String value = ParameterParserUtil.parseStringParam(rs.getString("srh.value"), "");
+        int sort = ParameterParserUtil.parseIntegerParam(rs.getString("srh.sort"), 0);
+        boolean isActive = rs.getBoolean("srh.isActive");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("srh.description"), "");
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("srh.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("srh.UsrCreated"), "");
+        Timestamp dateModif = rs.getTimestamp("srh.DateModif");
+        Timestamp dateCreated = rs.getTimestamp("srh.DateCreated");
+
+        return factoryAppServiceHeader.create(service, key, value, isActive, sort, description,
+                usrCreated, dateCreated, usrModif, dateModif);
     }
 }

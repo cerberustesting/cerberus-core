@@ -423,7 +423,7 @@ public class InvariantDAO implements IInvariantDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -546,7 +546,7 @@ public class InvariantDAO implements IInvariantDAO {
 
             int i = 1;
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -899,7 +899,7 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     private String getSearchString(String searchTerm) {
-        if (StringUtil.isNullOrEmpty(searchTerm)) {
+        if (StringUtil.isEmpty(searchTerm)) {
             return "";
         } else {
             StringBuilder gSearch = new StringBuilder();

@@ -370,7 +370,7 @@ public class TestDAO implements ITestDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `datecreated` like ?) ");
@@ -386,7 +386,7 @@ public class TestDAO implements ITestDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(colName)) {
+        if (!StringUtil.isEmpty(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -501,7 +501,7 @@ public class TestDAO implements ITestDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (tes.`test` like ?");
             searchSQL.append(" or tes.`description` like ?");
             searchSQL.append(" or tes.`isActive` like ?");

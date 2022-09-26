@@ -21,7 +21,6 @@
 package org.cerberus.core.api.dto.v001;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,7 +31,6 @@ import lombok.extern.jackson.Jacksonized;
 import org.cerberus.core.api.dto.views.View;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 @ToString
 @Data

@@ -20,6 +20,7 @@
 package org.cerberus.core.crud.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,7 @@ import org.cerberus.core.crud.entity.AppServiceHeader;
 import org.cerberus.core.crud.service.IAppServiceContentService;
 import org.cerberus.core.crud.service.IAppServiceHeaderService;
 import org.cerberus.core.crud.service.IAppServiceService;
+import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
@@ -47,7 +49,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import org.cerberus.core.crud.service.ITestCaseStepActionService;
 
 /**
  * @author cte
@@ -73,9 +74,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList<AppService> readByCriteria(
-            int startPosition, int length, String columnName, String sort,
-            String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
+    public AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems) {
         return appServiceDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
     }
 
@@ -93,7 +92,7 @@ public class AppServiceService implements IAppServiceService {
             if (appService != null) {
                 AnswerList<AppServiceContent> content;
                 // Add first the inherited values.
-                if (!StringUtil.isNullOrEmpty(appService.getParentContentService())) {
+                if (!StringUtil.isEmpty(appService.getParentContentService())) {
                     content = appServiceContentService.readByVarious(appService.getParentContentService());
                     if (content != null) {
                         List<AppServiceContent> contentList = content.getDataList();
@@ -171,10 +170,9 @@ public class AppServiceService implements IAppServiceService {
         Answer answer = this.create(newAppService);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-
-            if (newAppService.getContentList() != null && !newAppService.getContentList().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(newAppService.getContentList())) {
                 newAppService.getContentList().forEach(appServiceContent -> {
-                    if (appServiceContent.getKey() == null || appServiceContent.getKey().isEmpty()) {
+                    if (StringUtil.isEmpty(appServiceContent.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceContent");
                     }
                     appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "defaultUser" : newAppService.getUsrCreated());
@@ -187,9 +185,9 @@ public class AppServiceService implements IAppServiceService {
                 }
             }
 
-            if (newAppService.getHeaderList() != null && !newAppService.getHeaderList().isEmpty()) {
+            if (CollectionUtils.isNotEmpty(newAppService.getHeaderList())) {
                 newAppService.getHeaderList().forEach(appServiceHeader -> {
-                    if (appServiceHeader.getKey() == null || appServiceHeader.getKey().isEmpty()) {
+                    if (StringUtil.isNotEmpty(appServiceHeader.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceHeader");
                     }
                     appServiceHeader.setUsrCreated(newAppService.getUsrCreated());
@@ -212,14 +210,14 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public Answer update(String originalService, AppService object) {
         Answer resp = appServiceDao.update(originalService, object);
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            if (originalService != null && !originalService.equals(object.getService())) {
-                try {
-                    // Key is modified, we updte all testcase actions that call that service
-                    actionService.updateService(originalService, object.getService());
-                } catch (CerberusException ex) {
-                    LOG.warn(ex, ex);
-                }
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())
+                && originalService != null
+                && !originalService.equals(object.getService())) {
+            try {
+                // Key is modified, we update all testcase actions that call that service
+                actionService.updateService(originalService, object.getService());
+            } catch (CerberusException ex) {
+                LOG.warn(ex, ex);
             }
         }
         return resp;
@@ -294,7 +292,7 @@ public class AppServiceService implements IAppServiceService {
     public String guessContentType(AppService service, String defaultValue) {
 
         // If service is null, Type is not defined.
-        if (service == null || StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
+        if (service == null || StringUtil.isEmpty(service.getResponseHTTPBody())) {
             // Service is null so we don't know the format.
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
@@ -322,7 +320,7 @@ public class AppServiceService implements IAppServiceService {
         }
 
         // Header did not define the format and could not guess from file content.
-        if (StringUtil.isNullOrEmpty(defaultValue)) {
+        if (StringUtil.isEmpty(defaultValue)) {
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
         return defaultValue;
@@ -330,11 +328,11 @@ public class AppServiceService implements IAppServiceService {
 
     @Override
     public String guessContentType(String content) {
-        if (StringUtil.isNullOrEmpty(content)) {
+        if (StringUtil.isEmpty(content)) {
             // Service is null so we don't know the format.
             return null;
         }
-        
+
         if (JSONUtil.isJSONValid(content)) {
             LOG.debug("JSON format guessed from successful parsing.");
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
@@ -360,7 +358,7 @@ public class AppServiceService implements IAppServiceService {
                 result.append("&");
             }
         }
-        result = new StringBuilder(StringUtil.removeLastChar(result.toString(), 1));
+        result = new StringBuilder(StringUtil.removeLastChar(result.toString()));
         return result.toString();
     }
 

@@ -176,14 +176,14 @@ public class SikuliService implements ISikuliService {
                             yOffsetS = offsetsR1.replace("yoffset=", "");
                         }
                     }
-                    if (!StringUtil.isNullOrEmpty(xOffsetS)) {
+                    if (!StringUtil.isEmpty(xOffsetS)) {
                         try {
                             xOffset = Integer.valueOf(xOffsetS);
                         } catch (NumberFormatException e) {
                             LOG.warn("Failed to convert xOffset : " + xOffsetS, e);
                         }
                     }
-                    if (!StringUtil.isNullOrEmpty(yOffsetS)) {
+                    if (!StringUtil.isEmpty(yOffsetS)) {
                         try {
                             yOffset = Integer.valueOf(yOffsetS);
                         } catch (NumberFormatException e) {
@@ -403,7 +403,7 @@ public class SikuliService implements ISikuliService {
                         msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_BUTRETURNEDKO);
                         msg.resolveDescription("DETAIL", "");
                     } else {
-                        if (objReceived.has("message") && !StringUtil.isNullOrEmpty(objReceived.getString("message"))) {
+                        if (objReceived.has("message") && !StringUtil.isEmpty(objReceived.getString("message"))) {
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WITHDETAIL);
                             msg.resolveDescription("DETAIL", objReceived.getString("message"));
                         } else {

@@ -86,13 +86,13 @@ public class DeleteApplicationObject extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(application)) {
+        if (StringUtil.isEmpty(application)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "Application name is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(object)) {
+        } else if (StringUtil.isEmpty(object)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
                     .replace("%OPERATION%", "Delete")

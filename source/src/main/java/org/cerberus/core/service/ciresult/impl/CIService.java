@@ -67,7 +67,7 @@ public class CIService implements ICIService {
         try {
 
             // If campaign is not defined here, we try to get it from tag. At the same time, we check that tag exist.
-            if (StringUtil.isNullOrEmpty(campaign)) {
+            if (StringUtil.isEmpty(campaign)) {
                 Tag myTag = tagService.convert(tagService.readByKey(tag));
                 campaign = myTag.getCampaign();
             }
@@ -201,12 +201,12 @@ public class CIService implements ICIService {
             int resultCalThreshold = parameterService.getParameterIntegerByKey("cerberus_ci_threshold", "", 100);
 
             // If tag is linked to campaign, we get the threshold from the campaign definition (if exist and can be converted to integer).
-            if (!StringUtil.isNullOrEmpty(campaign)) {
+            if (!StringUtil.isEmpty(campaign)) {
                 try {
                     LOG.debug("Trying to get CIScoreThreshold from campaign : '" + campaign + "'");
                     // Check campaign score here.
                     Campaign mycampaign = campaignService.convert(campaignService.readByKey(campaign));
-                    if (!StringUtil.isNullOrEmpty(mycampaign.getCIScoreThreshold())) {
+                    if (!StringUtil.isEmpty(mycampaign.getCIScoreThreshold())) {
                         try {
                             resultCalThreshold = Integer.valueOf(mycampaign.getCIScoreThreshold());
                         } catch (NumberFormatException ex) {
@@ -278,7 +278,7 @@ public class CIService implements ICIService {
 
         HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            if (!StringUtil.isNullOrEmpty(testCaseExecution.getEnvironment())) {
+            if (!StringUtil.isEmpty(testCaseExecution.getEnvironment())) {
                 statMap.put(testCaseExecution.getEnvironment(), null);
             }
         }
@@ -296,7 +296,7 @@ public class CIService implements ICIService {
 
         HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            if (!StringUtil.isNullOrEmpty(testCaseExecution.getCountry())) {
+            if (!StringUtil.isEmpty(testCaseExecution.getCountry())) {
                 statMap.put(testCaseExecution.getCountry(), null);
             }
         }
@@ -314,7 +314,7 @@ public class CIService implements ICIService {
 
         HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            if (!StringUtil.isNullOrEmpty(testCaseExecution.getRobotDecli())) {
+            if (!StringUtil.isEmpty(testCaseExecution.getRobotDecli())) {
                 statMap.put(testCaseExecution.getRobotDecli(), null);
             }
         }
@@ -332,7 +332,7 @@ public class CIService implements ICIService {
 
         HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            if (!StringUtil.isNullOrEmpty(testCaseExecution.getSystem())) {
+            if (!StringUtil.isEmpty(testCaseExecution.getSystem())) {
                 statMap.put(testCaseExecution.getSystem(), null);
             }
         }
@@ -350,7 +350,7 @@ public class CIService implements ICIService {
 
         HashMap<String, String> statMap = new HashMap<>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            if (!StringUtil.isNullOrEmpty(testCaseExecution.getApplication())) {
+            if (!StringUtil.isEmpty(testCaseExecution.getApplication())) {
                 statMap.put(testCaseExecution.getApplication(), null);
             }
         }

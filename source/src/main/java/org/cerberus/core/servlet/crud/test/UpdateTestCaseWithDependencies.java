@@ -120,7 +120,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(testId) || StringUtil.isNullOrEmpty(testCaseId)) {
+        if (StringUtil.isEmpty(testId) || StringUtil.isEmpty(testCaseId)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")

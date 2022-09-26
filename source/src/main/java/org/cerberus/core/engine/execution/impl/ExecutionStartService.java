@@ -246,7 +246,7 @@ public class ExecutionStartService implements IExecutionStartService {
         String appURL = "";
         if (execution.getManualURL() == 1) {
             LOG.debug("Execution will be done with manual application connectivity setting.");
-            if (StringUtil.isNullOrEmpty(execution.getMyHost())) {
+            if (StringUtil.isEmpty(execution.getMyHost())) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID);
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
@@ -259,7 +259,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
                 execution.setUrl(appURL);
                 // If domain is empty we guess it from URL.
-                if (StringUtil.isNullOrEmpty(cea.getDomain())) {
+                if (StringUtil.isEmpty(cea.getDomain())) {
                     cea.setDomain(StringUtil.getDomainFromUrl(appURL));
                 }
                 cea.setUrlLogin(execution.getMyLoginRelativeURL());
@@ -285,20 +285,20 @@ public class ExecutionStartService implements IExecutionStartService {
                 if (cea != null) {
                     if (execution.getManualURL() == 2) {
                         // add possibility to override URL with MyHost if MyHost is available
-                        if (!StringUtil.isNullOrEmpty(execution.getMyHost())) {
+                        if (!StringUtil.isEmpty(execution.getMyHost())) {
                             cea.setIp(execution.getMyHost());
                         }
-                        if (!StringUtil.isNullOrEmpty(execution.getMyContextRoot())) {
+                        if (!StringUtil.isEmpty(execution.getMyContextRoot())) {
                             cea.setUrl(execution.getMyContextRoot());
                         }
-                        if (!StringUtil.isNullOrEmpty(execution.getMyLoginRelativeURL())) {
+                        if (!StringUtil.isEmpty(execution.getMyLoginRelativeURL())) {
                             cea.setUrlLogin(execution.getMyLoginRelativeURL());
                         }
                     }
                     appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
                     execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
                     execution.setUrl(appURL);
-                    if ("GUI".equals(execution.getApplicationObj().getType()) && StringUtil.isNullOrEmpty(cea.getDomain())) {
+                    if ("GUI".equals(execution.getApplicationObj().getType()) && StringUtil.isEmpty(cea.getDomain())) {
                         // Domain calculation only make sense for Web applications.
                         // If domain is empty we guess it from URL.
                         cea.setDomain(StringUtil.getDomainFromUrl(execution.getUrl()));
@@ -413,7 +413,7 @@ public class ExecutionStartService implements IExecutionStartService {
         String robotDecli = "";
         String version = "";
         String platform = "";
-        if (!StringUtil.isNullOrEmpty(execution.getRobot())) {
+        if (!StringUtil.isEmpty(execution.getRobot())) {
             robObj = robotService.readByKey(execution.getRobot());
 
             if (robObj == null) {
@@ -424,7 +424,7 @@ public class ExecutionStartService implements IExecutionStartService {
             // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
             browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
             robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-            if (StringUtil.isNullOrEmpty(robotDecli)) {
+            if (StringUtil.isEmpty(robotDecli)) {
                 robotDecli = robObj.getRobot();
             }
             version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
@@ -445,7 +445,7 @@ public class ExecutionStartService implements IExecutionStartService {
             }
 
             // If executor is not set, we get the best one from the list.
-            if (StringUtil.isNullOrEmpty(execution.getRobotExecutor())) {
+            if (StringUtil.isEmpty(execution.getRobotExecutor())) {
                 LOG.debug("Getting the best Executor on Robot : {}", execution.getRobot());
                 robExeObj = robotExecutorService.readBestByKey(execution.getRobot());
                 if (robExeObj != null) {

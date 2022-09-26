@@ -85,7 +85,7 @@ public class XRayGenerationService implements IXRayGenerationService {
             xRayMessage.put("tests", testsMessage);
 
             // Adding Test Execution in case it aalready exist.
-            if (!StringUtil.isNullOrEmpty(tag.getXRayTestExecution()) && !"PENDING".equals(tag.getXRayTestExecution())) {
+            if (!StringUtil.isEmpty(tag.getXRayTestExecution()) && !"PENDING".equals(tag.getXRayTestExecution())) {
                 xRayMessage.put("testExecutionKey", tag.getXRayTestExecution());
             }
 
@@ -101,7 +101,7 @@ public class XRayGenerationService implements IXRayGenerationService {
     public JSONObject generateUpdateTestExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -128,7 +128,7 @@ public class XRayGenerationService implements IXRayGenerationService {
 
         slackMessage.append("attachments", attachementObj);
 
-        if (!StringUtil.isNullOrEmpty(channel)) {
+        if (!StringUtil.isEmpty(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");

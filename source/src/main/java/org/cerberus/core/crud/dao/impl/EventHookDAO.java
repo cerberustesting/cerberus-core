@@ -123,7 +123,7 @@ public class EventHookDAO implements IEventHookDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (evh.`id` like ?");
             searchSQL.append(" or evh.`ObjectKey1` like ?");
             searchSQL.append(" or evh.`ObjectKey2` like ?");
@@ -159,7 +159,7 @@ public class EventHookDAO implements IEventHookDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -180,7 +180,7 @@ public class EventHookDAO implements IEventHookDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -401,7 +401,7 @@ public class EventHookDAO implements IEventHookDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (evh.`id` like ?");
             searchSQL.append(" or evh.`ObjectKey1` like ?");
             searchSQL.append(" or evh.`ObjectKey2` like ?");
@@ -438,7 +438,7 @@ public class EventHookDAO implements IEventHookDAO {
 
             int i = 1;
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

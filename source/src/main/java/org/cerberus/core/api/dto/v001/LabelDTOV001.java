@@ -82,7 +82,7 @@ public class LabelDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class})
     @ApiModelProperty(position = 10)
-    private String longDescription;
+    private String detailedDescription;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 11)

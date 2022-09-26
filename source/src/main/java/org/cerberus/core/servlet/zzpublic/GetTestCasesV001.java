@@ -122,7 +122,7 @@ public class GetTestCasesV001 {
         LOG.info("Webservice GetTestCasesV001 called by GET Request");
         Map<String, Object> mapResponse = new HashMap<>();
         try {
-            if (!StringUtil.isNullOrEmpty(application)) {
+            if (!StringUtil.isEmpty(application)) {
                 //Process to get testcase by application
                 List<ResponseTC.TestCase> testCaseListResponse = new ArrayList<>();
                 testCaseListResponse = findTestCasesByApplication(application, servletContext);

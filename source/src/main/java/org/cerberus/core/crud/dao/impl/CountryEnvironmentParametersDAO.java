@@ -19,32 +19,32 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
+import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.database.DatabaseSpring;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.enums.MessageGeneralEnum;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.cerberus.core.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.database.DatabaseSpring;
-import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.engine.entity.MessageGeneral;
-import org.cerberus.core.enums.MessageGeneralEnum;
-import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.StringUtil;
-import org.cerberus.core.util.answer.Answer;
-import org.cerberus.core.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
-import org.cerberus.core.util.answer.AnswerItem;
 
 /**
  * {Insert class description here}
@@ -145,7 +145,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 + "FROM countryenvironmentparameters cea, countryenvparam cev, invariant inv "
                 + "WHERE cev.system = cea.system AND cev.country = cea.country AND cev.environment = cea.environment "
                 + "AND cea.Application = ? AND cea.country= ? "
-                + "AND cev.active='Y' AND inv.idname = 'ENVIRONMENT' AND inv.Value = ce.Environment "
+                + "AND cev.active='Y' AND inv.idname = 'ENVIRONMENT' AND inv.Value = cev.Environment "
                 + "ORDER BY inv.sort";
 
         // Debug message on SQL.
@@ -276,7 +276,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (cea.`system` like ?");
             searchSQL.append(" or cea.`country` like ?");
             searchSQL.append(" or cea.`environment` like ?");
@@ -286,24 +286,24 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             searchSQL.append(" or cea.`URL` like ?");
             searchSQL.append(" or cea.`URLLOGIN` like ?)");
         }
-        if (!StringUtil.isNullOrEmpty(individualSearch)) {
+        if (!StringUtil.isEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (cea.`System` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(country)) {
+        if (!StringUtil.isEmpty(country)) {
             searchSQL.append(" and (cea.`country` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(environment)) {
+        if (!StringUtil.isEmpty(environment)) {
             searchSQL.append(" and (cea.`environment` = ? )");
         }
-        if (!StringUtil.isNullOrEmpty(application)) {
+        if (!StringUtil.isEmpty(application)) {
             searchSQL.append(" and (cea.`application` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -327,7 +327,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -337,19 +337,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isNullOrEmpty(individualSearch)) {
+                if (!StringUtil.isEmpty(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
+                if (!StringUtil.isEmpty(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isNullOrEmpty(country)) {
+                if (!StringUtil.isEmpty(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isNullOrEmpty(environment)) {
+                if (!StringUtil.isEmpty(environment)) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isNullOrEmpty(application)) {
+                if (!StringUtil.isEmpty(application)) {
                     preStat.setString(i++, application);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -459,7 +459,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString(),exception);
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
@@ -544,7 +544,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, object.getIp());
                 preStat.setString(i++, object.getUrl());
                 preStat.setString(i++, object.getUrlLogin());
@@ -602,12 +602,12 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String var3 = resultSet.getString("cea.Var3");
         String var4 = resultSet.getString("cea.Var4");
         String mobileActivity = resultSet.getString("cea.mobileActivity");
-        if(mobileActivity == null) {
-            mobileActivity="";
+        if (mobileActivity == null) {
+            mobileActivity = "";
         }
         String mobilePackage = resultSet.getString("cea.mobilePackage");
-        if(mobilePackage == null) {
-            mobilePackage="";
+        if (mobilePackage == null) {
+            mobilePackage = "";
         }
 
         int poolSize = resultSet.getInt("cea.poolSize");

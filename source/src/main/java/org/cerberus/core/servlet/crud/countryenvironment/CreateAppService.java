@@ -158,7 +158,7 @@ public class CreateAppService extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(service)) {
+        if (StringUtil.isEmpty(service)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                     .replace("%OPERATION%", "Create")

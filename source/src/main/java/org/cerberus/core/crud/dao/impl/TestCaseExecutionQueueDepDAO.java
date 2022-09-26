@@ -373,7 +373,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -395,7 +395,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -415,7 +415,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -613,7 +613,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
         searchSQL.append("WHERE 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -647,7 +647,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
             int i = 1;
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

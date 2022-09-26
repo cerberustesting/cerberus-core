@@ -61,7 +61,7 @@ public class APIKeyService implements IAPIKeyService {
 
                 // If already aauthorised, we don't need to check the api key.
                 LOG.debug(request.getUserPrincipal());
-                if ((request.getUserPrincipal() != null) && (!StringUtil.isNullOrEmpty(request.getUserPrincipal().getName()))) {
+                if ((request.getUserPrincipal() != null) && (!StringUtil.isEmpty(request.getUserPrincipal().getName()))) {
                     LOG.debug("User connected with : '" + request.getUserPrincipal().getName() + "'");
                     return true;
                 }
@@ -97,7 +97,7 @@ public class APIKeyService implements IAPIKeyService {
 
     @Override
     public boolean authenticate(Principal principal, String apiKey) {
-        return (principal != null && !StringUtil.isNullOrEmpty(principal.getName())) || this.authenticate(apiKey);
+        return (principal != null && !StringUtil.isEmpty(principal.getName())) || this.authenticate(apiKey);
     }
 
     private boolean isApiKeyAuthEnabled() {
@@ -115,7 +115,7 @@ public class APIKeyService implements IAPIKeyService {
     }
 
     private boolean isApiKeyValid(String apiKey) {
-        return (!StringUtil.isNullOrEmpty(apiKey))
+        return (!StringUtil.isEmpty(apiKey))
                 && (userService.verifyAPIKey(apiKey));
     }
 

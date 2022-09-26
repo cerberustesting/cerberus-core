@@ -80,7 +80,7 @@ public class DeleteSqlLibrary extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
                     .replace("%OPERATION%", "Delete")

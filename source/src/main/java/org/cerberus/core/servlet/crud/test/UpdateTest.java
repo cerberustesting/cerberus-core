@@ -89,7 +89,7 @@ public class UpdateTest extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(test)) {
+        if (StringUtil.isEmpty(test)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test")
                     .replace("%OPERATION%", "Update")

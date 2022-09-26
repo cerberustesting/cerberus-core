@@ -19,29 +19,18 @@
  */
 package org.cerberus.core.servlet.crud.test;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import javax.annotation.Nullable;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCaseStep;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.crud.entity.Test;
-import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITestService;
 import org.cerberus.core.crud.service.impl.LogEventService;
+import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.StringUtil;
@@ -55,6 +44,16 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.annotation.Nullable;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @author cerberus
  */
@@ -67,10 +66,10 @@ public class DeleteTest extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
@@ -87,7 +86,7 @@ public class DeleteTest extends HttpServlet {
         String key = policy.sanitize(request.getParameter("test"));
 
         // Checking all constrains before calling the services.
-        if (StringUtil.isNull(key)) {
+        if (StringUtil.isEmptyOrNullValue(key)) {
             ans.setResultMessage(
                     new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
                             .resolveDescription("ITEM", "Test")
@@ -119,7 +118,7 @@ public class DeleteTest extends HttpServlet {
                     final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
                     if (!externallyUsedTestCaseSteps.isEmpty()) {
                         String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-                        if (StringUtil.isNullOrEmpty(cerberusUrlTemp)) {
+                        if (StringUtil.isEmpty(cerberusUrlTemp)) {
                             cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
                         }
                         final String cerberusUrl = cerberusUrlTemp;
@@ -131,7 +130,7 @@ public class DeleteTest extends HttpServlet {
                                         .resolveDescription("OPERATION", "Delete")
                                         .resolveDescription(
                                                 "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
-                                                + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
+                                                        + Collections2.transform(externallyUsedTestCaseSteps, (@Nullable final TestCaseStep input) -> String.format(
                                                         "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
                                                         cerberusUrl,
                                                         input.getTest(),
@@ -177,7 +176,7 @@ public class DeleteTest extends HttpServlet {
      * {@link Test}
      *
      * @param test the {@link Test} from which getting externally used
-     * {@link TestCaseStep}s
+     *             {@link TestCaseStep}s
      * @return a {@link Collection} of {@link TestCaseStep} which are using an
      * other {@link TestCaseStep} from the given {@link Test} but which are NOT
      * included into this {@link Test}
@@ -206,13 +205,14 @@ public class DeleteTest extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -227,10 +227,10 @@ public class DeleteTest extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

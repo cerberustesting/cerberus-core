@@ -19,7 +19,8 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -73,6 +74,8 @@
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-net.version>3.6</commons-net.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
         <java-image-scaling.version>0.8.5</java-image-scaling.version>
         <commons-email.version>1.5</commons-email.version>
         <commons-text.version>1.3</commons-text.version>
@@ -268,7 +271,7 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>${jna.version}</version>
-            <classifier />
+            <classifier/>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -423,6 +426,16 @@
             <groupId>com.mortennobel</groupId>
             <artifactId>java-image-scaling</artifactId>
             <version>${java-image-scaling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons-collections4.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -824,16 +837,21 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to Cerberus Delivery server..." />
-                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}" password="${cerberus.delivery.password}" trust="yes" />
+                                        <echo message="Uploading artifact to Cerberus Delivery server..."/>
+                                        <scp file="${project.build.directory}/${project.build.finalName}.zip"
+                                             todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}"
+                                             password="${cerberus.delivery.password}" trust="yes"/>
                                         <!--
                                             Deploy artifact by:
                                                 1. Extracting distribution package to the server's upload path;
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying to QA..." />
-                                        <sshexec host="${cerberus.delivery.host}" username="${cerberus.delivery.username}" password="${cerberus.delivery.password}" trust="yes" command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
+                                        <echo message="Deploying to QA..."/>
+                                        <sshexec host="${cerberus.delivery.host}"
+                                                 username="${cerberus.delivery.username}"
+                                                 password="${cerberus.delivery.password}" trust="yes"
+                                                 command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )"/>
                                     </target>
                                 </configuration>
                             </execution>

@@ -88,7 +88,7 @@ public class CreateDeployType extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(deploytype)) {
+        if (StringUtil.isEmpty(deploytype)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
                     .replace("%OPERATION%", "Create")

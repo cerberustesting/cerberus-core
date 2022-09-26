@@ -463,7 +463,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         searchSQL.append(" WHERE 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
             searchSQL.append(" or tdl.`privateData` like ?");
             searchSQL.append(" or tdl.`group` like ?");
@@ -501,7 +501,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (country != null) {
             searchSQL.append(" and tdl.`country` = ? ");
         }
-        if (!StringUtil.isNullOrEmpty(type)) {
+        if (!StringUtil.isEmpty(type)) {
             searchSQL.append(" and tdl.`type` = ? ");
         }
         query.append(searchSQL);
@@ -515,7 +515,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         query.append(" AND ");
         query.append(UserSecurity.getSystemAllowForSQL("tdl.`system`"));
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -540,7 +540,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -572,7 +572,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 if (country != null) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isNullOrEmpty(type)) {
+                if (!StringUtil.isEmpty(type)) {
                     preStat.setString(i++, type);
                 }
 
@@ -1069,7 +1069,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
             searchSQL.append(" or tdl.`privateData` like ?");
             searchSQL.append(" or tdl.`group` like ?");

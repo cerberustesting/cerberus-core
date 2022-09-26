@@ -19,23 +19,30 @@
  */
 package org.cerberus.core.crud.entity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.sql.Timestamp;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.URLEncoder;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author vertigo17
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class Tag {
 
     private static final Logger LOG = LogManager.getLogger(Tag.class);
@@ -45,7 +52,7 @@ public class Tag {
     private String description;
     private String comment;
     private String campaign;
-    private Timestamp DateEndQueue;
+    private Timestamp dateEndQueue;
     private int nbExe;
     private int nbExeUsefull;
     private int nbOK;
@@ -72,20 +79,18 @@ public class Tag {
     private String xRayTestExecution;
     private String xRayURL;
     private String lambdaTestBuild;
-    private String UsrCreated;
-    private Timestamp DateCreated;
-    private String UsrModif;
-    private Timestamp DateModif;
+    @EqualsAndHashCode.Exclude
+    private String usrCreated;
+    @EqualsAndHashCode.Exclude
+    private Timestamp dateCreated;
+    @EqualsAndHashCode.Exclude
+    private String usrModif;
+    @EqualsAndHashCode.Exclude
+    private Timestamp dateModif;
 
-    /*
-     * Outside Database Model
-     */
+    // Outside Database Model
     @EqualsAndHashCode.Exclude
     private List<TestCaseExecution> executionsNew;
-
-    public void appendExecutions(TestCaseExecution executions) {
-        this.executionsNew.add(executions);
-    }
 
     public boolean hasSameKey(Tag obj) {
         if (obj == null) {
@@ -94,44 +99,7 @@ public class Tag {
         if (getClass() != obj.getClass()) {
             return false;
         }
-
-        final Tag other = obj;
-        if ((this.tag == null) ? (other.tag != null) : !this.tag.equals(other.tag)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-
-        int hash = 3;
-        hash = 67 * hash + (this.tag != null ? this.tag.hashCode() : 0);
-        hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
-        hash = 67 * hash + (this.campaign != null ? this.campaign.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tag other = (Tag) obj;
-        if ((this.tag == null) ? (other.tag != null) : !this.tag.equals(other.tag)) {
-            return false;
-        }
-        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
-            return false;
-        }
-        if ((this.campaign == null) ? (other.campaign != null) : !this.campaign.equals(other.campaign)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.tag, obj.tag);
     }
 
     public JSONObject toJsonLight() {
@@ -142,8 +110,6 @@ public class Tag {
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
-        } catch (JSONException ex) {
-            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }
@@ -159,7 +125,7 @@ public class Tag {
             result.put("campaign", this.campaign);
             result.put("description", this.description);
             result.put("comment", this.comment);
-            result.put("DateEndQueue", this.DateEndQueue);
+            result.put("DateEndQueue", this.dateEndQueue);
             result.put("nbExe", this.nbExe);
             result.put("nbExeUsefull", this.nbExeUsefull);
             result.put("nbOK", this.nbOK);
@@ -182,17 +148,15 @@ public class Tag {
             result.put("applicationList", this.applicationList);
             result.put("reqEnvironmentList", this.reqEnvironmentList);
             result.put("reqCountryList", this.reqCountryList);
-            result.put("UsrCreated", this.UsrCreated);
-            result.put("DateCreated", this.DateCreated);
-            result.put("UsrModif", this.UsrModif);
-            result.put("DateModif", this.DateModif);
+            result.put("UsrCreated", this.usrCreated);
+            result.put("DateCreated", this.dateCreated);
+            result.put("UsrModif", this.usrModif);
+            result.put("DateModif", this.dateModif);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
             result.put("xRayTestExecution", this.xRayTestExecution);
             result.put("xRayURL", this.xRayURL);
 
-        } catch (JSONException ex) {
-            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }
@@ -200,14 +164,13 @@ public class Tag {
     }
 
     /**
-     *
      * @param cerberusURL
-     * @param prioritiesList : send the invariant list of priorities to the
-     * method (this is to avoid getting value from database for every entries)
-     * @param countriesList : send the invariant list of countries to the method
-     * (this is to avoid getting value from database for every entries)
+     * @param prioritiesList   : send the invariant list of priorities to the
+     *                         method (this is to avoid getting value from database for every entries)
+     * @param countriesList    : send the invariant list of countries to the method
+     *                         (this is to avoid getting value from database for every entries)
      * @param environmentsList : send the invariant list of environments to the
-     * method (this is to avoid getting value from database for every entries)
+     *                         method (this is to avoid getting value from database for every entries)
      * @return
      */
     public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {
@@ -217,12 +180,12 @@ public class Tag {
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
             result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, "UTF-8"));
             result.put("tag", this.tag);
-            if (this.DateEndQueue != null && this.DateCreated != null) {
-                result.put("tagDurationInMs", (this.DateEndQueue.getTime() - this.DateCreated.getTime()));
+            if (this.dateEndQueue != null && this.dateCreated != null) {
+                result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateCreated.getTime()));
             }
             result.put("CI", this.ciResult);
-            result.put("start", this.DateCreated);
-            result.put("end", this.DateEndQueue);
+            result.put("start", this.dateCreated);
+            result.put("end", this.dateEndQueue);
             result.put("campaign", this.campaign);
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
@@ -247,8 +210,6 @@ public class Tag {
             }
             result.put("executions", listOfExecutionsJSON);
 
-        } catch (JSONException | UnsupportedEncodingException ex) {
-            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }

@@ -19,13 +19,6 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BatchInvariant;
@@ -49,8 +42,15 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author vertigo17
  */
 @Service
@@ -72,7 +72,7 @@ public class EmailGenerationService implements IEmailGenerationService {
     private IEmailFactory emailFactory;
     @Autowired
     private IEmailBodyGeneration emailBodyGeneration;
-    
+
 
     @Override
     public Email generateRevisionChangeEmail(String system, String country, String env, String build, String revision) throws Exception {
@@ -93,10 +93,10 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_body", system).getValue();
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyRevision())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.geteMailBodyRevision())) {
             body = myCountryEnvParam.geteMailBodyRevision();
         }
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.getDistribList())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.getDistribList())) {
             to = myCountryEnvParam.getDistribList();
         }
 
@@ -151,11 +151,11 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.findParameterByKey("cerberus_notification_disableenvironment_body", system).getValue();
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
             body = myCountryEnvParam.geteMailBodyDisableEnvironment();
         }
 
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.getDistribList())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.getDistribList())) {
             to = myCountryEnvParam.getDistribList();
         }
 
@@ -201,10 +201,10 @@ public class EmailGenerationService implements IEmailGenerationService {
         String body = parameterService.findParameterByKey("cerberus_notification_newchain_body", system).getValue();
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyChain())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.geteMailBodyChain())) {
             body = myCountryEnvParam.geteMailBodyChain();
         }
-        if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.getDistribList())) {
+        if (StringUtil.isNotEmptyOrNullValue(myCountryEnvParam.getDistribList())) {
             to = myCountryEnvParam.getDistribList();
         }
 
@@ -273,7 +273,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%LOGIN%", user.getLogin());
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
         StringBuilder sb = new StringBuilder();
@@ -308,7 +308,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
 
@@ -355,7 +355,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
             String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-            if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+            if (StringUtil.isEmpty(cerberusUrl)) {
                 cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
             }
 
@@ -576,7 +576,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
 
@@ -627,7 +627,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
 
@@ -682,7 +682,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         boolean isSetTls = parameterService.getParameterBooleanByKey("cerberus_smtp_isSetTls", system, true);
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+        if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
 

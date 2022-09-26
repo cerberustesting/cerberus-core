@@ -93,13 +93,13 @@ public class UpdateBatchInvariant extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(batch)) {
+        if (StringUtil.isEmpty(batch)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Batch is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(system)) {
+        } else if (StringUtil.isEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")

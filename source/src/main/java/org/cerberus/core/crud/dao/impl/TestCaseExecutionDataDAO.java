@@ -98,7 +98,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`Property` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -123,7 +123,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -136,7 +136,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 ps -> {
                     int i = 1;
-                    if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    if (!StringUtil.isEmpty(searchTerm)) {
                         ps.setString(i++, "%" + searchTerm + "%");
                         ps.setString(i++, "%" + searchTerm + "%");
                         ps.setString(i++, "%" + searchTerm + "%");

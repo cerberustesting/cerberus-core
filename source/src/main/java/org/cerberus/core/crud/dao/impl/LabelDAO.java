@@ -125,7 +125,7 @@ public class LabelDAO implements ILabelDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (lab.`id` like ?");
             searchSQL.append(" or lab.`system` like ?");
             searchSQL.append(" or lab.`label` like ?");
@@ -168,7 +168,7 @@ public class LabelDAO implements ILabelDAO {
 
         query.append(" group by lab.id ");
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -189,7 +189,7 @@ public class LabelDAO implements ILabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -499,11 +499,11 @@ public class LabelDAO implements ILabelDAO {
         query.append(" as distinctValues FROM label ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
+        if (!StringUtil.isEmpty(system)) {
             searchSQL.append(" and (`System` = ? or `System` = '' )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `label` like ?");
@@ -542,11 +542,11 @@ public class LabelDAO implements ILabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
+            if (!StringUtil.isEmpty(system)) {
                 preStat.setString(i++, system);
             }
 
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

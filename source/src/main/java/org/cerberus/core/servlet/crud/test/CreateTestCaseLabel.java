@@ -196,7 +196,7 @@ public class CreateTestCaseLabel extends HttpServlet {
 
                                 Application myApplication = (Application) resp.getItem();
 
-                                if ((StringUtil.isNullOrEmpty(myLab.getSystem())) || (myApplication.getSystem().equals(myLab.getSystem()))) {
+                                if ((StringUtil.isEmpty(myLab.getSystem())) || (myApplication.getSystem().equals(myLab.getSystem()))) {
                                     TestCaseLabel tcLabel = factoryTestCaseLabel.create(0, myTest, myTestCase, myIdInt, request.getRemoteUser(), null, "", null, null);
                                     ans = testCaseLabelService.create(tcLabel);
 

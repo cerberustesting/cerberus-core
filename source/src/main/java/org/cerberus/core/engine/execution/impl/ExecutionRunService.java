@@ -1502,7 +1502,7 @@ public class ExecutionRunService implements IExecutionRunService {
             break;
             case Application.TYPE_FAT:
                 LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvironmentParameters().getIp());
-                if (!StringUtil.isNullOrEmpty(execution.getCountryEnvironmentParameters().getIp())) {
+                if (!StringUtil.isEmpty(execution.getCountryEnvironmentParameters().getIp())) {
                     this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvironmentParameters().getIp());
                 }
                 LOG.debug("Ask Sikuli to clean execution {}", execution.getId());

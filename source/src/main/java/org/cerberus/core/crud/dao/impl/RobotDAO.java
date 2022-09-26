@@ -143,7 +143,7 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(typeRobot)) {
+        if (!StringUtil.isEmpty(typeRobot)) {
             query.append(" and type=? ");
         }
 
@@ -162,7 +162,7 @@ public class RobotDAO implements IRobotDAO {
                     }
                 }
 
-                if (!StringUtil.isNullOrEmpty(typeRobot)) {
+                if (!StringUtil.isEmpty(typeRobot)) {
                     preStat.setString(i++, typeRobot);
                 }
 
@@ -253,7 +253,7 @@ public class RobotDAO implements IRobotDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");
@@ -274,7 +274,7 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -587,7 +587,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" and 1=0 ");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");

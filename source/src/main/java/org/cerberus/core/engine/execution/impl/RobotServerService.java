@@ -443,7 +443,7 @@ public class RobotServerService implements IRobotServerService {
 
                 if (!tCExecution.getBrowser().equalsIgnoreCase(BrowserType.CHROME)) {
                     // For chrome the resolution has already been defined at capabilities level.
-                    if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                    if ((!StringUtil.isEmpty(targetScreensize)) && targetScreensize.contains("*")) {
                         Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
                         Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
                         setScreenSize(driver, screenWidth, screenLength);
@@ -546,7 +546,7 @@ public class RobotServerService implements IRobotServerService {
         // Instanciate DesiredCapabilities
         MutableCapabilities caps = new MutableCapabilities();
         // In case browser is not defined at that level, we force it to firefox.
-        if (StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
+        if (StringUtil.isEmpty(tCExecution.getBrowser())) {
             tCExecution.setBrowser("");
         }
 
@@ -577,7 +577,7 @@ public class RobotServerService implements IRobotServerService {
         }
 
         // Feed DesiredCapabilities with values get from Robot
-        if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())
+        if (!StringUtil.isEmpty(tCExecution.getPlatform())
                 && ((caps.getCapability("platform") == null)
                 || ((caps.getCapability("platform") != null)
                 && (caps.getCapability("platform").toString().equals("ANY")
@@ -585,7 +585,7 @@ public class RobotServerService implements IRobotServerService {
 
             caps.setCapability("platformName", tCExecution.getPlatform());
         }
-        if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())
+        if (!StringUtil.isEmpty(tCExecution.getVersion())
                 && ((caps.getCapability("version") == null)
                 || ((caps.getCapability("version") != null)
                 && (caps.getCapability("version").toString().isEmpty())))) {
@@ -595,7 +595,7 @@ public class RobotServerService implements IRobotServerService {
 
         if (tCExecution.getRobotExecutorObj() != null) {
             // Setting deviceUdid and device name from executor.
-            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())
+            if (!StringUtil.isEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())
                     && ((caps.getCapability("udid") == null)
                     || ((caps.getCapability("udid") != null)
                     && (caps.getCapability("udid").toString().isEmpty())))) {
@@ -603,7 +603,7 @@ public class RobotServerService implements IRobotServerService {
                 caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
             }
 
-            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())
+            if (!StringUtil.isEmpty(tCExecution.getRobotExecutorObj().getDeviceName())
                     && ((caps.getCapability("deviceName") == null)
                     || ((caps.getCapability("deviceName") != null)
                     && (caps.getCapability("deviceName").toString().isEmpty())))) {
@@ -611,7 +611,7 @@ public class RobotServerService implements IRobotServerService {
                 caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
             }
 
-            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
+            if (!StringUtil.isEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                 if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                         && ((caps.getCapability("systemPort") == null)
                         || ((caps.getCapability("systemPort") != null)
@@ -632,14 +632,14 @@ public class RobotServerService implements IRobotServerService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
-            if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())
+            if (!StringUtil.isEmpty(tCExecution.getMyHost())
                     && (isNotAlreadyDefined(caps, "app"))) {
                 caps.setCapability("app", tCExecution.getMyHost());
             } else if (isNotAlreadyDefined(caps, "app")) {
                 caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
             }
 
-            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity())
+            if (!StringUtil.isEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity())
                     && (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     && isNotAlreadyDefined(caps, "appWaitActivity"))) {
 
@@ -655,7 +655,7 @@ public class RobotServerService implements IRobotServerService {
         // Setting specific capabilities of external cloud providers.
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
-                if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
+                if (!StringUtil.isEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
                     caps.setCapability("build", tCExecution.getTag());
                 }
                 if (isNotAlreadyDefined(caps, "project")) {
@@ -688,7 +688,7 @@ public class RobotServerService implements IRobotServerService {
 
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
-                if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
+                if (!StringUtil.isEmpty(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
                     caps.setCapability("build", tCExecution.getTag());
                 }
                 if (isNotAlreadyDefined(caps, "name")) {
@@ -794,13 +794,13 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Force a specific profile for that session (allows reusing cookies and browser preferences).
-                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isEmpty(tCExecution.getRobotObj().getProfileFolder())) {
                         optionsFF.addArguments("--profile");
                         optionsFF.addArguments(tCExecution.getRobotObj().getProfileFolder());
                     }
 
                     // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
-                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                    if (!StringUtil.isEmpty(usedUserAgent)) {
                         profile.setPreference("general.useragent.override", usedUserAgent);
                     }
 
@@ -831,7 +831,7 @@ public class RobotServerService implements IRobotServerService {
                     ChromeOptions optionsCH = new ChromeOptions();
                     // Maximize windows for chrome browser
                     String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
-                    if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                    if ((!StringUtil.isEmpty(targetScreensize)) && targetScreensize.contains("*")) {
                         Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
                         Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
                         String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
@@ -857,12 +857,12 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Force a specific profile for that session (allows reusing cookies and browser preferences).
-                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getProfileFolder())) {
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isEmpty(tCExecution.getRobotObj().getProfileFolder())) {
                         optionsCH.addArguments("user-data-dir=" + tCExecution.getRobotObj().getProfileFolder());
                     }
 
                     // Set UserAgent if necessary
-                    if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                    if (!StringUtil.isEmpty(usedUserAgent)) {
                         optionsCH.addArguments("--user-agent=" + usedUserAgent);
                     }
 
@@ -890,7 +890,7 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Extra Browser Parameters.
-                    if (tCExecution.getRobotObj() != null && !StringUtil.isNullOrEmpty(tCExecution.getRobotObj().getExtraParam())) {
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isEmpty(tCExecution.getRobotObj().getExtraParam())) {
                         optionsCH.addArguments(tCExecution.getRobotObj().getExtraParam());
                     }
 
@@ -997,10 +997,10 @@ public class RobotServerService implements IRobotServerService {
      * @return String containing the userAgent to use
      */
     private String getUserAgentToUse(String userAgentTestCase, String userAgentRobot) {
-        if (StringUtil.isNullOrEmpty(userAgentRobot) && StringUtil.isNullOrEmpty(userAgentTestCase)) {
+        if (StringUtil.isEmpty(userAgentRobot) && StringUtil.isEmpty(userAgentTestCase)) {
             return "";
         } else {
-            return StringUtil.isNullOrEmpty(userAgentTestCase) ? userAgentRobot : userAgentTestCase;
+            return StringUtil.isEmpty(userAgentTestCase) ? userAgentRobot : userAgentTestCase;
         }
     }
 
@@ -1012,10 +1012,10 @@ public class RobotServerService implements IRobotServerService {
      * @return String containing the screensize to use
      */
     private String getScreenSizeToUse(String screenSizeTestCase, String screenSizeRobot) {
-        if (StringUtil.isNullOrEmpty(screenSizeRobot) && StringUtil.isNullOrEmpty(screenSizeTestCase)) {
+        if (StringUtil.isEmpty(screenSizeRobot) && StringUtil.isEmpty(screenSizeTestCase)) {
             return "";
         } else {
-            return StringUtil.isNullOrEmpty(screenSizeTestCase) ? screenSizeRobot : screenSizeTestCase;
+            return StringUtil.isEmpty(screenSizeTestCase) ? screenSizeRobot : screenSizeTestCase;
         }
     }
 
@@ -1032,7 +1032,7 @@ public class RobotServerService implements IRobotServerService {
 
             //  We remove manually the package if it is defined.
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
-                    && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
+                    && !StringUtil.isEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
                 session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage());
             }
 
@@ -1192,13 +1192,13 @@ public class RobotServerService implements IRobotServerService {
     private static String getBaseUrl(String host, String port) {
         String baseurl = "";
 
-        if (!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://"))) {
+        if (!StringUtil.isEmpty(host) && (host.contains("https://") || host.contains("http://"))) {
             baseurl = host;
         } else {
             baseurl = "http://" + host;
         }
 
-        if (!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
+        if (!StringUtil.isEmpty(port) && Integer.valueOf(port) > 0) {
             baseurl += ":" + port;
         }
 

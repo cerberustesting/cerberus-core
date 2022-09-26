@@ -150,7 +150,7 @@ public class GetKeycloakImport extends HttpServlet {
                 acc.put("account", account);
 
                 for (User myUser : userService.findallUser()) {
-                    if (!StringUtil.isNullOrEmpty(myUser.getEmail())) {
+                    if (!StringUtil.isEmpty(myUser.getEmail())) {
 
                     JSONArray roles = new JSONArray();
                     roles.put("uma_authorization");

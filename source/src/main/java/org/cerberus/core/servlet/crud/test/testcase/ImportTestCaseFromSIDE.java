@@ -273,13 +273,13 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 default:
                     action = TestCaseStepAction.ACTION_DONOTHING;
                     description = "Unknow Selenium IDE command '" + commandS + "'";
-                    if (!StringUtil.isNullOrEmpty(command.getString("target"))) {
+                    if (!StringUtil.isEmpty(command.getString("target"))) {
                         description += " on target '" + convertElement(command) + "'";
                     }
-                    if (!StringUtil.isNullOrEmpty(command.getString("value"))) {
+                    if (!StringUtil.isEmpty(command.getString("value"))) {
                         description += " with value '" + command.getString("value") + "'";
                     }
-                    if (!StringUtil.isNullOrEmpty(command.getString("comment"))) {
+                    if (!StringUtil.isEmpty(command.getString("comment"))) {
                         description += " - " + command.getString("comment");
                     }
             }

@@ -162,7 +162,7 @@ public class AppService {
                 jsonMyRequest.put("HTTP-TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("CalledURL", this.getServicePath());
-            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+            if (!StringUtil.isEmpty(this.getMethod())) {
                 jsonMyRequest.put("HTTP-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
@@ -202,7 +202,7 @@ public class AppService {
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", this.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
-            if (!StringUtil.isNullOrEmpty(this.getResponseHTTPBody())) {
+            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
                     jsonMyResponse.put("HTTP-ResponseBody", respBody);
@@ -242,7 +242,7 @@ public class AppService {
                 jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("Servers", this.getServicePath());
-            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+            if (!StringUtil.isEmpty(this.getMethod())) {
                 jsonMyRequest.put("KAFKA-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
@@ -268,7 +268,7 @@ public class AppService {
                 }
                 jsonMyRequest.put("KAFKA-Header", jsonHeaders);
             }
-            if (!StringUtil.isNullOrEmpty(this.getServiceRequest())) {
+            if (!StringUtil.isEmpty(this.getServiceRequest())) {
                 try {
                     JSONObject reqBody = new JSONObject(this.getServiceRequest());
                     jsonMyRequest.put("KAFKA-Request", reqBody);
@@ -299,7 +299,7 @@ public class AppService {
             if (this.getKafkaResponsePartition() >= 0) {
                 jsonMyResponse.put("Partition", this.getKafkaResponsePartition());
             }
-            if (!StringUtil.isNullOrEmpty(this.getResponseHTTPBody())) {
+            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
                     jsonMyResponse.put("Messages", respBody);
@@ -326,7 +326,7 @@ public class AppService {
                 jsonMyRequest.put("FTP-TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("CalledURL", this.getServicePath());
-            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+            if (!StringUtil.isEmpty(this.getMethod())) {
                 jsonMyRequest.put("FTP-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());

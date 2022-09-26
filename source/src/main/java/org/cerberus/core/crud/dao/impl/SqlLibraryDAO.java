@@ -534,7 +534,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         query.append(" WHERE 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`sql`.Name like ?");
             searchSQL.append(" or `sql`.Type like ?");
             searchSQL.append(" or `sql`.Database like ?");
@@ -557,7 +557,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isNullOrEmpty(column)) {
+        if (!StringUtil.isEmpty(column)) {
             query.append(" order by `sql`.").append(column).append(" ").append(dir);
         }
 
@@ -577,7 +577,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             try {
                 int i = 1;
 
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -722,7 +722,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         query.append(" as distinctValues FROM sqllibrary `sql`");
         query.append(" where 1=1");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (`sql`.Name like ?");
             searchSQL.append(" or `sql`.Type like ?");
             searchSQL.append(" or `sql`.Database like ?");
@@ -751,7 +751,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

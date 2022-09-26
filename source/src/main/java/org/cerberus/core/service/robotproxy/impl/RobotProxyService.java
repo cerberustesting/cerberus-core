@@ -215,7 +215,7 @@ public class RobotProxyService implements IRobotProxyService {
         LOG.debug("Building URL : " + exUuid);
         String url = "http://" + exHost + ":" + exPort
                 + "/getHar?uuid=" + exUuid;
-        if (!StringUtil.isNullOrEmpty(urlFilter)) {
+        if (!StringUtil.isEmpty(urlFilter)) {
             url += "&requestUrl=" + urlFilter;
         }
         if (!withContent) {
