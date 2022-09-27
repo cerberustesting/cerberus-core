@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.v001;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -34,54 +34,63 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CampaignExecutionResult")
-public class CampaignExecutionResultDTOV001 {
+@ApiModel(value = "CICampaignExecutionResult")
+public class CICampaignResultDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 0)
-    private int ok;
+    private String globalResult;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 1)
-    private int ko;
+    private String campaignExecutionId;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 2)
-    private int fa;
+    private int calculatedResult;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 3)
-    private int na;
+    private int resultThreshold;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 4)
-    private int ne;
+    private JsonNode detailByDeclinations;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 5)
-    private int we;
+    private JsonNode environments;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 6)
-    private int pe;
+    private JsonNode countries;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 7)
-    private int qu;
+    private JsonNode robotDeclinations;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 8)
-    private int qe;
+    private JsonNode systems;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 9)
-    private int ca;
+    private JsonNode applications;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
-    private int totalWithRetries;
+    private CampaignExecutionResultDTOV001 result;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 11)
-    private int total;
+    private CampaignExecutionResultPriorityDTOV001 resultByPriority;
+
+    @JsonView(value = {View.Public.GET.class})
+    @ApiModelProperty(position = 12)
+    private String executionStart;
+
+    @JsonView(value = {View.Public.GET.class})
+    @ApiModelProperty(position = 13)
+    private String executionEnd;
+
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.v001;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -34,54 +33,46 @@ import org.cerberus.core.api.dto.views.View;
 @Data
 @Builder
 @Jacksonized
-@ApiModel(value = "CampaignExecutionResult")
-public class CampaignExecutionResultDTOV001 {
+@ApiModel(value = "CampaignExecutionResultPriority")
+public class CampaignExecutionResultPriorityDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 0)
-    private int ok;
+    private int okCoefficientPriorityLevel1;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 1)
-    private int ko;
+    private int okCoefficientPriorityLevel2;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 2)
-    private int fa;
+    private int okCoefficientPriorityLevel3;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 3)
-    private int na;
+    private int okCoefficientPriorityLevel4;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 4)
-    private int ne;
+    private int okCoefficientPriorityLevel5;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 5)
-    private int we;
+    private int nonOkExecutionsPriorityLevel1;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 6)
-    private int pe;
+    private int nonOkExecutionsPriorityLevel2;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 7)
-    private int qu;
+    private int nonOkExecutionsPriorityLevel3;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 8)
-    private int qe;
+    private int nonOkExecutionsPriorityLevel4;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 9)
-    private int ca;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 10)
-    private int totalWithRetries;
-
-    @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 11)
-    private int total;
+    private int nonOkExecutionsPriorityLevel5;
 }

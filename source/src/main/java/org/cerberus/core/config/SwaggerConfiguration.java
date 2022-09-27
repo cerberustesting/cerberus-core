@@ -67,7 +67,11 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.cerberus.core.api.controllers"))
                 .apis(p -> {
-                    if (p.headers() != null) {
+                    //Bypass API version for SVG because these routes are used only directly with URL without HTTP headers
+                    if (p.getName().contains("Svg")) {
+                        return true;
+                    }
+                    if (p.headers() != null || p.getName().equals("findCiSvgCampaignExecutionByCampaignId")) {
                         for (NameValueExpression<String> nve : p.headers()) {
                             if ((nve.getName().equals("X-API-VERSION")) && (Objects.equals(nve.getValue(), version))) {
                                 return true;

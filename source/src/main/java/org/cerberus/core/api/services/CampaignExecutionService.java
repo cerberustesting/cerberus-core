@@ -20,6 +20,8 @@
 package org.cerberus.core.api.services;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.cerberus.core.api.entity.CICampaignResult;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.FailedReadOperationException;
 import org.cerberus.core.crud.entity.Invariant;
@@ -27,7 +29,10 @@ import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -45,12 +50,15 @@ public class CampaignExecutionService {
     private final ITestCaseExecutionService testCaseExecutionService;
     private final IInvariantService invariantService;
 
-    public Tag findByExecutionIdWithExecutions(String campaignExecutionId) {
+    public Tag findByExecutionIdWithExecutions(String campaignExecutionId, String campaignId) {
         Optional<Tag> campaignExecution;
         try {
             List<Invariant> priorities = invariantService.readByIdName("PRIORITY");
             List<Invariant> countries = invariantService.readByIdName("COUNTRY");
             List<Invariant> environments = invariantService.readByIdName("ENVIRONMENT");
+            if (StringUtil.isNotEmpty(campaignId)) {
+                campaignExecutionId = findLastCampaignExecution(campaignId);
+            }
             campaignExecution = Optional.ofNullable(tagService.convert(tagService.readByKey(campaignExecutionId)));
             if (campaignExecution.isPresent()) {
                 campaignExecution.get().setExecutionsNew(
@@ -68,5 +76,16 @@ public class CampaignExecutionService {
             throw new FailedReadOperationException("An error occurred when retrieving the campaign execution.");
         }
         return campaignExecution.get();
+    }
+
+    private String findLastCampaignExecution(String campaignId) {
+        String campaignExecutionId;
+        AnswerList<Tag> tags = tagService.readByVariousByCriteria(campaignId, 0, 1, "id", "desc", null, null);
+        if (CollectionUtils.isNotEmpty(tags.getDataList()) && tags.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            campaignExecutionId = tags.getDataList().get(0).getTag();
+        } else {
+            throw new EntityNotFoundException(CICampaignResult.class, "campaignId", campaignId);
+        }
+        return campaignExecutionId;
     }
 }
