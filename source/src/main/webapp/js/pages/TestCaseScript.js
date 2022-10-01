@@ -377,16 +377,16 @@ $.when($.getScript("js/global/global.js")
         // open Run navbar Menu
         openNavbarMenu("navMenuTest");
 
-        if (oneclickcreation === "true"){
+        if (oneclickcreation === "true") {
             var message = "TestCase has been successfully created.";
             showMessageMainPage("success", message, false, 2000);
 
-            $("#runTestCasePopover").attr('data-toggle','popover');
-            $("#runTestCasePopover").attr('data-trigger','manual');
+            $("#runTestCasePopover").attr('data-toggle', 'popover');
+            $("#runTestCasePopover").attr('data-trigger', 'manual');
             $("#runTestCasePopover").attr('title', doc.getDocLabel("page_testcasescript", "runtestcasepopover_title"));
-            $("#runTestCasePopover").attr('data-placement','bottom');
-            $("#runTestCasePopover").attr('data-container','body');
-            $("#runTestCasePopover").attr("data-content",doc.getDocLabel("page_testcasescript", "runtestcasepopover_content"));
+            $("#runTestCasePopover").attr('data-placement', 'bottom');
+            $("#runTestCasePopover").attr('data-container', 'body');
+            $("#runTestCasePopover").attr("data-content", doc.getDocLabel("page_testcasescript", "runtestcasepopover_content"));
 
             $("#runTestCasePopover").popover('show');
             $("#runTestCase").attr('style', 'margin-left: 5px; background-color:#5cb85c; color:white');
@@ -421,17 +421,17 @@ function displayPageLabel(doc) {
 
     // CONTEXT MENU
     $("#btnGroupDrop1").html("<span class='glyphicon glyphicon-option-horizontal'></span>");
-    $("#seeLastExecUniq").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexecuniq")).html("<span class='glyphicon glyphicon-saved'></span> " + doc.getDocLabel('page_testcasescript', 'see_lastexecuniq'));
-    $("#seeLastExec").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexec")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
-    $("#seeTest").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_test")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_test"));
-    $("#seeLogs").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_logs")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
+    $("#seeLastExecUniq").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexecuniq")).html("<span class='glyphicon glyphicon-saved'></span> " + doc.getDocLabel('page_testcasescript', 'see_lastexecuniq'));
+    $("#seeLastExec").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_lastexec")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
+    $("#seeTest").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_test")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_test"));
+    $("#seeLogs").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "see_logs")).html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
     $("#btnGroupDrop2").html(doc.getDocLabel("page_testcasescript", "run") + " <span class='caret'></span>");
-    $("#runTestCase").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "run_testcase")).html("<span class='glyphicon glyphicon-play'></span> " +doc.getDocLabel("page_testcasescript", "run_testcase"));
-    $("#rerunFromQueueandSee").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "rerunqueueandsee_testcase")).html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
-    $("#editTcInfo").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "edit_testcase")).html("<span class='glyphicon glyphicon-pencil'></span> " +doc.getDocLabel("page_testcasescript", "edit_testcase"));
-    $("#saveScript").attr('data-toggle','tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "save_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
-    $("#saveScriptAs").attr('data-toggle','tooltip').attr('data-original-title',doc.getDocDescription("page_testcasescript", "saveas_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
-    $("#deleteTestCase").attr('data-toggle','tooltip').attr('data-original-title',doc.getDocDescription("page_testcasescript", "delete")).html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
+    $("#runTestCase").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "run_testcase")).html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
+    $("#rerunFromQueueandSee").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "rerunqueueandsee_testcase")).html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
+    $("#editTcInfo").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "edit_testcase")).html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#saveScript").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "save_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
+    $("#saveScriptAs").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "saveas_script")).html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
+    $("#deleteTestCase").attr('data-toggle', 'tooltip').attr('data-original-title', doc.getDocDescription("page_testcasescript", "delete")).html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
 
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
@@ -1776,9 +1776,9 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row stepItem").css("margin-left", "0px");
-    this.stepNumberDisplay = $("<span></span>").addClass("input-group-addon").addClass("drag-step-step").attr("style","font-weight: 400;").prop("draggable", true).text(steps.length + 1);
-    this.stepDescriptionDisplay = $("<input class='description form-control'>").attr("style","border:0px").val(this.description);
-    this.textArea = $("<div class='input-group'></div>").addClass("step-description").append(this.stepNumberDisplay).append(this.stepDescriptionDisplay)
+    this.stepNumberDisplay = $("<span></span>").addClass("input-group-addon").addClass("drag-step-step").attr("style", "font-weight: 400;").prop("draggable", true).text(steps.length + 1);
+    this.stepDescriptionDisplay = $("<input class='description form-control'>").attr("style", "border:0px").val(this.description);
+    this.textArea = $("<div class='input-group'></div>").addClass("step-description").append(this.stepNumberDisplay).append(this.stepDescriptionDisplay);
 
 }
 
@@ -1788,8 +1788,8 @@ Step.prototype.draw = function () {
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input id='stepDescription' class='description form-control'>").attr("style","border:0px");
-    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step").attr("style","font-weight: 700;border-radius:4px;border:1px solid #ccc").prop("draggable", true).text(this.steps.length + 1);
+    var descriptionField = $("<input id='stepDescription' class='description form-control'>").attr("placeholder", doc.getDocLabel("page_testcasescript", "describe_step")).attr("style", "border:0px");
+    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").prop("draggable", true).text(this.steps.length + 1);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
     drag.on("dragover", handleDragOver);
@@ -1809,26 +1809,26 @@ Step.prototype.draw = function () {
 // LABEL CONTAINERS
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
     if (this.isExecutionForced) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelLightOrange">Force Execution</span>');
+        var labelOptions = $('<span class="label label-primary optionLabel labelLightOrange">Force Execution</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
     if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
-        var labelOptions=$('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
+        var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
         stepLabelContainer.append(labelOptions[0]);
     } else if ((this.conditionOperator !== "never")
-        && (this.conditionOperator !== "always")) {
+            && (this.conditionOperator !== "always")) {
 
 
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
-        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelLightRed">Do not execute</span>');
+            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+        var labelOptions = $('<span class="label label-primary optionLabel labelLightRed">Do not execute</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
     if (this.isLibraryStep) {
-        var labelOptions=$('<span class="label label-primary optionLabel labelLightPurple">is Library</span>');
+        var labelOptions = $('<span class="label label-primary optionLabel labelLightPurple">is Library</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
 
@@ -1840,7 +1840,7 @@ Step.prototype.draw = function () {
     var useStepContainer = $("<div class='col-sm-12 fieldRow row' class='useStepContainer' id='UseStepRow' style='display: none;'></div>");
     if (this.isUsingLibraryStep) {
         //useStepContainer.html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "&step=" + encodeURI(this.libraryStepSort) + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a>)").show();
-        var labelOptions=$("<span class='label label-primary optionLabel' style='background-color:rgba(114,124,245,.25);color:#727cf5'>" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "&step=" + encodeURI(this.libraryStepSort) + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a></span>");
+        var labelOptions = $("<span class='label label-primary optionLabel' style='background-color:rgba(114,124,245,.25);color:#727cf5'>" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "&step=" + encodeURI(this.libraryStepSort) + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a></span>");
         stepLabelContainer.append(labelOptions[0]);
 
     }
@@ -1896,8 +1896,8 @@ Step.prototype.show = function () {
     $("#stepButtons").append('<button class="btn add-btn deleteItem-btn" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>');
 
 
-    $("#stepPlus").click(function(){
-        displayStepOptionsModal(object,object.html);
+    $("#stepPlus").click(function () {
+        displayStepOptionsModal(object, object.html);
     });
 
     $("#deleteStep").click(function () {
@@ -1970,7 +1970,7 @@ Step.prototype.show = function () {
 
     //if (object.isExecutionForced) {
     //    $("#stepForceExe").val("true");
-   // } else {
+    // } else {
     //    $("#stepForceExe").val("false");
     //}
     //$("#stepId").text(object.sort);
@@ -1999,7 +1999,7 @@ Step.prototype.show = function () {
     $("#stepConditionVal3").attr("disabled", activateDisableWithUseStep);
 };
 
-function displayStepOptionsModal(step,htmlElement) {
+function displayStepOptionsModal(step, htmlElement) {
 
     var user = getUser();
     $("#modalStepOptions").find("h5").text("Override Step Option Values");
@@ -2021,7 +2021,7 @@ function displayStepOptionsModal(step,htmlElement) {
 
 
 //FATAL
-    if (step.isExecutionForced){
+    if (step.isExecutionForced) {
         $("#stepForceExe").prop("checked", true);
     }
 //END OF FATAL
@@ -2109,7 +2109,8 @@ function displayStepOptionsModal(step,htmlElement) {
         //printLabelForFatal(action.isFatal, $($(htmlElement)[0]).find(".secondRow"));
 
     });
-};
+}
+;
 
 Step.prototype.setActions = function (actions, canUpdate) {
     for (var i = 0; i < actions.length; i++) {
@@ -2299,7 +2300,7 @@ Action.prototype.draw = function (afterAction) {
     this.refreshSort();
 };
 
-function displayOverrideOptionsModal(action,htmlElement) {
+function displayOverrideOptionsModal(action, htmlElement) {
 
     var user = getUser();
     $("#modalOptions").find("h5").text("Override Option Values");
@@ -2319,7 +2320,7 @@ function displayOverrideOptionsModal(action,htmlElement) {
     setOptionModal(action.conditionOptions, "Condition");
 
     //FATAL
-    if (action.isFatal){
+    if (action.isFatal) {
         $("#fatalCheckbox").prop("checked", true);
     }
 
@@ -2412,19 +2413,21 @@ function displayOverrideOptionsModal(action,htmlElement) {
             setModif(true);
         }
 
-        printLabelForOptions($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(),newOpts,newConditionOpts,"optionLabel");
-        printLabelForCondition($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(),action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
+        printLabelForOptions($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), newOpts, newConditionOpts, "optionLabel");
+        printLabelForCondition($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
         printLabel($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
     });
-};
+}
+;
 
 function formatActionSelect2Result(state) {
-    if(typeof $($(state.element)[0]).attr("data-picto") !== 'undefined'){
-        return $($($(state.element)[0]).attr("data-picto")+'<span> '+state.text+'</span>');
+    if (typeof $($(state.element)[0]).attr("data-picto") !== 'undefined') {
+        return $($($(state.element)[0]).attr("data-picto") + '<span> ' + state.text + '</span>');
     } else {
-        return $('<span>'+state.text+'</span>');
+        return $('<span>' + state.text + '</span>');
     }
-};
+}
+;
 
 Action.prototype.setControls = function (controls, canUpdate) {
     for (var i = 0; i < controls.length; i++) {
@@ -2476,7 +2479,7 @@ Action.prototype.generateContent = function () {
 
 
     //FIRST ROW
-    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
@@ -2500,21 +2503,22 @@ Action.prototype.generateContent = function () {
         }
     });
 
-    plusBtn.click(function(){
+    plusBtn.click(function () {
         displayOverrideOptionsModal(action, action.html);
     });
 
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style","border:0px");
-    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style","font-weight: 700;border-radius:4px;border:1px solid #ccc").attr("id","labelDiv").prop("draggable", true);
+    var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px");
+    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").attr("id", "labelDiv").prop("draggable", true);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
     drag.on("dragover", handleDragOver);
     drag.on("dragleave", handleDragLeave);
     drag.on("drop", handleDrop);
-    drag.on("dragend", handleDragEnd);descContainer.append(drag);
+    drag.on("dragend", handleDragEnd);
+    descContainer.append(drag);
     descContainer.append(descriptionField);
 
     descriptionField.val(this.description);
@@ -2531,12 +2535,12 @@ Action.prototype.generateContent = function () {
     actions.css("width", "100%").attr("id", generated_id).attr("name", "actionSelect");
     var user = getUser();
     for (var i = 0; i < actionOptGroupList.length; i++) {
-        actions.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto",actionOptGroupList[i].picto));
+        actions.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto", actionOptGroupList[i].picto));
     }
 
     for (var key in actionOptList) {
-        if(actionOptList[key].group !== 'none'){
-            actions.find("[data-group='"+actionOptList[key].group+"']").append($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
+        if (actionOptList[key].group !== 'none') {
+            actions.find("[data-group='" + actionOptList[key].group + "']").append($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
         } else {
             actions.prepend($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
         }
@@ -2558,9 +2562,9 @@ Action.prototype.generateContent = function () {
     });
 
     var field1Container = $("<div class='input-group'></div>");
-    var field1Addon = $("<span></span>").attr("id","field1Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var field1Addon = $("<span></span>").attr("id", "field1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     field1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    value1Field.attr("aria-describedby","field1Addon");
+    value1Field.attr("aria-describedby", "field1Addon");
     field1Container.append(field1Addon).append(value1Field);
 //END OF VALUE1 FIELD
 
@@ -2572,9 +2576,9 @@ Action.prototype.generateContent = function () {
     });
 
     var field2Container = $("<div class='input-group'></div>");
-    var field2Addon = $("<span></span>").attr("id","field2Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var field2Addon = $("<span></span>").attr("id", "field2Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     field2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    value2Field.attr("aria-describedby","field2Addon");
+    value2Field.attr("aria-describedby", "field2Addon");
     field2Container.append(field2Addon).append(value2Field);
 //END OF VALUE2 FIELD
 
@@ -2586,9 +2590,9 @@ Action.prototype.generateContent = function () {
     });
 
     var field3Container = $("<div class='input-group'></div>");
-    var field3Addon = $("<span></span>").attr("id","field3Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var field3Addon = $("<span></span>").attr("id", "field3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     field3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    value3Field.attr("aria-describedby","field3Addon");
+    value3Field.attr("aria-describedby", "field3Addon");
     field3Container.append(field3Addon).append(value3Field);
 //END OF VALUE3 FIELD
 
@@ -2620,8 +2624,8 @@ Action.prototype.generateContent = function () {
     row.append(btnGrp);
     row.data("item", this);
 
-    printLabelForOptions(btnGrp,action.options,action.conditionOptions,"optionLabel");
-    printLabelForCondition(btnGrp,action.conditionOperator,action.conditionValue1,action.conditionValue2,action.conditionValue3);
+    printLabelForOptions(btnGrp, action.options, action.conditionOptions, "optionLabel");
+    printLabelForCondition(btnGrp, action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
     printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
 
     return row;
@@ -2629,34 +2633,34 @@ Action.prototype.generateContent = function () {
 
 
 function initOptionModal(context) {
-    $("#timeout"+context+"Val").val("");
-    $("#timeout"+context+"Act").prop("checked", false);
-    $("#highlight"+context+"Val").val("");
-    $("#highlight"+context+"Act").prop("checked", false);
-    $("#minSimilarity"+context+"Val").val("");
-    $("#minSimilarity"+context+"Act").prop("checked", false);
-    $("#typeDelay"+context+"Val").val("");
-    $("#typeDelay"+context+"Act").prop("checked", false);
+    $("#timeout" + context + "Val").val("");
+    $("#timeout" + context + "Act").prop("checked", false);
+    $("#highlight" + context + "Val").val("");
+    $("#highlight" + context + "Act").prop("checked", false);
+    $("#minSimilarity" + context + "Val").val("");
+    $("#minSimilarity" + context + "Act").prop("checked", false);
+    $("#typeDelay" + context + "Val").val("");
+    $("#typeDelay" + context + "Act").prop("checked", false);
 }
 
 function setOptionModal(actionOption, context) {
     for (var item in actionOption) {
         switch (actionOption[item].option) {
             case "timeout":
-                $("#timeout"+context+"Val").val(actionOption[item].value);
-                $("#timeout"+context+"Act").prop("checked", actionOption[item].act);
+                $("#timeout" + context + "Val").val(actionOption[item].value);
+                $("#timeout" + context + "Act").prop("checked", actionOption[item].act);
                 break;
             case "highlightElement":
-                $("#highlight"+context+"Val").val(actionOption[item].value);
-                $("#highlight"+context+"Act").prop("checked", actionOption[item].act);
+                $("#highlight" + context + "Val").val(actionOption[item].value);
+                $("#highlight" + context + "Act").prop("checked", actionOption[item].act);
                 break;
             case "minSimilarity":
-                $("#minSimilarity"+context+"Val").val(actionOption[item].value);
-                $("#minSimilarity"+context+"Act").prop("checked", actionOption[item].act);
+                $("#minSimilarity" + context + "Val").val(actionOption[item].value);
+                $("#minSimilarity" + context + "Act").prop("checked", actionOption[item].act);
                 break;
             case "typeDelay":
-                $("#typeDelay"+context+"Val").val(actionOption[item].value);
-                $("#typeDelay"+context+"Act").prop("checked", actionOption[item].act);
+                $("#typeDelay" + context + "Val").val(actionOption[item].value);
+                $("#typeDelay" + context + "Act").prop("checked", actionOption[item].act);
                 break;
             default:
                 break;
@@ -2672,19 +2676,19 @@ function hasOneOptionActive(options) {
     return false;
 }
 
-function printLabelForOptions(element, newOpts, newOptsCondition, className){
-    $(element).find('.'+className).remove();
+function printLabelForOptions(element, newOpts, newOptsCondition, className) {
+    $(element).find('.' + className).remove();
     let overrideOption = false;
     let title = "";
 
-    for(optionObject in newOpts){
-        if(newOpts[optionObject].act){
+    for (optionObject in newOpts) {
+        if (newOpts[optionObject].act) {
             title = title + "option : " + newOpts[optionObject].option + "=" + newOpts[optionObject].value + " \n\ ";
             overrideOption = true;
         }
     }
-    for(optionObject in newOptsCondition){
-        if(newOptsCondition[optionObject].act){
+    for (optionObject in newOptsCondition) {
+        if (newOptsCondition[optionObject].act) {
             title = title + "condition option : " + newOptsCondition[optionObject].option + "=" + newOptsCondition[optionObject].value + " \n\ ";
             overrideOption = true;
         }
@@ -2695,23 +2699,23 @@ function printLabelForOptions(element, newOpts, newOptsCondition, className){
     }
 }
 
-function printLabelForCondition(element,conditionOperator,conditionValue1,conditionValue2,conditionValue3){
+function printLabelForCondition(element, conditionOperator, conditionValue1, conditionValue2, conditionValue3) {
     $(element).find('.conditionLabel').remove();
     if (conditionOperator === 'never') {
         var labelOptions = $('<span class="label label-primary labelLightRed optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
         $(element).append(labelOptions[0]);
-    } else if (conditionOperator !== 'always'){
+    } else if (conditionOperator !== 'always') {
         var title = "<div>Execution Condition : </div>";
         title += "<div>" + conditionOperator + "</div>";
         title += "<div>val1" + conditionValue1 + "</div>";
         title += "<div>val2" + conditionValue2 + "</div>";
-        title += "<div>val3" + conditionValue3+ "</div>";
-        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="'+title+'" class="label label-primary labelLightGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
+        title += "<div>val3" + conditionValue3 + "</div>";
+        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="' + title + '" class="label label-primary labelLightGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
         $(element).append(labelOptions[0]);
     }
 }
 
-function printLabelForFatal(isFatal, element){
+function printLabelForFatal(isFatal, element) {
     $(element).find('.actionFatalLabel').remove();
     if (isFatal) {
         var labelOptions = $('<span class="label label-primary labelLightOrange optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
@@ -2720,10 +2724,10 @@ function printLabelForFatal(isFatal, element){
 }
 
 
-function printLabel(element, displayBoolean, identifierClass, colorClass, text){
-    $(element).find('.'+identifierClass).remove();
+function printLabel(element, displayBoolean, identifierClass, colorClass, text) {
+    $(element).find('.' + identifierClass).remove();
     if (displayBoolean) {
-        var labelOptions = $('<span class="label label-primary '+ colorClass +' optionLabel '+ identifierClass +' pull-right "><span class="glyphicon glyphicon-cog"></span> '+ text +'</span>');
+        var labelOptions = $('<span class="label label-primary ' + colorClass + ' optionLabel ' + identifierClass + ' pull-right "><span class="glyphicon glyphicon-cog"></span> ' + text + '</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2902,7 +2906,7 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
 
-    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle","modal").attr("data-target","#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
     var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
@@ -2927,14 +2931,14 @@ Control.prototype.generateContent = function () {
     });
 
     plusBtn.click(function () {
-        displayOverrideOptionsModal(control,control.html);
+        displayOverrideOptionsModal(control, control.html);
     });
 
 
 //DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
     var descriptionField = $("<input class='description form-control' style='border:0px' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
-    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style","font-weight: 700;").attr("id","labelDiv").prop("draggable", true);
+    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;").attr("id", "labelDiv").prop("draggable", true);
     var ctrlNumber = $($("<span class='input-group-addon' style='font-weight: 700;border-top-right-radius: 4px;border-bottom-right-radius: 4px;' id='labelControlDiv'></span>"));
 
     drag.on("dragstart", handleDragStart);
@@ -2973,9 +2977,9 @@ Control.prototype.generateContent = function () {
         control.value1 = convertValueWithErratum(control.value1, controlValue1Field.val());
     });
     var controlField1Container = $("<div class='input-group'></div>");
-    var controlField1Addon = $("<span></span>").attr("id","controlField1Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var controlField1Addon = $("<span></span>").attr("id", "controlField1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    controlValue1Field.attr("aria-describedby","controlField1Addon");
+    controlValue1Field.attr("aria-describedby", "controlField1Addon");
     controlField1Container.append(controlField1Addon).append(controlValue1Field);
 //END OF VALUE1 FIELD
 
@@ -2988,9 +2992,9 @@ Control.prototype.generateContent = function () {
         control.value2 = convertValueWithErratum(control.value2, controlValue2Field.val());
     });
     var controlField2Container = $("<div class='input-group'></div>");
-    var controlField2Addon = $("<span></span>").attr("id","controlField2Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var controlField2Addon = $("<span></span>").attr("id", "controlField2Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    controlValue2Field.attr("aria-describedby","controlField2Addon");
+    controlValue2Field.attr("aria-describedby", "controlField2Addon");
     controlField2Container.append(controlField2Addon).append(controlValue2Field);
 //END OF VALUE2 FIELD
 
@@ -3003,9 +3007,9 @@ Control.prototype.generateContent = function () {
         control.value3 = controlValue3Field.val();
     });
     var controlField3Container = $("<div class='input-group'></div>");
-    var controlField3Addon = $("<span></span>").attr("id","controlField3Addon").addClass("input-group-addon").attr("style","font-weight: 700;");
+    var controlField3Addon = $("<span></span>").attr("id", "controlField3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
-    controlValue3Field.attr("aria-describedby","controlField3Addon");
+    controlValue3Field.attr("aria-describedby", "controlField3Addon");
     controlField3Container.append(controlField3Addon).append(controlValue3Field);
 //END OF VALUE3 FIELD
 
@@ -3034,8 +3038,8 @@ Control.prototype.generateContent = function () {
     row.append(btnGrp);
     row.data("item", this);
 
-    printLabelForOptions(btnGrp,control.options,control.conditionOptions,"controlOptionLabel");
-    printLabelForCondition(btnGrp,control.conditionOperator);
+    printLabelForOptions(btnGrp, control.options, control.conditionOptions, "controlOptionLabel");
+    printLabelForCondition(btnGrp, control.conditionOperator);
     printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelLightOrange", "Stop Execution on Failure")
 
     if (typeof convertToGui[this.control] !== 'undefined') {
@@ -3043,7 +3047,7 @@ Control.prototype.generateContent = function () {
 
         for (var key in operatorOptList) {
             var ctrlType = Array.from(operatorOptList[key].control_type);
-            if(ctrlType.includes(convertToGui[this.control].control)) {
+            if (ctrlType.includes(convertToGui[this.control].control)) {
                 operator.append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
             }
         }
@@ -3056,7 +3060,7 @@ Control.prototype.generateContent = function () {
         $(this).parents(".control").find(".operator").empty();
         for (var key in operatorOptList) {
             var ctrlType = Array.from(operatorOptList[key].control_type);
-            if(ctrlType.includes($(this).find(":selected").val())) {
+            if (ctrlType.includes($(this).find(":selected").val())) {
                 $(this).parents(".control").find(".operator").append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
             }
         }
@@ -3337,9 +3341,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 	                                title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-pencil"></span></button>\
 	                                <button class="buttonObject btn btn-default input-sm" type="button">\
-	                                <img width="20px" height="20px" src="ReadApplicationObjectImage?application=' + tcInfo.application + '&object=' + name + '&time=' + new Date().getTime()+'"' +
-                                        ' onclick="displayPictureOfMinitature1(this)"/></button></span>';
-                                    $(htmlElement).attr("style","width:70%").parent().append(editEntry);
+	                                <img width="20px" height="20px" src="ReadApplicationObjectImage?application=' + tcInfo.application + '&object=' + name + '&time=' + new Date().getTime() + '"' +
+                                            ' onclick="displayPictureOfMinitature1(this)"/></button></span>';
+                                    $(htmlElement).attr("style", "width:70%").parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
                                 let data = loadGuiProperties();
@@ -3421,16 +3425,16 @@ function setPlaceholderAction(action) {
     var actionElement = $(action).find("[name='actionSelect'] option:selected");
     var placeHolders = actionOptList[actionElement.val()];
 
-    if (typeof placeHolders === 'undefined'){
+    if (typeof placeHolders === 'undefined') {
         placeHolders = actionOptList["unknown"];
     }
 
     if (typeof placeHolders.field1 !== 'undefined') {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('#field1Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field1.label[user.language]);
-        if (typeof placeHolders.field1.picto !== 'undefined'){
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('#field1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
+        if (typeof placeHolders.field1.picto !== 'undefined') {
             $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
         }
     } else {
@@ -3439,9 +3443,9 @@ function setPlaceholderAction(action) {
     if (typeof placeHolders.field2 !== 'undefined') {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field2.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").show();
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('input').attr("placeholder",placeHolders.field2.label[user.language]);
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('#field2Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field2.label[user.language]);
-        if (typeof placeHolders.field2.picto !== 'undefined'){
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('#field2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
+        if (typeof placeHolders.field2.picto !== 'undefined') {
             $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('img').attr("src", placeHolders.field2.picto);
         }
     } else {
@@ -3450,9 +3454,9 @@ function setPlaceholderAction(action) {
     if (typeof placeHolders.field3 !== 'undefined') {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field3.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").show();
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('input').attr("placeholder",placeHolders.field3.label[user.language]);
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('#field3Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field3.label[user.language]);
-        if (typeof placeHolders.field3.picto !== 'undefined'){
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('#field3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
+        if (typeof placeHolders.field3.picto !== 'undefined') {
             $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('img').attr("src", placeHolders.field3.picto);
         }
     } else {
@@ -3466,22 +3470,22 @@ function setPlaceholderCondition(conditionElement) {
     var user = getUser();
     var placeHolders = conditionNewUIList[conditionElement.val()];
 
-    if (typeof placeHolders === 'undefined'){
+    if (typeof placeHolders === 'undefined') {
         placeHolders = conditionNewUIList["always"];
     }
 
     console.log(conditionElement);
 
     if (typeof placeHolders.field1 !== 'undefined') {
-       // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
-    //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
-    //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
+        // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
+        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
+        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
         //$(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
-        if (typeof placeHolders.field1.picto !== 'undefined'){
-     //       $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
+        if (typeof placeHolders.field1.picto !== 'undefined') {
+            //       $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
         }
     } else {
-    //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
+        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
     }
 
 
@@ -3570,11 +3574,11 @@ function setPlaceholderControl(control) {
     var operatorSelect = control.find(".operator");
     var placeHolders = convertToGui[newControlOptList[controlSelect.val()][operatorSelect.val()]];
 
-    if (typeof placeHolders === 'undefined'){
+    if (typeof placeHolders === 'undefined') {
         placeHolders = convertToGui["unknown"];
     }
 
-    if (placeHolders.operator === "unknown"){
+    if (placeHolders.operator === "unknown") {
         control.find(".operator").hide();
     } else {
         control.find(".operator").show();
@@ -3583,10 +3587,10 @@ function setPlaceholderControl(control) {
     if (typeof placeHolders.field1 !== 'undefined') {
         control.find("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
         control.find("div[class*='v1']").show();
-        control.find("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
-        control.find("div[class*='v1']").find('#controlField1Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field1.label[user.language]);
+        control.find("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
+        control.find("div[class*='v1']").find('#controlField1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
 
-        if (typeof placeHolders.field1.picto !== 'undefined'){
+        if (typeof placeHolders.field1.picto !== 'undefined') {
             control.find("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
         }
     } else {
@@ -3595,9 +3599,9 @@ function setPlaceholderControl(control) {
     if (typeof placeHolders.field2 !== 'undefined') {
         control.find("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field2.class);
         control.find("div[class*='v2']").show();
-        control.find("div[class*='v2']").find('input').attr("placeholder",placeHolders.field2.label[user.language]);
-        control.find("div[class*='v2']").find('#controlField2Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field2.label[user.language]);
-        if (typeof placeHolders.field2.picto !== 'undefined'){
+        control.find("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
+        control.find("div[class*='v2']").find('#controlField2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
+        if (typeof placeHolders.field2.picto !== 'undefined') {
             control.find("div[class*='v2']").find('img').attr("src", placeHolders.field2.picto);
         }
     } else {
@@ -3606,9 +3610,9 @@ function setPlaceholderControl(control) {
     if (typeof placeHolders.field3 !== 'undefined') {
         control.find("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field3.class);
         control.find("div[class*='v3']").show();
-        control.find("div[class*='v3']").find('input').attr("placeholder",placeHolders.field3.label[user.language]);
-        control.find("div[class*='v3']").find('#controlField3Addon').attr("data-toggle","tooltip").attr("data-original-title",placeHolders.field3.label[user.language]);
-        if (typeof placeHolders.field3.picto !== 'undefined'){
+        control.find("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
+        control.find("div[class*='v3']").find('#controlField3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
+        if (typeof placeHolders.field3.picto !== 'undefined') {
             control.find("div[class*='v3']").find('img').attr("src", placeHolders.field3.picto);
         }
     } else {
