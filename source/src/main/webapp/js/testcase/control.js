@@ -38,7 +38,7 @@ var operatorOptList = {
     "isArrayNumeric":{"value":"isArrayNumeric","label":{"en":"isArrayNumeric","fr":"isArrayNumeric"},"control_type":["array"]},
     "isElementArrayString":{"value":"isElementArrayString","label":{"en":"isElementArrayString","fr":"isElementArrayString"},"control_type":["array"]},
     "isElementArrayNumeric":{"value":"isElementArrayNumeric","label":{"en":"isElementArrayNumeric","fr":"isElementArrayNumeric"},"control_type":["array"]}
-}
+};
 
 
 
@@ -88,11 +88,11 @@ var convertToGui = {
     "verifyTitle":{"control":"title","operator":"unknown","field1":{"label":{"en": "Title (ex : welcome to site)", "fr": "Titre (ex : welcome to site)"},"picto":"images/action-font.png","class": "col-lg-8"}},
     "verifyUrl":{"control":"url","operator":"unknown","field1":{"label":{"en": "URL", "fr": "URL"},"picto":"images/action-link.png","class": "col-lg-8"}},
     "verifyTextInPage":{"control":"text_in_page","operator":"unknown","field1":{"label":{"en": "Text to find", "fr": "Texte à rechercher"},"picto":"images/action-font.png","class": "col-lg-8"}},
-    "verifyTextNotInPage":{"control":"text_not_in_page","operator":"unknown","field1":{"label":{"en": "Element (ex : data-cerberus=fieldToto)", "fr": "Element (ex : data-cerberus=fieldToto)"},"picto":"images/action-html.png","class": "col-lg-8"}},
-    "verifyTextInDialog":{"control":"text_in_dialog","operator":"unknown","field1":{"label":{"en": "Element (ex : data-cerberus=fieldToto)", "fr": "Element (ex : data-cerberus=fieldToto)"},"picto":"images/action-html.png","class": "col-lg-8"}},
-    "takeScreenshot":{"control":"take_screenshot","operator":"unknown"},
+    "verifyTextNotInPage":{"control":"text_not_in_page","operator":"unknown","field1":{"label":{"en": "Text not to find)", "fr": "Texte à ne pas trouver"},"picto":"images/action-font.png","class": "col-lg-8"}},
+    "verifyTextInDialog":{"control":"text_in_dialog","operator":"unknown","field1":{"label":{"en": "Text to find", "fr": "Texte à rechercher"},"picto":"images/action-font.png","class": "col-lg-8"}},
+    "takeScreenshot":{"control":"take_screenshot","operator":"unknown","field1":{"label":{"en": "Crop values in pixels (left,right,top,bottom)", "fr": "Cadrer en pixel (gauche,droite,haut,bas)"},"picto":"images/action-font.png","class": "col-lg-8"}},
     "getPageSource":{"control":"get_page_source","operator":"unknown"}
-}
+};
 
 var newControlOptList = {
     "unknown":{"value":"unknown","label":{"en":"Define a control","fr":"Choisir un control"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"]},
@@ -110,11 +110,11 @@ var newControlOptList = {
     "take_screenshot":{"value":"take_screenshot","label":{"en":"Take a Screenshot","fr":"Prendre un Screenshot"},"application_types":["GUI"],"unknown":"takeScreenshot"},
     "get_page_source":{"value":"get_page_source","label":{"en":"Record Page Source","fr":"Enregistrer les sources de la page"},"application_types":["GUI"],"unknown":"getPageSource"}
 
-}
+};
 
 
 var controlOptList = {
     "unknown":{"value":"unknown","label":{"en":"Define a control","fr":"Choisir un control"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"]},
     "string_comparison":{"value":"string_comparison","label":{"en":"String Comparison","fr":"Comparaison de Chaine de Caractère"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"equals":"verifyStringEquals","different":"verifyStringDifferent","greater":"verifyStringGreater","minor":"verifyStringMinor"}
-}
+};
 
