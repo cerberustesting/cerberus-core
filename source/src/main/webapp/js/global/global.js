@@ -2232,11 +2232,11 @@ function getRowClass(status) {
 
 function getExeStatusRowColor(status) {
     if (status === "OK") {
-        return 'rgb(0,210,122)';
+        return '#00d27a';
     } else if (status === "KO") {
-        return 'rgb(230,55,87)';
+        return '#e63757';
     } else if (status === "FA") {
-        return 'rgb(245,128,62)';
+        return '#f5803e';
     } else if (status === "CA") {
         return '#c6a20d';
     } else if (status === "PE") {

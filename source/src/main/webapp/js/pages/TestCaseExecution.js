@@ -1395,6 +1395,7 @@ function setConfigPanel(data) {
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
 console.info(data.controlStatus);
+console.info(getExeStatusRowColor(data.controlStatus));
     var favicon = new Favico({
         animation: 'slide',
         bgColor: getExeStatusRowColor(data.controlStatus)
