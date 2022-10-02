@@ -77,7 +77,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-8">
+                            <div class="col-sm-12">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-pencil"></span>  Test Cases</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_TestcaseNumber"></div>
                                 <a href="./TestCaseList.jsp" class="marginLeft15">See or Create TestCase</a>
@@ -88,7 +88,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-8">
+                            <div class="col-sm-12">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
                                 <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
@@ -99,7 +99,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-8">
+                            <div class="col-sm-12">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
                                 <a href="./Application.jsp" class="marginLeft15">See or Create Application</a>
@@ -110,7 +110,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row">
-                            <div class="col-sm-8" style="height: 100px;">
+                            <div class="col-sm-12" style="height: 100px;">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-question-sign"></span>  Documentation</h5>
                                 <div class="marginLeft15 marginBottom10"></div>
                                 <a href="./documentation/D1/documentation_en.html" target="_blank" class="marginLeft15">See online documentation</a>
@@ -121,7 +121,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-6" id="LastTagExecPanel">
-                    <div class="panel panel-default whiteCard" style="height:420px">
+                    <div class="panel panel-default whiteCard">
                         <div class="panel-heading card clearfix" data-target="#tagExecStatus">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
@@ -140,7 +140,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6" id="LastTagExecPanel">
-                    <div id="panelHistory" class="panel panel-default whiteCard" style="display: block;height:420px">
+                    <div id="panelHistory" class="panel panel-default whiteCard" style="display: block;">
                         <div class="panel-heading card" data-target="#histoChart1">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
@@ -158,7 +158,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-6" id="TcStatPanel">
-                    <div id="panelTcHistory" class="panel panel-default whiteCard" style="display: block;height:420px">
+                    <div id="panelTcHistory" class="panel panel-default whiteCard" style="display: block;">
                         <div class="panel-heading card" data-target="#histoChart2">
                             <div class="btn-group pull-right">
                                 <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
@@ -175,7 +175,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div id="ReportByStatusPanel">
-                        <div class="panel panel-default whiteCard" style="height:420px">
+                        <div class="panel panel-default whiteCard">
                             <div class="panel-heading card" data-target="#EnvStatus">
                                 <span class="fa fa-pie-chart fa-fw"></span>
                                 <label id="reportStatus">Environment Status</label>

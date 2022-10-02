@@ -27,9 +27,9 @@
     --crb-red-light-color: rgb(252,231,235);
     --crb-red-dark-color: rgb(171, 42, 65);
 
-    --crb-purple-color: #727cf5;
+    --crb-purple-color: #BF00BF;
     --crb-purple-light-color: rgb(221, 223, 247);
-    --crb-purple-dark-color: #494f9b;
+    --crb-purple-dark-color: #5C025C;
 
     --crb-turquoise-color: rgb(39,188,253);
     --crb-turquoise-light-color: rgb(229, 247, 255);
@@ -40,7 +40,7 @@
     --crb-yellow-dark-color: #c6a20d;
 
     --crb-dark-color: #34495e;
-    --crb-light-color: #ffffff;
+    --crb-light-color: #aaa;
 
     /*SYNTHESIS*/
     --old-ok: #5CB85C;

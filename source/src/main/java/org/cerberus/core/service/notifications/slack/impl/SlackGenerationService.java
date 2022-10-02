@@ -87,10 +87,10 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         JSONObject slackattaMessage = new JSONObject();
         if ("OK".equalsIgnoreCase(tag.getCiResult())) {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_OK_COL);
+            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_OK_COL_EXT);
             slackattaMessage.put("title", "Campaign successfully Executed. CI Score = " + tag.getCiScore() + " (< " + tag.getCiScoreThreshold() + ")");
         } else {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_KO_COL);
+            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_KO_COL_EXT);
             slackattaMessage.put("title", "Campaign failed. CI Score = " + tag.getCiScore() + " >= " + tag.getCiScoreThreshold());
 
         }
@@ -149,10 +149,10 @@ public class SlackGenerationService implements ISlackGenerationService {
 
         JSONObject slackattaMessage = new JSONObject();
         if ("OK".equalsIgnoreCase(exe.getControlStatus())) {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_OK_COL);
+            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_OK_COL_EXT);
             slackattaMessage.put("title", "Execution successfully Executed. " + exe.getControlStatus());
         } else {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_KO_COL);
+            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_KO_COL_EXT);
             slackattaMessage.put("title", "Execution failed. " + exe.getControlStatus() + " : " + exe.getControlMessage());
 
         }

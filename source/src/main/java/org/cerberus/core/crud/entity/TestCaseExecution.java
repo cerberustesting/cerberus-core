@@ -185,24 +185,34 @@ public class TestCaseExecution {
      */
     public static final String CONTROLSTATUS_OK = "OK"; // Test executed and everything was fine.
     public static final String CONTROLSTATUS_OK_COL = "var(--crb-green-color)"; // Test executed and everything was fine.
+    public static final String CONTROLSTATUS_OK_COL_EXT = "#00d27a"; // Test executed and everything was fine.
     public static final String CONTROLSTATUS_KO = "KO"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
     public static final String CONTROLSTATUS_KO_COL = "var(--crb-red-color)"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
+    public static final String CONTROLSTATUS_KO_COL_EXT = "#e63757"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
     public static final String CONTROLSTATUS_FA = "FA"; // Test failed to be executed. --> Problem is in the test itself.
     public static final String CONTROLSTATUS_FA_COL = "var(--crb-orange-color)"; // Test failed to be executed. --> Problem is in the test itself.
+    public static final String CONTROLSTATUS_FA_COL_EXT = "#f5803e"; // Test failed to be executed. --> Problem is in the test itself.
     public static final String CONTROLSTATUS_NA = "NA"; // Test could not be executed because no data could be retreive for testing.
     public static final String CONTROLSTATUS_NA_COL = "var(--crb-yellow-color)"; // Test could not be executed because no data could be retreive for testing.
+    public static final String CONTROLSTATUS_NA_COL_EXT = "#f1c40f"; // Test could not be executed because no data could be retreive for testing.
     public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed.
     public static final String CONTROLSTATUS_NE_COL = "var(--crb-light-color)"; // Test was not executed.
+    public static final String CONTROLSTATUS_NE_COL_EXT = "#ffffff"; // Test was not executed.
     public static final String CONTROLSTATUS_WE = "WE"; // Test is waiting for a manual testing.
     public static final String CONTROLSTATUS_WE_COL = "var(--crb-dark-color)"; // Test is waiting for a manual testing.
+    public static final String CONTROLSTATUS_WE_COL_EXT = "#34495e"; // Test is waiting for a manual testing.
     public static final String CONTROLSTATUS_PE = "PE"; // Test is currently beeing executed.
     public static final String CONTROLSTATUS_PE_COL = "var(--crb-blue-color)"; // Test is currently beeing executed.
+    public static final String CONTROLSTATUS_PE_COL_EXT = "#2c7be5"; // Test is currently beeing executed.
     public static final String CONTROLSTATUS_CA = "CA"; // Test has been cancelled by user.
     public static final String CONTROLSTATUS_CA_COL = "var(--crb-yellow-dark-color)"; // Test has been cancelled by user.
+    public static final String CONTROLSTATUS_CA_COL_EXT = "#c6a20d"; // Test has been cancelled by user.
     public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QU_COL = "var(--crb-purple-color)"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_QU_COL_EXT = "#BF00BF"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL = "var(--crb-purple-dark-color)"; // Test is stuck in Queue.
+    public static final String CONTROLSTATUS_QE_COL_EXT = "#5C025C"; // Test is stuck in Queue.
 
     public enum ControlStatus {
         OK, KO, FA, NA, NE, WE, PE, CA, QU, QE

@@ -856,7 +856,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
                 tinyMCE.get('detailedDescription').setContent(testCase.detailedDescription);
             }
 
-            me.disconnect()
+            me.disconnect();
         }
         return;
     });

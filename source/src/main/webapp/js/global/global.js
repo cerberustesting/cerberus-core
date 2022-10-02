@@ -2232,11 +2232,11 @@ function getRowClass(status) {
 
 function getExeStatusRowColor(status) {
     if (status === "OK") {
-        return 'rgb(0,210,122)';
+        return '#00d27a';
     } else if (status === "KO") {
-        return 'rgb(230,55,87)';
+        return '#e63757';
     } else if (status === "FA") {
-        return 'rgb(245,128,62)';
+        return '#f5803e';
     } else if (status === "CA") {
         return '#c6a20d';
     } else if (status === "PE") {
@@ -2248,9 +2248,9 @@ function getExeStatusRowColor(status) {
     } else if (status === "NA") {
         return '#F1C40F';
     } else if (status === "QU") {
-        return '#727cf5';
+        return '#BF00BF';
     } else if (status === "QE") {
-        return '#494f9b';
+        return '#5C025C';
     } else {
         return 'lightgrey';
     }

@@ -2507,10 +2507,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','db_field','','fr','Base de donnée','',NULL)");
         b.append(",('page_testcasescript','delete','','en','Delete','Delete',NULL)");
         b.append(",('page_testcasescript','delete','','fr','Supprimer','Supprimer',NULL)");
+        b.append(",('page_testcasescript','describe_step','','en','Describe Step','',NULL)");
+        b.append(",('page_testcasescript','describe_step','','fr','Décrivez ce Step','',NULL)");
         b.append(",('page_testcasescript','describe_action','','en','Describe Action','',NULL)");
         b.append(",('page_testcasescript','describe_action','','fr','Décrivez cette action','',NULL)");
         b.append(",('page_testcasescript','describe_control','','en','Describe Control','',NULL)");
-        b.append(",('page_testcasescript','describe_control','','fr','Décrivez ce control','',NULL)");
+        b.append(",('page_testcasescript','describe_control','','fr','Décrivez ce controle','',NULL)");
         b.append(",('page_testcasescript','description_field','','en','Description','',NULL)");
         b.append(",('page_testcasescript','description_field','','ru','Описание','',NULL)");
         b.append(",('page_testcasescript','description_field','','fr','Description','',NULL)");
