@@ -118,6 +118,7 @@ $.when($.getScript("js/global/global.js")
                         }
 
                     }
+                    $(".testTestCase #test").select2({width: "100%"}).next().css("margin-bottom", "7px");
                 });
             });
 
