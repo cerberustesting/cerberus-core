@@ -2248,9 +2248,9 @@ function getExeStatusRowColor(status) {
     } else if (status === "NA") {
         return '#F1C40F';
     } else if (status === "QU") {
-        return '#727cf5';
+        return '#BF00BF';
     } else if (status === "QE") {
-        return '#494f9b';
+        return '#5C025C';
     } else {
         return 'lightgrey';
     }

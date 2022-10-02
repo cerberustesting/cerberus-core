@@ -209,10 +209,10 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA_COL_EXT = "#c6a20d"; // Test has been cancelled by user.
     public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QU_COL = "var(--crb-purple-color)"; // Test is still waiting in queue.
-    public static final String CONTROLSTATUS_QU_COL_EXT = "#727cf5"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_QU_COL_EXT = "#BF00BF"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL = "var(--crb-purple-dark-color)"; // Test is stuck in Queue.
-    public static final String CONTROLSTATUS_QE_COL_EXT = "#494f9b"; // Test is stuck in Queue.
+    public static final String CONTROLSTATUS_QE_COL_EXT = "#5C025C"; // Test is stuck in Queue.
 
     public enum ControlStatus {
         OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
