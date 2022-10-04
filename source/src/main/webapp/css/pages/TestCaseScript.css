@@ -436,9 +436,11 @@
 }
 
 .list-group-item-calm.active {
-    border-color:#46b8da;
     background-color:#fff;
     color:#555;
+    background-color:#f8f8f8;
+    border: 2px solid rgb(39,188,253);
+    border-left: 4px solid rgb(39,188,253);
 }
 
 .list-group-item-calm.active:hover {

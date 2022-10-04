@@ -77,10 +77,10 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
     displayRobotList("robotList", "ROBOTLIST", true);
     displayApplicationIpList("environmentList", "", application);
 
-    $("#testToExecuteLabel").html(doc.getDocLabel("page_testcaseexecutionmodal", "testToExecuteLabel"));
-    $("#chooseEnvLabel").html(doc.getDocLabel("page_testcaseexecutionmodal", "chooseEnvLabel"));
-    $("#chooseRobotLabel").html(doc.getDocLabel("page_testcaseexecutionmodal", "chooseRobotLabel"));
-    $("#customizeExecutionSettings").html(doc.getDocLabel("page_testcaseexecutionmodal", "customizeExecutionSettings"));
+    $("#testToExecuteLabel").html('<span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "testToExecuteLabel"));
+    $("#chooseEnvLabel").html('<span class="card-img-top glyphicon glyphicon-list" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "chooseEnvLabel"));
+    $("#chooseRobotLabel").html('<span class="card-img-top glyphicon glyphicon-road" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "chooseRobotLabel"));
+    $("#customizeExecutionSettings").html('<span class="card-img-top glyphicon glyphicon-cog" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "customizeExecutionSettings"));
 
 
 //Activate popover for interactive tutorial
@@ -96,6 +96,31 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
     if($("[name='robotItem']").size()===1){
         $("[name='robotItem']").addClass("active");
     }
+
+    $("#filterRobot").change(function(){
+        $("[name='robotItem']").show();
+
+        $(this).val().toLowerCase().split(" ").forEach(function (item) {
+            $("[name='robotItem']").each(function () {
+                if (JSON.stringify($(this).data('item')).toLowerCase().indexOf(item) <= -1) {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+
+    $("#filterEnvironment").change(function(){
+        $("[name='applicationIpItem']").show();
+
+        $(this).val().toLowerCase().split(" ").forEach(function (item) {
+            $("[name='applicationIpItem']").each(function () {
+                if (JSON.stringify($(this).data('item')).toLowerCase().indexOf(item) <= -1) {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+
 
 }
 

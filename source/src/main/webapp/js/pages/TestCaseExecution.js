@@ -2159,25 +2159,21 @@ Step.prototype.draw = function () {
     var object = htmlElement.data("item");
 
     if (object.returnCode === "OK") {
-        htmlElement.prepend($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+        htmlElement.prepend($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
     } else if (object.returnCode === "FA") {
-        htmlElement.prepend($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+        htmlElement.prepend($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
     } else if (object.returnCode === "PE") {
-        htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+        htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
     } else if (object.returnCode === "KO") {
-        htmlElement.prepend($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+        htmlElement.prepend($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
     } else if (object.returnCode === "NA") {
-        htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
-        object.html.addClass("list-group-item-info");
+        htmlElement.prepend($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
     } else if (object.returnCode === "NE") {
-        htmlElement.prepend($("<span>").addClass("pull-left"));
-        //object.html.addClass("list-group-item-grey");
+        htmlElement.prepend($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
     } else if (object.returnCode === "WE" && isTheExecutionManual) {
-        htmlElement.prepend($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
-        //object.html.addClass("list-group-item-black");
+        htmlElement.prepend($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
     } else {
         htmlElement.prepend($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        //object.html.addClass("list-group-item-warning");
     }
 }
 
@@ -2472,11 +2468,11 @@ Action.prototype.draw = function (idMotherStep, id) {
      */
     if (isTheExecutionManual) {
 
-        var buttonUpload = $($("<button>").addClass("btn btnTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
+        var buttonUpload = $($("<button>").addClass("btn btnLightTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
 
         var buttonGroup = $('<div class="btn-group" role="group">');
-        var buttonOK = $('<button name="buttonOK" class="btn btnGreen"><span class="glyphicon glyphicon-ok"></span></button>');
-        var buttonFA = $('<button class="btn btnOrange"><span class="glyphicon glyphicon-alert"></span></button>');
+        var buttonOK = $('<button name="buttonOK" class="btn btnLightGreen"><span class="glyphicon glyphicon-ok"></span></button>');
+        var buttonFA = $('<button class="btn btnLightOrange"><span class="glyphicon glyphicon-alert"></span></button>');
         var inputStatus = $('<input style="display:none" name="returncode"/>');
         var inputMessage = $('<input style="display:none" name="returnmessage"/>');
         buttonGroup.append(buttonOK).append(inputStatus).append(inputMessage).append(buttonFA).css("float", "right");
@@ -2512,21 +2508,21 @@ Action.prototype.draw = function (idMotherStep, id) {
     }
 
         if (action.returnCode === "OK") {
-            status.append($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+            status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
         } else if (action.returnCode === "FA") {
-            status.append($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+            status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
         } else if (action.returnCode === "PE") {
-            status.append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em"));
+            status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
         } else if (action.returnCode === "KO") {
-            status.append($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+            status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
         } else if (action.returnCode === "NA") {
-            status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+            status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
         } else if (action.returnCode === "NE") {
-            status.append($("<span>").attr("style", "font-size:1.5em"));
+            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
         } else if (action.returnCode === "WE" && isTheExecutionManual) {
-            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+            status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
         } else {
-            status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
         }
 
         status.append(elapsedTime);
@@ -2611,7 +2607,7 @@ function triggerActionExecution(element, id, status) {
     var newReturnCode = "WE";
     //update first all element of actionDiv in case of control change
     $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").val("OK").change();
     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").attr("data-modified", "true");
     $(element).parents("[name='fullActionDiv']").removeClass("initialStatus");
@@ -2620,17 +2616,17 @@ function triggerActionExecution(element, id, status) {
     // update element checked
     if (status === "OK") {
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else if (status === "FA") {
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
-        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightOrange optionLabel pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelOrange optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("FA").change();
         newReturnCode = "FA";
     } else if (status === "KO") {
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
-        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelLightRed optionLabel pull-left");
+        $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("KO").change();
         newReturnCode = "KO";
     }
@@ -2640,7 +2636,7 @@ function triggerActionExecution(element, id, status) {
     //Modify all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $(element).parents("[name='fullActionDiv']").prevAll('.initialStatus');
     prevElementCurrentStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     prevElementCurrentStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
     prevElementCurrentStep.find("input[id='returnmessage']").val("Action manually executed").change();
     prevElementCurrentStep.find(".action-group").each(function(i, obj){
@@ -2653,7 +2649,7 @@ function triggerActionExecution(element, id, status) {
     //Modify all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $(element).parents("[name='fullActionDiv']").parent().prevAll().find('.initialStatus');
     prevElementPreviousStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+    prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     prevElementPreviousStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
     prevElementPreviousStep.find("input[id='returnmessage']").val("Action manually executed").change();
     prevElementPreviousStep.find(".action-group").each( function(i, obj){
@@ -2671,25 +2667,25 @@ function triggerActionExecution(element, id, status) {
         }).get();
         if(returnCodes.includes("KO")){
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
-            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightRed optionLabel pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
             testCaseNewReturnCode = "KO";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
-            //htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+            //htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
 
         } else if(returnCodes.includes("FA")){
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
-            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightOrange optionLabel pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelOrange optionLabel pull-left");
             testCaseNewReturnCode = "FA";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
-            //htmlElement.prepend($('<span class="label label-primary labelLightBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+            //htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
 
         } else {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelLightGreen optionLabel pull-left");
+            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
             testCaseNewReturnCode = "OK";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
@@ -3000,10 +2996,10 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
      */
     if (isTheExecutionManual) {
 
-        var buttonUpload = $($("<button>").addClass("btn btnTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
+        var buttonUpload = $($("<button>").addClass("btn btnLightTurquoise marginRight5").attr("type", "button").html('<span class="glyphicon glyphicon-upload"></span>'));
         var buttonGroup = $('<div class="btn-group" role="group">');
-        var buttonOK = $('<button name="buttonOK" class="btn btnGreen"><span class="glyphicon glyphicon-ok"></span></button>');
-        var buttonKO = $('<button class="btn btnRed"><span class="glyphicon glyphicon-alert"></span></button>');
+        var buttonOK = $('<button name="buttonOK" class="btn btnLightGreen"><span class="glyphicon glyphicon-ok"></span></button>');
+        var buttonKO = $('<button class="btn btnLightRed"><span class="glyphicon glyphicon-alert"></span></button>');
         var inputStatus = $('<input style="display:none" name="returncode"/>');
         var inputMessage = $('<input style="display:none" name="returnmessage"/>');
         buttonGroup.append(buttonOK).append(inputStatus).append(inputMessage).append(buttonKO).css("float", "right");
@@ -3040,21 +3036,21 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
 
             if (control.returnCode === "OK") {
-                status.append($('<span class="label label-primary labelLightGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+                status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
             } else if (control.returnCode === "FA") {
-                status.append($('<span class="label label-primary labelLightOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+                status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
             } else if (control.returnCode === "PE") {
-                status.append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em"));
+                status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
             } else if (control.returnCode === "KO") {
-                status.append($('<span class="label label-primary labelLightRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+                status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
             } else if (control.returnCode === "NA") {
-                status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+                status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
             } else if (control.returnCode === "NE") {
-                status.append($("<span>").attr("style", "font-size:1.5em"));
+                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
             } else if (control.returnCode === "WE" && isTheExecutionManual) {
-                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+                status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
             } else {
-                status.append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em"));
+                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
             }
 
         status.append(elapsedTime);

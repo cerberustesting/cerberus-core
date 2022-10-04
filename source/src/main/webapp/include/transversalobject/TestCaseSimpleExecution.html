@@ -6,7 +6,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="executeTestCaseModalLabel" name="executeTestCaseField">Run Test Case</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background-color:#f5f6fa">
                 <div class="container-fluid center">
                     <!-- messages area-->
                     <div id="DialogMessagesArea">
@@ -21,13 +21,9 @@
                 <!--edit form-->
                 <form id="executeTestCaseModalForm" name="executeTestCaseModalForm"  title="ExecuteTestCase" role="form">
                     <div class="container-fluid center">
-                        <div class="row">
+                        <div class="row marginBottom20 whiteCard">
                             <div class="col-xs-12" id="EditScriptPanel">
                                 <div class="panel panel-default">
-                                    <div class="pill40 light-primary pull-left">
-                                        <span class="card-img-top glyphicon glyphicon-edit"
-                                              style="font-size:15px;"></span>
-                                    </div>
                                     <div class="panel-heading bold" id="testToExecuteLabel">
                                         Testcase to launch :
                                     </div>
@@ -36,40 +32,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row row-divided">
+                        <div class="row whiteCard">
                             <div class="col-xs-12 col-md-4">
                                 <div class="panel panel-default">
-                                    <div class="pill40 light-primary pull-left">
-                                        <span class="card-img-top glyphicon glyphicon-edit"
-                                              style="font-size:15px;"></span>
-                                    </div>
                                     <div class="panel-heading bold" id="chooseEnvLabel">
                                             Choose your Environment
                                     </div>
                                 </div>
+                                <div><input type="text" placeholder="Filter"  class="form-control input-sm" id="filterEnvironment"/></div>
                                 <div class="list-group marginTop10" id="environmentList" name="environmentList" style="max-height:300px;overflow-y: scroll;">
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-4">
                                 <div class="panel panel-default">
-                                    <div class="pill40 light-primary pull-left">
-                                        <span class="card-img-top glyphicon glyphicon-edit"
-                                              style="font-size:15px;"></span>
-                                    </div>
                                     <div class="panel-heading bold" id="chooseRobotLabel">
                                         Choose your Robot<span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
                                                                style="font-size:15px;">
                                     </div>
                                 </div>
+                                <div><input type="text" placeholder="Filter"  class="form-control input-sm" id="filterRobot"/></div>
                                 <div class="list-group marginTop10" id="robotList" name="robotList" style="max-height:300px;overflow-y: scroll;">
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-4">
                                 <div class="panel panel-default">
-                                    <div class="pill40 light-primary pull-left">
-                                        <span class="card-img-top glyphicon glyphicon-cog"
-                                              style="font-size:15px;"></span>
-                                    </div>
                                     <div class="panel-heading bold" id="customizeExecutionSettings">
                                         Customize execution settings
                                         <span class="card-img-top glyphicon glyphicon-floppy-disk pull-right"
@@ -79,13 +65,13 @@
                                 <div class="form-horizontal" id="executionSettings">
                                     <div class="list-group marginTop10">
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-tag pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-tag pull-left marginTop10' data-toggle="tooltip" data-original-title="Tag"></span>
                                             <div class="col-sm-11">
                                                 <input type="text" placeholder="Define your own execution tag"  class="form-control input-sm" id="tag" name="Tag" maxlength="255"/>
                                             </div>
                                         </button>
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-list pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-list pull-left marginTop10' data-toggle="tooltip" data-original-title="Logs level"></span>
                                             <div class="col-sm-11">
                                                 <div class="btn-group btn-group-toggle" id="verbose" data-toggle="buttons">
                                                     <label class="btn btn-default">
@@ -101,13 +87,13 @@
                                             </div>
                                         </button>
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-time pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-time pull-left marginTop10' data-toggle="tooltip" data-original-title="Override Timeout"></span>
                                             <div class="col-sm-11">
                                                     <input type="text" placeholder="Override timeout (in ms)" class="form-control input-sm" id="timeout" name="timeout"/>
                                             </div>
                                         </button>
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-repeat pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-repeat pull-left marginTop10' data-toggle="tooltip" data-original-title="Repeat on Failure"></span>
                                             <div class="col-sm-11">
                                                 <div class="btn-group btn-group-toggle" id="retries" data-toggle="buttons">
                                                     <label class="btn btn-default active">
@@ -126,13 +112,13 @@
                                             </div>
                                         </button>
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-arrow-up pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-arrow-up pull-left marginTop10' data-toggle="tooltip" data-original-title="Priority (0 lowest, 1000 default)"></span>
                                             <div class="col-sm-11">
                                                 <input type="text" placeholder="Override priority (default 1000, 1 highest priority)"  class="form-control input-sm" id="priority" name="priority"/>
                                             </div>
                                         </button>
                                         <button type="button" class="list-group-item list-group-item-action">
-                                            <span class='glyphicon glyphicon-hand-left pull-left marginTop10'></span>
+                                            <span class='glyphicon glyphicon-hand-left pull-left marginTop10' data-toggle="tooltip" data-original-title="Manual execution"></span>
                                             <div class="col-sm-11">
                                                 <div class="btn-group btn-group-toggle" id="manual" data-toggle="buttons">
                                                     <label class="btn btn-default">

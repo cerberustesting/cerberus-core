@@ -181,6 +181,7 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
                         "<img class='col-xs-2' style='width:60px;height:30px' src='images/browser-"+list[index].browser+".png'/>" +
                         "<span class='col-xs-2 grayscale'> "+list[index].version+" </span>" +
                         "</button>");
+                    line.data("item",list[index]);
                     $("[name='" + selectName + "']").append(line);
 
                 }
@@ -527,6 +528,7 @@ function displayApplicationIpList(selectName, system, application) {
                 "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].country+"</span>" +
                 "<span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].environment+"</span></div>" +
                 "</button>");
+            line.data("item",data.contentTable[option]);
             $("[name='" + selectName + "']").append(line);
         }
             $("[name='applicationIpItem']").each(function () {

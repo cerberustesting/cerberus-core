@@ -40,7 +40,7 @@
     --crb-yellow-dark-color: #c6a20d;
 
     --crb-dark-color: #34495e;
-    --crb-light-color: #aaa;
+    --crb-light-color: #aaaaaa;
 
     /*SYNTHESIS*/
     --old-ok: #5CB85C;
@@ -160,6 +160,22 @@
     color: var(--crb-orange-light-color);
     background-color: var(--crb-orange-color);
     border-color: var(--crb-orange-color);
+}
+/* YELLOW */
+.labelYellow {
+    color: var(--crb-yellow-light-color);
+    background-color: var(--crb-yellow-color);
+    border-color: var(--crb-yellow-color);
+}
+.btnYellow {
+    color: var(--crb-yellow-light-color);
+    background-color: var(--crb-yellow-color);
+    border-color: var(--crb-yellow-color);
+}
+.btnYellow:hover {
+    color: var(--crb-yellow-light-color);
+    background-color: var(--crb-yellow-color);
+    border-color: var(--crb-yellow-color);
 }
 /* RED */
 .labelRed {
