@@ -118,6 +118,7 @@ $.when($.getScript("js/global/global.js")
                         }
 
                     }
+                    $(".testTestCase #test").select2({width: "100%"}).next().css("margin-bottom", "7px");
                 });
             });
 
@@ -2415,7 +2416,7 @@ function displayOverrideOptionsModal(action, htmlElement) {
 
         printLabelForOptions($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), newOpts, newConditionOpts, "optionLabel");
         printLabelForCondition($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
-        printLabel($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
+        printLabel($($($(htmlElement)[0]).find(".boutonGroup")[0]).parent(), action.isFatal, "actionFatalLabel", "labelOrange", "Stop Execution on Failure")
     });
 }
 ;
@@ -2480,8 +2481,8 @@ Action.prototype.generateContent = function () {
 
     //FIRST ROW
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
-    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addBtn = $("<button></button>").addClass("btn add-btn btnLightGreen").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn btnLightBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
 
@@ -2626,7 +2627,7 @@ Action.prototype.generateContent = function () {
 
     printLabelForOptions(btnGrp, action.options, action.conditionOptions, "optionLabel");
     printLabelForCondition(btnGrp, action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
-    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelLightOrange", "Stop Execution on Failure")
+    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelOrange", "Stop Execution on Failure")
 
     return row;
 };
@@ -2694,15 +2695,15 @@ function printLabelForOptions(element, newOpts, newOptsCondition, className) {
         }
     }
     if (overrideOption) {
-        var labelOptions = $('<span data-toggle="tooltip" data-original-title="' + title + '" class="label label-primary labelLightBlue pull-right optionLabel ' + className + '"><span class="glyphicon glyphicon-cog"></span> Override Parameter</span>');
+        var labelOptions = $('<span data-toggle="tooltip" data-original-title="' + title + '" class="label label-primary labelBlue pull-right optionLabel ' + className + '"><span class="glyphicon glyphicon-cog"></span> Override Parameter</span>');
         $(element).append(labelOptions[0]);
     }
 }
 
 function printLabelForCondition(element, conditionOperator, conditionValue1, conditionValue2, conditionValue3) {
     $(element).find('.conditionLabel').remove();
-    if (conditionOperator === 'never') {
-        var labelOptions = $('<span class="label label-primary labelLightRed optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
+    if (conditionOperator === 'Never') {
+        var labelOptions = $('<span class="label label-primary labelRed optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
         $(element).append(labelOptions[0]);
     } else if (conditionOperator !== 'always') {
         var title = "<div>Execution Condition : </div>";
@@ -2710,7 +2711,7 @@ function printLabelForCondition(element, conditionOperator, conditionValue1, con
         title += "<div>val1" + conditionValue1 + "</div>";
         title += "<div>val2" + conditionValue2 + "</div>";
         title += "<div>val3" + conditionValue3 + "</div>";
-        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="' + title + '" class="label label-primary labelLightGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
+        var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="' + title + '" class="label label-primary labelGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2718,7 +2719,7 @@ function printLabelForCondition(element, conditionOperator, conditionValue1, con
 function printLabelForFatal(isFatal, element) {
     $(element).find('.actionFatalLabel').remove();
     if (isFatal) {
-        var labelOptions = $('<span class="label label-primary labelLightOrange optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
+        var labelOptions = $('<span class="label label-primary labelOrange optionLabel pull-right actionFatalLabel"><span class="glyphicon glyphicon-cog"></span> Stop test on failure</span>');
         $(element).append(labelOptions[0]);
     }
 }
@@ -2850,8 +2851,8 @@ Control.prototype.draw = function (afterControl) {
 
     htmlElement.append(row);
 
-    //setPlaceholderControl(htmlElement);
-    setPlaceholderCondition(htmlElement);
+    setPlaceholderControl(htmlElement);
+    //setPlaceholderCondition(htmlElement);
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
     if (afterControl === undefined) {
@@ -2907,8 +2908,8 @@ Control.prototype.generateContent = function () {
 
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
-    var addBtn = $("<button></button>").addClass("btn add-btn addControl-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var addABtn = $("<button></button>").addClass("btn add-btn btnBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addBtn = $("<button></button>").addClass("btn add-btn btnLightGreen").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn btnLightBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("marginRight10 boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
 
@@ -2963,6 +2964,7 @@ Control.prototype.generateContent = function () {
     var controls = $("<select></select>").addClass("form-control input-sm controlType");
     var operator = $("<select></select>").addClass("form-control input-sm operator");
 
+    controls.css("width", "100%")
     var user = getUser();
     for (var key in newControlOptList) {
         controls.append($("<option></option>").text(newControlOptList[key].label[user.language]).val(newControlOptList[key].value));
@@ -3040,7 +3042,7 @@ Control.prototype.generateContent = function () {
 
     printLabelForOptions(btnGrp, control.options, control.conditionOptions, "controlOptionLabel");
     printLabelForCondition(btnGrp, control.conditionOperator);
-    printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelLightOrange", "Stop Execution on Failure")
+    printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelOrange", "Stop Execution on Failure")
 
     if (typeof convertToGui[this.control] !== 'undefined') {
         controls.val(convertToGui[this.control].control);
@@ -3074,6 +3076,7 @@ Control.prototype.generateContent = function () {
         var controlSelect = $(this).parents(".control").find(".controlType");
         var operatorSelect = $(this).find(":selected");
         control.control = newControlOptList[controlSelect.val()][operatorSelect.val()];
+        setPlaceholderControl($(this).parents(".control"));
     });
 
     return row;

@@ -376,6 +376,11 @@ function initHPGraph() {
 
 function getHPOptionsExeBar(title, unit) {
     let option = {
+        legend: {
+            labels: {
+                usePointStyle: true,
+            },
+        },
         title: {
             text: title
         },
@@ -416,6 +421,11 @@ function getHPOptionsTcGraph(title, unit) {
         hover: {
             mode: 'nearest',
             intersect: true
+        },
+        legend: {
+            labels: {
+                usePointStyle: true,
+            },
         },
         title: {
             text: title
