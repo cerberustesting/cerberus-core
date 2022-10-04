@@ -27,6 +27,7 @@
 * [UI] Visual improvements on Robot and Service page.
 * [UI] Contextual favicon that display the execution status when loading a testcase execution.
 * [UI] On ReportByTag screen : Display CI Result and score + Make the report by test folder more responsive on small screens + Collapse country filter list when too big (above 20 countries) + Collapse Application/Env/country/Robot report list when too big (above 20 lines).
+* [UI] Major redesign of testcase and testcase execution pages.
 * [DOC] Added Documentation usecase on how to use test data from Google drive file.
  
 *Warning to be considered before applying the version (deprecated features)*

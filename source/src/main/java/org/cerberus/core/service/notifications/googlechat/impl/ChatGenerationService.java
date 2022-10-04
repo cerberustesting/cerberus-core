@@ -109,9 +109,9 @@ public class ChatGenerationService implements IChatGenerationService {
         JSONObject textContent = new JSONObject();
 
         if ("OK".equalsIgnoreCase(tag.getCiResult())) {
-            textContent.put("text", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.<br><b><font color=\"" + TestCaseExecution.CONTROLSTATUS_OK_COL + "\">Campaign successfully Executed. CI Score = " + tag.getCiScore() + " < " + tag.getCiScoreThreshold() + "</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusUrl + "'>here</a> for details.");
+            textContent.put("text", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.<br><b><font color=\"" + TestCaseExecution.CONTROLSTATUS_OK_COL_EXT + "\">Campaign successfully Executed. CI Score = " + tag.getCiScore() + " < " + tag.getCiScoreThreshold() + "</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusUrl + "'>here</a> for details.");
         } else {
-            textContent.put("text", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.<br><b><font color=\"" + TestCaseExecution.CONTROLSTATUS_KO_COL + "\">Campaign failed. CI Score = " + tag.getCiScore() + " (>= " + tag.getCiScoreThreshold() + ")</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusUrl + "'>here</a> for details.");
+            textContent.put("text", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.<br><b><font color=\"" + TestCaseExecution.CONTROLSTATUS_KO_COL_EXT + "\">Campaign failed. CI Score = " + tag.getCiScore() + " (>= " + tag.getCiScoreThreshold() + ")</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusUrl + "'>here</a> for details.");
         }
 
         JSONObject textParaContent = new JSONObject();

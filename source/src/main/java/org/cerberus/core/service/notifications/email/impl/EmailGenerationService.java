@@ -369,9 +369,9 @@ public class EmailGenerationService implements IEmailGenerationService {
             body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
             body = body.replace("%CAMPAIGN%", tag.getCampaign());
             body = body.replace("%CIRESULT%", tag.getCiResult());
-            String ciColor = TestCaseExecution.CONTROLSTATUS_KO_COL;
+            String ciColor = TestCaseExecution.CONTROLSTATUS_KO_COL_EXT;
             if ("OK".equals(tag.getCiResult())) {
-                ciColor = TestCaseExecution.CONTROLSTATUS_OK_COL;
+                ciColor = TestCaseExecution.CONTROLSTATUS_OK_COL_EXT;
             }
             body = body.replace("%CIRESULTCOLOR%", ciColor);
             body = body.replace("%CISCORE%", String.valueOf(tag.getCiScore()));
