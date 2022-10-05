@@ -3242,7 +3242,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
         $(document).on('focus', ".content div.fieldRow input:not('.description')", function (e) {
-            let currentAction = $(this).parent().parent().find("#actionSelect").val();
+            console.log($(this));
+            let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
+            console.log(currentAction);
             if (currentAction === "callService" || currentAction === "calculateProperty") {
                 initAutocompleteforSpecificFields($(this));
             } else {
@@ -3252,7 +3254,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         $(document).on('settingsButton', ".content div.fieldRow input:not('.description')", function (e) {
             var doc = new Doc();
-            let currentAction = $(this).parent().parent().find("#actionSelect").val();
+            let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
             let htmlElement = $(this);
             $(htmlElement).parent().find(".input-group-btn").remove();
             switch (currentAction) {
@@ -3263,7 +3265,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             dataType: "json",
                             success: function (data) {
                                 var dataContent = data.contentTable;
-                                if ($(htmlElement).parent().find(".v1").val() !== undefined) {
+                                if ($(htmlElement).parents(".secondRow").find(".v1").val() !== undefined) {
                                     if (dataContent.hasPermissions !== undefined) {
                                         var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
         								class="buttonObject btn btn-default input-sm " \n\
