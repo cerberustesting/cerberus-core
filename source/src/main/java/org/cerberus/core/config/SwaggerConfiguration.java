@@ -51,6 +51,7 @@ public class SwaggerConfiguration {
     private static final Tag TESTCASESTEP_TAG = new Tag("Testcase Step", "Testcase Step endpoint");
     private static final Tag SERVICE_TAG = new Tag("Service", "Service endpoint");
     private static final Tag CAMPAIGNEXECUTION_TAG = new Tag("Campaign Execution", "Campaign Execution endpoint");
+    private static final Tag QUEUEDEXECUTION_TAG = new Tag("Queued Execution", "Queued Execution endpoint");
 
     private static final String LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
     private static final String GITHUB_REPOSITORY = "https://github.com/cerberustesting/cerberus-source";
@@ -90,6 +91,7 @@ public class SwaggerConfiguration {
                 .tags(TESTCASECONTROL_TAG)
                 .tags(SERVICE_TAG)
                 .tags(CAMPAIGNEXECUTION_TAG)
+                .tags(QUEUEDEXECUTION_TAG)
                 .useDefaultResponseMessages(false);
     }
 
