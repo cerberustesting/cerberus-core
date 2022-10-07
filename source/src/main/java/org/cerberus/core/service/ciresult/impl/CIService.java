@@ -19,14 +19,13 @@
  */
 package org.cerberus.core.service.ciresult.impl;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
-
 import com.google.gson.Gson;
-import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
+import org.cerberus.core.api.entity.CICampaignResult;
+import org.cerberus.core.api.entity.CampaignExecutionResult;
+import org.cerberus.core.api.entity.CampaignExecutionResultPriority;
+import org.cerberus.core.api.exceptions.EntityNotFoundException;
+import org.cerberus.core.api.exceptions.FailedReadOperationException;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -35,17 +34,23 @@ import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.dto.SummaryStatisticsDTO;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -263,6 +268,120 @@ public class CIService implements ICIService {
         return null;
     }
 
+    public CICampaignResult getCIResultApi(String tag, String campaign) {
+        Optional<Tag> campaignExecution;
+        List<TestCaseExecution> executions;
+        try {
+            //Get the last campaign execution when campaign id is specified
+            if (StringUtil.isNotEmpty(campaign)) {
+                AnswerList<Tag> tags = tagService.readByVariousByCriteria(campaign, 0, 1, "id", "desc", null, null);
+                if (CollectionUtils.isNotEmpty(tags.getDataList()) && tags.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    tag = tags.getDataList().get(0).getTag();
+                } else {
+                    throw new EntityNotFoundException(CICampaignResult.class, "campaignId", campaign);
+                }
+            }
+
+            campaignExecution = Optional.ofNullable(tagService.convert(tagService.readByKey(tag)));
+            if (campaignExecution.isPresent()) {
+                campaign = campaignExecution.get().getCampaign();
+            } else {
+                throw new EntityNotFoundException(CICampaignResult.class, "campaignExecutionId", tag);
+
+            }
+
+            int coefficientLevel1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
+            int coefficientLevel2 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio2", "", 0);
+            int coefficientLevel3 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio3", "", 0);
+            int coefficientLevel4 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio4", "", 0);
+            int coefficientLevel5 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio5", "", 0);
+
+            executions = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            Map<String, Long> executionStatusCount = executions.stream().collect(Collectors.groupingBy(TestCaseExecution::getControlStatus, Collectors.counting()));
+            int nbOk = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_OK) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_OK).intValue();
+            int nbKo = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_KO) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_KO).intValue();
+            int nbFa = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_FA) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_FA).intValue();
+            int nbNa = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_NA) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_NA).intValue();
+            int nbCa = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_CA) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_CA).intValue();
+            int nbPe = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_PE) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_PE).intValue();
+            int nbNe = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_NE) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_NE).intValue();
+            int nbWe = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_WE) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_WE).intValue();
+            int nbQu = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_QU) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_QU).intValue();
+            int nbQe = executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_QE) == null ? 0 : executionStatusCount.get(TestCaseExecution.CONTROLSTATUS_QE).intValue();
+            int nbTotal = nbOk + nbKo + nbFa + nbNa + nbCa + nbPe + nbNe + nbWe + nbQu + nbQe;
+
+            Map<Integer, Long> statusKoCountPriority = executions
+                    .stream()
+                    .filter(
+                            testCaseExecution -> (
+                                    !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK) &&
+                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_NE) &&
+                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_PE) &&
+                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU)
+                            )
+                    )
+                    .collect(Collectors.groupingBy(testCaseExecution -> testCaseExecution.getTestCaseObj().getPriority(), Collectors.counting()));
+
+            int nbKoPriority1 = statusKoCountPriority.get(1) == null ? 0 : statusKoCountPriority.get(1).intValue();
+            int nbKoPriority2 = statusKoCountPriority.get(2) == null ? 0 : statusKoCountPriority.get(2).intValue();
+            int nbKoPriority3 = statusKoCountPriority.get(3) == null ? 0 : statusKoCountPriority.get(3).intValue();
+            int nbKoPriority4 = statusKoCountPriority.get(4) == null ? 0 : statusKoCountPriority.get(4).intValue();
+            int nbKoPriority5 = statusKoCountPriority.get(5) == null ? 0 : statusKoCountPriority.get(5).intValue();
+
+            int resultCalThreshold = convertCIScoreThreshold(campaign);
+            int resultCal = (nbKoPriority1 * coefficientLevel1) + (nbKoPriority2 * coefficientLevel2) + (nbKoPriority3 * coefficientLevel3) + (nbKoPriority4 * coefficientLevel4) + (nbKoPriority5 * coefficientLevel5);
+            String globalResult = ((nbTotal > 0) && nbQu + nbPe > 0) ? "PE" : this.getFinalResult(resultCal, resultCalThreshold, nbTotal, nbOk);
+
+
+            CampaignExecutionResult campaignResult = CampaignExecutionResult.builder()
+                    .ok(nbOk)
+                    .ca(nbCa)
+                    .pe(nbPe)
+                    .qe(nbQe)
+                    .qu(nbQu)
+                    .ne(nbNe)
+                    .we(nbWe)
+                    .ko(nbKo)
+                    .na(nbNa)
+                    .fa(nbFa)
+                    .total(nbTotal)
+                    .totalWithRetries(nbTotal + executions.stream().mapToInt(it -> it.getNbExecutions() - 1).sum())
+                    .build();
+
+            CampaignExecutionResultPriority campaignResultPriority = CampaignExecutionResultPriority.builder()
+                    .okCoefficientPriorityLevel1(coefficientLevel1)
+                    .okCoefficientPriorityLevel2(coefficientLevel2)
+                    .okCoefficientPriorityLevel3(coefficientLevel3)
+                    .okCoefficientPriorityLevel4(coefficientLevel4)
+                    .okCoefficientPriorityLevel5(coefficientLevel5)
+                    .nonOkExecutionsPriorityLevel1(nbKoPriority1)
+                    .nonOkExecutionsPriorityLevel2(nbKoPriority2)
+                    .nonOkExecutionsPriorityLevel3(nbKoPriority3)
+                    .nonOkExecutionsPriorityLevel4(nbKoPriority4)
+                    .nonOkExecutionsPriorityLevel5(nbKoPriority5)
+                    .build();
+
+            return CICampaignResult.builder()
+                    .globalResult(globalResult)
+                    .campaignExecutionId(tag)
+                    .detailByDeclinations(generateStats(executions))
+                    .countries(generateCountryList(executions))
+                    .environments(generateEnvList(executions))
+                    .robotDeclinations(generateRobotDecliList(executions))
+                    .systems(generateSystemList(executions))
+                    .applications(generateApplicationList(executions))
+                    .calculatedResult(resultCal)
+                    .resultThreshold(resultCalThreshold)
+                    .result(campaignResult)
+                    .resultByPriority(campaignResultPriority)
+                    .executionStart(String.valueOf(campaignExecution.get().getDateCreated()))
+                    .executionEnd(String.valueOf(campaignExecution.get().getDateEndQueue()))
+                    .build();
+        } catch (JSONException | ParseException | CerberusException e) {
+            throw new FailedReadOperationException("An error occurred when retrieving the campaign execution.");
+        }
+    }
+
     @Override
     public String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok) {
         if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
@@ -422,5 +541,55 @@ public class CIService implements ICIService {
         }
 
         return dataArray;
+    }
+
+    private int convertCIScoreThreshold(String campaign) throws CerberusException {
+        int ciScoreThreshold = parameterService.getParameterIntegerByKey("cerberus_ci_threshold", "", 100);
+        if (StringUtil.isNotEmpty(campaign)) {
+            LOG.debug("Trying to get CIScoreThreshold from campaign : {}", campaign);
+            // Check campaign score here.
+            Campaign campaignRetrieved = campaignService.convert(campaignService.readByKey(campaign));
+            if (StringUtil.isNotEmpty(campaignRetrieved.getCIScoreThreshold())) {
+                try {
+                    ciScoreThreshold = Integer.parseInt(campaignRetrieved.getCIScoreThreshold());
+                } catch (NumberFormatException ex) {
+                    LOG.error("Could not convert campaign CIScoreThreshold {} to integer", campaignRetrieved.getCIScoreThreshold(), ex);
+                }
+            }
+        }
+        return ciScoreThreshold;
+    }
+
+    public String generateSvg(String id, String globalResult) {
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"350\" height=\"20\">"
+                + "<linearGradient id=\"b\" x2=\"0\" y2=\"100%\">"
+                + "<stop offset=\"0\" stop-color=\"#bbb\" stop-opacity=\".1\"></stop>"
+                + "<stop offset=\"1\" stop-opacity=\".1\"></stop>"
+                + "</linearGradient>"
+                //RECTANGLE
+                + "<rect rx=\"3\" fill=\"#555\" width=\"250\" height=\"20\"></rect>"
+                + "<rect rx=\"3\" x=\"210\" fill=\"" + this.getColor(globalResult) + "\" width=\"40\" height=\"20\"></rect>"
+                //TEXT
+                + "<g fill=\"#fff\" text-anchor=\"start\" font-family=\"DejaVu Sans,Verdana,Geneva,sans-serif\" font-size=\"9\">"
+                + "<text x=\"10\" y=\"14\">" + id + "</text>"
+                + "<text x=\"225\" y=\"14\">" + globalResult + "</text>"
+                + "</g>"
+                + "</svg>";
+    }
+
+    private String getColor(String controlStatus) {
+        String color;
+        switch (controlStatus) {
+            case "OK":
+                color = "#5CB85C";
+                break;
+            case "KO":
+                color = "#D9534F";
+                break;
+            default:
+                color = "#3498DB";
+                break;
+        }
+        return color;
     }
 }

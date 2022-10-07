@@ -22,6 +22,7 @@ package org.cerberus.core.api.controllers.handlers;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.FailedInsertOperationException;
+import org.cerberus.core.api.exceptions.FailedReadOperationException;
 import org.cerberus.core.api.exceptions.InvalidRequestException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -155,7 +156,7 @@ public class RestExceptionHandler {
         return buildResponseEntity(responseWrapper);
     }
 
-    @ExceptionHandler({DataAccessException.class, FailedInsertOperationException.class})
+    @ExceptionHandler({DataAccessException.class, FailedInsertOperationException.class, FailedReadOperationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleDatabaseException(final RuntimeException ex, final WebRequest request) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>(HttpStatus.INTERNAL_SERVER_ERROR);

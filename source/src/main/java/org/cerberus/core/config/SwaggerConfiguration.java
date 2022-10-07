@@ -50,6 +50,8 @@ public class SwaggerConfiguration {
     private static final Tag TESTCASECONTROL_TAG = new Tag("Testcase Control", "Testcase Control endpoint");
     private static final Tag TESTCASESTEP_TAG = new Tag("Testcase Step", "Testcase Step endpoint");
     private static final Tag SERVICE_TAG = new Tag("Service", "Service endpoint");
+    private static final Tag CAMPAIGNEXECUTION_TAG = new Tag("Campaign Execution", "Campaign Execution endpoint");
+    private static final Tag QUEUEDEXECUTION_TAG = new Tag("Queued Execution", "Queued Execution endpoint");
 
     private static final String LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
     private static final String GITHUB_REPOSITORY = "https://github.com/cerberustesting/cerberus-source";
@@ -66,7 +68,11 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.cerberus.core.api.controllers"))
                 .apis(p -> {
-                    if (p.headers() != null) {
+                    //Bypass API version for SVG because these routes are used only directly with URL without HTTP headers
+                    if (p.getName().contains("Svg")) {
+                        return true;
+                    }
+                    if (p.headers() != null || p.getName().equals("findCiSvgCampaignExecutionByCampaignId")) {
                         for (NameValueExpression<String> nve : p.headers()) {
                             if ((nve.getName().equals("X-API-VERSION")) && (Objects.equals(nve.getValue(), version))) {
                                 return true;
@@ -84,6 +90,8 @@ public class SwaggerConfiguration {
                 .tags(TESTCASEACTION_TAG)
                 .tags(TESTCASECONTROL_TAG)
                 .tags(SERVICE_TAG)
+                .tags(CAMPAIGNEXECUTION_TAG)
+                .tags(QUEUEDEXECUTION_TAG)
                 .useDefaultResponseMessages(false);
     }
 
