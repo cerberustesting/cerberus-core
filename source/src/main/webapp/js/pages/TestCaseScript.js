@@ -2114,9 +2114,13 @@ function displayStepOptionsModal(step, htmlElement) {
 ;
 
 Step.prototype.setActions = function (actions, canUpdate) {
+    //var start =  Date.now();
     for (var i = 0; i < actions.length; i++) {
         this.setAction(actions[i], undefined, canUpdate);
     }
+    //var end = Date.now();
+    //var elapsed = end-start;
+    //console.log("Elapsed : " + elapsed);
 };
 
 Step.prototype.setAction = function (action, afterAction, canUpdate) {
@@ -2531,13 +2535,8 @@ Action.prototype.generateContent = function () {
 // END OF DESCRIPTION
 
 //ACTION FIELD
-    var actions = $("<select></select>").addClass("form-control input-sm");
-    var generated_id = "actionSelect_" + Math.floor(Math.random() * 100000);
-    actions.css("width", "100%").attr("id", generated_id).attr("name", "actionSelect");
     var user = getUser();
-    for (var i = 0; i < actionOptGroupList.length; i++) {
-        actions.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto", actionOptGroupList[i].picto));
-    }
+    var actions = $(getActionCombo());
 
     for (var key in actionOptList) {
         if (actionOptList[key].group !== 'none') {
@@ -2961,14 +2960,10 @@ Control.prototype.generateContent = function () {
 //END OF DESCRIPTION
 
 //CONTROL FIELD
-    var controls = $("<select></select>").addClass("form-control input-sm controlType");
     var operator = $("<select></select>").addClass("form-control input-sm operator");
-
-    controls.css("width", "100%")
     var user = getUser();
-    for (var key in newControlOptList) {
-        controls.append($("<option></option>").text(newControlOptList[key].label[user.language]).val(newControlOptList[key].value));
-    }
+    var controls = $(getControlCombo());
+
 // END OF CONTROL FIELD
 
 //VALUE1 FIELD

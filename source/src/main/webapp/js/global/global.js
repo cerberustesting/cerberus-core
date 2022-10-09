@@ -494,6 +494,38 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
 
 }
 
+function getActionCombo(){
+    var cacheEntryName = "ACTION_COMBO";
+
+    if (sessionStorage.getItem(cacheEntryName) === null) {
+        var actionCombo = $("<select></select>").addClass("form-control input-sm");
+        actionCombo.css("width", "100%").css("display", "none").attr("name", "actionSelect").addClass("templateComboAction");
+        var user = getUser();
+        for (var i = 0; i < actionOptGroupList.length; i++) {
+            actionCombo.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto", actionOptGroupList[i].picto));
+        }
+        sessionStorage.setItem(cacheEntryName, actionCombo.prop('outerHTML'));
+    }
+    return $.parseHTML(sessionStorage.getItem(cacheEntryName));
+}
+
+function getControlCombo(){
+    var cacheEntryName = "CONTROL_COMBO";
+
+    if (sessionStorage.getItem(cacheEntryName) === null) {
+        var controlCombo = $("<select></select>").addClass("form-control input-sm controlType");
+        controlCombo.css("width", "100%").css("display", "none").addClass("templateComboControl");
+        var user = getUser();
+        for (var key in newControlOptList) {
+            controlCombo.append($("<option></option>").text(newControlOptList[key].label[user.language]).val(newControlOptList[key].value));
+        }
+        sessionStorage.setItem(cacheEntryName, controlCombo.prop('outerHTML'));
+    }
+    return $.parseHTML(sessionStorage.getItem(cacheEntryName));
+
+}
+
+
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Environment list
  * @param {String} selectName value name of the select tag in the html
