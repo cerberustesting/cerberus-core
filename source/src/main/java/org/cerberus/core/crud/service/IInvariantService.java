@@ -19,16 +19,17 @@
  */
 package org.cerberus.core.crud.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
@@ -44,7 +45,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByIdname(String idName);
 
     /**
-     *
      * @param idName
      * @return
      * @throws CerberusException
@@ -61,7 +61,6 @@ public interface IInvariantService {
     Map<String, Invariant> readByIdNameToHash(String idName) throws CerberusException;
 
     /**
-     *
      * @param testCaseCountries
      * @param countryInvariants
      * @return
@@ -70,7 +69,6 @@ public interface IInvariantService {
     List<Invariant> convertCountryPropertiesToCountryInvariants(HashMap<String, TestCaseCountry> testCaseCountries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     /**
-     *
      * @param countries
      * @param countryInvariants
      * @return
@@ -79,7 +77,6 @@ public interface IInvariantService {
     public List<Invariant> convertCountryPropertiesToCountryInvariants(List<String> countries, HashMap<String, Invariant> countryInvariants) throws CerberusException;
 
     /**
-     *
      * @param idName
      * @param defaultValue
      * @return
@@ -87,7 +84,6 @@ public interface IInvariantService {
     HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue);
 
     /**
-     *
      * @param idName
      * @param defaultValue
      * @return
@@ -95,7 +91,6 @@ public interface IInvariantService {
     HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue);
 
     /**
-     *
      * @param idName
      * @param gp
      * @return
@@ -103,7 +98,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByIdnameGp1(String idName, String gp);
 
     /**
-     *
      * @param idName
      * @param gp
      * @return
@@ -111,7 +105,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByIdnameNotGp1(String idName, String gp);
 
     /**
-     *
      * @param system
      * @param nbDays
      * @return
@@ -119,7 +112,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -131,7 +123,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -143,7 +134,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
-     *
      * @param column
      * @param dir
      * @param searchTerm
@@ -154,7 +144,6 @@ public interface IInvariantService {
     AnswerList<String> readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -166,7 +155,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -178,7 +166,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
-     *
      * @param column
      * @param dir
      * @param searchTerm
@@ -189,7 +176,6 @@ public interface IInvariantService {
     AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -201,7 +187,6 @@ public interface IInvariantService {
     AnswerList<Invariant> readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     /**
-     *
      * @param idName
      * @param value
      * @return
@@ -209,14 +194,12 @@ public interface IInvariantService {
     boolean isInvariantExist(String idName, String value);
 
     /**
-     *
      * @param object
      * @return
      */
     boolean isInvariantPublic(Invariant object);
 
     /**
-     *
      * @param id
      * @param value
      * @return
@@ -224,21 +207,18 @@ public interface IInvariantService {
     AnswerItem<Invariant> readByKey(String id, String value);
 
     /**
-     *
      * @param invariant
      * @return
      */
     Answer create(Invariant invariant);
 
     /**
-     *
      * @param invariant
      * @return
      */
     Answer delete(Invariant invariant);
 
     /**
-     *
      * @param idname
      * @param value
      * @param invariant
@@ -247,14 +227,12 @@ public interface IInvariantService {
     Answer update(String idname, String value, Invariant invariant);
 
     /**
-     *
      * @param filter
      * @return
      */
     String getPublicPrivateFilter(String filter);
 
     /**
-     *
      * @param invariant
      * @param request
      * @return
@@ -262,7 +240,6 @@ public interface IInvariantService {
     boolean hasPermissionsRead(Invariant invariant, HttpServletRequest request);
 
     /**
-     *
      * @param invariant
      * @param request
      * @return
@@ -270,7 +247,6 @@ public interface IInvariantService {
     boolean hasPermissionsUpdate(Invariant invariant, HttpServletRequest request);
 
     /**
-     *
      * @param invariant
      * @param request
      * @return
@@ -278,7 +254,6 @@ public interface IInvariantService {
     boolean hasPermissionsCreate(Invariant invariant, HttpServletRequest request);
 
     /**
-     *
      * @param invariant
      * @param request
      * @return
@@ -286,7 +261,6 @@ public interface IInvariantService {
     boolean hasPermissionsDelete(Invariant invariant, HttpServletRequest request);
 
     /**
-     *
      * @param answerItem
      * @return
      * @throws CerberusException
@@ -294,7 +268,6 @@ public interface IInvariantService {
     Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException;
 
     /**
-     *
      * @param answerList
      * @return
      * @throws CerberusException
@@ -302,10 +275,37 @@ public interface IInvariantService {
     List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException;
 
     /**
-     *
      * @param answer
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    /**
+     * Build the invariant according to the country string
+     *
+     * @param country
+     * @param countries
+     * @return
+     */
+    Invariant findCountryInvariantFromCountries(String country, List<Invariant> countries);
+
+    /**
+     * Build the invariant according to the environment string
+     *
+     * @param environment
+     * @param environments
+     * @return
+     */
+    Invariant findEnvironmentInvariantFromEnvironments(String environment, List<Invariant> environments);
+
+    /**
+     * Build the invariant according to the environment string
+     *
+     * @param priority
+     * @param priorities
+     * @return
+     */
+    Invariant findPriorityInvariantFromPriorities(int priority, List<Invariant> priorities);
+
 
 }

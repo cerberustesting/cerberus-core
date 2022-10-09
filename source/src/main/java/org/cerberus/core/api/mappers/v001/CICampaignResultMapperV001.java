@@ -17,43 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.ciresult;
 
+package org.cerberus.core.api.mappers.v001;
+
+import org.cerberus.core.api.dto.v001.CICampaignResultDTOV001;
 import org.cerberus.core.api.entity.CICampaignResult;
-import org.json.JSONObject;
+import org.cerberus.core.api.mappers.JSONArrayMapper;
+import org.mapstruct.Mapper;
 
 /**
- * @author bcivel
+ * @author lucashimpens
  */
-public interface ICIService {
+@Mapper(componentModel = "spring",
+        uses = {
+                CampaignExecutionResultMapperV001.class,
+                CampaignExecutionResultPriorityMapperV001.class,
+                JSONArrayMapper.class
+        })
+public interface CICampaignResultMapperV001 {
 
-    /**
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    JSONObject getCIResult(String tag, String campaign);
-
-    /**
-     * @param resultCal
-     * @param resultCalThreshold
-     * @param nbtotal
-     * @param nbok
-     * @return
-     */
-    String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok);
-
-    /**
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    CICampaignResult getCIResultApi(String tag, String campaign);
-
-    /**
-     * @param id           campaign or execution id
-     * @param globalResult
-     * @return
-     */
-    String generateSvg(String id, String globalResult);
+    CICampaignResultDTOV001 toDTO(CICampaignResult result);
+    //CICampaignResultDTOV001 toDto(JSONObject )
 }

@@ -17,31 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.api.mappers;
 
-import org.cerberus.core.util.DateUtil;
+package org.cerberus.core.api.mappers.v001;
+
+import org.cerberus.core.api.dto.v001.queuedexecution.QueuedExecutionTestcaseDTOV001;
+import org.cerberus.core.api.entity.QueuedExecutionTestcase;
 import org.mapstruct.Mapper;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 /**
- * @author mlombard
+ * @author lucashimpens
  */
 
 @Mapper(componentModel = "spring")
-public interface TimestampMapper {
+public interface QueuedExecutionTestcaseMapperV001 {
 
-    public default Timestamp toTimestamp(String timestampStr) throws ParseException {
-        return timestampStr == null ? null : new Timestamp(new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).parse(timestampStr).getTime());
-    }
+    QueuedExecutionTestcaseDTOV001 toDto(QueuedExecutionTestcase queuedExecutionTestcase);
 
-    public default String toFormattedString(Timestamp timestamp) {
-        return timestamp == null ? null : new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).format(timestamp);
-    }
-
-    public default String toFormattedString(long timestamp) {
-        return new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY).format(timestamp);
-    }
+    QueuedExecutionTestcase toEntity(QueuedExecutionTestcaseDTOV001 queuedExecutionTestcaseDTO);
 }
