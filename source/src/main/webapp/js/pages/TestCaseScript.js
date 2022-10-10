@@ -323,7 +323,7 @@ $.when($.getScript("js/global/global.js")
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
                         $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(data.contentTable.id));
-                        $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase));
+                        $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?Test=" + encodeURI(test) + "&TestCase=" + encodeURI(testcase));
                         $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
                         $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&country=" + encodeURI(data.contentTable.country) + "&environment=" + encodeURI(data.contentTable.env));
                         $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);

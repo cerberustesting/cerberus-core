@@ -251,7 +251,7 @@ function filterERunning() {
 }
 
 function filterTag(myTag) {
-    filterOnColumn("executionsTable", "tag", myTag)
+    filterOnColumn("executionsTable", "tag", myTag);
 }
 
 function displayPageLabel() {
