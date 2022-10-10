@@ -32,6 +32,8 @@ function initPage() {
     // The page take some parameters.
     var test = GetURLParameter("Test");
     var testCase = GetURLParameter("TestCase");
+    var country = GetURLParameter("country");
+    var environment = GetURLParameter("environment");
 
     displayPageLabel();
     loadTable();
@@ -46,6 +48,14 @@ function initPage() {
     }
     if ((testCase !== null) && (testCase !== 'ALL')) {
         searchObject = {param: "testcase", values: testCase};
+        searchArray.push(searchObject);
+    }
+    if ((country !== null) && (country !== 'ALL')) {
+        searchObject = {param: "country", values: country};
+        searchArray.push(searchObject);
+    }
+    if ((environment !== null) && (environment !== 'ALL')) {
+        searchObject = {param: "environment", values: environment};
         searchArray.push(searchObject);
     }
     applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);

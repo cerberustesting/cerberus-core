@@ -423,9 +423,9 @@ function updatePage(data, steps) {
     }
 
     $("#lastExecution").attr("disabled", false);
-    $("#lastExecution").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#lastExecution").parent().attr("href", "TestCaseExecutionList.jsp?Test=" + data.test + "&TestCase=" + data.testcase);
     $("#lastExecutionwithEnvCountry").attr("disabled", false);
-    $("#lastExecutionwithEnvCountry").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecutionwithEnvCountry").parent().attr("href", "TestCaseExecutionList.jsp?Test=" + data.test + "&TestCase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
     $("#lastExecutionoT").attr("disabled", false);
     $("#lastExecutionoT").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase);
     $("#lastExecutionoTwithEnvCountry").attr("disabled", false);
