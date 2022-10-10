@@ -146,7 +146,7 @@ public class TagDAO implements ITagDAO {
         StringBuilder query = new StringBuilder();
 
         if (CollectionUtils.isNotEmpty(systems)) {
-            query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
+            query.append("SELECT SQL_CALC_FOUND_ROWS distinct tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
             searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
         } else {
             query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
