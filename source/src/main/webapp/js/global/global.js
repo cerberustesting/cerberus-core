@@ -499,7 +499,7 @@ function getActionCombo(){
 
     if (sessionStorage.getItem(cacheEntryName) === null) {
         var actionCombo = $("<select></select>").addClass("form-control input-sm");
-        actionCombo.css("width", "100%").css("display", "none").attr("name", "actionSelect").addClass("templateComboAction");
+        actionCombo.css("width", "100%").attr("name", "actionSelect").addClass("templateComboAction");
         var user = getUser();
         for (var i = 0; i < actionOptGroupList.length; i++) {
             actionCombo.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto", actionOptGroupList[i].picto));
@@ -514,7 +514,7 @@ function getControlCombo(){
 
     if (sessionStorage.getItem(cacheEntryName) === null) {
         var controlCombo = $("<select></select>").addClass("form-control input-sm controlType");
-        controlCombo.css("width", "100%").css("display", "none").addClass("templateComboControl");
+        controlCombo.css("width", "100%").addClass("templateComboControl");
         var user = getUser();
         for (var key in newControlOptList) {
             controlCombo.append($("<option></option>").text(newControlOptList[key].label[user.language]).val(newControlOptList[key].value));
