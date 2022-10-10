@@ -504,6 +504,14 @@ function getActionCombo(){
         for (var i = 0; i < actionOptGroupList.length; i++) {
             actionCombo.append($("<optGroup></optGroup>").attr("label", actionOptGroupList[i].label[user.language]).attr("data-group", actionOptGroupList[i].name).attr("data-picto", actionOptGroupList[i].picto));
         }
+
+        for (var key in actionOptList) {
+            if (actionOptList[key].group !== 'none') {
+                actionCombo.find("[data-group='" + actionOptList[key].group + "']").append($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
+            } else {
+                actionCombo.prepend($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
+            }
+        }
         sessionStorage.setItem(cacheEntryName, actionCombo.prop('outerHTML'));
     }
     return $.parseHTML(sessionStorage.getItem(cacheEntryName));
@@ -522,7 +530,6 @@ function getControlCombo(){
         sessionStorage.setItem(cacheEntryName, controlCombo.prop('outerHTML'));
     }
     return $.parseHTML(sessionStorage.getItem(cacheEntryName));
-
 }
 
 
