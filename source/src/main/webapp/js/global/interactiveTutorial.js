@@ -118,9 +118,6 @@ function displayTuto(doc) {
 
 function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
-//    if ($('#' + role).length === 0) { // verify if element exit
-//        $("#interactiveTutoList").append("<td id=tutu-" + id + "></td>");
-//    }
 
     let levelstr = "easy";
     let badgecolor = "success";
@@ -192,35 +189,6 @@ function interractiveTutorial(id, startStep = 1) {
 }
 
 
-//function firstConnexion() {
-//    let cerberusTuto = new CerberusTuto(0);
-//
-//
-//    cerberusTuto.addGeneralMessage("Bienvenue dans Cerberus ! Je vois que c'est ta première connexion, veux tu que je te guide dans tes premiers pas ?");
-//    cerberusTuto.addGeneralMessage("Bienvenue sur la page d'accueil de cerberus ! <b>Sur cette page d’accueil, tu trouveras des informations sur</b>" +
-//            "<ul>" +
-//            "   <li>les cas de tests par application regroupés par status</li>" +
-//            "   <li>les dernières executions par tag</li>" +
-//            "   <li>les versions des applications déployées par environnement</li>" +
-//            "</ul>");
-//
-//    cerberusTuto.addGeneralMessage("TODO, 2 choix = rediriger sur tuto admin ou tuto création dun cas de test. Pour le moment juste l'admin est créé");
-//
-//    cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Vous êtes administrateur ! La 1ere étape de configuration est de créer un système. " +
-//            "Un <strong>système</strong> est une application métier ou CI. Rendez vous dans le menu <b>Administration/Invariants.</b>", "#menuInvariants");
-//
-//    // Page invariant
-//    cerberusTuto.addMessage("#createInvariantButton", "Clique sur Creer un invariant");
-//    cerberusTuto.addMessage("#idname", "Selectionne SYSTEM- dans la liste");
-//    cerberusTuto.addMessage("#value", "Donne un nom à ton systeme");
-//    cerberusTuto.addMessage("#addInvariantButton", "Et valide ton nouveau systeme");
-//    cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Voilà, ton sytème est créé ! Prochaine étape : il faut créez un environnement. L'<b>environement</b>" +
-//            " represente une plateforme de test, ex : INTEGRATION ou PREPRODUCTION." +
-//            " Rendez-vous dans le menu <b>Integration/Environment</b>", "#menuEnvironments");
-//
-//    cerberusTuto.start(startStep);
-//
-//}
 
 class CerberusTuto {
     constructor(tutorialId) {

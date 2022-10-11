@@ -2802,15 +2802,15 @@ function printLabelForOptions(element, newOpts, newOptsCondition, className) {
 
 function printLabelForCondition(element, conditionOperator, conditionValue1, conditionValue2, conditionValue3) {
     $(element).find('.conditionLabel').remove();
-    if (conditionOperator === 'Never') {
+    if (conditionOperator === 'never') {
         var labelOptions = $('<span class="label label-primary labelRed optionLabel pull-right conditionLabel"><span class="glyphicon glyphicon-cog"></span> Do not execute</span>');
         $(element).append(labelOptions[0]);
     } else if (conditionOperator !== 'always') {
-        var title = "<div>Execution Condition : </div>";
-        title += "<div>" + conditionOperator + "</div>";
-        title += "<div>val1" + conditionValue1 + "</div>";
-        title += "<div>val2" + conditionValue2 + "</div>";
-        title += "<div>val3" + conditionValue3 + "</div>";
+        var title = "<div><b>Execution Condition : </b></div>";
+        title += "<div>'Condition' : '" + conditionOperator + "'</div>";
+        title += "<div>'val1' : '" + conditionValue1 + "'</div>";
+        title += "<div>'val2' : '" + conditionValue2 + "'</div>";
+        title += "<div>'val3' : '" + conditionValue3 + "'</div>";
         var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="' + title + '" class="label label-primary labelGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
         $(element).append(labelOptions[0]);
     }

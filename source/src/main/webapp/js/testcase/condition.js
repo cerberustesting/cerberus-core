@@ -43,6 +43,6 @@ var conditionNewUIList = {
     "ifStringMinor":{"value":"ifStringMinor","label":{"en":"If String Minor","fr":"Si le texte est inférieur"},"field1":{"label":{"en": "String 1", "fr": "Texte 1"}},"field2":{"label":{"en": "String 2", "fr": "Texte 2"}}},
     "ifStringContains":{"value":"ifStringContains","label":{"en":"If String Contains","fr":"Si le texte contient"},"field1":{"label":{"en": "String 1", "fr": "Texte 1"}},"field2":{"label":{"en": "String 2", "fr": "Texte 2"}}},
     "ifStringNotContains":{"value":"ifStringNotContains","label":{"en":"If String not Contains","fr":"Si le texte ne contient pas"},"field1":{"label":{"en": "String 1", "fr": "Texte 1"}},"field2":{"label":{"en": "String 2", "fr": "Texte 2"}}},
-    "Never":{"value":"Never","label":{"en":"Never","fr":"Jamais"}},
+    "never":{"value":"never","label":{"en":"Never","fr":"Jamais"}},
 
 }
