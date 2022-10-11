@@ -168,7 +168,7 @@
                                 </div>
                                 <div id="actionContainer"></div>
                                 <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
-                                    <button id="addActionBottom" class="btn btn-block btnLightBlue" disabled onclick="addActionAndFocus()">Add Action</button>
+                                    <button id="addActionBottom" class="btn btn-block btnLightBlue" disabled onclick="addActionFromBottomButton()">Add Action</button>
                                 </div>
                             </div>
                         </div>

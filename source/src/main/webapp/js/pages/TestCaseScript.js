@@ -302,6 +302,7 @@ $.when($.getScript("js/global/global.js")
                         $('#editTestCaseModal').data("Saved", undefined);
                         window.location = "./TestCaseScript.jsp?test=" + t.val() + "&testcase=" + tc.val();
                     }
+                    $(".testTestCase #test").select2({width: "100%"}).next().css("margin-bottom", "7px");
                 });
             });
             $("#deleteTestCase").click(function () {
@@ -530,6 +531,11 @@ function addActionAndFocus(action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
     });
+}
+
+function addActionFromBottomButton(){
+    addActionAndFocus();
+    displayActionCombo($("#steps li.active").data("item"));
 }
 
 function getTestCase(test, testcase, step) {
@@ -1951,6 +1957,12 @@ Step.prototype.show = function () {
 
     object.stepActionContainer.show();
 
+    displayActionCombo(object);
+
+    displayControlCombo(object);
+
+    $(object.stepActionContainer).find('input:not(".description")').trigger('settingsButton');
+
     $(this).find("#stepDescription").unbind("change").change(function () {
         setModif(true);
         object.description = $(this).val();
@@ -1999,6 +2011,102 @@ Step.prototype.show = function () {
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal3").attr("disabled", activateDisableWithUseStep);
 };
+
+/**
+ * Display all Action combo of Current Step
+ * @param object
+ */
+function displayActionCombo(object){
+    $(object.stepActionContainer).find(".action").each(function(){
+        var actions = $(getActionCombo());
+        var actionItem = $(this).data("item");
+        actions.val(actionItem.action);
+        actions.off("change").on("change", function () {
+            setModif(true);
+            actionItem.action = actions.val();
+            setPlaceholderAction($(this).parents(".action"));
+        });
+        $(this).find(".actionSelectContainer").empty();
+        $(this).find(".actionSelectContainer").append(actions);
+        setPlaceholderAction($(this));
+
+        if ((object.isUsingLibraryStep) || (!object.hasPermissionsUpdate)) {
+            actions.prop("disabled", "disabled");
+        }
+
+        actions.select2({
+            minimumResultsForSearch: 20,
+            templateSelection: formatActionSelect2Result,
+            templateResult: formatActionSelect2Result
+        });
+    });
+
+}
+
+/**
+ * Display all Control Combo of Current Step
+ * @param object
+ */
+function displayControlCombo(object){
+    var user = getUser();
+    $(object.stepActionContainer).find(".control").each(function(){
+        console.log(this);
+        var controls = $(getControlCombo());
+        var controlItem = $(this).data("item");
+
+        $(this).find(".controlSelectContainer").empty();
+        $(this).find(".controlSelectContainer").append(controls);
+
+        var operator = $("<select></select>").addClass("form-control input-sm operator");
+        if (typeof convertToGui[controlItem.control] !== 'undefined') {
+            controls.val(convertToGui[controlItem.control].control);
+
+            for (var key in operatorOptList) {
+                var ctrlType = Array.from(operatorOptList[key].control_type);
+                if (ctrlType.includes(convertToGui[controlItem.control].control)) {
+                    operator.append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
+                }
+            }
+            operator.val(convertToGui[controlItem.control].operator);
+        }
+        $(this).find(".controlOperatorContainer").empty();
+        $(this).find(".controlOperatorContainer").append(operator);
+        console.log(this);
+        setPlaceholderControl($(this));
+
+        controls.on("change", function () {
+            setModif(true);
+            $(this).parents(".control").find(".operator").empty();
+            for (var key in operatorOptList) {
+                var ctrlType = Array.from(operatorOptList[key].control_type);
+                if (ctrlType.includes($(this).find(":selected").val())) {
+                    $(this).parents(".control").find(".operator").append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
+                }
+            }
+            controlItem.control = newControlOptList[$(this).find(":selected").val()][$(this).parents(".control").find(".operator").val()];
+            setPlaceholderControl($(this).parents(".control"));
+        });
+
+        operator.on("change", function () {
+            setModif(true);
+            var controlSelect = $(this).parents(".control").find(".controlType");
+            var operatorSelect = $(this).find(":selected");
+            controlItem.control = newControlOptList[controlSelect.val()][operatorSelect.val()];
+            setPlaceholderControl($(this).parents(".control"));
+        });
+
+        if ((object.isUsingLibraryStep) || (!object.hasPermissionsUpdate)) {
+            controls.prop("disabled", "disabled");
+            operator.prop("disabled", "disabled");
+        }
+
+        controls.select2({
+            minimumResultsForSearch: 20,
+            templateSelection: formatActionSelect2Result,
+            templateResult: formatActionSelect2Result
+        });
+    });
+}
 
 function displayStepOptionsModal(step, htmlElement) {
 
@@ -2477,10 +2585,16 @@ Action.prototype.generateContent = function () {
     var action = this;
     var doc = new Doc();
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var content = $("<div></div>").addClass("content col-lg-10");
+    var content = $("<div></div>").addClass("content col-lg-8");
     var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
+
+    var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+        .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+        .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+        .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     //FIRST ROW
@@ -2492,9 +2606,11 @@ Action.prototype.generateContent = function () {
 
     addBtn.click(function () {
         addControlAndFocus(action);
+        displayControlCombo(action.parentStep.html.data('item'));
     });
     addABtn.click(function () {
         addActionAndFocus(action);
+        displayActionCombo(action.parentStep.html.data('item'));
     });
 
     supprBtn.click(function () {
@@ -2536,22 +2652,7 @@ Action.prototype.generateContent = function () {
 
 //ACTION FIELD
     var user = getUser();
-    var actions = $(getActionCombo());
-
-    for (var key in actionOptList) {
-        if (actionOptList[key].group !== 'none') {
-            actions.find("[data-group='" + actionOptList[key].group + "']").append($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
-        } else {
-            actions.prepend($("<option></option>").text(actionOptList[key].label[user.language]).val(actionOptList[key].value));
-        }
-    }
-
-    actions.val(this.action);
-    actions.off("change").on("change", function () {
-        setModif(true);
-        action.action = actions.val();
-        setPlaceholderAction($(this).parents(".action"));
-    });
+    var actionDivContainer = $("<div></div>").addClass("col-lg-8 form-group marginBottom10 actionSelectContainer");
 // END OF ACTION FIELD
 
 //VALUE1 FIELD
@@ -2599,7 +2700,7 @@ Action.prototype.generateContent = function () {
 
 //STRUCTURE
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-8 form-group marginBottom10").append(actions));
+    secondRow.append(actionDivContainer);
     secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group marginBottom10").append(field1Container));
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group marginBottom10").append(field2Container));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group marginBottom10").append(field3Container));
@@ -2611,7 +2712,6 @@ Action.prototype.generateContent = function () {
         value1Field.prop("readonly", true);
         value2Field.prop("readonly", true);
         value3Field.prop("readonly", true);
-        actions.prop("disabled", "disabled");
         btnGrp.find('.boutonGroup').hide();
     }
 
@@ -2621,6 +2721,7 @@ Action.prototype.generateContent = function () {
 
 
     row.append(content);
+    row.append(picture);
     row.append(btnGrp);
     row.data("item", this);
 
@@ -2850,7 +2951,7 @@ Control.prototype.draw = function (afterControl) {
 
     htmlElement.append(row);
 
-    setPlaceholderControl(htmlElement);
+    //setPlaceholderControl(htmlElement);
     //setPlaceholderCondition(htmlElement);
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
@@ -2900,10 +3001,16 @@ Control.prototype.generateContent = function () {
     var control = this;
     var doc = new Doc();
     var row = this.html;
-    var content = $("<div></div>").addClass("content col-lg-10");
+    var content = $("<div></div>").addClass("content col-lg-8");
     var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
-    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group col-lg-12");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
+
+    var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+        .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+        .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+        .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
@@ -2914,10 +3021,12 @@ Control.prototype.generateContent = function () {
 
     addABtn.click(function () {
         addActionAndFocus(control.parentAction);
+        displayActionCombo(control.parentStep.html.data('item'));
     });
 
     addBtn.click(function () {
         addControlAndFocus(control.parentAction, control);
+        displayControlCombo(control.parentStep.html.data('item'));
     });
     supprBtn.click(function () {
         setModif(true);
@@ -2960,15 +3069,15 @@ Control.prototype.generateContent = function () {
 //END OF DESCRIPTION
 
 //CONTROL FIELD
-    var operator = $("<select></select>").addClass("form-control input-sm operator");
     var user = getUser();
-    var controls = $(getControlCombo());
-
+    var controlDivContainer = $("<div></div>").addClass("col-lg-8 form-group marginBottom10 controlSelectContainer");
+    var controlOperatorDivContainer = $("<div></div>").addClass("col-lg-4 form-group marginBottom10 controlOperatorContainer");
 // END OF CONTROL FIELD
 
 //VALUE1 FIELD
     var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm v1");
     controlValue1Field.val(cleanErratum(this.value1));
+    controlValue1Field.css("width", "84%");
     controlValue1Field.on("change", function () {
         setModif(true);
         control.value1 = convertValueWithErratum(control.value1, controlValue1Field.val());
@@ -3011,9 +3120,9 @@ Control.prototype.generateContent = function () {
 //END OF VALUE3 FIELD
 
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-8 form-group marginBottom10").append(controls));
+    secondRow.append(controlDivContainer);
     secondRow.append($("<div></div>").addClass("v1 col-lg-3 form-group marginBottom10").append(controlField1Container));
-    secondRow.append($("<div></div>").addClass("col-lg-2 form-group marginBottom10").append(operator));
+    secondRow.append(controlOperatorDivContainer);
     secondRow.append($("<div></div>").addClass("v2 col-lg-3 form-group marginBottom10").append(controlField2Container));
     secondRow.append($("<div></div>").addClass("v3 col-lg-3 form-group marginBottom10").append(controlField3Container));
 
@@ -3023,7 +3132,7 @@ Control.prototype.generateContent = function () {
         controlValue1Field.prop("readonly", true);
         controlValue2Field.prop("readonly", true);
         controlValue3Field.prop("readonly", true);
-        controls.prop("disabled", "disabled");
+        //controls.prop("disabled", "disabled");
         btnGrp.find('.boutonGroup').hide();
     }
 
@@ -3032,6 +3141,7 @@ Control.prototype.generateContent = function () {
     content.append(thirdRow);
 
     row.append(content);
+    row.append(picture);
     row.append(btnGrp);
     row.data("item", this);
 
@@ -3039,40 +3149,6 @@ Control.prototype.generateContent = function () {
     printLabelForCondition(btnGrp, control.conditionOperator);
     printLabel(btnGrp, control.isFatal, "controlFatalLabel", "labelOrange", "Stop Execution on Failure")
 
-    if (typeof convertToGui[this.control] !== 'undefined') {
-        controls.val(convertToGui[this.control].control);
-
-        for (var key in operatorOptList) {
-            var ctrlType = Array.from(operatorOptList[key].control_type);
-            if (ctrlType.includes(convertToGui[this.control].control)) {
-                operator.append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
-            }
-        }
-        operator.val(convertToGui[this.control].operator);
-        setPlaceholderControl(content);
-    }
-
-    controls.on("change", function () {
-        setModif(true);
-        $(this).parents(".control").find(".operator").empty();
-        for (var key in operatorOptList) {
-            var ctrlType = Array.from(operatorOptList[key].control_type);
-            if (ctrlType.includes($(this).find(":selected").val())) {
-                $(this).parents(".control").find(".operator").append($("<option></option>").text(operatorOptList[key].label[user.language]).val(operatorOptList[key].value));
-            }
-        }
-        control.control = newControlOptList[$(this).find(":selected").val()][$(this).parents(".control").find(".operator").val()];
-        //operator.val(convertToGui["none"].operator);
-        setPlaceholderControl($(this).parents(".control"));
-    });
-
-    operator.on("change", function () {
-        setModif(true);
-        var controlSelect = $(this).parents(".control").find(".controlType");
-        var operatorSelect = $(this).find(":selected");
-        control.control = newControlOptList[controlSelect.val()][operatorSelect.val()];
-        setPlaceholderControl($(this).parents(".control"));
-    });
 
     return row;
 };
@@ -3236,7 +3312,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             contextInfo = context;
         }
 
-        $(document).on('focus', ".content div.fieldRow input:not('.description')", function (e) {
+        $(document).on('focus', ".content div.fieldRow input:not([class*='description'],[readonly])", function (e) {
             console.log($(this));
             let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
             console.log(currentAction);
@@ -3247,7 +3323,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
         });
 
-        $(document).on('settingsButton', ".content div.fieldRow input:not('.description')", function (e) {
+        $(document).on('settingsButton', ".content div.fieldRow input:not([class*='description'])", function (e) {
             var doc = new Doc();
             let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
             let htmlElement = $(this);
@@ -3313,15 +3389,15 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
-                                if (false) {
+                                if ($(this).hasClass("v1")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg1")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
-                                } else if (false) {
+                                } else if ($(this).hasClass("v2")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg2")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
-                                } else if (false) {
+                                } else if ($(this).hasClass("v3")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg3")
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
@@ -3334,16 +3410,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     objectNotExist = true;
                                     nameNotExist = name;
                                     typeNotExist = "applicationObject";
-                                    $(htmlElement).parent().append(addEntry);
+                                    $(htmlElement).attr("style","width:80%").parent().append(addEntry);
                                 } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 	                                class="buttonObject btn btn-default input-sm " \n\
 	                                title="' + name + '" type="button">\n\
-	                                <span class="glyphicon glyphicon-pencil"></span></button>\
-	                                <button class="buttonObject btn btn-default input-sm" type="button">\
-	                                <img width="20px" height="20px" src="ReadApplicationObjectImage?application=' + tcInfo.application + '&object=' + name + '&time=' + new Date().getTime() + '"' +
-                                            ' onclick="displayPictureOfMinitature1(this)"/></button></span>';
-                                    $(htmlElement).attr("style", "width:70%").parent().append(editEntry);
+	                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
+                                    $(htmlElement).attr("style","width:80%").parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
                                 let data = loadGuiProperties();
@@ -3375,13 +3448,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
         });
 
-        $(document).on('input', ".content div.fieldRow input:not('.description')", function (e) {
+        $(document).on('input', ".content div.fieldRow input:not([class*='description'],[readonly])", function (e) {
             let data = loadGuiProperties();
             try {
-                if ($(this).parent().parent().find("select").val() === "callService") {
+                if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "callService") {
                     let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
                     modifyAutocompleteSource($(this), url);
-                } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {
+                } else if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "calculateProperty") {
                     modifyAutocompleteSource($(this), null, data);
                 }
             } catch (e) {
@@ -3473,8 +3546,6 @@ function setPlaceholderCondition(conditionElement) {
     if (typeof placeHolders === 'undefined') {
         placeHolders = conditionNewUIList["always"];
     }
-
-    console.log(conditionElement);
 
     if (typeof placeHolders.field1 !== 'undefined') {
         // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
