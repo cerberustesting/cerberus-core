@@ -813,10 +813,10 @@ function aoColumnsFunc(countries, tableId) {
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var runTest = '<a id="runTest" class="btn btn-primary btn-xs marginRight5 marginLeft20"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" href="./RunTests.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
-                                    <span class="glyphicon glyphicon-play"></span>\n\
-                                    </a>';
+                var runTest = '<button id="runTest" onclick="openModalExecutionSimple(\'' + data.application + '\',\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testcase"]) + '\',\'' + data.description + '\');"\n\
+                                        class="btn btn-primary btn-xs marginRight5 marginLeft20" \n\
+                                        data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-play"></span></button>';
 
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;

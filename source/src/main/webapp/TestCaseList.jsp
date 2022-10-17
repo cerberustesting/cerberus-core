@@ -35,6 +35,7 @@
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
     <body>
@@ -46,6 +47,7 @@
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCaseFromSIDE.html"%>
+            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

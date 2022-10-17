@@ -237,11 +237,17 @@ function feedNewTestCaseSimpleCreationModal(modalId, defaultTest) {
     SimpleCreationAppendApplicationList(undefined, undefined);
 
     $('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').change(function() {
-        if ($('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"] option[data-select2-tag=true]')[0]!==undefined) {
-            $("#newApplication").attr('style', 'display:block');
-        } else {
-            $("#newApplication").attr('style', 'display:none');
-        }
+        var appList = [];
+        $.when($.getJSON("ReadApplication", "")).then(function (data) {
+            for (var option in data.contentTable) {
+                appList.push(data.contentTable[option].application);
+            }
+            if (appList.includes($('#editTestCaseSimpleCreationModal [name="editTestCaseSimpleCreationApplication"]').val())) {
+                $("#newApplication").attr('style', 'display:none');
+            } else {
+                $("#newApplication").attr('style', 'display:block');
+            }
+        });
     });
 
     formEdit.modal('show');
