@@ -126,6 +126,14 @@ image:kafka_search2.png[kafka_search_filters_multiple_conditions]
 
 ====
 
+
+[TIP]
+====
+Extra Json path external documentation :
+https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html
+
+====
+
 **Avro Support**
 
 Cerberus support https://avro.apache.org/[Avro] data serialization system.
