@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
@@ -52,6 +53,10 @@ public class XRayGenerationService implements IXRayGenerationService {
     @Override
     public JSONObject generateCreateTestExecution(Tag tag, TestCaseExecution execution) {
         JSONObject xRayMessage = new JSONObject();
+        boolean isXRayDC = false;
+        if (TestCase.TESTCASE_ORIGIN_JIRAXRAYDC.equalsIgnoreCase(execution.getTestCaseObj().getOrigine())) {
+            isXRayDC = true;
+        }
 
         try {
 
@@ -71,11 +76,19 @@ public class XRayGenerationService implements IXRayGenerationService {
             testMessage.put("start", convertToDate(execution.getStart()));
             testMessage.put("finish", convertToDate(execution.getEnd()));
             testMessage.put("comment", execution.getId() + " - " + execution.getControlMessage());
-            testMessage.put("status", convertToStatus(execution.getControlStatus()));
+            if (isXRayDC) {
+                testMessage.put("status", convertToStatus_DC(execution.getControlStatus()));
+            } else {
+                testMessage.put("status", convertToStatus(execution.getControlStatus()));
+            }
 
             JSONArray stepsMessage = new JSONArray();
             JSONObject stepMessage = new JSONObject();
-            stepMessage.put("status", convertToStatus(execution.getControlStatus()));
+            if (isXRayDC) {
+                stepMessage.put("status", convertToStatus_DC(execution.getControlStatus()));
+            } else {
+                stepMessage.put("status", convertToStatus(execution.getControlStatus()));
+            }
             stepMessage.put("actualResult", "actuel Result");
             stepsMessage.put(stepMessage);
             testMessage.put("steps", stepsMessage);
@@ -169,6 +182,27 @@ public class XRayGenerationService implements IXRayGenerationService {
                 return "TODO";
             default:
                 return "FAILED";
+        }
+    }
+
+    private String convertToStatus_DC(String cerberusStatus) {
+        switch (cerberusStatus) {
+            case TestCaseExecution.CONTROLSTATUS_KO:
+            case TestCaseExecution.CONTROLSTATUS_FA:
+            case TestCaseExecution.CONTROLSTATUS_NA:
+            case TestCaseExecution.CONTROLSTATUS_CA:
+            case TestCaseExecution.CONTROLSTATUS_QE:
+                return "FAIL";
+            case TestCaseExecution.CONTROLSTATUS_OK:
+            case TestCaseExecution.CONTROLSTATUS_NE:
+                return "PASS";
+            case TestCaseExecution.CONTROLSTATUS_PE:
+            case TestCaseExecution.CONTROLSTATUS_QU:
+                return "EXECUTING";
+            case TestCaseExecution.CONTROLSTATUS_WE:
+                return "BLOCKED";
+            default:
+                return "FAIL";
         }
     }
 
