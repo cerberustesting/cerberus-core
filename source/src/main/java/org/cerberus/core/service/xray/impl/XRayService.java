@@ -274,8 +274,8 @@ public class XRayService implements IXRayService {
                                 LOG.debug("Setting new XRay TestExecution '{}' to tag '{}'", xRayResponse.getString("key"), currentTag.getTag());
                             } else {
                                 LOG.warn("XRay Test Execution request http return code : " + rc);
-                                logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ".");
                                 String responseString = EntityUtils.toString(response.getEntity());
+                                logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". " + responseString);
                                 LOG.warn("Message sent to " + xRayUrl + " :");
                                 LOG.warn(xRayRequest.toString(1));
                                 LOG.warn("Response : {}", responseString);
@@ -390,7 +390,7 @@ public class XRayService implements IXRayService {
                     }
 
                 } catch (Exception e) {
-                        logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Authent request to '" + xRayUrl + "' failed : " + e.toString() + ".");
+                    logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Authent request to '" + xRayUrl + "' failed : " + e.toString() + ".");
                 }
 
             } else if (TestCase.TESTCASE_ORIGIN_JIRAXRAYDC.equals(origin)) {
