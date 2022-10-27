@@ -168,9 +168,30 @@ function feedParameterModal(param, system, modalId) {
             formEdit.find("#editParameterButton").show();
             if (data.isSecured) {
                 $('#editParameterButton').attr('disabled', true);
-                $("#cerberusValue").change(function () {
-                    $('#editParameterButton').attr('disabled', false);
-                });
+                if (data.isSystemManaged) {
+                    $("#cerberusValue").change(function () {
+                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
+                        {
+                            $('#editParameterButton').attr('disabled', false);
+                        } else {
+                            $('#editParameterButton').attr('disabled', true);
+                        }
+                    });
+                    $("#systemValue").change(function () {
+                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
+                        {
+                            $('#editParameterButton').attr('disabled', false);
+                        } else {
+                            $('#editParameterButton').attr('disabled', true);
+                        }
+                    });
+
+                } else {
+                    $("#cerberusValue").change(function () {
+                        $('#editParameterButton').attr('disabled', false);
+                    });
+
+                }
             } else {
                 $('#editParameterButton').attr('disabled', false);
             }
