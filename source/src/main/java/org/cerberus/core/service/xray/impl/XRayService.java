@@ -270,8 +270,15 @@ public class XRayService implements IXRayService {
                                         currentTag.setXRayTestExecution(xrayTestExecution);
                                         tagService.updateXRayTestExecution(currentTag.getTag(), currentTag);
                                     }
+                                    LOG.debug("Setting new XRay TestExecution '{}' to tag '{}'", xRayResponse.getString("key"), currentTag.getTag());
+                                } else {
+                                    LOG.warn("XRay Test Execution request http return code : {} is missing 'key' entry.", rc);
+                                    String responseString1 = EntityUtils.toString(response.getEntity());
+                                    logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString1);
+                                    LOG.warn("Message sent to " + xRayUrl + " :");
+                                    LOG.warn(xRayRequest.toString(1));
+                                    LOG.warn("Response : {}", responseString1);
                                 }
-                                LOG.debug("Setting new XRay TestExecution '{}' to tag '{}'", xRayResponse.getString("key"), currentTag.getTag());
                             } else {
                                 LOG.warn("XRay Test Execution request http return code : " + rc);
                                 String responseString = EntityUtils.toString(response.getEntity());
