@@ -228,8 +228,6 @@ If SubData is not defined, the key value subdata will be used.
 | %system.TOMORROW-MM% |	Month of tomorrw
 | %system.TOMORROW-dd% |	Day of tomorrw
 | %system.TOMORROW-doy% |	Day of tomorrw from the beginning of the year
-| %system.ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
-| %system.ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
 
 |=== 
 
