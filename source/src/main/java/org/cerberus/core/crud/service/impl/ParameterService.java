@@ -115,7 +115,6 @@ public class ParameterService implements IParameterService {
                 return cacheEntry.get(cacheKey);
             }
         }*/
-
         if (Parameter.CACHE_DURATION > 0 && !Parameter.VALUE_cerberus_queueexecution_enable.equals(key)) {
             if (cacheEntry.containsKey(cacheKey)
                     && cacheEntry.get(cacheKey) != null
@@ -383,11 +382,11 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_smtp_username.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_manage_timeout.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_apikey_enable.equalsIgnoreCase(parameter.getParam())
-//                    || Parameter.VALUE_cerberus_apikey_value1.equalsIgnoreCase(parameter.getParam())
-//                    || Parameter.VALUE_cerberus_apikey_value2.equalsIgnoreCase(parameter.getParam())
-//                    || Parameter.VALUE_cerberus_apikey_value3.equalsIgnoreCase(parameter.getParam())
-//                    || Parameter.VALUE_cerberus_apikey_value4.equalsIgnoreCase(parameter.getParam())
-//                    || Parameter.VALUE_cerberus_apikey_value5.equalsIgnoreCase(parameter.getParam())
+                    //                    || Parameter.VALUE_cerberus_apikey_value1.equalsIgnoreCase(parameter.getParam())
+                    //                    || Parameter.VALUE_cerberus_apikey_value2.equalsIgnoreCase(parameter.getParam())
+                    //                    || Parameter.VALUE_cerberus_apikey_value3.equalsIgnoreCase(parameter.getParam())
+                    //                    || Parameter.VALUE_cerberus_apikey_value4.equalsIgnoreCase(parameter.getParam())
+                    //                    || Parameter.VALUE_cerberus_apikey_value5.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_url.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_webperf_thirdpartyfilepath.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_executeCerberusCommand_password.equalsIgnoreCase(parameter.getParam())
@@ -425,6 +424,9 @@ public class ParameterService implements IParameterService {
     public Parameter secureParameter(Parameter parameter) {
         if (isToSecureParameter(parameter)) {
             parameter.setValue("XXXXXXXXXX");
+            if (StringUtil.isNotEmptyOrNullValue(parameter.getSystem1value())) {
+                parameter.setSystem1value("XXXXXXXXXX");
+            }
         }
         return parameter;
     }
@@ -437,8 +439,7 @@ public class ParameterService implements IParameterService {
                 || parameter.getParam().equals("cerberus_smtp_password")
                 || parameter.getParam().equals("cerberus_executeCerberusCommand_password")
                 || parameter.getParam().equals(Parameter.VALUE_cerberus_xraycloud_clientsecret)
-                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraydc_token)
-                ) {
+                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraydc_token)) {
             return true;
         }
         return false;

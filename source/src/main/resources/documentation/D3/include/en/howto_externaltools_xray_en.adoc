@@ -54,7 +54,7 @@ image:jiradc6.png[FR,300,800]
 
 image:jiradc7.png[FR,400,800]
 
-* On Cerberus Side, set the 2 parameters *_cerberus_xraydc_token_* with the previously created API Key and  *_cerberus_xraydc_url_* with the URL to your JIRA instance (following the schema : __http://yourserver__ /rest/raven/2.0/api will be added by Cerberus in order to access the API).
+* On Cerberus Side, set the 2 parameters *_cerberus_xraydc_token_* with the previously created API Key and  *_cerberus_xraydc_url_* with the URL to your JIRA instance following the schema : __http://yourserver.com__ (NB : /rest/raven/2.0/api will be added by Cerberus in order to access the API).
 
 image:jiradc8.png[FR,400,800]
 
@@ -74,3 +74,9 @@ image:jiracloud4.png[FR,400,800]
 The button will bring you to the JIRA page :
 
 image:jiracloud5.png[FR,800,800]
+
+[NOTE]
+====
+In case or error you can consult the _Log viewer_ from _Administration_ menu that will report the URL called and error received from the JIRA server.
+====
+

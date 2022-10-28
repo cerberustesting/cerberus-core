@@ -68,6 +68,14 @@ public class XRayGenerationService implements IXRayGenerationService {
             infoMessage.put("description", tag.getDescription());
             infoMessage.put("startDate", convertToDate(tag.getDateCreated()));
 
+            JSONArray environments = new JSONArray();
+            environments.put(execution.getEnvironment());
+            environments.put(execution.getCountry());
+            if (execution.getRobotObj() != null) {
+                environments.put(execution.getRobotObj().getRobotDecli());
+            }
+            infoMessage.put("testEnvironments", environments);
+
             xRayMessage.put("info", infoMessage);
 
             JSONArray testsMessage = new JSONArray();
