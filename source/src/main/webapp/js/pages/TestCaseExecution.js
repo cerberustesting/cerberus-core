@@ -3342,8 +3342,8 @@ function addFileLink(fileList, container, manual, idStep) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                     .append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                     .click(function (e) {
                         changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
@@ -3360,32 +3360,32 @@ function addFileLink(fileList, container, manual, idStep) {
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3398,15 +3398,16 @@ function addFileLink(fileList, container, manual, idStep) {
 
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+
+                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc).click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px")
+                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc).click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
