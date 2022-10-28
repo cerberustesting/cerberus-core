@@ -2149,11 +2149,12 @@ function displayStepOptionsModal(step, htmlElement) {
     $("#stepConditionVal1").val(step.conditionValue1);
     $("#stepConditionVal2").val(step.conditionValue2);
     $("#stepConditionVal3").val(step.conditionValue3);
+    setPlaceholderCondition($("#stepConditionOperator"));
 //END OF CONDITION
 
     $("#stepConditionOperator").on("change", function () {
         setModif(true);
-        //setPlaceholderCondition($(this).parents(".action"));
+        setPlaceholderCondition($(this));
     });
     $("#stepConditionVal1").on("change", function () {
         setModif(true);
@@ -2178,7 +2179,7 @@ function displayStepOptionsModal(step, htmlElement) {
     $("#optionStepSave").click(function () {
 
         step.isExecutionForced = $("#stepForceExe").is(':checked');
-        step.conditionOperator = $("#conditionSelectContainer").find('select').val();
+        step.conditionOperator = $("#stepConditionOperator").val();
         step.conditionValue1 = $("#stepConditionVal1").val();
         step.conditionValue2 = $("#stepConditionVal2").val();
         step.conditionValue3 = $("#stepConditionVal3").val();
@@ -3540,8 +3541,11 @@ function setPlaceholderAction(action) {
 
 function setPlaceholderCondition(conditionElement) {
 
+    console.log(conditionElement);
     var user = getUser();
     var placeHolders = conditionNewUIList[conditionElement.val()];
+
+    console.log(placeHolders);
 
     if (typeof placeHolders === 'undefined') {
         placeHolders = conditionNewUIList["always"];
@@ -3549,93 +3553,31 @@ function setPlaceholderCondition(conditionElement) {
 
     if (typeof placeHolders.field1 !== 'undefined') {
         // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
-        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
-        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
-        //$(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder",placeHolders.field1.label[user.language]);
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").parent().show();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").text(placeHolders.field1.label[user.language]);
         if (typeof placeHolders.field1.picto !== 'undefined') {
-            //       $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
+            //$(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
         }
     } else {
-        //    $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").parent().hide();
     }
 
+    if (typeof placeHolders.field2 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").parent().show();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").text(placeHolders.field2.label[user.language]);
 
-    if ($(conditionElement).find('select#conditionSelect option:selected').length) {
-        $(conditionElement).find('select#conditionSelect option:selected').each(function (i, e) {
-            for (var i = 0; i < placeHolders.length; i++) {
-                if (placeHolders[i].type === e.value) {
-                    if (placeHolders[i].object !== null) {
-                        $(e).parent().parent().next().show();
-                        $(e).parent().parent().next().find('label').text(placeHolders[i].object);
-                    } else {
-                        $(e).parent().parent().next().hide();
-                    }
-                    if (placeHolders[i].property !== null) {
-                        $(e).parent().parent().next().next().show();
-                        $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
-                    } else {
-                        $(e).parent().parent().next().next().hide();
-                    }
-                    if (placeHolders[i].condValue3 !== null) {
-                        $(e).parent().parent().next().next().next().show();
-                        $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].condValue3);
-                    } else {
-                        $(e).parent().parent().next().next().next().hide();
-                    }
-                }
-            }
-        });
-    } else if ($(conditionElement).children().find('select#stepConditionOperator option:selected').length) {
-        $(conditionElement).children().find('select#stepConditionOperator option:selected').each(function (i, e) {
-            for (var i = 0; i < placeHolders.length; i++) {
-                if (placeHolders[i].type === e.value) {
-                    if (placeHolders[i].object !== null) {
-                        $(e).parent().parent().next().show();
-                        $(e).parent().parent().next().find('label').text(placeHolders[i].object);
-                    } else {
-                        $(e).parent().parent().next().hide();
-                    }
-                    if (placeHolders[i].property !== null) {
-                        $(e).parent().parent().next().next().show();
-                        $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
-                    } else {
-                        $(e).parent().parent().next().next().hide();
-                    }
-                    if (placeHolders[i].condValue3 !== null) {
-                        $(e).parent().parent().next().next().next().show();
-                        $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].condValue3);
-                    } else {
-                        $(e).parent().parent().next().next().next().hide();
-                    }
-                }
-            }
-        });
-    } else if ($(conditionElement).find('select#controlConditionSelect option:selected').length) {
-        $(conditionElement).find('select#controlConditionSelect option:selected').each(function (i, e) {
-            for (var i = 0; i < placeHolders.length; i++) {
-                if (placeHolders[i].type === e.value) {
-                    if (placeHolders[i].object !== null) {
-                        $(e).parent().parent().next().show();
-                        $(e).parent().parent().next().find('label').text(placeHolders[i].object);
-                    } else {
-                        $(e).parent().parent().next().hide();
-                    }
-                    if (placeHolders[i].property !== null) {
-                        $(e).parent().parent().next().next().show();
-                        $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
-                    } else {
-                        $(e).parent().parent().next().next().hide();
-                    }
-                    if (placeHolders[i].condValue3 !== null) {
-                        $(e).parent().parent().next().next().next().show();
-                        $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].condValue3);
-                    } else {
-                        $(e).parent().parent().next().next().next().hide();
-                    }
-                }
-            }
-        });
+    } else {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").parent().hide();
     }
+
+    if (typeof placeHolders.field3 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").parent().show();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").text(placeHolders.field3.label[user.language]);
+
+    } else {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").parent().hide();
+    }
+
 }
 
 function setPlaceholderControl(control) {

@@ -2139,6 +2139,41 @@ function Step(json, steps, id) {
     }
     this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
 
+    var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
+
+    var conditionTooltip = "<b>Condition : </b>" + this.conditionOperator + "</br>"
+    conditionTooltip += "<b>Val1 : </b>" + this.conditionVal1 + "</br>"
+    conditionTooltip += "<b>Val2 : </b>" + this.conditionVal2 + "</br>"
+    conditionTooltip += "<b>Val3 : </b>" + this.conditionVal3 + "</br>"
+
+    if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
+        var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
+        stepLabelContainer.append(labelOptions[0]);
+    } else if ((this.conditionOperator !== "never")
+        && (this.conditionOperator !== "always")) {
+            if (this.returnCode !== "NE"){
+
+                var labelOptions = $('<span class="label label-primary optionLabel labelLight">Condition verified</span>')
+                    .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                stepLabelContainer.append(labelOptions[0]);
+            } else {
+                var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
+                    .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                stepLabelContainer.append(labelOptions[0]);
+
+            }
+
+    }
+    if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
+        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+        var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
+            .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+        stepLabelContainer.append(labelOptions[0]);
+    }
+
+
+    this.textArea.append(stepLabelContainer);
+
 }
 
 Step.prototype.addElements = function () {

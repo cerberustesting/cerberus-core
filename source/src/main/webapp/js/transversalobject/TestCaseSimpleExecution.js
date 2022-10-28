@@ -179,8 +179,12 @@ function submitForm() {
 
     let countryenvironmentstring = "";
     $('#environmentList').find('button[class*="active"]').each(function () {
-        countryenvironmentstring += "&country=" + $(this).attr('data-country');
-        countryenvironmentstring += "&environment=" + $(this).attr('data-environment');
+        if (!countryenvironmentstring.includes("&country=" + $(this).attr('data-country'))){
+            countryenvironmentstring += "&country=" + $(this).attr('data-country');
+        }
+        if (!countryenvironmentstring.includes("&environment=" + $(this).attr('data-environment'))) {
+            countryenvironmentstring += "&environment=" + $(this).attr('data-environment');
+        }
     });
 
     let robotsstring = "";
