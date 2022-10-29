@@ -59,6 +59,7 @@ import java.util.stream.Collectors;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.crud.entity.TestCaseStep;
@@ -67,6 +68,7 @@ import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.IInvariantService;
+import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseCountryService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
@@ -94,6 +96,7 @@ public class TestcaseController {
     private final IApplicationService applicationService;
     private final ICountryEnvironmentParametersService countryEnvironmentParametersService;
     private final TestcaseMapperV001 testcaseMapper;
+    private final IParameterService parameterService;
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
 
@@ -219,7 +222,7 @@ public class TestcaseController {
                         .build());
 
         List<Invariant> countryInvariantList = this.invariantService.readByIdName("COUNTRY");
-        for(Invariant countryInvariant : countryInvariantList){
+        for (Invariant countryInvariant : countryInvariantList) {
 
             this.testCaseCountryService.create(
                     TestCaseCountry.builder()
@@ -230,61 +233,63 @@ public class TestcaseController {
                             .build());
         }
 
+        if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_testcaseautofeed_enable, newTestcase.getSystem(), true)) {
 
+            this.testCaseStepService.create(
+                    TestCaseStep.builder()
+                            .test(newTestcase.getTestFolderId())
+                            .testcase(newTestcase.getTestcaseId())
+                            .stepId(0)
+                            .sort(1)
+                            .isUsingLibraryStep(false)
+                            .libraryStepStepId(0)
+                            .loop("onceIfConditionTrue")
+                            .conditionOperator("always")
+                            .description("Go to the homepage and take a screenshot")
+                            .usrCreated(principal.getName())
+                            .build());
 
-        this.testCaseStepService.create(
-                TestCaseStep.builder()
-                        .test(newTestcase.getTestFolderId())
-                        .testcase(newTestcase.getTestcaseId())
-                        .stepId(0)
-                        .sort(1)
-                        .isUsingLibraryStep(false)
-                        .libraryStepStepId(0)
-                        .loop("onceIfConditionTrue")
-                        .conditionOperator("always")
-                        .description("Go to the homepage and take a screenshot")
-                        .usrCreated(principal.getName())
-                        .build());
+            this.testCaseStepActionService.create(
+                    TestCaseStepAction.builder()
+                            .test(newTestcase.getTestFolderId())
+                            .testcase(newTestcase.getTestcaseId())
+                            .stepId(0)
+                            .actionId(0)
+                            .sort(1)
+                            .conditionOperator("always")
+                            .conditionValue1("")
+                            .conditionValue2("")
+                            .conditionValue3("")
+                            .action(TestCaseStepAction.ACTION_OPENURLWITHBASE)
+                            .value1("/")
+                            .value2("")
+                            .value3("")
+                            .description("Open the homepage")
+                            .conditionOperator("always")
+                            .usrCreated(principal.getName())
+                            .build());
 
-        this.testCaseStepActionService.create(
-                TestCaseStepAction.builder()
-                        .test(newTestcase.getTestFolderId())
-                        .testcase(newTestcase.getTestcaseId())
-                        .stepId(0)
-                        .actionId(0)
-                        .sort(1)
-                        .conditionOperator("always")
-                        .conditionValue1("")
-                        .conditionValue2("")
-                        .conditionValue3("")
-                        .action("openUrlWithBase")
-                        .value1("/")
-                        .value2("")
-                        .value3("")
-                        .description("Open the homepage")
-                        .conditionOperator("always")
-                        .usrCreated(principal.getName())
-                        .build());
+            this.testCaseStepActionControlService.create(
+                    TestCaseStepActionControl.builder()
+                            .test(newTestcase.getTestFolderId())
+                            .testcase(newTestcase.getTestcaseId())
+                            .stepId(0)
+                            .actionId(0)
+                            .controlId(0)
+                            .sort(1)
+                            .conditionOperator("always")
+                            .conditionValue1("")
+                            .conditionValue2("")
+                            .conditionValue3("")
+                            .control(TestCaseStepActionControl.CONTROL_TAKESCREENSHOT)
+                            .value1("")
+                            .value2("")
+                            .value3("")
+                            .description("Take a screenshot")
+                            .usrCreated(principal.getName())
+                            .build());
 
-        this.testCaseStepActionControlService.create(
-                TestCaseStepActionControl.builder()
-                        .test(newTestcase.getTestFolderId())
-                        .testcase(newTestcase.getTestcaseId())
-                        .stepId(0)
-                        .actionId(0)
-                        .controlId(0)
-                        .sort(1)
-                        .conditionOperator("always")
-                        .conditionValue1("")
-                        .conditionValue2("")
-                        .conditionValue3("")
-                        .control("takeScreenshot")
-                        .value1("")
-                        .value2("")
-                        .value3("")
-                        .description("Take a screenshot")
-                        .usrCreated(principal.getName())
-                        .build());
+        }
 
         try {
             jsonResponse.put("test", newTestcase.getTestFolderId());

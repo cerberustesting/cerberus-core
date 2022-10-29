@@ -6173,3 +6173,8 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 -- 1739-1740
 UPDATE invariant set idname = 'ROBOTPROXYHOST' where idname = 'EXECUTOREXTENSIONHOST';
 UPDATE invariant set value = 'ROBOTPROXYHOST' where idname = 'INVARIANTPUBLIC' and value = 'EXECUTOREXTENSIONHOST' ;
+
+-- 1741
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_testcaseautofeed_enable', 'true', 'Enable the creation of standard actions and controls on first creation of a testcase.');
+
