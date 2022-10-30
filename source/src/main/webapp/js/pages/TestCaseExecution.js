@@ -3314,16 +3314,16 @@ Control.prototype.getJsonData = function () {
 function changeClickIfManual(isTheExecutionManual, container, idStep, file, event) {
     if (isTheExecutionManual) {
         var idex = $("#idlabel").text()
-        if ($(container).parent().parent().parent().hasClass("action")) {
-            var indexAction = $(this).parents("a").data('index')
+       // if ($(container).parent().parent().parent().hasClass("action")) {
+            var indexAction = $(container).parents("a").data('item').index
             var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
             openModalFile(true, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
-        } else {
-            var indexAction = $(this).parents("a").parent().find(".action").data('index')
-            var indexControl = $(this).parents("a").data('index')
-            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-            openModalFile(false, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
-        }
+       // } else {
+        //    var indexAction = $(container).parents("a").data('item')
+        //      var indexControl = $(this).parents("a").data('index')
+        //    var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+        //    openModalFile(false, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        // }
         event.preventDefault()
         event.stopPropagation()
     } else {
@@ -3424,11 +3424,11 @@ function addFileLink(fileList, container, manual, idStep) {
         buttonUpload.click(function (event) {
             var idex = $("#idlabel").text()
             if ($(container).parent().parent().parent().hasClass("action")) {
-                var indexAction = $(this).parents("a").data('index')
+                var indexAction = $(this).parents("a").data('item').action
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
                 openModalFile(true, currentActionOrControl, "ADD", idex)
             } else {
-                var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                var indexAction = $(this).parents("a").data('item').action
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
                 openModalFile(false, currentActionOrControl, "ADD", idex)

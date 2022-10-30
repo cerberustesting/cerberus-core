@@ -136,9 +136,17 @@ function confirmFileModalHandler(action, manualFile, mode, idex, myFile, auto) {
             var file = $("#editManualFileModal input[type=file]");
             formData.append("file", file.prop("files")[0]);
         }
-        ;
 
         var temp = [];
+
+        //Delete object to avoid cyclic exception converting into JSON
+        delete manualFile.controls;
+        delete manualFile.controlsJson;
+        delete manualFile.parentStep;
+        delete manualFile.parentAction;
+        delete manualFile.fileList;
+        delete manualFile.html;
+
         temp.push(manualFile)
 
         if (action) {
@@ -150,12 +158,12 @@ function confirmFileModalHandler(action, manualFile, mode, idex, myFile, auto) {
         formData.append("fileName", $("#editManualFileModal").find("#dropzoneText").text())
         formData.append("fileID", myFile.id)
     } catch (e) {
-
+        console.log("exception : " + e);
     }
 
     var myServlet = "CreateUpdateTestCaseExecutionFile"
 
-    if (mode == "DELETE") {
+    if (mode === "DELETE") {
         var myServlet = "DeleteTestCaseExecutionFile?fileID=" + myFile.id;
     }
 
