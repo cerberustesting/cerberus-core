@@ -57,11 +57,12 @@ public interface IKafkaService {
      * @param token
      * @param isAvroEnable
      * @param schemaRegistryURL
+     * @param avroSchema
      * @param timeoutMs
      * @return
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean isAvroEnable, String schemaRegistryURL, int timeoutMs);
+            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean isAvroEnable, String schemaRegistryURL, String avroSchema, int timeoutMs);
 
     /**
      *

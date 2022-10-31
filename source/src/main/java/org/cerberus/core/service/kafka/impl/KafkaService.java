@@ -20,6 +20,10 @@
 package org.cerberus.core.service.kafka.impl;
 
 import com.jayway.jsonpath.PathNotFoundException;
+import io.confluent.kafka.schemaregistry.ParsedSchema;
+import io.confluent.kafka.schemaregistry.avro.AvroSchema;
+import io.confluent.kafka.schemaregistry.avro.AvroSchemaUtils;
+import java.io.IOException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -71,8 +75,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumReader;
 
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.util.Utf8;
+import org.apache.kafka.common.errors.SerializationException;
 import org.json.JSONException;
 
 /**
@@ -110,14 +122,84 @@ public class KafkaService implements IKafkaService {
         return bootstrapServers + "|" + topic;
     }
 
+    /**
+     * This method will convert a json string to an Avro Object given the json
+     * string and the Avro Schema. <br>
+     * It has an issue on managing schema with multiple type possible. That
+     * issue force the user to change a schema to a mono type in order to bypass
+     * the error.<br>
+     * Example:
+     *
+     * { <br>
+     * "name": "productReferenceBU",<br>
+     * "type": ["int","null"],<br>
+     * "default": null<br>
+     * }<br>
+     *
+     * has to be replaced by:
+     *
+     * {<br>
+     * "name": "productReferenceBU",<br>
+     * "type": "int",<br>
+     * }<br>
+     *
+     * @param jsonString
+     * @param schema
+     * @return
+     */
+    private Object jsonToAvro(String jsonString, Schema schema) {
+        try {
+            DatumReader<Object> reader = new GenericDatumReader<Object>(schema);
+            Object object = reader.read(null, DecoderFactory.get().jsonDecoder(schema, jsonString));
+
+            if (schema.getType().equals(Schema.Type.STRING)) {
+                object = ((Utf8) object).toString();
+            }
+            return object;
+        } catch (IOException e) {
+            throw new SerializationException(
+                    String.format("Error deserializing json %s to Avro of schema %s", jsonString, schema), e);
+        } catch (AvroRuntimeException e) {
+            throw new SerializationException(
+                    String.format("Error deserializing json %s to Avro of schema %s", jsonString, schema), e);
+        }
+    }
+
+    /**
+     * This method will convert a json string to an Avro Object given the json
+     * string and the Avro Parsed Schema.<br>
+     * This method is supposed to fix the previous bug but so far is not
+     * integrated to Cerberus because it use the ParsedSchema.
+     *
+     * @param jsonString
+     * @param schema
+     * @return
+     */
+    private Object readFrom(String jsonString, ParsedSchema parsedSchema) {
+        Schema schema = ((AvroSchema) parsedSchema).rawSchema();
+        try {
+            Object object = AvroSchemaUtils.toObject(jsonString, (AvroSchema) parsedSchema);
+            if (schema.getType().equals(Schema.Type.STRING)) {
+                object = ((Utf8) object).toString();
+            }
+            return object;
+        } catch (IOException e) {
+            throw new SerializationException(
+                    String.format("Error deserializing json %s to Avro of schema %s", jsonString, schema), e);
+        } catch (AvroRuntimeException e) {
+            throw new SerializationException(
+                    String.format("Error deserializing json %s to Avro of schema %s", jsonString, schema), e);
+        }
+    }
+
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL, int timeoutMs) {
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL, String avroSchema, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", null,
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", null,
                 "", null, "", null, null);
 
         // If token is defined, we add 'cerberus-token' on the http header.
@@ -135,7 +217,6 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
 //            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
@@ -164,15 +245,54 @@ public class KafkaService implements IKafkaService {
             producer = new KafkaProducer<>(props);
 
             if (activateAvro) {
-//                String userSchema = "{\"type\":\"record\","
-//                        + "\"name\":\"myrecord\","
-//                        + "\"fields\":[{\"name\":\"f1\",\"type\":\"string\"}]}";
-//                Schema.Parser parser = new Schema.Parser();
-//                Schema schema = parser.parse(userSchema);
-//                GenericRecord avroRecord = new GenericData.Record(schema);
-//                avroRecord.put("f1", "value1");
-//                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, avroRecord);
-                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, eventMessage);
+
+//                String userSchema = "{"
+//                        + "	\"name\": \"ProductGenericEvent\","
+//                        + "	\"type\": \"record\","
+//                        + "	\"namespace\": \"fr.adeo.redwood.event.avro.product\","
+//                        + "	\"fields\": ["
+//                        + "		{"
+//                        + "			\"name\": \"id\","
+//                        + "			\"type\": \"string\""
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"timestamp\","
+//                        + "			\"type\": \"long\""
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"eventType\","
+//                        + "			\"type\": \"string\""
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"productReferenceAdeo\","
+//                        + "			\"type\": \"int\""
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"productReferenceBU\","
+//                        + "			\"type\": \"int\""
+////                        + "			\"type\": [\"int\",\"null\"],"
+////                        + "			\"default\":null"
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"codeBU\","
+//                        + "			\"type\": \"string\""
+//                        + "		},"
+//                        + "		{"
+//                        + "			\"name\": \"source\","
+//                        + "			\"type\": \"string\""
+//                        + "		}"
+//                        + "	]"
+//                        + "}";
+//
+//                LOG.debug("userSchema");
+//                LOG.debug(userSchema);
+                Schema.Parser parser = new Schema.Parser();
+                Schema schema = parser.parse(avroSchema);
+//                ParsedSchema toto ;
+
+//                GenericRecord eventMessageGeneric = new GenericData.Record(schema);
+                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, jsonToAvro(eventMessage, schema));
+
                 for (AppServiceHeader object : serviceHeader) {
                     if (object.isActive()) {
                         record.headers().add(new RecordHeader(object.getKey(), object.getValue().getBytes()));
