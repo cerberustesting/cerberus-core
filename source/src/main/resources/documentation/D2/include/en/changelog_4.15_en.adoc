@@ -33,4 +33,5 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Updated Groovy version from 2.4.21 to latest 3.0.11 and Groovy sandbox from 1.10 to 1.19
-* That release require cerberus-robot-extension v1.7. Uncompatible changes to prio versions were introduced.
+* That release require cerberus-robot-extension v1.7. Uncompatible changes to prio versions were introduced. Secure that you update that component at the same time as your Cerberus instance.
+* Support to MySQL 8 is now official. So far we also support MySQL 5.6.xx / MariaDb 10.1.xx but that support will soon disappear.
