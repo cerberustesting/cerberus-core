@@ -12,10 +12,6 @@ Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
 latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/latest/Dockerfile)
 4.15   | Use the 4.15 Cerberus version     | [4.15/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.15/Dockerfile)
-4.15   | Use the 4.15 Cerberus version     | [4.15/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.15/Dockerfile)
-4.15   | Use the 4.15 Cerberus version     | [4.15/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.15/Dockerfile)
-4.15   | Use the 4.15 Cerberus version     | [4.15/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.15/Dockerfile)
-4.14   | Use the 4.14 Cerberus version     | [4.14/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.14/Dockerfile)
 4.14   | Use the 4.14 Cerberus version     | [4.14/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.14/Dockerfile)
 4.13.1   | Use the 4.13.1 Cerberus version     | [4.13.1/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.13.1/Dockerfile)
 4.13   | Use the 4.13 Cerberus version     | [4.13/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat/4.13/Dockerfile)
