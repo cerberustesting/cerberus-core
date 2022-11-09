@@ -10,7 +10,7 @@ ENV DATABASE_NAME cerberus
 ENV DATABASE_USER cerberus
 ENV DATABASE_PASSWORD toto
 
-ARG CERBERUS_NAME=cerberus-core
+ARG CERBERUS_NAME=Cerberus
 ARG CERBERUS_VERSION=4.15
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
@@ -31,7 +31,7 @@ RUN echo "Download & install MySQL JDBC Drivers" && \
 
 # Download & install Cerberus Application
 RUN echo "Download & install Cerberus Application" && \
-    wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/cerberus-core-${CERBERUS_VERSION}.zip && \
+    wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
     unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip && \
     rm -rf /usr/local/tomcat/webapps/* && \
     cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war && \

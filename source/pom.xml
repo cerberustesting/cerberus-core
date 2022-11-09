@@ -19,14 +19,13 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus-core</artifactId>
-    <version>4.15-SNAPSHOT</version>
+    <version>4.16-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus Core</name>
@@ -271,7 +270,7 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>${jna.version}</version>
-            <classifier/>
+            <classifier />
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -837,21 +836,16 @@
                                 <configuration>
                                     <target>
                                         <!-- Upload artifact -->
-                                        <echo message="Uploading artifact to Cerberus Delivery server..."/>
-                                        <scp file="${project.build.directory}/${project.build.finalName}.zip"
-                                             todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}"
-                                             password="${cerberus.delivery.password}" trust="yes"/>
+                                        <echo message="Uploading artifact to Cerberus Delivery server..." />
+                                        <scp file="${project.build.directory}/${project.build.finalName}.zip" todir="${cerberus.delivery.username}@${cerberus.delivery.host}:${cerberus.delivery.upload.path}" password="${cerberus.delivery.password}" trust="yes" />
                                         <!--
                                             Deploy artifact by:
                                                 1. Extracting distribution package to the server's upload path;
                                                 2. Redeploying current application
                                                 3. Restarting current cluster.
                                         -->
-                                        <echo message="Deploying to QA..."/>
-                                        <sshexec host="${cerberus.delivery.host}"
-                                                 username="${cerberus.delivery.username}"
-                                                 password="${cerberus.delivery.password}" trust="yes"
-                                                 command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )"/>
+                                        <echo message="Deploying to QA..." />
+                                        <sshexec host="${cerberus.delivery.host}" username="${cerberus.delivery.username}" password="${cerberus.delivery.password}" trust="yes" command="unzip -o ${cerberus.delivery.upload.path}/${project.build.finalName}.zip -d ${cerberus.delivery.upload.path} &amp;&amp; ( ${cerberus.delivery.tomcat.deploy} ${cerberus.delivery.upload.path}/${project.build.finalName}/${project.build.finalName}.war )" />
                                     </target>
                                 </configuration>
                             </execution>

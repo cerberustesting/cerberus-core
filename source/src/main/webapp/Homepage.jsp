@@ -223,11 +223,11 @@
                 <div class="col-lg-6">
                     <div id="ChangelogPanel">
                         <div class="panel panel-default whiteCard">
-                            <div class="panel-heading card" data-target="#Changelog41500">
+                            <div class="panel-heading card" data-target="#Changelog41600">
                                 <span class="fa fa-pie-chart fa-fw"></span>
                                 <label id="changelogLabel">Changelog</label>
                             </div>
-                            <div class="panel-body collapse in" id="Changelog41500">
+                            <div class="panel-body collapse in" id="Changelog41600">
                                 <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
                                 </iframe>
                             </div>
