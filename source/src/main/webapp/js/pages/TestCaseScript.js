@@ -533,7 +533,7 @@ function addActionAndFocus(action) {
     });
 }
 
-function addActionFromBottomButton(){
+function addActionFromBottomButton() {
     addActionAndFocus();
     displayActionCombo($("#steps li.active").data("item"));
 }
@@ -677,7 +677,10 @@ function saveScript(property) {
                     url_sort = "&step=" + encodeURI(stepData.sort);
                 }
                 var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + url_sort + tutorialParameters + "&tabactive=" + tabActive;
-
+                // If the 1st 2 characters are // we remove 1 of them.
+                if ((new_uri[0] === '/') && (new_uri[1] === '/')) {
+                    new_uri = new_uri[0] + new_uri.slice(2)
+                }
                 setModif(false);
 
                 window.location.href = new_uri;
@@ -2016,8 +2019,8 @@ Step.prototype.show = function () {
  * Display all Action combo of Current Step
  * @param object
  */
-function displayActionCombo(object){
-    $(object.stepActionContainer).find(".action").each(function(){
+function displayActionCombo(object) {
+    $(object.stepActionContainer).find(".action").each(function () {
         var actions = $(getActionCombo());
         var actionItem = $(this).data("item");
         actions.val(actionItem.action);
@@ -2047,9 +2050,9 @@ function displayActionCombo(object){
  * Display all Control Combo of Current Step
  * @param object
  */
-function displayControlCombo(object){
+function displayControlCombo(object) {
     var user = getUser();
-    $(object.stepActionContainer).find(".control").each(function(){
+    $(object.stepActionContainer).find(".control").each(function () {
         console.log(this);
         var controls = $(getControlCombo());
         var controlItem = $(this).data("item");
@@ -2592,10 +2595,10 @@ Action.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-        .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-        .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-        .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     //FIRST ROW
@@ -3008,10 +3011,10 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-        .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-        .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-        .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
@@ -3411,13 +3414,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     objectNotExist = true;
                                     nameNotExist = name;
                                     typeNotExist = "applicationObject";
-                                    $(htmlElement).attr("style","width:80%").parent().append(addEntry);
+                                    $(htmlElement).attr("style", "width:80%").parent().append(addEntry);
                                 } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 	                                class="buttonObject btn btn-default input-sm " \n\
 	                                title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
-                                    $(htmlElement).attr("style","width:80%").parent().append(editEntry);
+                                    $(htmlElement).attr("style", "width:80%").parent().append(editEntry);
                                 }
                             } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
                                 let data = loadGuiProperties();
