@@ -162,7 +162,7 @@ public class SchedulerInit {
                                     instanceSchedulerVersion = databaseSchedulerVersion.getValueString();
 
                                 } catch (Exception e) {
-                                    LOG.error("Failed to load scheduler table.");
+                                    LOG.error("Failed to load scheduler table. " + myTriggersSetList);
                                     LOG.error(e);
                                 }
                             } else {
