@@ -278,13 +278,13 @@ public class ActionService implements IActionService {
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
-            LOG.warn("Saving Image 1 on Action : " + identifier.getLocator());
+            LOG.debug("Saving Image 1 on Action : " + identifier.getLocator());
 
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
-            LOG.warn("Saving Image 2 on Action : " + identifier.getLocator());
+            LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "2"));
         }
 

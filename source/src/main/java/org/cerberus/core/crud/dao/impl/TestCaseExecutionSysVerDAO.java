@@ -63,8 +63,8 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer)  throws CerberusException {
-        final String query = "INSERT INTO testcaseexecutionsysver (id, system, build, revision) "
+    public void insertTestCaseExecutionSysVer(TestCaseExecutionSysVer testCaseExecutionSysVer) throws CerberusException {
+        final String query = "INSERT INTO testcaseexecutionsysver (id, `system`, build, revision) "
                 + "VALUES (?, ?, ?, ?)";
 
         // Debug message on SQL.
@@ -87,13 +87,13 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         } finally {
             try {
@@ -118,7 +118,6 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
             try {
                 preStat.setString(1, String.valueOf(id));
 
-
                 ResultSet resultSet = preStat.executeQuery();
                 result = new ArrayList<>();
                 try {
@@ -130,17 +129,17 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {

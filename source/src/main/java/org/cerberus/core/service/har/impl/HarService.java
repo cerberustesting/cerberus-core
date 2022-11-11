@@ -237,7 +237,12 @@ public class HarService implements IHarService {
             }
 
             if (!Files.exists(Paths.get(configFile))) {
-                LOG.error("Could not load config file of Web Third Party. File " + configFile + " does not exist. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
+                LOG.warn("Could not load config file of Web Third Party. File " + configFile + " does not exist. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
+                return rules;
+            }
+
+            if (Files.isDirectory(Paths.get(configFile))) {
+                LOG.warn("Could not load config file of Web Third Party. File " + configFile + " is a directory and not a file. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
 
