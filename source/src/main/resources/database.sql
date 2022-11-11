@@ -6178,3 +6178,6 @@ UPDATE invariant set value = 'ROBOTPROXYHOST' where idname = 'INVARIANTPUBLIC' a
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_testcaseautofeed_enable', 'true', 'Enable the creation of standard actions and controls on first creation of a testcase.');
 
+-- 1742
+ALTER TABLE `appservice` 
+    ADD COLUMN `AvroSchema` MEDIUMTEXT NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;

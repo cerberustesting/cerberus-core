@@ -333,11 +333,11 @@ public class SikuliService implements ISikuliService {
             if (session.getNodeProxyPort() > 0) {
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
 
-                LOG.info("Open Connection to (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.info("Open Connection to : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Sikuli extension the sikuli timeout + 60 s to perform the action/control.
@@ -363,9 +363,9 @@ public class SikuliService implements ISikuliService {
 //            os.println("|ENDS|");
 
             if (connection == null) {
-                LOG.warn("No response to the request !!");
+                LOG.warn("No response from Robot Node Sikuli !!");
             } else {
-                LOG.debug("http response status code : " + connection.getResponseCode());
+                LOG.debug("Robot Node Sikuli http response status code : " + connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
@@ -388,7 +388,7 @@ public class SikuliService implements ISikuliService {
                 }
             }
 
-            LOG.debug("Sikuli Answer: " + response.toString());
+            LOG.debug("Robot Node Sikuli Answer: " + response.toString());
 
             if (response.toString() != null && response.length() > 0) {
                 /**

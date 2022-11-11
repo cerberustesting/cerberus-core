@@ -80,7 +80,6 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     // Remove an existing {@link ApplicationObject}
     private static final String DELETE = "DELETE FROM `applicationobject` WHERE `ID` = ?";
 
-
     @Override
     public AnswerItem<ApplicationObject> readByKeyTech(int id) {
         AnswerItem<ApplicationObject> ans = new AnswerItem<>();
@@ -89,7 +88,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setInt(1, id);
             ResultSet rs = preStat.executeQuery();
             ApplicationObject applicationObject = loadFromResultSet(rs);
@@ -114,7 +113,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             ApplicationObject applicationObject = null;
             // Prepare and execute query
             preStat.setString(1, application);
@@ -145,7 +144,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, application);
             try (ResultSet rs = preStat.executeQuery()) {
                 List<ApplicationObject> al = new ArrayList<>();
@@ -178,11 +177,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             if (applicationObjectAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject applicationObject = applicationObjectAnswerItem.getItem();
                 if (applicationObject != null) {
-                    File picture = new File(uploadPath + File.separator + applicationObject.getID() + File.separator + applicationObject.getScreenshotFilename());
+                    String filePath = uploadPath + File.separator + applicationObject.getID() + File.separator + applicationObject.getScreenshotFilename();
+                    File picture = new File(filePath);
                     try {
                         image = ImageIO.read(picture);
                     } catch (IOException e) {
-                        LOG.warn("Impossible to read the image");
+                        LOG.warn("Impossible to read the image : " + picture, e);
                     }
                 }
             } else {
@@ -302,8 +302,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -321,7 +321,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
@@ -416,10 +416,9 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         LOG.debug("SQL : {}", query);
 
-
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -446,7 +445,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
@@ -485,7 +484,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(CREATE)) {
+                PreparedStatement preStat = connection.prepareStatement(CREATE)) {
 
             int i = 1;
             preStat.setString(i++, object.getApplication());
@@ -518,7 +517,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(DELETE)) {
+                PreparedStatement preStat = connection.prepareStatement(DELETE)) {
 
             preStat.setInt(1, object.getID());
             preStat.executeUpdate();
@@ -544,7 +543,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getApplication());
             preStat.setString(i++, object.getObject());
@@ -612,8 +611,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         LOG.debug("SQL : {}", query);
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -631,7 +630,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -710,8 +709,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(application)) {
@@ -732,7 +731,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }

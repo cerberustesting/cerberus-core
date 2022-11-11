@@ -278,13 +278,13 @@ public class ActionService implements IActionService {
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
-            LOG.warn("Saving Image 1 on Action : " + identifier.getLocator());
+            LOG.debug("Saving Image 1 on Action : " + identifier.getLocator());
 
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
-            LOG.warn("Saving Image 2 on Action : " + identifier.getLocator());
+            LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "2"));
         }
 
@@ -544,7 +544,7 @@ public class ActionService implements IActionService {
                 }
                 LOG.debug(contentJSON.toString(1));
 
-                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", null, "", null, "");
+                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", "", null, "", null, "");
                 JSONObject contentJSONnew = new JSONObject();
 
                 // We copy the header values for the service answered.
@@ -1871,7 +1871,7 @@ public class ActionService implements IActionService {
 
             har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
-            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", "", null, "", null, null);
+            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", "", "", null, "", null, null);
             appSrv.setResponseHTTPBody(har.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -1952,7 +1952,7 @@ public class ActionService implements IActionService {
             consoleStat = consolelogService.enrichWithStats(consoleLogs);
             consoleRecap.put("stat", consoleStat);
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", null, "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", null, "", null, "", null, "");
             appSrv.setResponseHTTPBody(consoleRecap.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -1985,7 +1985,7 @@ public class ActionService implements IActionService {
              */
             LOG.debug("Setting static content.");
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", "", null, "", null, "");
             appSrv.setResponseHTTPBody(textContent);
             appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             appSrv.setRecordTraceFile(false);

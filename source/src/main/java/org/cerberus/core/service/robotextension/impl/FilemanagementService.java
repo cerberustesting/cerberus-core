@@ -106,11 +106,11 @@ public class FilemanagementService implements IFilemanagementService {
             if (session.getNodeProxyPort() > 0) {
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
 
-                LOG.info("Open Connection to (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.info("Open Connection to : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Filemanagement : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Robot extension the sikuli timeout + 60 s to perform the action/control.
@@ -129,9 +129,9 @@ public class FilemanagementService implements IFilemanagementService {
 //            os.println("|ENDS|");
 
             if (connection == null) {
-                LOG.warn("No response to the request !!");
+                LOG.warn("No response from Robot Node Filemanagement !!");
             } else {
-                LOG.debug("http response status code : " + connection.getResponseCode());
+                LOG.debug("Robot Node Filemanagement http response status code : " + connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() >= 500) {
@@ -153,7 +153,7 @@ public class FilemanagementService implements IFilemanagementService {
                 }
             }
 
-            LOG.debug("Robot Extension Answer: " + response.toString());
+            LOG.debug("Robot Node Filemanagement Answer: " + response.toString());
 
             if (response.toString() != null && response.length() > 0) {
                 /**
@@ -161,7 +161,7 @@ public class FilemanagementService implements IFilemanagementService {
                  */
                 JSONObject objReceived = new JSONObject(response.toString());
                 answer.setItem(objReceived);
-                LOG.debug("Robot Extension Answer (json): " + objReceived.toString(1));
+                LOG.debug("Robot Node Filemanagement Answer (json): " + objReceived.toString(1));
 
                 if (objReceived.has("status")) {
                     if (null == objReceived.getString("status")) {

@@ -99,7 +99,7 @@ public class ServiceService implements IServiceService {
             if (StringUtil.isEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "", "", "Automatically created Service from datalib.",
-                        servicePathParam, true, "", operation, false, "", null, null, null, null, null, null);
+                        servicePathParam, true, "", operation, false, "", "", null, null, null, null, null, null);
                 service = "null";
 
             } else {
@@ -457,7 +457,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
-                                        token, appService.isAvroEnable(), appService.getSchemaRegistryURL(), timeOutMs);
+                                        token, appService.isAvroEnable(), appService.getSchemaRegistryURL(), appService.getAvroSchema(), timeOutMs);
                                 message = result.getResultMessage();
                                 break;
 
