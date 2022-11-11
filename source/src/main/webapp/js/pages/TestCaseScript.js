@@ -2399,7 +2399,6 @@ Action.prototype.draw = function (afterAction) {
     htmlElement.prepend(row);
 
     setPlaceholderAction(htmlElement);
-    //setPlaceholderCondition(htmlElement);
 
     $("[name='actionSelect']").select2({
         minimumResultsForSearch: 20,
@@ -2451,10 +2450,11 @@ function displayOverrideOptionsModal(action, htmlElement) {
     $("#actionconditionval1").val(action.conditionValue1);
     $("#actionconditionval2").val(action.conditionValue2);
     $("#actionconditionval3").val(action.conditionValue3);
+    setPlaceholderCondition($("#conditionSelect"));
 
     $("#conditionSelect").on("change", function () {
         setModif(true);
-        setPlaceholderCondition2($(this).parents(".action"));
+        setPlaceholderCondition($(this));
     });
     $("#actionconditionval1").on("change", function () {
         setModif(true);
