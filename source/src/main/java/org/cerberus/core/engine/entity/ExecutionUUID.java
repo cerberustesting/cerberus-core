@@ -38,7 +38,7 @@ public class ExecutionUUID {
         executionHashMap = new HashMap<>();
     }
 
-    public HashMap getExecutionUUIDList() {
+    public HashMap<String, TestCaseExecution> getExecutionUUIDList() {
         return executionHashMap;
     }
 

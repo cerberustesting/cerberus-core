@@ -55,6 +55,8 @@ function feedContent() {
 
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
     $.when(jqxhr).then(function (data) {
+
+
         var table = $("#cerberusTableBody");
         table.empty();
         var row = $("<tr></tr>");
@@ -126,6 +128,11 @@ function feedContent() {
         row.append(cel3);
         row.append(cel4);
         table.append(row);
+        let progress = (data.javaUsedMemory / data.javaMaxMemory) * 100;
+        $("#progress-barUsed").css("width", progress + "%").attr("aria-valuenow", progress);
+        progress = (data.javaFreeMemory / data.javaMaxMemory) * 100;
+        $("#progress-barTotal").css("width", progress + "%").attr("aria-valuenow", progress);
+
 
         var table = $("#exeNbTableBody");
         table.empty();
@@ -138,6 +145,12 @@ function feedContent() {
 
         var table = $("#exeTableBody");
         table.empty();
+
+        // Sort Executions by ID.
+        let exeList = data.simultaneous_execution_list;
+        exeList.sort(function (a, b) {
+            return a.id - b.id;
+        });
         $.each(data["simultaneous_execution_list"], function (idx, obj) {
             var row = $("<tr></tr>");
             var cel1 = $("<td></td>").append(FormatedExeId(obj.id));
@@ -225,7 +238,6 @@ function feedContent() {
             var cel1 = $("<td rowspan='2'></td>").append(obj.triggerName);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
-            console.info(obj.triggerNextFiretime);
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerUserCreated);
             row.append(cel1);
