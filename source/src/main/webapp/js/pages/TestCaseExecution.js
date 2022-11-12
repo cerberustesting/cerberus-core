@@ -1394,8 +1394,8 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
-console.info(data.controlStatus);
-console.info(getExeStatusRowColor(data.controlStatus));
+    console.info(data.controlStatus);
+    console.info(getExeStatusRowColor(data.controlStatus));
     var favicon = new Favico({
         animation: 'slide',
         bgColor: getExeStatusRowColor(data.controlStatus)
@@ -1545,7 +1545,7 @@ function removeColorClass(element) {
  * @returns {undefined}
  */
 function showSaveTestCaseExecutionButton() {
-    $("#saveTestCaseExecution").attr("style","display:block");
+    $("#saveTestCaseExecution").attr("style", "display:block");
     $("#saveTestCaseExecution").attr("disabled", false);
 }
 
@@ -1725,9 +1725,9 @@ function drawProperty(property, table, isSecondary) {
     var firstRow = $("<div></div>").addClass("row");
     var contentField = $("<div></div>").addClass("col-sm-12");
     var contentfirstRow = $("<div></div>").addClass("row").attr("id", "contentRow");
-    var propertyName = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var propertyName = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
+    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
+    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
 
     returnMessageField.append(safeLinkify(property.rMessage));
     descriptionField.append(getShortenString(property.value));
@@ -1936,9 +1936,9 @@ function createPropertiesOld(propList) {
         } else {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left' style='font-size:1.5em'></span>"))
         }
-        var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.property));
-        var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.value));
-        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.rMessage));
+        var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; word-wrap: break-word'; data-toggle='tooltip'>").text(property.property));
+        var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; word-wrap: break-word'; data-toggle='tooltip'>").text(property.value));
+        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; word-wrap: break-word'; data-toggle='tooltip'>").text(property.rMessage));
 
         var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "property_field") + "' readonly>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "description_field") + "' readonly>").addClass("form-control input-sm").val(property.description);
@@ -2150,24 +2150,24 @@ function Step(json, steps, id) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
         stepLabelContainer.append(labelOptions[0]);
     } else if ((this.conditionOperator !== "never")
-        && (this.conditionOperator !== "always")) {
-            if (this.returnCode !== "NE"){
+            && (this.conditionOperator !== "always")) {
+        if (this.returnCode !== "NE") {
 
-                var labelOptions = $('<span class="label label-primary optionLabel labelLight">Condition verified</span>')
+            var labelOptions = $('<span class="label label-primary optionLabel labelLight">Condition verified</span>')
                     .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
-                stepLabelContainer.append(labelOptions[0]);
-            } else {
-                var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
+            stepLabelContainer.append(labelOptions[0]);
+        } else {
+            var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
                     .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
-                stepLabelContainer.append(labelOptions[0]);
+            stepLabelContainer.append(labelOptions[0]);
 
-            }
+        }
 
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
-        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
-            .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
         stepLabelContainer.append(labelOptions[0]);
     }
 
@@ -2483,8 +2483,8 @@ Action.prototype.draw = function (idMotherStep, id) {
 
 //DESCRIPTION
     var description = $("<div class='description'></div>").addClass("col-sm-8");
-    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
-    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 13px;");
+    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
+    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;font-size: 13px;");
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
     description.append(descriptionField);
@@ -2497,7 +2497,7 @@ Action.prototype.draw = function (idMotherStep, id) {
 
 // STATUS & BUTTON
     var status = $("<div class='status'></div>").addClass("col-sm-1");
-    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
     /**
      * If returnCode is NE, display button, else display status & elapsed time
      */
@@ -2542,28 +2542,28 @@ Action.prototype.draw = function (idMotherStep, id) {
         }
     }
 
-        if (action.returnCode === "OK") {
-            status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
-        } else if (action.returnCode === "FA") {
-            status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        } else if (action.returnCode === "PE") {
-            status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
-        } else if (action.returnCode === "KO") {
-            status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
-        } else if (action.returnCode === "NA") {
-            status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        } else if (action.returnCode === "NE") {
-            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        } else if (action.returnCode === "WE" && isTheExecutionManual) {
-            status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
-        } else {
-            status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        }
+    if (action.returnCode === "OK") {
+        status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+    } else if (action.returnCode === "FA") {
+        status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (action.returnCode === "PE") {
+        status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+    } else if (action.returnCode === "KO") {
+        status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+    } else if (action.returnCode === "NA") {
+        status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (action.returnCode === "NE") {
+        status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (action.returnCode === "WE" && isTheExecutionManual) {
+        status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+    } else {
+        status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    }
 
-        status.append(elapsedTime);
+    status.append(elapsedTime);
 
-        var content = this.generateContent();
-        content.hide();
+    var content = this.generateContent();
+    content.hide();
 
 // END OF STATUS & BUTTON
 
@@ -2674,8 +2674,8 @@ function triggerActionExecution(element, id, status) {
     prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     prevElementCurrentStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
     prevElementCurrentStep.find("input[id='returnmessage']").val("Action manually executed").change();
-    prevElementCurrentStep.find(".action-group").each(function(i, obj){
-        if(typeof $(obj).data("item")!=="undefined") {
+    prevElementCurrentStep.find(".action-group").each(function (i, obj) {
+        if (typeof $(obj).data("item") !== "undefined") {
             $(obj).data("item").returnCode = "OK";
         }
     });
@@ -2687,20 +2687,20 @@ function triggerActionExecution(element, id, status) {
     prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     prevElementPreviousStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
     prevElementPreviousStep.find("input[id='returnmessage']").val("Action manually executed").change();
-    prevElementPreviousStep.find(".action-group").each( function(i, obj){
-            if(typeof $(obj).data("item")!=="undefined") {
-                $(obj).data("item").returnCode = "OK";
-            }
-        });
+    prevElementPreviousStep.find(".action-group").each(function (i, obj) {
+        if (typeof $(obj).data("item") !== "undefined") {
+            $(obj).data("item").returnCode = "OK";
+        }
+    });
     prevElementPreviousStep.removeClass('initialStatus');
 
     // Modify Steps
     var testCaseNewReturnCode = "WE";
     $("#actionContainer").children().each(function (i) {
-        var returnCodes = $(this).find("[name='returncode']").map(function() {
+        var returnCodes = $(this).find("[name='returncode']").map(function () {
             return $(this).val();
         }).get();
-        if(returnCodes.includes("KO")){
+        if (returnCodes.includes("KO")) {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
             testCaseNewReturnCode = "KO";
@@ -2709,7 +2709,7 @@ function triggerActionExecution(element, id, status) {
             }
             //htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
 
-        } else if(returnCodes.includes("FA")){
+        } else if (returnCodes.includes("FA")) {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelOrange optionLabel pull-left");
             testCaseNewReturnCode = "FA";
@@ -3010,8 +3010,8 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
 //DESCRIPTION
     var description = $("<div class='description'></div>").addClass("col-sm-8");
-    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
-    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 13px;");
+    var returnMessageField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;font-size: 10px;margin-top: 5px;font-weight: 500;");
+    var descriptionField = $("<span>").addClass("col-sm-12").attr("style", "overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;font-size: 13px;");
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
     description.append(descriptionField);
@@ -3024,7 +3024,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
 
 // STATUS & BUTTON
     var status = $("<div class='status'></div>").addClass("col-sm-1");
-    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
 
     /**
      * If returnCode is NE, display button, else display status & elapsed time
@@ -3061,7 +3061,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         showSaveTestCaseExecutionButton();
     } else {
 
-        var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+        var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
         if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
             elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
         } else {
@@ -3070,28 +3070,28 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     }
 
 
-            if (control.returnCode === "OK") {
-                status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
-            } else if (control.returnCode === "FA") {
-                status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-            } else if (control.returnCode === "PE") {
-                status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
-            } else if (control.returnCode === "KO") {
-                status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
-            } else if (control.returnCode === "NA") {
-                status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-            } else if (control.returnCode === "NE") {
-                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-            } else if (control.returnCode === "WE" && isTheExecutionManual) {
-                status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
-            } else {
-                status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-            }
+    if (control.returnCode === "OK") {
+        status.append($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
+    } else if (control.returnCode === "FA") {
+        status.append($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (control.returnCode === "PE") {
+        status.append($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
+    } else if (control.returnCode === "KO") {
+        status.append($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
+    } else if (control.returnCode === "NA") {
+        status.append($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (control.returnCode === "NE") {
+        status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    } else if (control.returnCode === "WE" && isTheExecutionManual) {
+        status.append($('<span class="label label-primary labelDark optionLabel pull-left"><span class="glyphicon glyphicon-question-sign"></span></span>'));
+    } else {
+        status.append($('<span class="label label-primary labelLight optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
+    }
 
-        status.append(elapsedTime);
+    status.append(elapsedTime);
 
-        var content = this.generateContent();
-        content.hide();
+    var content = this.generateContent();
+    content.hide();
 
 
 // END OF STATUS & BUTTON
@@ -3314,11 +3314,11 @@ Control.prototype.getJsonData = function () {
 function changeClickIfManual(isTheExecutionManual, container, idStep, file, event) {
     if (isTheExecutionManual) {
         var idex = $("#idlabel").text()
-       // if ($(container).parent().parent().parent().hasClass("action")) {
-            var indexAction = $(container).parents("a").data('item').index
-            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-            openModalFile(true, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
-       // } else {
+        // if ($(container).parent().parent().parent().hasClass("action")) {
+        var indexAction = $(container).parents("a").data('item').index
+        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+        openModalFile(true, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        // } else {
         //    var indexAction = $(container).parents("a").data('item')
         //      var indexControl = $(this).parents("a").data('index')
         //    var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
@@ -3343,11 +3343,11 @@ function addFileLink(fileList, container, manual, idStep) {
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                     .append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-                    .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
-                    .click(function (e) {
-                        changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
-                        return false;
-                    }));
+                            .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
+                            .click(function (e) {
+                                changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
+                                return false;
+                            }));
             container.append(linkBox);
 
 
@@ -3361,7 +3361,7 @@ function addFileLink(fileList, container, manual, idStep) {
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3369,7 +3369,7 @@ function addFileLink(fileList, container, manual, idStep) {
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3377,7 +3377,7 @@ function addFileLink(fileList, container, manual, idStep) {
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3385,7 +3385,7 @@ function addFileLink(fileList, container, manual, idStep) {
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc)
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
@@ -3399,15 +3399,15 @@ function addFileLink(fileList, container, manual, idStep) {
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
 
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc).click(function (f) {
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc).click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px")
-                        .attr("data-toggle","tooltip").attr("data-original-title",fileList[i].fileDesc).click(function (f) {
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px")
+                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc).click(function (f) {
                     changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
