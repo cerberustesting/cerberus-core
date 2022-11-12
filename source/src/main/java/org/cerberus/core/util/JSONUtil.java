@@ -57,6 +57,7 @@ public final class JSONUtil {
      */
     public static Map<String, Object> convertFromJSONObject(JSONObject param) throws JSONException {
         Map<String, Object> params = new HashMap<>();
+        @SuppressWarnings("unchecked")
         Iterator<String> keys = param.keys();
         while (keys.hasNext()) {
             String key = keys.next();

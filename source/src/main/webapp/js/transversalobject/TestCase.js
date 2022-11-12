@@ -648,7 +648,8 @@ function confirmTestCaseModalHandler(mode) {
                         // If we created a testcase, We propose the user to go and edit testcase directly.
                         showModalConfirmation(function () {
                             $('#confirmationModal').modal('hide');
-                            window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' '));
+                            // Due to already encoded format of data.test, we need to decode it first and then encode it again.
+                            window.location.href = "TestCaseScript.jsp?test=" + encodeURIComponent(decodeURIComponent(data.test).replace(/\+/g, ' ')) + "&testcase=" + encodeURIComponent(decodeURIComponent(data.testCase).replace(/\+/g, ' '));
                         }, function () {
                         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcaselist", "ask_edit_testcase"), "", "", "", "");
                     }

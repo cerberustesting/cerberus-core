@@ -759,23 +759,23 @@ public class PropertyService implements IPropertyService {
                             break;
 
                         // DEPRECATED Property types.
-                        case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
-                            testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, execution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
-                            res = testCaseExecutionData.getPropertyResultMessage();
-                            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                            testCaseExecutionData.setPropertyResultMessage(res);
-                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                            break;
+//                        case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
+//                            testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, execution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+//                            res = testCaseExecutionData.getPropertyResultMessage();
+//                            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+//                            testCaseExecutionData.setPropertyResultMessage(res);
+//                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
+//                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
+//                            break;
 
-                        case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
-                            testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
-                            res = testCaseExecutionData.getPropertyResultMessage();
-                            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                            testCaseExecutionData.setPropertyResultMessage(res);
-                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                            break;
+//                        case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
+//                            testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
+//                            res = testCaseExecutionData.getPropertyResultMessage();
+//                            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+//                            testCaseExecutionData.setPropertyResultMessage(res);
+//                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
+//                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
+//                            break;
 
                         default:
                             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
