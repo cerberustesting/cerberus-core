@@ -45,7 +45,7 @@ function openModalExecutionSimple(application, test, testcase, description) {
     $('#executeTestCaseButton').removeProp('hidden');
 
     //Feed the modal
-    feedNewTestCaseModal("testCaseSimpleExecutionModal");
+    feedNewTestCaseModalSimple("testCaseSimpleExecutionModal");
 
     //Clean response messages
     $('#executeTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
@@ -275,7 +275,7 @@ function afterSuccessSubmit(data, dataMessage){
  * @param {String} defaultTest - default test to selected.
  * @returns {null}
  */
-function feedNewTestCaseModal(modalId) {
+function feedNewTestCaseModalSimple(modalId) {
     clearResponseMessageMainPage();
     $('#editTestCaseModalForm').show();
     $('#afterTestCaseCreationModalForm').hide();
