@@ -650,7 +650,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "cleanRobotFile"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_UPLOADROBOTFILE));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
 
@@ -677,7 +677,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_INSTALLAPP));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
 
@@ -703,7 +703,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_REMOVEAPP));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
@@ -735,7 +735,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_SCROLLTO));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
@@ -855,7 +855,7 @@ public class ActionService implements IActionService {
 
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_EXECUTEJS));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
@@ -890,7 +890,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "MouseDown"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -934,7 +934,7 @@ public class ActionService implements IActionService {
                 }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "rightClick"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_RIGHTCLICK));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -965,7 +965,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "MouseUp"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -983,7 +983,7 @@ public class ActionService implements IActionService {
             return sikuliService.doSikuliActionMouseMove(tCExecution.getSession(), value1);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "MouseMove"));
+        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSEMOVE));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
     }
@@ -1040,7 +1040,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionManageDialog(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "ManageDialog"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MANAGEDIALOG));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1063,7 +1063,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionManageDialogKeyPress(tCExecution.getSession(), element);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "ManageDialogKeypress"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MANAGEDIALOGKEYPRESS));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1117,7 +1117,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "doubleClick"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_DOUBLECLICK));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1223,7 +1223,7 @@ public class ActionService implements IActionService {
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "mouseOver"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSEOVER));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1261,7 +1261,7 @@ public class ActionService implements IActionService {
                 return message;
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "mouseOverAndWait"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSEOVERANDWAIT));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1414,7 +1414,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionOpenURL(execution.getSession(), execution.getUrl(), identifier, withBase);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "OpenURL[WithBase]"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_OPENURL));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", execution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1445,7 +1445,7 @@ public class ActionService implements IActionService {
 
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));
+        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_OPENAPP));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
     }
@@ -1471,7 +1471,7 @@ public class ActionService implements IActionService {
         }
 
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "CloseApp"));
+        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CLOSEAPP));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
     }
@@ -1559,7 +1559,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierValue1, identifierValue2, true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_SELECT));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1575,7 +1575,7 @@ public class ActionService implements IActionService {
             return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(), tCExecution.getUrl(), tCExecution.getCountryEnvironmentParameters().getUrlLogin());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "UrlLogin"));
+        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_OPENURLLOGIN));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
     }
@@ -1599,7 +1599,7 @@ public class ActionService implements IActionService {
                 return webdriverService.doSeleniumActionFocusToIframe(tCExecution.getSession(), identifier);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "FocusToIframe"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_FOCUSTOIFRAME));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -1614,7 +1614,7 @@ public class ActionService implements IActionService {
             return webdriverService.doSeleniumActionFocusDefaultIframe(tCExecution.getSession());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "FocusDefaultIframe"));
+        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME));
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
 
@@ -1658,7 +1658,7 @@ public class ActionService implements IActionService {
                 return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_DRAGANDDROP));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (CerberusEventException ex) {
@@ -2230,7 +2230,7 @@ public class ActionService implements IActionService {
                 return this.webdriverService.doSeleniumActionRefreshCurrentPage(tCExecution.getSession());
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "refreshCurrentPage"));
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_REFRESHCURRENTPAGE));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
