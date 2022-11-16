@@ -1187,7 +1187,8 @@ public class PropertyService implements IPropertyService {
             executionData.setPropertyResultMessage(mes);
         } else {
 
-            if (execution.getAppTypeEngine().equals(Application.TYPE_GUI)) {
+            if (execution.getAppTypeEngine().equals(Application.TYPE_GUI)
+            || execution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
                 try {
                     valueFromJS = this.webdriverService.getValueFromJS(execution.getSession(), script);
                 } catch (Exception e) {
