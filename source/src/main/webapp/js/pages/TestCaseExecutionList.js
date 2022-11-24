@@ -36,8 +36,6 @@ function initPage() {
     var environment = GetURLParameter("environment");
 
     displayPageLabel();
-    loadTable();
-
 
     var searchArray = [];
     var searchObject = {param: "col", values: "val"};
@@ -58,8 +56,10 @@ function initPage() {
         searchObject = {param: "environment", values: environment};
         searchArray.push(searchObject);
     }
-    applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);
 
+    $.when(loadTable()).then(function () {
+        applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);
+    });
 }
 
 function loadTable() {
@@ -77,8 +77,9 @@ function loadTable() {
 
     var filtrableColumns = new Array("test", "testcase", "application", "country", "environment");
 
-    var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", filtrableColumns);
-
+    $.when(createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", filtrableColumns, undefined ,undefined, undefined, false)).then(function () {
+        return true;
+    });
 
 }
 
