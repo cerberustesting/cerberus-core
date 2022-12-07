@@ -485,6 +485,7 @@ public class ParameterService implements IParameterService {
             case "cerberus_loopstep_max":
             case "cerberus_url":
             case "cerberus_webperf_ignoredomainlist":
+            case "cerberus_accept_unsigned_ssl_certificate":
             case Parameter.VALUE_cerberus_xraycloud_clientid:
             case Parameter.VALUE_cerberus_xraycloud_clientsecret:
             case Parameter.VALUE_cerberus_xraydc_token:

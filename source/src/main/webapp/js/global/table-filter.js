@@ -215,11 +215,11 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $("#filterAlertDiv").remove();
     $("#" + tableId + "_filter").after($(showFilteredColumnsAlertMessage).hide());
     //if ($("#" + tableId + "_paginate").length !== 0) {
-        //Hide filtered alert message displayed when filtered column
-      //  $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
+    //Hide filtered alert message displayed when filtered column
+    //  $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
     //} else {
-        //Hide filtered alert message displayed when filtered column
-      //  $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+    //Hide filtered alert message displayed when filtered column
+    //  $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
     //}
 
     //Load the table

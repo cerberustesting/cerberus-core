@@ -169,10 +169,10 @@ public class RestService implements IRestService {
 
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
-                                           List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-                                           String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
+            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "","", "", "", "", "", "", true, "", "",false, "", "", null, 
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", null,
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
@@ -376,7 +376,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -475,7 +475,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -528,7 +528,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 

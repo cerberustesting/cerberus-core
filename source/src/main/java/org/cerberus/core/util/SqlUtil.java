@@ -88,7 +88,11 @@ public class SqlUtil {
 
         StringBuilder result = new StringBuilder();
         result.append(" ");
-        result.append(search.get(0));
+        if ("system".equals(search.get(0))) {
+            result.append("`").append(search.get(0)).append("`");
+        } else {
+            result.append(search.get(0));
+        }
 
         if (!search.get(0).isEmpty() || search.get(0) != null) {
             if (search.size() == 1) {
