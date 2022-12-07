@@ -50,6 +50,7 @@
         <jsonxpath.version>2.7.0</jsonxpath.version>
         <!-- Groovy Version -->
         <groovy.version>3.0.11</groovy.version>
+        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>
         <groovy-sandbox.version>1.19</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
         <appium.version>7.2.0</appium.version>
@@ -242,6 +243,11 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-dateutil</artifactId>
             <version>${groovy.version}</version>
         </dependency>
         <dependency>
