@@ -1536,7 +1536,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @param {Function} createdRowCallback callback function to be called after each row
  * @return {Object} Return the dataTable object to use the api
  */
-function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback) {
+function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback, async) {
     /**
      * Define datatable config with tableConfiguration object received
      */
@@ -1653,6 +1653,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",
+                "async": async === undefined ? true : async,
                 "url": sSource,
                 "data": aoData,
                 "success": function (json) {
