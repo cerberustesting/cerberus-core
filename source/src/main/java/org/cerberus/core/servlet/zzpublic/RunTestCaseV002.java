@@ -74,7 +74,7 @@ public class RunTestCaseV002 extends HttpServlet {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCaseV002.class);
 
-    public static final String SERVLET_URL = "/RunTestCaseV002";
+    public static final String SERVLET_URL = "RunTestCaseV002";
 
     public static final String PARAMETER_TEST = "Test";
     public static final String PARAMETER_TEST_CASE = "TestCase";

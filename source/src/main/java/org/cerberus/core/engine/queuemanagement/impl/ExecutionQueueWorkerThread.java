@@ -406,9 +406,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
         // Check answer format
         Matcher matcher = EXECUTION_ID_FROM_ANSWER_PATTERN.matcher(answer);
         if (!matcher.find()) {
-            LOG.error("Bad answer format (could not find 'RunID = '). URL Called: " + cerberusFullUrl);
-            LOG.error("Bad answer format (could not find 'RunID = '). Answer: " + answer);
-            throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'RunID = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
+            LOG.error("Bad answer format (could not find 'id = '). URL Called: " + cerberusFullUrl);
+            LOG.error("Bad answer format (could not find 'id = '). Answer: " + answer);
+            throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'id = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
         }
 
         // Extract the return code
@@ -424,9 +424,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
         if (executionID == 0) {
             Matcher descriptionMatcher = RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN.matcher(answer);
             if (!descriptionMatcher.find()) {
-                LOG.error("Bad answer format (could not find 'ReturnCodeDescription = '). URL Called: " + cerberusFullUrl);
-                LOG.error("Bad answer format (could not find 'ReturnCodeDescription = '). Answer: " + answer);
-                throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'ReturnCodeDescription = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
+                LOG.error("Bad answer format (could not find 'controlMessage = '). URL Called: " + cerberusFullUrl);
+                LOG.error("Bad answer format (could not find 'controlMessage = '). Answer: " + answer);
+                throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'controlMessage = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
             }
             throw new RunQueueProcessException(descriptionMatcher.group(1));
         }
