@@ -614,7 +614,14 @@ function aoColumnsFunc() {
                 return "<a href='" + href + "'>" + data + "</a>";
             }
         },
-        {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total", "sWidth": "10px"}
+        {
+            "data": "Total", 
+            "bSortable": true,
+            "sWidth": "10px",
+            "sClass": "datatable-alignright", 
+            "sName": "Total", 
+            "title": "Total"
+        }
     ];
 
     for (var s = 0; s < statusLen; s++) {
@@ -623,9 +630,16 @@ function aoColumnsFunc() {
                 "data": status[s].value,
                 "bSortable": true,
                 "sWidth": "10px",
+                "sClass": "datatable-alignright",
                 "sName": status[s].value,
-                "title": status[s].value
-            };
+                "title": status[s].value,
+                "mRender": function (data, type, oObj) {
+                    if ((data) === 0) {
+                        return "";
+                    };
+                    return data;
+                    }
+                };
             aoColumns.push(obj);
         }
     }

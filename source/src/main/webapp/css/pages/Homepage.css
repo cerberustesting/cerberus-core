@@ -46,3 +46,7 @@
     margin-top: 10px;
     text-transform: uppercase;
 }
+
+.datatable-alignright{
+    text-align: right;
+}

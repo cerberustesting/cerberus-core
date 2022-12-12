@@ -201,11 +201,11 @@ public abstract class AppiumService implements IAppiumService {
      * Get the {@link Coordinates} represented by the given {@link Identifier}
      *
      * @param identifier the {@link Identifier} to parse to get the
-     *                   {@link Coordinates}
+     * {@link Coordinates}
      * @return the {@link Coordinates} represented by the given
      * {@link Identifier}
      * @throws NoSuchElementException if no {@link Coordinates} can be found
-     *                                inside the given {@link Identifier}
+     * inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
         if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
@@ -410,8 +410,8 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
-        TouchAction touchAction = new TouchAction(driver);
 
+        TouchAction touchAction = new TouchAction(driver);
         touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }

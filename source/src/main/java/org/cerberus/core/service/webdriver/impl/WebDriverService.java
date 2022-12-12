@@ -213,6 +213,8 @@ public class WebDriverService implements IWebDriverService {
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     webElement = (WebElement) answer.getItem();
                 }
+                return answer.getResultMessage();
+
             } else {
                 webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
             }
@@ -609,7 +611,7 @@ public class WebDriverService implements IWebDriverService {
      * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
-     *                                Database) inside current URL (from Selenium)
+     * Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
@@ -799,11 +801,13 @@ public class WebDriverService implements IWebDriverService {
             }
 
             return answer.getResultMessage();
+
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             LOG.debug(exception.toString());
             return message;
+
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
@@ -1252,13 +1256,13 @@ public class WebDriverService implements IWebDriverService {
 
             // Arbitrary
             String[] browsers = new String[]{
-                    "",
-                    "Google Chrome",
-                    "Mozilla Firefox",
-                    "Opera",
-                    "Safari",
-                    "Internet Explorer",
-                    "Microsoft Edge",};
+                "",
+                "Google Chrome",
+                "Mozilla Firefox",
+                "Opera",
+                "Safari",
+                "Internet Explorer",
+                "Microsoft Edge",};
 
             for (String browser : browsers) {
                 HWND window;
