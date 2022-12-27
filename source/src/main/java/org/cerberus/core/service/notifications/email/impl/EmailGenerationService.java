@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
+import java.net.URLEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BatchInvariant;
@@ -72,7 +73,6 @@ public class EmailGenerationService implements IEmailGenerationService {
     private IEmailFactory emailFactory;
     @Autowired
     private IEmailBodyGeneration emailBodyGeneration;
-
 
     @Override
     public Email generateRevisionChangeEmail(String system, String country, String env, String build, String revision) throws Exception {
@@ -318,7 +318,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-        urlreporttag.append(tag.getTag());
+        urlreporttag.append(URLEncoder.encode(tag.getTag(), "UTF-8"));
         body = body.replace("%TAG%", tag.getTag());
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", tag.getCampaign());
@@ -362,7 +362,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             StringBuilder urlreporttag = new StringBuilder();
             urlreporttag.append(cerberusUrl);
             urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-            urlreporttag.append(tag);
+            urlreporttag.append(URLEncoder.encode(URLEncoder.encode(tag.getTag(), "UTF-8"), "UTF-8"));
 
             // Body replace.
             body = body.replace("%TAG%", tag.getTag());
@@ -689,9 +689,9 @@ public class EmailGenerationService implements IEmailGenerationService {
         StringBuilder urlTestCase = new StringBuilder();
         urlTestCase.append(cerberusUrl);
         urlTestCase.append("/TestCaseScript.jsp?test=");
-        urlTestCase.append(testCase.getTest());
+        urlTestCase.append(URLEncoder.encode(testCase.getTest(), "UTF-8"));
         urlTestCase.append("&testcase=");
-        urlTestCase.append(testCase.getTestcase());
+        urlTestCase.append(URLEncoder.encode(testCase.getTestcase(), "UTF-8"));
 
         switch (eventReference) {
             case EventHook.EVENTREFERENCE_TESTCASE_CREATE:
