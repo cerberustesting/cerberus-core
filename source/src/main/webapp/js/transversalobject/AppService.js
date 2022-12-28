@@ -191,12 +191,15 @@ function prepareAppServiceModal() {
         if ($("#editSoapLibraryModal #type").val() == "KAFKA") {
             console.info($(this).val());
             if ($(this).val() == "SEARCH") {
-                $("#editSoapLibraryModal #avrSchemaDiv").hide();
+                $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+                $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
             } else {
-                $("#editSoapLibraryModal #avrSchemaDiv").show();
+                $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
+                $("#editSoapLibraryModal #avrSchemaValueDiv").show();
             }
         } else {
-            $("#editSoapLibraryModal #avrSchemaDiv").show();
+            $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
+            $("#editSoapLibraryModal #avrSchemaValueDiv").show();
         }
 
     });
@@ -243,7 +246,8 @@ function confirmAppServiceModalHandler(mode, page) {
 
     //Add envelope, not in the form
     var editorRequest = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    var editorSchema = ace.edit($("#editSoapLibraryModal #avrSchema")[0]);
+    var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
+    var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
 
     // Getting Data from Content TAB
     var table1 = $("#contentTableBody tr");
@@ -268,7 +272,8 @@ function confirmAppServiceModalHandler(mode, page) {
     formData.append("contentList", JSON.stringify(table_content));
     formData.append("headerList", JSON.stringify(table_header));
     formData.append("srvRequest", encodeURIComponent(editorRequest.getSession().getDocument().getValue()));
-    formData.append("avrSchema", encodeURIComponent(editorSchema.getSession().getDocument().getValue()));
+    formData.append("avrSchemaKey", encodeURIComponent(editorSchemaKey.getSession().getDocument().getValue()));
+    formData.append("avrSchemaValue", encodeURIComponent(editorSchemaValue.getSession().getDocument().getValue()));
 
     if (file.prop("files").length != 0) {
         formData.append("file", file.prop("files")[0]);
@@ -345,7 +350,8 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #kafkaFilter").hide();
         $("label[name='avroField']").hide();
         $("#editSoapLibraryModal #avro").hide();
-        $("#editSoapLibraryModal #avrSchemaDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "FTP") {
@@ -371,7 +377,8 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #kafkaFilter").hide();
         $("label[name='avroField']").hide();
         $("#editSoapLibraryModal #avro").hide();
-        $("#editSoapLibraryModal #avrSchemaDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     } else if (newValue === "KAFKA") {
@@ -398,9 +405,11 @@ function refreshDisplayOnTypeChange(newValue) {
         $("label[name='avroField']").show();
         $("#editSoapLibraryModal #avro").show();
         if ($("#editSoapLibraryModal #method").val() === "SEARCH") {
-            $("#editSoapLibraryModal #avrSchemaDiv").hide();
+            $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+            $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         } else {
-            $("#editSoapLibraryModal #avrSchemaDiv").show();
+            $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
+            $("#editSoapLibraryModal #avrSchemaValueDiv").show();
         }
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
@@ -427,7 +436,8 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #kafkaFilter").hide();
         $("label[name='avroField']").hide();
         $("#editSoapLibraryModal #avro").hide();
-        $("#editSoapLibraryModal #avrSchemaDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().show();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
     }
@@ -506,6 +516,8 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.isFollowRedir = true;
         serviceObj1.isAvroEnable = false;
         serviceObj1.schemaRegistryURL = "";
+        serviceObj1.avroSchemaKey = "";
+        serviceObj1.avroSchemaValue = "";
         serviceObj1.parentContentService = "";
 
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
@@ -531,7 +543,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     //Destroy the previous Ace object.
     ace.edit($("#editSoapLibraryModal #srvRequest")[0]).destroy();
-    ace.edit($("#editSoapLibraryModal #avrSchema")[0]).destroy();
+    ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]).destroy();
+    ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]).destroy();
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -569,7 +582,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#isFollowRedir").prop("checked", true);
         formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
-        formEdit.find("#avrSchema").text("");
+        formEdit.find("#avrSchemaKey").text("");
+        formEdit.find("#avrSchemaValue").text("");
         formEdit.find("#isAvroEnable").prop("checked", false);
         formEdit.find("#schemaRegistryUrl").prop("value", "");
         formEdit.find("#parentContentService").prop("value", "");
@@ -594,7 +608,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#parentContentService").val(service.parentContentService);
         formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
-        formEdit.find("#avrSchema").text(service.avroSchema);
+        formEdit.find("#avrSchemaKey").text(service.avroSchemaKey);
+        formEdit.find("#avrSchemaValue").text(service.avroSchemaValue);
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
         formEdit.find("#description").prop("value", service.description);
@@ -623,10 +638,16 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     editor.setOptions({
         maxLines: Infinity
     });
-    var editorSchema = ace.edit($("#editSoapLibraryModal #avrSchema")[0]);
-    editorSchema.setTheme("ace/theme/chrome");
-    editorSchema.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
-    editorSchema.setOptions({
+    var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
+    editorSchemaKey.setTheme("ace/theme/chrome");
+    editorSchemaKey.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editorSchemaKey.setOptions({
+        maxLines: Infinity
+    });
+    var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
+    editorSchemaValue.setTheme("ace/theme/chrome");
+    editorSchemaValue.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editorSchemaValue.setOptions({
         maxLines: Infinity
     });
 
@@ -637,9 +658,14 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
             editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
         }
     });
-    $($("#editSoapLibraryModal #avrSchema").get(0)).keyup(function () {
-        if (editorSchema.getSession().getMode().$id === "ace/mode/text") {
-            editorSchema.getSession().setMode(defineAceMode(editorSchema.getSession().getDocument().getValue()));
+    $($("#editSoapLibraryModal #avrSchemaKey").get(0)).keyup(function () {
+        if (editorSchemaKey.getSession().getMode().$id === "ace/mode/text") {
+            editorSchemaKey.getSession().setMode(defineAceMode(editorSchemaKey.getSession().getDocument().getValue()));
+        }
+    });
+    $($("#editSoapLibraryModal #avrSchemaValue").get(0)).keyup(function () {
+        if (editorSchemaValue.getSession().getMode().$id === "ace/mode/text") {
+            editorSchemaValue.getSession().setMode(defineAceMode(editorSchemaValue.getSession().getDocument().getValue()));
         }
     });
 
@@ -665,7 +691,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("readonly", true);
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
-        formEdit.find("#avrSchema").prop("readonly", "readonly");
+        formEdit.find("#avrSchemaKey").prop("readonly", "readonly");
+        formEdit.find("#avrSchemaValue").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
         formEdit.find("#isFollowRedir").prop("readonly", "readonly");
         formEdit.find("#kafkaTopic").prop("readonly", "readonly");
@@ -688,7 +715,8 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("readonly", false);
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
-        formEdit.find("#avrSchema").removeProp("readonly");
+        formEdit.find("#avrSchemaKey").removeProp("readonly");
+        formEdit.find("#avrSchemaValue").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
         formEdit.find("#isFollowRedir").prop("readonly", false);
         formEdit.find("#kafkaTopic").removeProp("disabled");

@@ -140,7 +140,8 @@ public class CreateAppService extends HttpServlet {
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         boolean isAvroEnable = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isAvroEnable"), true, charset);
         String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
-        String avroSchema = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avroSchema"), null, charset);
+        String avroSchemaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avroSchemaKey"), null, charset);
+        String avroSchemaValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avroSchemaValue"), null, charset);
         String parentContentService = ParameterParserUtil.parseStringParamAndDecode(fileData.get("parentContentService"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
         String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
@@ -178,7 +179,7 @@ public class CreateAppService extends HttpServlet {
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
             LOG.debug(request.getUserPrincipal().getName());
             AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue, description, servicePath,
-                    isFollowRedir, attachementurl, operation, isAvroEnable, schemaRegistryUrl, avroSchema, parentContentService, request.getUserPrincipal().getName(), null, null, null, fileName);
+                    isFollowRedir, attachementurl, operation, isAvroEnable, schemaRegistryUrl, avroSchemaKey, avroSchemaValue, parentContentService, request.getUserPrincipal().getName(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 

@@ -49,7 +49,8 @@ public interface IFactoryAppService {
      * @param operation
      * @param isAvroEnable
      * @param schemaRegistryUrl
-     * @param avroSchema
+     * @param avroSchemaKey
+     * @param avroSchemaValue
      * @param parentContentService
      * @param usrCreated
      * @param dateCreated
@@ -60,6 +61,6 @@ public interface IFactoryAppService {
      */
     AppService create(String service, String type, String method, String application, String group, String serviceRequest,
             String kafkaTopic, String kafkaKey, String kafkaFilterPath, String kafkaFilterValue, String kafkaFilterHeaderPath, String kafkaFilterHeaderValue, 
-            String description, String servicePath, boolean isFollowRedir, String attachementURL, String operation, boolean isAvroEnable, String schemaRegistryUrl, String avroSchema, String parentContentService,
+            String description, String servicePath, boolean isFollowRedir, String attachementURL, String operation, boolean isAvroEnable, String schemaRegistryUrl, String avroSchemaKey, String avroSchemaValue, String parentContentService,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName);
 }

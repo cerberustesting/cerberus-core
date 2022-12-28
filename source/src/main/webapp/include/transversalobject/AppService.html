@@ -6,15 +6,14 @@
     <div class="modal-dialog nomargintop nomarginbottom modal-xl">
         <div class="modal-content" id="editServiceModal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit SoapLibrary</h4>
             </div>
             <div class="modal-body">
 
                 <!--edit form-->
-                <form id="editSoapLibraryModalForm" name="editSoapLibraryModalForm" title="Edit SoapLibrary"
-                      role="form">
+                <form id="editSoapLibraryModalForm" name="editSoapLibraryModalForm" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -182,10 +181,16 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12" id="avrSchemaDiv">
-                                        <label for="avroSchema" name="avroSchemaField">Avro Schema</label>
-                                        <div name="avroSchema" id="avroSchema" aria-describedby="basic-editon1">
-                                            <pre id='avrSchema' name='avrSchema' style="min-height: 150px"></pre>
+                                    <div class="col-xs-12" id="avrSchemaKeyDiv">
+                                        <label for="avroSchemaKey" name="avroSchemaKeyField">Avro Schema Key</label>
+                                        <div name="avroSchemaKey" id="avroSchemaKey" aria-describedby="basic-editon1">
+                                            <pre id='avrSchemaKey' name='avrSchemaKey' style="min-height: 150px"></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12" id="avrSchemaValueDiv">
+                                        <label for="avroSchemaValue" name="avroSchemaValueField">Avro Schema Value</label>
+                                        <div name="avroSchemaValue" id="avroSchemaValue" aria-describedby="basic-editon1">
+                                            <pre id='avrSchemaValue' name='avrSchemaValue' style="min-height: 150px"></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +199,7 @@
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
                                         <label class="control-label" for="parentContentService" name="parentContentServiceField">Parent Service</label>
-                                        <div class="input-group col-xs-12">                               	
+                                        <div class="input-group col-xs-12">
                                             <select type="text" class="form-control input-sm" name="parentContentService" id="parentContentService" style="width:100%;"></select>
                                         </div>
                                     </div>
@@ -218,8 +223,8 @@
                                             </table>
                                             <button type="button" class="btn btn-default marginTop20" id="addContent">Add Content</button>
                                         </div>
-                                    </div>  
-                                </div>   
+                                    </div>
+                                </div>
                             </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-4">
                                 <div id="listPanelHeader">
@@ -241,8 +246,8 @@
                                             </table>
                                             <button type="button" class="btn btn-default marginTop20" id="addHeader">Add Header</button>
                                         </div>
-                                    </div>  
-                                </div>   
+                                    </div>
+                                </div>
                             </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
                                 <div class="row">
@@ -251,33 +256,33 @@
                                             <div class="form-group col-sm-6">
                                                 <label name="lbl_created" for="created">Created</label>
                                                 <div>
-                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="form-group col-sm-6">
                                                 <label name="lbl_creator" for="creator">Creator</label>
                                                 <div>
-                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />
                                                 </div>
-                                            </div> 
-                                        </div> 
+                                            </div>
+                                        </div>
                                         <div class="row">
                                             <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModified" for="lastModified">Last Modified</label>
                                                 <div>
-                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
                                                 <div>
-                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </div>
                                     </div>
-                                </div>  
-                            </div>   
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

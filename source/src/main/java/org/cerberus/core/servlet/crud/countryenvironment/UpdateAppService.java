@@ -140,7 +140,8 @@ public class UpdateAppService extends HttpServlet {
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         boolean isAvroEnable = ParameterParserUtil.parseBooleanParam(fileData.get("isAvroEnable"), false);
         String schemaRegistryUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("schemaRegistryUrl"), null, charset);
-        String avrSchema = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avrSchema"), null, charset);
+        String avrSchemaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avrSchemaKey"), null, charset);
+        String avrSchemaValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("avrSchemaValue"), null, charset);
         String parentContentService = ParameterParserUtil.parseStringParamAndDecode(fileData.get("parentContentService"), "", charset);
         String kafkaKey = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaKey"), "", charset);
         String kafkaFilterPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterPath"), "", charset);
@@ -216,7 +217,8 @@ public class UpdateAppService extends HttpServlet {
                 appService.setFollowRedir(isFollowRedir);
                 appService.setAvroEnable(isAvroEnable);
                 appService.setSchemaRegistryURL(schemaRegistryUrl);
-                appService.setAvroSchema(avrSchema);
+                appService.setAvroSchemaKey(avrSchemaKey);
+                appService.setAvroSchemaValue(avrSchemaValue);
                 appService.setParentContentService(parentContentService);
 
                 ans = appServiceService.update(originalService, appService);

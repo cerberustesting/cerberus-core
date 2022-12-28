@@ -39,7 +39,7 @@ public class FactoryAppService implements IFactoryAppService {
     public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String kafkaTopic, String kafkaKey,
             String kafkaFilterPath, String kafkaFilterValue, String kafkaFilterHeaderPath, String kafkaFilterHeaderValue,
             String description,
-            String servicePath, boolean isFollowRedir, String attachementURL, String operation, boolean isAvroEnable, String schemaRegistryUrl, String avroSchema, String parentContentService,
+            String servicePath, boolean isFollowRedir, String attachementURL, String operation, boolean isAvroEnable, String schemaRegistryUrl, String avroSchemaKey, String avroSchemaValue, String parentContentService,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName) {
         AppService s = new AppService();
         s.setService(service);
@@ -71,7 +71,8 @@ public class FactoryAppService implements IFactoryAppService {
         s.setKafkaFilterHeaderValue(kafkaFilterHeaderValue);
         s.setAvroEnable(isAvroEnable);
         s.setSchemaRegistryURL(schemaRegistryUrl);
-        s.setAvroSchema(avroSchema);
+        s.setAvroSchemaKey(avroSchemaKey);
+        s.setAvroSchemaValue(avroSchemaValue);
         s.setParentContentService(parentContentService);
         s.setRecordTraceFile(true);
         s.setFollowRedir(isFollowRedir);

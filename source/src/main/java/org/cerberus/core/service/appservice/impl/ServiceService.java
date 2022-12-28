@@ -99,7 +99,7 @@ public class ServiceService implements IServiceService {
             if (StringUtil.isEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "", "", "Automatically created Service from datalib.",
-                        servicePathParam, true, "", operation, false, "", "", null, null, null, null, null, null);
+                        servicePathParam, true, "", operation, false, "", "", "", null, null, null, null, null, null);
                 service = "null";
 
             } else {
@@ -471,7 +471,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
-                                        token, appService.isAvroEnable(), decodedSchemaRegistryURL, appService.getAvroSchema(), timeOutMs);
+                                        token, appService.isAvroEnable(), decodedSchemaRegistryURL, appService.getAvroSchemaKey(), appService.getAvroSchemaValue(), timeOutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -566,7 +566,7 @@ public class ServiceService implements IServiceService {
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
                                 AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
                                         appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
-                                        appService.isAvroEnable(), decodedSchemaRegistryURL, targetNbEventsInt, targetNbSecInt);
+                                        appService.isAvroEnable(), decodedSchemaRegistryURL, StringUtil.isNotEmpty(appService.getAvroSchemaKey()), StringUtil.isNotEmpty(appService.getAvroSchemaValue()), targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

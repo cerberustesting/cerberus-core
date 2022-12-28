@@ -58,7 +58,8 @@ public class AppService {
     private String kafkaFilterHeaderValue;
     private boolean isAvroEnable;
     private String schemaRegistryURL;
-    private String avroSchema;
+    private String avroSchemaValue;
+    private String avroSchemaKey;
     private String parentContentService;
     private String group; // Information in order to group the services in order to organise them
     private String description;

@@ -433,9 +433,9 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
                 .append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, ")
-                .append("   `isAvroEnable`, `SchemaRegistryUrl`, `AvroSchema`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
+                .append("   `isAvroEnable`, `SchemaRegistryUrl`, `AvroSchemaKey`, `AvroSchemaValue`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
                 .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ")
-                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
@@ -458,7 +458,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getServiceRequest());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
-            preStat.setString(i++, object.getAvroSchema());
+            preStat.setString(i++, object.getAvroSchemaKey());
+            preStat.setString(i++, object.getAvroSchemaValue());
             if (StringUtil.isNotEmpty(object.getParentContentService())) {
                 preStat.setString(i++, object.getParentContentService());
             } else {
@@ -497,7 +498,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
                 .append("UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, ")
-                .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `AvroSchema` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
+                .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `AvroSchemaKey` = ?, `AvroSchemaValue` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
                 .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, ")
                 .append("`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
@@ -523,7 +524,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getServiceRequest());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
-            preStat.setString(i++, object.getAvroSchema());
+            preStat.setString(i++, object.getAvroSchemaKey());
+            preStat.setString(i++, object.getAvroSchemaValue());
             if (StringUtil.isEmpty(object.getParentContentService())) {
                 preStat.setString(i++, null);
             } else {
@@ -646,10 +648,11 @@ public class AppServiceDAO implements IAppServiceDAO {
         boolean isFollowRedir = rs.getBoolean("srv.isFollowRedir");
         boolean isAvroEnable = rs.getBoolean("srv.isAvroEnable");
         String schemaRegistryURL = ParameterParserUtil.parseStringParam(rs.getString("srv.SchemaRegistryUrl"), "");
-        String avroSchema = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchema"), "");
+        String avroSchemaKey = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchemaKey"), "");
+        String avroSchemaValue = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchemaValue"), "");
         String parentContentService = ParameterParserUtil.parseStringParam(rs.getString("srv.ParentContentService"), "");
         return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
-                description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, avroSchema, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
+                description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, avroSchemaKey, avroSchemaValue, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
 
     private static void deleteFolder(File folder, boolean deleteit) {
