@@ -187,8 +187,7 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(),
-                    execution, actionExecution, false);
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(), execution, actionExecution, false);
             actionExecution.setValue1(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -212,8 +211,7 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(),
-                    execution, actionExecution, false);
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(), execution, actionExecution, false);
             actionExecution.setValue2(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -223,6 +221,30 @@ public class ActionService implements IActionService {
                 actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value2' Error.");
+                return actionExecution;
+            }
+        } catch (CerberusEventException cex) {
+            actionExecution.setActionResultMessage(cex.getMessageError());
+            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            actionExecution.setEnd(new Date().getTime());
+            return actionExecution;
+        }
+
+        try {
+
+            // When starting a new action, we reset the property list that was already calculated.
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue3(), execution, actionExecution, false);
+            actionExecution.setValue3(answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value3"));
+                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                actionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Action Value3' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {

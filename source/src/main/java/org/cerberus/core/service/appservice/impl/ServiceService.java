@@ -467,6 +467,7 @@ public class ServiceService implements IServiceService {
                                 String decodedFilterValue = appService.getKafkaFilterValue();
                                 String decodedFilterHeaderPath = appService.getKafkaFilterHeaderPath();
                                 String decodedFilterHeaderValue = appService.getKafkaFilterHeaderValue();
+
                                 try {
 
                                     answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
@@ -549,8 +550,8 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaFilterValue(decodedFilterValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
-                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, 
-                                        appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue, 
+                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
+                                        appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
                                         appService.isAvroEnable(), appService.getSchemaRegistryURL(), targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
