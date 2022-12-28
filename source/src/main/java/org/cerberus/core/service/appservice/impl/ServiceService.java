@@ -449,6 +449,21 @@ public class ServiceService implements IServiceService {
                             return result;
                         }
 
+                        String decodedSchemaRegistryURL = appService.getSchemaRegistryURL();
+                        if (appService.isAvroEnable()) {
+                            answerDecode = variableService.decodeStringCompletly(decodedSchemaRegistryURL, tCExecution, null, false);
+                            decodedSchemaRegistryURL = answerDecode.getItem();
+                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                String field = "Kafka Schema Registry URL";
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                        .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
+                                LOG.debug("Service Call interupted due to decode '" + field + "'.");
+                                result.setResultMessage(message);
+                                return result;
+                            }
+                        }
+
                         switch (appService.getMethod()) {
 
                             case AppService.METHOD_KAFKAPRODUCE:
@@ -456,7 +471,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
-                                        token, appService.isAvroEnable(), appService.getSchemaRegistryURL(), appService.getAvroSchema(), timeOutMs);
+                                        token, appService.isAvroEnable(), decodedSchemaRegistryURL, appService.getAvroSchema(), timeOutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -551,7 +566,7 @@ public class ServiceService implements IServiceService {
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
                                 AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
                                         appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
-                                        appService.isAvroEnable(), appService.getSchemaRegistryURL(), targetNbEventsInt, targetNbSecInt);
+                                        appService.isAvroEnable(), decodedSchemaRegistryURL, targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
