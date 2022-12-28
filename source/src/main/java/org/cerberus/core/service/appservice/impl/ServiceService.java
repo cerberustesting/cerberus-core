@@ -106,7 +106,6 @@ public class ServiceService implements IServiceService {
                 // If Service information is defined, we get it from database.
                 LOG.debug("Getting AppService from service : " + service);
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
-
             }
 
             String servicePath;
