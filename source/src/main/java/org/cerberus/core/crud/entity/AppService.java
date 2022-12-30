@@ -58,8 +58,10 @@ public class AppService {
     private String kafkaFilterHeaderValue;
     private boolean isAvroEnable;
     private String schemaRegistryURL;
-    private String avroSchemaValue;
+    private boolean isAvroEnableKey;
     private String avroSchemaKey;
+    private boolean isAvroEnableValue;
+    private String avroSchemaValue;
     private String parentContentService;
     private String group; // Information in order to group the services in order to organise them
     private String description;
@@ -138,7 +140,7 @@ public class AppService {
         this.contentList.add(object);
     }
 
-    public void addContentList(List <AppServiceContent> object) {
+    public void addContentList(List<AppServiceContent> object) {
         this.contentList.addAll(object);
     }
 
@@ -273,12 +275,19 @@ public class AppService {
             if (!StringUtil.isEmpty(this.getServiceRequest())) {
                 try {
                     JSONObject reqBody = new JSONObject(this.getServiceRequest());
-                    jsonMyRequest.put("KAFKA-Request", reqBody);
+                    jsonMyRequest.put("KAFKA-Value", reqBody);
                 } catch (JSONException e) {
-                    jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+                    jsonMyRequest.put("KAFKA-Value", this.getServiceRequest());
                 }
             }
-            jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
+            if (!StringUtil.isEmpty(this.getKafkaKey())) {
+                try {
+                    JSONObject keyBody = new JSONObject(this.getKafkaKey());
+                    jsonMyRequest.put("KAFKA-Key", keyBody);
+                } catch (JSONException e) {
+                    jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
+                }
+            }
             if (!(this.getKafkaWaitNbEvent() == 0)) {
                 jsonMyRequest.put("WaitNbEvents", this.getKafkaWaitNbEvent());
             }
@@ -289,7 +298,11 @@ public class AppService {
                 JSONObject jsonFilters = new JSONObject();
                 jsonFilters.put("Path", this.getKafkaFilterPath());
                 jsonFilters.put("Value", this.getKafkaFilterValue());
-                jsonMyRequest.put("KAFKA-SearchFilter", jsonFilters);
+                jsonMyRequest.put("KAFKA-SearchFilterValue", jsonFilters);
+                JSONObject jsonFiltersHeader = new JSONObject();
+                jsonFiltersHeader.put("Path", this.getKafkaFilterHeaderPath());
+                jsonFiltersHeader.put("Value", this.getKafkaFilterHeaderValue());
+                jsonMyRequest.put("KAFKA-SearchFilter", jsonFiltersHeader);
             }
 
             jsonMain.put("Request", jsonMyRequest);

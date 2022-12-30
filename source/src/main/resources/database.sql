@@ -6182,10 +6182,12 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 ALTER TABLE `appservice` 
     ADD COLUMN `AvroSchema` MEDIUMTEXT NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;
 
--- 1743
+-- 1743-1745
 ALTER TABLE `appservice` 
     ADD COLUMN `AvroSchemaKey` MEDIUMTEXT NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;
-
 ALTER TABLE `appservice` 
     CHANGE COLUMN `AvroSchema` `AvroSchemaValue` MEDIUMTEXT NULL DEFAULT NULL ;
+ALTER TABLE `appservice` 
+    ADD COLUMN `IsAvroEnableKey` BOOLEAN DEFAULT 0 AFTER `SchemaRegistryUrl`,
+    ADD COLUMN `IsAvroEnableValue` BOOLEAN DEFAULT 0 AFTER `AvroSchemaKey`;
 

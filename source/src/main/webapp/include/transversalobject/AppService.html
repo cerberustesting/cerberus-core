@@ -6,7 +6,7 @@
     <div class="modal-dialog nomargintop nomarginbottom modal-xl">
         <div class="modal-content" id="editServiceModal">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit SoapLibrary</h4>
             </div>
@@ -84,11 +84,33 @@
                                                aria-describedby="basic-editon1">
                                     </div>
                                 </div>
+                                <label for="avro" name="avroField">Avro</label>
+                                <div class="well well-sm" id="avro">
+                                    <div class="row">
+                                        <div class="form-group col-sm-2">
+                                            <label for="isAvroEnable" name="isAvroEnableField">Enable Avro</label>
+                                            <input class="form-control input-sm" id="isAvroEnable" name="isAvroEnable" type="checkbox" value="1">
+                                        </div>
+                                        <div class="form-group col-sm-8">
+                                            <label for="schemaRegistryUrl" name="schemaRegistryUrlField">Schema Registry URL</label>
+                                            <input type="text" class="form-control" name="schemaRegistryUrl" id="schemaRegistryUrl"
+                                                   aria-describedby="basic-editon1">
+                                        </div>
+                                        <div class="form-group col-sm-1">
+                                            <label for="isAvroEnableKey" name="isAvroEnableKeyField">Key</label>
+                                            <input class="form-control input-sm" id="isAvroEnableKey" name="isAvroEnableKey" type="checkbox" value="1">
+                                        </div>
+                                        <div class="form-group col-sm-1">
+                                            <label for="isAvroEnableValue" name="isAvroEnableValueField">Value</label>
+                                            <input class="form-control input-sm" id="isAvroEnableValue" name="isAvroEnableValue" type="checkbox" value="1">
+                                        </div>
+                                    </div>
+                                </div>
                                 <label for="kafkaFilter" name="kafkaFilterField">Kafka Filters</label>
                                 <div class="well well-sm" id="kafkaFilter">
                                     <div class="row">
                                         <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterPath" name="kafkaFilterPathField">Event Filter Path</label>
+                                            <label for="kafkaFilterPath" name="kafkaFilterPathField">Event Filter JSON Path</label>
                                             <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
                                                    aria-describedby="basic-editon1">
                                         </div>
@@ -100,27 +122,13 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterHeaderPath" name="kafkaFilterHeaderPathField">Header Filter Path</label>
+                                            <label for="kafkaFilterHeaderPath" name="kafkaFilterHeaderPathField">Header Filter JSON Path</label>
                                             <input type="text" class="form-control" name="kafkaFilterHeaderPath" id="kafkaFilterHeaderPath"
                                                    aria-describedby="basic-editon1">
                                         </div>
                                         <div class="form-group col-xs-6">
                                             <label for="kafkaFilterHeaderValue" name="kafkaFilterHeaderValueField">Header Filter Value</label>
                                             <input type="text" class="form-control" name="kafkaFilterHeaderValue" id="kafkaFilterHeaderValue"
-                                                   aria-describedby="basic-editon1">
-                                        </div>
-                                    </div>
-                                </div>
-                                <label for="avro" name="avroField">Avro</label>
-                                <div class="well well-sm" id="avro">
-                                    <div class="row">
-                                        <div class="form-group col-xs-2">
-                                            <label for="isAvroEnable" name="isAvroEnableField">Enable Avro</label>
-                                            <input class="form-control input-sm" id="isAvroEnable" name="isAvroEnable" type="checkbox" value="1">
-                                        </div>
-                                        <div class="form-group col-xs-10">
-                                            <label for="schemaRegistryUrl" name="schemaRegistryUrlField">Schema Registry URL</label>
-                                            <input type="text" class="form-control" name="schemaRegistryUrl" id="schemaRegistryUrl"
                                                    aria-describedby="basic-editon1">
                                         </div>
                                     </div>
@@ -155,21 +163,30 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-xs-12">
+                                    <div class="form-group col-sm-6">
                                         <label for="kafkaKey" name="kafkaKeyField">Kafka Key</label>
-                                        <input type="text" class="form-control" name="kafkaKey" id="kafkaKey"
-                                               aria-describedby="basic-editon1">
+                                        <div name="kafkaKey" id="kafkaKey" aria-describedby="basic-editon1">
+                                            <pre id='kfkKey' name='kfkKey' style="min-height: 150px"></pre>
+                                        </div>
+                                        <!--                                        <input type="text" class="form-control" name="kafkaKey" id="kafkaKey"
+                                                                                       aria-describedby="basic-editon1">-->
+                                    </div>
+                                    <div class="col-sm-6" id="avrSchemaKeyDiv">
+                                        <label for="avroSchemaKey" name="avroSchemaKeyField">Avro Schema Key</label>
+                                        <img style="height:40px;  border: 0px; padding:0;" class="marginBottom10" id="avroLogoKey" src="./images/logo-AVRO.png" alt="AVRO">
+                                        <div name="avroSchemaKey" id="avroSchemaKey" aria-describedby="basic-editon1">
+                                            <pre id='avrSchemaKey' name='avrSchemaKey' style="min-height: 150px"></pre>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
+                                        <label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>
                                         <label  for="Filename" id="dropzone" class="upload-drop-zone" >
                                             <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
                                             <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
                                         </label>
-                                        <input type="file" name="Filename" id="Filename" class="hidden"/> 
-                                        </form>
+                                        <input type="file" name="Filename" id="Filename" class="hidden"/>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -179,16 +196,9 @@
                                             <pre id='srvRequest' name='srvRequest' style="min-height: 150px"></pre>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-12" id="avrSchemaKeyDiv">
-                                        <label for="avroSchemaKey" name="avroSchemaKeyField">Avro Schema Key</label>
-                                        <div name="avroSchemaKey" id="avroSchemaKey" aria-describedby="basic-editon1">
-                                            <pre id='avrSchemaKey' name='avrSchemaKey' style="min-height: 150px"></pre>
-                                        </div>
-                                    </div>
                                     <div class="col-xs-12" id="avrSchemaValueDiv">
                                         <label for="avroSchemaValue" name="avroSchemaValueField">Avro Schema Value</label>
+                                        <img style="height:40px;  border: 0px; padding:0;" class="marginBottom10" id="avroLogoValue" src="./images/logo-AVRO.png" alt="AVRO">
                                         <div name="avroSchemaValue" id="avroSchemaValue" aria-describedby="basic-editon1">
                                             <pre id='avrSchemaValue' name='avrSchemaValue' style="min-height: 150px"></pre>
                                         </div>

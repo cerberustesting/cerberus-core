@@ -214,7 +214,7 @@ public class RobotServerService implements IRobotServerService {
             // typeDelay parameters
             session.setCerberus_sikuli_typeDelay(cerberus_sikuli_typeDelay);
             session.setCerberus_sikuli_typeDelay_default(cerberus_sikuli_typeDelay);
-            
+
             // auto scroll parameters
             session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             session.setCerberus_selenium_autoscroll_vertical_offset(cerberus_selenium_autoscroll_vertical_offset);
@@ -277,8 +277,8 @@ public class RobotServerService implements IRobotServerService {
 
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
-                            tCExecution.getSession().getHostUser(),
-                            tCExecution.getSession().getHostPassword(), session.getHost()),
+                    tCExecution.getSession().getHostUser(),
+                    tCExecution.getSession().getHostPassword(), session.getHost()),
                     session.getPort())) + "/wd/hub";
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
@@ -315,7 +315,7 @@ public class RobotServerService implements IRobotServerService {
                                     .build();
                         }
                     };
-*/
+                     */
                 }
                 factory.builder().proxy(myproxy);
             } else {
@@ -1047,11 +1047,11 @@ public class RobotServerService implements IRobotServerService {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                        tce.addFileList(recorderService.recordSeleniumLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Selenium Logs {}", tce.getId(), ex);
-                    }
-                    break;
+                    tce.addFileList(recorderService.recordSeleniumLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Selenium Logs {}", tce.getId(), ex);
+                }
+                break;
                 default:
             }
 
@@ -1060,11 +1060,11 @@ public class RobotServerService implements IRobotServerService {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                        tce.addFileList(recorderService.recordConsoleLog(tce));
-                    } catch (Exception ex) {
-                        LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
-                    }
-                    break;
+                    tce.addFileList(recorderService.recordConsoleLog(tce));
+                } catch (Exception ex) {
+                    LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
+                }
+                break;
                 default:
             }
 
@@ -1223,6 +1223,21 @@ public class RobotServerService implements IRobotServerService {
             }
         }
         return result;
+    }
+
+    @Override
+    public int getFromOptions(JSONArray options, String option) {
+        int timeout = 0;
+        HashMap<String, String> result = new HashMap<>();
+        result = this.getMapFromOptions(options);
+        try {
+            if (result.containsKey(option)) {
+                timeout = Integer.parseInt(result.get(option));
+            }
+        } catch (Exception e) {
+            LOG.error("Cannot convert option '{}' to integer from options {}", option, options);
+        }
+        return timeout;
     }
 
     @Override

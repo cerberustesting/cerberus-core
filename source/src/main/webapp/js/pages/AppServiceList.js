@@ -285,8 +285,86 @@ function aoColumnsFunc(tableId) {
             "sName": "srv.Method",
             "visible": false,
             "data": "method",
-            "sWidth": "150px",
+            "sWidth": "50px",
             "title": doc.getDocLabel("appservice", "method")
+        }, {
+            "sName": "srv.kafkaTopic",
+            "visible": false,
+            "data": "kafkaTopic",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaTopic")
+        }, {
+            "sName": "srv.kafkaKey",
+            "visible": false,
+            "data": "kafkaKey",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaKey")
+        }, {
+            "sName": "srv.kafkaFilterPath",
+            "visible": false,
+            "data": "kafkaFilterPath",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaFilterPath")
+        }, {
+            "sName": "srv.kafkaFilterValue",
+            "visible": false,
+            "data": "kafkaFilterValue",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaFilterValue")
+        }, {
+            "sName": "srv.kafkaFilterHeaderPath",
+            "visible": false,
+            "data": "kafkaFilterHeaderPath",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaFilterHeaderPath")
+        }, {
+            "sName": "srv.kafkaFilterHeaderValue",
+            "visible": false,
+            "data": "kafkaFilterHeaderValue",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "kafkaFilterHeaderValue")
+        }, {
+            "sName": "srv.isAvroEnable",
+            "visible": false,
+            "data": "isAvroEnable",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("appservice", "isAvroEnable")
+        }, {
+            "sName": "srv.schemaRegistryURL",
+            "visible": false,
+            "data": "schemaRegistryURL",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "schemaRegistryURL")
+        }, {
+            "sName": "srv.isAvroEnableKey",
+            "visible": false,
+            "data": "isAvroEnableKey",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("appservice", "isAvroEnableKey")
+        }, {
+            "sName": "srv.avroSchemaKey",
+            "visible": false,
+            "data": "avroSchemaKey",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "avroSchemaKey")
+        }, {
+            "sName": "srv.isAvroEnableValue",
+            "visible": false,
+            "data": "isAvroEnableValue",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("appservice", "isAvroEnableValue")
+        }, {
+            "sName": "srv.avroSchemaValue",
+            "visible": false,
+            "data": "avroSchemaValue",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "avroSchemaValue")
+        }, {
+            "sName": "srv.parentContentService",
+            "visible": false,
+            "data": "parentContentService",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "parentContentService")
         }, {
             "sName": "srv.group",
             "visible": false,

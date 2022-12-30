@@ -79,6 +79,34 @@ function initModalAppService() {
 
     srv_setUpDragAndDrop('#editSoapLibraryModal');
 
+    var availablesearch = ["$.messageField1"];
+    $('#editSoapLibraryModal').find("#kafkaFilterPath").autocomplete({
+        source: availablesearch,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
+    availablesearch = ["$.header.headerKey"];
+    $('#editSoapLibraryModal').find("#kafkaFilterHeaderPath").autocomplete({
+        source: availablesearch,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    }).on("focus", function () {
+        $(this).autocomplete("search", "");
+    });
+
 
 }
 
@@ -173,34 +201,28 @@ function prepareAppServiceModal() {
     // when type is changed we enable / disable type field.
     $("#editSoapLibraryModal #type").off("change");
     $("#editSoapLibraryModal #type").change(function () {
-        refreshDisplayOnTypeChange($(this).val());
+        refreshDisplayOnTypeChange();
     });
 
+    $("#editSoapLibraryModal #isAvroEnable").off("change");
+    $("#editSoapLibraryModal #isAvroEnable").change(function () {
+        refreshDisplayOnTypeChange();
+    });
+
+    $("#editSoapLibraryModal #isAvroEnableKey").off("change");
+    $("#editSoapLibraryModal #isAvroEnableKey").change(function () {
+        refreshDisplayOnTypeChange();
+    });
+
+    $("#editSoapLibraryModal #isAvroEnableValue").off("change");
+    $("#editSoapLibraryModal #isAvroEnableValue").change(function () {
+        refreshDisplayOnTypeChange();
+    });
+
+
+    $("#editSoapLibraryModal #method").off("change");
     $("#editSoapLibraryModal #method").change(function () {
-        if ($("#editSoapLibraryModal #type").val() == "FTP") {
-            if ($(this).val() == "GET") {
-                $("#editSoapLibraryModal #srvRequestDiv").hide();
-            } else {
-                $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("File Content");
-                $("#editSoapLibraryModal #srvRequestDiv").show();
-            }
-        } else {
-            $("#editSoapLibraryModal #srvRequestDiv").show();
-            $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
-        }
-        if ($("#editSoapLibraryModal #type").val() == "KAFKA") {
-            console.info($(this).val());
-            if ($(this).val() == "SEARCH") {
-                $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
-                $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
-            } else {
-                $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
-                $("#editSoapLibraryModal #avrSchemaValueDiv").show();
-            }
-        } else {
-            $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
-            $("#editSoapLibraryModal #avrSchemaValueDiv").show();
-        }
+        refreshDisplayOnTypeChange();
 
     });
 
@@ -245,6 +267,7 @@ function confirmAppServiceModalHandler(mode, page) {
     data.servicePath = encodeURIComponent(data.servicePath);
 
     //Add envelope, not in the form
+    var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
     var editorRequest = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
@@ -271,6 +294,7 @@ function confirmAppServiceModalHandler(mode, page) {
 
     formData.append("contentList", JSON.stringify(table_content));
     formData.append("headerList", JSON.stringify(table_header));
+    formData.append("kafkaKey", encodeURIComponent(editorKey.getSession().getDocument().getValue()));
     formData.append("srvRequest", encodeURIComponent(editorRequest.getSession().getDocument().getValue()));
     formData.append("avrSchemaKey", encodeURIComponent(editorSchemaKey.getSession().getDocument().getValue()));
     formData.append("avrSchemaValue", encodeURIComponent(editorSchemaValue.getSession().getDocument().getValue()));
@@ -284,6 +308,12 @@ function confirmAppServiceModalHandler(mode, page) {
     }
     if (isEmpty(formData.get("isAvroEnable"))) {
         formData.append("isAvroEnable", 0);
+    }
+    if (isEmpty(formData.get("isAvroEnableKey"))) {
+        formData.append("isAvroEnableKey", 0);
+    }
+    if (isEmpty(formData.get("isAvroEnableValue"))) {
+        formData.append("isAvroEnableValue", 0);
     }
 
     var temp = data.service;
@@ -328,12 +358,17 @@ function confirmAppServiceModalHandler(mode, page) {
 
 }
 
-function refreshDisplayOnTypeChange(newValue) {
+function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
 
-    $('#editSoapLibraryModal #typeLogo').attr('src', './images/logo-' + newValue + '.png').attr('alt', newValue);
+    newValueMethod = $("#editSoapLibraryModal #method").val();
+    newValueType = $("#editSoapLibraryModal #type").val();
 
+    $('#editSoapLibraryModal #typeLogo').attr('src', './images/logo-' + newValueType + '.png').attr('alt', newValueType);
 
-    if (newValue === "SOAP") {
+    $("#editSoapLibraryModal #tab2Text").show();
+    $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
+
+    if (newValueType === "SOAP") {
         // If SOAP service, no need to feed the method.
         $('.upload-drop-zone').hide();
         $("label[name='screenshotfilenameField']").hide();
@@ -354,7 +389,7 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
-    } else if (newValue === "FTP") {
+    } else if (newValueType === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
@@ -381,7 +416,16 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
-    } else if (newValue === "KAFKA") {
+        if (newValueMethod == "GET") {
+            $("#editSoapLibraryModal #srvRequestDiv").hide();
+        } else {
+            $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("File Content");
+            $("#editSoapLibraryModal #srvRequestDiv").show();
+        }
+
+    } else if (newValueType === "KAFKA") {
+        $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Kafka Value");
+
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
@@ -404,12 +448,34 @@ function refreshDisplayOnTypeChange(newValue) {
         $("#editSoapLibraryModal #kafkaFilter").show();
         $("label[name='avroField']").show();
         $("#editSoapLibraryModal #avro").show();
-        if ($("#editSoapLibraryModal #method").val() === "SEARCH") {
+        if (newValueMethod === "SEARCH") {
+            $("#editSoapLibraryModal #tab2Text").hide();
+            $("#editSoapLibraryModal #kafkaFilter").show();
+        } else {
+            $("#editSoapLibraryModal #tab2Text").show();
+            $("#editSoapLibraryModal #kafkaFilter").hide();
+        }
+        isAvro = $("#editSoapLibraryModal #isAvroEnable")[0].checked;
+        if (isAvro) {
+            $("#editSoapLibraryModal #schemaRegistryUrl").removeAttr("readonly");
+            $("#editSoapLibraryModal #isAvroEnableValue").removeAttr("disabled");
+            $("#editSoapLibraryModal #isAvroEnableKey").removeAttr("disabled");
+            if ($("#editSoapLibraryModal #isAvroEnableKey")[0].checked) {
+                $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
+            } else {
+                $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+            }
+            if ($("#editSoapLibraryModal #isAvroEnableValue")[0].checked) {
+                $("#editSoapLibraryModal #avrSchemaValueDiv").show();
+            } else {
+                $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
+            }
+        } else {
+            $("#editSoapLibraryModal #schemaRegistryUrl").prop("readonly", "true");
+            $("#editSoapLibraryModal #isAvroEnableValue").prop("disabled", "true");
+            $("#editSoapLibraryModal #isAvroEnableKey").prop("disabled", "true");
             $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
             $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
-        } else {
-            $("#editSoapLibraryModal #avrSchemaKeyDiv").show();
-            $("#editSoapLibraryModal #avrSchemaValueDiv").show();
         }
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
@@ -516,7 +582,9 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.isFollowRedir = true;
         serviceObj1.isAvroEnable = false;
         serviceObj1.schemaRegistryURL = "";
+        serviceObj1.isAvroEnableKey = false;
         serviceObj1.avroSchemaKey = "";
+        serviceObj1.isAvroEnableValue = true;
         serviceObj1.avroSchemaValue = "";
         serviceObj1.parentContentService = "";
 
@@ -543,6 +611,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     //Destroy the previous Ace object.
     ace.edit($("#editSoapLibraryModal #srvRequest")[0]).destroy();
+    ace.edit($("#editSoapLibraryModal #kfkKey")[0]).destroy();
     ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]).destroy();
     ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]).destroy();
 
@@ -582,9 +651,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#isFollowRedir").prop("checked", true);
         formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
+        formEdit.find("#kfkKey").text("");
         formEdit.find("#avrSchemaKey").text("");
         formEdit.find("#avrSchemaValue").text("");
         formEdit.find("#isAvroEnable").prop("checked", false);
+        formEdit.find("#isAvroEnableKey").prop("checked", false);
+        formEdit.find("#isAvroEnableValue").prop("checked", false);
         formEdit.find("#schemaRegistryUrl").prop("value", "");
         formEdit.find("#parentContentService").prop("value", "");
         formEdit.find("#group").prop("value", "");
@@ -604,17 +676,19 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#servicePath").prop("value", service.servicePath);
         formEdit.find("#isFollowRedir").prop("checked", service.isFollowRedir);
         formEdit.find("#isAvroEnable").prop("checked", service.isAvroEnable);
+        formEdit.find("#isAvroEnableKey").prop("checked", service.isAvroEnableKey);
+        formEdit.find("#isAvroEnableValue").prop("checked", service.isAvroEnableValue);
         formEdit.find("#schemaRegistryUrl").prop("value", service.schemaRegistryURL);
         formEdit.find("#parentContentService").val(service.parentContentService);
         formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
+        formEdit.find("#kfkKey").text(service.kafkaKey);
         formEdit.find("#avrSchemaKey").text(service.avroSchemaKey);
         formEdit.find("#avrSchemaValue").text(service.avroSchemaValue);
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
         formEdit.find("#description").prop("value", service.description);
         formEdit.find("#kafkaTopic").prop("value", service.kafkaTopic);
-        formEdit.find("#kafkaKey").prop("value", service.kafkaKey);
         formEdit.find("#kafkaFilterPath").prop("value", service.kafkaFilterPath);
         formEdit.find("#kafkaFilterValue").prop("value", service.kafkaFilterValue);
         formEdit.find("#kafkaFilterHeaderPath").prop("value", service.kafkaFilterHeaderPath);
@@ -638,6 +712,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     editor.setOptions({
         maxLines: Infinity
     });
+    var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
+    editorKey.setTheme("ace/theme/chrome");
+    editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
+    editorKey.setOptions({
+        maxLines: Infinity
+    });
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     editorSchemaKey.setTheme("ace/theme/chrome");
     editorSchemaKey.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
@@ -656,6 +736,11 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
         if (editor.getSession().getMode().$id === "ace/mode/text") {
             editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+        }
+    });
+    $($("#editSoapLibraryModal #kfkKey").get(0)).keyup(function () {
+        if (editorKey.getSession().getMode().$id === "ace/mode/text") {
+            editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
         }
     });
     $($("#editSoapLibraryModal #avrSchemaKey").get(0)).keyup(function () {
@@ -691,12 +776,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("readonly", true);
         formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
+        formEdit.find("#kfkKey").prop("readonly", "readonly");
         formEdit.find("#avrSchemaKey").prop("readonly", "readonly");
         formEdit.find("#avrSchemaValue").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
         formEdit.find("#isFollowRedir").prop("readonly", "readonly");
         formEdit.find("#kafkaTopic").prop("readonly", "readonly");
-        formEdit.find("#kafkaKey").prop("readonly", "readonly");
         formEdit.find("#kafkaFilterPath").prop("readonly", "readonly");
         formEdit.find("#kafkaFilterValue").prop("readonly", "readonly");
         // We hide Save button.
@@ -715,12 +800,13 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("readonly", false);
         formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
+        formEdit.find("#kfkKey").removeProp("readonly");
         formEdit.find("#avrSchemaKey").removeProp("readonly");
         formEdit.find("#avrSchemaValue").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
         formEdit.find("#isFollowRedir").prop("readonly", false);
         formEdit.find("#kafkaTopic").removeProp("disabled");
-        formEdit.find("#kafkaKey").removeProp("disabled");
+//        formEdit.find("#kafkaKey").removeProp("disabled");
         formEdit.find("#kafkaFilterPath").removeProp("disabled");
         formEdit.find("#kafkaFilterValue").removeProp("disabled");
     }

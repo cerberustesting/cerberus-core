@@ -57,13 +57,16 @@ public interface IKafkaService {
      * @param token
      * @param isAvroEnable
      * @param schemaRegistryURL
+     * @param isAvroEnableKey
      * @param avroSchemaKey
+     * @param isAvroEnableValue
      * @param avroSchemaValue
      * @param timeoutMs
      * @return
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean isAvroEnable, String schemaRegistryURL, String avroSchemaKey, String avroSchemaValue, int timeoutMs);
+            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, 
+            boolean isAvroEnable, String schemaRegistryURL, boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs);
 
     /**
      * Get the last offset of every partition.
