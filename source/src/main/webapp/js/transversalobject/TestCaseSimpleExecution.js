@@ -37,7 +37,7 @@ function openModalExecutionSimple(application, test, testcase, description) {
     //Add event on Save button.
     $("#executeTestCaseButton").off("click");
     $("#executeTestCaseButton").click(function () {
-        if (checkFormBeforeSubmit()===true) {
+        if (checkFormBeforeSubmit() === true) {
             submitForm();
         }
     });
@@ -49,7 +49,7 @@ function openModalExecutionSimple(application, test, testcase, description) {
 
     //Clean response messages
     $('#executeTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
-    clearResponseMessage($('#executeTestCaseModalForm'));
+    clearResponseMessage($('#testCaseSimpleExecutionModal'));
 
     $('#testCaseToExecute').attr('data-test', test).attr('data-testcase', testcase).text(description);
 }
@@ -77,10 +77,10 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
     displayRobotList("robotList", "ROBOTLIST", true);
     displayApplicationIpList("environmentList", "", application);
 
-    $("#testToExecuteLabel").html('<span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "testToExecuteLabel"));
-    $("#chooseEnvLabel").html('<span class="card-img-top glyphicon glyphicon-list" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "chooseEnvLabel"));
-    $("#chooseRobotLabel").html('<span class="card-img-top glyphicon glyphicon-road" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "chooseRobotLabel"));
-    $("#customizeExecutionSettings").html('<span class="card-img-top glyphicon glyphicon-cog" style="font-size:15px;"></span>  '+doc.getDocLabel("page_testcaseexecutionmodal", "customizeExecutionSettings"));
+    $("#testToExecuteLabel").html('<span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>  ' + doc.getDocLabel("page_testcaseexecutionmodal", "testToExecuteLabel"));
+    $("#chooseEnvLabel").html('<span class="card-img-top glyphicon glyphicon-list" style="font-size:15px;"></span>  ' + doc.getDocLabel("page_testcaseexecutionmodal", "chooseEnvLabel"));
+    $("#chooseRobotLabel").html('<span class="card-img-top glyphicon glyphicon-road" style="font-size:15px;"></span>  ' + doc.getDocLabel("page_testcaseexecutionmodal", "chooseRobotLabel"));
+    $("#customizeExecutionSettings").html('<span class="card-img-top glyphicon glyphicon-cog" style="font-size:15px;"></span>  ' + doc.getDocLabel("page_testcaseexecutionmodal", "customizeExecutionSettings"));
 
 
 //Activate popover for interactive tutorial
@@ -90,14 +90,14 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
     );
 
 //if only 1 application or 1 env, selct them by default
-    if($("[name='applicationIpItem']").size()===1){
+    if ($("[name='applicationIpItem']").size() === 1) {
         $("[name='applicationIpItem']").addClass("active");
     }
-    if($("[name='robotItem']").size()===1){
+    if ($("[name='robotItem']").size() === 1) {
         $("[name='robotItem']").addClass("active");
     }
 
-    $("#filterRobot").change(function(){
+    $("#filterRobot").keyup(function () {
         $("[name='robotItem']").show();
 
         $(this).val().toLowerCase().split(" ").forEach(function (item) {
@@ -109,7 +109,7 @@ function initModalTestCaseSimpleExecution(application, test, testcase) {
         });
     });
 
-    $("#filterEnvironment").change(function(){
+    $("#filterEnvironment").keyup(function () {
         $("[name='applicationIpItem']").show();
 
         $(this).val().toLowerCase().split(" ").forEach(function (item) {
@@ -130,20 +130,16 @@ function checkFormBeforeSubmit() {
     var doc = new Doc();
     clearResponseMessage($('#testCaseSimpleExecutionModal'));
 
-    var hasNoEnvSelected = $('#environmentList').find('button[class*="active"]').size()===0;
-    var hasNoRobotSelected = $('#robotList').find('button[class*="active"]').size()===0;
+    var hasNoEnvSelected = $('#environmentList').find('button[class*="active"]').size() === 0;
 
     var localMessage = new Message("danger", "Unexpected Error!");
     if (hasNoEnvSelected) {
         localMessage = new Message("danger", doc.getDocLabel("page_runtest", "select_one_env"));
         showMessage(localMessage, $('#testCaseSimpleExecutionModal'));
-    } else if (hasNoRobotSelected) {
-        localMessage = new Message("danger", "Please choose at least one robot!");
-        showMessage(localMessage, $('#testCaseSimpleExecutionModal'));
     }
 
     // verify if all mandatory fields are not empty and valid
-    if (hasNoEnvSelected || hasNoRobotSelected) {
+    if (hasNoEnvSelected) {
         return false;
     }
     return true;
@@ -155,6 +151,8 @@ function checkFormBeforeSubmit() {
  * @returns {null}
  */
 function submitForm() {
+
+    clearResponseMessage($('#testCaseSimpleExecutionModal'));
 
     showLoaderInModal('#testCaseSimpleExecutionModal');
 
@@ -179,7 +177,7 @@ function submitForm() {
 
     let countryenvironmentstring = "";
     $('#environmentList').find('button[class*="active"]').each(function () {
-        if (!countryenvironmentstring.includes("&country=" + $(this).attr('data-country'))){
+        if (!countryenvironmentstring.includes("&country=" + $(this).attr('data-country'))) {
             countryenvironmentstring += "&country=" + $(this).attr('data-country');
         }
         if (!countryenvironmentstring.includes("&environment=" + $(this).attr('data-environment'))) {
@@ -192,18 +190,19 @@ function submitForm() {
         robotsstring += "&robot=" + $(this).attr('data-robot');
     });
 
-    showLoader('#page-layout');
-
     var jqxhr = $.post("AddToExecutionQueuePrivate", paramSerialized + teststring + countryenvironmentstring + robotsstring);
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns
-        hideLoader('#page-layout');
+        hideLoaderInModal('#testCaseSimpleExecutionModal');
+
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
             handleAddToQueueResponse(data, true);
         } else {
+            let localMessage = {};
+            localMessage.message = data.message;
+            localMessage.messageType = getAlertType(data.messageType);
             showMessage(localMessage, $('#testCaseSimpleExecutionModal'));
-            showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -229,20 +228,27 @@ function handleAddToQueueResponse(data, doRedirect) {
     if (data.nbExe > 1) {
         data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
     }
-    var rc = getAlertType(data.messageType);
-    if ((rc === "success") && (data.nbExe === 0)) {
-        rc = "warning";
-    }
-    showMessageMainPage(rc, data.message, false, 60000);
+
     if ((data.nbExe === 1) && doRedirect) {
         window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
     }
     if ((data.nbExe > 1) && doRedirect) {
-        window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
+        window.location.href = "ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(data.tag);
     }
+
+    var rc = getAlertType(data.messageType);
+    if ((rc === "success") && (data.nbExe === 0)) {
+        data.messageType = "KO";
+    }
+    let localMessage = {};
+    localMessage.message = data.message;
+    localMessage.messageType = data.messageType;
+
+    showMessage(localMessage, $('#testCaseSimpleExecutionModal'));
+
 }
 
-function afterSuccessSubmit(data, dataMessage){
+function afterSuccessSubmit(data, dataMessage) {
     var doc = new Doc();
 
     var code = getAlertType(dataMessage.messageType);
@@ -258,7 +264,7 @@ function afterSuccessSubmit(data, dataMessage){
         elementAlert.slideUp(500);
     });
 
-    $('editTestCaseButton').click(function() {
+    $('editTestCaseButton').click(function () {
         window.location.href = "TestCaseScript.jsp?test=" + encodeURI(data.test.replace(/\+/g, ' ')) + "&testcase=" + encodeURI(data.testCase.replace(/\+/g, ' '));
     });
 
@@ -283,8 +289,8 @@ function feedNewTestCaseModalSimple(modalId) {
     var formEdit = $('#' + modalId);
 
 
-    $('#editTestCaseSimpleCreationModal [name="application"]').change(function() {
-        if ($('#editTestCaseSimpleCreationModal [name="application"] option[data-select2-tag=true]')[0]!==undefined) {
+    $('#editTestCaseSimpleCreationModal [name="application"]').change(function () {
+        if ($('#editTestCaseSimpleCreationModal [name="application"] option[data-select2-tag=true]')[0] !== undefined) {
             $("#newApplication").attr('style', 'display:block');
         } else {
             $("#newApplication").attr('style', 'display:none');
