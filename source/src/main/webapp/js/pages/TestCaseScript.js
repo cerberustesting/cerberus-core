@@ -1787,7 +1787,7 @@ function Step(json, steps, canUpdate, hasPermissionsStepLibrary) {
 
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row stepItem").css("margin-left", "0px");
     this.stepNumberDisplay = $("<span></span>").addClass("input-group-addon").addClass("drag-step-step").attr("style", "font-weight: 400;").prop("draggable", true).text(steps.length + 1);
-    this.stepDescriptionDisplay = $("<input class='description form-control'>").attr("style", "border:0px").val(this.description);
+    this.stepDescriptionDisplay = $("<input class='description form-control crb-autocomplete-variable'>").attr("style", "border:0px").val(this.description);
     this.textArea = $("<div class='input-group'></div>").addClass("step-description").append(this.stepNumberDisplay).append(this.stepDescriptionDisplay);
 
 }
@@ -1798,7 +1798,7 @@ Step.prototype.draw = function () {
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input id='stepDescription' class='description form-control'>").attr("placeholder", doc.getDocLabel("page_testcasescript", "describe_step")).attr("style", "border:0px");
+    var descriptionField = $("<input id='stepDescription' class='description form-control crb-autocomplete-variable'>").attr("placeholder", doc.getDocLabel("page_testcasescript", "describe_step")).attr("style", "border:0px");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").prop("draggable", true).text(this.steps.length + 1);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
@@ -2053,7 +2053,7 @@ function displayActionCombo(object) {
 function displayControlCombo(object) {
     var user = getUser();
     $(object.stepActionContainer).find(".control").each(function () {
-        console.log(this);
+
         var controls = $(getControlCombo());
         var controlItem = $(this).data("item");
 
@@ -2074,7 +2074,7 @@ function displayControlCombo(object) {
         }
         $(this).find(".controlOperatorContainer").empty();
         $(this).find(".controlOperatorContainer").append(operator);
-        console.log(this);
+
         setPlaceholderControl($(this));
 
         controls.on("change", function () {
@@ -2635,7 +2635,7 @@ Action.prototype.generateContent = function () {
 
 // DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px");
+    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").attr("id", "labelDiv").prop("draggable", true);
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
@@ -3050,7 +3050,7 @@ Control.prototype.generateContent = function () {
 
 //DESCRIPTION
     var descContainer = $("<div class='input-group'></div>");
-    var descriptionField = $("<input class='description form-control' style='border:0px' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
+    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' style='border:0px' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
     var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;").attr("id", "labelDiv").prop("draggable", true);
     var ctrlNumber = $($("<span class='input-group-addon' style='font-weight: 700;border-top-right-radius: 4px;border-bottom-right-radius: 4px;' id='labelControlDiv'></span>"));
 
@@ -3304,6 +3304,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
     // function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function (configs, context, Tags) {
+        
         if (Tags !== undefined) {
             TagsToUse = Tags;
         }
@@ -3316,18 +3317,94 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             contextInfo = context;
         }
 
-        $(document).on('focus', ".content div.fieldRow input:not([class*='description'],[readonly])", function (e) {
-            console.log($(this));
-            let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
-            console.log(currentAction);
-            if (currentAction === "callService" || currentAction === "calculateProperty") {
-                initAutocompleteforSpecificFields($(this));
-            } else {
-                initAutocompleteWithTags($(this), configs, contextInfo);
-            }
-        });
 
-        $(document).on('settingsButton', ".content div.fieldRow input:not([class*='description'])", function (e) {
+        function initAutocompleteElement(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteService(e) {
+//            console.log("start feed autocomplete on focus (service).");
+            initAutocompleteforSpecificFields($(this));
+        }
+
+        function initAutocompleteProperty(e) {
+//            console.log("start feed autocomplete on focus (property).");
+            initAutocompleteforSpecificFields($(this));
+            $(this).autocomplete("search", "");
+        }
+
+
+        function   initAutocompleteVariablesOnly(e) {
+//            console.log("start feed autocomplete on focus (variable only).");
+            configs.indentifier = false;
+            initAutocompleteWithTagsNoElement($(this), configs, contextInfo);
+
+        }
+
+        function modifyAutocompleteService(e) {
+//            console.log("modify feed autocomplete on input (service).")
+            let data = loadGuiProperties();
+            try {
+                if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "callService") {
+                    let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
+                    modifyAutocompleteSource($(this), url);
+                } else if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "calculateProperty") {
+                    modifyAutocompleteSource($(this), null, data);
+                }
+            } catch (e) {
+            }
+
+            $(this).trigger("settingsButton");
+        }
+
+        function modifyAutocompleteProperty(e) {
+//            console.log("modify feed autocomplete on input (property).")
+            let data = loadGuiProperties();
+            try {
+                modifyAutocompleteSource($(this), null, data);
+            } catch (e) {
+            }
+            console.log("trigger settingsButton.");
+
+            $(this).trigger("settingsButton");
+        }
+
+        function modifyAutocomplete(e) {
+            console.log("modify feed autocomplete on input (generic).")
+            console.log("trigger settingsButton.");
+            $(this).trigger("settingsButton");
+        }
+
+
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-varaible (include Variables ONLY) #####
+        $(document).on('focus', "div.crb-autocomplete-variable input:not([readonly])", initAutocompleteVariablesOnly);
+        $(document).on('input', "div.crb-autocomplete-variable input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-variable:not([readonly])", initAutocompleteVariablesOnly);
+        $(document).on('input', "input.crb-autocomplete-variable:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Services+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-service input:not([readonly])", initAutocompleteService);
+        $(document).on('input', "div.crb-autocomplete-service input:not([readonly])", modifyAutocompleteService);
+        $(document).on('focus', "input.crb-autocomplete-service:not([readonly])", initAutocompleteService);
+        $(document).on('input', "input.crb-autocomplete-service:not([readonly])", modifyAutocompleteService);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Properties+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-property input:not([readonly])", initAutocompleteProperty);
+        $(document).on('input', "div.crb-autocomplete-property input:not([readonly])", modifyAutocompleteProperty);
+        $(document).on('focus', "input.crb-autocomplete-property:not([readonly])", initAutocompleteProperty);
+        $(document).on('input', "input.crb-autocomplete-property:not([readonly])", modifyAutocompleteProperty);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-element input:not([readonly])", initAutocompleteElement);
+        $(document).on('input', "div.crb-autocomplete-element input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-element:not([readonly])", initAutocompleteElement);
+        $(document).on('input', "input.crb-autocomplete-element:not([readonly])", modifyAutocomplete);
+
+        // Adding Contextual buttons when 'settingsButton' event is triggered.
+        $(document).on('settingsButton', "div.crb-contextual-button input", function (e) {
+            console.log("start generate buttons.");
             var doc = new Doc();
             let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
             let htmlElement = $(this);
@@ -3452,19 +3529,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
         });
 
-        $(document).on('input', ".content div.fieldRow input:not([class*='description'],[readonly])", function (e) {
-            let data = loadGuiProperties();
-            try {
-                if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "callService") {
-                    let url = "ReadAppService?service=" + encodeURI($(this).val()) + "&limit=15";
-                    modifyAutocompleteSource($(this), url);
-                } else if ($(this).parents(".secondRow").find("[name='actionSelect']").val() === "calculateProperty") {
-                    modifyAutocompleteSource($(this), null, data);
-                }
-            } catch (e) {
-            }
-            $(this).trigger("settingsButton");
-        });
         $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton");
     };
 })();
@@ -3507,7 +3571,7 @@ function setPlaceholderAction(action) {
     }
 
     if (typeof placeHolders.field1 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('#field1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
@@ -3518,7 +3582,7 @@ function setPlaceholderAction(action) {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
     }
     if (typeof placeHolders.field2 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field2.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('#field2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
@@ -3529,7 +3593,7 @@ function setPlaceholderAction(action) {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").hide();
     }
     if (typeof placeHolders.field3 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field3.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('#field3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
@@ -3556,6 +3620,7 @@ function setPlaceholderCondition(conditionElement) {
 
     if (typeof placeHolders.field1 !== 'undefined') {
         // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
+        $(conditionElement).parents("div[class*='conditions']").find(".v1").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").text(placeHolders.field1.label[user.language]);
         if (typeof placeHolders.field1.picto !== 'undefined') {
@@ -3566,6 +3631,7 @@ function setPlaceholderCondition(conditionElement) {
     }
 
     if (typeof placeHolders.field2 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find(".v2").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").text(placeHolders.field2.label[user.language]);
 
@@ -3574,6 +3640,7 @@ function setPlaceholderCondition(conditionElement) {
     }
 
     if (typeof placeHolders.field3 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find(".v3").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").text(placeHolders.field3.label[user.language]);
 
@@ -3601,7 +3668,7 @@ function setPlaceholderControl(control) {
     }
 
     if (typeof placeHolders.field1 !== 'undefined') {
-        control.find("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
+        control.find("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
         control.find("div[class*='v1']").show();
         control.find("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
         control.find("div[class*='v1']").find('#controlField1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
@@ -3613,7 +3680,7 @@ function setPlaceholderControl(control) {
         control.find("div[class*='v1']").hide();
     }
     if (typeof placeHolders.field2 !== 'undefined') {
-        control.find("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field2.class);
+        control.find("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
         control.find("div[class*='v2']").show();
         control.find("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
         control.find("div[class*='v2']").find('#controlField2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
@@ -3624,7 +3691,7 @@ function setPlaceholderControl(control) {
         control.find("div[class*='v2']").hide();
     }
     if (typeof placeHolders.field3 !== 'undefined') {
-        control.find("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field3.class);
+        control.find("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
         control.find("div[class*='v3']").show();
         control.find("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
         control.find("div[class*='v3']").find('#controlField3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
