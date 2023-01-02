@@ -1,10 +1,21 @@
 *Bug fixes*
 [square]
-* none
+* Kafka Service Props heritage is now working correctly #2425
+* Special characters supported on email notifications.
+* Fixed redirection on empty page after saving testcase.
+* Fixed issue on testcase creation from header #2416
+* Allow to use property getFromJS for GUI Application type.
+* Action value3 is now decoded. #2413
 
 *Improvements / New features*
 [square]
-* none
+* Improved autocomplete feature on testcase script page. It has been added to almost all possible fields.
+* Improvements on new run modal. filter apply on key press + robot select is no longer mandatory
+* Timeout overwrite feature is now also available for Appium and Service calls.  #2331
+* Better responsiveness on small screens on execution page.
+* Progress bar on memory consumption on maintenance page
+* Kafka Avro Schema registry URL now decoded #2426
+* Added Kafka AVRO support also on key. #2418
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
