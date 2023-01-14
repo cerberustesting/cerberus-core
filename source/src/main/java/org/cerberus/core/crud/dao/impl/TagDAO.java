@@ -77,7 +77,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", tag);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
@@ -111,7 +111,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.id : {}", id);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setLong(1, id);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -187,8 +187,8 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (systems != null && !systems.isEmpty()) {
@@ -211,7 +211,7 @@ public class TagDAO implements ITagDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -272,8 +272,8 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.system {}: ", systems);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(systems)) {
@@ -287,7 +287,7 @@ public class TagDAO implements ITagDAO {
             preStat.setTimestamp(i++, t1);
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -366,8 +366,8 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.campaigns : {}", campaigns);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(campaigns)) {
@@ -411,7 +411,7 @@ public class TagDAO implements ITagDAO {
             preStat.setTimestamp(i, t1);
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -475,7 +475,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getTag());
@@ -518,7 +518,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, object.getTag());
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -544,7 +544,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getTag());
@@ -575,7 +575,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, object.getBrowserstackBuildHash());
             preStat.setString(i++, object.getUsrModif());
@@ -601,7 +601,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getLambdaTestBuild());
@@ -628,7 +628,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getUsrModif());
@@ -654,7 +654,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getComment());
@@ -674,19 +674,20 @@ public class TagDAO implements ITagDAO {
     @Override
     public Answer updateXRayTestExecution(String tag, Tag object) {
         MessageEvent msg;
-        StringBuilder query = new StringBuilder("UPDATE tag SET XRayTestExecution = ?, XRayURL = ?, dateModif = NOW(), usrModif= ?");
+        StringBuilder query = new StringBuilder("UPDATE tag SET XRayTestExecution = ?, XRayURL = ?, XRayMEssage = ?, dateModif = NOW(), usrModif= ?");
         query.append("  WHERE Tag = ?");
 
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getXRayTestExecution());
             preStat.setString(i++, object.getXRayURL());
-            preStat.setString(i++, "");
+            preStat.setString(i++, object.getXRayMessage());
+            preStat.setString(i++, "updateXRayTestExecution");
             preStat.setString(i, tag);
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -709,9 +710,9 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
-            preStat.setString(i++, "");
+            preStat.setString(i++, "lockXRayTestExecution");
             preStat.setString(i, tag);
             return preStat.executeUpdate();
         } catch (SQLException exception) {
@@ -736,7 +737,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.param.tag : {}", tag.getTag());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setTimestamp(i++, tag.getDateEndQueue());
@@ -812,8 +813,8 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(campaign)) {
@@ -830,7 +831,7 @@ public class TagDAO implements ITagDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -900,6 +901,7 @@ public class TagDAO implements ITagDAO {
         String lambdaTestBuild = rs.getString("tag.LambdaTestBuild");
         String xRayTestExecution = rs.getString("tag.XRayTestExecution");
         String xRayURL = rs.getString("tag.XRayURL");
+        String xRayMEssage = rs.getString("tag.XRayMessage");
 
         return Tag.builder()
                 .id(id).tag(tag).description(description).comment(comment)
@@ -912,7 +914,7 @@ public class TagDAO implements ITagDAO {
                 .systemList(systemList).applicationList(applicationList)
                 .reqEnvironmentList(reqEnvironmentList).reqCountryList(reqCountryList)
                 .browserstackBuildHash(browserstackBuildHash).lambdaTestBuild(lambdaTestBuild)
-                .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL)
+                .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL).xRayMessage(xRayMEssage)
                 .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif)
                 .dateModif(dateModif).build();
     }

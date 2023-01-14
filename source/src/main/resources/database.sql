@@ -6191,3 +6191,12 @@ ALTER TABLE `appservice`
     ADD COLUMN `IsAvroEnableKey` BOOLEAN DEFAULT 0 AFTER `SchemaRegistryUrl`,
     ADD COLUMN `IsAvroEnableValue` BOOLEAN DEFAULT 0 AFTER `AvroSchemaKey`;
 
+-- 1746
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_xray_tokencache_duration', '300', 'Cache duration in second of JIRA XRay token (default to 300 seconds / 5 minutes).'),
+    ('', 'cerberus_xray_sendenvironments_enable', 'false', 'boolean in order to activate or not the sending of environments to XRay.');
+
+-- 1747
+ALTER TABLE `tag` 
+    ADD COLUMN `XRayMessage` TEXT NULL AFTER `XRayURL`;
+

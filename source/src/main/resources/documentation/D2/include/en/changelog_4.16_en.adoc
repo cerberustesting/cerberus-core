@@ -16,6 +16,7 @@
 * Progress bar on memory consumption on maintenance page
 * Kafka Avro Schema registry URL now decoded #2426
 * Added Kafka AVRO support also on key. #2418
+* XRay Integration with ERROR message when link is not done + tokencache parameter + environments synchronisation parameter.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

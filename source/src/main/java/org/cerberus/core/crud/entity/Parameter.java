@@ -80,6 +80,8 @@ public class Parameter {
     public static final String VALUE_cerberus_xraycloud_clientid = "cerberus_xraycloud_clientid";
     public static final String VALUE_cerberus_xraydc_url = "cerberus_xraydc_url";
     public static final String VALUE_cerberus_xraydc_token = "cerberus_xraydc_token";
+    public static final String VALUE_cerberus_xray_tokencache_duration = "cerberus_xray_tokencache_duration";
+    public static final String VALUE_cerberus_xray_sendenvironments_enable = "cerberus_xray_sendenvironments_enable";
     public static final String VALUE_cerberus_sikuli_typeDelay = "cerberus_sikuli_typeDelay";
     public static final String VALUE_cerberus_testcaseautofeed_enable = "cerberus_testcaseautofeed_enable";
 

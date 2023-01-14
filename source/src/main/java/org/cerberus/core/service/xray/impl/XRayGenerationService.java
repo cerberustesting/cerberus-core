@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -68,19 +69,27 @@ public class XRayGenerationService implements IXRayGenerationService {
             infoMessage.put("description", tag.getDescription());
             infoMessage.put("startDate", convertToDate(tag.getDateCreated()));
 
-            JSONArray environments = new JSONArray();
-            environments.put(execution.getEnvironment());
-            environments.put(execution.getCountry());
-            if (execution.getRobotObj() != null) {
-                environments.put(execution.getRobotObj().getRobotDecli());
+            // Adding Environments 
+            if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_xray_sendenvironments_enable, execution.getSystem(), false)) {
+                JSONArray environments = new JSONArray();
+                if (StringUtil.isNotEmpty(execution.getEnvironment())) {
+                    environments.put(execution.getEnvironment());
+                }
+                if (StringUtil.isNotEmpty(execution.getCountry())) {
+                    environments.put(execution.getCountry());
+                }
+                if (execution.getRobotObj() != null) {
+                    environments.put(execution.getRobotObj().getRobotDecli());
+                }
+                infoMessage.put("testEnvironments", environments);
             }
-            infoMessage.put("testEnvironments", environments);
 
             xRayMessage.put("info", infoMessage);
 
             JSONArray testsMessage = new JSONArray();
             JSONObject testMessage = new JSONObject();
             testMessage.put("testKey", execution.getTestCaseObj().getRefOrigine());
+
             testMessage.put("start", convertToDate(execution.getStart()));
             testMessage.put("finish", convertToDate(execution.getEnd()));
             testMessage.put("comment", execution.getId() + " - " + execution.getControlMessage());
