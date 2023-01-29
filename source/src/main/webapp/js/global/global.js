@@ -567,7 +567,7 @@ function displayApplicationIpList(selectName, system, application) {
     $.when($.getJSON("ReadCountryEnvironmentParameters", "system=" + system + "&application=" + application)).then(function (data) {
         for (var option in data.contentTable) {
             var line = $("<button type='button' data-country='" + data.contentTable[option].country + "' data-environment='" + data.contentTable[option].environment + "' name='applicationIpItem' class='list-group-item list-group-item-action'>" +
-                    "<span class='col-lg-8 grayscale'>" + data.contentTable[option].ip + "</span>" +
+                    "<span class='col-lg-8 grayscale' style='word-wrap: break-word;text-overflow;'>" + data.contentTable[option].ip + "</span>" +
                     "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].country + "</span>" +
                     "<span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].environment + "</span></div>" +
                     "</button>");

@@ -1219,13 +1219,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                                pathContent = jsonService.getFromJson(responseBody, null, path);
-                            } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.resolveDescription("ERROR", ex.toString());
-                                return mes;
-                            }
-                            break;
+                            pathContent = jsonService.getFromJson(responseBody, null, path);
+                        } catch (Exception ex) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                            mes.resolveDescription("ERROR", ex.toString());
+                            return mes;
+                        }
+                        break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
