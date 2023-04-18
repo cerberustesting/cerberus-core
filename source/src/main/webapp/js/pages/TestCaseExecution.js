@@ -2198,15 +2198,15 @@ Step.prototype.draw = function () {
 
     if (object.returnCode === "OK") {
         htmlElement.prepend($('<span class="label label-primary labelGreen optionLabel pull-left"><span class="glyphicon glyphicon-ok"></span></span>'));
-        htmlElement.addClass("itemStatusOK");
+        htmlElement.addClass("stepStatusOK");
     } else if (object.returnCode === "FA") {
         htmlElement.prepend($('<span class="label label-primary labelOrange optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
-        htmlElement.addClass("itemStatusFA");
+        htmlElement.addClass("stepStatusFA");
     } else if (object.returnCode === "PE") {
         htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
     } else if (object.returnCode === "KO") {
         htmlElement.prepend($('<span class="label label-primary labelRed optionLabel pull-left"><span class="glyphicon glyphicon-remove"></span></span>'));
-        htmlElement.addClass("itemStatusKO");
+        htmlElement.addClass("stepStatusKO");
     } else if (object.returnCode === "NA") {
         htmlElement.prepend($('<span class="label label-primary labelYellow optionLabel pull-left"><span class="glyphicon glyphicon-alert"></span></span>'));
     } else if (object.returnCode === "NE") {
@@ -2663,16 +2663,22 @@ function triggerActionExecution(element, id, status) {
 
     // update element checked
     if (status === "OK") {
+        $(element).parents(".action-group").removeClass("itemStatusFA itemStatusKO");
+        $(element).parents(".action-group").addClass("itemStatusOK");
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
         $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else if (status === "FA") {
+        $(element).parents(".action-group").removeClass("itemStatusOK itemStatusKO");
+        $(element).parents(".action-group").addClass("itemStatusFA");
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
         $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelOrange optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("FA").change();
         newReturnCode = "FA";
     } else if (status === "KO") {
+        $(element).parents(".action-group").removeClass("itemStatusOK itemStatusFA");
+        $(element).parents(".action-group").addClass("itemStatusKO");
         $(element).parents(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
         $(element).parents(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
         $(element).parents(".action-group").find("input[name='returncode']").val("KO").change();
@@ -2716,6 +2722,8 @@ function triggerActionExecution(element, id, status) {
         if (returnCodes.includes("KO")) {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
+            $($(".stepItem")[i]).removeClass("stepStatusOK stepStatusFA");
+            $($(".stepItem")[i]).addClass("stepStatusKO");
             testCaseNewReturnCode = "KO";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
@@ -2725,6 +2733,8 @@ function triggerActionExecution(element, id, status) {
         } else if (returnCodes.includes("FA")) {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-alert pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelOrange optionLabel pull-left");
+            $($(".stepItem")[i]).removeClass("stepStatusOK stepStatusKO");
+            $($(".stepItem")[i]).addClass("stepStatusFA");
             testCaseNewReturnCode = "FA";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
@@ -2734,6 +2744,8 @@ function triggerActionExecution(element, id, status) {
         } else {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
+            $($(".stepItem")[i]).removeClass("stepStatusKO stepStatusFA");
+            $($(".stepItem")[i]).addClass("stepStatusOK");
             testCaseNewReturnCode = "OK";
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;

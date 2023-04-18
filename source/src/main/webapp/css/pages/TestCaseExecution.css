@@ -178,15 +178,15 @@
     color: #555;
 }
 
-.itemStatusOK, .itemStatusOK:not(:focus) {
+.stepStatusOK, .stepStatusOK:not(:focus) {
     background-color: var(--crb-green-light-color);
 }
 
-.itemStatusFA, .itemStatusFA:not(:focus) {
+.stepStatusFA, .stepStatusFA:not(:focus) {
     background-color: var(--crb-orange-light-color);
 }
 
-.itemStatusKO, .itemStatusKO:not(:focus) {
+.stepStatusKO, .stepStatusKO:not(:focus) {
     background-color: var(--crb-red-light-color);
 }
 
@@ -202,7 +202,7 @@
     background-color: var(--crb-red-light-color) !important;
 }
 
-.itemStatusOK:hover, .itemStatusnFA:hover, .itemStatusKO:hover {
+.stepStatusOK:hover, .stepStatusFA:hover, .stepStatusKO:hover, .itemStatusOK:hover, .itemStatusFA:hover, .itemStatusKO:hover {
     background-color: #f5f5f5 !important;
 }
 
