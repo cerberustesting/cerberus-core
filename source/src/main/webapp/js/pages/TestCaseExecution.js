@@ -2654,12 +2654,14 @@ function returnMessageWritable(object, field) {
 function triggerActionExecution(element, id, status) {
     var newReturnCode = "WE";
     //update first all element of actionDiv in case of control change
-    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+    /*$(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
     $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").val("OK").change();
     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").attr("data-modified", "true");
+    $(element).parents("[name='fullActionDiv']").find(".action").addClass("itemStatusOK");
+    $(element).parents("[name='fullActionDiv']").find(".control").addClass("itemStatusOK");
     $(element).parents("[name='fullActionDiv']").removeClass("initialStatus");
-    $(element).parents("[name='fullActionDiv']").find(".action-group").data("item").returnCode = "OK";
+    $(element).parents("[name='fullActionDiv']").find(".action-group").data("item").returnCode = "OK";*/
 
     // update element checked
     if (status === "OK") {
@@ -2689,32 +2691,42 @@ function triggerActionExecution(element, id, status) {
 
     //Modify all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $(element).parents("[name='fullActionDiv']").prevAll('.initialStatus');
-    prevElementCurrentStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
-    prevElementCurrentStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
-    prevElementCurrentStep.find("input[id='returnmessage']").val("Action manually executed").change();
-    prevElementCurrentStep.find(".action-group").each(function (i, obj) {
-        if (typeof $(obj).data("item") !== "undefined") {
-            $(obj).data("item").returnCode = "OK";
-        }
-    });
-    prevElementCurrentStep.removeClass('initialStatus');
+    if (!prevElementCurrentStep.find(".action").hasClass("itemStatusOK") && !prevElementCurrentStep.find(".action").hasClass("itemStatusFA") && !prevElementCurrentStep.find(".action").hasClass("itemStatusKO") && !prevElementCurrentStep.find(".control").hasClass("itemStatusOK") && !prevElementCurrentStep.find(".control").hasClass("itemStatusFA") && !prevElementCurrentStep.find(".control").hasClass("itemStatusKO")) {
+        prevElementCurrentStep.find(".action").addClass("itemStatusOK");
+        prevElementCurrentStep.find(".control").addClass("itemStatusOK");
+        prevElementCurrentStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+        prevElementCurrentStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
+        prevElementCurrentStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
+        prevElementCurrentStep.find("input[id='returnmessage']").val("Action manually executed").change();
+        prevElementCurrentStep.find(".action-group").each(function (i, obj) {
+            if (typeof $(obj).data("item") !== "undefined") {
+                $(obj).data("item").returnCode = "OK";
+            }
+        });
+        prevElementCurrentStep.removeClass('initialStatus');
+    }
 
     //Modify all previous action and control of the previous steps that have not been modified yet
     var prevElementPreviousStep = $(element).parents("[name='fullActionDiv']").parent().prevAll().find('.initialStatus');
-    prevElementPreviousStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
-    prevElementPreviousStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
-    prevElementPreviousStep.find("input[id='returnmessage']").val("Action manually executed").change();
-    prevElementPreviousStep.find(".action-group").each(function (i, obj) {
-        if (typeof $(obj).data("item") !== "undefined") {
-            $(obj).data("item").returnCode = "OK";
-        }
-    });
-    prevElementPreviousStep.removeClass('initialStatus');
+    if (!prevElementPreviousStep.find(".action").hasClass("itemStatusOK") && !prevElementPreviousStep.find(".action").hasClass("itemStatusFA") && !prevElementPreviousStep.find(".action").hasClass("itemStatusKO")) {
+        prevElementPreviousStep.find(".action").addClass("itemStatusOK");
+        prevElementPreviousStep.find(".control").addClass("itemStatusOK");
+        prevElementPreviousStep.find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+        prevElementPreviousStep.find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
+        prevElementPreviousStep.find("input[name='returncode']").attr("data-modified", "true").val("OK").change();
+        prevElementPreviousStep.find("input[id='returnmessage']").val("Action manually executed").change();
+        prevElementPreviousStep.find(".action-group").each(function (i, obj) {
+            if (typeof $(obj).data("item") !== "undefined") {
+                $(obj).data("item").returnCode = "OK";
+            }
+        });
+        prevElementPreviousStep.removeClass('initialStatus');
+    }
 
     // Modify Steps
     var testCaseNewReturnCode = "WE";
+    let koStatus = 0;
+    let faStatus = 0;
     $("#actionContainer").children().each(function (i) {
         var returnCodes = $(this).find("[name='returncode']").map(function () {
             return $(this).val();
@@ -2725,6 +2737,7 @@ function triggerActionExecution(element, id, status) {
             $($(".stepItem")[i]).removeClass("stepStatusOK stepStatusFA");
             $($(".stepItem")[i]).addClass("stepStatusKO");
             testCaseNewReturnCode = "KO";
+            koStatus++;
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
@@ -2736,23 +2749,38 @@ function triggerActionExecution(element, id, status) {
             $($(".stepItem")[i]).removeClass("stepStatusOK stepStatusKO");
             $($(".stepItem")[i]).addClass("stepStatusFA");
             testCaseNewReturnCode = "FA";
+            faStatus++;
             if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
                 $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
             }
             //htmlElement.prepend($('<span class="label label-primary labelBlue optionLabel pull-left"><span class="glyphicon glyphicon-refresh spin"></span></span>'));
 
         } else {
-            $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-            $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
-            $($(".stepItem")[i]).removeClass("stepStatusKO stepStatusFA");
-            $($(".stepItem")[i]).addClass("stepStatusOK");
-            testCaseNewReturnCode = "OK";
-            if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
-                $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
+            if (!returnCodes.includes("") || returnCodes.includes("OK")) {
+                $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
+                $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
+                $($(".stepItem")[i]).removeClass("stepStatusKO stepStatusFA");
+                $($(".stepItem")[i]).addClass("stepStatusOK");
+                testCaseNewReturnCode = "OK";
+                if (typeof $($(".stepItem")[i]).data("item") !== 'undefined') {
+                    $($(".stepItem")[i]).data("item").returnCode = testCaseNewReturnCode;
+                }
             }
         }
 
     });
+
+    //Global result of testcase
+    if (koStatus > 0) {
+        testCaseNewReturnCode = "KO";
+        if (faStatus > 0) {
+            testCaseNewReturnCode = "FA";
+        }
+    } else if (faStatus > 0) {
+        testCaseNewReturnCode = "FA";
+    } else {
+        testCaseNewReturnCode = "OK";
+    }
 
     // Modify Execution
     var configPanel = $("#testCaseConfig");
