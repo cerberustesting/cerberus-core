@@ -26,12 +26,12 @@ var Tags = [];
 
 
 $.when($.getScript("js/global/global.js")
-        , $.getScript("js/global/autocomplete.js")
-        , $.getScript("js/testcase/action.js")
-        , $.getScript("js/testcase/property.js")
-        , $.getScript("js/testcase/condition.js")
-        , $.getScript("js/testcase/control.js")
-        ).then(function () {
+    , $.getScript("js/global/autocomplete.js")
+    , $.getScript("js/testcase/action.js")
+    , $.getScript("js/testcase/property.js")
+    , $.getScript("js/testcase/condition.js")
+    , $.getScript("js/testcase/control.js")
+).then(function () {
     $(document).ready(function () {
         initModalDataLib();
         $("#nav-property").on('mouseenter', 'a', function (ev) {
@@ -371,9 +371,9 @@ $.when($.getScript("js/global/global.js")
         closeEveryNavbarMenu();
 
         $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'
-        }
+                'placement': 'auto',
+                'container': 'body'
+            }
         );
 
         // open Run navbar Menu
@@ -400,7 +400,6 @@ $.when($.getScript("js/global/global.js")
 
 
         }
-
 
 
     });
@@ -735,19 +734,18 @@ function drawPropertyList(property, index, isSecondary) {
     }
 
     deleteBtn.click(function (ev) {
-
         if (allDelete !== true) {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
                     if (!$(this).hasClass("list-group-item-danger")) {
-                        $(this).find("button.add-btn.btn-danger").trigger("click");
+                        $(this).find("button.btn.add-btn.deleteItem-btn").trigger("click");
                     }
                 }
             });
         } else {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
-                    $(this).find("button.add-btn.btn-danger").trigger("click");
+                    $(this).find("button.btn.add-btn.deleteItem-btn").trigger("click");
                 }
             });
         }
@@ -1176,7 +1174,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1197,7 +1195,7 @@ function sortSecondaryProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1244,8 +1242,8 @@ function getTestCaseCountry(countries, countriesToCheck, isDisabled) {
         }
 
         div.append($("<label></label>").addClass("checkbox-inline")
-                .append(input)
-                .append(country));
+            .append(input)
+            .append(country));
 
         cpt++;
         html.push(div);
@@ -1301,15 +1299,15 @@ function showImportStepDetail(element) {
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-                '<div id="' + importInfoId + '" class="row">' +
-                '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-                '   <div name="importInfo" class="col-sm-5"></div>' +
-                '   <div class="col-sm-2">' +
-                '    <label class="checkbox-inline">' +
-                '        <input type="checkbox" name="useStep" checked> Use Step' +
-                '    </label>' +
-                '   </div>' +
-                '</div>';
+            '<div id="' + importInfoId + '" class="row">' +
+            '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+            '   <div name="importInfo" class="col-sm-5"></div>' +
+            '   <div class="col-sm-2">' +
+            '    <label class="checkbox-inline">' +
+            '        <input type="checkbox" name="useStep" checked> Use Step' +
+            '    </label>' +
+            '   </div>' +
+            '</div>';
 
         $("#importDetail").append(importInfo);
         $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
@@ -1502,7 +1500,7 @@ function loadLibraryStep(search, system) {
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
                         $("#lib").append(listGr);
@@ -1512,7 +1510,7 @@ function loadLibraryStep(search, system) {
                     if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
@@ -1533,8 +1531,8 @@ function loadLibraryStep(search, system) {
 
             $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
-                        .toggleClass('glyphicon-chevron-right')
-                        .toggleClass('glyphicon-chevron-down');
+                    .toggleClass('glyphicon-chevron-right')
+                    .toggleClass('glyphicon-chevron-down');
             });
 
             $("#addStepModal #search").unbind("input").on("input", function (e) {
@@ -1597,13 +1595,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
     showModalConfirmation(function () {
         $('#confirmationModal').modal('hide');
     }, undefined, doc.getDocLabel("page_global", "warning"),
-            doc.getDocLabel("page_testcasescript", "cant_detach_library") +
-            "<br/>" +
-            "<div id='otherStepThatUseIt' style='width:100%;'>" +
-            "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
-            "<span class='glyphicon glyphicon-refresh spin'></span>" +
-            "</div>" +
-            "</div>", "", "", "", "");
+        doc.getDocLabel("page_testcasescript", "cant_detach_library") +
+        "<br/>" +
+        "<div id='otherStepThatUseIt' style='width:100%;'>" +
+        "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
+        "<span class='glyphicon glyphicon-refresh spin'></span>" +
+        "</div>" +
+        "</div>", "", "", "", "");
 }
 
 
@@ -1661,7 +1659,7 @@ function handleDragEnter(event) {
             $(target).parent(".action-group").before(source.parentNode);
         }
     } else if (sourceData instanceof Control &&
-            (targetData instanceof Action || targetData instanceof Control)) {
+        (targetData instanceof Action || targetData instanceof Control)) {
         if (isBefore(source, target) || targetData instanceof Action) {
             $(target).after(source);
         } else {
@@ -1827,12 +1825,12 @@ Step.prototype.draw = function () {
         var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
         stepLabelContainer.append(labelOptions[0]);
     } else if ((this.conditionOperator !== "never")
-            && (this.conditionOperator !== "always")) {
+        && (this.conditionOperator !== "always")) {
 
 
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
-            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLightRed">Do not execute</span>');
         stepLabelContainer.append(labelOptions[0]);
     }
@@ -2595,10 +2593,10 @@ Action.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     //FIRST ROW
@@ -2708,7 +2706,6 @@ Action.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group marginBottom10").append(field1Container));
     secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group marginBottom10").append(field2Container));
     secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group marginBottom10").append(field3Container));
-
 
 
     if ((this.parentStep.isUsingLibraryStep) || (!action.hasPermissionsUpdate)) {
@@ -3011,10 +3008,10 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
@@ -3304,7 +3301,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
     // function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function (configs, context, Tags) {
-        
+
         if (Tags !== undefined) {
             TagsToUse = Tags;
         }
@@ -3335,7 +3332,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
 
-        function   initAutocompleteVariablesOnly(e) {
+        function initAutocompleteVariablesOnly(e) {
 //            console.log("start feed autocomplete on focus (variable only).");
             configs.indentifier = false;
             initAutocompleteWithTagsNoElement($(this), configs, contextInfo);
@@ -3375,7 +3372,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             console.log("trigger settingsButton.");
             $(this).trigger("settingsButton");
         }
-
 
 
         // Adding Autocomplete on all fields. ##### crb-autocomplete-varaible (include Variables ONLY) #####
@@ -3472,16 +3468,16 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 name = name.slice(1, name.length - 1);
                                 if ($(this).hasClass("v1")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg1")
-                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 } else if ($(this).hasClass("v2")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg2")
-                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 } else if ($(this).hasClass("v3")) {
                                     $(htmlElement).parents(".step-action").find("#ApplicationObjectImg3")
-                                            .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
-                                            .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
+                                        .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
+                                        .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 }
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
