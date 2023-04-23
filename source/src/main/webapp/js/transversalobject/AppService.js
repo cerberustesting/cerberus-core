@@ -366,7 +366,11 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
     $('#editSoapLibraryModal #typeLogo').attr('src', './images/logo-' + newValueType + '.png').attr('alt', newValueType);
 
     $("#editSoapLibraryModal #tab2Text").show();
+    $("#editSoapLibraryModal #tab3Text").show();
+    $("#editSoapLibraryModal #tab4Text").show();
     $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
+    $("label[name='operationField']").html("Operation");
+
 
     if (newValueType === "SOAP") {
         // If SOAP service, no need to feed the method.
@@ -389,6 +393,7 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
         $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("Request Detail");
+
     } else if (newValueType === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
@@ -398,6 +403,7 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
         $('.upload-drop-zone').show();
@@ -434,6 +440,7 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "block");
+        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
         $('.upload-drop-zone').hide();
@@ -479,6 +486,42 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
         }
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tab3Text').text("KAFKA Props");
+
+    } else if (newValueType === "MONGODB") {
+        $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("MongoDB Query");
+
+        $('#editSoapLibraryModal #method').prop("disabled", false);
+        $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="GET"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="POST"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "block");
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", true);
+        $('.upload-drop-zone').hide();
+        $("#editSoapLibraryModal #tab2Text").show();
+        $("#editSoapLibraryModal #tab3Text").hide();
+        $("#editSoapLibraryModal #tab4Text").hide();
+        $("label[name='screenshotfilenameField']").hide();
+        $("label[name='operationField']").parent().show();
+        $("label[name='operationField']").html("Database.Collection");
+//        $("input[name='operation']").hide();
+        $("label[name='attachementurlField']").parent().hide();
+//        $("input[name='attachementurl']").hide();
+        $("label[name='kafkaTopicField']").parent().hide();
+        $("label[name='kafkaKeyField']").parent().hide();
+        $("label[name='kafkaFilterField']").hide();
+        $("#editSoapLibraryModal #kafkaFilter").hide();
+        $("label[name='avroField']").hide();
+        $("#editSoapLibraryModal #avro").hide();
+        $("#editSoapLibraryModal #avrSchemaKeyDiv").hide();
+        $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
+        $("label[name='isFollowRedirField']").parent().hide();
+        $('#editSoapLibraryModal #tab3Text').text("Request Detail");
+
     } else { // REST
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
@@ -488,6 +531,7 @@ function refreshDisplayOnTypeChange(newValueType, newValueMethod) {
         $('#editSoapLibraryModal #method option[value="POST"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="SEARCH"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PRODUCE"]').css("display", "none");
+        $('#editSoapLibraryModal #method option[value="FIND"]').css("display", "none");
         $('#editSoapLibraryModal #addContent').prop("disabled", false);
         $('#editSoapLibraryModal #addHeader').prop("disabled", false);
         $('.upload-drop-zone').hide();

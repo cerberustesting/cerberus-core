@@ -112,6 +112,8 @@ public class AppService {
     private int kafkaWaitSecond;
     @EqualsAndHashCode.Exclude
     private boolean recordTraceFile;
+    @EqualsAndHashCode.Exclude
+    private int responseNb;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -120,6 +122,7 @@ public class AppService {
     public static final String TYPE_REST = "REST";
     public static final String TYPE_FTP = "FTP";
     public static final String TYPE_KAFKA = "KAFKA";
+    public static final String TYPE_MONGODB = "MONGODB";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
     public static final String METHOD_HTTPDELETE = "DELETE";
@@ -127,6 +130,7 @@ public class AppService {
     public static final String METHOD_HTTPPATCH = "PATCH";
     public static final String METHOD_KAFKAPRODUCE = "PRODUCE";
     public static final String METHOD_KAFKASEARCH = "SEARCH";
+    public static final String METHOD_MONGODBFIND = "FIND";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
@@ -150,6 +154,8 @@ public class AppService {
                 return this.toJSONOnFTPExecution();
             case AppService.TYPE_KAFKA:
                 return this.toJSONOnKAFKAExecution();
+            case AppService.TYPE_MONGODB:
+                return this.toJSONOnMONGODBExecution();
             default:
                 return this.toJSONOnDefaultExecution();
         }
@@ -227,6 +233,52 @@ public class AppService {
                 }
                 jsonMyResponse.put("Header", jsonHeaders);
             }
+            jsonMain.put("Response", jsonMyResponse);
+
+        } catch (JSONException ex) {
+            Logger LOG = LogManager.getLogger(RecorderService.class);
+            LOG.warn(ex);
+        }
+        return jsonMain;
+    }
+    
+    public JSONObject toJSONOnMONGODBExecution() {
+
+        JSONObject jsonMain = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
+        try {
+            // Request Information.
+            if (!(this.getTimeoutms() == 0)) {
+                jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
+            }
+            jsonMyRequest.put("ConnectionString", this.getServicePath());
+            jsonMyRequest.put("DatabaseCollection", this.getOperation());
+            if (!StringUtil.isEmpty(this.getMethod())) {
+                jsonMyRequest.put("Method", this.getMethod());
+            }
+            jsonMyRequest.put("ServiceType", this.getType());
+            
+            jsonMyRequest.put("FindRequest", this.getServiceRequest());
+
+            jsonMain.put("Request", jsonMyRequest);
+
+            // Response Information.
+            jsonMyResponse.put("ResultNb", this.getResponseNb());
+            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
+                try {
+                    JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
+                    jsonMyResponse.put("ResponseArray", respBody);
+                } catch (JSONException e1) {
+                    try {
+                        JSONObject respBody = new JSONObject(this.getResponseHTTPBody());
+                        jsonMyResponse.put("ResponseArray", respBody);
+                    } catch (JSONException e2) {
+                        jsonMyResponse.put("ResponseArray", this.getResponseHTTPBody());
+                    }
+                }
+            }
+            jsonMyResponse.put("ResponseContentType", this.getResponseHTTPBodyContentType());
             jsonMain.put("Response", jsonMyResponse);
 
         } catch (JSONException ex) {

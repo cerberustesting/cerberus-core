@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* Support for MongoDB Service type.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

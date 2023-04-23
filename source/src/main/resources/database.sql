@@ -6200,3 +6200,10 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 ALTER TABLE `tag` 
     ADD COLUMN `XRayMessage` TEXT NULL AFTER `XRayURL`;
 
+-- 1748
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES 
+    ('SRVTYPE', 'MONGODB', '100', 'MongoDB Service', '', '', '', '');
+
+-- 1749
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('SRVMETHOD', 'FIND', 800 , 'Find a MongoDB Record');

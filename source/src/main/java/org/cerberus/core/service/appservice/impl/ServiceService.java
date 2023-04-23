@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.core.service.csvfile.ICsvFileService;
+import org.cerberus.core.service.mongodb.IMongodbService;
 
 /**
  * @author bcivel
@@ -71,6 +72,8 @@ public class ServiceService implements IServiceService {
     private IVariableService variableService;
     @Autowired
     private IRestService restService;
+    @Autowired
+    private IMongodbService mongodbService;
     @Autowired
     private IKafkaService kafkaService;
     @Autowired
@@ -146,8 +149,8 @@ public class ServiceService implements IServiceService {
                     return result;
                 }
 
-                // Autocomplete of service path is disable for KAFKA service (this is because there could be a list of host).
-                if (!appService.getType().equals(AppService.TYPE_KAFKA)) {
+                // Autocomplete of service path is disable for KAFKA and MONGODB service (this is because there could be a list of host).
+                if (!appService.getType().equals(AppService.TYPE_KAFKA) && !appService.getType().equals(AppService.TYPE_MONGODB)) {
 
                     if (!(StringUtil.isURL(servicePath))) {
                         // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
@@ -415,6 +418,33 @@ public class ServiceService implements IServiceService {
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
+                                result.setResultMessage(message);
+                        }
+
+                        break;
+
+                    /**
+                     * KAFKA.
+                     */
+                    case AppService.TYPE_MONGODB:
+
+                        /**
+                         * MONGODB.
+                         */
+                        switch (appService.getMethod()) {
+
+                            case AppService.METHOD_MONGODBFIND:
+                                /**
+                                 * Call MONGODB and store it into the execution.
+                                 */
+                                result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, appService.getMethod(),
+                                        appService.getOperation(), timeoutMs, system, tCExecution);
+                                message = result.getResultMessage();
+                                break;
+
+                            default:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for MONGODB Service is not supported by the engine."));
                                 result.setResultMessage(message);
                         }
 
