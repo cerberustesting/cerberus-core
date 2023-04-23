@@ -206,14 +206,14 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
         MessageEvent message = null;
         WebElement webElement = null;
-
         try {
             if (StringUtil.isEmpty(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     webElement = (WebElement) answer.getItem();
+                } else {
+                    return answer.getResultMessage();
                 }
-                return answer.getResultMessage();
 
             } else {
                 webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
@@ -233,7 +233,11 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            if (StringUtil.isEmpty(text)) {
+                message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            } else {
+                message.setDescription(message.getDescription().replace("%ELEMENT%", "'" + text + "' (by text)"));
+            }
             LOG.debug(exception.toString());
             return message;
         } catch (Exception e) {

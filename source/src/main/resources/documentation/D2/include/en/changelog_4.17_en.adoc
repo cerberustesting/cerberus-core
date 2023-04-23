@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Fixed scrollTo action. #2458
 
 *Improvements / New features*
 [square]

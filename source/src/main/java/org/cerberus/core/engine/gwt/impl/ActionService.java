@@ -762,7 +762,10 @@ public class ActionService implements IActionService {
             return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
-            String messageString = e.getMessage().split("\n")[0];
+            String messageString = "";
+            if (e.getMessage() != null) {
+                messageString = e.getMessage().split("\n")[0];
+            }
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
             LOG.debug("Exception Running scroll to  :" + messageString, e);
             return message;
