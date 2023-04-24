@@ -91,12 +91,8 @@ public class MongodbService implements IMongodbService {
         String mongoDBResult = null;
         JSONArray mongoDBResultArray = new JSONArray();
 
-        // Replace the uri string with your MongoDB deployment's connection string
-//        String uri = "mongodb+srv://<username>:<password>@tracking.6zo4t.mongodb.net/?retryWrites=true&w=majority";
         LOG.debug("Starting MONGODB Find. " + servicePath);
 
-//        servicePath = "mongodb+srv://cerberus-test:hZpR78LHEMdi4@tracking.6zo4t.mongodb.net/?retryWrites=true&w=majority";
-//        try (MongoClient mongoClient = MongoClients.create(servicePath)) {
         try (MongoClient mongoClient = MongoClients.create(MongoClientSettings.builder().applyConnectionString(new ConnectionString(servicePath))
                 .applyToSocketSettings(builder
                         -> builder.connectTimeout(timeOutMs, MILLISECONDS) // TODO Debug as still 30 sec.
@@ -109,17 +105,19 @@ public class MongodbService implements IMongodbService {
             LOG.debug("Connection : " + MDBdtb + " / " + MDBColl);
             MongoDatabase database = mongoClient.getDatabase(MDBdtb);
             MongoCollection<Document> collection = database.getCollection(MDBColl);
+            
 //            Bson projectionFields = Projections.fields(
-            //                    Projections.include("title", "imdb"),
+//                    Projections.include("title", "imdb"),
 //                    Projections.excludeId());
 //            Document doc = collection.find(eq("ID_CDE_GET", "7883"))
 //                    .projection(projectionFields)
-//                    //                    .sort(Sorts.descending("imdb.rating"))
+//                    .sort(Sorts.descending("imdb.rating"))
 //                    .first();
 //            Document doc = collection.find(eq("ID_CDE_GET", "7883")).first();
 //                    .projection(projectionFields)
-            //                    .sort(Sorts.descending("imdb.rating"))
+//                    .sort(Sorts.descending("imdb.rating"))
 //                    .first();
+
             BasicDBObject whereQuery = new BasicDBObject();
 
             JSONObject requestObject = new JSONObject(requestString);
@@ -131,7 +129,6 @@ public class MongodbService implements IMongodbService {
                 String key = keys.next();
 //                if (requestObject.get(key) instanceof String) {
                 whereQuery.put(key, requestObject.get(key));
-                // do something with jsonObject here      
 //                }
             }
             LOG.debug("Parsed : " + requestObject);
@@ -157,17 +154,6 @@ public class MongodbService implements IMongodbService {
                 cursor.close();
             }
 
-//            if (doc == null) {
-//                LOG.debug("No results found.");
-//            } else {
-//                LOG.debug("Results found.");
-//                LOG.debug(doc.toJson());
-//                mongoDBResult = doc.toJson();
-//                serviceMONGODB.setResponseHTTPBody(mongoDBResult);
-//                serviceMONGODB.setResponseHTTPCode(0);
-//                serviceMONGODB.setResponseHTTPVersion("");
-////                serviceMONGODB.setResponseHeaderList(responseHttp.getResponseHeaderList());
-//            }
         } catch (MongoTimeoutException ex) {
             LOG.info("Exception when performing the MONGODB Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
