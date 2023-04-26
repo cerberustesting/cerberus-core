@@ -1,10 +1,13 @@
 *Bug fixes*
 [square]
 * Fixed scrollTo action. #2458
+* Fixed wrong status on manual test execution. #2455
+* Fixed impossibility to delete all property with the same name. #2454
 
 *Improvements / New features*
 [square]
 * Support for MongoDB Service type.
+* Added background on steps according to the status and displayed condition when step NE on TestcaseExecution page. #2463
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
