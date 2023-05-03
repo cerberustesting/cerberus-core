@@ -2731,7 +2731,8 @@ function triggerActionExecution(element, id, status) {
         var returnCodes = $(this).find("[name='returncode']").map(function () {
             return $(this).val();
         }).get();
-        if (returnCodes.includes("KO")) {
+        //Step is KO when we have only KO and no FA, otherwise, if we have KO and FA, status of step is FA
+        if (returnCodes.includes("KO") && !returnCodes.includes("FA")) {
             $($(".stepItem")[i]).find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-remove pull-left");
             $($(".stepItem")[i]).find("span.label").removeClass().addClass("label label-primary labelRed optionLabel pull-left");
             $($(".stepItem")[i]).removeClass("stepStatusOK stepStatusFA");
