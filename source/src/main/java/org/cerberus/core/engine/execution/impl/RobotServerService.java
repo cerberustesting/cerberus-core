@@ -804,6 +804,11 @@ public class RobotServerService implements IRobotServerService {
                         profile.setPreference("general.useragent.override", usedUserAgent);
                     }
 
+                    // Activate DRM
+                        optionsFF.addPreference("media.eme.enabled",true);
+                        optionsFF.addPreference("media.gmp-manager.updateEnabled", true);
+
+
                     // Verbose level and Headless
                     if (tCExecution.getVerbose() <= 0) {
                         optionsFF.setHeadless(true);
@@ -818,6 +823,7 @@ public class RobotServerService implements IRobotServerService {
                         optionsFF.setProxy(proxy);
                     }
                     optionsFF.setProfile(profile);
+
 
                     // Accept Insecure Certificates.
                     optionsFF.setAcceptInsecureCerts(tCExecution.getRobotObj() == null || tCExecution.getRobotObj().isAcceptInsecureCerts());

@@ -1026,23 +1026,31 @@ public class WebDriverService implements IWebDriverService {
         String title;
 
         switch (identifier) {
-            case Identifier.IDENTIFIER_URL: {
-
+            case Identifier.IDENTIFIER_URL:
                 wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
-                return session.getDriver().getCurrentUrl().equals(value);
-            }
+                result = session.getDriver().getCurrentUrl().equals(value);
+                break;
+            case Identifier.IDENTIFIER_REGEXURL:
+                wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
+                String currentUrl = session.getDriver().getCurrentUrl();
+                Pattern patternUrl = Pattern.compile(value);
+                Matcher matcherUrl = patternUrl.matcher(currentUrl);
+                result = matcherUrl.find();
+                break;
             case Identifier.IDENTIFIER_REGEXTITLE:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();
                 Pattern pattern = Pattern.compile(value);
                 Matcher matcher = pattern.matcher(title);
                 result = matcher.find();
+                break;
             default:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();
                 if (title.equals(value)) {
                     result = true;
                 }
+                break;
         }
         return result;
     }
