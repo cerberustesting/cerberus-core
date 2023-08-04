@@ -3,6 +3,7 @@
 * Fixed scrollTo action. #2458
 * Fixed wrong status on manual test execution. #2455
 * Fixed impossibility to delete all property with the same name. #2454
+* Fixed the Job that CANCELLED execution queue entries so that it does not not consider the timeout from the time it was inserted to the queue but the time when the execution was triggered. #2472
 
 *Improvements / New features*
 [square]
