@@ -308,6 +308,12 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE:
                     res = this.verifyElementNotVisible(execution, value1);
                     break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCHECKED:
+                    res = this.verifyElementChecked(execution, value1);
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCHECKED:
+                    res = this.verifyElementNotChecked(execution, value1);
+                    break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS:
                     res = this.verifyElementEquals(execution, value1, controlExecution.getValue2());
                     break;
@@ -910,6 +916,66 @@ public class ControlService implements IControlService {
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE_NULL);
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyElementChecked(TestCaseExecution tCExecution, String html) {
+        LOG.debug("Control: verifyElementChecked on: {}", html);
+        MessageEvent mes;
+        if (!StringUtil.isEmptyOrNullValue(html)) {
+            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    if (this.webdriverService.isElementChecked(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CHECKED);
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CHECKED);
+                    }
+                    mes.resolveDescription("STRING1", html);
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTCHECKED);
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            }
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CHECKED_NULL);
+        }
+        return mes;
+    }
+
+    private MessageEvent verifyElementNotChecked(TestCaseExecution tCExecution, String html) {
+        LOG.debug("Control: verifyElementNotChecked on: {}", html);
+        MessageEvent mes;
+        if (!StringUtil.isEmptyOrNullValue(html)) {
+            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    if (this.webdriverService.isElementNotChecked(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCHECKED);
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCHECKED);
+                    }
+                    mes.resolveDescription("STRING1", html);
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCHECKED);
+                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+            }
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCHECKED_NULL);
         }
         return mes;
     }

@@ -599,6 +599,36 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
+    public boolean isElementChecked(Session session, Identifier identifier) {
+        try {
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement webElement = (WebElement) answer.getItem();
+                return webElement != null && webElement.isSelected();
+            }
+
+        } catch (NoSuchElementException exception) {
+            LOG.warn(exception.toString());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isElementNotChecked(Session session, Identifier identifier) {
+        try {
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement webElement = (WebElement) answer.getItem();
+                return webElement != null && !webElement.isSelected();
+            }
+
+        } catch (NoSuchElementException exception) {
+            LOG.warn(exception.toString());
+        }
+        return false;
+    }
+
+    @Override
     public String getPageSource(Session session) {
         return session.getDriver().getPageSource();
     }
