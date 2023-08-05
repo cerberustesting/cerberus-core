@@ -416,7 +416,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Open Kafka Consumer
             execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGKAFKACONSUMERS));
-            updateExecutionWebSocketOnly(execution, true);
+            updateExecution(execution, true);
             execution.setKafkaLatestOffset(kafkaService.getAllConsumers(mainExecutionTestCaseStepList, execution));
 
             // Initialize the global TestCaseExecution Data List

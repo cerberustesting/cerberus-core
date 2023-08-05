@@ -594,6 +594,8 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaResponseOffset(-1);
                                 appService.setKafkaFilterPath(decodedFilterPath);
                                 appService.setKafkaFilterValue(decodedFilterValue);
+                                appService.setKafkaFilterHeaderPath(decodedFilterHeaderPath);
+                                appService.setKafkaFilterHeaderValue(decodedFilterHeaderValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
                                 AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,

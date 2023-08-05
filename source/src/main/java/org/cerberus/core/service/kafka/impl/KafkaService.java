@@ -256,46 +256,6 @@ public class KafkaService implements IKafkaService {
 
             if (activateAvro) {
 
-//                String userSchema = "{"
-//                        + "	\"name\": \"ProductGenericEvent\","
-//                        + "	\"type\": \"record\","
-//                        + "	\"namespace\": \"fr.adeo.redwood.event.avro.product\","
-//                        + "	\"fields\": ["
-//                        + "		{"
-//                        + "			\"name\": \"id\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"timestamp\","
-//                        + "			\"type\": \"long\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"eventType\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"productReferenceAdeo\","
-//                        + "			\"type\": \"int\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"productReferenceBU\","
-//                        + "			\"type\": \"int\""
-////                        + "			\"type\": [\"int\",\"null\"],"
-////                        + "			\"default\":null"
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"codeBU\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"source\","
-//                        + "			\"type\": \"string\""
-//                        + "		}"
-//                        + "	]"
-//                        + "}";
-//
-//                LOG.debug("userSchema");
-//                LOG.debug(userSchema);
                 Schema.Parser parser = new Schema.Parser();
                 Schema schemaValue;
                 Schema schemaKey;
