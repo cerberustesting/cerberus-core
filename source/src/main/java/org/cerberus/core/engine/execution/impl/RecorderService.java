@@ -217,7 +217,7 @@ public class RecorderService implements IRecorderService {
             step = String.valueOf(controlExecution.getStepId());
             index = String.valueOf(controlExecution.getIndex());
             sequence = String.valueOf(controlExecution.getActionId());
-            controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
+            controlString = String.valueOf(controlNumber);
         }
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
@@ -227,10 +227,8 @@ public class RecorderService implements IRecorderService {
             File dir = null;
             if (file != null) {
                 name = file.getName();
-                extension = name.substring(name.lastIndexOf('.') + 1);
-                extension = extension.toUpperCase();
                 extension = testCaseExecutionFileService.checkExtension(name, extension);
-                recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')), extension, true);
+                recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name, extension, true);
                 dir = new File(recorder.getFullPath());
             } else {
                 name = fileName;
@@ -1053,9 +1051,9 @@ public class RecorderService implements IRecorderService {
     /**
      * Auxiliary method that saves a file
      *
-     * @param path     - directory path
+     * @param path - directory path
      * @param fileName - name of the file
-     * @param content  -content of the file
+     * @param content -content of the file
      */
     private void recordFile(String path, String fileName, String content, HashMap<String, String> secrets) {
         LOG.debug("Starting to save File (recordFile) : {} {}", path, fileName);

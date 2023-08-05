@@ -33,6 +33,7 @@ import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -76,7 +77,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     }
 
     @Override
-    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException{
+    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException {
         return testCaseExecutionFileDAO.getListByFileDesc(exeId, fileDesc);
     }
 
@@ -98,13 +99,13 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
         AnswerItem objectAnswer = readByKey(exeId, level, fileDesc);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
-    
+
     @Override
     public boolean exist(long exeId, String level) {
         AnswerItem objectAnswer = readByKey(exeId, level, null);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
-    
+
     @Override
     public Answer create(TestCaseExecutionFile object) {
         return testCaseExecutionFileDAO.create(object);
@@ -128,70 +129,73 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
             return create(object);
         }
     }
+
     @Override
     public void deleteFile(String root, String fileName) {
-    	File currentFile = new File(root + File.separator +fileName);
-    	currentFile.delete();
+        File currentFile = new File(root + File.separator + fileName);
+        currentFile.delete();
     }
-    
+
     @Override
     public Answer saveManual(TestCaseExecutionFile object) {
-    	if(this.exist(object.getId())) {
-    		return update(object);
-    	}else {
-    		return create(object);
-    	}
+        if (this.exist(object.getId())) {
+            return update(object);
+        } else {
+            return create(object);
+        }
     }
-    
+
     /**
      * this function allow to check if extension exist in invariants table
      */
-    
     @Override
     public String checkExtension(String fileName, String extension) {
-		if(extension.isEmpty() || (extension == null ? fileName.substring(fileName.lastIndexOf('.')+1, fileName.length()) != null : !extension.equals(fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())))) {
-			if(fileName.contains(".")) {
-				extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
-				extension = extension.trim().toUpperCase();
-			}else {
-				extension = "BIN";
-			}
-			
-			switch(extension) {
-				case TestCaseExecutionFile.FILETYPE_JPG:
-					extension = "JPG";
-					break;
-				case TestCaseExecutionFile.FILETYPE_PNG:
-					extension = "PNG";
-					break;
-				case TestCaseExecutionFile.FILETYPE_JPEG:
-					extension = "JPG";
-					break;
-				case TestCaseExecutionFile.FILETYPE_PDF:
-					extension = "PDF";
-					break;
-				case TestCaseExecutionFile.FILETYPE_JSON:
-					extension = "JSON";
-					break;
-				case TestCaseExecutionFile.FILETYPE_XML:
-					extension = "XML";
-					break;
-				case TestCaseExecutionFile.FILETYPE_TXT:
-					extension = "TXT";
-					break;
-				case TestCaseExecutionFile.FILETYPE_BIN:
-					extension = "BIN";
-					break;
-				default:
-					extension = "BIN";
-					break;
-			}
+        if (extension.isEmpty() || (extension == null ? fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length()) != null : !extension.equals(fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length())))) {
+            if (fileName.contains(".")) {
+                extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+                extension = extension.trim().toUpperCase();
+            } else {
+                if (StringUtil.isEmptyOrNullValue(extension)) {
+
+                    extension = "BIN";
+
+                }
+            }
+
+            switch (extension) {
+                case TestCaseExecutionFile.FILETYPE_JPG:
+                    extension = "JPG";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_PNG:
+                    extension = "PNG";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_JPEG:
+                    extension = "JPG";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_PDF:
+                    extension = "PDF";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_JSON:
+                    extension = "JSON";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_XML:
+                    extension = "XML";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_TXT:
+                    extension = "TXT";
+                    break;
+                case TestCaseExecutionFile.FILETYPE_BIN:
+                    extension = "BIN";
+                    break;
+                default:
+                    extension = "BIN";
+                    break;
+            }
         }
-		
-		return extension;
+
+        return extension;
     }
-    
-    
+
     @Override
     public TestCaseExecutionFile convert(AnswerItem<TestCaseExecutionFile> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
