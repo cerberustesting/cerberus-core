@@ -6206,9 +6206,9 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 
 -- 1749
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
-  VALUES   ('SRVMETHOD', 'FIND', 800 , 'Find a MongoDB Record');
+  VALUES ('SRVMETHOD', 'FIND', 800 , 'Find a MongoDB Record');
 
 -- 1750
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
-VALUES ('CONTROL', 'verifyElementChecked', 4930, 'Verify the element (checkbox) is checked','verifyElementChecked'),
-       ('CONTROL', 'verifyElementNotChecked', 4940, 'Verify the element (checkbox) is not checked','verifyElementNotChecked');
+    VALUES ('CONTROL', 'verifyElementChecked', 4930, 'Verify the element (checkbox) is checked','verifyElementChecked'),
+           ('CONTROL', 'verifyElementNotChecked', 4940, 'Verify the element (checkbox) is not checked','verifyElementNotChecked');
