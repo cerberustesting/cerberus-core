@@ -36,8 +36,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy to core server
         env:
-          source: './target/'
-          destination: 'debian@vm.cerberus-testing.org:/opt/delivery'  
+          source: 'source/target/'
+          destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
         run: |
           echo "${{secrets.DEPLOY_KEY}}" > deploy_key
           chmod 600 ./deploy_key
