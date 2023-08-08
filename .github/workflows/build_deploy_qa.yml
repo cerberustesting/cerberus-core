@@ -25,7 +25,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       env:
-        source: 'source/target/'
+        source: 'target/'
         destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
       run: |
         cd source
