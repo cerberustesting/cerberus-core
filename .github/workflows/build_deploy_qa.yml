@@ -25,7 +25,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       env:
-        source: 'target/'
+        source: 'target/*.war'
         destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
       run: |
         cd source
@@ -34,24 +34,5 @@ jobs:
         chmod 600 ./deploy_key
         sudo rsync -chav \
           -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
-          --exclude /sass \
           ${{env.source}} ${{env.destination}}
-
-  deploy:
-    name: deploy
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy to core server
-        env:
-          source: 'source/target/'
-          destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
-        run: |
-          echo "${{secrets.DEPLOY_KEY}}" > deploy_key
-          chmod 600 ./deploy_key
-          ls /home/runner/work/cerberus-core/cerberus-core/source/
-          sudo rsync -chav \
-            -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
-            --exclude /sass \
-            ${{env.source}} ${{env.destination}}
+        ssh debian@debian@vm.cerberus-testing.org "/opt/bin/deployQA.sh /opt/delivery/cerberus-core-4.17-SNAPSHOT.war"
