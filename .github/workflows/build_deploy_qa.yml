@@ -25,5 +25,5 @@ jobs:
     - name: Build with Maven
       run: |
         cd source
-        mvn -Dcerberus.delivery.username=${{secrets.CERBERUS_DELIVERY_USERNAME}} -Dcerberus.delivery.password=${{secrets.CERBERUS_DELIVERY_PASSWORD}} clean deploy -Pdelivery-deploy --file pom.xml 
+        mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dcerberus.delivery.username=${{secrets.CERBERUS_DELIVERY_USERNAME}} -Dcerberus.delivery.password=${{secrets.CERBERUS_DELIVERY_PASSWORD}} clean deploy -Pdelivery-deploy --file pom.xml 
 
