@@ -24,9 +24,18 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
+      env:
+        source: 'source/target/'
+        destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
       run: |
         cd source
         mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean install --file pom.xml 
+        echo "${{secrets.DEPLOY_KEY}}" > deploy_key
+        chmod 600 ./deploy_key
+        sudo rsync -chav \
+          -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
+          --exclude /sass \
+          ${{env.source}} ${{env.destination}}
 
   deploy:
     name: deploy
@@ -41,16 +50,7 @@ jobs:
         run: |
           echo "${{secrets.DEPLOY_KEY}}" > deploy_key
           chmod 600 ./deploy_key
-          ls /home/runner/work/
-          ls /home/runner/work/cerberus-core/
-          ls /home/runner/work/cerberus-core/cerberus-core/
           ls /home/runner/work/cerberus-core/cerberus-core/source/
-          ls /home/runner/.m2/
-          ls /home/runner/.m2/repository/
-          ls /home/runner/.m2/repository/org/
-          ls /home/runner/.m2/repository/org/cerberus/
-          ls /home/runner/.m2/repository/org/cerberus/cerberus-core/
-          ls /home/runner/.m2/repository/org/cerberus/cerberus-core/4.17-SNAPSHOT/
           sudo rsync -chav \
             -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
             --exclude /sass \
