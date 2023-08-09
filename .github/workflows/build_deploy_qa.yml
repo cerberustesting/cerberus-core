@@ -42,7 +42,6 @@ jobs:
         sudo rsync -chav \
           -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
           ${{env.source-zip}} ${{env.destination}}
-        ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployQA.sh /opt/delivery/`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`"
     - name: Deploy to QA
       run: |
         cd source
