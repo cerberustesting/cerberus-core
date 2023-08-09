@@ -39,5 +39,5 @@ jobs:
         sudo rsync -chav \
           -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
           ${{env.source-zip}} ${{env.destination}}
-        FILEWAR=`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`
+        export FILEWAR=`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`
         ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployQA.sh /opt/delivery/${{FILEWAR}}"
