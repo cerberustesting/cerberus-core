@@ -13,7 +13,7 @@ on:
 jobs:
 
   build:
-    name: build
+    name: build and deploy
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -24,13 +24,15 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
+      run: |
+        cd source
+        mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean install --file pom.xml 
+    - name: Push file to core VM
       env:
         source-war: 'target/*.war'
         source-zip: 'target/*.zip'
         destination: 'debian@vm.cerberus-testing.org:/opt/delivery/'  
       run: |
-        cd source
-        mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean install --file pom.xml 
         echo "${{secrets.DEPLOY_KEY}}" > deploy_key
         chmod 600 ./deploy_key
         sudo rsync -chav \
@@ -39,4 +41,9 @@ jobs:
         sudo rsync -chav \
           -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
           ${{env.source-zip}} ${{env.destination}}
+        ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployQA.sh /opt/delivery/`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`"
+    - name: Deploy to QA
+      run: |
+        echo "${{secrets.DEPLOY_KEY}}" > deploy_key
+        chmod 600 ./deploy_key
         ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployQA.sh /opt/delivery/`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`"
