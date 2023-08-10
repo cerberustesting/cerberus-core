@@ -307,6 +307,9 @@
                                         <a id="buttonRunCampaign" class="pull-right">
                                             <button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button>
                                         </a>
+                                        <a id="buttonDownloadPdfReport" class="pull-right">
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">Download Report</button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

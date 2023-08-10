@@ -125,6 +125,9 @@
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>2.0</license-maven-plugin.version>
 
+        <!-- PDF Generation itext version -->
+        <com.itextpdf.version>8.0.1</com.itextpdf.version>
+
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
 
@@ -506,6 +509,53 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${springfox.version}</version>
         </dependency>
+
+        <!-- PDF Generation -->     
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>kernel</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>io</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>layout</artifactId>         
+            <version>${com.itextpdf.version}</version>
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>forms</artifactId>         
+            <version>${com.itextpdf.version}</version>    
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>pdfa</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>sign</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>barcodes</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>font-asian</artifactId>         
+            <version>${com.itextpdf.version}</version>     
+        </dependency>  
+        <dependency>         
+            <groupId>com.itextpdf</groupId>         
+            <artifactId>hyph</artifactId>         
+            <version>${com.itextpdf.version}</version>    
+        </dependency> 
 
         <!-- Test scope -->
         <!--        <dependency>

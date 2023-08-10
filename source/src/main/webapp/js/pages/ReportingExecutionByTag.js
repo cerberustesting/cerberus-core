@@ -363,6 +363,7 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
+                $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");

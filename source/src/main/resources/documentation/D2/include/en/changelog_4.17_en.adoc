@@ -11,6 +11,7 @@
 [square]
 * Support for MongoDB Service type.
 * Added background on steps according to the status and displayed condition when step NE on TestcaseExecution page. #2463
+* A pdf report is now available for campaign execution for download #2475
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
