@@ -29,6 +29,7 @@ import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import java.io.File;
@@ -37,12 +38,15 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseStepExecution;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.springframework.stereotype.Service;
@@ -98,17 +102,44 @@ public class PDFService implements IPDFService {
             document.add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
             document.add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
 
-            document.add(new Paragraph("Triggered from campaign: " + tag.getCampaign() + "by " + tag.getUsrCreated()));
-            document.add(new Paragraph("Countries: " + StringUtil.convertToString(new JSONArray(tag.getCountryList()), ",")));
-            document.add(new Paragraph("Environments: " + StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ",")));
-            document.add(new Paragraph("Robots: " + StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ",")));
+            document.add(new Paragraph()
+                    .add(getTextFromString("Triggered from campaign: ", 10, false))
+                    .add(getTextFromString(tag.getCampaign(), 12, true))
+                    .add(getTextFromString(" by ", 10, false))
+                    .add(getTextFromString(tag.getUsrCreated(), 12, true)));
 
-            document.add(new Paragraph("CI results: " + tag.getCiResult() + " (Score=" + tag.getCiScore() + " vs " + tag.getCiScoreThreshold() + ")"));
+            document.add(new Paragraph()
+                    .add(getTextFromString("Executed on Country(ies): ", 10, false))
+                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getCountryList()), ","), 12, true))
+                    .add(getTextFromString(", Environment(s): ", 10, false))
+                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                    .add(getTextFromString(" and Robot(s): ", 10, false))
+                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
 
-            document.add(new Paragraph("Started: " + tag.getDateCreated()));
-            document.add(new Paragraph("Ended: " + tag.getDateEndQueue()));
+            document.add(new Paragraph()
+                    .add(getTextFromString("Global result for campaign is ", 10, false))
+                    .add(getTextFromString(tag.getCiResult(), 12, true))
+                    .add(getTextFromString(" (with a Score of ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getCiScore()), 12, true))
+                    .add(getTextFromString(" vs ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
+                    .add(getTextFromString(")", 10, false)));
 
-            document.add(new Paragraph(tag.getNbExe() + " Executions performed (Over " + tag.getNbExe() + " in Total including retries)"));
+            long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
+            document.add(new Paragraph()
+                    .add(getTextFromString("Campaign started at ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getDateCreated()), 12, true))
+                    .add(getTextFromString(" and ended at ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getDateEndQueue()), 12, true))
+                    .add(getTextFromString(" (duration of ", 10, false))
+                    .add(getTextFromString(String.valueOf(tagDur), 12, true))
+                    .add(getTextFromString(" min)", 10, false)));
+
+            document.add(new Paragraph()
+                    .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))
+                    .add(getTextFromString(" usefully executions were performed (Over ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getNbExe()), 12, true))
+                    .add(getTextFromString(" in total including retries)", 10, false)));
 
             /**
              * Result information per status
@@ -116,9 +147,10 @@ public class PDFService implements IPDFService {
             document.add(new Paragraph("Global Status").setMarginTop(10).setBold().setFontSize(14));
             // Creating a table
             Table tableGlobalStatus = new Table(new float[]{50, 50, 40})
-                    .addHeaderCell(new Cell().add(new Paragraph("Status")).setBackgroundColor(ColorConstants.LIGHT_GRAY))
-                    .addHeaderCell(new Cell().add(new Paragraph("Number")).setBackgroundColor(ColorConstants.LIGHT_GRAY))
-                    .addHeaderCell(new Cell().add(new Paragraph("%")).setBackgroundColor(ColorConstants.LIGHT_GRAY));
+                    .addHeaderCell(getHeaderCell("Status"))
+                    .addHeaderCell(getHeaderCell("Number"))
+                    .addHeaderCell(getHeaderCell("%"));
+
             // Map that will contain the color of every status.
             Map<String, String> statColorMap = new HashMap<>();
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_OK, TestCaseExecution.CONTROLSTATUS_OK_COL_EXT);
@@ -165,17 +197,19 @@ public class PDFService implements IPDFService {
              */
             document.add(new Paragraph("Execution list summary").setMarginTop(10).setBold().setFontSize(14));
             List<TestCaseExecution> listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+            Collections.sort(listOfExecutions, new SortExecution());
+
             // Creating a table
             Table tableExe = new Table(new float[]{25, 90, 40, 80, 20, 20, 40, 20, 50})
-                    .addHeaderCell(new Cell().add(new Paragraph("Exe ID")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Test Folder")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Test ID")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Application")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Country")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Environment")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Robot")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Prio")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8))
-                    .addHeaderCell(new Cell().add(new Paragraph("Result")).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8));
+                    .addHeaderCell(getHeaderCell("Exe ID"))
+                    .addHeaderCell(getHeaderCell("Prio"))
+                    .addHeaderCell(getHeaderCell("Test Folder"))
+                    .addHeaderCell(getHeaderCell("Test ID"))
+                    .addHeaderCell(getHeaderCell("Application"))
+                    .addHeaderCell(getHeaderCell("Country"))
+                    .addHeaderCell(getHeaderCell("Environment"))
+                    .addHeaderCell(getHeaderCell("Robot"))
+                    .addHeaderCell(getHeaderCell("Result"));
             for (TestCaseExecution execution : listOfExecutions) {
                 Cell cellID = new Cell(2, 1).add(new Paragraph(String.valueOf(execution.getId()))).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER);
                 Cell cellRes = getStatusCell(execution.getControlStatus(), 2, 1);
@@ -183,13 +217,13 @@ public class PDFService implements IPDFService {
 
                 tableExe
                         .addCell(cellID.setAction(PdfAction.createGoTo(String.valueOf(execution.getId()))))
+                        .addCell(String.valueOf(execution.getTestCasePriority()))
                         .addCell(execution.getTest())
                         .addCell(execution.getTestCase())
                         .addCell(execution.getApplication())
                         .addCell(execution.getCountry())
                         .addCell(execution.getEnvironment())
                         .addCell(execution.getRobot())
-                        .addCell(String.valueOf(execution.getTestCasePriority()))
                         .addCell(cellRes);
                 tableExe
                         .addCell(cellTCDesc);
@@ -205,6 +239,34 @@ public class PDFService implements IPDFService {
             for (TestCaseExecution execution : listOfExecutions) {
                 document.add(new Paragraph("Execution: " + execution.getId()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER).setDestination(String.valueOf(execution.getId())));
                 // Adding exeution details
+                String coloHex = getColor(execution.getControlStatus());
+                document.add(new Paragraph(execution.getControlStatus() + " - " + execution.getDescription())
+                        .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
+                document.add(new Paragraph()
+                        .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true))
+                        .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
+
+                tableExe = new Table(new float[]{25, 90, 40, 80, 20, 20, 40, 20, 50})
+                        .addHeaderCell(getHeaderCell("Test Folder"))
+                        .addHeaderCell(getHeaderCell("Test ID"))
+                        .addHeaderCell(getHeaderCell("Prio"))
+                        .addHeaderCell(getHeaderCell("Application"))
+                        .addHeaderCell(getHeaderCell("Country"))
+                        .addHeaderCell(getHeaderCell("Environment"))
+                        .addHeaderCell(getHeaderCell("Robot"));
+                tableExe
+                        .addCell(execution.getTest())
+                        .addCell(execution.getTestCase())
+                        .addCell(String.valueOf(execution.getTestCasePriority()))
+                        .addCell(execution.getApplication())
+                        .addCell(execution.getCountry())
+                        .addCell(execution.getEnvironment())
+                        .addCell(execution.getRobot());
+                document.add(tableExe.setMarginTop(10));
+
+                for (TestCaseStepExecution step : execution.getTestCaseStepExecutionList()) {
+
+                }
 
                 // Adding area break to the PDF
                 if (i++ < listOfExecutions.size()) {
@@ -220,6 +282,63 @@ public class PDFService implements IPDFService {
             LOG.error(ex, ex);
         }
         return null;
+    }
+
+    private Text getTextFromString(String text, int fontSize, boolean isBold) {
+        if (isBold) {
+            return new Text(text).setBold().setFontSize(fontSize);
+
+        } else {
+            return new Text(text).setFontSize(fontSize);
+
+        }
+    }
+
+    class SortExecution implements Comparator<TestCaseExecution> {
+        // Used for sorting in ascending order of 
+        // Label name. 
+
+        @Override
+        public int compare(TestCaseExecution a, TestCaseExecution b) {
+            if (a != null && b != null) {
+                int aPrio = a.getTestCasePriority();
+                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
+                    aPrio = 999 + a.getTestCasePriority();
+                }
+                int bPrio = b.getTestCasePriority();
+                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
+                    bPrio = 999 + b.getTestCasePriority();
+                }
+
+                if (aPrio == bPrio) {
+                    if (a.getTest().equals(b.getTest())) {
+                        if (a.getTestCase().equals(b.getTestCase())) {
+                            if (a.getEnvironment().equals(b.getEnvironment())) {
+                                if (a.getCountry().equals(b.getCountry())) {
+                                    return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
+                                } else {
+                                    return a.getCountry().compareToIgnoreCase(b.getCountry());
+                                }
+                            } else {
+                                return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
+                            }
+                        } else {
+                            return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                        }
+                    } else {
+                        return a.getTest().compareToIgnoreCase(b.getTest());
+                    }
+                } else {
+                    return aPrio - bPrio;
+                }
+            } else {
+                return 1;
+            }
+        }
+    }
+
+    private Cell getHeaderCell(String text) {
+        return new Cell().add(new Paragraph(text)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(8).setTextAlignment(TextAlignment.CENTER);
     }
 
     private Cell getStatusCell(String status, int rowspan, int colspan) {
