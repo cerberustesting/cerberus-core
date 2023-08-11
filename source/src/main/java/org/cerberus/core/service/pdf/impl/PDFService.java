@@ -19,22 +19,32 @@
  */
 package org.cerberus.core.service.pdf.impl;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import java.awt.Color;
 import java.io.File;
 
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,9 +54,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionFile;
+import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.core.crud.entity.TestCaseStepExecution;
+import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.springframework.stereotype.Service;
@@ -67,6 +84,8 @@ public class PDFService implements IPDFService {
 
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    private IParameterService parameterService;
 
     @Override
     public String generatePdf(Tag tag) throws FileNotFoundException {
@@ -95,12 +114,18 @@ public class PDFService implements IPDFService {
         // Creating a PdfDocument       
         PdfDocument pdfDoc = new PdfDocument(writer);
 
+        // Load parameters
+        String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
+        mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
+
         try ( // Creating a Document
                 Document document = new Document(pdfDoc)) {
 
+            AreaBreak aB = new AreaBreak();
+
             // Tittle
             document.add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER).setMarginBottom(30));
 
             document.add(new Paragraph()
                     .add(getTextFromString("Triggered from campaign: ", 10, false))
@@ -137,7 +162,7 @@ public class PDFService implements IPDFService {
 
             document.add(new Paragraph()
                     .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))
-                    .add(getTextFromString(" usefully executions were performed (Over ", 10, false))
+                    .add(getTextFromString(" useful executions were performed (Over ", 10, false))
                     .add(getTextFromString(String.valueOf(tag.getNbExe()), 12, true))
                     .add(getTextFromString(" in total including retries)", 10, false)));
 
@@ -191,6 +216,7 @@ public class PDFService implements IPDFService {
             }
             // Adding Table to document        
             document.add(tableGlobalStatus);
+            document.add(aB);
 
             /**
              * Summary result per execution
@@ -229,7 +255,6 @@ public class PDFService implements IPDFService {
                         .addCell(cellTCDesc);
             }
             document.add(tableExe);
-            AreaBreak aB = new AreaBreak();
             document.add(aB);
 
             /**
@@ -243,8 +268,7 @@ public class PDFService implements IPDFService {
                 document.add(new Paragraph(execution.getControlStatus() + " - " + execution.getDescription())
                         .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
                 document.add(new Paragraph()
-                        .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true))
-                        .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
+                        .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true)));
 
                 tableExe = new Table(new float[]{25, 90, 40, 80, 20, 20, 40, 20, 50})
                         .addHeaderCell(getHeaderCell("Test Folder"))
@@ -262,9 +286,71 @@ public class PDFService implements IPDFService {
                         .addCell(execution.getCountry())
                         .addCell(execution.getEnvironment())
                         .addCell(execution.getRobot());
-                document.add(tableExe.setMarginTop(10));
+                document.add(tableExe.setMarginTop(10).setMarginBottom(10));
 
-                for (TestCaseStepExecution step : execution.getTestCaseStepExecutionList()) {
+                @SuppressWarnings("unchecked")
+                TestCaseExecution exec = testCaseExecutionService.convert(testCaseExecutionService.readByKeyWithDependency(execution.getId()));
+
+                Table tableTmp;
+
+                for (TestCaseStepExecution step : exec.getTestCaseStepExecutionList()) {
+                    // Creating a table
+                    tableTmp = new Table(new float[]{500, 20})
+                            .addCell(new Cell().add(new Paragraph().add(getTextFromString(step.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                    .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                            .addCell(getStatusCell(step.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                    document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
+
+                    document.add(new Paragraph()
+                            .add(getTextFromString(String.valueOf(step.getReturnMessage()), 10, false))
+                            .setMarginLeft(0)
+                    );
+
+                    // Add images is exist
+                    tableTmp = getImageTable(step.getFileList(), mediaPath);
+                    if (tableTmp != null) {
+                        document.add(tableTmp.setMarginLeft(0));
+                    }
+
+                    for (TestCaseStepActionExecution action : step.getTestCaseStepActionExecutionList()) {
+                        tableTmp = new Table(new float[]{500, 20})
+                                .addCell(new Cell().add(new Paragraph().add(getTextFromString(action.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                        .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                                .addCell(getStatusCell(action.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                        document.add(tableTmp.setMarginLeft(20));
+
+                        document.add(new Paragraph()
+                                .add(getTextFromString(String.valueOf(action.getReturnMessage()), 10, false))
+                                .setMarginLeft(20)
+                        );
+
+                        // Add images is exist
+                        tableTmp = getImageTable(action.getFileList(), mediaPath);
+                        if (tableTmp != null) {
+                            document.add(tableTmp.setMarginLeft(20));
+                        }
+
+                        for (TestCaseStepActionControlExecution control : action.getTestCaseStepActionControlExecutionList()) {
+                            tableTmp = new Table(new float[]{500, 20})
+                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString(control.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                                    .addCell(getStatusCell(control.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                            document.add(tableTmp.setMarginLeft(40));
+
+                            document.add(new Paragraph()
+                                    .add(getTextFromString(String.valueOf(control.getReturnMessage()), 10, false))
+                                    .setMarginLeft(40)
+                            );
+
+                            // Add images is exist
+                            tableTmp = getImageTable(control.getFileList(), mediaPath);
+                            if (tableTmp != null) {
+                                document.add(tableTmp.setMarginLeft(40));
+                            }
+
+                        }
+
+                    }
 
                 }
 
@@ -274,11 +360,26 @@ public class PDFService implements IPDFService {
                 }
             }
 
+            // Adding Headers and Footers
+//            Paragraph header = new Paragraph("Copy")
+//                    .setFontSize(14)
+//                    .setFontColor(ColorConstants.RED);
+//
+//            for (i = 1; i <= document.getPdfDocument().getNumberOfPages(); i++) {
+//                LOG.debug(i);
+//                LOG.debug(document.getPdfDocument());
+//                LOG.debug(document.getPdfDocument().getPage(i));
+//                LOG.debug(document.getPdfDocument().getPage(i).getPageSize());
+//                Rectangle pageSize = document.getPdfDocument().getPage(i).getPageSize();
+//                float x = pageSize.getWidth() / 2;
+//                float y = pageSize.getTop() - 20;
+//                LOG.debug(" " + x + " " + y);
+//
+//                document.showTextAligned(header, x, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+//            }
             // Closing the document
             return dest;
-        } catch (ParseException | CerberusException ex) {
-            LOG.error(ex, ex);
-        } catch (JSONException ex) {
+        } catch (ParseException | CerberusException | JSONException ex) {
             LOG.error(ex, ex);
         }
         return null;
@@ -292,6 +393,41 @@ public class PDFService implements IPDFService {
             return new Text(text).setFontSize(fontSize);
 
         }
+    }
+
+    private Table getImageTable(List<TestCaseExecutionFile> controlFileList, String mediaPath) {
+        Table tableTmp = null;
+        // We count the nb of images in the file list.
+        int nbImages = 0;
+        for (TestCaseExecutionFile controlFile : controlFileList) {
+            if (controlFile.isImage()) {
+                nbImages++;
+            }
+        }
+        // If there is at least 1 image in the list
+        if (nbImages > 0) {
+            tableTmp = new Table(new float[]{150, 500});
+
+            for (TestCaseExecutionFile controlFile : controlFileList) {
+                if (controlFile.isImage()) {
+                    // Load screenshots to pdf.
+                    ImageData imageData;
+                    try {
+                        imageData = ImageDataFactory.create(mediaPath + controlFile.getFileName());
+                        Image image = new Image(imageData).scaleToFit(500, 200);
+                        tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
+                                .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
+                                .addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                    } catch (MalformedURLException ex) {
+                        LOG.error(ex, ex);
+                    }
+                }
+
+            }
+
+        }
+
+        return tableTmp;
     }
 
     class SortExecution implements Comparator<TestCaseExecution> {
@@ -350,6 +486,12 @@ public class PDFService implements IPDFService {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .setTextAlignment(TextAlignment.CENTER);
 
+        return cellRes;
+    }
+
+    private Cell getContentCell(String text) {
+        Cell cellRes = new Cell(1, 1)
+                .add(new Paragraph(text));
         return cellRes;
     }
 
