@@ -381,6 +381,8 @@ public class PDFService implements IPDFService {
             return dest;
         } catch (ParseException | CerberusException | JSONException ex) {
             LOG.error(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
         }
         return null;
     }
@@ -395,11 +397,11 @@ public class PDFService implements IPDFService {
         }
     }
 
-    private Table getImageTable(List<TestCaseExecutionFile> controlFileList, String mediaPath) {
+    private Table getImageTable(List<TestCaseExecutionFile> fileList, String mediaPath) {
         Table tableTmp = null;
         // We count the nb of images in the file list.
         int nbImages = 0;
-        for (TestCaseExecutionFile controlFile : controlFileList) {
+        for (TestCaseExecutionFile controlFile : fileList) {
             if (controlFile.isImage()) {
                 nbImages++;
             }
@@ -408,17 +410,27 @@ public class PDFService implements IPDFService {
         if (nbImages > 0) {
             tableTmp = new Table(new float[]{150, 500});
 
-            for (TestCaseExecutionFile controlFile : controlFileList) {
+            for (TestCaseExecutionFile controlFile : fileList) {
                 if (controlFile.isImage()) {
                     // Load screenshots to pdf.
                     ImageData imageData;
                     try {
-                        imageData = ImageDataFactory.create(mediaPath + controlFile.getFileName());
-                        Image image = new Image(imageData).scaleToFit(500, 200);
-                        tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
-                                .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
-                                .addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                        File f = new File(mediaPath + controlFile.getFileName());
+                        if (f.exists()) {
+                            imageData = ImageDataFactory.create(mediaPath + controlFile.getFileName());
+                            Image image = new Image(imageData).scaleToFit(500, 200);
+                            tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
+                                    .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
+                                    .addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+
+                        }else{
+                            tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
+                                    .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
+                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("File no longuer exist !!!", 7, false)).setTextAlignment(TextAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                        }
                     } catch (MalformedURLException ex) {
+                        LOG.error(ex, ex);
+                    } catch (Exception ex) {
                         LOG.error(ex, ex);
                     }
                 }
