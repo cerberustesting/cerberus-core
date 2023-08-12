@@ -33,4 +33,14 @@ public interface IPDFService {
      * @throws java.io.FileNotFoundException
      */
     String generatePdf(Tag tag) throws FileNotFoundException;
+    
+    /**
+     *
+     * @param pdfFilePath
+     * @param tag
+     * @return
+     * @throws FileNotFoundException
+     */
+    String addHeaderAndFooter(String pdfFilePath, Tag tag) throws FileNotFoundException;
+    
 }

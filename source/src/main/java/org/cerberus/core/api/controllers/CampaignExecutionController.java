@@ -126,7 +126,8 @@ public class CampaignExecutionController {
         try {
             Tag campaignExeIdTag = this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, null);
 
-            String pdfFilename = this.pdfService.generatePdf(campaignExeIdTag);
+            String pdfFilenameOri = this.pdfService.generatePdf(campaignExeIdTag);
+            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, campaignExeIdTag);
             Path filePath = Paths.get(pdfFilename);
 
             logEventService.createForPublicCalls(EXECUTIONS_CAMPAIGN_PDF_PATH, "CALLRESULT", String.format("PDF calculated for campaign '%s'", campaignExecutionId), request);
