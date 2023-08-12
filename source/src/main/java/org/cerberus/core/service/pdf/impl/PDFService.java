@@ -292,7 +292,7 @@ public class PDFService implements IPDFService {
                 Table tableTmp;
 
                 for (TestCaseStepExecution step : exec.getTestCaseStepExecutionList()) {
-                    if (!TestCaseExecution.CONTROLSTATUS_PE.equals(step.getReturnCode())) {
+                    if (!TestCaseExecution.CONTROLSTATUS_NE.equals(step.getReturnCode())) {
                         // Creating a table
                         tableTmp = new Table(new float[]{500, 20})
                                 .addCell(new Cell().add(new Paragraph().add(getTextFromString(step.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
@@ -314,7 +314,7 @@ public class PDFService implements IPDFService {
                     }
 
                     for (TestCaseStepActionExecution action : step.getTestCaseStepActionExecutionList()) {
-                        if (!TestCaseExecution.CONTROLSTATUS_PE.equals(action.getReturnCode())) {
+                        if (!TestCaseExecution.CONTROLSTATUS_NE.equals(action.getReturnCode())) {
                             tableTmp = new Table(new float[]{500, 20})
                                     .addCell(new Cell().add(new Paragraph().add(getTextFromString(action.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
                                             .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
@@ -336,7 +336,7 @@ public class PDFService implements IPDFService {
 
                         for (TestCaseStepActionControlExecution control : action.getTestCaseStepActionControlExecutionList()) {
 
-                            if (!TestCaseExecution.CONTROLSTATUS_PE.equals(control.getReturnCode())) {
+                            if (!TestCaseExecution.CONTROLSTATUS_NE.equals(control.getReturnCode())) {
                                 tableTmp = new Table(new float[]{500, 20})
                                         .addCell(new Cell().add(new Paragraph().add(getTextFromString(control.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
                                                 .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
