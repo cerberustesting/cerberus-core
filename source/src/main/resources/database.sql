@@ -6212,3 +6212,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
     VALUES ('CONTROL', 'verifyElementChecked', 4930, 'Verify the element (checkbox) is checked','verifyElementChecked'),
            ('CONTROL', 'verifyElementNotChecked', 4940, 'Verify the element (checkbox) is not checked','verifyElementNotChecked');
+
+-- 1751
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
+  VALUES ('LANGUAGE', 'fa', 400, 'فارسی', 'فارسی');

@@ -211,10 +211,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','isAvroEnableValue','','fr','Avro Value Actif','','_librairie_de_services')");
         b.append(",('appservice','avroSchemaKey','','en','Key Avro Schema','','_service_library')");
         b.append(",('appservice','avroSchemaKey','','fr','Schema Avro de la Key','','_librairie_de_services')");
-        b.append(",('appservice','avroSchemaKey','','en','کلید اسکیما Avro','','_service_library')");
+        b.append(",('appservice','avroSchemaKey','','fa','کلید اسکیما Avro','','_service_library')");
         b.append(",('appservice','avroSchemaValue','','en','Value Avro Schema','','_service_library')");
         b.append(",('appservice','avroSchemaValue','','fr','Schema Avro de la Value','','_librairie_de_services')");
-        b.append(",('appservice','avroSchemaValue','','en','مقدار اسکیما Avro','','_service_library')");
+        b.append(",('appservice','avroSchemaValue','','fa','مقدار اسکیما Avro','','_service_library')");
         b.append(",('appservice','parentContentService','','en','Parent Service (for Kafka Props)','','_service_library')");
         b.append(",('appservice','parentContentService','','fr','Service Père (pour les Kafka Props)','','_librairie_de_services')");
         b.append(",('appservice','parentContentService','','fa','سرویس والد (برای خصوصیت های کافکا)','','_service_library')");
@@ -285,7 +285,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisioninvariant','versionName','','fa','نام نسخه','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname01','','en','Build','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname01','','fr','Build','','_build_revision_invariant_attributes')");
-        b.append(",('buildrevisioninvariant','versionname01','','en','ساخت','','_build_revision_invariant_attributes')");
+        b.append(",('buildrevisioninvariant','versionname01','','fa','ساخت','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname02','','en','Revision','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname02','','fr','Revision','','_build_revision_invariant_attributes')");
         b.append(",('buildrevisioninvariant','versionname02','','fa','بازبینی','','_build_revision_invariant_attributes')");
@@ -429,7 +429,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvironmentparameters','mobileActivity','','fa','فعالیت موبایل','زمانیکه تعریف می شود, برای قابلیت \\'appWaitActivity\\' مورد استفاده قرار می گیرد.','_environment')");
         b.append(",('countryenvironmentparameters','mobilePackage','','en','Mobile Package','When defined, that package is automatically removed at the end of the execution by removeApp command.','_environment')");
         b.append(",('countryenvironmentparameters','mobilePackage','','fr','Mobile Package','Lorsque défini, le package est désinstallé du device à la fin de l\\'éxecution du cas de test.','_environnement')");
-        b.append(",('countryenvironmentparameters','mobilePackage','','en','پکیج موبایل','زمانیکه تعریف می شود, آن پکیج بصورت خودکار از انتهای اجرا توسط دستور removeApp حذف می شود.','_environment')");
+        b.append(",('countryenvironmentparameters','mobilePackage','','fa','پکیج موبایل','زمانیکه تعریف می شود, آن پکیج بصورت خودکار از انتهای اجرا توسط دستور removeApp حذف می شود.','_environment')");
         b.append(",('countryenvlink','CountryLink','','en','Country linked','','_environment')");
         b.append(",('countryenvlink','CountryLink','','fr','Pays lié','','_environnement')");
         b.append(",('countryenvlink','CountryLink','','fa','کشور مربوطه','','_environment')");
@@ -472,7 +472,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvparam','maintenancestr','','fa','زمان آغاز تعمیر و نگهداری','این مدت زمانی است که دوره نگهداری روزانه آغاز می شود.<br>اگر آغاز قبل از پایان باشد، هر درخواست اجرای آزمون که بین آغاز و پایان ارسال شود، با یک پیام خطای صریح که دوره نگهداری و زمان ارسال را گزارش می کند، کنار گذاشته می شود .','_environment')");
         b.append(",('countryenvparam','system','','en','System','','_environment')");
         b.append(",('countryenvparam','system','','fr','Système','','_environnement')");
-        b.append(",('countryenvparam','system','','en','سیستم','','_environment')");
+        b.append(",('countryenvparam','system','','fa','سیستم','','_environment')");
         b.append(",('countryenvparam','Type','','en','Type','The type of the <code class=\\'doc-crbvvoca\\'>environment</code> define what is the <code class=\\'doc-crbvvoca\\'>environment</code> used for.<br><br><p>\\'STD\\' Standard Testing is allowed in the <code class=\\'doc-crbvvoca\\'>environment</code>.</p><p>\\'COMPARISON\\' Only Comparison test case is allowed to be executed on the <code class=\\'doc-crbvvoca\\'>environment</code>. No other test cases is allowed to execute. This is to avoid modifying any data on the <code class=\\'doc-crbvvoca\\'>environment</code> and not beeing able to analyse easilly the differences between 2 Build/Revisions.</p>','_environment')");
         b.append(",('countryenvparam','Type','','fr','Type','','_environnement')");
         b.append(",('countryenvparam','Type','','fa','نوع','نوع <code class=\\'doc-crbvvoca\\'>محیط</code> مشخص می کند که <code class=\\'doc-crbvvoca\\'>محیط</code> برای چه چیزی استفاده می شود.<br><br><p>\\'STD\\' آزمون استاندارد در  <code class=\\'doc-crbvvoca\\'>محیط</code>.</p><p>\\'COMPARISON\\'  مجاز است و فقط مقایسه مورد آزمون برروی   <code class=\\'doc-crbvvoca\\'>محیط</code> اجرا شود.هیچ آزمون دیگری مجاز به اجرا نیست. این برای جلوگیری از تغییر هرگونه داده در مورد  <code class=\\'doc-crbvvoca\\'>محیط</code> و عدم توانایی تجزیه و تحلیل آسان تفاوت های بین 2 Build/Revision است.</p>','_environment')");
@@ -542,7 +542,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('invariant','ENVGP','','en','Environment Group','',NULL)");
         b.append(",('invariant','ENVGP','','ru','Группа окружения','',NULL)");
         b.append(",('invariant','ENVGP','','fr','Groupe d\\'Environnement','',NULL)");
-        b.append(",('invariant','ENVGP','','fa',''گروه محیط'','',NULL)");
+        b.append(",('invariant','ENVGP','','fa','گروه محیط','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','en','Environment','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','fr','Environnement','',NULL)");
         b.append(",('invariant','ENVIRONMENT','','fa','محیط','',NULL)");
@@ -567,7 +567,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','description','','fa','توصیف','<p>توصیف برچسب.</p>',NULL)");
         b.append(",('label','id','','en','ID','',NULL)");
         b.append(",('label','id','','fr','ID','',NULL)");
-        b.append(",('label','id','','en','شناسه','',NULL)");
+        b.append(",('label','id','','fa','شناسه','',NULL)");
         b.append(",('label','label','','en','Label','<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
         b.append(",('label','label','','fr','Label','<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
         b.append(",('label','label','','fa','برچسب','<p>این مقدار برچسبی است که به منظور شناسایی یا دادن اطلاعات ذیگر به مورد آزمون متصل شده است.</p>',NULL)");
@@ -936,10 +936,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ticket','','fa','تیکت','شماره تیکت است که پیاده سازی  <code class=\\'doc-crbvvoca\\'>مورد آزمون</code> را ارائه می دهد.','_testcase')");
         b.append(",('testcase','ToMajor','','en','To Major',' ','_testcase')");
         b.append(",('testcase','ToMajor','','fr','A Majeure','','_cas_de_test')");
-        b.append(",('testcase','ToMajor','','en','به اصلی',' ','_testcase')");
-        b.append(",('testcase','ToMajor','','fa','To Major',' ','_testcase')");
+        b.append(",('testcase','ToMajor','','fa','به اصلی',' ','_testcase')");
         b.append(",('testcase','ToMinor','','en','To Minor',' ','_testcase')");
-        b.append(",('testcase','ToMinor','','fr','A Majeure','','_cas_de_test')");
+        b.append(",('testcase','ToMinor','','fr','A Mineure','','_cas_de_test')");
         b.append(",('testcase','ToMinor','','fa','به جزئی',' ','_testcase')");
         b.append(",('testcase','versionActivation','','en','Version Activation','Activation parameters for specific versions','_testcase')");
         b.append(",('testcase','versionActivation','','fr','Version Activation','Paramètres pour activation suivant les version d\\'application  ','_cas_de_test')");
