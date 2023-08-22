@@ -355,6 +355,7 @@ function loadReportingData(selectTag) {
             $("#Tagcampaign").val(data.tagObject.campaign);
             $("#TagComment").val(data.tagObject.comment);
             $("#TagDesc").val(data.tagObject.description);
+            $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
             if (isEmpty(data.tagObject.campaign)) {
                 $("#TagcampaignCel1").addClass("hidden");
                 $("#TagcampaignCel2").addClass("hidden");
@@ -363,7 +364,6 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
-                $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");

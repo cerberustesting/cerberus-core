@@ -271,15 +271,20 @@
                                            aria-describedby="basic-addon1">
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row marginTop10">
                                 <div class="col-sm-6" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
                                     <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1">
                                 </div>
-                                <div class="col-sm-6" id="TagcampaignCICel1">
+                                <div class="col-sm-3" id="TagcampaignCICel1">
                                     <label for="tagDetailCI">CI Result :</label>
                                     <div class="marginTop10" id="tagDetailCI">
                                     </div>
+                                </div>
+                                <div class="col-sm-3" >
+                                    <a id="buttonDownloadPdfReport" class="pull-right">
+                                        <button type="button" class="btn btn-default" style="margin-left: 10px;">Download Report</button>
+                                    </a>
                                 </div>
                             </div>
                             <div class="marginTop10" id="tagDetailBar">
@@ -306,9 +311,6 @@
                                         </a>
                                         <a id="buttonRunCampaign" class="pull-right">
                                             <button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button>
-                                        </a>
-                                        <a id="buttonDownloadPdfReport" class="pull-right">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">Download Report</button>
                                         </a>
                                     </div>
                                 </div>
