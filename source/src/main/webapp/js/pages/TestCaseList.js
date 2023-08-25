@@ -129,7 +129,8 @@ function loadTable(selectTest, sortColumn) {
     $.when(jqxhr).then(function (data) {
         sortColumn = 2;
 
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc']);
+        var lengthMenu = [10, 25, 50, 100, 500, 1000];
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc'], lengthMenu);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
 

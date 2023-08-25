@@ -45,9 +45,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -56,6 +59,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionFile;
 import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
@@ -67,6 +71,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.springframework.stereotype.Service;
 
 import org.cerberus.core.service.pdf.IPDFService;
+import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +100,6 @@ public class PDFService implements IPDFService {
             rootPath = System.getProperty("java.io.tmpdir");
         } else {
             String sep = "" + File.separatorChar;
-            LOG.info(sep);
             if (sep.equalsIgnoreCase("/")) {
                 rootPath = "/tmp";
             } else {
@@ -116,20 +120,60 @@ public class PDFService implements IPDFService {
         String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
         mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
 
+        boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
+
+        String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
+
         try ( // Creating a Document
                 Document document = new Document(pdfDoc)) {
 
             AreaBreak aB = new AreaBreak();
 
             // Tittle
-            document.add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
-            document.add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER).setMarginBottom(30));
+            Table tableTitle = new Table(new float[]{100, 500});
+            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
+                ImageData imageDataLogo = ImageDataFactory.create(logoURL);
+                Image image = new Image(imageDataLogo).scaleToFit(100, 70);
+                tableTitle.addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                tableTitle.addCell(new Cell().add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER))
+                        .add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER)).setMarginBottom(30).setBorder(Border.NO_BORDER));
 
+            }
+            document.add(tableTitle.setMarginLeft(0));
+
+            long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
             document.add(new Paragraph()
-                    .add(getTextFromString("Triggered from campaign: ", 10, false))
-                    .add(getTextFromString(tag.getCampaign(), 12, true))
-                    .add(getTextFromString(" by ", 10, false))
-                    .add(getTextFromString(tag.getUsrCreated(), 12, true)));
+                    .add(getTextFromString("Campaign started at ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getDateCreated()), 12, true))
+                    .add(getTextFromString(" and ended at ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getDateEndQueue()), 12, true))
+                    .add(getTextFromString(" (duration of ", 10, false))
+                    .add(getTextFromString(String.valueOf(tagDur), 12, true))
+                    .add(getTextFromString(" min)", 10, false))
+            );
+
+            if (StringUtil.isEmptyOrNullValue(tag.getCampaign())) {
+                if (!StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered by ", 10, false))
+                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
+                    );
+                }
+            } else {
+                if (StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered from campaign: ", 10, false))
+                            .add(getTextFromString(tag.getCampaign(), 12, true))
+                    );
+                } else {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered from campaign: ", 10, false))
+                            .add(getTextFromString(tag.getCampaign(), 12, true))
+                            .add(getTextFromString(" by ", 10, false))
+                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
+                    );
+                }
+            }
 
             document.add(new Paragraph()
                     .add(getTextFromString("Executed on Country(ies): ", 10, false))
@@ -148,21 +192,17 @@ public class PDFService implements IPDFService {
                     .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
                     .add(getTextFromString(")", 10, false)));
 
-            long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
-            document.add(new Paragraph()
-                    .add(getTextFromString("Campaign started at ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getDateCreated()), 12, true))
-                    .add(getTextFromString(" and ended at ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getDateEndQueue()), 12, true))
-                    .add(getTextFromString(" (duration of ", 10, false))
-                    .add(getTextFromString(String.valueOf(tagDur), 12, true))
-                    .add(getTextFromString(" min)", 10, false)));
-
             document.add(new Paragraph()
                     .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))
                     .add(getTextFromString(" useful executions were performed (Over ", 10, false))
                     .add(getTextFromString(String.valueOf(tag.getNbExe()), 12, true))
                     .add(getTextFromString(" in total including retries)", 10, false)));
+
+            if (!StringUtil.isEmptyOrNullValue(tag.getDescription())) {
+                document.add(new Paragraph()
+                        .add(getTextFromString(tag.getDescription(), 12, true))
+                );
+            }
 
             /**
              * Result information per status
@@ -212,8 +252,49 @@ public class PDFService implements IPDFService {
 
                 }
             }
-            // Adding Table to document        
             document.add(tableGlobalStatus);
+
+            /**
+             * Legend
+             */
+            document.add(new Paragraph("Legend").setMarginTop(10).setBold().setFontSize(14));
+            // Creating a table
+            Table tableLegendGlobalStatus = new Table(new float[]{50, 500})
+                    .addHeaderCell(getHeaderCell("Status"))
+                    .addHeaderCell(getHeaderCell("Meaning"));
+            tableLegendGlobalStatus
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_OK, 1, 1))
+                    .addCell("The execution was performed correctly and all controls were OK.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_KO, 1, 1))
+                    .addCell("The execution was performed correcly and at least one control failed resulting a global KO. That means that a bug needs to be reported to development teams.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_FA, 1, 1))
+                    .addCell("The execution did not performed correctly and needs a correction from the team that is in charge of managing the testcases. It couls be a failed SQL or action during the test.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_NA, 1, 1))
+                    .addCell("Test could not be executed as a data could not be retreived. That probably means that the test is not possible in the current environment/status.").setTextAlignment(TextAlignment.LEFT);
+
+            // Adding Table to document
+            document.add(tableLegendGlobalStatus);
+
+            Table tableTmp;
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Step", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Action", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(20));
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Control", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(40));
+
             document.add(aB);
 
             /**
@@ -224,30 +305,61 @@ public class PDFService implements IPDFService {
             Collections.sort(listOfExecutions, new SortExecution());
 
             // Creating a table
-            Table tableExe = new Table(new float[]{25, 90, 40, 80, 20, 20, 40, 20, 50})
-                    .addHeaderCell(getHeaderCell("Exe ID"))
-                    .addHeaderCell(getHeaderCell("Prio"))
+            Table tableExe;
+            if (displayCountryColumn) {
+                tableExe = new Table(new float[]{40, 140, 80, 20, 80, 20, 20, 50, 50, 50, 30});
+
+            } else {
+                tableExe = new Table(new float[]{40, 140, 80, 20, 80, 20, 50, 50, 50, 30});
+            }
+
+            tableExe.addHeaderCell(getHeaderCell("Exe ID"))
                     .addHeaderCell(getHeaderCell("Test Folder"))
                     .addHeaderCell(getHeaderCell("Test ID"))
-                    .addHeaderCell(getHeaderCell("Application"))
-                    .addHeaderCell(getHeaderCell("Country"))
+                    .addHeaderCell(getHeaderCell("Prio"))
+                    .addHeaderCell(getHeaderCell("Application"));
+            if (displayCountryColumn) {
+                tableExe.addHeaderCell(getHeaderCell("Country"));
+            }
+            tableExe
                     .addHeaderCell(getHeaderCell("Environment"))
                     .addHeaderCell(getHeaderCell("Robot"))
+                    .addHeaderCell(getHeaderCell("Started"))
+                    .addHeaderCell(getHeaderCell("Ended"))
                     .addHeaderCell(getHeaderCell("Result"));
+
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
+            DateFormat dfEnd = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_TIME);
+            Calendar calStart = Calendar.getInstance();
+            Calendar calEnd = Calendar.getInstance();
+
+            int nbColSpan = 8;
+            if (displayCountryColumn) {
+                nbColSpan = 9;
+            }
+
             for (TestCaseExecution execution : listOfExecutions) {
-                Cell cellID = new Cell(2, 1).add(new Paragraph(String.valueOf(execution.getId()))).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER);
+                Cell cellID = new Cell(2, 1).add(new Paragraph(String.valueOf(execution.getId()))).setFontSize(6).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER);
                 Cell cellRes = getStatusCell(execution.getControlStatus(), 2, 1);
-                Cell cellTCDesc = new Cell(1, 7).add(new Paragraph(execution.getDescription())).setFontSize(7);
+                Cell cellTCDesc = new Cell(1, nbColSpan).add(new Paragraph(execution.getDescription())).setFontSize(7);
+                calStart.setTimeInMillis(execution.getStart());
+                calEnd.setTimeInMillis(execution.getEnd());
 
                 tableExe
                         .addCell(cellID.setAction(PdfAction.createGoTo(String.valueOf(execution.getId()))))
-                        .addCell(String.valueOf(execution.getTestCasePriority()))
-                        .addCell(execution.getTest())
-                        .addCell(execution.getTestCase())
-                        .addCell(execution.getApplication())
-                        .addCell(execution.getCountry())
-                        .addCell(execution.getEnvironment())
-                        .addCell(execution.getRobot())
+                        .addCell(new Cell().add(new Paragraph(execution.getTest())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(execution.getTestCase())).setFontSize(7));
+                if (displayCountryColumn) {
+                    tableExe
+                            .addCell(new Cell().add(new Paragraph(String.valueOf(execution.getTestCasePriority()))).setFontSize(7));
+                }
+                tableExe
+                        .addCell(new Cell().add(new Paragraph(execution.getApplication())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(execution.getCountry())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(execution.getEnvironment())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(execution.getRobot())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(df.format(calStart.getTime()))).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(df.format(calEnd.getTime()))).setFontSize(7))
                         .addCell(cellRes);
                 tableExe
                         .addCell(cellTCDesc);
@@ -268,7 +380,7 @@ public class PDFService implements IPDFService {
                 document.add(new Paragraph()
                         .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true)));
 
-                tableExe = new Table(new float[]{50, 90, 40, 80, 20, 20, 40, 20, 50})
+                tableExe = new Table(new float[]{200, 90, 70, 70, 80, 20, 20, 40, 20, 50})
                         .addHeaderCell(getHeaderCell("Test Folder"))
                         .addHeaderCell(getHeaderCell("Test ID"))
                         .addHeaderCell(getHeaderCell("Prio"))
@@ -288,14 +400,14 @@ public class PDFService implements IPDFService {
 
                 @SuppressWarnings("unchecked")
                 TestCaseExecution exec = testCaseExecutionService.convert(testCaseExecutionService.readByKeyWithDependency(execution.getId()));
-
-                Table tableTmp;
+                String desc = "";
 
                 for (TestCaseStepExecution step : exec.getTestCaseStepExecutionList()) {
                     if (!TestCaseExecution.CONTROLSTATUS_NE.equals(step.getReturnCode())) {
+
                         // Creating a table
                         tableTmp = new Table(new float[]{500, 20})
-                                .addCell(new Cell().add(new Paragraph().add(getTextFromString(step.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(step.getDescription(), step.getSort(), step.getIndex(), step.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
                                         .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
                                 .addCell(getStatusCell(step.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
                         document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
@@ -316,7 +428,7 @@ public class PDFService implements IPDFService {
                     for (TestCaseStepActionExecution action : step.getTestCaseStepActionExecutionList()) {
                         if (!TestCaseExecution.CONTROLSTATUS_NE.equals(action.getReturnCode())) {
                             tableTmp = new Table(new float[]{500, 20})
-                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString(action.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(action.getDescription(), action.getSort(), 0, action.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
                                             .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
                                     .addCell(getStatusCell(action.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
                             document.add(tableTmp.setMarginLeft(20));
@@ -338,7 +450,7 @@ public class PDFService implements IPDFService {
 
                             if (!TestCaseExecution.CONTROLSTATUS_NE.equals(control.getReturnCode())) {
                                 tableTmp = new Table(new float[]{500, 20})
-                                        .addCell(new Cell().add(new Paragraph().add(getTextFromString(control.getDescription(), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                        .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(control.getDescription(), control.getSort(), 0, control.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
                                                 .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
                                         .addCell(getStatusCell(control.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
                                 document.add(tableTmp.setMarginLeft(40));
@@ -368,7 +480,7 @@ public class PDFService implements IPDFService {
             }
 
             // Closing the document
-            LOG.info("Starting to generate PDF Report on :" + dest);
+            LOG.info("Ending to generate PDF Report on :" + dest);
             return dest;
         } catch (ParseException | CerberusException | JSONException ex) {
             LOG.error(ex, ex);
@@ -376,6 +488,18 @@ public class PDFService implements IPDFService {
             LOG.error(ex, ex);
         }
         return null;
+    }
+
+    private String getElementDescription(String desc, int sort, int seq, String test) {
+        if (Test.TEST_PRETESTING.equals(test)) {
+            return "[PRE] " + desc;
+        } else if (Test.TEST_POSTTESTING.equals(test)) {
+            return "[POST] " + desc;
+        } else if (seq > 0) {
+            return "[" + sort + "." + seq + "] " + desc;
+        } else {
+            return "[" + sort + "] " + desc;
+        }
     }
 
     @Override
@@ -403,11 +527,14 @@ public class PDFService implements IPDFService {
                 // Footer insert
                 Paragraph footer = new Paragraph("Page " + i + " / " + pdfDoc.getNumberOfPages())
                         .setFontSize(7).setItalic();
+                Paragraph footerLeft = new Paragraph("(C) Cerberus Testing")
+                        .setFontSize(7).setItalic();
 
                 x = pageSize.getRight() - 60;
 //                x = 20;
                 y = pageSize.getBottom() + 20;
                 doc.showTextAligned(footer, x, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+                doc.showTextAligned(footerLeft, 20, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
 
             }
             doc.close();
@@ -434,11 +561,12 @@ public class PDFService implements IPDFService {
         Table tableTmp = null;
         // We count the nb of images in the file list.
         int nbImages = 0;
-        for (TestCaseExecutionFile controlFile : fileList) {
-            if (controlFile.isImage()) {
+        for (TestCaseExecutionFile exeFile : fileList) {
+            if (exeFile.isImage() && !exeFile.getFileDesc().contains("Picture")) {
                 nbImages++;
             }
         }
+
         // If there is at least 1 image in the list
         if (nbImages > 0) {
             tableTmp = new Table(new float[]{150, 500});
@@ -482,36 +610,36 @@ public class PDFService implements IPDFService {
         @Override
         public int compare(TestCaseExecution a, TestCaseExecution b) {
             if (a != null && b != null) {
-                int aPrio = a.getTestCasePriority();
-                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
-                    aPrio = 999 + a.getTestCasePriority();
-                }
-                int bPrio = b.getTestCasePriority();
-                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
-                    bPrio = 999 + b.getTestCasePriority();
-                }
+//                int aPrio = a.getTestCasePriority();
+//                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
+//                    aPrio = 999 + a.getTestCasePriority();
+//                }
+//                int bPrio = b.getTestCasePriority();
+//                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
+//                    bPrio = 999 + b.getTestCasePriority();
+//                }
 
-                if (aPrio == bPrio) {
-                    if (a.getTest().equals(b.getTest())) {
-                        if (a.getTestCase().equals(b.getTestCase())) {
-                            if (a.getEnvironment().equals(b.getEnvironment())) {
-                                if (a.getCountry().equals(b.getCountry())) {
-                                    return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
-                                } else {
-                                    return a.getCountry().compareToIgnoreCase(b.getCountry());
-                                }
+//                if (aPrio == bPrio) {
+                if (a.getTest().equals(b.getTest())) {
+                    if (a.getTestCase().equals(b.getTestCase())) {
+                        if (a.getEnvironment().equals(b.getEnvironment())) {
+                            if (a.getCountry().equals(b.getCountry())) {
+                                return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
                             } else {
-                                return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
+                                return a.getCountry().compareToIgnoreCase(b.getCountry());
                             }
                         } else {
-                            return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                            return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
                         }
                     } else {
-                        return a.getTest().compareToIgnoreCase(b.getTest());
+                        return a.getTestCase().compareToIgnoreCase(b.getTestCase());
                     }
                 } else {
-                    return aPrio - bPrio;
+                    return a.getTest().compareToIgnoreCase(b.getTest());
                 }
+//                } else {
+//                    return aPrio - bPrio;
+//                }
             } else {
                 return 1;
             }

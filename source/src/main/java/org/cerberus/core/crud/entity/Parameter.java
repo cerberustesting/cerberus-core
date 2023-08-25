@@ -84,6 +84,8 @@ public class Parameter {
     public static final String VALUE_cerberus_xray_sendenvironments_enable = "cerberus_xray_sendenvironments_enable";
     public static final String VALUE_cerberus_sikuli_typeDelay = "cerberus_sikuli_typeDelay";
     public static final String VALUE_cerberus_testcaseautofeed_enable = "cerberus_testcaseautofeed_enable";
+    public static final String VALUE_cerberus_instancelogo_url = "cerberus_instancelogo_url";
+    public static final String VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean = "cerberus_pdfcampaignreportdisplaycountry_boolean";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
             + "\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\",\"cerberus_xraycloud_clientsecret\",\"cerberus_xraycloud_clientid\",\"cerberus_xraydc_token\")";
