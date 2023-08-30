@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.pdf.impl;
 
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -33,6 +34,8 @@ import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.IBlockElement;
+import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -124,21 +127,31 @@ public class PDFService implements IPDFService {
 
         String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
 
+        // Tittle
+        Table tableTitle = new Table(new float[]{100, 500});
+        try {
+            ImageData imageDataLogo;
+            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
+                imageDataLogo = ImageDataFactory.create(logoURL);
+            } else {
+                imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");
+            }
+            Image image = new Image(imageDataLogo).scaleToFit(100, 70);
+            tableTitle.addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+        } catch (Exception ex) {
+            LOG.error("Error when trying to load content from : " + logoURL);
+            LOG.error(ex, ex);
+            tableTitle.addCell(new Cell().add(new Paragraph("")).setBorder(Border.NO_BORDER));
+        }
+        tableTitle.addCell(new Cell().add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER))
+                .add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER)).setMarginBottom(30).setBorder(Border.NO_BORDER));
+
         try ( // Creating a Document
                 Document document = new Document(pdfDoc)) {
 
             AreaBreak aB = new AreaBreak();
 
             // Tittle
-            Table tableTitle = new Table(new float[]{100, 500});
-            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
-                ImageData imageDataLogo = ImageDataFactory.create(logoURL);
-                Image image = new Image(imageDataLogo).scaleToFit(100, 70);
-                tableTitle.addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
-                tableTitle.addCell(new Cell().add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER))
-                        .add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER)).setMarginBottom(30).setBorder(Border.NO_BORDER));
-
-            }
             document.add(tableTitle.setMarginLeft(0));
 
             long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
@@ -175,13 +188,21 @@ public class PDFService implements IPDFService {
                 }
             }
 
-            document.add(new Paragraph()
-                    .add(getTextFromString("Executed on Country(ies): ", 10, false))
-                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getCountryList()), ","), 12, true))
-                    .add(getTextFromString(", Environment(s): ", 10, false))
-                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
-                    .add(getTextFromString(" and Robot(s): ", 10, false))
-                    .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+            if (displayCountryColumn) {
+                document.add(new Paragraph()
+                        .add(getTextFromString("Executed on Country(ies): ", 10, false))
+                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getCountryList()), ","), 12, true))
+                        .add(getTextFromString(", Environment(s): ", 10, false))
+                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                        .add(getTextFromString(" and Robot(s): ", 10, false))
+                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+            } else {
+                document.add(new Paragraph()
+                        .add(getTextFromString("Executed on Environment(s): ", 10, false))
+                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                        .add(getTextFromString(" and Robot(s): ", 10, false))
+                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+            }
 
             document.add(new Paragraph()
                     .add(getTextFromString("Global result for campaign is ", 10, false))
@@ -199,9 +220,15 @@ public class PDFService implements IPDFService {
                     .add(getTextFromString(" in total including retries)", 10, false)));
 
             if (!StringUtil.isEmptyOrNullValue(tag.getDescription())) {
-                document.add(new Paragraph()
-                        .add(getTextFromString(tag.getDescription(), 12, true))
-                );
+                List<IElement> eleList = HtmlConverter.convertToElements(tag.getDescription());
+                Table tableDesc = new Table(new float[]{1000});
+
+                Cell myCell = new Cell();
+                for (IElement element : eleList) {
+                    myCell.add((IBlockElement) element);
+                }
+                tableDesc.addCell(myCell);
+                document.add(tableDesc);
             }
 
             /**
@@ -348,14 +375,14 @@ public class PDFService implements IPDFService {
                 tableExe
                         .addCell(cellID.setAction(PdfAction.createGoTo(String.valueOf(execution.getId()))))
                         .addCell(new Cell().add(new Paragraph(execution.getTest())).setFontSize(7))
-                        .addCell(new Cell().add(new Paragraph(execution.getTestCase())).setFontSize(7));
+                        .addCell(new Cell().add(new Paragraph(execution.getTestCase())).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(String.valueOf(execution.getTestCasePriority()))).setFontSize(7))
+                        .addCell(new Cell().add(new Paragraph(execution.getApplication())).setFontSize(7));
                 if (displayCountryColumn) {
                     tableExe
-                            .addCell(new Cell().add(new Paragraph(String.valueOf(execution.getTestCasePriority()))).setFontSize(7));
+                            .addCell(new Cell().add(new Paragraph(execution.getCountry())).setFontSize(7));
                 }
                 tableExe
-                        .addCell(new Cell().add(new Paragraph(execution.getApplication())).setFontSize(7))
-                        .addCell(new Cell().add(new Paragraph(execution.getCountry())).setFontSize(7))
                         .addCell(new Cell().add(new Paragraph(execution.getEnvironment())).setFontSize(7))
                         .addCell(new Cell().add(new Paragraph(execution.getRobot())).setFontSize(7))
                         .addCell(new Cell().add(new Paragraph(df.format(calStart.getTime()))).setFontSize(7))
@@ -380,20 +407,34 @@ public class PDFService implements IPDFService {
                 document.add(new Paragraph()
                         .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true)));
 
-                tableExe = new Table(new float[]{200, 90, 70, 70, 80, 20, 20, 40, 20, 50})
+                if (displayCountryColumn) {
+                    tableExe = new Table(new float[]{200, 90, 20, 70, 80, 70, 70});
+                } else {
+                    tableExe = new Table(new float[]{200, 90, 20, 70, 70, 70});
+                }
+                tableExe
                         .addHeaderCell(getHeaderCell("Test Folder"))
                         .addHeaderCell(getHeaderCell("Test ID"))
                         .addHeaderCell(getHeaderCell("Prio"))
-                        .addHeaderCell(getHeaderCell("Application"))
-                        .addHeaderCell(getHeaderCell("Country"))
+                        .addHeaderCell(getHeaderCell("Application"));
+                if (displayCountryColumn) {
+                    tableExe
+                            .addHeaderCell(getHeaderCell("Country"));
+                }
+                tableExe
                         .addHeaderCell(getHeaderCell("Environment"))
                         .addHeaderCell(getHeaderCell("Robot"));
                 tableExe
                         .addCell(execution.getTest())
                         .addCell(execution.getTestCase())
                         .addCell(String.valueOf(execution.getTestCasePriority()))
-                        .addCell(execution.getApplication())
-                        .addCell(execution.getCountry())
+                        .addCell(execution.getApplication());
+                if (displayCountryColumn) {
+                    tableExe
+                            .addCell(execution.getCountry());
+
+                }
+                tableExe
                         .addCell(execution.getEnvironment())
                         .addCell(execution.getRobot());
                 document.add(tableExe.setMarginTop(10).setMarginBottom(10));
@@ -559,6 +600,7 @@ public class PDFService implements IPDFService {
 
     private Table getImageTable(List<TestCaseExecutionFile> fileList, String mediaPath) {
         Table tableTmp = null;
+        boolean imageInserted = false;
         // We count the nb of images in the file list.
         int nbImages = 0;
         for (TestCaseExecutionFile exeFile : fileList) {
@@ -571,12 +613,15 @@ public class PDFService implements IPDFService {
         if (nbImages > 0) {
             tableTmp = new Table(new float[]{150, 500});
 
+            imageInserted = false;
             for (TestCaseExecutionFile controlFile : fileList) {
-                if (controlFile.isImage()) {
+
+                if (controlFile.isImage() && !imageInserted) {
                     // Load screenshots to pdf.
                     ImageData imageData;
                     try {
                         File f = new File(mediaPath + controlFile.getFileName());
+                        imageInserted = true;
                         if (f.exists()) {
                             imageData = ImageDataFactory.create(mediaPath + controlFile.getFileName());
                             Image image = new Image(imageData).scaleToFit(500, 200);

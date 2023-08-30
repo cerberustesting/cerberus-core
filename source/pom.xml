@@ -555,8 +555,12 @@
             <groupId>com.itextpdf</groupId>         
             <artifactId>hyph</artifactId>         
             <version>${com.itextpdf.version}</version>    
-        </dependency> 
-
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>5.0.0</version>
+        </dependency>
         <!-- Test scope -->
         <!--        <dependency>
             <groupId>junit</groupId>
