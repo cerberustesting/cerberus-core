@@ -25,13 +25,11 @@ import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.service.appium.SwipeAction.Direction;
 
 /**
- *
  * @author bcivel
  */
 public interface IAppiumService {
 
     /**
-     *
      * @param session
      * @param identifier
      * @return
@@ -39,7 +37,13 @@ public interface IAppiumService {
     MessageEvent switchToContext(Session session, Identifier identifier);
 
     /**
-     *
+     * @param session Appium session
+     * @param context Name of the context to switch to
+     * @return Message to inform of the action result
+     */
+    MessageEvent switchToContext(Session session, String context);
+
+    /**
      * @param session
      * @param identifier
      * @return
@@ -47,7 +51,6 @@ public interface IAppiumService {
     MessageEvent wait(Session session, Identifier identifier);
 
     /**
-     *
      * @param session
      * @param identifier
      * @param valueToType
@@ -57,7 +60,6 @@ public interface IAppiumService {
     MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName);
 
     /**
-     *
      * @param session
      * @param identifier
      * @return
@@ -65,7 +67,6 @@ public interface IAppiumService {
     MessageEvent click(Session session, Identifier identifier);
 
     /**
-     *
      * @param session
      * @param keyName
      * @return
@@ -73,14 +74,12 @@ public interface IAppiumService {
     MessageEvent keyPress(Session session, String keyName);
 
     /**
-     *
      * @param session
      * @return
      */
     MessageEvent hideKeyboard(Session session);
 
     /**
-     *
      * @param session
      * @param swipeAction
      * @return
@@ -88,7 +87,6 @@ public interface IAppiumService {
     MessageEvent swipe(Session session, SwipeAction swipeAction);
 
     /**
-     *
      * @param session
      * @param action
      * @return
@@ -97,7 +95,6 @@ public interface IAppiumService {
     Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException;
 
     /**
-     *
      * @param session
      * @param cmd
      * @param args
@@ -111,7 +108,7 @@ public interface IAppiumService {
      *
      * @param session
      * @param element if not null or not empty, switch to this element
-     * @param text if not null or not empty, switch to this text
+     * @param text    if not null or not empty, switch to this text
      * @return
      * @throws IllegalArgumentException
      */
@@ -156,7 +153,6 @@ public interface IAppiumService {
     MessageEvent closeApp(Session session);
 
     /**
-     *
      * @param session
      * @param identifier
      * @param pressDuration
@@ -165,7 +161,6 @@ public interface IAppiumService {
     MessageEvent longPress(Session session, Identifier identifier, Integer pressDuration);
 
     /**
-     *
      * @param session
      * @param identifier
      * @return

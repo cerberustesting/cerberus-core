@@ -20,15 +20,10 @@
 package org.cerberus.core.engine.gwt.impl;
 
 import com.google.common.primitives.Ints;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionData;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryAppService;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.core.crud.service.IAppServiceService;
@@ -38,7 +33,6 @@ import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
-import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.engine.execution.IIdentifierService;
 import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.engine.execution.IRobotServerService;
@@ -51,15 +45,17 @@ import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appium.IAppiumService;
+import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.service.appservice.IServiceService;
 import org.cerberus.core.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.core.service.consolelog.IConsolelogService;
 import org.cerberus.core.service.har.IHarService;
 import org.cerberus.core.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.core.service.rest.IRestService;
-import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.robotextension.IFilemanagementService;
+import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
+import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
@@ -80,8 +76,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-import org.apache.commons.codec.binary.Base64;
-import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -344,6 +338,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
                     res = this.doActionSwitchToWindow(execution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_SWITCHTOCONTEXT:
+                    res = this.doActionSwitchToContext(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_MANAGEDIALOG:
                     res = this.doActionManageDialog(execution, value1, value2);
@@ -1043,6 +1040,19 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action SwitchToWindow :" + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionSwitchToContext(TestCaseExecution tCExecution, String context) {
+        String applicationType = tCExecution.getApplicationObj().getType();
+        if (applicationType.equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.switchToContext(tCExecution.getSession(), context);
+        } else if (applicationType.equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.switchToContext(tCExecution.getSession(), context);
+        } else {
+            return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                    .resolveDescription("ACTION", "SwitchToContext")
+                    .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
         }
     }
 
