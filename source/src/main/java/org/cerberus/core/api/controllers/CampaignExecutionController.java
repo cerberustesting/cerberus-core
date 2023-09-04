@@ -24,7 +24,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,8 +53,18 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.service.pdf.IPDFService;
+import org.cerberus.core.util.DateUtil;
 import org.springframework.core.io.InputStreamResource;
 
 /**
@@ -106,15 +118,15 @@ public class CampaignExecutionController {
         );
     }
 
-    @ApiOperation(value = "Get a campaign execution report in pdf format by campaign execution id (tag)")
+    @ApiOperation(value = "Get Campaign execution reports in pdf format inside a zip file by campaign execution id (tag)")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Campaign execution pdf report successfully returned."),
+        @ApiResponse(code = 200, message = "Campaign execution pdfs report successfully returned."),
         @ApiResponse(code = 404, message = "Campaign execution was not found."),
-        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution pdf report.")
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution pdfs report.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "/pdf/{campaignExecutionId}", produces = MediaType.APPLICATION_PDF_VALUE)
+    @GetMapping(path = "/pdf/{campaignExecutionId}", produces = "application/zip")
     public ResponseEntity<InputStreamResource> findCampaignExecutionPdfById(
             @PathVariable("campaignExecutionId") String campaignExecutionId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
@@ -126,16 +138,54 @@ public class CampaignExecutionController {
         try {
             Tag campaignExeIdTag = this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, null);
 
-            String pdfFilenameOri = this.pdfService.generatePdf(campaignExeIdTag);
-            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, campaignExeIdTag);
+            Date today = Calendar.getInstance().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_FILE);
+
+            String rootPath = "";
+            if (System.getProperty("java.io.tmpdir") != null) {
+                rootPath = System.getProperty("java.io.tmpdir");
+            } else {
+                String sep = "" + File.separatorChar;
+                if (sep.equalsIgnoreCase("/")) {
+                    rootPath = "/tmp";
+                } else {
+                    rootPath = "C:";
+                }
+                LOG.warn("Java Property for temporary folder not defined. Default to :" + rootPath);
+            }
+            UUID fileUUID = UUID.randomUUID();
+            String tmpFolderPath = rootPath + File.separatorChar + fileUUID.toString().substring(0, 17) + File.separatorChar;
+            File folderPath = new File(tmpFolderPath);
+            folderPath.mkdirs();
+
+            String pdfFilenameOri = this.pdfService.generatePdf(campaignExeIdTag, today, tmpFolderPath);
+            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, tmpFolderPath + "Campaign Execution.pdf", campaignExeIdTag, today);
             Path filePath = Paths.get(pdfFilename);
 
-            logEventService.createForPublicCalls(EXECUTIONS_CAMPAIGN_PDF_PATH, "CALLRESULT", String.format("PDF calculated for campaign '%s'", campaignExecutionId), request);
+            String pdfFilenameOriAppendix = this.pdfService.generatePdfAppendix(campaignExeIdTag, today, tmpFolderPath);
+            String pdfFilenameAppendix = this.pdfService.addHeaderAndFooter(pdfFilenameOriAppendix, tmpFolderPath + "Campaign Execution - Appendix.pdf", campaignExeIdTag, today);
+            Path filePathAppendix = Paths.get(pdfFilenameAppendix);
+
+            // Creating a PdfWriter
+            String zipPath = rootPath + File.separatorChar + "campaignExecutionReport-" + fileUUID.toString().substring(0, 17) + ".zip";
+            Path zipFilePath = Paths.get(zipPath);
+
+            List<String> filePaths = Arrays.asList(pdfFilename, pdfFilenameAppendix);
+
+            try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipPath))) {
+                for (String filePath1 : filePaths) {
+                    File fileToZip = new File(filePath1);
+                    zipOut.putNextEntry(new ZipEntry(fileToZip.getName()));
+                    Files.copy(fileToZip.toPath(), zipOut);
+                }
+            }
+
+            logEventService.createForPublicCalls(EXECUTIONS_CAMPAIGN_PDF_PATH, "CALLRESULT", String.format("PDFs calculated for campaign '%s'", campaignExecutionId), request);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .contentLength(filePath.toFile().length())
-                    .header("Content-Disposition", "attachment; filename=CampaignReport-" + campaignExecutionId + ".pdf")
-                    .body(new InputStreamResource(Files.newInputStream(filePath)));
+                    .contentLength(zipFilePath.toFile().length())
+                    .header("Content-Disposition", "attachment; filename=CampaignReport-" + campaignExecutionId + "_" + String.valueOf(df.format(today)) + ".zip")
+                    .body(new InputStreamResource(Files.newInputStream(zipFilePath)));
         } catch (EntityNotFoundException exception) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
