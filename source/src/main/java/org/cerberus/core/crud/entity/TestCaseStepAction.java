@@ -129,6 +129,7 @@ public class TestCaseStepAction {
     public static final String ACTION_SETCONSOLECONTENT = "setConsoleContent";
     public static final String ACTION_SETCONTENT = "setContent";
     public static final String ACTION_SETSERVICECALLCONTENT = "setServiceCallContent";
+    public static final String ACTION_SWITCHTOCONTEXT = "switchToContext";
     public static final String ACTION_DONOTHING = "doNothing";
 
     // ??? TODO. Clean this unused action.

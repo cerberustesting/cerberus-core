@@ -139,6 +139,18 @@ title=titleOfThisNewWindow
 url=http://url_of_this_new_window
 ====
 
+==== switchToContext
+|===
+
+| *[red]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
+
+|===
+Switch the current application context to another.
+
+*[blue]#Value1#*	Name of the context you want to switch to. If the value is empty, this will switch to the default context "NATIVE_APP".
+ For example, you can set this action with defined value to switch on the context you want, then do your actions in this context, and finally set again
+ this action with no value to get back to the default context.
+
 ==== manageDialog
 |=== 
 
