@@ -6222,3 +6222,5 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_instancelogo_url', 'https://vm.cerberus-testing.org/img/logo.png', 'URl that point to the instance logo. Use that parameter in order to personalize some screens and pdf report.'),
     ('', 'cerberus_pdfcampaignreportdisplaycountry_boolean', 'true', 'Boolean in order to show or hide the country column on pdf campaign execution pdf report.');
 
+-- 1753
+ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
