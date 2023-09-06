@@ -59,6 +59,8 @@ var actionOptList = {
         "focusDefaultIframe":{"group":"context_action","value": "focusDefaultIframe","label":{"en":"Focus to main context","fr":"Switcher sur le context principal"},"application_types":["GUI"]},
         "switchToWindow":{"group":"context_action","value": "switchToWindow","label":{"en":"Switch to Window","fr":"Switcher sur l'onglet"},"application_types":["GUI"],
             "field1":{"label":{"en": "Window title or url (incl. regexTitle and regexUrl)", "fr": "Titre ou url de la fenêtre  (incl. regexTitle and regexUrl)"},"picto":"images/action-website.png", "class": "col-lg-12 crb-autocomplete-variable"}},
+        "switchToContext": {"group": "context_action","value": "switchToContext","label": {"en":"Switch to context","fr":"Switcher sur le contexte"},"application_types":["IPA", "APK"],
+            "field1": {"label":{"en":"[opt] Context name","fr":"[opt] Nom du contexte"},"picto":"images/action-font.png","class":"col-lg-12 crb-autocomplete-variable"}},
         "manageDialog":{"group":"context_action","value": "manageDialog","label":{"en":"Manage Dialog","fr":"Gérer la popup"},"application_types":["GUI"],
             "field1":{"label":{"en": "ok or cancel", "fr": "ok ou cancel"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"}},
         "manageDialogKeypress":{"group":"context_action","value": "manageDialogKeypress","label":{"en":"Manage Dialog pressing key","fr":"Switcher sur l'Iframe"},"application_types":["GUI"],

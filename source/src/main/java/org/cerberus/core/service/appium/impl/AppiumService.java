@@ -19,10 +19,8 @@
  */
 package org.cerberus.core.service.appium.impl;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.TouchAction;
+import io.appium.java_client.NoSuchContextException;
+import io.appium.java_client.*;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
@@ -39,13 +37,7 @@ import org.cerberus.core.service.appium.SwipeAction.Direction;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +91,30 @@ public abstract class AppiumService implements IAppiumService {
         //driver.context("WEBVIEW_1");
         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
         message.setDescription(message.getDescription().replace("%WINDOW%", newContext));
+        return message;
+    }
+
+    @Override
+    public MessageEvent switchToContext(Session session, String context) {
+        MessageEvent message;
+        AppiumDriver driver = session.getAppiumDriver();
+        Set<String> contexts = driver.getContextHandles();
+
+        try {
+            if (context.isEmpty()) {
+                context = "NATIVE_APP";
+            }
+            driver.context(context);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOCONTEXT);
+            message.setDescription(message.getDescription().replace("%CONTEXT%", context));
+        } catch (NoSuchContextException exception) {
+            LOG.error("Impossible to change the context: ", exception);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOCONTEXT_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription()
+                    .replace("%CONTEXT%", context)
+                    .replace("%CONTEXTS%", contexts.toString())
+                    .replace("%ERROR%", exception.getMessage()));
+        }
         return message;
     }
 
@@ -201,11 +217,11 @@ public abstract class AppiumService implements IAppiumService {
      * Get the {@link Coordinates} represented by the given {@link Identifier}
      *
      * @param identifier the {@link Identifier} to parse to get the
-     * {@link Coordinates}
+     *                   {@link Coordinates}
      * @return the {@link Coordinates} represented by the given
      * {@link Identifier}
      * @throws NoSuchElementException if no {@link Coordinates} can be found
-     * inside the given {@link Identifier}
+     *                                inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
         if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {

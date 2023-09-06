@@ -6223,4 +6223,9 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
     ('', 'cerberus_pdfcampaignreportdisplaycountry_boolean', 'true', 'Boolean in order to show or hide the country column on pdf campaign execution pdf report.');
 
 -- 1753
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
+ VALUES ('ACTION', 'switchToContext', 5450, 'Switch to another application context', 'switchToContext');
+
+-- 1754
 ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
+
