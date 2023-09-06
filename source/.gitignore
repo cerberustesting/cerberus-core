@@ -2,7 +2,7 @@ target/
 .classpath
 .settings
 .project
-.log
+*.log
 /src/main/webapp/documentation/
 localdata
 nb-configuration.xml
