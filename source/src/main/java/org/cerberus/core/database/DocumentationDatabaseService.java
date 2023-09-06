@@ -2037,7 +2037,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','traca','','en','Traceability','',NULL)");
         b.append(",('page_global','traca','','ru','Прослеживаемость','',NULL)");
         b.append(",('page_global','traca','','fr','Traçabilité','',NULL)");
-        b.append(",('page_global','traca','','en','قابلیت ردیابی','',NULL)");
+        b.append(",('page_global','traca','','fa','قابلیت ردیابی','',NULL)");
         b.append(",('page_header','menuLogout','','en','Logout','',NULL)");
         b.append(",('page_header','menuLogout','','fr','Déconnexion','',NULL)");
         b.append(",('page_header','menuLogout','','fa','خروج','',NULL)");
@@ -2153,7 +2153,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuRun','','fa','اجرا','',NULL)");
         b.append(",('page_header','menuRunTestCase','','en','Run Test Case','',NULL)");
         b.append(",('page_header','menuRunTestCase','','fr','Executer un Cas de Test','',NULL)");
-        b.append(",('page_header','menuRunTestCase','','en','اجرای مورد آزمون','',NULL)");
+        b.append(",('page_header','menuRunTestCase','','fa','اجرای مورد آزمون','',NULL)");
         b.append(",('page_header','menuRunTestSeePendingExecution','','en','Executions in queue','',NULL)");
         b.append(",('page_header','menuRunTestSeePendingExecution','','fr','File d\\'attente d\\'éxécutions','',NULL)");
         b.append(",('page_header','menuRunTestSeePendingExecution','','fa','اجراهای درون صف','',NULL)");
@@ -2312,7 +2312,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_label','display','','fa','نمایش','برچسب تولید شده را از روی برچسب و رنگ تعریف شده نمایش دهید',NULL)");
         b.append(",('page_label','table_label','','en','Label List','',NULL)");
         b.append(",('page_label','table_label','','fr','Liste de Labels','',NULL)");
-        b.append(",('page_label','table_label','','fa','فهرست برچشب ها','',NULL)");
+        b.append(",('page_label','table_label','','fa','فهرست برچسب ها','',NULL)");
         b.append(",('page_label','title','','en','Label','This page can be used in order to manage the labels.','_label')");
         b.append(",('page_label','title','','fr','Label','Cette page permet de gérer et créer des labels.','_label')");
         b.append(",('page_label','title','','fa','برچسب','از این صفحه می توان برای مدیریت برچسب ها استفاده کرد.','_label')");
