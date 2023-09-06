@@ -56,6 +56,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,40 +94,8 @@ public class PDFService implements IPDFService {
     @Autowired
     private IParameterService parameterService;
 
-    @Override
-    public String generatePdf(Tag tag) throws FileNotFoundException {
-
-        UUID fileUUID = UUID.randomUUID();
-
-        String rootPath = "";
-        if (System.getProperty("java.io.tmpdir") != null) {
-            rootPath = System.getProperty("java.io.tmpdir");
-        } else {
-            String sep = "" + File.separatorChar;
-            if (sep.equalsIgnoreCase("/")) {
-                rootPath = "/tmp";
-            } else {
-                rootPath = "C:";
-            }
-            LOG.warn("Java Property for temporary folder not defined. Default to :" + rootPath);
-        }
-
-        // Creating a PdfWriter
-        String dest = rootPath + File.separatorChar + "campaignExecutionReport-" + fileUUID.toString().substring(0, 17) + ".pdf";
-        LOG.info("Starting to generate PDF Report on :" + dest);
-        PdfWriter writer = new PdfWriter(dest);
-
-        // Creating a PdfDocument       
-        PdfDocument pdfDoc = new PdfDocument(writer);
-
-        // Load parameters
-        String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
-        mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
-
-        boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
-
+    private Table getTitleTable(String desc1, String desc2) {
         String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
-
         // Tittle
         Table tableTitle = new Table(new float[]{100, 500});
         try {
@@ -143,8 +112,38 @@ public class PDFService implements IPDFService {
             LOG.error(ex, ex);
             tableTitle.addCell(new Cell().add(new Paragraph("")).setBorder(Border.NO_BORDER));
         }
-        tableTitle.addCell(new Cell().add(new Paragraph("Campaign Execution Report").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER))
-                .add(new Paragraph(tag.getTag()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER)).setMarginBottom(30).setBorder(Border.NO_BORDER));
+        Cell descCell = new Cell();
+        descCell.add(new Paragraph(desc1).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+        if (StringUtil.isNotEmptyOrNullValue(desc2)) {
+            descCell.add(new Paragraph(desc2).setBold().setItalic().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+        }
+        descCell.setMarginBottom(30).setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE);
+        tableTitle.addCell(descCell);
+        return tableTitle;
+    }
+
+    @Override
+    public String generatePdf(Tag tag, Date today, String folder) throws FileNotFoundException {
+
+        UUID fileUUID = UUID.randomUUID();
+        DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
+
+        // Creating a PdfWriter
+        String dest = folder + File.separatorChar + "Campaign Execution Report tmp.pdf";
+        LOG.info("Starting to generate PDF Report on :" + dest);
+        PdfWriter writer = new PdfWriter(dest);
+
+        // Creating a PdfDocument       
+        PdfDocument pdfDoc = new PdfDocument(writer);
+
+        // Load parameters
+        String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
+        mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
+
+        boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
+
+        // Tittle
+        Table tableTitle = getTitleTable("Campaign Execution Report", tag.getTag());
 
         try ( // Creating a Document
                 Document document = new Document(pdfDoc)) {
@@ -154,7 +153,29 @@ public class PDFService implements IPDFService {
             // Tittle
             document.add(tableTitle.setMarginLeft(0));
 
+            document.add(new Paragraph().add(getTextFromString("", 10, false)));
+            document.add(new Paragraph().add(getTextFromString("", 10, false)));
+            document.add(new Paragraph().add(getTextFromString("", 10, false)));
+
+            if (!StringUtil.isEmptyOrNullValue(tag.getDescription())) {
+                List<IElement> eleList = HtmlConverter.convertToElements(tag.getDescription());
+                Table tableDesc = new Table(new float[]{1000});
+
+                Cell myCell = new Cell();
+                for (IElement element : eleList) {
+                    myCell.add((IBlockElement) element);
+                }
+                tableDesc.addCell(myCell.setBorder(Border.NO_BORDER));
+                document.add(tableDesc);
+            }
+
+            document.add(new Paragraph("Main technical details").setMarginTop(30).setMarginBottom(10).setBold().setFontSize(14));
+
             long tagDur = (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()) / 60000;
+            document.add(new Paragraph()
+                    .add(getTextFromString("Report generated at ", 10, false))
+                    .add(getTextFromString(String.valueOf(df.format(today)), 12, true))
+            );
             document.add(new Paragraph()
                     .add(getTextFromString("Campaign started at ", 10, false))
                     .add(getTextFromString(String.valueOf(tag.getDateCreated()), 12, true))
@@ -164,30 +185,6 @@ public class PDFService implements IPDFService {
                     .add(getTextFromString(String.valueOf(tagDur), 12, true))
                     .add(getTextFromString(" min)", 10, false))
             );
-
-            if (StringUtil.isEmptyOrNullValue(tag.getCampaign())) {
-                if (!StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
-                    document.add(new Paragraph()
-                            .add(getTextFromString("Triggered by ", 10, false))
-                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
-                    );
-                }
-            } else {
-                if (StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
-                    document.add(new Paragraph()
-                            .add(getTextFromString("Triggered from campaign: ", 10, false))
-                            .add(getTextFromString(tag.getCampaign(), 12, true))
-                    );
-                } else {
-                    document.add(new Paragraph()
-                            .add(getTextFromString("Triggered from campaign: ", 10, false))
-                            .add(getTextFromString(tag.getCampaign(), 12, true))
-                            .add(getTextFromString(" by ", 10, false))
-                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
-                    );
-                }
-            }
-
             if (displayCountryColumn) {
                 document.add(new Paragraph()
                         .add(getTextFromString("Executed on Country(ies): ", 10, false))
@@ -199,42 +196,15 @@ public class PDFService implements IPDFService {
             } else {
                 document.add(new Paragraph()
                         .add(getTextFromString("Executed on Environment(s): ", 10, false))
-                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                        .add(getTextFromString(tag.getEnvironmentList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
                         .add(getTextFromString(" and Robot(s): ", 10, false))
-                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
-            }
-
-            document.add(new Paragraph()
-                    .add(getTextFromString("Global result for campaign is ", 10, false))
-                    .add(getTextFromString(tag.getCiResult(), 12, true))
-                    .add(getTextFromString(" (with a Score of ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getCiScore()), 12, true))
-                    .add(getTextFromString(" vs ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
-                    .add(getTextFromString(")", 10, false)));
-
-            document.add(new Paragraph()
-                    .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))
-                    .add(getTextFromString(" useful executions were performed (Over ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getNbExe()), 12, true))
-                    .add(getTextFromString(" in total including retries)", 10, false)));
-
-            if (!StringUtil.isEmptyOrNullValue(tag.getDescription())) {
-                List<IElement> eleList = HtmlConverter.convertToElements(tag.getDescription());
-                Table tableDesc = new Table(new float[]{1000});
-
-                Cell myCell = new Cell();
-                for (IElement element : eleList) {
-                    myCell.add((IBlockElement) element);
-                }
-                tableDesc.addCell(myCell);
-                document.add(tableDesc);
+                        .add(getTextFromString(tag.getRobotDecliList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
             }
 
             /**
              * Result information per status
              */
-            document.add(new Paragraph("Global Status").setMarginTop(10).setBold().setFontSize(14));
+            document.add(new Paragraph("Global status").setMarginTop(30).setMarginBottom(10).setBold().setFontSize(14));
             // Creating a table
             Table tableGlobalStatus = new Table(new float[]{50, 50, 40})
                     .addHeaderCell(getHeaderCell("Status"))
@@ -253,23 +223,26 @@ public class PDFService implements IPDFService {
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QU, TestCaseExecution.CONTROLSTATUS_QU_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QE, TestCaseExecution.CONTROLSTATUS_QE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_CA, TestCaseExecution.CONTROLSTATUS_CA_COL_EXT);
+
             // Map that will contain the nb of execution for global status.
+            List<TestCaseExecution> listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+            Collections.sort(listOfExecutions, new SortExecution());
+
             Map<String, Integer> statNbMap = new HashMap<>();
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_OK, tag.getNbOK());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_KO, tag.getNbKO());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_FA, tag.getNbFA());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NA, tag.getNbNA());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NE, tag.getNbNE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_WE, tag.getNbWE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_PE, tag.getNbPE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QU, tag.getNbQU());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QE, tag.getNbQE());
-            statNbMap.put(TestCaseExecution.CONTROLSTATUS_CA, tag.getNbCA());
+            for (TestCaseExecution execution : listOfExecutions) {
+                LOG.debug("1 " + execution.getControlStatus() + " - " + statNbMap.get(execution.getControlStatus()));
+                if (statNbMap.get(execution.getControlStatus()) == null) {
+                    statNbMap.put(execution.getControlStatus(), 0);
+                }
+                statNbMap.put(execution.getControlStatus(), statNbMap.get(execution.getControlStatus()) + 1);
+                LOG.debug("2 " + execution.getControlStatus() + " - " + statNbMap.get(execution.getControlStatus()));
+            }
+
             // Status list in the correct order.
             float per = 0;
             List<String> statList = new ArrayList<>(Arrays.asList("OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"));
             for (String string : statList) {
-                if (statNbMap.get(string) > 0) {
+                if ((statNbMap.get(string) != null) && (statNbMap.get(string) > 0)) {
                     per = statNbMap.get(string) / (float) tag.getNbExeUsefull();
                     per *= 100;
                     tableGlobalStatus
@@ -281,55 +254,12 @@ public class PDFService implements IPDFService {
             }
             document.add(tableGlobalStatus);
 
-            /**
-             * Legend
-             */
-            document.add(new Paragraph("Legend").setMarginTop(10).setBold().setFontSize(14));
-            // Creating a table
-            Table tableLegendGlobalStatus = new Table(new float[]{50, 500})
-                    .addHeaderCell(getHeaderCell("Status"))
-                    .addHeaderCell(getHeaderCell("Meaning"));
-            tableLegendGlobalStatus
-                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_OK, 1, 1))
-                    .addCell("The execution was performed correctly and all controls were OK.").setTextAlignment(TextAlignment.LEFT)
-                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_KO, 1, 1))
-                    .addCell("The execution was performed correcly and at least one control failed resulting a global KO. That means that a bug needs to be reported to development teams.").setTextAlignment(TextAlignment.LEFT)
-                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_FA, 1, 1))
-                    .addCell("The execution did not performed correctly and needs a correction from the team that is in charge of managing the testcases. It couls be a failed SQL or action during the test.").setTextAlignment(TextAlignment.LEFT)
-                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_NA, 1, 1))
-                    .addCell("Test could not be executed as a data could not be retreived. That probably means that the test is not possible in the current environment/status.").setTextAlignment(TextAlignment.LEFT);
-
-            // Adding Table to document
-            document.add(tableLegendGlobalStatus);
-
-            Table tableTmp;
-
-            tableTmp = new Table(new float[]{500, 20})
-                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Step", 12, true).setTextAlignment(TextAlignment.LEFT)))
-                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
-            document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
-
-            tableTmp = new Table(new float[]{500, 20})
-                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Action", 12, true).setTextAlignment(TextAlignment.LEFT)))
-                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
-            document.add(tableTmp.setMarginLeft(20));
-
-            tableTmp = new Table(new float[]{500, 20})
-                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Control", 12, true).setTextAlignment(TextAlignment.LEFT)))
-                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
-            document.add(tableTmp.setMarginLeft(40));
-
             document.add(aB);
 
             /**
              * Summary result per execution
              */
-            document.add(new Paragraph("Execution list summary").setMarginTop(10).setBold().setFontSize(14));
-            List<TestCaseExecution> listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
-            Collections.sort(listOfExecutions, new SortExecution());
+            document.add(getTitleTable("Execution list summary", "").setMarginLeft(0));
 
             // Creating a table
             Table tableExe;
@@ -355,7 +285,6 @@ public class PDFService implements IPDFService {
                     .addHeaderCell(getHeaderCell("Ended"))
                     .addHeaderCell(getHeaderCell("Result"));
 
-            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
             DateFormat dfEnd = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_TIME);
             Calendar calStart = Calendar.getInstance();
             Calendar calEnd = Calendar.getInstance();
@@ -393,6 +322,145 @@ public class PDFService implements IPDFService {
             }
             document.add(tableExe);
             document.add(aB);
+
+            document.add(getTitleTable("Other technical details", "").setMarginLeft(0));
+
+            if (StringUtil.isEmptyOrNullValue(tag.getCampaign())) {
+                if (!StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered by ", 10, false))
+                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
+                    );
+                }
+            } else {
+                if (StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered from campaign: ", 10, false))
+                            .add(getTextFromString(tag.getCampaign(), 12, true))
+                    );
+                } else {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Triggered from campaign: ", 10, false))
+                            .add(getTextFromString(tag.getCampaign(), 12, true))
+                            .add(getTextFromString(" by ", 10, false))
+                            .add(getTextFromString(tag.getUsrCreated(), 12, true))
+                    );
+                }
+            }
+
+            document.add(new Paragraph()
+                    .add(getTextFromString("Global result for campaign is ", 10, false))
+                    .add(getTextFromString(tag.getCiResult(), 12, true))
+                    .add(getTextFromString(" (with a Score of ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getCiScore()), 12, true))
+                    .add(getTextFromString(" vs ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
+                    .add(getTextFromString(")", 10, false)));
+
+            document.add(new Paragraph()
+                    .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))
+                    .add(getTextFromString(" useful executions were performed (Over ", 10, false))
+                    .add(getTextFromString(String.valueOf(tag.getNbExe()), 12, true))
+                    .add(getTextFromString(" in total including retries)", 10, false)));
+
+            /**
+             * Legend
+             */
+            document.add(new Paragraph("Execution status legend").setMarginTop(30).setMarginBottom(10).setBold().setFontSize(14));
+            // Creating a table
+            Table tableLegendGlobalStatus = new Table(new float[]{50, 500})
+                    .addHeaderCell(getHeaderCell("Status"))
+                    .addHeaderCell(getHeaderCell("Meaning"));
+            tableLegendGlobalStatus
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_OK, 1, 1))
+                    .addCell("The execution was performed correctly and all controls were OK.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_KO, 1, 1))
+                    .addCell("The execution was performed correcly and at least one control failed resulting a global KO. That means that a bug needs to be reported to development teams.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_FA, 1, 1))
+                    .addCell("The execution did not performed correctly and needs a correction from the team that is in charge of managing the testcases. It could be a failed SQL or action during the test.").setTextAlignment(TextAlignment.LEFT)
+                    .addCell(getStatusCell(TestCaseExecution.CONTROLSTATUS_NA, 1, 1))
+                    .addCell("Test could not be executed as a data could not be retreived. That probably means that the test is not possible in the current environment/status.").setTextAlignment(TextAlignment.LEFT);
+
+            // Adding Table to document
+            document.add(tableLegendGlobalStatus);
+
+            document.add(new Paragraph("Test cases legend").setMarginTop(30).setMarginBottom(10).setBold().setFontSize(14));
+
+            Table tableTmp;
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Step", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(0));
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Action", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(20));
+
+            tableTmp = new Table(new float[]{500, 20})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Control", 12, true).setTextAlignment(TextAlignment.LEFT)))
+                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                    .addCell(getStatusCell("OK", 1, 1).setTextAlignment(TextAlignment.RIGHT));
+            document.add(tableTmp.setMarginLeft(40));
+
+            // Closing the document
+            LOG.info("Ending to generate PDF Report on :" + dest);
+            return dest;
+        } catch (ParseException | CerberusException | JSONException ex) {
+            LOG.error(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public String generatePdfAppendix(Tag tag, Date today, String folder) throws FileNotFoundException {
+
+        UUID fileUUID = UUID.randomUUID();
+
+        // Creating a PdfWriter
+        String dest = folder + File.separatorChar + "Campaign Execution Report Appendix tmp.pdf";
+        LOG.info("Starting to generate PDF Report on :" + dest);
+        PdfWriter writer = new PdfWriter(dest);
+
+        // Creating a PdfDocument       
+        PdfDocument pdfDoc = new PdfDocument(writer);
+
+        // Load parameters
+        String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
+        mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
+
+        boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
+
+        try ( // Creating a Document
+                Document document = new Document(pdfDoc)) {
+
+            AreaBreak aB = new AreaBreak();
+
+            // Tittle
+            document.add(getTitleTable("", ""));
+
+            Table tableExe, tableTmp;
+
+            tableTmp = new Table(new float[]{600})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("APPENDIX", 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+            document.add(tableTmp.setMarginTop(200));
+
+            tableTmp = new Table(new float[]{600})
+                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Details of Execution Campaign", 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+            document.add(tableTmp.setMarginTop(40));
+
+            document.add(aB);
+
+            /**
+             * Summary result per execution
+             */
+            List<TestCaseExecution> listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+            Collections.sort(listOfExecutions, new SortExecution());
 
             /**
              * Detail information per execution
@@ -523,7 +591,7 @@ public class PDFService implements IPDFService {
             // Closing the document
             LOG.info("Ending to generate PDF Report on :" + dest);
             return dest;
-        } catch (ParseException | CerberusException | JSONException ex) {
+        } catch (ParseException | CerberusException ex) {
             LOG.error(ex, ex);
         } catch (Exception ex) {
             LOG.error(ex, ex);
@@ -544,15 +612,16 @@ public class PDFService implements IPDFService {
     }
 
     @Override
-    public String addHeaderAndFooter(String pdfFilePath, Tag tag) throws FileNotFoundException {
-        String destinationFile = pdfFilePath + "new.pdf";
+    public String addHeaderAndFooter(String pdfFilePathSrc, String destinationFile, Tag tag, Date today) throws FileNotFoundException {
         try {
-            LOG.info("Starting to add Headers on PDF Report :" + pdfFilePath + " To : " + destinationFile);
+            LOG.info("Starting to add Headers on PDF Report :" + pdfFilePathSrc + " To : " + destinationFile);
+
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
 
             // Adding Headers and Footers
             Paragraph header = new Paragraph("Campaign Execution Report - " + tag.getTag())
                     .setFontSize(7).setItalic();
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(pdfFilePath), new PdfWriter(destinationFile));
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(pdfFilePathSrc), new PdfWriter(destinationFile));
             Document doc = new Document(pdfDoc);
             for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
 
@@ -568,7 +637,7 @@ public class PDFService implements IPDFService {
                 // Footer insert
                 Paragraph footer = new Paragraph("Page " + i + " / " + pdfDoc.getNumberOfPages())
                         .setFontSize(7).setItalic();
-                Paragraph footerLeft = new Paragraph("(C) Cerberus Testing")
+                Paragraph footerLeft = new Paragraph("(C) Cerberus Testing - " + df.format(today))
                         .setFontSize(7).setItalic();
 
                 x = pageSize.getRight() - 60;
@@ -579,7 +648,7 @@ public class PDFService implements IPDFService {
 
             }
             doc.close();
-            LOG.info("Ended to add Headers on PDF Report :" + pdfFilePath + " To : " + destinationFile);
+            LOG.info("Ended to add Headers on PDF Report :" + pdfFilePathSrc + " To : " + destinationFile);
 
         } catch (IOException ex) {
             LOG.error(ex, ex);

@@ -6226,3 +6226,6 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
  VALUES ('ACTION', 'switchToContext', 5450, 'Switch to another application context', 'switchToContext');
 
+-- 1754
+ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
+

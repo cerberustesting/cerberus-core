@@ -29,10 +29,12 @@ import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.dao.ITagDAO;
+import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.EventHook;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.factory.IFactoryTag;
+import org.cerberus.core.crud.service.ICampaignService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
@@ -80,6 +82,8 @@ public class TagService implements ITagService {
     private ITestCaseExecutionQueueService executionQueueService;
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private ICampaignService campaignService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -275,8 +279,20 @@ public class TagService implements ITagService {
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            Tag newTag = factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
-                    reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
+            Campaign cmp = null;
+            try {
+                cmp = campaignService.convert(campaignService.readByKey(campaign));
+            } catch (CerberusException ex) {
+                LOG.error(ex,ex);
+            }
+            Tag newTag;
+            if (cmp == null) {
+                newTag = factoryTag.create(0, tagS, "", "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+                        reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
+            } else {
+                newTag = factoryTag.create(0, tagS, cmp.getLongDescription(), "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "",
+                        reqEnvironmentList.toString(), reqCountryList.toString(), "", "", "", "", user, null, user, null);
+            }
             Answer ans = tagDAO.create(newTag);
             // If campaign is not empty, we can notify the Start of campaign execution.
             if (!StringUtil.isEmpty(campaign)) {
