@@ -2726,9 +2726,6 @@ function comboConfigTag_format(tag) {
     let markup = "<div class='select2-result-tag clearfix'>" +
             "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
-    if (tag.description) {
-        markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
-    }
     markup += "<div class='select2-result-tag__statistics'>";
     if (tag.campaign) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";

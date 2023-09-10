@@ -26,6 +26,7 @@ import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
@@ -89,29 +90,16 @@ public class PDFService implements IPDFService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(PDFService.class);
 
+    private final int NB_EXECUTION_PER_APPENDIX_FILE = 50;
+
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private IParameterService parameterService;
 
     private Table getTitleTable(String desc1, String desc2) {
-        String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
         // Tittle
-        Table tableTitle = new Table(new float[]{100, 500});
-        try {
-            ImageData imageDataLogo;
-            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
-                imageDataLogo = ImageDataFactory.create(logoURL);
-            } else {
-                imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");
-            }
-            Image image = new Image(imageDataLogo).scaleToFit(100, 70);
-            tableTitle.addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
-        } catch (Exception ex) {
-            LOG.error("Error when trying to load content from : " + logoURL);
-            LOG.error(ex, ex);
-            tableTitle.addCell(new Cell().add(new Paragraph("")).setBorder(Border.NO_BORDER));
-        }
+        Table tableTitle = new Table(new float[]{600});
         Cell descCell = new Cell();
         descCell.add(new Paragraph(desc1).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
         if (StringUtil.isNotEmptyOrNullValue(desc2)) {
@@ -127,6 +115,7 @@ public class PDFService implements IPDFService {
 
         UUID fileUUID = UUID.randomUUID();
         DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
+        DateFormat dfEnd = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_TIME);
 
         // Creating a PdfWriter
         String dest = folder + File.separatorChar + "Campaign Execution Report tmp.pdf";
@@ -135,10 +124,6 @@ public class PDFService implements IPDFService {
 
         // Creating a PdfDocument       
         PdfDocument pdfDoc = new PdfDocument(writer);
-
-        // Load parameters
-        String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
-        mediaPath = StringUtil.addSuffixIfNotAlready(mediaPath, File.separator);
 
         boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
 
@@ -178,9 +163,9 @@ public class PDFService implements IPDFService {
             );
             document.add(new Paragraph()
                     .add(getTextFromString("Campaign started at ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getDateCreated()), 12, true))
+                    .add(getTextFromString(String.valueOf(df.format(tag.getDateCreated().getTime())), 12, true))
                     .add(getTextFromString(" and ended at ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getDateEndQueue()), 12, true))
+                    .add(getTextFromString(String.valueOf(df.format(tag.getDateEndQueue())), 12, true))
                     .add(getTextFromString(" (duration of ", 10, false))
                     .add(getTextFromString(String.valueOf(tagDur), 12, true))
                     .add(getTextFromString(" min)", 10, false))
@@ -230,12 +215,10 @@ public class PDFService implements IPDFService {
 
             Map<String, Integer> statNbMap = new HashMap<>();
             for (TestCaseExecution execution : listOfExecutions) {
-                LOG.debug("1 " + execution.getControlStatus() + " - " + statNbMap.get(execution.getControlStatus()));
                 if (statNbMap.get(execution.getControlStatus()) == null) {
                     statNbMap.put(execution.getControlStatus(), 0);
                 }
                 statNbMap.put(execution.getControlStatus(), statNbMap.get(execution.getControlStatus()) + 1);
-                LOG.debug("2 " + execution.getControlStatus() + " - " + statNbMap.get(execution.getControlStatus()));
             }
 
             // Status list in the correct order.
@@ -285,7 +268,6 @@ public class PDFService implements IPDFService {
                     .addHeaderCell(getHeaderCell("Ended"))
                     .addHeaderCell(getHeaderCell("Result"));
 
-            DateFormat dfEnd = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_TIME);
             Calendar calStart = Calendar.getInstance();
             Calendar calEnd = Calendar.getInstance();
 
@@ -294,15 +276,28 @@ public class PDFService implements IPDFService {
                 nbColSpan = 9;
             }
 
+            // Build Cerberus URL to execution.
+            String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
+            if (StringUtil.isEmpty(cerberusUrl)) {
+                cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
+            }
+            cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+
+            int exe_count = 0;
+            int appendix_page = 0;
             for (TestCaseExecution execution : listOfExecutions) {
-                Cell cellID = new Cell(2, 1).add(new Paragraph(String.valueOf(execution.getId()))).setFontSize(6).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER);
+                appendix_page = (exe_count / NB_EXECUTION_PER_APPENDIX_FILE) + 1;
+                exe_count++;
+                Cell cellID = new Cell(2, 1)
+                        .add(new Paragraph(String.valueOf(execution.getId())).setFontSize(8)).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER)
+                        .add(new Paragraph("appx " + appendix_page).setFontSize(6)).setVerticalAlignment(VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER);
                 Cell cellRes = getStatusCell(execution.getControlStatus(), 2, 1);
                 Cell cellTCDesc = new Cell(1, nbColSpan).add(new Paragraph(execution.getDescription())).setFontSize(7);
                 calStart.setTimeInMillis(execution.getStart());
                 calEnd.setTimeInMillis(execution.getEnd());
 
                 tableExe
-                        .addCell(cellID.setAction(PdfAction.createGoTo(String.valueOf(execution.getId()))))
+                        .addCell(cellID.setAction(PdfAction.createURI(cerberusUrl + "TestCaseExecution.jsp?executionId=" + String.valueOf(execution.getId()))))
                         .addCell(new Cell().add(new Paragraph(execution.getTest())).setFontSize(7))
                         .addCell(new Cell().add(new Paragraph(execution.getTestCase())).setFontSize(7))
                         .addCell(new Cell().add(new Paragraph(String.valueOf(execution.getTestCasePriority()))).setFontSize(7))
@@ -418,17 +413,11 @@ public class PDFService implements IPDFService {
     }
 
     @Override
-    public String generatePdfAppendix(Tag tag, Date today, String folder) throws FileNotFoundException {
+    public List<String> generatePdfAppendix(Tag tag, Date today, String folder) throws FileNotFoundException {
+
+        List<String> destList = new ArrayList<>();
 
         UUID fileUUID = UUID.randomUUID();
-
-        // Creating a PdfWriter
-        String dest = folder + File.separatorChar + "Campaign Execution Report Appendix tmp.pdf";
-        LOG.info("Starting to generate PDF Report on :" + dest);
-        PdfWriter writer = new PdfWriter(dest);
-
-        // Creating a PdfDocument       
-        PdfDocument pdfDoc = new PdfDocument(writer);
 
         // Load parameters
         String mediaPath = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", "");
@@ -436,167 +425,199 @@ public class PDFService implements IPDFService {
 
         boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
 
-        try ( // Creating a Document
-                Document document = new Document(pdfDoc)) {
+        /**
+         * Summary result per execution
+         */
+        List<TestCaseExecution> listOfExecutions;
+        int total_nb_pages = 0;
+        try {
 
-            AreaBreak aB = new AreaBreak();
-
-            // Tittle
-            document.add(getTitleTable("", ""));
-
-            Table tableExe, tableTmp;
-
-            tableTmp = new Table(new float[]{600})
-                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("APPENDIX", 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-            document.add(tableTmp.setMarginTop(200));
-
-            tableTmp = new Table(new float[]{600})
-                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("Details of Execution Campaign", 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-            document.add(tableTmp.setMarginTop(40));
-
-            document.add(aB);
-
-            /**
-             * Summary result per execution
-             */
-            List<TestCaseExecution> listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
+            // Getting and sorting list of executions.
+            listOfExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag.getTag());
             Collections.sort(listOfExecutions, new SortExecution());
 
-            /**
-             * Detail information per execution
-             */
-            int i = 1;
-            for (TestCaseExecution execution : listOfExecutions) {
-                document.add(new Paragraph("Execution: " + execution.getId()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER).setDestination(String.valueOf(execution.getId())));
-                // Adding exeution details
-                String coloHex = getColor(execution.getControlStatus());
-                document.add(new Paragraph(execution.getControlStatus() + " - " + execution.getDescription())
-                        .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
-                document.add(new Paragraph()
-                        .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true)));
+            // Calculating total nb of pages.
+            total_nb_pages = (listOfExecutions.size() / NB_EXECUTION_PER_APPENDIX_FILE) + 1;
 
-                if (displayCountryColumn) {
-                    tableExe = new Table(new float[]{200, 90, 20, 70, 80, 70, 70});
-                } else {
-                    tableExe = new Table(new float[]{200, 90, 20, 70, 70, 70});
-                }
-                tableExe
-                        .addHeaderCell(getHeaderCell("Test Folder"))
-                        .addHeaderCell(getHeaderCell("Test ID"))
-                        .addHeaderCell(getHeaderCell("Prio"))
-                        .addHeaderCell(getHeaderCell("Application"));
-                if (displayCountryColumn) {
-                    tableExe
-                            .addHeaderCell(getHeaderCell("Country"));
-                }
-                tableExe
-                        .addHeaderCell(getHeaderCell("Environment"))
-                        .addHeaderCell(getHeaderCell("Robot"));
-                tableExe
-                        .addCell(execution.getTest())
-                        .addCell(execution.getTestCase())
-                        .addCell(String.valueOf(execution.getTestCasePriority()))
-                        .addCell(execution.getApplication());
-                if (displayCountryColumn) {
-                    tableExe
-                            .addCell(execution.getCountry());
+            int appendix_page;
+            boolean file_not_yet_created = false;
+            for (int current_appendix_index = 1; current_appendix_index < total_nb_pages + 1; current_appendix_index++) {
 
-                }
-                tableExe
-                        .addCell(execution.getEnvironment())
-                        .addCell(execution.getRobot());
-                document.add(tableExe.setMarginTop(10).setMarginBottom(10));
+                // Creating a PdfWriter
+                String dest = folder + File.separatorChar + "Campaign Execution Report Appendix " + current_appendix_index + " tmp.pdf";
+                destList.add(dest);
+                LOG.info("Starting to generate PDF Report on :" + dest);
+                PdfWriter writer = new PdfWriter(dest);
 
-                @SuppressWarnings("unchecked")
-                TestCaseExecution exec = testCaseExecutionService.convert(testCaseExecutionService.readByKeyWithDependency(execution.getId()));
-                String desc = "";
+                // Creating a PdfDocument       
+                PdfDocument pdfDoc = new PdfDocument(writer);
 
-                for (TestCaseStepExecution step : exec.getTestCaseStepExecutionList()) {
-                    if (!TestCaseExecution.CONTROLSTATUS_NE.equals(step.getReturnCode())) {
+                try ( // Creating a Document
+                        Document document = new Document(pdfDoc)) {
 
-                        // Creating a table
-                        tableTmp = new Table(new float[]{500, 20})
-                                .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(step.getDescription(), step.getSort(), step.getIndex(), step.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
-                                        .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                                .addCell(getStatusCell(step.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
-                        document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
+                    AreaBreak aB = new AreaBreak();
 
-                        document.add(new Paragraph()
-                                .add(getTextFromString(String.valueOf(step.getReturnMessage()), 10, false))
-                                .setMarginLeft(0)
-                        );
+                    // Tittle
+                    document.add(getTitleTable("", ""));
 
-                        // Add images is exist
-                        tableTmp = getImageTable(step.getFileList(), mediaPath);
-                        if (tableTmp != null) {
-                            document.add(tableTmp.setMarginLeft(0));
-                        }
+                    Table tableExe, tableTmp;
 
-                    }
+                    tableTmp = new Table(new float[]{600})
+                            .addCell(new Cell().add(new Paragraph().add(getTextFromString("APPENDIX " + current_appendix_index + "/" + total_nb_pages, 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    document.add(tableTmp.setMarginTop(200));
 
-                    for (TestCaseStepActionExecution action : step.getTestCaseStepActionExecutionList()) {
-                        if (!TestCaseExecution.CONTROLSTATUS_NE.equals(action.getReturnCode())) {
-                            tableTmp = new Table(new float[]{500, 20})
-                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(action.getDescription(), action.getSort(), 0, action.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
-                                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                                    .addCell(getStatusCell(action.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
-                            document.add(tableTmp.setMarginLeft(20));
+                    tableTmp = new Table(new float[]{600})
+                            .addCell(new Cell().add(new Paragraph().add(getTextFromString("Details of Execution Campaign", 20, true).setTextAlignment(TextAlignment.CENTER)).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    document.add(tableTmp.setMarginTop(40));
 
+                    /**
+                     * Detail information per execution
+                     */
+                    int i = 0;
+                    for (TestCaseExecution execution : listOfExecutions) {
+                        appendix_page = (i / NB_EXECUTION_PER_APPENDIX_FILE) + 1;
+
+                        // We display the execution only if exe is on the correct appendix file.
+                        if (appendix_page == current_appendix_index) {
+
+                            document.add(aB);
+
+                            document.add(new Paragraph("Execution: " + execution.getId()).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER).setDestination(String.valueOf(execution.getId())));
+                            // Adding exeution details
+                            String coloHex = getColor(execution.getControlStatus());
+                            document.add(new Paragraph(execution.getControlStatus() + " - " + execution.getDescription())
+                                    .setBackgroundColor(new DeviceRgb(decodeColor(coloHex, "R"), decodeColor(coloHex, "G"), decodeColor(coloHex, "B"))));
                             document.add(new Paragraph()
-                                    .add(getTextFromString(String.valueOf(action.getReturnMessage()), 10, false))
-                                    .setMarginLeft(20)
-                            );
+                                    .add(getTextFromString(String.valueOf(execution.getControlMessage()), 12, true)));
 
-                            // Add images is exist
-                            tableTmp = getImageTable(action.getFileList(), mediaPath);
-                            if (tableTmp != null) {
-                                document.add(tableTmp.setMarginLeft(20));
+                            if (displayCountryColumn) {
+                                tableExe = new Table(new float[]{200, 90, 20, 70, 80, 70, 70});
+                            } else {
+                                tableExe = new Table(new float[]{200, 90, 20, 70, 70, 70});
                             }
+                            tableExe
+                                    .addHeaderCell(getHeaderCell("Test Folder"))
+                                    .addHeaderCell(getHeaderCell("Test ID"))
+                                    .addHeaderCell(getHeaderCell("Prio"))
+                                    .addHeaderCell(getHeaderCell("Application"));
+                            if (displayCountryColumn) {
+                                tableExe
+                                        .addHeaderCell(getHeaderCell("Country"));
+                            }
+                            tableExe
+                                    .addHeaderCell(getHeaderCell("Environment"))
+                                    .addHeaderCell(getHeaderCell("Robot"));
+                            tableExe
+                                    .addCell(execution.getTest())
+                                    .addCell(execution.getTestCase())
+                                    .addCell(String.valueOf(execution.getTestCasePriority()))
+                                    .addCell(execution.getApplication());
+                            if (displayCountryColumn) {
+                                tableExe
+                                        .addCell(execution.getCountry());
 
-                        }
+                            }
+                            tableExe
+                                    .addCell(execution.getEnvironment())
+                                    .addCell(execution.getRobot());
+                            document.add(tableExe.setMarginTop(10).setMarginBottom(10));
 
-                        for (TestCaseStepActionControlExecution control : action.getTestCaseStepActionControlExecutionList()) {
+                            @SuppressWarnings("unchecked")
+                            TestCaseExecution exec = testCaseExecutionService.convert(testCaseExecutionService.readByKeyWithDependency(execution.getId()));
+                            String desc = "";
 
-                            if (!TestCaseExecution.CONTROLSTATUS_NE.equals(control.getReturnCode())) {
-                                tableTmp = new Table(new float[]{500, 20})
-                                        .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(control.getDescription(), control.getSort(), 0, control.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
-                                                .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
-                                        .addCell(getStatusCell(control.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
-                                document.add(tableTmp.setMarginLeft(40));
+                            for (TestCaseStepExecution step : exec.getTestCaseStepExecutionList()) {
+                                if (!TestCaseExecution.CONTROLSTATUS_NE.equals(step.getReturnCode())) {
 
-                                document.add(new Paragraph()
-                                        .add(getTextFromString(String.valueOf(control.getReturnMessage()), 10, false))
-                                        .setMarginLeft(40)
-                                );
+                                    // Creating a table
+                                    tableTmp = new Table(new float[]{500, 20})
+                                            .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(step.getDescription(), step.getSort(), step.getIndex(), step.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                                    .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.CYAN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                                            .addCell(getStatusCell(step.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                                    document.add(tableTmp.setMarginLeft(0).setMarginTop(20));
 
-                                // Add images is exist
-                                tableTmp = getImageTable(control.getFileList(), mediaPath);
-                                if (tableTmp != null) {
-                                    document.add(tableTmp.setMarginLeft(40));
+                                    document.add(new Paragraph()
+                                            .add(getTextFromString(String.valueOf(step.getReturnMessage()), 10, false))
+                                            .setMarginLeft(0)
+                                    );
+
+                                    // Add images is exist
+                                    tableTmp = getImageTable(step.getFileList(), mediaPath);
+                                    if (tableTmp != null) {
+                                        document.add(tableTmp.setMarginLeft(0));
+                                    }
+
                                 }
-                            }
 
+                                for (TestCaseStepActionExecution action : step.getTestCaseStepActionExecutionList()) {
+                                    if (!TestCaseExecution.CONTROLSTATUS_NE.equals(action.getReturnCode())) {
+                                        tableTmp = new Table(new float[]{500, 20})
+                                                .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(action.getDescription(), action.getSort(), 0, action.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                                        .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.BLUE, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                                                .addCell(getStatusCell(action.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                                        document.add(tableTmp.setMarginLeft(20));
+
+                                        document.add(new Paragraph()
+                                                .add(getTextFromString(String.valueOf(action.getReturnMessage()), 10, false))
+                                                .setMarginLeft(20)
+                                        );
+
+                                        // Add images is exist
+                                        tableTmp = getImageTable(action.getFileList(), mediaPath);
+                                        if (tableTmp != null) {
+                                            document.add(tableTmp.setMarginLeft(20));
+                                        }
+
+                                    }
+
+                                    for (TestCaseStepActionControlExecution control : action.getTestCaseStepActionControlExecutionList()) {
+
+                                        if (!TestCaseExecution.CONTROLSTATUS_NE.equals(control.getReturnCode())) {
+                                            tableTmp = new Table(new float[]{500, 20})
+                                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString(getElementDescription(control.getDescription(), control.getSort(), 0, control.getTest()), 12, true).setTextAlignment(TextAlignment.LEFT)))
+                                                            .setBorder(Border.NO_BORDER).setBorderLeft(new SolidBorder(ColorConstants.GREEN, 3)).setBorderRight(new SolidBorder(1)).setBorderTop(new SolidBorder(1)).setBorderBottom(new SolidBorder(1)))
+                                                    .addCell(getStatusCell(control.getReturnCode(), 1, 1).setTextAlignment(TextAlignment.RIGHT));
+                                            document.add(tableTmp.setMarginLeft(40));
+
+                                            document.add(new Paragraph()
+                                                    .add(getTextFromString(String.valueOf(control.getReturnMessage()), 10, false))
+                                                    .setMarginLeft(40)
+                                            );
+
+                                            // Add images is exist
+                                            tableTmp = getImageTable(control.getFileList(), mediaPath);
+                                            if (tableTmp != null) {
+                                                document.add(tableTmp.setMarginLeft(40));
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                            }
                         }
 
+                        i++;
                     }
 
+                    // Closing the document
+                    LOG.info("Ending to generate PDF Report on :" + dest);
+                } catch (CerberusException ex) {
+                    LOG.error(ex, ex);
+                } catch (Exception ex) {
+                    LOG.error(ex, ex);
                 }
 
-                // Adding area break to the PDF
-                if (i++ < listOfExecutions.size()) {
-                    document.add(aB);
-                }
             }
 
-            // Closing the document
-            LOG.info("Ending to generate PDF Report on :" + dest);
-            return dest;
         } catch (ParseException | CerberusException ex) {
-            LOG.error(ex, ex);
+            LOG.error("Error when getting the list of execution for pdf file generation.", ex);
         } catch (Exception ex) {
             LOG.error(ex, ex);
         }
-        return null;
+
+        return destList;
     }
 
     private String getElementDescription(String desc, int sort, int seq, String test) {
@@ -612,39 +633,55 @@ public class PDFService implements IPDFService {
     }
 
     @Override
-    public String addHeaderAndFooter(String pdfFilePathSrc, String destinationFile, Tag tag, Date today) throws FileNotFoundException {
+    public String addHeaderAndFooter(String pdfFilePathSrc, String destinationFile, Tag tag, Date today, boolean withLogo) throws FileNotFoundException {
         try {
             LOG.info("Starting to add Headers on PDF Report :" + pdfFilePathSrc + " To : " + destinationFile);
+
+            String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
+            // Tittle
+            ImageData imageDataLogo;
+            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
+                imageDataLogo = ImageDataFactory.create(logoURL);
+            } else {
+                imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");
+            }
+            Image image = new Image(imageDataLogo).scaleToFit(50, 70);
 
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
 
             // Adding Headers and Footers
-            Paragraph header = new Paragraph("Campaign Execution Report - " + tag.getTag())
-                    .setFontSize(7).setItalic();
+            Paragraph headerRight = new Paragraph("Campaign Execution Report - " + tag.getTag())
+                    .setFontSize(5).setItalic().setTextAlignment(TextAlignment.RIGHT).setWidth(400);
+            Paragraph headerLeft = new Paragraph()
+                    .setFontSize(5).setItalic().add(image);
+
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(pdfFilePathSrc), new PdfWriter(destinationFile));
             Document doc = new Document(pdfDoc);
             for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
 
                 Rectangle pageSize = pdfDoc.getPage(i).getPageSize();
-                float x = 20;
-                float y = pageSize.getTop() - 20;
+                PdfPage curPage = pdfDoc.getPage(i);
 
-                // Header insert
-                if (i != 1) {
-                    doc.showTextAligned(header, x, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+                // Header insert (no header on first page)
+//                if (i != 1) {
+                LOG.debug("headerRight x " + pageSize.getWidth() + " y " + (pageSize.getTop() - 20));
+                doc.showTextAligned(headerRight, 570, pageSize.getTop() - 20, i, TextAlignment.RIGHT, VerticalAlignment.TOP, 0);
+                // Logo is always displayed on 1st page. It is displayed on other page only if logo flag is activated.
+                if (withLogo || i == 1) {
+                    LOG.debug("headerLeft x " + (20) + " y " + (pageSize.getTop() - 20));
+                    doc.showTextAligned(headerLeft, 20, pageSize.getTop() - 40, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+
                 }
+//                }
 
                 // Footer insert
-                Paragraph footer = new Paragraph("Page " + i + " / " + pdfDoc.getNumberOfPages())
-                        .setFontSize(7).setItalic();
+                Paragraph footerRight = new Paragraph("Page " + i + " / " + pdfDoc.getNumberOfPages())
+                        .setFontSize(5).setItalic();
                 Paragraph footerLeft = new Paragraph("(C) Cerberus Testing - " + df.format(today))
-                        .setFontSize(7).setItalic();
+                        .setFontSize(5).setItalic();
 
-                x = pageSize.getRight() - 60;
-//                x = 20;
-                y = pageSize.getBottom() + 20;
-                doc.showTextAligned(footer, x, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
-                doc.showTextAligned(footerLeft, 20, y, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+                doc.showTextAligned(footerRight, pageSize.getRight() - 60, pageSize.getBottom() + 20, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+                doc.showTextAligned(footerLeft, 20, pageSize.getBottom() + 20, i, TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
 
             }
             doc.close();
@@ -773,12 +810,6 @@ public class PDFService implements IPDFService {
                 .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .setTextAlignment(TextAlignment.CENTER);
 
-        return cellRes;
-    }
-
-    private Cell getContentCell(String text) {
-        Cell cellRes = new Cell(1, 1)
-                .add(new Paragraph(text));
         return cellRes;
     }
 

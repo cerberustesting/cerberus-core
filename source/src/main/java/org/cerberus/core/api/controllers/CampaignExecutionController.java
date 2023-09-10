@@ -55,7 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -141,6 +141,8 @@ public class CampaignExecutionController {
             Date today = Calendar.getInstance().getTime();
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_FILE);
 
+            String filePostName = campaignExecutionId + "_" + String.valueOf(df.format(today));
+
             String rootPath = "";
             if (System.getProperty("java.io.tmpdir") != null) {
                 rootPath = System.getProperty("java.io.tmpdir");
@@ -158,19 +160,29 @@ public class CampaignExecutionController {
             File folderPath = new File(tmpFolderPath);
             folderPath.mkdirs();
 
+            // Summary PDF
             String pdfFilenameOri = this.pdfService.generatePdf(campaignExeIdTag, today, tmpFolderPath);
-            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, tmpFolderPath + "Campaign Execution.pdf", campaignExeIdTag, today);
-            Path filePath = Paths.get(pdfFilename);
+            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, tmpFolderPath + "Campaign Execution-" + filePostName + ".pdf", campaignExeIdTag, today, true);
 
-            String pdfFilenameOriAppendix = this.pdfService.generatePdfAppendix(campaignExeIdTag, today, tmpFolderPath);
-            String pdfFilenameAppendix = this.pdfService.addHeaderAndFooter(pdfFilenameOriAppendix, tmpFolderPath + "Campaign Execution - Appendix.pdf", campaignExeIdTag, today);
-            Path filePathAppendix = Paths.get(pdfFilenameAppendix);
+            // Appendix PDFs
+            List<String> pdfFilenameOriAppendix = this.pdfService.generatePdfAppendix(campaignExeIdTag, today, tmpFolderPath);
+            int i = 0;
+            List<String> pdfFilenameAppendixList = new ArrayList<>();
+            for (String filenameAppendix : pdfFilenameOriAppendix) {
+                i++;
+                pdfFilenameAppendixList.add(this.pdfService.addHeaderAndFooter(filenameAppendix, tmpFolderPath + "Campaign Execution-" + filePostName + " - Appendix " + i + ".pdf", campaignExeIdTag, today, false));
+
+            }
 
             // Creating a PdfWriter
             String zipPath = rootPath + File.separatorChar + "campaignExecutionReport-" + fileUUID.toString().substring(0, 17) + ".zip";
             Path zipFilePath = Paths.get(zipPath);
 
-            List<String> filePaths = Arrays.asList(pdfFilename, pdfFilenameAppendix);
+            List<String> filePaths = new ArrayList<>();
+            filePaths.add(pdfFilename);
+            for (String filenam : pdfFilenameAppendixList) {
+                filePaths.add(filenam);
+            }
 
             try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipPath))) {
                 for (String filePath1 : filePaths) {
@@ -184,7 +196,7 @@ public class CampaignExecutionController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentLength(zipFilePath.toFile().length())
-                    .header("Content-Disposition", "attachment; filename=CampaignReport-" + campaignExecutionId + "_" + String.valueOf(df.format(today)) + ".zip")
+                    .header("Content-Disposition", "attachment; filename=CampaignReport-" + filePostName + ".zip")
                     .body(new InputStreamResource(Files.newInputStream(zipFilePath)));
         } catch (EntityNotFoundException exception) {
             return ResponseEntity

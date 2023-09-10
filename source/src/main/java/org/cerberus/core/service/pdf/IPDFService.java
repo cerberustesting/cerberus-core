@@ -21,6 +21,7 @@ package org.cerberus.core.service.pdf;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.List;
 import org.cerberus.core.crud.entity.Tag;
 
 /**
@@ -44,7 +45,7 @@ public interface IPDFService {
      * @return
      * @throws java.io.FileNotFoundException
      */
-    String generatePdfAppendix(Tag tag, Date today, String folder) throws FileNotFoundException;
+    List<String> generatePdfAppendix(Tag tag, Date today, String folder) throws FileNotFoundException;
 
     /**
      *
@@ -52,9 +53,10 @@ public interface IPDFService {
      * @param pdfFilePathDst
      * @param tag
      * @param today
+     * @param withLogo
      * @return
      * @throws FileNotFoundException
      */
-    String addHeaderAndFooter(String pdfFilePathSrc, String pdfFilePathDst, Tag tag, Date today) throws FileNotFoundException;
+    String addHeaderAndFooter(String pdfFilePathSrc, String pdfFilePathDst, Tag tag, Date today, boolean withLogo) throws FileNotFoundException;
 
 }
