@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONStyle;
@@ -78,14 +79,14 @@ public class JsonService implements IJsonService {
      * @param jsonMessage     JSON Content
      * @param url             URL of the Json file to parse
      * @param attributeToFind The path of the searched element
-     * @return Value of the element from the Json File or null if the element is
+     * @return Value of the element from the Json File or PathNotFoundException if the element is
      * not found.
      */
     @Override
     public String getFromJson(String jsonMessage, String url, String attributeToFind) throws InvalidPathException {
         if (attributeToFind == null) {
             LOG.warn("Null argument");
-            return DEFAULT_GET_FROM_JSON_VALUE;
+            throw new InvalidPathException();
         }
 
         //Get the Json File in string format
@@ -103,8 +104,14 @@ public class JsonService implements IJsonService {
         //Get the value
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
         String jsonPath = checkJsonPathFormat(attributeToFind);
-
-        return castObjectAccordingToJson(JsonPath.read(document, jsonPath));
+        Object value = JsonPath.read(document, jsonPath);
+        //Value "null" in the json.
+        if (value == null) value = "null";
+        //When using $.. syntax, it will return an empty array [] in case of no element found
+        if (value.toString().equals("[]")) {
+            throw new PathNotFoundException();
+        }
+        return castObjectAccordingToJson(value);
     }
 
     /**
@@ -120,7 +127,7 @@ public class JsonService implements IJsonService {
         String jsonPath = checkJsonPathFormat(attributeToFind);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        //Exception InavlidPathException throwed by read method when not elements found
+        //Exception PathNotFoundException throwed by read method when not elements found
         JsonNode jsonElementsSearched = JsonPath.using(
                         Configuration
                                 .defaultConfiguration()

@@ -19,14 +19,11 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.execution.IConditionService;
@@ -468,18 +465,21 @@ public class ConditionService implements IConditionService {
                                     LOG.debug("Checking if Element Present - JSON");
                                 }
                                 try {
-                                    if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
-                                        conditionResult = true;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    } else {
-                                        conditionResult = false;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    }
+                                    jsonService.getFromJson(responseBody, null, conditionValue1);
+                                    conditionResult = true;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT)
+                                            .resolveDescription("ELEMENT", conditionValue1);
+                                } catch (PathNotFoundException ex) {
+                                    conditionResult = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT)
+                                            .resolveDescription("ELEMENT", conditionValue1);
+                                } catch (InvalidPathException ex) {
+                                    conditionResult = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_INVALIDJSONPATH)
+                                            .resolveDescription("PATH", conditionValue1);
                                 } catch (Exception ex) {
-                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
-                                    mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC)
+                                            .resolveDescription("ERROR", ex.toString());
                                 }
                                 break;
 
@@ -621,15 +621,18 @@ public class ConditionService implements IConditionService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                                 try {
-                                    if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
-                                        conditionResult = true;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    } else {
-                                        conditionResult = false;
-                                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
-                                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                                    }
+                                    jsonService.getFromJson(responseBody, null, conditionValue1);
+                                    conditionResult = true;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT)
+                                            .resolveDescription("ELEMENT", conditionValue1);
+                                } catch (PathNotFoundException ex) {
+                                    conditionResult = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT)
+                                            .resolveDescription("ELEMENT", conditionValue1);
+                                } catch (InvalidPathException ex) {
+                                    conditionResult = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_INVALIDJSONPATH)
+                                            .resolveDescription("PATH", conditionValue1);
                                 } catch (Exception ex) {
                                     mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
                                     mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));

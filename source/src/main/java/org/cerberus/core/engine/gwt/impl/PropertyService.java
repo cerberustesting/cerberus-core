@@ -19,24 +19,13 @@
  */
 package org.cerberus.core.engine.gwt.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionData;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.core.crud.entity.TestDataLib;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.core.crud.service.IAppServiceService;
-import org.cerberus.core.crud.service.ILogEventService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.ISqlLibraryService;
-import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
-import org.cerberus.core.crud.service.ITestDataLibService;
+import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.execution.IIdentifierService;
@@ -52,6 +41,7 @@ import org.cerberus.core.service.datalib.IDataLibService;
 import org.cerberus.core.service.groovy.IGroovyService;
 import org.cerberus.core.service.har.IHarService;
 import org.cerberus.core.service.json.IJsonService;
+import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
@@ -74,7 +64,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
-import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
  * {Insert class description here}
@@ -1010,22 +999,22 @@ public class PropertyService implements IPropertyService {
 
                 String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath);
 
-                if (valueFromJson != null) {
-                    testCaseExecutionData.setValue(valueFromJson);
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC)
-                            .resolveDescription("PARAM", jsonPath)
-                            .resolveDescription("VALUE", valueFromJson)
-                            .resolveDescription("INDEX", String.valueOf(execution.getNetworkTrafficIndexList().size()))
-                            .resolveDescription("NBHITS", String.valueOf(indexFrom));
-                    testCaseExecutionData.setPropertyResultMessage(res);
+                testCaseExecutionData.setValue(valueFromJson);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMNETWORKTRAFFIC)
+                        .resolveDescription("PARAM", jsonPath)
+                        .resolveDescription("VALUE", valueFromJson)
+                        .resolveDescription("INDEX", String.valueOf(execution.getNetworkTrafficIndexList().size()))
+                        .resolveDescription("NBHITS", String.valueOf(indexFrom));
+                testCaseExecutionData.setPropertyResultMessage(res);
 
-                } else {
-                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PATHNOTFOUND);
-                    res.setDescription(res.getDescription().replace("%PARAM%", jsonPath));
-                    testCaseExecutionData.setPropertyResultMessage(res);
-
-                }
-
+            } catch (PathNotFoundException exception) {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PATHNOTFOUND)
+                        .resolveDescription("PARAM", jsonPath);
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } catch (InvalidPathException exception) {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_INVALIDPATH)
+                        .resolveDescription("PATH", testCaseExecutionData.getValue1());
+                testCaseExecutionData.setPropertyResultMessage(res);
             } catch (Exception ex) {
                 LOG.warn("Exception when getting property from Network Traffic.", ex);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_PROXYNOTACTIVE);
@@ -1516,6 +1505,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, boolean forceRecalculation) {
         String jsonResponse = "";
+        MessageEvent res;
 
         if (null != execution.getLastServiceCalled()) {
             jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
@@ -1543,24 +1533,30 @@ public class PropertyService implements IPropertyService {
             }
 
             testCaseExecutionData.setValue(valueFromJson);
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        } catch (InvalidPathException exception) { //Path not found, invalid path syntax or empty path
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%ERROR%", ""));
-            testCaseExecutionData.setPropertyResultMessage(res);
+            res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("VALUE", valueFromJson);
+        } catch (PathNotFoundException exception) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("ERROR", "");
+        } catch (InvalidPathException exception) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_INVALIDPATH)
+                    .resolveDescription("PATH", testCaseExecutionData.getValue1());
+        } catch (Exception exception) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("ERROR", exception.toString());
+            LOG.error("Exception when trying to calculate getFromJson property: {}", exception.toString(), exception);
         }
 
+        testCaseExecutionData.setPropertyResultMessage(res);
         return testCaseExecutionData;
     }
 
     private TestCaseExecutionData property_getRawFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution) {
         String jsonResponse = "";
+        MessageEvent res;
 
         //If tCExecution LastServiceCalled exist, get the response
         if (execution.getLastServiceCalled() != null) {
@@ -1586,22 +1582,23 @@ public class PropertyService implements IPropertyService {
             String valueFromJson = this.jsonService.getRawFromJson(jsonResponse, testCaseExecutionData.getValue1());
 
             testCaseExecutionData.setValue(valueFromJson);
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
-            testCaseExecutionData.setPropertyResultMessage(res);
-
-        } catch (JsonProcessingException | InvalidPathException exception) { //Path not found, invalid path syntax or empty path
-            if (LOG.isDebugEnabled()) {
-                LOG.error("Exception when getting property from JSON.", exception);
-            }
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
-            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%ERROR%", ""));
-            testCaseExecutionData.setPropertyResultMessage(res);
+            res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("VALUE", valueFromJson);
+        } catch (PathNotFoundException exception) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("ERROR", "");
+        } catch (InvalidPathException exception) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_INVALIDPATH)
+                    .resolveDescription("PATH", testCaseExecutionData.getValue1());
+        } catch (Exception exception) {
+            LOG.error("Exception when trying to calculate getRawFromJson property: {}", exception.toString(), exception);
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON)
+                    .resolveDescription("PARAM", testCaseExecutionData.getValue1())
+                    .resolveDescription("ERROR", exception.toString());
         }
+        testCaseExecutionData.setPropertyResultMessage(res);
         return testCaseExecutionData;
     }
 

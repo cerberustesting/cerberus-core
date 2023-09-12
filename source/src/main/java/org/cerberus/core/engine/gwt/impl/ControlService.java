@@ -21,16 +21,11 @@ package org.cerberus.core.engine.gwt.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
+import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionFile;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -58,12 +53,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -654,29 +644,25 @@ public class ControlService implements IControlService {
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
-                                //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
-                                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
-                                    return mes;
-                                } else {
-                                    throw new PathNotFoundException();
-                                }
+                                jsonService.getFromJson(responseBody, null, elementPath);
+                                return new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT)
+                                        .resolveDescription("STRING1", elementPath);
                             } catch (PathNotFoundException ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                                mes.resolveDescription("STRING1", elementPath);
-                                return mes;
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT)
+                                        .resolveDescription("STRING1", elementPath);
+                            } catch (InvalidPathException ex) {
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_INVALIDJSONPATH)
+                                        .resolveDescription("PATH", elementPath)
+                                        .resolveDescription("ERROR", "");
                             } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.resolveDescription("ERROR", ex.toString());
-                                return mes;
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC)
+                                        .resolveDescription("ERROR", ex.toString());
                             }
                         }
                         default:
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType());
-                            mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
-                            return mes;
+                            return new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE)
+                                    .resolveDescription("TYPE", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType())
+                                    .resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT);
                     }
 
                 } else {
@@ -773,30 +759,26 @@ public class ControlService implements IControlService {
                             return mes;
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
-                                //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
-                                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                    mes.resolveDescription("STRING1", elementPath);
-                                    return mes;
-                                } else {
-                                    throw new PathNotFoundException();
-                                }
+                                jsonService.getFromJson(responseBody, null, elementPath);
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT)
+                                        .resolveDescription("STRING1", elementPath);
                             } catch (PathNotFoundException ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                                mes.resolveDescription("STRING1", elementPath);
-                                return mes;
+                                return new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT)
+                                        .resolveDescription("STRING1", elementPath);
+                            } catch (InvalidPathException ex) {
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_INVALIDJSONPATH)
+                                        .resolveDescription("PATH", elementPath)
+                                        .resolveDescription("ERROR", "");
                             } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.resolveDescription("ERROR", ex.toString());
-                                return mes;
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC)
+                                        .resolveDescription("ERROR", ex.toString());
                             }
 
                         }
                         default:
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
-                            mes.resolveDescription("TYPE", execution.getLastServiceCalled().getResponseHTTPBodyContentType());
-                            mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
-                            return mes;
+                            return new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE)
+                                    .resolveDescription("TYPE", execution.getLastServiceCalled().getResponseHTTPBodyContentType())
+                                    .resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT);
                     }
 
                 } else {
@@ -1089,10 +1071,16 @@ public class ControlService implements IControlService {
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                                 try {
                                     actual = jsonService.getFromJson(responseBody, null, path);
+                                } catch (PathNotFoundException ex) {
+                                    return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT)
+                                            .resolveDescription("ELEMENT", path);
+                                } catch (InvalidPathException exception) {
+                                    return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_INVALIDJSONPATH)
+                                            .resolveDescription("PATH", path)
+                                            .resolveDescription("ERROR", "");
                                 } catch (Exception ex) {
-                                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                    mes.resolveDescription("ERROR", ex.toString());
-                                    return mes;
+                                    return new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC)
+                                            .resolveDescription("ERROR", ex.toString());
                                 }
                             }
                             // In case of null actual value then we alert user
@@ -1285,13 +1273,19 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path);
-                        } catch (Exception ex) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.resolveDescription("ERROR", ex.toString());
-                            return mes;
-                        }
-                        break;
+                                pathContent = jsonService.getFromJson(responseBody, null, path);
+                            } catch (PathNotFoundException ex) {
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NOSUCHELEMENT)
+                                        .resolveDescription("ELEMENT", path);
+                            } catch (InvalidPathException exception) {
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_INVALIDJSONPATH)
+                                        .resolveDescription("PATH", path)
+                                        .resolveDescription("ERROR", "");
+                            } catch (Exception ex) {
+                                return new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC)
+                                        .resolveDescription("ERROR", ex.toString());
+                            }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
