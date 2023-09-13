@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.notifications.email.impl;
 
+import java.nio.charset.Charset;
 import org.cerberus.core.service.notifications.email.entity.Email;
 import org.apache.commons.mail.HtmlEmail;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -51,6 +52,7 @@ public class EmailService implements IEmailService {
             email.setFrom(cerberusEmail.getFrom());
             email.setSubject(cerberusEmail.getSubject());
             email.setHtmlMsg(cerberusEmail.getBody());
+            email.setCharset("UTF-8");
             if (cerberusEmail.isSetTls()) {
                 email = (HtmlEmail) email.setStartTLSEnabled(true);
             }

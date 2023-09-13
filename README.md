@@ -57,6 +57,7 @@ Docker images are available for [MySQL](https://hub.docker.com/r/cerberustesting
 | --- | --- |
 | 🎤 Meetup | [Cerberus Testing User Group ](https://www.meetup.com/pt-BR/cerberus-testing-user-group/) |
 | 📺 Youtube | [Cerberus Testing Youtube Channel](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ) |
+| 🌎 CNLL Paris | [CNLL Paris Open Source Experience 2022: Special Jury Price](https://linuxfr.org/news/le-cnll-annonce-les-resultats-des-acteurs-du-libre-2022) |
 | 🌎 JFTL 2022 | [Implement Continuous Testing ](https://www.cftl.fr/jftl-22-implementer-le-continuous-testing-en-pratique/) |
 | 🌎 Sophia Open Source 2022 | [Continuous Testing in Action ](https://www.telecom-valley.fr/sophiaconf-2022/) |
 | 🌎 Sophia Open Source 2022 | [Cerberus Testing, 100% Open Source Test Automation ](https://www.youtube.com/watch?v=Zz0qG6iyd4g&list=PLupkTj3yDqODEnE0DaYkZ7F3osrnZHZQk&index=10) |

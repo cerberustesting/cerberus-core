@@ -175,13 +175,17 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
-                    var line = $("<button type='button' data-robot='"+list[index].robot+"' class='list-group-item list-group-item-action' name='robotItem'>" +
-                        "<span class='col-xs-6 grayscale'>"+list[index].robot+"</span>" +
-                        "<img class='col-xs-2' style='width:60px;height:30px' src='images/platform-"+list[index].platform+".png'/>" +
-                        "<img class='col-xs-2' style='width:60px;height:30px' src='images/browser-"+list[index].browser+".png'/>" +
-                        "<span class='col-xs-2 grayscale'> "+list[index].version+" </span>" +
-                        "</button>");
-                    line.data("item",list[index]);
+                    let browserImg = "<img class='col-xs-2' style='width:60px;height:30px' src='images/browser-" + list[index].browser + ".png'/>";
+                    if (list[index].browser == "") {
+                        browserImg = "";
+                    }
+                    var line = $("<button type='button' data-robot='" + list[index].robot + "' class='list-group-item list-group-item-action' name='robotItem'>" +
+                            "<span class='col-xs-6 grayscale'>" + list[index].robot + "</span>" +
+                            "<img class='col-xs-2' style='width:60px;height:30px' src='images/platform-" + list[index].platform + ".png'/>" +
+                            browserImg +
+                            "<span class='col-xs-2 grayscale'> " + list[index].version + " </span>" +
+                            "</button>");
+                    line.data("item", list[index]);
                     $("[name='" + selectName + "']").append(line);
 
                 }
@@ -193,12 +197,12 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
         });
     } else {
         for (var index = 0; index < list.length; index++) {
-            var line = $("<button type='button' class='list-group-item list-group-item-action' data-robot='"+list[index].robot+"' name='robotItem'>" +
-                "<span class='col-lg-6 grayscale'>"+list[index].robot+"</span>" +
-                "<img class='col-lg-2' src='images/platform-"+list[index].platform+".png'/>" +
-                "<img class='col-lg-2' src='images/browser-"+list[index].browser+".png'/>" +
-                "<span class='col-lg-2 grayscale'> "+list[index].version+" </span>" +
-                "</button>");
+            var line = $("<button type='button' class='list-group-item list-group-item-action' data-robot='" + list[index].robot + "' name='robotItem'>" +
+                    "<span class='col-lg-6 grayscale'>" + list[index].robot + "</span>" +
+                    "<img class='col-lg-2' src='images/platform-" + list[index].platform + ".png'/>" +
+                    "<img class='col-lg-2' src='images/browser-" + list[index].browser + ".png'/>" +
+                    "<span class='col-lg-2 grayscale'> " + list[index].version + " </span>" +
+                    "</button>");
             $("[name='" + selectName + "']").append(line);
         }
     }
@@ -494,7 +498,7 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
 
 }
 
-function getActionCombo(){
+function getActionCombo() {
     var cacheEntryName = "ACTION_COMBO";
 
     if (sessionStorage.getItem(cacheEntryName) === null) {
@@ -517,7 +521,7 @@ function getActionCombo(){
     return $.parseHTML(sessionStorage.getItem(cacheEntryName));
 }
 
-function getControlCombo(){
+function getControlCombo() {
     var cacheEntryName = "CONTROL_COMBO";
 
     if (sessionStorage.getItem(cacheEntryName) === null) {
@@ -563,24 +567,24 @@ function displayApplicationIpList(selectName, system, application) {
     $.when($.getJSON("ReadCountryEnvironmentParameters", "system=" + system + "&application=" + application)).then(function (data) {
         for (var option in data.contentTable) {
             var line = $("<button type='button' data-country='" + data.contentTable[option].country + "' data-environment='" + data.contentTable[option].environment + "' name='applicationIpItem' class='list-group-item list-group-item-action'>" +
-                "<span class='col-lg-8 grayscale'>" + data.contentTable[option].ip + "</span>" +
-                "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].country+"</span>" +
-                "<span class='label label-primary' style='background-color:#000000'>"+data.contentTable[option].environment+"</span></div>" +
-                "</button>");
-            line.data("item",data.contentTable[option]);
+                    "<span class='col-lg-8 grayscale' style='word-wrap: break-word;text-overflow;'>" + data.contentTable[option].ip + "</span>" +
+                    "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].country + "</span>" +
+                    "<span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].environment + "</span></div>" +
+                    "</button>");
+            line.data("item", data.contentTable[option]);
             $("[name='" + selectName + "']").append(line);
         }
-            $("[name='applicationIpItem']").each(function () {
-                $(this).on("click", function () {
-                    if ($(this).hasClass("active")) {
-                        $(this).removeClass("active");
-                    } else {
-                        $(this).addClass("active");
-                    }
-                });
+        $("[name='applicationIpItem']").each(function () {
+            $(this).on("click", function () {
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                } else {
+                    $(this).addClass("active");
+                }
             });
+        });
 
-        if($("[name='applicationIpItem']").size()===1){
+        if ($("[name='applicationIpItem']").size() === 1) {
             $("[name='applicationIpItem']").addClass("active");
         }
     });
@@ -1080,12 +1084,15 @@ function clearResponseMessageMainPage() {
 function showMessage(obj, dialog, silentMode, waitinMs) {
     var code = getAlertType(obj.messageType);
 
-    if (code !== "success" && dialog !== undefined && dialog !== null) {
+    if (dialog !== undefined && dialog !== null) {
         //shows the error message in the current dialog
         var elementAlert = dialog.find("div[id*='DialogMessagesAlert']");
         var elementAlertDescription = dialog.find("span[id*='DialogAlertDescription']");
 
         elementAlertDescription.html(obj.message);
+        elementAlert.removeClass("alert-success");
+        elementAlert.removeClass("alert-danger");
+        elementAlert.removeClass("alert-warning");
         elementAlert.addClass("alert-" + code);
         elementAlert.fadeIn();
     } else {
@@ -2719,9 +2726,6 @@ function comboConfigTag_format(tag) {
     let markup = "<div class='select2-result-tag clearfix'>" +
             "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
 
-    if (tag.description) {
-        markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
-    }
     markup += "<div class='select2-result-tag__statistics'>";
     if (tag.campaign) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
@@ -2893,17 +2897,18 @@ function getComboConfigApplication(editable) {
     };
 }
 
-function comboConfigApplication_format(application){
+function comboConfigApplication_format(application) {
     var doc = new Doc();
     var color = "labelGreen";
     var appType = "NEW APPLICATION ? : CLICK HERE TO CREATE IT";
 
-    if (!isEmpty(application.type)){
+    if (!isEmpty(application.type)) {
         color = "labelBlue";
         appType = doc.getDocLabel("comboApplicationType", application.type);
     }
-    return $('<span name="appNameLabel">'+application.id+' <span name="appTypeLabel" class="label '+color+'" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">'+appType+'</span></span>');
-};
+    return $('<span name="appNameLabel">' + application.id + ' <span name="appTypeLabel" class="label ' + color + '" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">' + appType + '</span></span>');
+}
+;
 
 
 function getBugIdList(data, appUrl) {

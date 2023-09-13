@@ -29,3 +29,6 @@ docker/compositions/*/localdata/
 **/helm/*.tgz
 *.tgz
 .history
+
+# Temporary log files
+hs_err_*.log

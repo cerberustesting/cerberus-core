@@ -1086,7 +1086,7 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var row = $("<tr></tr>");
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
-    var bugidInput = $("<input  maxlength=\"10\">").addClass("form-control input-sm").val(obj.id);
+    var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control input-sm").val(obj.id);
     var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
     var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated).toLocaleString());
     var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed).toLocaleString());

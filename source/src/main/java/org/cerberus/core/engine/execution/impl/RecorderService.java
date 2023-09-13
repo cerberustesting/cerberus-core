@@ -217,7 +217,7 @@ public class RecorderService implements IRecorderService {
             step = String.valueOf(controlExecution.getStepId());
             index = String.valueOf(controlExecution.getIndex());
             sequence = String.valueOf(controlExecution.getActionId());
-            controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
+            controlString = String.valueOf(controlNumber);
         }
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
@@ -227,10 +227,8 @@ public class RecorderService implements IRecorderService {
             File dir = null;
             if (file != null) {
                 name = file.getName();
-                extension = name.substring(name.lastIndexOf('.') + 1);
-                extension = extension.toUpperCase();
                 extension = testCaseExecutionFileService.checkExtension(name, extension);
-                recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')), extension, true);
+                recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name, extension, true);
                 dir = new File(recorder.getFullPath());
             } else {
                 name = fileName;
@@ -1053,9 +1051,9 @@ public class RecorderService implements IRecorderService {
     /**
      * Auxiliary method that saves a file
      *
-     * @param path     - directory path
+     * @param path - directory path
      * @param fileName - name of the file
-     * @param content  -content of the file
+     * @param content -content of the file
      */
     private void recordFile(String path, String fileName, String content, HashMap<String, String> secrets) {
         LOG.debug("Starting to save File (recordFile) : {} {}", path, fileName);
@@ -1075,7 +1073,7 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public Recorder initFilenames(long exeID, String test, String testCase, String stepID, String index, String ctionID, String controlID, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
+    public Recorder initFilenames(long exeID, String test, String testCase, String stepID, String index, String actionID, String controlID, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
         Recorder newRecorder = new Recorder();
 
         try {
@@ -1113,10 +1111,10 @@ public class RecorderService implements IRecorderService {
             //  Filename. If filename is not define, we assign it from the test, testcase, step action and control.
             StringBuilder sbfileName = new StringBuilder();
             if (!StringUtil.isEmpty(test)) {
-                sbfileName.append(test).append("-");
+                sbfileName.append(test.replace("/", "").replace("\\", "")).append("-");
             }
             if (!StringUtil.isEmpty(testCase)) {
-                sbfileName.append(testCase).append("-");
+                sbfileName.append(testCase.replace("/", "").replace("\\", "")).append("-");
             }
             if (!StringUtil.isEmpty(stepID)) {
                 sbfileName.append("S").append(stepID).append("-");
@@ -1124,8 +1122,8 @@ public class RecorderService implements IRecorderService {
             if (!StringUtil.isEmpty(index)) {
                 sbfileName.append("I").append(index).append("-");
             }
-            if (!StringUtil.isEmpty(ctionID)) {
-                sbfileName.append("A").append(ctionID).append("-");
+            if (!StringUtil.isEmpty(actionID)) {
+                sbfileName.append("A").append(actionID).append("-");
             }
             if (!StringUtil.isEmpty(controlID)) {
                 sbfileName.append("C").append(controlID).append("-");
@@ -1153,9 +1151,9 @@ public class RecorderService implements IRecorderService {
              */
             String level = "";
             if (!(StringUtil.isEmpty(controlID))) {
-                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID + "-" + controlID;
-            } else if (!(StringUtil.isEmpty(ctionID))) {
-                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + ctionID;
+                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + actionID + "-" + controlID;
+            } else if (!(StringUtil.isEmpty(actionID))) {
+                level = test + "-" + testCase + "-" + stepID + "-" + index + "-" + actionID;
             } else if (!(StringUtil.isEmpty(stepID))) {
                 level = test + "-" + testCase + "-" + stepID + "-" + index;
             } else if (!(StringUtil.isEmpty(property))) {

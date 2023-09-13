@@ -129,15 +129,15 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
-        TestCaseStepActionExecution testCaseStepActionExecution = null;
-        TestCaseStepActionControlExecution testCaseStepActionControlExecution = null;
+        TestCaseStepActionExecution executionAction = null;
+        TestCaseStepActionControlExecution executionControl = null;
         JSONArray obj = null;
         if (action) {
             obj = new JSONArray(fileData.get("action"));
-            testCaseStepActionExecution = updateTestCaseStepActionExecutionFromJsonArray(obj, appContext);
+            executionAction = updateTestCaseStepActionExecutionFromJsonArray(obj, appContext);
         } else {
             obj = new JSONArray(fileData.get("control"));
-            testCaseStepActionControlExecution = updateTestCaseStepActionControlExecutionFromJsonArray(obj, appContext);
+            executionControl = updateTestCaseStepActionControlExecutionFromJsonArray(obj, appContext);
         }
 
         if (description.isEmpty()) {
@@ -147,7 +147,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
                     .replace("%REASON%", "desc is missing!"));
             ans.setResultMessage(msg);
         } else {
-            ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName, fileID);
+            ans = recorderService.recordManuallyFile(executionAction, executionControl, extension, description, file, idex, fileName, fileID);
         }
 
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

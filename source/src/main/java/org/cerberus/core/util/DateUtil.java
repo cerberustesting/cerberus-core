@@ -40,6 +40,13 @@ public class DateUtil {
      */
     public static final String DATE_FORMAT_TIMESTAMP = "yyyyMMddHHmmssSSS";
 
+    /**
+     * SimpleDateFormat use to display inside reports
+     */
+    public static final String DATE_FORMAT_REPORT = "MM/dd/yyyy HH:mm:ss";
+    public static final String DATE_FORMAT_REPORT_TIME = "HH:mm:ss";
+    public static final String DATE_FORMAT_REPORT_FILE = "yyMMddHHmmss";
+
     private DateUtil() {
     }
 

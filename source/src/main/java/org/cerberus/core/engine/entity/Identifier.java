@@ -64,6 +64,7 @@ public class Identifier {
     public static final String IDENTIFIER_DATACERBERUS = "data-cerberus";
     public static final String IDENTIFIER_TITLE = "title";
     public static final String IDENTIFIER_REGEXTITLE = "regexTitle";
+    public static final String IDENTIFIER_REGEXURL = "regexUrl";
     public static final String IDENTIFIER_URL = "url";
     public static final String IDENTIFIER_ERRATUM = "erratum";
     public static final String IDENTIFIER_QUERYSELECTOR = "querySelector";

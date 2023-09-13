@@ -108,7 +108,7 @@ public class CreateRobot extends HttpServlet {
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), "", charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
-        String extraParam = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("extraParam"), "", charset);
+        String extraParam = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("extraParam"), "", charset);
         boolean isAcceptInsecureCerts = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter("isAcceptInsecureCerts"), true, charset);
 
         List<RobotCapability> capabilities;

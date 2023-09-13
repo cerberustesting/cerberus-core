@@ -62,8 +62,8 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      * Read TestCaseExecutionInQueue By Tag
      *
-     * @param tag              Tag used to filter execution.
-     * @param stateList        List of State to filter.
+     * @param tag Tag used to filter execution.
+     * @param stateList List of State to filter.
      * @param withDependencies
      * @return AnswerList that contains a list of TestCaseExecutionInQueue
      * object enriched with TestCase and Application objects
@@ -150,13 +150,15 @@ public interface ITestCaseExecutionQueueDAO {
     TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException;
 
     /**
-     * @param object the {@link org.cerberus.core.crud.entity.AppService} to Create
+     * @param object the {@link org.cerberus.core.crud.entity.AppService} to
+     * Create
      * @return {@link AnswerItem}
      */
     AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object);
 
     /**
-     * @param object the {@link org.cerberus.core.crud.entity.AppService} to Update
+     * @param object the {@link org.cerberus.core.crud.entity.AppService} to
+     * Update
      * @return {@link AnswerItem}
      */
     Answer update(TestCaseExecutionQueue object);
@@ -264,6 +266,11 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToCancelledForce(long id, String comment);
 
     /**
+     * This method moves queue State to CANCELLED any queue entry that has been
+     * in a running state for a too long period without any State change. It
+     * prevents execution that stops in an unexpected way to keep a slot
+     * resource in the queue for nothing.
+     *
      * @param timeOutInS
      * @param comment
      * @return
@@ -278,7 +285,8 @@ public interface ITestCaseExecutionQueueDAO {
     Answer updateToErrorForce(long id, String comment);
 
     /**
-     * @param object the {@link org.cerberus.core.crud.entity.AppService} to Delete
+     * @param object the {@link org.cerberus.core.crud.entity.AppService} to
+     * Delete
      * @return {@link AnswerItem}
      */
     Answer delete(TestCaseExecutionQueue object);
@@ -293,10 +301,10 @@ public interface ITestCaseExecutionQueueDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     *                  TestCaseExecutionInQueue
+     * TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionQueue}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionQueue
      */
     TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException;

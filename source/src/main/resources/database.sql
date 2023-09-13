@@ -6181,3 +6181,51 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 -- 1742
 ALTER TABLE `appservice` 
     ADD COLUMN `AvroSchema` MEDIUMTEXT NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;
+
+-- 1743-1745
+ALTER TABLE `appservice` 
+    ADD COLUMN `AvroSchemaKey` MEDIUMTEXT NULL DEFAULT NULL AFTER `SchemaRegistryUrl`;
+ALTER TABLE `appservice` 
+    CHANGE COLUMN `AvroSchema` `AvroSchemaValue` MEDIUMTEXT NULL DEFAULT NULL ;
+ALTER TABLE `appservice` 
+    ADD COLUMN `IsAvroEnableKey` BOOLEAN DEFAULT 0 AFTER `SchemaRegistryUrl`,
+    ADD COLUMN `IsAvroEnableValue` BOOLEAN DEFAULT 0 AFTER `AvroSchemaKey`;
+
+-- 1746
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_xray_tokencache_duration', '300', 'Cache duration in second of JIRA XRay token (default to 300 seconds / 5 minutes).'),
+    ('', 'cerberus_xray_sendenvironments_enable', 'false', 'boolean in order to activate or not the sending of environments to XRay.');
+
+-- 1747
+ALTER TABLE `tag` 
+    ADD COLUMN `XRayMessage` TEXT NULL AFTER `XRayURL`;
+
+-- 1748
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES 
+    ('SRVTYPE', 'MONGODB', '100', 'MongoDB Service', '', '', '', '');
+
+-- 1749
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES ('SRVMETHOD', 'FIND', 800 , 'Find a MongoDB Record');
+
+-- 1750
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)
+    VALUES ('CONTROL', 'verifyElementChecked', 4930, 'Verify the element (checkbox) is checked','verifyElementChecked'),
+           ('CONTROL', 'verifyElementNotChecked', 4940, 'Verify the element (checkbox) is not checked','verifyElementNotChecked');
+
+-- 1751
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
+  VALUES ('LANGUAGE', 'fa', 400, 'فارسی', 'فارسی');
+
+-- 1752
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_instancelogo_url', 'https://vm.cerberus-testing.org/img/logo.png', 'URl that point to the instance logo. Use that parameter in order to personalize some screens and pdf report.'),
+    ('', 'cerberus_pdfcampaignreportdisplaycountry_boolean', 'true', 'Boolean in order to show or hide the country column on pdf campaign execution pdf report.');
+
+-- 1753
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`)
+ VALUES ('ACTION', 'switchToContext', 5450, 'Switch to another application context', 'switchToContext');
+
+-- 1754
+ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
+

@@ -384,7 +384,7 @@ public class CIService implements ICIService {
 
     @Override
     public String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok) {
-        if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
+        if ((resultCal < resultCalThreshold) && (nbtotal > 0)) {
             return "OK";
         } else {
             return "KO";

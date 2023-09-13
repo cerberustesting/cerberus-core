@@ -149,6 +149,10 @@ public class TestCaseExecutionFile {
         return result;
     }
 
+    public boolean isImage() {
+        return (FILETYPE_GIF.equals(this.fileType) || FILETYPE_JPEG.equals(this.fileType) || FILETYPE_JPG.equals(this.fileType) || FILETYPE_PNG.equals(this.fileType));
+    }
+
     @Override
     public String toString() {
         String result = "";

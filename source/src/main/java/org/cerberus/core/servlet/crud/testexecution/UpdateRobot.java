@@ -106,7 +106,7 @@ public class UpdateRobot extends HttpServlet {
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), null, charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String extraParam = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("extraParam"), null, charset);
+        String extraParam = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("extraParam"), null, charset);
         boolean isAcceptCerts = ParameterParserUtil.parseBooleanParam(request.getParameter("isAcceptInsecureCerts"), true);
 
         List<RobotCapability> capabilities;

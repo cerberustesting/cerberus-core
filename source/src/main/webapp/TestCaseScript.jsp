@@ -142,7 +142,7 @@
                                             </div>
                                             <div style="margin-top:15px;" class="input-group marginBottom20">
                                                 <span class="input-group-addon" style="font-weight: 700;border-radius:4px;border:1px solid #ccc" id="stepId"></span>
-                                                <input aria-describedby="stepId" class="description form-control" id="stepDescription" placeholder="Step" style="border: 0px;width: 100%; font-size: 20px;">
+                                                <input aria-describedby="stepId" class="description form-control crb-autocomplete-variable" id="stepDescription" placeholder="Step" style="border: 0px;width: 100%; font-size: 20px;">
                                             </div>
                                         </div>
                                         <div class="col-lg-2" style="padding: 0px;">

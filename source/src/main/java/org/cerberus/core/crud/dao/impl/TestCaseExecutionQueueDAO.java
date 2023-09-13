@@ -786,8 +786,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isEmpty(searchTerm)) {
@@ -805,7 +805,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -1227,7 +1227,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "WHERE `" + COLUMN_ID + "` = ?";
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement selectStatement = connection.prepareStatement(query);) {
+                PreparedStatement selectStatement = connection.prepareStatement(query);) {
             selectStatement.setLong(1, id);
             try (ResultSet result = selectStatement.executeQuery();) {
                 if (!result.next()) {
@@ -1269,7 +1269,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
 
             int i = 1;
             preStat.setString(i++, object.getSystem());
@@ -1876,7 +1876,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -1907,7 +1907,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -2077,7 +2077,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         String query
                 = "UPDATE testcaseexecutionqueue "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
-                + "WHERE TO_SECONDS(now()) - TO_SECONDS(DateCreated) > ? "
+                + "WHERE TO_SECONDS(now()) - TO_SECONDS(`" + COLUMN_DATEMODIF + "`) > ? "
                 + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING')";
 
         // Debug message on SQL.
@@ -2360,11 +2360,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     *                  TestCaseExecutionInQueue
+     * TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionQueue} with objects
      * {@link ResultSet} and {@link Application}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionQueue
      */
     private TestCaseExecutionQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {

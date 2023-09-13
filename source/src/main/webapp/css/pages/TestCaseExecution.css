@@ -22,19 +22,19 @@
 */
 
 
-#NavtabsScriptEdit{
-    height:40px;
-    background-color:white;
+#NavtabsScriptEdit {
+    height: 40px;
+    background-color: white;
 }
 
-@media (max-width: 768px){
-    #NavtabsScriptEdit{
-        height:80px;
+@media (max-width: 768px) {
+    #NavtabsScriptEdit {
+        height: 80px;
     }
 }
 
-#dropzoneText{
-    word-wrap:break-word;
+#dropzoneText {
+    word-wrap: break-word;
 }
 
 
@@ -97,21 +97,21 @@
     font-size: 12px;
     background-color: #fff;
     border: 1px solid #e5e5e5;
-    border-left: 4px solid rgb(44,123,229);
+    border-left: 4px solid rgb(44, 123, 229);
     border-radius: 4px;
     margin-top: 4px;
 }
 
 .control {
-    position:relative;
+    position: relative;
     font-size: 11px;
     margin-left: -4px;
     border: 1px solid #e5e5e5;
-    border-left: 4px solid rgb(0,210,122);
+    border-left: 4px solid rgb(0, 210, 122);
     border-radius: 4px;
 }
 
-.no-border{
+.no-border {
     border: 0px;
     box-shadow: 0 0px 0px;
 }
@@ -123,7 +123,7 @@
     border-radius: 3px 3px 0 0;
 }
 
-.form-control{
+.form-control {
 }
 
 .action .type {
@@ -161,34 +161,67 @@
 }
 
 .stepItem {
-    border-left: 4px solid rgb(39,188,253);
+    border-left: 4px solid rgb(39, 188, 253);
     border-radius: 4px;
     margin-top: 4px;
 }
 
 .list-group-item-calm.active {
-    border-color:#46b8da;
-    background-color:#fff;
-    color:#555;
+    border-color: #46b8da;
+    border-width: 2px;
+    border-left-width: 4px;
+    font-weight: bold;
+    background-color: #fff;
+    color: #555;
 }
 
 .list-group-item-calm.active:hover {
-    border-color:#46b8da;
-    background-color:#f8f8f8;
-    color:#555;
+    border-color: #46b8da;
+    background-color: #f8f8f8;
+    color: #555;
+}
+
+.stepStatusOK, .stepStatusOK:not(:focus) {
+    background-color: var(--crb-green-light-color);
+}
+
+.stepStatusFA, .stepStatusFA:not(:focus) {
+    background-color: var(--crb-orange-light-color);
+}
+
+.stepStatusKO, .stepStatusKO:not(:focus) {
+    background-color: var(--crb-red-light-color);
+}
+
+.itemStatusOK {
+    background-color: var(--crb-green-light-color) !important;
+}
+
+.itemStatusFA {
+    background-color: var(--crb-orange-light-color) !important;
+}
+
+.itemStatusKO {
+    background-color: var(--crb-red-light-color) !important;
+}
+
+.stepStatusOK:hover, .stepStatusFA:hover, .stepStatusKO:hover, .itemStatusOK:hover, .itemStatusFA:hover, .itemStatusKO:hover {
+    background-color: #f5f5f5 !important;
 }
 
 .step-action:hover {
     background-color: #f8f8f8;
 }
-.step-action:hover input{
-    background-color: #f8f8f8;
-}
-.step-action:hover select{
+
+.step-action:hover input {
     background-color: #f8f8f8;
 }
 
-.optionLabel{
+.step-action:hover select {
+    background-color: #f8f8f8;
+}
+
+.optionLabel {
     display: inline-block;
     margin-bottom: 5px;
     margin-right: 10px;
@@ -196,22 +229,23 @@
     padding-bottom: 5px;
     padding-top: 5px;
     font-weight: 600;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
+
 .step-action input::-webkit-input-placeholder {
     color: red !important;
 }
 
 .step-action input:-moz-placeholder { /* Firefox 18- */
-    color: red !important;  
+    color: red !important;
 }
 
-.step-action input::-moz-placeholder {  /* Firefox 19+ */
-    color: red !important;  
+.step-action input::-moz-placeholder { /* Firefox 19+ */
+    color: red !important;
 }
 
-.step-action input:-ms-input-placeholder {  
-    color: red !important;  
+.step-action input:-ms-input-placeholder {
+    color: red !important;
 }
 
 .lib-info {
@@ -246,7 +280,6 @@
 }
 
 
-
 .step-list .list-group-item-grey {
     color: #666666;
     background-color: #cccccc;
@@ -260,13 +293,13 @@
 .list-group-item-grey.active {
     background-color: #aaa;
     color: #FFFFFF;
-    border-color : #aaa;
+    border-color: #aaa;
 }
 
 .list-group-item-grey.active:hover {
     background-color: #999999;
     color: #FFFFFF;
-    border-color : #aaa;
+    border-color: #aaa;
 }
 
 .list-group-item-danger.active {
@@ -283,10 +316,10 @@
     margin-top: 45%;
 }
 
-.action-group.toDelete, 
+.action-group.toDelete,
 .action-group.toDelete .action,
 .action-group.toDelete .control,
-.action-group.toDelete input, 
+.action-group.toDelete input,
 .action-group.toDelete select {
     background-color: #e74c3c;
 }
@@ -297,39 +330,51 @@
     background-color: #e74c3c;
 }
 
-textarea { resize:vertical ; }
+textarea {
+    resize: vertical;
+}
 
 .text-black {
-    color: #34495E; 
+    color: #34495E;
 }
 
-.progress-bar-black{
-    background-color: #34495E; 
+.progress-bar-black {
+    background-color: #34495E;
 }
 
-.progress-bar-grey{
-    background-color: #aaa; 
+.progress-bar-grey {
+    background-color: #aaa;
 }
 
-.list-group-item-black{
+.list-group-item-black {
     color: #34495E;
     background-color: #fff;
 }
 
-.list-group-item-black.active{
+.list-group-item-black.active {
     color: #fff;
     background-color: #34495E;
 }
 
-h4{
-    white-space: inherit!important;
-    overflow: initial!important;
-    text-overflow: initial!important;
-    word-wrap:break-word!important;
-    height:inherit!important;
+h4 {
+    white-space: inherit !important;
+    overflow: initial !important;
+    text-overflow: initial !important;
+    word-wrap: break-word !important;
+    height: inherit !important;
 }
+
 .tabSteps {
     font-size: 13px;
     font-weight: 500;
-    font-family: "Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+#stepConditionMessageContent {
+    font-size: 1.2em;
+    padding: 15px;
+    border: 1px solid var(--crb-light-color);
+    border-radius: 4px;
+    margin-top: 4px;
+    display: none;
 }

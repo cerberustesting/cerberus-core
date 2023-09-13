@@ -92,6 +92,8 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYELEMENTNOTPRESENT = "verifyElementNotPresent";
     public static final String CONTROL_VERIFYELEMENTVISIBLE = "verifyElementVisible";
     public static final String CONTROL_VERIFYELEMENTNOTVISIBLE = "verifyElementNotVisible";
+    public static final String CONTROL_VERIFYELEMENTCHECKED = "verifyElementChecked";
+    public static final String CONTROL_VERIFYELEMENTNOTCHECKED = "verifyElementNotChecked";
     public static final String CONTROL_VERIFYELEMENTEQUALS = "verifyElementEquals";
     public static final String CONTROL_VERIFYELEMENTDIFFERENT = "verifyElementDifferent";
     public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";

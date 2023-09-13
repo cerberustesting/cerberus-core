@@ -44,8 +44,9 @@ public interface IServiceService {
      * @param servicePath
      * @param operation
      * @param tCExecution
+     * @param timeoutMs
      * @return
      */
-    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution);
+    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution, int timeoutMs);
 
 }

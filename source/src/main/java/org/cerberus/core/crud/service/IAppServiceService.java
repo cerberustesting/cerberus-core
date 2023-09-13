@@ -72,8 +72,8 @@ public interface IAppServiceService {
     /**
      * Get the {@link AppService} of the given key
      *
-     * @param key the key of the {@link AppService} to getY will load detail
-     * only with Active data on header and content. null wil load all data.
+     * @param key the key of the {@link AppService} to get Y will load detail
+     * only with Active data on header and content. null will load all data.
      * @return
      */
     AnswerItem<AppService> readByKeyWithDependency(String key);

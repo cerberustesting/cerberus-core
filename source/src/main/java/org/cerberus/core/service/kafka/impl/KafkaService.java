@@ -195,11 +195,12 @@ public class KafkaService implements IKafkaService {
     @Override
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
             String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL, String avroSchema, int timeoutMs) {
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean activateAvro, String schemaRegistryURL,
+            boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_PRODUCEKAFKA);
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", null,
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_KAFKA, AppService.METHOD_KAFKAPRODUCE, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
                 "", null, "", null, null);
 
         // If token is defined, we add 'cerberus-token' on the http header.
@@ -214,14 +215,23 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
         } else {
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
+            if (isAvroEnableKey) {
+                serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
+            } else {
+                serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            }
+            if (isAvroEnableValue) {
+                serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroSerializer", true, 0, "", "", null, "", null));
+            } else {
+                serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer", true, 0, "", "", null, "", null));
+            }
 //            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
             serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
         }
         // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
         serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+        serviceContent.add(factoryAppServiceContent.create(null, ProducerConfig.MAX_BLOCK_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
         for (AppServiceContent object : serviceContent) {
             if (object.isActive()) {
@@ -246,53 +256,31 @@ public class KafkaService implements IKafkaService {
 
             if (activateAvro) {
 
-//                String userSchema = "{"
-//                        + "	\"name\": \"ProductGenericEvent\","
-//                        + "	\"type\": \"record\","
-//                        + "	\"namespace\": \"fr.adeo.redwood.event.avro.product\","
-//                        + "	\"fields\": ["
-//                        + "		{"
-//                        + "			\"name\": \"id\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"timestamp\","
-//                        + "			\"type\": \"long\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"eventType\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"productReferenceAdeo\","
-//                        + "			\"type\": \"int\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"productReferenceBU\","
-//                        + "			\"type\": \"int\""
-////                        + "			\"type\": [\"int\",\"null\"],"
-////                        + "			\"default\":null"
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"codeBU\","
-//                        + "			\"type\": \"string\""
-//                        + "		},"
-//                        + "		{"
-//                        + "			\"name\": \"source\","
-//                        + "			\"type\": \"string\""
-//                        + "		}"
-//                        + "	]"
-//                        + "}";
-//
-//                LOG.debug("userSchema");
-//                LOG.debug(userSchema);
                 Schema.Parser parser = new Schema.Parser();
-                Schema schema = parser.parse(avroSchema);
+                Schema schemaValue;
+                Schema schemaKey;
+
 //                ParsedSchema toto ;
+                ProducerRecord<Object, Object> record;
+                if (isAvroEnableKey) {
+                    if (isAvroEnableValue) {
+                        schemaKey = parser.parse(avroSchemaKey);
+                        schemaValue = parser.parse(avroSchemaValue);
+                        record = new ProducerRecord<>(topic, jsonToAvro(key, schemaKey), jsonToAvro(eventMessage, schemaValue));
+                    } else {
+                        schemaKey = parser.parse(avroSchemaKey);
+                        record = new ProducerRecord<>(topic, jsonToAvro(key, schemaKey), eventMessage);
+                    }
+                } else {
+                    if (isAvroEnableValue) {
+                        schemaValue = parser.parse(avroSchemaValue);
+                        record = new ProducerRecord<>(topic, key, jsonToAvro(eventMessage, schemaValue));
+                    } else {
+                        record = new ProducerRecord<>(topic, key, eventMessage);
+                    }
+                }
 
 //                GenericRecord eventMessageGeneric = new GenericData.Record(schema);
-                ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, jsonToAvro(eventMessage, schema));
-
                 for (AppServiceHeader object : serviceHeader) {
                     if (object.isActive()) {
                         record.headers().add(new RecordHeader(object.getKey(), object.getValue().getBytes()));
@@ -429,7 +417,7 @@ public class KafkaService implements IKafkaService {
     @Override
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
             List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue,
-            boolean activateAvro, String schemaRegistryURL, int targetNbEventsInt, int targetNbSecInt) {
+            boolean activateAvro, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<String> result = new AnswerItem<>();
@@ -447,12 +435,22 @@ public class KafkaService implements IKafkaService {
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
             serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
+
             if (!activateAvro) {
                 serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
                 serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             } else {
-                serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
-                serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
+                if (avroEnableKey) {
+                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
+                } else {
+                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+                }
+                if (avroEnableValue) {
+                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer", true, 0, "", "", null, "", null));
+                } else {
+                    serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+                }
+//            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
                 serviceContent.add(factoryAppServiceContent.create(null, "schema.registry.url", schemaRegistryURL, true, 0, "", "", null, "", null));
             }
 
@@ -565,66 +563,220 @@ public class KafkaService implements IKafkaService {
 
                     } else {
 
-                        // AVRO VERSION
-                        @SuppressWarnings("unchecked")
-                        ConsumerRecords<String, GenericRecord> recordsAvro = consumer.poll(Duration.ofSeconds(pollDurationSec));
-                        LOG.debug("End Poll.");
-                        if (Instant.now().toEpochMilli() > timeoutTime) {
-                            LOG.debug("Timed out searching for record");
-                            consumer.wakeup(); //exit
-                        }
-                        //Now for each record in the batch of records we got from Kafka
-                        for (ConsumerRecord<String, GenericRecord> record : recordsAvro) {
-                            try {
-                                LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
-                                LOG.debug("  " + record.key() + " | " + record.value());
+                        if (avroEnableKey) {
 
-                                // Parsing header.
-                                JSONObject headerJSON = new JSONObject();
-                                for (Header header : record.headers()) {
-                                    String headerKey = header.key();
-                                    String headerValue = new String(header.value());
-                                    headerJSON.put(headerKey, headerValue);
+                            if (avroEnableValue) {
+
+                                // AVRO KEY+VALUE VERSION
+                                @SuppressWarnings("unchecked")
+                                ConsumerRecords<GenericRecord, GenericRecord> recordsAvro = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                                LOG.debug("End Poll.");
+                                if (Instant.now().toEpochMilli() > timeoutTime) {
+                                    LOG.debug("Timed out searching for record");
+                                    consumer.wakeup(); //exit
                                 }
+                                //Now for each record in the batch of records we got from Kafka
+                                for (ConsumerRecord<GenericRecord, GenericRecord> record : recordsAvro) {
+                                    try {
+                                        LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                                        LOG.debug("  " + record.key() + " | " + record.value());
 
-                                boolean recordError = false;
+                                        // Parsing header.
+                                        JSONObject headerJSON = new JSONObject();
+                                        for (Header header : record.headers()) {
+                                            String headerKey = header.key();
+                                            String headerValue = new String(header.value());
+                                            headerJSON.put(headerKey, headerValue);
+                                        }
 
-                                // Parsing message.
-                                JSONObject recordJSON = new JSONObject();
-                                try {
-                                    recordJSON = new JSONObject(record.value().toString());
-                                } catch (JSONException ex) {
-                                    LOG.error(ex, ex);
-                                    recordError = true;
-                                }
+                                        boolean recordError = false;
 
-                                // Complete event with headers.
-                                JSONObject messageJSON = new JSONObject();
-                                messageJSON.put("key", record.key());
-                                messageJSON.put("value", recordJSON);
-                                messageJSON.put("offset", record.offset());
-                                messageJSON.put("partition", record.partition());
-                                messageJSON.put("header", headerJSON);
+                                        // Parsing message.
+                                        JSONObject recordJSON = new JSONObject();
+                                        try {
+                                            recordJSON = new JSONObject(record.value().toString());
+                                        } catch (JSONException ex) {
+                                            LOG.error(ex, ex);
+                                            recordError = true;
+                                        }
 
-                                nbEvents++;
+                                        // Parsing message.
+                                        JSONObject keyJSON = new JSONObject();
+                                        try {
+                                            keyJSON = new JSONObject(record.key().toString());
+                                        } catch (JSONException ex) {
+                                            LOG.error(ex, ex);
+                                            recordError = true;
+                                        }
 
-                                boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+                                        // Complete event with headers.
+                                        JSONObject messageJSON = new JSONObject();
+                                        messageJSON.put("key", keyJSON);
+                                        messageJSON.put("value", recordJSON);
+                                        messageJSON.put("offset", record.offset());
+                                        messageJSON.put("partition", record.partition());
+                                        messageJSON.put("header", headerJSON);
 
-                                if (match) {
-                                    resultJSON.put(messageJSON);
-                                    nbFound++;
-                                    if (nbFound >= targetNbEventsInt) {
-                                        consume = false;  //exit the consume loop
-                                        consumer.wakeup(); //takes effect on the next poll loop so need to break.
-                                        break; //if we've found a match, stop looping through the current record batch
+                                        nbEvents++;
+
+                                        boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+
+                                        if (match) {
+                                            resultJSON.put(messageJSON);
+                                            nbFound++;
+                                            if (nbFound >= targetNbEventsInt) {
+                                                consume = false;  //exit the consume loop
+                                                consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                                break; //if we've found a match, stop looping through the current record batch
+                                            }
+                                        }
+
+                                    } catch (Exception ex) {
+                                        //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                        //but we don't want to trigger the catch block for Kafka consumption
+                                        LOG.error(ex, ex);
                                     }
                                 }
 
-                            } catch (Exception ex) {
-                                //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
-                                //but we don't want to trigger the catch block for Kafka consumption
-                                LOG.error(ex, ex);
+                            } else {
+
+                                // AVRO KEY VERSION
+                                @SuppressWarnings("unchecked")
+                                ConsumerRecords<GenericRecord, String> recordsAvro = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                                LOG.debug("End Poll.");
+                                if (Instant.now().toEpochMilli() > timeoutTime) {
+                                    LOG.debug("Timed out searching for record");
+                                    consumer.wakeup(); //exit
+                                }
+                                //Now for each record in the batch of records we got from Kafka
+                                for (ConsumerRecord<GenericRecord, String> record : recordsAvro) {
+                                    try {
+                                        LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                                        LOG.debug("  " + record.key() + " | " + record.value());
+
+                                        // Parsing header.
+                                        JSONObject headerJSON = new JSONObject();
+                                        for (Header header : record.headers()) {
+                                            String headerKey = header.key();
+                                            String headerValue = new String(header.value());
+                                            headerJSON.put(headerKey, headerValue);
+                                        }
+
+                                        boolean recordError = false;
+
+                                        // Parsing message.
+                                        JSONObject recordJSON = new JSONObject();
+                                        try {
+                                            recordJSON = new JSONObject(record.value());
+                                        } catch (JSONException ex) {
+                                            LOG.error(ex, ex);
+                                            recordError = true;
+                                        }
+
+                                        // Parsing message.
+                                        JSONObject keyJSON = new JSONObject();
+                                        try {
+                                            keyJSON = new JSONObject(record.key().toString());
+                                        } catch (JSONException ex) {
+                                            LOG.error(ex, ex);
+                                            recordError = true;
+                                        }
+
+                                        // Complete event with headers.
+                                        JSONObject messageJSON = new JSONObject();
+                                        messageJSON.put("key", keyJSON);
+                                        messageJSON.put("value", record.value());
+                                        messageJSON.put("offset", record.offset());
+                                        messageJSON.put("partition", record.partition());
+                                        messageJSON.put("header", headerJSON);
+
+                                        nbEvents++;
+
+                                        boolean match = isRecordMatch(record.value(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+
+                                        if (match) {
+                                            resultJSON.put(messageJSON);
+                                            nbFound++;
+                                            if (nbFound >= targetNbEventsInt) {
+                                                consume = false;  //exit the consume loop
+                                                consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                                break; //if we've found a match, stop looping through the current record batch
+                                            }
+                                        }
+
+                                    } catch (Exception ex) {
+                                        //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                        //but we don't want to trigger the catch block for Kafka consumption
+                                        LOG.error(ex, ex);
+                                    }
+                                }
+
                             }
+
+                        } else {
+
+                            // AVRO VALUE VERSION
+                            @SuppressWarnings("unchecked")
+                            ConsumerRecords<String, GenericRecord> recordsAvro = consumer.poll(Duration.ofSeconds(pollDurationSec));
+                            LOG.debug("End Poll.");
+                            if (Instant.now().toEpochMilli() > timeoutTime) {
+                                LOG.debug("Timed out searching for record");
+                                consumer.wakeup(); //exit
+                            }
+                            //Now for each record in the batch of records we got from Kafka
+                            for (ConsumerRecord<String, GenericRecord> record : recordsAvro) {
+                                try {
+                                    LOG.debug("New record " + record.topic() + " " + record.partition() + " " + record.offset());
+                                    LOG.debug("  " + record.key() + " | " + record.value());
+
+                                    // Parsing header.
+                                    JSONObject headerJSON = new JSONObject();
+                                    for (Header header : record.headers()) {
+                                        String headerKey = header.key();
+                                        String headerValue = new String(header.value());
+                                        headerJSON.put(headerKey, headerValue);
+                                    }
+
+                                    boolean recordError = false;
+
+                                    // Parsing message.
+                                    JSONObject recordJSON = new JSONObject();
+                                    try {
+                                        recordJSON = new JSONObject(record.value().toString());
+                                    } catch (JSONException ex) {
+                                        LOG.error(ex, ex);
+                                        recordError = true;
+                                    }
+
+                                    // Complete event with headers.
+                                    JSONObject messageJSON = new JSONObject();
+                                    messageJSON.put("key", record.key());
+                                    messageJSON.put("value", recordJSON);
+                                    messageJSON.put("offset", record.offset());
+                                    messageJSON.put("partition", record.partition());
+                                    messageJSON.put("header", headerJSON);
+
+                                    nbEvents++;
+
+                                    boolean match = isRecordMatch(record.value().toString(), filterPath, filterValue, messageJSON.toString(), filterHeaderPath, filterHeaderValue);
+
+                                    if (match) {
+                                        resultJSON.put(messageJSON);
+                                        nbFound++;
+                                        if (nbFound >= targetNbEventsInt) {
+                                            consume = false;  //exit the consume loop
+                                            consumer.wakeup(); //takes effect on the next poll loop so need to break.
+                                            break; //if we've found a match, stop looping through the current record batch
+                                        }
+                                    }
+
+                                } catch (Exception ex) {
+                                    //Catch any exceptions thrown from message processing/testing as they should have already been reported/dealt with
+                                    //but we don't want to trigger the catch block for Kafka consumption
+                                    LOG.error(ex, ex);
+                                }
+                            }
+
                         }
 
                     }

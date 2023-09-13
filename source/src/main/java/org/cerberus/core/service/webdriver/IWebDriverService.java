@@ -51,6 +51,10 @@ public interface IWebDriverService {
 
     boolean isElementNotVisible(Session session, Identifier identifier);
 
+    boolean isElementChecked(Session session, Identifier identifier);
+
+    boolean isElementNotChecked(Session session, Identifier identifier);
+
     boolean isElementInElement(Session session, Identifier identifier, Identifier childIdentifier);
 
     boolean isElementNotClickable(Session session, Identifier identifier);

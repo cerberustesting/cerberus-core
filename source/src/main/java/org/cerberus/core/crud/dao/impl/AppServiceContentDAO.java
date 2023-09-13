@@ -58,7 +58,6 @@ import java.util.Map;
 @Repository
 public class AppServiceContentDAO implements IAppServiceContentDAO {
 
-
     private final DatabaseSpring databaseSpring;
     private final IFactoryAppServiceContent factoryAppServiceContent;
     private static final Logger LOG = LogManager.getLogger(AppServiceContentDAO.class);
@@ -79,7 +78,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         LOG.debug("SQL.param.key : {}", key);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, service);
             preStat.setString(2, key);
 
@@ -158,10 +157,12 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
         // Debug message on SQL.
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.service : {}", service);
+        LOG.debug("SQL.param.isActive : {}", isActive);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -187,7 +188,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             }
 
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
@@ -230,7 +231,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
@@ -269,7 +270,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         LOG.debug("SQL.param.key : {}", object.getKey());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getService());
             preStat.setString(i, object.getKey());
@@ -296,7 +297,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         LOG.debug("SQL.param.key : {}", object.getKey());
 
         try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             int i = 1;
             preStat.setString(i++, object.getService());
             preStat.setString(i++, object.getKey());
@@ -365,8 +366,8 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         LOG.debug("SQL : {}", query);
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(system)) {
@@ -388,7 +389,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
             try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

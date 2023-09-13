@@ -78,6 +78,7 @@ public class Tag {
     private String browserstackBuildHash;
     private String xRayTestExecution;
     private String xRayURL;
+    private String xRayMessage;
     private String lambdaTestBuild;
     @EqualsAndHashCode.Exclude
     private String usrCreated;
@@ -156,6 +157,7 @@ public class Tag {
             result.put("lambdaTestBuild", this.lambdaTestBuild);
             result.put("xRayTestExecution", this.xRayTestExecution);
             result.put("xRayURL", this.xRayURL);
+            result.put("xRayMessage", this.xRayMessage);
 
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);

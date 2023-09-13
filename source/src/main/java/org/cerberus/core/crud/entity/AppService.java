@@ -58,7 +58,10 @@ public class AppService {
     private String kafkaFilterHeaderValue;
     private boolean isAvroEnable;
     private String schemaRegistryURL;
-    private String avroSchema;
+    private boolean isAvroEnableKey;
+    private String avroSchemaKey;
+    private boolean isAvroEnableValue;
+    private String avroSchemaValue;
     private String parentContentService;
     private String group; // Information in order to group the services in order to organise them
     private String description;
@@ -109,6 +112,8 @@ public class AppService {
     private int kafkaWaitSecond;
     @EqualsAndHashCode.Exclude
     private boolean recordTraceFile;
+    @EqualsAndHashCode.Exclude
+    private int responseNb;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -117,6 +122,7 @@ public class AppService {
     public static final String TYPE_REST = "REST";
     public static final String TYPE_FTP = "FTP";
     public static final String TYPE_KAFKA = "KAFKA";
+    public static final String TYPE_MONGODB = "MONGODB";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
     public static final String METHOD_HTTPDELETE = "DELETE";
@@ -124,6 +130,7 @@ public class AppService {
     public static final String METHOD_HTTPPATCH = "PATCH";
     public static final String METHOD_KAFKAPRODUCE = "PRODUCE";
     public static final String METHOD_KAFKASEARCH = "SEARCH";
+    public static final String METHOD_MONGODBFIND = "FIND";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
@@ -137,7 +144,7 @@ public class AppService {
         this.contentList.add(object);
     }
 
-    public void addContentList(List <AppServiceContent> object) {
+    public void addContentList(List<AppServiceContent> object) {
         this.contentList.addAll(object);
     }
 
@@ -147,6 +154,8 @@ public class AppService {
                 return this.toJSONOnFTPExecution();
             case AppService.TYPE_KAFKA:
                 return this.toJSONOnKAFKAExecution();
+            case AppService.TYPE_MONGODB:
+                return this.toJSONOnMONGODBExecution();
             default:
                 return this.toJSONOnDefaultExecution();
         }
@@ -232,6 +241,52 @@ public class AppService {
         }
         return jsonMain;
     }
+    
+    public JSONObject toJSONOnMONGODBExecution() {
+
+        JSONObject jsonMain = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
+        try {
+            // Request Information.
+            if (!(this.getTimeoutms() == 0)) {
+                jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
+            }
+            jsonMyRequest.put("ConnectionString", this.getServicePath());
+            jsonMyRequest.put("DatabaseCollection", this.getOperation());
+            if (!StringUtil.isEmpty(this.getMethod())) {
+                jsonMyRequest.put("Method", this.getMethod());
+            }
+            jsonMyRequest.put("ServiceType", this.getType());
+            
+            jsonMyRequest.put("FindRequest", this.getServiceRequest());
+
+            jsonMain.put("Request", jsonMyRequest);
+
+            // Response Information.
+            jsonMyResponse.put("ResultNb", this.getResponseNb());
+            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
+                try {
+                    JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
+                    jsonMyResponse.put("ResponseArray", respBody);
+                } catch (JSONException e1) {
+                    try {
+                        JSONObject respBody = new JSONObject(this.getResponseHTTPBody());
+                        jsonMyResponse.put("ResponseArray", respBody);
+                    } catch (JSONException e2) {
+                        jsonMyResponse.put("ResponseArray", this.getResponseHTTPBody());
+                    }
+                }
+            }
+            jsonMyResponse.put("ResponseContentType", this.getResponseHTTPBodyContentType());
+            jsonMain.put("Response", jsonMyResponse);
+
+        } catch (JSONException ex) {
+            Logger LOG = LogManager.getLogger(RecorderService.class);
+            LOG.warn(ex);
+        }
+        return jsonMain;
+    }
 
     public JSONObject toJSONOnKAFKAExecution() {
         JSONObject jsonMain = new JSONObject();
@@ -272,12 +327,19 @@ public class AppService {
             if (!StringUtil.isEmpty(this.getServiceRequest())) {
                 try {
                     JSONObject reqBody = new JSONObject(this.getServiceRequest());
-                    jsonMyRequest.put("KAFKA-Request", reqBody);
+                    jsonMyRequest.put("KAFKA-Value", reqBody);
                 } catch (JSONException e) {
-                    jsonMyRequest.put("KAFKA-Request", this.getServiceRequest());
+                    jsonMyRequest.put("KAFKA-Value", this.getServiceRequest());
                 }
             }
-            jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
+            if (!StringUtil.isEmpty(this.getKafkaKey())) {
+                try {
+                    JSONObject keyBody = new JSONObject(this.getKafkaKey());
+                    jsonMyRequest.put("KAFKA-Key", keyBody);
+                } catch (JSONException e) {
+                    jsonMyRequest.put("KAFKA-Key", this.getKafkaKey());
+                }
+            }
             if (!(this.getKafkaWaitNbEvent() == 0)) {
                 jsonMyRequest.put("WaitNbEvents", this.getKafkaWaitNbEvent());
             }
@@ -288,7 +350,11 @@ public class AppService {
                 JSONObject jsonFilters = new JSONObject();
                 jsonFilters.put("Path", this.getKafkaFilterPath());
                 jsonFilters.put("Value", this.getKafkaFilterValue());
-                jsonMyRequest.put("KAFKA-SearchFilter", jsonFilters);
+                jsonMyRequest.put("KAFKA-SearchFilterValue", jsonFilters);
+                JSONObject jsonFiltersHeader = new JSONObject();
+                jsonFiltersHeader.put("Path", this.getKafkaFilterHeaderPath());
+                jsonFiltersHeader.put("Value", this.getKafkaFilterHeaderValue());
+                jsonMyRequest.put("KAFKA-SearchFilter", jsonFiltersHeader);
             }
 
             jsonMain.put("Request", jsonMyRequest);

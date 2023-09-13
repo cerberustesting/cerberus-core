@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,6 +24,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.api.dto.v001.CICampaignResultDTOV001;
@@ -47,6 +53,19 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.service.pdf.IPDFService;
+import org.cerberus.core.util.DateUtil;
+import org.springframework.core.io.InputStreamResource;
 
 /**
  * @author lucashimpens
@@ -58,6 +77,8 @@ import java.security.Principal;
 @RequestMapping(path = "/public/campaignexecutions/")
 public class CampaignExecutionController {
 
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CampaignExecutionController.class);
+
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "X-API-KEY";
 
@@ -67,15 +88,17 @@ public class CampaignExecutionController {
     private final CampaignExecutionService campaignExecutionService;
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ICIService ciService;
+    private final IPDFService pdfService;
 
     private static final String EXECUTIONS_CAMPAIGN_CI_PATH = "/campaignexecutions/ci";
     private static final String EXECUTIONS_CAMPAIGN_CI_SVG_PATH = "/campaignexecutions/ci/svg";
+    private static final String EXECUTIONS_CAMPAIGN_PDF_PATH = "/campaignexecutions/pdf";
 
     @ApiOperation(value = "Get a campaign execution by campaign execution id (tag)", response = CampaignExecutionDTOV001.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CampaignExecutionDTOV001.class),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CampaignExecutionDTOV001.class),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -95,11 +118,110 @@ public class CampaignExecutionController {
         );
     }
 
+    @ApiOperation(value = "Get Campaign execution reports in pdf format inside a zip file by campaign execution id (tag)")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Campaign execution pdfs report successfully returned."),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution pdfs report.")
+    })
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(path = "/pdf/{campaignExecutionId}", produces = "application/zip")
+    public ResponseEntity<InputStreamResource> findCampaignExecutionPdfById(
+            @PathVariable("campaignExecutionId") String campaignExecutionId,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
+            Principal principal) {
+        LOG.debug("pdf Called.");
+        logEventService.createForPublicCalls(EXECUTIONS_CAMPAIGN_PDF_PATH, "CALL", String.format("API /campaignexecutions/pdf/ called with URL: %s", request.getRequestURL()), request);
+        this.apiAuthenticationService.authenticate(principal, apiKey);
+        try {
+            Tag campaignExeIdTag = this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, null);
+
+            Date today = Calendar.getInstance().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT_FILE);
+
+            String filePostName = campaignExecutionId + "_" + String.valueOf(df.format(today));
+
+            String rootPath = "";
+            if (System.getProperty("java.io.tmpdir") != null) {
+                rootPath = System.getProperty("java.io.tmpdir");
+            } else {
+                String sep = "" + File.separatorChar;
+                if (sep.equalsIgnoreCase("/")) {
+                    rootPath = "/tmp";
+                } else {
+                    rootPath = "C:";
+                }
+                LOG.warn("Java Property for temporary folder not defined. Default to :" + rootPath);
+            }
+            UUID fileUUID = UUID.randomUUID();
+            String tmpFolderPath = rootPath + File.separatorChar + fileUUID.toString().substring(0, 17) + File.separatorChar;
+            File folderPath = new File(tmpFolderPath);
+            folderPath.mkdirs();
+
+            // Summary PDF
+            String pdfFilenameOri = this.pdfService.generatePdf(campaignExeIdTag, today, tmpFolderPath);
+            String pdfFilename = this.pdfService.addHeaderAndFooter(pdfFilenameOri, tmpFolderPath + "Campaign Execution-" + filePostName + ".pdf", campaignExeIdTag, today, true);
+
+            // Appendix PDFs
+            List<String> pdfFilenameOriAppendix = this.pdfService.generatePdfAppendix(campaignExeIdTag, today, tmpFolderPath);
+            int i = 0;
+            List<String> pdfFilenameAppendixList = new ArrayList<>();
+            for (String filenameAppendix : pdfFilenameOriAppendix) {
+                i++;
+                pdfFilenameAppendixList.add(this.pdfService.addHeaderAndFooter(filenameAppendix, tmpFolderPath + "Campaign Execution-" + filePostName + " - Appendix " + i + ".pdf", campaignExeIdTag, today, false));
+
+            }
+
+            // Creating a PdfWriter
+            String zipPath = rootPath + File.separatorChar + "campaignExecutionReport-" + fileUUID.toString().substring(0, 17) + ".zip";
+            Path zipFilePath = Paths.get(zipPath);
+
+            List<String> filePaths = new ArrayList<>();
+            filePaths.add(pdfFilename);
+            for (String filenam : pdfFilenameAppendixList) {
+                filePaths.add(filenam);
+            }
+
+            try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipPath))) {
+                for (String filePath1 : filePaths) {
+                    File fileToZip = new File(filePath1);
+                    zipOut.putNextEntry(new ZipEntry(fileToZip.getName()));
+                    Files.copy(fileToZip.toPath(), zipOut);
+                }
+            }
+
+            logEventService.createForPublicCalls(EXECUTIONS_CAMPAIGN_PDF_PATH, "CALLRESULT", String.format("PDFs calculated for campaign '%s'", campaignExecutionId), request);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentLength(zipFilePath.toFile().length())
+                    .header("Content-Disposition", "attachment; filename=CampaignReport-" + filePostName + ".zip")
+                    .body(new InputStreamResource(Files.newInputStream(zipFilePath)));
+        } catch (EntityNotFoundException exception) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        } catch (FailedReadOperationException exception) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        } catch (FileNotFoundException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        } catch (IOException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     @ApiOperation(value = "Get the last execution of a campaign with its name", response = CampaignExecutionDTOV001.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CampaignExecutionDTOV001.class),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CampaignExecutionDTOV001.class),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -121,9 +243,9 @@ public class CampaignExecutionController {
 
     @ApiOperation(value = "Get a campaign execution (CI Results) by campaign execution id (tag)", response = CICampaignResultDTOV001.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CICampaignResultDTOV001.class),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CICampaignResultDTOV001.class),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -146,9 +268,9 @@ public class CampaignExecutionController {
 
     @ApiOperation(value = "Get the last execution (CI Results) of a campaign with its name", response = CICampaignResultDTOV001.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CICampaignResultDTOV001.class),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned.", response = CICampaignResultDTOV001.class),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -171,13 +293,13 @@ public class CampaignExecutionController {
 
     @ApiOperation(value = "Get execution (CI Results) of a campaign in SVG output with the campaign execution id (tag)")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned."),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned."),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "ci/svg/{campaignExecutionId}", produces = "image/svg+xml")
+    @GetMapping(path = "/ci/svg/{campaignExecutionId}", produces = "image/svg+xml")
     public ResponseEntity<String> findCiSvgCampaignExecutionById(
             @PathVariable("campaignExecutionId") String campaignExecutionId,
             HttpServletRequest request) {
@@ -202,13 +324,13 @@ public class CampaignExecutionController {
 
     @ApiOperation(value = "Get the last execution (CI Results) of a campaign with its name")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign execution successfully returned."),
-            @ApiResponse(code = 404, message = "Campaign execution was not found."),
-            @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
+        @ApiResponse(code = 200, message = "Campaign execution successfully returned."),
+        @ApiResponse(code = 404, message = "Campaign execution was not found."),
+        @ApiResponse(code = 500, message = "An error occurred when retrieving the campaign execution.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(path = "ci/svg/{campaignId}/last", produces = "image/svg+xml")
+    @GetMapping(path = "/ci/svg/{campaignId}/last", produces = "image/svg+xml")
     public ResponseEntity<String> findLastCiSvgCampaignExecutionByCampaignId(
             @PathVariable("campaignId") String campaignId,
             HttpServletRequest request) {

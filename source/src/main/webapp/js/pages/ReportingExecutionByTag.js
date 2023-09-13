@@ -355,6 +355,7 @@ function loadReportingData(selectTag) {
             $("#Tagcampaign").val(data.tagObject.campaign);
             $("#TagComment").val(data.tagObject.comment);
             $("#TagDesc").val(data.tagObject.description);
+            $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
             if (isEmpty(data.tagObject.campaign)) {
                 $("#TagcampaignCel1").addClass("hidden");
                 $("#TagcampaignCel2").addClass("hidden");
@@ -369,12 +370,14 @@ function loadReportingData(selectTag) {
             } else {
                 $("#xRayTestExecutionBlock").removeClass("hidden");
                 $("#xRayTestExecution").val(data.tagObject.xRayTestExecution);
-                if (data.tagObject.xRayTestExecution !== "PENDING") {
+                if ((data.tagObject.xRayTestExecution !== "PENDING") && (data.tagObject.xRayTestExecution !== "ERROR")) {
                     $("#buttonJIRAXray").removeClass("hidden");
                     $("#buttonJIRAXray").attr("href", data.tagObject.xRayURL + "/browse/" + data.tagObject.xRayTestExecution).attr("target", "_blank");
                 } else {
                     $("#buttonJIRAXray").addClass("hidden");
                 }
+                $("#xRayTestExecution").attr("title", data.tagObject.xRayMessage);
+
             }
             $("#durExe").val(data.tagDuration);
             if (data.tagDuration >= 0) {

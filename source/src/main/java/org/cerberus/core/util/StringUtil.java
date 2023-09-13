@@ -313,7 +313,7 @@ public final class StringUtil {
      */
     public static String cleanHostURL(String host) {
         String newHost = host;
-        if (!(host.startsWith(HTTP_PREFIX) || host.startsWith(HTTPS_PREFIX) || host.startsWith(FTP_PREFIX) || host.startsWith(FTPS_PREFIX))) {
+        if (!(host.startsWith(HTTP_PREFIX) || host.startsWith(HTTPS_PREFIX) || host.startsWith(FTP_PREFIX) || host.startsWith(FTPS_PREFIX) || host.startsWith(FILE_PREFIX))) {
             // No prefix so we put http:// by default.
             newHost = HTTP_PREFIX + host;
         }
@@ -330,7 +330,7 @@ public final class StringUtil {
      * @return formatted host
      */
     public static String removeProtocolFromHostURL(String host) {
-        String newHost = host.replace(HTTP_PREFIX, "").replace(HTTPS_PREFIX, "").replace(FTP_PREFIX, "").replace(FTPS_PREFIX, "");
+        String newHost = host.replace(HTTP_PREFIX, "").replace(HTTPS_PREFIX, "").replace(FTP_PREFIX, "").replace(FTPS_PREFIX, "").replace(FILE_PREFIX, "");
         LOG.debug("Removed protocol host from {} to {}", host, newHost);
         return newHost;
 

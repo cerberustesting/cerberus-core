@@ -78,5 +78,15 @@ image:jiracloud5.png[FR,800,800]
 [NOTE]
 ====
 In case or error you can consult the _Log viewer_ from _Administration_ menu that will report the URL called and error received from the JIRA server.
+That error message also appear on Campaign execution screen as a tooltip on the ERROR field
 ====
 
+[NOTE]
+====
+Token Cache duration can be tuned thanks to parameter : cerberus_xray_tokencache_duration
+====
+
+[NOTE]
+====
+Environments can be send to JIRA XRay if you activate parameter : cerberus_xray_sendenvironments_enable
+====

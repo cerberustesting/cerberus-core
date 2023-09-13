@@ -206,10 +206,13 @@ If SubData is not defined, the key value subdata will be used.
 | %system.EXESTORAGEURL% |	Path where media are stored (based from the exeid).
 | %system.EXEELAPSEDMS% |	Elapsed time in ms since the beginning of the execution (can be used to perform timing controls).
 | %system.CURRENTSTEP_INDEX% |	Index number of the current step execution. Can be used when looping over a step.
+| %system.CURRENTSTEP_SORT% |	Sort number of the current step execution. Can be used when looping over a step.
 | %system.CURRENTSTEP_STARTISO% |	ISO Timestamp of the beginning of the step execution.
 | %system.CURRENTSTEP_ELAPSEDMS% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
-| %system.STEP.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
+| %system.STEP.n.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
 | %system.LASTSERVICE_HTTPCODE% |	Http return code of the last service called.
+| %system.LASTSERVICE_CALL% |	Last JSON Service call.
+| %system.LASTSERVICE_RESPONSE% |	Last JSON Service answer.
 | %system.TODAY-yyyy% |	Year of today
 | %system.TODAY-MM% |	Month of today
 | %system.TODAY-dd% |	Day of today

@@ -65,6 +65,15 @@ public interface IRobotServerService {
 
     /**
      *
+     * @param options JSONArray of options.
+     * @param option string value of the option. Ex :
+     * RobotServerService.OPTIONS_TIMEOUT_SYNTAX
+     * @return int value of the option requested. O if not exist.
+     */
+    public int getFromOptions(JSONArray options, String option);
+
+    /**
+     *
      * @param session
      * @param timeout
      */

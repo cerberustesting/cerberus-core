@@ -50,36 +50,36 @@ public class RunTestCaseService implements IRunTestCaseService {
     private static final Logger LOG = LogManager.getLogger(RunTestCaseService.class);
 
     @Override
-    public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
+    public TestCaseExecution runTestCase(TestCaseExecution execution) {
 
         // Start Execution (Checks and Creation of ID)
         try {
-            LOG.debug("Start Execution " + "ID={}", tCExecution.getId());
-            tCExecution = executionStartService.startExecution(tCExecution);
-            LOG.info("Execution Started : UUID={} ID= {}", tCExecution.getExecutionUUID(), " ID=" + tCExecution.getId());
+            LOG.debug("Start Execution " + "ID={}", execution.getId());
+            execution = executionStartService.startExecution(execution);
+            LOG.info("Execution Started : UUID={} ID= {}", execution.getExecutionUUID(), " ID=" + execution.getId());
 
         } catch (CerberusException ex) {
-            tCExecution.setResultMessage(ex.getMessageError());
-            LOG.info("Execution not Launched : UUID={} causedBy={}", tCExecution.getExecutionUUID(), ex.getMessageError().getDescription());
+            execution.setResultMessage(ex.getMessageError());
+            LOG.info("Execution not Launched : UUID={} causedBy={}", execution.getExecutionUUID(), ex.getMessageError().getDescription());
             try {
                 // After every execution finished we try to trigger more from the queue;-).
                 executionThreadPoolService.executeNextInQueueAsynchroneously(false);
             } catch (CerberusException ex1) {
                 LOG.error(ex1.toString(), ex1);
             }
-            return tCExecution;
+            return execution;
         }
 
         //  Execute TestCase in new thread if the execution is asynchronous
-        if (tCExecution.getId() != 0) {
+        if (execution.getId() != 0) {
             try {
-                if (!tCExecution.isSynchroneous()) {
-                    executionRunService.executeTestCaseAsynchronously(tCExecution);
+                if (!execution.isSynchroneous()) {
+                    executionRunService.executeTestCaseAsynchronously(execution);
                 } else {
-                    tCExecution = executionRunService.executeTestCase(tCExecution);
+                    execution = executionRunService.executeTestCase(execution);
                 }
             } catch (CerberusException ex) {
-                tCExecution.setResultMessage(ex.getMessageError());
+                execution.setResultMessage(ex.getMessageError());
                 LOG.warn("Execution stopped due to exception. {}", ex.getMessageError().getDescription(), ex);
                 try {
                     // After every execution finished we try to trigger more from the queue;-).
@@ -88,8 +88,8 @@ public class RunTestCaseService implements IRunTestCaseService {
                     LOG.error(ex1.toString(), ex1);
                 }
             } catch (Exception ex) {
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
-                LOG.warn("Execution stopped due to exception : UUID={} causeBy={}", tCExecution.getExecutionUUID(), ex.toString(), ex);
+                execution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
+                LOG.warn("Execution stopped due to exception : UUID={} causeBy={}", execution.getExecutionUUID(), ex.toString(), ex);
                 try {
                     // After every execution finished we try to trigger more from the queue;-).
                     executionThreadPoolService.executeNextInQueueAsynchroneously(false);
@@ -99,7 +99,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             }
         }
 
-        LOG.debug("Exit RunTestCaseService : {}", tCExecution.getId());
-        return tCExecution;
+        LOG.debug("Exit RunTestCaseService : {}", execution.getId());
+        return execution;
     }
 }

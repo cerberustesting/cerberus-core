@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
@@ -98,10 +99,12 @@ public class XRayService implements IXRayService {
     private static final String XRAYCLOUD_TESTEXECUTIONCREATION_URL = "https://xray.cloud.getxray.app/api/v2/import/execution";
     private static final String XRAYDC_TESTEXECUTIONCREATION_URLPATH = "/rest/raven/2.0/api/import/execution";
 
+    private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
+
     private String getToken(String system, String origin) {
         try {
-            if (cacheEntry.get("TOKEN-" + origin + "#" + system) != null) {
-                return cacheEntry.get("TOKEN-" + origin + "#" + system).getString("value");
+            if (cacheEntry.containsKey(getCacheKey(origin, system))) {
+                return cacheEntry.get(getCacheKey(origin, system)).getString("value");
             }
         } catch (JSONException ex) {
             LOG.error(ex, ex);
@@ -111,11 +114,13 @@ public class XRayService implements IXRayService {
 
     private void putToken(String system, String origin, String value) {
         try {
+            LocalDateTime currentTime = LocalDateTime.now();
+
             JSONObject entry = new JSONObject();
-            entry.put("key", "TOKEN-" + origin + "#" + system);
+            entry.put("key", getCacheKey(origin, system));
             entry.put("value", value);
-            entry.put("created", "now");
-            cacheEntry.put("TOKEN-" + origin + "#" + system, entry);
+            entry.put("created", currentTime.toString());
+            cacheEntry.put(getCacheKey(origin, system), entry);
         } catch (JSONException ex) {
             LOG.error(ex, ex);
         }
@@ -244,10 +249,9 @@ public class XRayService implements IXRayService {
                         post.setHeader("Content-type", "application/json");
                         post.setHeader("Authorization", "Bearer " + getToken(execution.getSystem(), execution.getTestCaseObj().getOrigine()));
 
-                        LOG.debug("Bearer " + getToken(execution.getSystem(), execution.getTestCaseObj().getOrigine()));
-
                         try {
 
+                            LOG.debug("Calling {} with Bearer {}", xRayUrl, getToken(execution.getSystem(), execution.getTestCaseObj().getOrigine()));
                             HttpResponse response = httpclient.execute(post);
 
                             int rc = response.getStatusLine().getStatusCode();
@@ -274,7 +278,12 @@ public class XRayService implements IXRayService {
                                 } else {
                                     LOG.warn("XRay Test Execution request http return code : {} is missing 'key' entry.", rc);
                                     String responseString1 = EntityUtils.toString(response.getEntity());
-                                    logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString1);
+                                    String message = "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString1;
+                                    logEventService.createForPrivateCalls("XRAY", "APICALL", message);
+                                    currentTag.setXRayURL("");
+                                    currentTag.setXRayTestExecution("ERROR");
+                                    currentTag.setXRayMessage(message);
+                                    tagService.updateXRayTestExecution(currentTag.getTag(), currentTag);
                                     LOG.warn("Message sent to " + xRayUrl + " :");
                                     LOG.warn(xRayRequest.toString(1));
                                     LOG.warn("Response : {}", responseString1);
@@ -282,7 +291,12 @@ public class XRayService implements IXRayService {
                             } else {
                                 LOG.warn("XRay Test Execution request http return code : " + rc);
                                 String responseString = EntityUtils.toString(response.getEntity());
-                                logEventService.createForPrivateCalls("XRAY", "APICALL", "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". " + responseString);
+                                String message = "Xray Execution creation request to '" + xRayUrl + "' failed with http return code : " + rc + ". " + responseString;
+                                logEventService.createForPrivateCalls("XRAY", "APICALL", message);
+                                currentTag.setXRayURL("");
+                                currentTag.setXRayTestExecution("ERROR");
+                                currentTag.setXRayMessage(message);
+                                tagService.updateXRayTestExecution(currentTag.getTag(), currentTag);
                                 LOG.warn("Message sent to " + xRayUrl + " :");
                                 LOG.warn(xRayRequest.toString(1));
                                 LOG.warn("Response : {}", responseString);
@@ -305,11 +319,11 @@ public class XRayService implements IXRayService {
     private void getXRayAuthenticationToken(String origin, String system) throws Exception {
         String xRayUrl = XRAYCLOUD_AUTHENT_URL;
 
-        if (getToken(system, origin) == null) {
+        if (getToken(system, origin) == null || (isTokenExpired(origin, system))) {
 
             if (TestCase.TESTCASE_ORIGIN_JIRAXRAYCLOUD.equals(origin)) {
 
-                LOG.debug("Getting new XRay Token.");
+                LOG.debug("Getting new XRay Token for {} and {}.", system, origin);
                 String clientID = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_xraycloud_clientid, system, "");
                 String clientSecret = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_xraycloud_clientsecret, system, "");
 
@@ -413,6 +427,31 @@ public class XRayService implements IXRayService {
 
         }
 
+    }
+
+    private boolean isTokenExpired(String origin, String system) {
+        try {
+            LOG.debug("Checking Token Cache validity.");
+            LocalDateTime currentTime = LocalDateTime.now();
+            int cacheDuration = parameterService.getParameterIntegerByKey(Parameter.VALUE_cerberus_xray_tokencache_duration, system, DEFAULT_XRAY_CACHE_DURATION);
+            if (cacheEntry.containsKey(getCacheKey(origin, system))) {
+                LOG.debug("Cache entry creation timestamp {}", cacheEntry.get(getCacheKey(origin, system)).getString("created"));
+                LocalDateTime cacheDateTime = LocalDateTime.parse(cacheEntry.get(getCacheKey(origin, system)).getString("created"));
+                LOG.debug("isTokenExpired : {}", cacheDateTime.plusSeconds(cacheDuration).isBefore(currentTime));
+                return cacheDateTime.plusSeconds(cacheDuration).isBefore(currentTime);
+            } else {
+                LOG.debug("isTokenExpired (no entry found) : {}", true);
+                return true;
+            }
+        } catch (JSONException ex) {
+            LOG.error(ex, ex);
+        }
+
+        return true;
+    }
+
+    private String getCacheKey(String origin, String system) {
+        return "TOKEN-" + origin + "#" + system;
     }
 
 }

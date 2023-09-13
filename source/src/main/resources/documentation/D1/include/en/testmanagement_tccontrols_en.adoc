@@ -6,6 +6,8 @@
 | getPageSource | Force the page source to be retrieved and stored to be checked for detailed analysis. |
 | takeScreenshot | Force to take a screenshot. Image can be automatically crop when taking the screenshot allowing to automatize clean application or web site screenshot (without Operating system header or footer elements). |
 | verifyElementClickable | *[green]#OK#* if *[red]#Element#* is clickable. |
+| verifyElementChecked | *[green]#OK#* if *[red]#Checkbox#* is checked. |
+| verifyElementNotChecked | *[green]#OK#* if *[red]#Checkbox#* is not checked. |
 | verifyElementDifferent | TBD |
 | verifyElementEquals | TBD |
 | verifyElementinElement | *[green]#OK#* if *[red]#Sub Element#* is inside *[red]#Master Element#*. That can be used to check if an option is available inside a select box. |

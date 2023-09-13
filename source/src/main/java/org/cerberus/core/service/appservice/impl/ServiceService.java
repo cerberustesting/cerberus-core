@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.core.service.csvfile.ICsvFileService;
+import org.cerberus.core.service.mongodb.IMongodbService;
 
 /**
  * @author bcivel
@@ -72,6 +73,8 @@ public class ServiceService implements IServiceService {
     @Autowired
     private IRestService restService;
     @Autowired
+    private IMongodbService mongodbService;
+    @Autowired
     private IKafkaService kafkaService;
     @Autowired
     private IFtpService ftpService;
@@ -79,7 +82,7 @@ public class ServiceService implements IServiceService {
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
     @Override
-    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePathParam, String operation, TestCaseExecution tCExecution) {
+    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePathParam, String operation, TestCaseExecution tCExecution, int timeoutMs) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;
         String decodedServicePath = null;
@@ -99,14 +102,13 @@ public class ServiceService implements IServiceService {
             if (StringUtil.isEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "", "", "", "", "", "", "Automatically created Service from datalib.",
-                        servicePathParam, true, "", operation, false, "", "", null, null, null, null, null, null);
+                        servicePathParam, true, "", operation, false, "", false, "", false, "", null, null, null, null, null, null);
                 service = "null";
 
             } else {
                 // If Service information is defined, we get it from database.
                 LOG.debug("Getting AppService from service : " + service);
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
-
             }
 
             String servicePath;
@@ -147,8 +149,8 @@ public class ServiceService implements IServiceService {
                     return result;
                 }
 
-                // Autocomplete of service path is disable for KAFKA service (this is because there could be a list of host).
-                if (!appService.getType().equals(AppService.TYPE_KAFKA)) {
+                // Autocomplete of service path is disable for KAFKA and MONGODB service (this is because there could be a list of host).
+                if (!appService.getType().equals(AppService.TYPE_KAFKA) && !appService.getType().equals(AppService.TYPE_MONGODB)) {
 
                     if (!(StringUtil.isURL(servicePath))) {
                         // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
@@ -332,7 +334,9 @@ public class ServiceService implements IServiceService {
                     token = String.valueOf(tCExecution.getId());
                 }
                 // Get from parameter the call timeout to be used.
-                int timeOutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", system, 60000);
+                if (timeoutMs == 0) {
+                    timeoutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", system, 60000);
+                }
                 // The rest of the data will be prepared depending on the TYPE and METHOD used.
                 switch (appService.getType()) {
                     case AppService.TYPE_SOAP:
@@ -383,7 +387,7 @@ public class ServiceService implements IServiceService {
                          * Call SOAP and store it into the execution.
                          */
                         result = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, decodedAttachement,
-                                appService.getHeaderList(), token, timeOutMs, system);
+                                appService.getHeaderList(), token, timeoutMs, system);
                         LOG.debug("SOAP Called done.");
 
                         LOG.debug("Result message." + result.getResultMessage());
@@ -407,13 +411,40 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system, appService.isFollowRedir(), tCExecution);
+                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), tCExecution);
                                 message = result.getResultMessage();
                                 break;
 
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
+                                result.setResultMessage(message);
+                        }
+
+                        break;
+
+                    /**
+                     * KAFKA.
+                     */
+                    case AppService.TYPE_MONGODB:
+
+                        /**
+                         * MONGODB.
+                         */
+                        switch (appService.getMethod()) {
+
+                            case AppService.METHOD_MONGODBFIND:
+                                /**
+                                 * Call MONGODB and store it into the execution.
+                                 */
+                                result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, appService.getMethod(),
+                                        appService.getOperation(), timeoutMs, system, tCExecution);
+                                message = result.getResultMessage();
+                                break;
+
+                            default:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for MONGODB Service is not supported by the engine."));
                                 result.setResultMessage(message);
                         }
 
@@ -450,6 +481,21 @@ public class ServiceService implements IServiceService {
                             return result;
                         }
 
+                        String decodedSchemaRegistryURL = appService.getSchemaRegistryURL();
+                        if (appService.isAvroEnable()) {
+                            answerDecode = variableService.decodeStringCompletly(decodedSchemaRegistryURL, tCExecution, null, false);
+                            decodedSchemaRegistryURL = answerDecode.getItem();
+                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                String field = "Kafka Schema Registry URL";
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                                        .resolveDescription("DESCRIPTION", answerDecode.getResultMessage().resolveDescription("FIELD", field).getDescription());
+                                LOG.debug("Service Call interupted due to decode '" + field + "'.");
+                                result.setResultMessage(message);
+                                return result;
+                            }
+                        }
+
                         switch (appService.getMethod()) {
 
                             case AppService.METHOD_KAFKAPRODUCE:
@@ -457,7 +503,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = kafkaService.produceEvent(decodedTopic, decodedKey, decodedRequest, decodedServicePath, appService.getHeaderList(), appService.getContentList(),
-                                        token, appService.isAvroEnable(), appService.getSchemaRegistryURL(), appService.getAvroSchema(), timeOutMs);
+                                        token, appService.isAvroEnable(), decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.getAvroSchemaKey(), appService.isAvroEnableValue(), appService.getAvroSchemaValue(), timeoutMs);
                                 message = result.getResultMessage();
                                 break;
 
@@ -467,6 +513,7 @@ public class ServiceService implements IServiceService {
                                 String decodedFilterValue = appService.getKafkaFilterValue();
                                 String decodedFilterHeaderPath = appService.getKafkaFilterHeaderPath();
                                 String decodedFilterHeaderValue = appService.getKafkaFilterHeaderValue();
+
                                 try {
 
                                     answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
@@ -547,11 +594,13 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaResponseOffset(-1);
                                 appService.setKafkaFilterPath(decodedFilterPath);
                                 appService.setKafkaFilterValue(decodedFilterValue);
+                                appService.setKafkaFilterHeaderPath(decodedFilterHeaderPath);
+                                appService.setKafkaFilterHeaderValue(decodedFilterHeaderValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
-                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath, 
-                                        appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue, 
-                                        appService.isAvroEnable(), appService.getSchemaRegistryURL(), targetNbEventsInt, targetNbSecInt);
+                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
+                                        appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
+                                        appService.isAvroEnable(), decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.isAvroEnableValue(), targetNbEventsInt, targetNbSecInt);
 
                                 if (!(resultSearch.isCodeStringEquals("OK"))) {
                                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

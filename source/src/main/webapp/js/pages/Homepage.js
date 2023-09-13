@@ -129,10 +129,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadBuildRevTable();
 
         // Display Changelog;
-        $("#documentationFrame").attr("src", "./documentation/D2/changelog_4.16_en.html");
+        $("#documentationFrame").attr("src", "./documentation/D2/changelog_4.17_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.16");
+        $("#changelogLabel").html("Changelog 4.17");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
@@ -614,7 +614,14 @@ function aoColumnsFunc() {
                 return "<a href='" + href + "'>" + data + "</a>";
             }
         },
-        {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total", "sWidth": "10px"}
+        {
+            "data": "Total", 
+            "bSortable": true,
+            "sWidth": "10px",
+            "sClass": "datatable-alignright", 
+            "sName": "Total", 
+            "title": "Total"
+        }
     ];
 
     for (var s = 0; s < statusLen; s++) {
@@ -623,9 +630,16 @@ function aoColumnsFunc() {
                 "data": status[s].value,
                 "bSortable": true,
                 "sWidth": "10px",
+                "sClass": "datatable-alignright",
                 "sName": status[s].value,
-                "title": status[s].value
-            };
+                "title": status[s].value,
+                "mRender": function (data, type, oObj) {
+                    if ((data) === 0) {
+                        return "";
+                    };
+                    return data;
+                    }
+                };
             aoColumns.push(obj);
         }
     }

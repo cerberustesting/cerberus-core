@@ -57,20 +57,25 @@ public interface IKafkaService {
      * @param token
      * @param isAvroEnable
      * @param schemaRegistryURL
-     * @param avroSchema
+     * @param isAvroEnableKey
+     * @param avroSchemaKey
+     * @param isAvroEnableValue
+     * @param avroSchemaValue
      * @param timeoutMs
      * @return
      */
     public AnswerItem<AppService> produceEvent(String topic, String key, String eventMessage,
-            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, boolean isAvroEnable, String schemaRegistryURL, String avroSchema, int timeoutMs);
+            String bootstrapServers, List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String token, 
+            boolean isAvroEnable, String schemaRegistryURL, boolean isAvroEnableKey, String avroSchemaKey, boolean isAvroEnableValue, String avroSchemaValue, int timeoutMs);
 
     /**
+     * Get the last offset of every partition.
      *
      * @param topic
      * @param bootstrapServers
      * @param serviceHeader
      * @param timeoutMs
-     * @return
+     * @return a map that contain the last offset of every partition.
      * @throws InterruptedException
      * @throws ExecutionException
      */
@@ -90,16 +95,20 @@ public interface IKafkaService {
      * @param targetNbEventsInt
      * @param filterHeaderValue
      * @param avroEnable
+     * @param avroEnableKey
+     * @param avroEnableValue
      * @param schemaRegistryURL
      * @param targetNbSecInt
      * @return
      */
     public AnswerItem<String> searchEvent(Map<TopicPartition, Long> mapOffsetPosition, String topic, String bootstrapServers,
-            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue, 
-            boolean avroEnable, String schemaRegistryURL, int targetNbEventsInt, int targetNbSecInt);
+            List<AppServiceHeader> serviceHeader, List<AppServiceContent> serviceContent, String filterPath, String filterValue, String filterHeaderPath, String filterHeaderValue,
+            boolean avroEnable, String schemaRegistryURL, boolean avroEnableKey, boolean avroEnableValue, int targetNbEventsInt, int targetNbSecInt);
 
     /**
-     * Get the latest Offset of all partitions.
+     * Get the latest Offset of all partitions. This is triggered at the
+     * beginning of the execution only when at least a SEARCH KAFKA service is
+     * called.
      *
      * @param mainExecutionTestCaseStepList
      * @param tCExecution

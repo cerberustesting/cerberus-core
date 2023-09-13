@@ -206,13 +206,15 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
         MessageEvent message = null;
         WebElement webElement = null;
-
         try {
             if (StringUtil.isEmpty(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     webElement = (WebElement) answer.getItem();
+                } else {
+                    return answer.getResultMessage();
                 }
+
             } else {
                 webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
             }
@@ -231,7 +233,11 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            if (StringUtil.isEmpty(text)) {
+                message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            } else {
+                message.setDescription(message.getDescription().replace("%ELEMENT%", "'" + text + "' (by text)"));
+            }
             LOG.debug(exception.toString());
             return message;
         } catch (Exception e) {
@@ -593,6 +599,36 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
+    public boolean isElementChecked(Session session, Identifier identifier) {
+        try {
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement webElement = (WebElement) answer.getItem();
+                return webElement != null && webElement.isSelected();
+            }
+
+        } catch (NoSuchElementException exception) {
+            LOG.warn(exception.toString());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isElementNotChecked(Session session, Identifier identifier) {
+        try {
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement webElement = (WebElement) answer.getItem();
+                return webElement != null && !webElement.isSelected();
+            }
+
+        } catch (NoSuchElementException exception) {
+            LOG.warn(exception.toString());
+        }
+        return false;
+    }
+
+    @Override
     public String getPageSource(Session session) {
         return session.getDriver().getPageSource();
     }
@@ -609,7 +645,7 @@ public class WebDriverService implements IWebDriverService {
      * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
-     *                                Database) inside current URL (from Selenium)
+     * Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
@@ -799,11 +835,13 @@ public class WebDriverService implements IWebDriverService {
             }
 
             return answer.getResultMessage();
+
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             LOG.debug(exception.toString());
             return message;
+
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
@@ -1018,23 +1056,31 @@ public class WebDriverService implements IWebDriverService {
         String title;
 
         switch (identifier) {
-            case Identifier.IDENTIFIER_URL: {
-
+            case Identifier.IDENTIFIER_URL:
                 wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
-                return session.getDriver().getCurrentUrl().equals(value);
-            }
+                result = session.getDriver().getCurrentUrl().equals(value);
+                break;
+            case Identifier.IDENTIFIER_REGEXURL:
+                wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
+                String currentUrl = session.getDriver().getCurrentUrl();
+                Pattern patternUrl = Pattern.compile(value);
+                Matcher matcherUrl = patternUrl.matcher(currentUrl);
+                result = matcherUrl.find();
+                break;
             case Identifier.IDENTIFIER_REGEXTITLE:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();
                 Pattern pattern = Pattern.compile(value);
                 Matcher matcher = pattern.matcher(title);
                 result = matcher.find();
+                break;
             default:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();
                 if (title.equals(value)) {
                     result = true;
                 }
+                break;
         }
         return result;
     }
@@ -1252,13 +1298,13 @@ public class WebDriverService implements IWebDriverService {
 
             // Arbitrary
             String[] browsers = new String[]{
-                    "",
-                    "Google Chrome",
-                    "Mozilla Firefox",
-                    "Opera",
-                    "Safari",
-                    "Internet Explorer",
-                    "Microsoft Edge",};
+                "",
+                "Google Chrome",
+                "Mozilla Firefox",
+                "Opera",
+                "Safari",
+                "Internet Explorer",
+                "Microsoft Edge",};
 
             for (String browser : browsers) {
                 HWND window;

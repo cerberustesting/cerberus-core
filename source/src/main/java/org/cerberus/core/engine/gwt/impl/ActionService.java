@@ -20,15 +20,10 @@
 package org.cerberus.core.engine.gwt.impl;
 
 import com.google.common.primitives.Ints;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseCountryProperties;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionData;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryAppService;
 import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.core.crud.service.IAppServiceService;
@@ -38,7 +33,6 @@ import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
-import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.engine.execution.IIdentifierService;
 import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.engine.execution.IRobotServerService;
@@ -51,15 +45,17 @@ import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusEventException;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appium.IAppiumService;
+import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.service.appservice.IServiceService;
 import org.cerberus.core.service.cerberuscommand.ICerberusCommand;
 import org.cerberus.core.service.consolelog.IConsolelogService;
 import org.cerberus.core.service.har.IHarService;
 import org.cerberus.core.service.har.entity.NetworkTrafficIndex;
 import org.cerberus.core.service.rest.IRestService;
-import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.robotextension.IFilemanagementService;
+import org.cerberus.core.service.robotextension.ISikuliService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
+import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
@@ -80,8 +76,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-import org.apache.commons.codec.binary.Base64;
-import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
  * @author bcivel
@@ -187,8 +181,7 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(),
-                    execution, actionExecution, false);
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(), execution, actionExecution, false);
             actionExecution.setValue1(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -212,8 +205,7 @@ public class ActionService implements IActionService {
             // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
-            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(),
-                    execution, actionExecution, false);
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(), execution, actionExecution, false);
             actionExecution.setValue2(answerDecode.getItem());
 
             if (!(answerDecode.isCodeStringEquals("OK"))) {
@@ -223,6 +215,30 @@ public class ActionService implements IActionService {
                 actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                 actionExecution.setEnd(new Date().getTime());
                 LOG.debug("Action interupted due to decode 'Action Value2' Error.");
+                return actionExecution;
+            }
+        } catch (CerberusEventException cex) {
+            actionExecution.setActionResultMessage(cex.getMessageError());
+            actionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            actionExecution.setEnd(new Date().getTime());
+            return actionExecution;
+        }
+
+        try {
+
+            // When starting a new action, we reset the property list that was already calculated.
+            execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
+
+            answerDecode = variableService.decodeStringCompletly(actionExecution.getValue3(), execution, actionExecution, false);
+            actionExecution.setValue3(answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                actionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value3"));
+                actionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                actionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                actionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Action Value3' Error.");
                 return actionExecution;
             }
         } catch (CerberusEventException cex) {
@@ -322,6 +338,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
                     res = this.doActionSwitchToWindow(execution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_SWITCHTOCONTEXT:
+                    res = this.doActionSwitchToContext(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_MANAGEDIALOG:
                     res = this.doActionManageDialog(execution, value1, value2);
@@ -544,7 +563,7 @@ public class ActionService implements IActionService {
                 }
                 LOG.debug(contentJSON.toString(1));
 
-                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", "", null, "", null, "");
+                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
                 JSONObject contentJSONnew = new JSONObject();
 
                 // We copy the header values for the service answered.
@@ -740,7 +759,10 @@ public class ActionService implements IActionService {
             return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
-            String messageString = e.getMessage().split("\n")[0];
+            String messageString = "";
+            if (e.getMessage() != null) {
+                messageString = e.getMessage().split("\n")[0];
+            }
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
             LOG.debug("Exception Running scroll to  :" + messageString, e);
             return message;
@@ -1018,6 +1040,19 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action SwitchToWindow :" + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionSwitchToContext(TestCaseExecution tCExecution, String context) {
+        String applicationType = tCExecution.getApplicationObj().getType();
+        if (applicationType.equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.switchToContext(tCExecution.getSession(), context);
+        } else if (applicationType.equalsIgnoreCase(Application.TYPE_IPA)) {
+            return iosAppiumService.switchToContext(tCExecution.getSession(), context);
+        } else {
+            return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                    .resolveDescription("ACTION", "SwitchToContext")
+                    .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
         }
     }
 
@@ -1667,13 +1702,13 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String value3) {
+    private MessageEvent doActionCallService(TestCaseStepActionExecution action, String value1, String value2, String value3) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution tCExecution = action.getTestCaseStepExecution().gettCExecution();
         AnswerItem lastServiceCalledAnswer;
 
-        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution);
+        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution, robotServerService.getFromOptions(action.getOptions(), RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
         message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {
@@ -1685,7 +1720,7 @@ public class ActionService implements IActionService {
             /**
              * Record the Request and Response in file system.
              */
-            testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, null, lastServiceCalled));
+            action.addFileList(recorderService.recordServiceCall(tCExecution, action, 0, null, lastServiceCalled));
         }
 
         return message;
@@ -1871,7 +1906,7 @@ public class ActionService implements IActionService {
 
             har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
-            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", "", "", "", null, "", null, null);
+            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", "", "", null, "", null, null);
             appSrv.setResponseHTTPBody(har.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -1952,7 +1987,7 @@ public class ActionService implements IActionService {
             consoleStat = consolelogService.enrichWithStats(consoleLogs);
             consoleRecap.put("stat", consoleStat);
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", null, "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", null, "", null, "", null, "");
             appSrv.setResponseHTTPBody(consoleRecap.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -1985,7 +2020,7 @@ public class ActionService implements IActionService {
              */
             LOG.debug("Setting static content.");
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", "", "", "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
             appSrv.setResponseHTTPBody(textContent);
             appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             appSrv.setRecordTraceFile(false);
