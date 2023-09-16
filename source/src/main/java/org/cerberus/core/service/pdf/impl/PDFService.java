@@ -44,6 +44,8 @@ import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.signatures.PdfSignature;
+import com.itextpdf.signatures.SignatureUtil;
 import java.io.File;
 
 import java.io.FileNotFoundException;
@@ -62,6 +64,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.Test;
@@ -134,6 +138,9 @@ public class PDFService implements IPDFService {
                 Document document = new Document(pdfDoc)) {
 
             AreaBreak aB = new AreaBreak();
+
+            // Global Margin
+            document.setMargins(46, 36, 36, 36);
 
             // Tittle
             document.add(tableTitle.setMarginLeft(0));
@@ -410,6 +417,48 @@ public class PDFService implements IPDFService {
             LOG.error(ex, ex);
         }
         return null;
+    }
+
+// TEmporary version of method in order to retreive signature information from pdf file.
+    private void checkSignature(String fileName) {
+
+        PdfDocument pdfDoc;
+        try {
+            pdfDoc = new PdfDocument(new PdfReader(fileName));
+            SignatureUtil signUtil = new SignatureUtil(pdfDoc);
+            List<String> names = signUtil.getSignatureNames();
+
+            List<String> names2 = signUtil.getBlankSignatureNames();
+
+            SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
+
+            LOG.debug(fileName);
+            for (String name : names) {
+                LOG.debug("===== " + name + " =====");
+            }
+            for (String name : names2) {
+                LOG.debug("===== " + name + " =====");
+            }
+
+            for (String name : names) {
+                LOG.debug("===== " + name + " =====");
+                PdfSignature toto = signUtil.getSignature(name);
+                LOG.debug("=====  =====");
+                LOG.debug(" " + toto.getDate());
+                LOG.debug("=====  =====");
+                LOG.debug(" " + toto.getContents());
+                LOG.debug("=====  =====");
+                LOG.debug(" " + toto.getLocation());
+                LOG.debug("=====  =====");
+                LOG.debug(" " + toto.getName());
+                LOG.debug("=====  =====");
+                LOG.debug(" " + toto.getReason());
+            }
+
+            pdfDoc.close();
+        } catch (Exception ex) {
+            Logger.getLogger(PDFService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
