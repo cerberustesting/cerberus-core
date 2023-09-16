@@ -1248,7 +1248,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcasestepaction','image','','fa','تصویر','',NULL)");
         b.append(",('testcasestepaction','image','','fr','Image',NULL,NULL)");
         b.append(",('testcasestepaction','Sequence','','en','Sequence','Sequence of execution of the actions inside the step.',NULL)");
-        b.append(",('testcasestepaction','Sequence','','en','توالی','توالی اجرای اقدامات داخل گام.',NULL)");
+        b.append(",('testcasestepaction','Sequence','','fa','توالی','توالی اجرای اقدامات داخل گام.',NULL)");
         b.append(",('testcasestepaction','Value1','','en','Val1','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.',NULL)");
         b.append(",('testcasestepaction','Value1','','fa','Val1','این اطلاعاتی است که برای انجام اقدام مورد استفاده قرار می گیرد.<br>می توان از همان متغیر فیلد مقدار ویژگی استفاده کرد ( <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a> ببینید)<br>این اطلاعات باید مطابق با اقدام انتخاب شده تغذیه شوند.<br><br>کسب اطلاعات بیشتر در فیلد <code class=\\'doc-fixed\\'>اقدام</code>.',NULL)");
         b.append(",('testcasestepaction','Value2','','en','Val2','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.',NULL)");
@@ -1485,7 +1485,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_application','table_application','','ru','Список приложений',NULL,NULL)");
         b.append(",('page_application','table_application','','fr','Liste des Applications',NULL,NULL)");
         b.append(",('page_application','title','','en','Application','This page can be used to manage the applications.','_application')");
-        b.append(",('page_application','title','','en','برنامه','از این صفحه می توان برای مدیریت برنامه ها استفاده کرد.','_application')");
+        b.append(",('page_application','title','','fa','برنامه','از این صفحه می توان برای مدیریت برنامه ها استفاده کرد.','_application')");
         b.append(",('page_application','title','','ru','Приложение','Эта страница может быть использована для управления приложениями.','_application')");
         b.append(",('page_application','title','','fr','Application','Cette page permet de gérer et créer des applications.','_application')");
         b.append(",('page_applicationObject','Application','','en','Application','',NULL)");
@@ -1948,7 +1948,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','fatal','','fa','مهلک','',NULL)");
         b.append(",('page_executiondetail','fatal','','fr','Fatal','',NULL)");
         b.append(",('page_executiondetail','finished','','en','Finished','',NULL)");
-        b.append(",('page_executiondetail','finished','','en','تمام شده','',NULL)");
+        b.append(",('page_executiondetail','finished','','fa','تمام شده','',NULL)");
         b.append(",('page_executiondetail','finished','','fr','Fini','',NULL)");
         b.append(",('page_executiondetail','forceexec','','en','Fatal','',NULL)");
         b.append(",('page_executiondetail','forceexec','','fa','مهلک','',NULL)");
