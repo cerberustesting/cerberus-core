@@ -52,6 +52,7 @@ public class CampaignParameter implements Serializable {
     public static final String SYSTEM_PARAMETER = "SYSTEM";
     public static final String APPLICATION_PARAMETER = "APPLICATION";
     public static final String TYPE_PARAMETER = "TYPE";
+    public static final String TYPE_TESTFOLDER = "TESTFOLDER";
     public static final String BROWSER_PARAMETER = "BROWSER";
 
     private Integer campaignparameterID;

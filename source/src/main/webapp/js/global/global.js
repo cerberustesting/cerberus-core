@@ -923,6 +923,28 @@ function getSelectApplicationWithoutSystem() {
     return select;
 }
 
+function getSelectFolder() {
+
+    var list = [];
+
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    $.ajax({
+        url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test",
+        async: false,
+        success: function (data) {
+            list = data.contentTable;
+            for (var index = 0; index < list.length; index++) {
+                var item = list[index].test;
+                select.append($("<option></option>").text(item).val(item));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+    return select;
+}
+
 function getSelectDeployType(forceReload) {
     var cacheEntryName = "DEPLOYTYPE";
     if (forceReload) {

@@ -131,12 +131,13 @@ public interface ITestCaseDAO {
      * @param application arrays of application to filter
      * @param priority    arrays of priority to filter
      * @param type        arrays of type to filter
+     * @param testFolder
      * @param maxReturn   nd max of records to return. (Prevent from returning too
      *                    large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn);
+    AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, String[] testFolder, Integer maxReturn);
 
     /**
      * @param tc

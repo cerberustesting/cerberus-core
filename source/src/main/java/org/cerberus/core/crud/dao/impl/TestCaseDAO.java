@@ -1039,7 +1039,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, Integer maxReturn) {
+    public AnswerList<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, List<Integer> labelIdList, String[] status, String[] system, String[] application, String[] priority, String[] type, String[] testFolder, Integer maxReturn) {
 
         List<TestCase> list = null;
         AnswerList<TestCase> answer = new AnswerList<>();
@@ -1052,6 +1052,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         tcParameters.put("priority", priority);
         tcParameters.put("countries", countries);
         tcParameters.put("type", type);
+        tcParameters.put("test", testFolder);
         boolean withLabel = (labelIdList.size() > 0);
 
         StringBuilder query = new StringBuilder("SELECT tec.*, app.system FROM testcase tec ");

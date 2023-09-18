@@ -6229,3 +6229,6 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdes
 -- 1754
 ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
 
+-- 1255
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('CAMPAIGN_TCCRITERIA', 'TESTFOLDER', 50 , '');

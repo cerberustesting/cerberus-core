@@ -873,6 +873,8 @@ function updateSelectCriteria(id) {
         data = getSelectInvariant("TESTCASE_TYPE", false, false);
     } else if (val === "APPLICATION") {
         data = getSelectApplicationWithoutSystem();
+    } else if (val === "TESTFOLDER") {
+        data = getSelectFolder();
     } else {
         data = getSelectInvariant(val, false, false);
     }
