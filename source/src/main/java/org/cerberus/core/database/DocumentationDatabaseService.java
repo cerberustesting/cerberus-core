@@ -2127,7 +2127,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','ns1','','fa','آمار کلی','',NULL)");
         b.append(",('page_executiondetail','ns1','','fr','Statistiques globales','',NULL)");
         b.append(",('page_executiondetail','ns2','','en','Statistics Per Third Party','',NULL)");
-        b.append(",('page_executiondetail','ns2','','en','آمار به ازای هر شخص ثالث','',NULL)");
+        b.append(",('page_executiondetail','ns2','','fa','آمار به ازای هر شخص ثالث','',NULL)");
         b.append(",('page_executiondetail','ns2','','fr','Statistiques par Tier','',NULL)");
         b.append(",('page_executiondetail','ns3','','en','Requests List','',NULL)");
         b.append(",('page_executiondetail','ns3','','fa','فهرست درخواست ها','',NULL)");
@@ -2160,7 +2160,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus','','fa','وضعیت اجرای رگرسیون','این بخش آمار اجرای موارد آزمون رگرسیون را بر اساس آخرین اسپرینت / تجدید نظر گزارش می کند.<br>معیارها :<br>- در برنامه های کاربردی که به سامانه فعلی تعلق دارند.<br>- موارد تست باید در زمان اجرا در وضعیت WORKING باشند.<br>- موارد آزمون پایش مستثنی هستند<br>  (یعنی نه <i>\\'پایش کارایی\\'</i> و نه <i>\\'پایش فعالیت تجاری\\'</i> و نه <i>\\'پایش یکپارچگی داده\\'</i>)',NULL)");
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus','','fr','Statistiques d\\'Execution en Régression',NULL,NULL)");
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','en','Regression Execution Status on External Applications','This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that <b>does not</b> belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)',NULL)");
-        b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','fa','وضعیت اجرای رگرسیون در برنامه های خارجی','این بخش آمار اجرای موارد آزمون رگرسیون را بر اساس آخرین اسپرینت / تجدید نظر گزارش می کند.<br>معیارها :<br>- در برنامه هایی که به سامانه فعلی تعلق <b>ندارد</b> <br>- موارد تست باید در زمان اجرا در وضعیت WORKING باشند.<br>- موارد آزمایش نظارت مستثنی هستند<br>  (یعنی نه <i>\\\\'پایش کارایی\\\\'</i> و نه <i>\\\\'پایش فعالیت تجاری\\\\'</i> و نه <i>\\\\'پایش یکپارچگی داده\\\\'</i>)',NULL)");
+        b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','fa','وضعیت اجرای رگرسیون در برنامه های خارجی','این بخش آمار اجرای موارد آزمون رگرسیون را بر اساس آخرین اسپرینت / تجدید نظر گزارش می کند.<br>معیارها :<br>- در برنامه هایی که به سامانه فعلی تعلق <b>ندارد</b> <br>- موارد تست باید در زمان اجرا در وضعیت WORKING باشند.<br>- موارد آزمایش نظارت مستثنی هستند<br>  (یعنی نه <i>\\'پایش کارایی\\'</i> و نه <i>\\'پایش فعالیت تجاری\\'</i> و نه <i>\\'پایش یکپارچگی داده\\'</i>)',NULL)");
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','fr','Statistiques d\\'Execution en Régression sur des Applications Externes',NULL,NULL)");
         b.append(",('page_global','beta_message','','en','This page is in beta, some features may not be available or fully functional.','',NULL)");
         b.append(",('page_global','beta_message','','ru','Эта страница находится в бета-тестировании, некоторые возможности могут быть доступны не полностью.','',NULL)");
@@ -2861,7 +2861,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','myloginrelativeurl','','fa','آدرس نسبی ورود به سیستم من','',NULL)");
         b.append(",('page_runtest','myloginrelativeurl','','fr','Mon url de login relative','',NULL)");
         b.append(",('page_runtest','notValid','','en','Some executions couldn\\'t be added to the queue','',NULL)");
-        b.append(",('page_runtest','notValid','','en','برخی از اجراها را نمی توان به صف اضافه کرد','',NULL)");
+        b.append(",('page_runtest','notValid','','fa','برخی از اجراها را نمی توان به صف اضافه کرد','',NULL)");
         b.append(",('page_runtest','notValid','','fr','Des executions n\\'ont pas pu être ajoutées à la liste','',NULL)");
         b.append(",('page_runtest','outputformat','','en','Output Format','',NULL)");
         b.append(",('page_runtest','outputformat','','fa','قالب خروجی','',NULL)");
@@ -3088,7 +3088,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_tag','dateend','','fa','پایان','',NULL)");
         b.append(",('page_tag','dateend','','fr','Fin d''execution','',NULL)");
         b.append(",('page_tag','nbexe','','en','Execution Number','',NULL)");
-        b.append(",('page_tag','nbexe','','en','شماره اجرا','',NULL)");
+        b.append(",('page_tag','nbexe','','fa','شماره اجرا','',NULL)");
         b.append(",('page_tag','nbexe','','fr','Nombre d''execution','',NULL)");
         b.append(",('page_tag','nbexeuseful','','en','Useful Execution Number','',NULL)");
         b.append(",('page_tag','nbexeuseful','','fa','شماره اجرایی مفید','',NULL)");
