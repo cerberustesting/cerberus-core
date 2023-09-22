@@ -79,8 +79,8 @@ In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql
             userTable="user"
             userNameCol="Login"
             userCredCol="Password"
-            userRoleTable="usergroup"
-            roleNameCol="GroupName">
+            userRoleTable="userrole"
+            roleNameCol="Role">
             <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
         </Realm>
 		
