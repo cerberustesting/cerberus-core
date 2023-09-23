@@ -4,7 +4,7 @@
 
 ### Using Docker
 Cerberus is a Java project build with Maven and recommended to use with Tomcat.
-It rely on a MySQL (or MariaDB) database.
+It rely on a MySQL (or MariaDB) databases.
 
 All you need to build and launch Cerberus locally is Docker, in this folder you will find
 - `Dockerfile` building the tomcat image
