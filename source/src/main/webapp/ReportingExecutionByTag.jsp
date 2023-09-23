@@ -31,7 +31,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
@@ -227,11 +227,12 @@
                                 <div class="col-sm-12" id="TagDescCel">
                                     <label for="TagDesc">Description :</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly
-                                               aria-describedby="basic-addon1">
+                                        <textarea class="form-control wysiwyg" name="TagDesc" id="TagDesc" aria-describedby="basic-addon1"></textarea>
+                                        <!--                                        <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly
+                                                                                       aria-describedby="basic-addon1">-->
                                         <span class="input-group-btn">
-                                            <button id="editTagDesc" class="btn btn-default">Edit</button>
-                                            <button id="saveTagDesc" class="btn btn-primary" style="display : none;">Save</button>
+                                            <button id="editTagDesc" class="btn btn-default" style="display : none;">Edit</button>
+                                            <button id="saveTagDesc" class="btn btn-primary">Save</button>
                                         </span>
                                     </div>
                                     <!--                                    <input type="text" class="form-control" name="TagDesc" id="TagDesc" readonly aria-describedby="basic-addon1" >-->

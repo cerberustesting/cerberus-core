@@ -26,7 +26,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Case</title>
-        <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="dependencies/Tinymce-6.7.0/tinymce.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
         <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>

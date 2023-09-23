@@ -694,7 +694,7 @@ public class PDFService implements IPDFService {
             } else {
                 imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");
             }
-            Image image = new Image(imageDataLogo).scaleToFit(50, 70);
+            Image image = new Image(imageDataLogo).scaleToFit(50, 25);
 
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_REPORT);
 

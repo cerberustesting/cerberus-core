@@ -23,6 +23,16 @@ var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 // Define if execution detail must automaticly hide OK records.
 var isRefreshAutoHide = true;
 
+tinyMCE.init({
+    selector: ".wysiwyg",
+    menubar: false,
+//    statusbar: false,
+    toolbar: false,
+    height: 100,
+    resize: true
+});
+
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -132,22 +142,23 @@ function loadSummaryTableOptions() {
 }
 
 function loadTagSaveButtons() {
-    $("#editTagDesc").click(function () {
-        $(this).hide();
-        $("#saveTagDesc").show();
-        $("#TagDesc").attr("readonly", false);
-    });
+//    $("#editTagDesc").click(function () {
+//        $(this).hide();
+//        $("#saveTagDesc").show();
+//        $("#TagDesc").attr("readonly", false);
+//    });
 
     $("#saveTagDesc").click(function () {
-        $("#TagDesc").attr("readonly", true);
-        $(this).attr("disabled", true);
+//        tinyMCE.triggerSave();
+//        $("#TagDesc").attr("readonly", true);
+//        $(this).attr("disabled", true);
         $.ajax({
             url: "UpdateTag",
-            data: {"tag": $('#selectTag').val(), description: $("#TagDesc").val()},
+            data: {"tag": $('#selectTag').val(), description: tinyMCE.get('TagDesc').getContent()},
             success: function (data) {
-                $("#saveTagDesc").attr("disabled", false);
-                $("#saveTagDesc").hide();
-                $("#editTagDesc").show();
+//                $("#saveTagDesc").attr("disabled", false);
+//                $("#saveTagDesc").hide();
+//                $("#editTagDesc").show();
             }
         })
     });

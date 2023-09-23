@@ -801,3 +801,9 @@ a.list-group-item.selected, button.list-group-item.selected {
     width: 100%;
     padding-right: 20%;
 }
+
+/* force tinymce menus on top of bootstrap modals*/
+.tox-tinymce-aux {
+      z-index: 130000000000 !important;
+}
+
