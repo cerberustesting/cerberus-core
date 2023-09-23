@@ -45,7 +45,6 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import org.bson.Document;
 import org.cerberus.core.service.mongodb.IMongodbService;
@@ -105,7 +104,7 @@ public class MongodbService implements IMongodbService {
             LOG.debug("Connection : " + MDBdtb + " / " + MDBColl);
             MongoDatabase database = mongoClient.getDatabase(MDBdtb);
             MongoCollection<Document> collection = database.getCollection(MDBColl);
-            
+
 //            Bson projectionFields = Projections.fields(
 //                    Projections.include("title", "imdb"),
 //                    Projections.excludeId());
@@ -117,42 +116,36 @@ public class MongodbService implements IMongodbService {
 //                    .projection(projectionFields)
 //                    .sort(Sorts.descending("imdb.rating"))
 //                    .first();
-
-            BasicDBObject whereQuery = new BasicDBObject();
-
-            JSONObject requestObject = new JSONObject(requestString);
-
-            @SuppressWarnings("unchecked")
-            Iterator<String> keys = requestObject.keys();
-
-            while (keys.hasNext()) {
-                String key = keys.next();
-//                if (requestObject.get(key) instanceof String) {
-                whereQuery.put(key, requestObject.get(key));
-//                }
-            }
-            LOG.debug("Parsed : " + requestObject);
-            LOG.debug("Parsed : " + whereQuery);
-
-            MongoCursor<Document> cursor = collection.find(whereQuery)
-                    //                    .projection(projectionFields)
-                    .iterator();
-            try {
-                int i = 0;
-                while (cursor.hasNext() && i < 5) {
-                    LOG.debug("Results found.");
-                    mongoDBResult = cursor.next().toJson();
-                    i++;
-                    mongoDBResultArray.put(new JSONObject(mongoDBResult));
-                    LOG.debug(mongoDBResult);
+//            BasicDBObject whereQuery = new BasicDBObject();
+//            JSONObject requestObject = new JSONObject(requestString);
+//            @SuppressWarnings("unchecked")
+//            Iterator<String> keys = requestObject.keys();
+//            while (keys.hasNext()) {
+//                String key = keys.next();
+////                if (requestObject.get(key) instanceof String) {
+//                whereQuery.put(key, requestObject.get(key));
+////                }
+//            }
+//            LOG.debug("Parsed : " + requestObject);
+//            LOG.debug("Parsed : " + whereQuery);
+//            MongoCursor<Document> cursor = collection.find(whereQuery)            
+            try (
+                    MongoCursor<Document> cursor = collection.find(BasicDBObject.parse(requestString))
+                            //                    .projection(projectionFields)
+                            .iterator()) {
+                        int i = 0;
+                        while (cursor.hasNext() && i < 5) {
+                            LOG.debug("Results found.");
+                            mongoDBResult = cursor.next().toJson();
+                            i++;
+                            mongoDBResultArray.put(new JSONObject(mongoDBResult));
+                            LOG.debug(mongoDBResult);
 //                    System.out.println(cursor.next().toJson());
-                }
-                serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
-                serviceMONGODB.setResponseNb(i);
+                        }
+                        serviceMONGODB.setResponseHTTPBody(mongoDBResultArray.toString());
+                        serviceMONGODB.setResponseNb(i);
 
-            } finally {
-                cursor.close();
-            }
+                    }
 
         } catch (MongoTimeoutException ex) {
             LOG.info("Exception when performing the MONGODB Call. " + ex.toString());
