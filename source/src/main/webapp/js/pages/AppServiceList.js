@@ -80,7 +80,7 @@ function removeEntryClick(service) {
     showModalConfirmation(function (ev) {
         var name = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteAppService?service=" + name,
+            url: "DeleteAppService?service=" + encodeURIComponent(name),
             async: true,
             dataType: "json",
             method: "GET",

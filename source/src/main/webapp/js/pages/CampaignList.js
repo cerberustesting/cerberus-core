@@ -54,7 +54,7 @@ function initPage() {
     displayInvariantList("manualExecution", "MANUALEXECUTION", false, undefined, "");
     // Pre load eventconnector invariant.
     getSelectInvariant("EVENTCONNECTOR", false);
-    
+
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
         if (target == "#tabsCreate-1") {
@@ -141,7 +141,7 @@ function removeEntryClick(key) {
     showModalConfirmation(function (ev) {
         var id = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteCampaign?key=" + key,
+            url: "DeleteCampaign?key=" + encodeURIComponent(key),
             async: true,
             method: "GET",
             success: function (data) {

@@ -560,7 +560,7 @@ function removeEntryClick(key) {
     showModalConfirmation(function (ev) {
         var id = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteUser?login=" + key,
+            url: "DeleteUser?login=" + encodeURIComponent(key),
             async: true,
             method: "GET",
             success: function (data) {
