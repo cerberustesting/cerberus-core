@@ -7,6 +7,7 @@
 * Service Call JSON now display the proper Kafka Filter Header path and value #2465
 * Record a file at control level was saving it at action level #2412
 * Fixed delete of Campaigns, Services and Users with special Characters #2486
+* Fix display of group 2 and 3 on campaign page
 
 *Improvements / New features*
 [square]
@@ -14,6 +15,7 @@
 * Added background on steps according to the status and displayed condition when step NE on TestcaseExecution page. #2463
 * A pdf report is now available for campaign execution for download #2475
 * New action "Switch To Context" #2408
+* Added new execution parameter column on campaign list page #2489
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

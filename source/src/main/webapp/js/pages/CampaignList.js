@@ -228,18 +228,95 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("campaign", "Group1")
         },
         {
-            "data": "group1",
+            "data": "group2",
             "visible": false,
-            "sName": "group1",
+            "sName": "group2",
             "sWidth": "80px",
             "title": doc.getDocLabel("campaign", "Group2")
         },
         {
-            "data": "group1",
+            "data": "group3",
             "visible": false,
-            "sName": "group1",
+            "sName": "group3",
             "sWidth": "80px",
             "title": doc.getDocLabel("campaign", "Group3")
+        },
+        {
+            "data": "Tag",
+            "visible": false,
+            "sName": "Tag",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "tag")
+        },
+        {
+            "data": "Verbose",
+            "visible": false,
+            "sName": "Verbose",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Verbose")
+        },
+        {
+            "data": "Screenshot",
+            "visible": false,
+            "sName": "Screenshot",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Screenshot")
+        },
+        {
+            "data": "Video",
+            "visible": false,
+            "sName": "Video",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Video")
+        },
+        {
+            "data": "PageSource",
+            "visible": false,
+            "sName": "PageSource",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "PageSource")
+        },
+        {
+            "data": "RobotLog",
+            "visible": false,
+            "sName": "RobotLog",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "RobotLog")
+        },
+        {
+            "data": "ConsoleLog",
+            "visible": false,
+            "sName": "ConsoleLog",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "ConsoleLog")
+        },
+        {
+            "data": "Timeout",
+            "visible": false,
+            "sName": "Timeout",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Timeout")
+        },
+        {
+            "data": "Retries",
+            "visible": false,
+            "sName": "Retries",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Retries")
+        },
+        {
+            "data": "Priority",
+            "visible": false,
+            "sName": "Priority",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "Priority")
+        },
+        {
+            "data": "ManualExecution",
+            "visible": false,
+            "sName": "ManualExecution",
+            "sWidth": "80px",
+            "title": doc.getDocLabel("campaign", "ManualExecution")
         },
         {
             "data": "UsrCreated",
