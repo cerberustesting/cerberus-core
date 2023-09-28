@@ -88,7 +88,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append("('application','Application','','en','Application','','_application_attributes')");
         b.append(",('application','Application','','ru','Приложение','','_application_attributes')");
         b.append(",('application','Application','','fr','Application','','_application_attributes')");
-        b.append(",('application','Application','','fa','برنامه کاربردی','','_application_attributes')");
+        b.append(",('application','Application','','fa','برنامه','','_application_attributes')");
         b.append(",('application','bugtrackernewurl','','en','New Bug URL','This correspond to the URL that points to the page where a new bug can be created on the Bug system of the <code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         b.append(",('application','bugtrackernewurl','','ru','URL-адрес новой ошибки','Это соответствует URL-адресу системы регистрации ошибок, который указывает на страницу где может быть создана новая ошибка <code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         b.append(",('application','bugtrackernewurl','','fr','URL pour nouveau Bug','Correspond à l\\'URL qui pointe vers la page de création de bug du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
@@ -147,7 +147,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('applicationObject','Value','','fa','مقدار','',NULL)");
         b.append(",('appservice','application','','en','Application','','_service_library')");
         b.append(",('appservice','application','','ru','Приложение','','_service_library')");
-        b.append(",('appservice','application','','fa','برنامه کاربردی','','_librairie_de_services')");
+        b.append(",('appservice','application','','fa','برنامه','','_librairie_de_services')");
         b.append(",('appservice','description','','en','Description','','_service_library')");
         b.append(",('appservice','description','','ru','Описание','','_service_library')");
         b.append(",('appservice','description','','fr','Description','','_librairie_de_services')");
@@ -308,7 +308,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','id','','fa','مشخصه','','_build_content')");
         b.append(",('buildrevisionparameters','jenkinsBuildId','','en','Jenkins Build ID','','_build_content')");
         b.append(",('buildrevisionparameters','jenkinsBuildId','','fr','ID du build Jenkins','','_contenu_des_builds')");
-        b.append(",('buildrevisionparameters','jenkinsBuildId','','fa','مشخصه ساخت Jenkins','','_build_content')");
+        b.append(",('buildrevisionparameters','jenkinsBuildId','','fa','مولفه ساخت Jenkins','','_build_content')");
         b.append(",('buildrevisionparameters','Link','','en','Link','This is the link to the detailed content of the <code class=\\'doc-crbvvoca\\'>release</code>.','_build_content')");
         b.append(",('buildrevisionparameters','Link','','fr','Lien','Lien vers le detail de la <code class=\\'doc-crbvvoca\\'>release</code>.','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','Link','','fa','لینک','این لینک به محتوای دقیق <code class=\\'doc-crbvvoca\\'>نسخه</code> می باشد.','_build_content')");
@@ -318,7 +318,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','mavenGroupId','','en','Maven Group ID','','_build_content')");
         b.append(",('buildrevisionparameters','mavenGroupId','','ru','Идентификатор Maven Группы','','_build_content')");
         b.append(",('buildrevisionparameters','mavenGroupId','','fr','ID du groupe Maven','','_contenu_des_builds')");
-        b.append(",('buildrevisionparameters','mavenGroupId','','fa','مشخصه گروه Maven','','_build_content')");
+        b.append(",('buildrevisionparameters','mavenGroupId','','fa','مولفه گروه Maven','','_build_content')");
         b.append(",('buildrevisionparameters','mavenVersion','','en','Maven Version','','_build_content')");
         b.append(",('buildrevisionparameters','mavenVersion','','fr','Maven Version','','_contenu_des_builds')");
         b.append(",('buildrevisionparameters','mavenVersion','','fa','نسخه Maven','','_build_content')");
