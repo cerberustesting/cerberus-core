@@ -340,7 +340,8 @@ public class ParameterService implements IParameterService {
 
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
-        } else if (!((object.getValue()).equals(resp.getItem().getValue()))) {
+        } else if (!((object.getValue()).equals(resp.getItem().getValue())) && !"XXXXXXXXXX".equals(object.getValue())) {
+            // Parameter value is modified only if different from hiddem value (XXXXXXXXXX)
             finalAnswer = update(object);
         } else {
             /**
