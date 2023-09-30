@@ -29,6 +29,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -99,10 +101,57 @@ public class MongodbService implements IMongodbService {
                 .build())) {
 
             LOG.debug("Connection : " + operation);
+
+            // Check connexion format.
+            if (!operation.contains(".") || operation.startsWith(".") || operation.endsWith(".")) {
+                result.setItem(serviceMONGODB);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_MONGO_COLLECTIONFORMAT);
+                message.resolveDescription("SERVICEURL", servicePath);
+                message.resolveDescription("COLLECTIONPATH", operation);
+                result.setResultMessage(message);
+                return result;
+            }
+
             String MDBdtb = operation.split("\\.")[0];
             String MDBColl = operation.split("\\.")[1];
             LOG.debug("Connection : " + MDBdtb + " / " + MDBColl);
+
+            // Does the database exist.
+            MongoIterable<String> listDTB = mongoClient.listDatabaseNames();
+            StringBuilder databaseExist = new StringBuilder();
+            listDTB.forEach(databaseName -> {
+                if (databaseName.equals(MDBdtb)) {
+                    databaseExist.append(databaseName);
+                }
+            });
+            if (databaseExist.toString().isEmpty()) {
+                result.setItem(serviceMONGODB);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_MONGO_DATABASENOTEXIST);
+                message.resolveDescription("SERVICEURL", servicePath);
+                message.resolveDescription("DATABASE", MDBdtb);
+                result.setResultMessage(message);
+                return result;
+            }
+
             MongoDatabase database = mongoClient.getDatabase(MDBdtb);
+
+            // Does the collection exist.
+            MongoIterable<String> listCOL = database.listCollectionNames();
+            StringBuilder collectionExist = new StringBuilder();
+            listCOL.forEach(collectionName -> {
+                if (collectionName.equals(MDBColl)) {
+                    collectionExist.append(collectionName);
+                }
+            });
+            if (collectionExist.toString().isEmpty()) {
+                result.setItem(serviceMONGODB);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_MONGO_COLLECTIONNOTEXIST);
+                message.resolveDescription("SERVICEURL", servicePath);
+                message.resolveDescription("COLLECTION", MDBColl);
+                result.setResultMessage(message);
+                return result;
+            }
+
             MongoCollection<Document> collection = database.getCollection(MDBColl);
 
 //            Bson projectionFields = Projections.fields(

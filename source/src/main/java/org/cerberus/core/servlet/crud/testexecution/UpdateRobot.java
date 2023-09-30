@@ -293,7 +293,7 @@ public class UpdateRobot extends HttpServlet {
             String description = reJson.getString("description");
 
             String host_password = reJson.getString("hostPassword");
-            if (host_password.equals("XXXXXXXXXX")) {
+            if (host_password.equals(StringUtil.SECRET_STRING)) {
                 host_password = "";
                 for (RobotExecutor robotExecutor : reList1) {
                     if (robotExecutor.getID() == id) {

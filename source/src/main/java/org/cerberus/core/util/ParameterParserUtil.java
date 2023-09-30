@@ -472,7 +472,7 @@ public final class ParameterParserUtil {
             return value;
         }
         if (property.contains("PASS")) {
-            return "XXXXXXXXXX";
+            return StringUtil.SECRET_STRING;
         } else {
             return value;
         }

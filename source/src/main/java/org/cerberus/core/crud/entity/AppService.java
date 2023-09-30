@@ -306,7 +306,7 @@ public class AppService {
                 JSONObject jsonProps = new JSONObject();
                 for (AppServiceContent prop : this.getContentList()) {
                     if (prop.getKey().contains("passw")) {
-                        jsonProps.put(prop.getKey(), "XXXXXXXX");
+                        jsonProps.put(prop.getKey(), StringUtil.SECRET_STRING);
                     } else {
                         jsonProps.put(prop.getKey(), prop.getValue());
                     }
@@ -317,7 +317,7 @@ public class AppService {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : this.getHeaderList()) {
                     if (header.getKey().contains("passw")) {
-                        jsonHeaders.put(header.getKey(), "XXXXXXXX");
+                        jsonHeaders.put(header.getKey(), StringUtil.SECRET_STRING);
                     } else {
                         jsonHeaders.put(header.getKey(), header.getValue());
                     }

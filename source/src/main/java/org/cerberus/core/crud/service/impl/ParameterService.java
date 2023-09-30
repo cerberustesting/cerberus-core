@@ -340,7 +340,7 @@ public class ParameterService implements IParameterService {
 
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
-        } else if (!((object.getValue()).equals(resp.getItem().getValue())) && !"XXXXXXXXXX".equals(object.getValue())) {
+        } else if (!((object.getValue()).equals(resp.getItem().getValue())) && !StringUtil.SECRET_STRING.equals(object.getValue())) {
             // Parameter value is modified only if different from hiddem value (XXXXXXXXXX)
             finalAnswer = update(object);
         } else {
@@ -424,9 +424,9 @@ public class ParameterService implements IParameterService {
     @Override
     public Parameter secureParameter(Parameter parameter) {
         if (isToSecureParameter(parameter)) {
-            parameter.setValue("XXXXXXXXXX");
+            parameter.setValue(StringUtil.SECRET_STRING);
             if (StringUtil.isNotEmptyOrNullValue(parameter.getSystem1value())) {
-                parameter.setSystem1value("XXXXXXXXXX");
+                parameter.setSystem1value(StringUtil.SECRET_STRING);
             }
         }
         return parameter;
