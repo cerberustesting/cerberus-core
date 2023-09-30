@@ -3616,7 +3616,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','btn_editScript','','ru','Перейти к сценарию тестового случая','',NULL)");
         b.append(",('page_testcaselist','btn_editScript','','fr','Aller à la page du Script du Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_runTest','','en','Run Test Case','',NULL)");
-        b.append(",('page_testcaselist','btn_runTest','','en','اجرای مورد آزمون','',NULL)");
+        b.append(",('page_testcaselist','btn_runTest','','fa','اجرای مورد آزمون','',NULL)");
         b.append(",('page_testcaselist','btn_runTest','','ru','Запустить Тестовый случай','',NULL)");
         b.append(",('page_testcaselist','btn_runTest','','fr','Exécuter le Cas de Test','',NULL)");
         b.append(",('page_testcaselist','btn_view','','en','View Test Case','',NULL)");
