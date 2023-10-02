@@ -533,7 +533,7 @@ public final class StringUtil {
                 return appURL.substring(appURL.indexOf(':') + 1);
             }
         }
-        return "";
+        return null;
     }
 
     /**
