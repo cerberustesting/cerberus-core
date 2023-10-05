@@ -8,6 +8,7 @@
 * Record a file at control level was saving it at action level #2412
 * Fixed delete of Campaigns, Services and Users with special Characters #2486
 * Fix display of group 2 and 3 on campaign page
+* Fix Log Viewer entry when the XRay Key is not provided
 
 *Improvements / New features*
 [square]
@@ -16,6 +17,7 @@
 * A pdf report is now available for campaign execution for download #2475
 * New action "Switch To Context" #2408
 * Added new execution parameter column on campaign list page #2489
+* Added new test case 'Verify Text in Element does not contain'
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
