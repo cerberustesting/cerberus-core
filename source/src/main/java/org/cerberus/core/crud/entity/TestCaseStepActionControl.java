@@ -102,6 +102,7 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYELEMENTTEXTEQUAL = "verifyElementTextEqual";
     public static final String CONTROL_VERIFYELEMENTTEXTDIFFERENT = "verifyElementTextDifferent";
     public static final String CONTROL_VERIFYELEMENTTEXTCONTAINS = "verifyElementTextContains";
+    public static final String CONTROL_VERIFYELEMENTTEXTNOTCONTAINS = "verifyElementTextNotContains";
     public static final String CONTROL_VERIFYELEMENTTEXTMATCHREGEX = "verifyElementTextMatchRegex";
     public static final String CONTROL_VERIFYSTRINGARRAYCONTAINS = "verifyStringArrayContains";
     public static final String CONTROL_VERIFYNUMERICARRAYCONTAINS = "verifyNumericArrayContains";

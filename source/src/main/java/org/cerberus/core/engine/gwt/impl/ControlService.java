@@ -338,6 +338,9 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
                     res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTNOTCONTAINS:
+                    res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTNOTCONTAINS, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
+                    break;
                 case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
                     res = this.verifyElementXXX(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL, execution, value1, controlExecution.getValue2(), controlExecution.getValue3());
                     break;
@@ -1149,6 +1152,9 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
                 mes = verifyElementTextContainsCaseSensitiveCheck(actual, expected, isCaseSensitive);
                 break;
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTNOTCONTAINS:
+                mes = verifyElementTextNotContainsCaseSensitiveCheck(actual, expected, isCaseSensitive);
+                break;
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS:
                 //We use verifyStringArrayContains because it's the same behaviour. Difference is that here we retrieve array using json path or xpath
                 mes = this.verifyElementTextArrayContains(actual, expected, isCaseSensitive);
@@ -1223,6 +1229,16 @@ public class ControlService implements IControlService {
         return mes;
     }
 
+    private MessageEvent verifyElementTextNotContainsCaseSensitiveCheck(String text, String textToSearch, String isCaseSensitive) {
+        MessageEvent mes;
+        if (ParameterParserUtil.parseBooleanParam(isCaseSensitive, false)) {
+            mes = !text.contains(textToSearch) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTNOTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTNOTCONTAINS);
+        } else {
+            mes = !text.toLowerCase().contains(textToSearch.toLowerCase()) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTTEXTNOTCONTAINS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTTEXTNOTCONTAINS);
+        }
+        return mes;
+    }
+
     private MessageEvent checkNumericVerifyElement(String control, Double actual, Double expected) {
         switch (control) {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
@@ -1285,13 +1301,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path);
-                        } catch (Exception ex) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                            mes.resolveDescription("ERROR", ex.toString());
-                            return mes;
-                        }
-                        break;
+                                pathContent = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.resolveDescription("ERROR", ex.toString());
+                                return mes;
+                            }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);

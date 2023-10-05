@@ -6232,3 +6232,7 @@ ALTER TABLE tag MODIFY COLUMN Description TEXT NULL;
 -- 1255
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES   ('CAMPAIGN_TCCRITERIA', 'TESTFOLDER', 50 , '');
+
+-- 1256
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+    VALUES   ('CONTROL','verifyElementTextNotContains',4210, 'verifyElementTextNotContains');
