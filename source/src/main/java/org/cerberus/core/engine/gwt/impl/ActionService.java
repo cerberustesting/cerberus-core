@@ -1705,22 +1705,22 @@ public class ActionService implements IActionService {
     private MessageEvent doActionCallService(TestCaseStepActionExecution action, String value1, String value2, String value3) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-        TestCaseExecution tCExecution = action.getTestCaseStepExecution().gettCExecution();
+        TestCaseExecution execution = action.getTestCaseStepExecution().gettCExecution();
         AnswerItem lastServiceCalledAnswer;
 
-        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, tCExecution, robotServerService.getFromOptions(action.getOptions(), RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
+        lastServiceCalledAnswer = serviceService.callService(value1, value2, value3, null, null, null, null, execution, robotServerService.getFromOptions(action.getOptions(), RobotServerService.OPTIONS_TIMEOUT_SYNTAX));
         message = lastServiceCalledAnswer.getResultMessage();
 
         if (lastServiceCalledAnswer.getItem() != null) {
             AppService lastServiceCalled = (AppService) lastServiceCalledAnswer.getItem();
-            tCExecution.setLastServiceCalled(lastServiceCalled);
-            tCExecution.setOriginalLastServiceCalled(lastServiceCalled.getResponseHTTPBody());
-            tCExecution.setOriginalLastServiceCalledContent(lastServiceCalled.getResponseHTTPBodyContentType());
-
+            execution.setLastServiceCalled(lastServiceCalled);
+            execution.setOriginalLastServiceCalled(lastServiceCalled.getResponseHTTPBody());
+            execution.setOriginalLastServiceCalledContent(lastServiceCalled.getResponseHTTPBodyContentType());
+            
             /**
              * Record the Request and Response in file system.
              */
-            action.addFileList(recorderService.recordServiceCall(tCExecution, action, 0, null, lastServiceCalled));
+            action.addFileList(recorderService.recordServiceCall(execution, action, 0, null, lastServiceCalled));
         }
 
         return message;

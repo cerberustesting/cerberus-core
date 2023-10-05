@@ -60,7 +60,7 @@ public final class StringUtil {
     public static final String FTPS_PREFIX = "ftps://";
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
     private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
-    private static final String SECRET_STRING = "XXXXXX";
+    public static final String SECRET_STRING = "XXXXXXXXXX";
 
     // To avoid instantiation of utility class
     private StringUtil() {
@@ -140,8 +140,8 @@ public final class StringUtil {
     /**
      * Check for "null" string or empty string content
      *
-     * @return null safe method that returns
-     * true if the parameter is a "null" string or an empty string
+     * @return null safe method that returns true if the parameter is a "null"
+     * string or an empty string
      */
     public static boolean isEmptyOrNullValue(String str) {
         return (isEmpty(str) || NULL.equalsIgnoreCase(str.trim()));
@@ -150,8 +150,8 @@ public final class StringUtil {
     /**
      * Check for not "null" string or not empty string content
      *
-     * @return null safe method that returns
-     * true if the parameter is NOT a "null" string or empty string.
+     * @return null safe method that returns true if the parameter is NOT a
+     * "null" string or empty string.
      */
     public static boolean isNotEmptyOrNullValue(String str) {
         return isNotEmpty(str) && !NULL.equalsIgnoreCase(str.trim());
@@ -160,7 +160,8 @@ public final class StringUtil {
     /**
      * Check for null or empty string content
      *
-     * @return Null safe method that returns true if the parameter is null or an empty string.
+     * @return Null safe method that returns true if the parameter is null or an
+     * empty string.
      */
     public static boolean isEmpty(String str) {
         return (str == null) || (str.trim().isEmpty());
@@ -169,7 +170,8 @@ public final class StringUtil {
     /**
      * Check for not null or empty string content
      *
-     * @return Null safe method that returns true if the parameter is NOT null or an empty string.
+     * @return Null safe method that returns true if the parameter is NOT null
+     * or an empty string.
      */
     public static boolean isNotEmpty(String str) {
         return (str != null) && !str.trim().isEmpty();
@@ -178,7 +180,7 @@ public final class StringUtil {
     /**
      * Generate a random string using current time and charset
      *
-     * @param length  of the random string to generate
+     * @param length of the random string to generate
      * @param charset use to generate random value
      * @return random string, empty if charset is null or length <= 0
      */
@@ -202,7 +204,7 @@ public final class StringUtil {
      * Return left part of the String.
      *
      * @param string1 String to treat.
-     * @param length  nb of characters to keep.
+     * @param length nb of characters to keep.
      * @return the {length} first character of the string1.
      */
     public static String getLeftString(String string1, int length) {
@@ -219,7 +221,7 @@ public final class StringUtil {
      * Return left part of the string adding ... at the end.
      *
      * @param string1 String to treat.
-     * @param length  nb of characters to keep.
+     * @param length nb of characters to keep.
      * @return the {length} first character of the string1.
      */
     public static String getLeftStringPretty(String string1, int length) {
@@ -346,7 +348,8 @@ public final class StringUtil {
                 || url.startsWith(HTTPS_PREFIX)
                 // File scheme can have no authority component, then only one slash is necessary
                 || url.startsWith(FILE_PREFIX)
-                || url.startsWith(FTP_PREFIX);
+                || url.startsWith(FTP_PREFIX)
+                || url.startsWith(FTPS_PREFIX);
     }
 
     /**
@@ -360,6 +363,10 @@ public final class StringUtil {
      * in stead of www.laredoute.frfrtoto.jsp<br>
      * Protocol will be added in case host did not already have the protocol.
      *
+     * @param host
+     * @param contextRoot
+     * @param uri
+     * @param protocol
      * @return URL correctly formatted.
      */
     public static String getURLFromString(String host, String contextRoot, String uri, String protocol) {
@@ -518,6 +525,17 @@ public final class StringUtil {
         return null;
     }
 
+    public static String getPasswordFromAnyUrl(String appURL) {
+        if (appURL.contains("://")) {
+            appURL = appURL.split("://")[1];
+            if (appURL.contains("@")) {
+                appURL = appURL.split("@")[0];
+                return appURL.substring(appURL.indexOf(':') + 1);
+            }
+        }
+        return null;
+    }
+
     /**
      * Convert a string structure in a list
      *
@@ -536,7 +554,8 @@ public final class StringUtil {
      * @param array Structure of the list in string format
      * @return String mapped to a list of doubles
      * @throws JsonProcessingException When the array structure is not correct
-     * @throws NumberFormatException   When an element of the list is a text and not a number
+     * @throws NumberFormatException When an element of the list is a text and
+     * not a number
      */
     public static List<Double> convertStringToDoubleArray(String array) throws NumberFormatException, JsonProcessingException {
         List<String> strings = convertStringToStringArray(array);

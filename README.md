@@ -30,7 +30,7 @@ Various ressources are available :
 
 [Cerberus Testing LinkedIn Page](https://www.linkedin.com/company/cerberus-testing/)
 
-[Cerberus Testing Demo](http://demo.cerberus-testing.org)
+[Cerberus Testing Demo](https://demo.cerberus-testing.com/)
 
 [Cerberus Testing Jenkins Plugin](https://github.com/jenkinsci/cerberus-testing-plugin)
 

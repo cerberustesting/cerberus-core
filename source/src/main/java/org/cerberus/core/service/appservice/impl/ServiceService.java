@@ -82,7 +82,7 @@ public class ServiceService implements IServiceService {
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
     @Override
-    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePathParam, String operation, TestCaseExecution tCExecution, int timeoutMs) {
+    public AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePathParam, String operation, TestCaseExecution execution, int timeoutMs) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         String decodedRequest;
         String decodedServicePath = null;
@@ -90,9 +90,9 @@ public class ServiceService implements IServiceService {
         String decodedAttachement;
         AnswerItem<AppService> result = new AnswerItem<>();
         AnswerItem<String> answerDecode = new AnswerItem<>();
-        String system = tCExecution.getApplicationObj().getSystem();
-        String country = tCExecution.getCountry();
-        String environment = tCExecution.getEnvironment();
+        String system = execution.getApplicationObj().getSystem();
+        String country = execution.getCountry();
+        String environment = execution.getEnvironment();
         LOG.debug("Starting callService : " + service + " with database : " + database);
         try {
 
@@ -129,7 +129,7 @@ public class ServiceService implements IServiceService {
                 try {
 
                     // Decode Service Path
-                    answerDecode = variableService.decodeStringCompletly(servicePath, tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(servicePath, execution, null, false);
                     servicePath = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -149,6 +149,8 @@ public class ServiceService implements IServiceService {
                     return result;
                 }
 
+                execution.appendSecret(StringUtil.getPasswordFromAnyUrl(servicePath)); 
+
                 // Autocomplete of service path is disable for KAFKA and MONGODB service (this is because there could be a list of host).
                 if (!appService.getType().equals(AppService.TYPE_KAFKA) && !appService.getType().equals(AppService.TYPE_MONGODB)) {
 
@@ -159,7 +161,7 @@ public class ServiceService implements IServiceService {
                         if (StringUtil.isEmpty(database)) {
 
                             // We reformat servicePath in order to add the context from the application execution.
-                            servicePath = StringUtil.getURLFromString(tCExecution.getUrl(),
+                            servicePath = StringUtil.getURLFromString(execution.getUrl(),
                                     "", appService.getServicePath(), "http://");
 
                         } else {
@@ -234,7 +236,7 @@ public class ServiceService implements IServiceService {
                 try {
 
                     // Decode Service Path again as the change done by automatic complete of it following application configuration could have inserted some new variables.
-                    answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(decodedServicePath, execution, null, false);
                     decodedServicePath = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -246,7 +248,7 @@ public class ServiceService implements IServiceService {
                     }
 
                     // Decode Request
-                    answerDecode = variableService.decodeStringCompletly(decodedRequest, tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(decodedRequest, execution, null, false);
                     decodedRequest = answerDecode.getItem();
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -260,7 +262,7 @@ public class ServiceService implements IServiceService {
                     // Decode Header List
                     List<AppServiceHeader> objectHeaderList = new ArrayList<>();
                     for (AppServiceHeader object : appService.getHeaderList()) {
-                        answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(object.getKey(), execution, null, false);
                         object.setKey(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -272,7 +274,7 @@ public class ServiceService implements IServiceService {
                             return result;
                         }
 
-                        answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(object.getValue(), execution, null, false);
                         object.setValue(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -291,7 +293,7 @@ public class ServiceService implements IServiceService {
                     // Decode ContentDetail List
                     List<AppServiceContent> objectContentList = new ArrayList<>();
                     for (AppServiceContent object : appService.getContentList()) {
-                        answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(object.getKey(), execution, null, false);
                         object.setKey(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -303,7 +305,7 @@ public class ServiceService implements IServiceService {
                             return result;
                         }
 
-                        answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(object.getValue(), execution, null, false);
                         object.setValue(answerDecode.getItem());
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -331,7 +333,7 @@ public class ServiceService implements IServiceService {
                 // Get from parameter whether we define a token or not (in order to trace the cerberus calls in http header)
                 String token = null;
                 if (parameterService.getParameterBooleanByKey("cerberus_callservice_enablehttpheadertoken", system, true)) {
-                    token = String.valueOf(tCExecution.getId());
+                    token = String.valueOf(execution.getId());
                 }
                 // Get from parameter the call timeout to be used.
                 if (timeoutMs == 0) {
@@ -350,7 +352,7 @@ public class ServiceService implements IServiceService {
                         decodedAttachement = appService.getAttachementURL();
                         try {
 
-                            answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
+                            answerDecode = variableService.decodeStringCompletly(decodedOperation, execution, null, false);
                             decodedOperation = answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -362,7 +364,7 @@ public class ServiceService implements IServiceService {
                                 return result;
                             }
 
-                            answerDecode = variableService.decodeStringCompletly(decodedAttachement, tCExecution, null, false);
+                            answerDecode = variableService.decodeStringCompletly(decodedAttachement, execution, null, false);
                             decodedAttachement = answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -411,7 +413,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), tCExecution);
+                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution);
                                 message = result.getResultMessage();
                                 break;
 
@@ -438,7 +440,7 @@ public class ServiceService implements IServiceService {
                                  * Call MONGODB and store it into the execution.
                                  */
                                 result = mongodbService.callMONGODB(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getOperation(), timeoutMs, system, tCExecution);
+                                        appService.getOperation(), timeoutMs, system, execution);
                                 message = result.getResultMessage();
                                 break;
 
@@ -456,7 +458,7 @@ public class ServiceService implements IServiceService {
                     case AppService.TYPE_KAFKA:
 
                         String decodedKey = appService.getKafkaKey();
-                        answerDecode = variableService.decodeStringCompletly(decodedKey, tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(decodedKey, execution, null, false);
                         decodedKey = answerDecode.getItem();
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -469,7 +471,7 @@ public class ServiceService implements IServiceService {
                         }
 
                         String decodedTopic = appService.getKafkaTopic();
-                        answerDecode = variableService.decodeStringCompletly(decodedTopic, tCExecution, null, false);
+                        answerDecode = variableService.decodeStringCompletly(decodedTopic, execution, null, false);
                         decodedTopic = answerDecode.getItem();
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -483,7 +485,7 @@ public class ServiceService implements IServiceService {
 
                         String decodedSchemaRegistryURL = appService.getSchemaRegistryURL();
                         if (appService.isAvroEnable()) {
-                            answerDecode = variableService.decodeStringCompletly(decodedSchemaRegistryURL, tCExecution, null, false);
+                            answerDecode = variableService.decodeStringCompletly(decodedSchemaRegistryURL, execution, null, false);
                             decodedSchemaRegistryURL = answerDecode.getItem();
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -516,7 +518,7 @@ public class ServiceService implements IServiceService {
 
                                 try {
 
-                                    answerDecode = variableService.decodeStringCompletly(decodedFilterPath, tCExecution, null, false);
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterPath, execution, null, false);
                                     decodedFilterPath = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -528,7 +530,7 @@ public class ServiceService implements IServiceService {
                                         return result;
                                     }
 
-                                    answerDecode = variableService.decodeStringCompletly(decodedFilterValue, tCExecution, null, false);
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterValue, execution, null, false);
                                     decodedFilterValue = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -540,7 +542,7 @@ public class ServiceService implements IServiceService {
                                         return result;
                                     }
 
-                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderPath, tCExecution, null, false);
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderPath, execution, null, false);
                                     decodedFilterHeaderPath = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -552,7 +554,7 @@ public class ServiceService implements IServiceService {
                                         return result;
                                     }
 
-                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderValue, tCExecution, null, false);
+                                    answerDecode = variableService.decodeStringCompletly(decodedFilterHeaderValue, execution, null, false);
                                     decodedFilterHeaderValue = answerDecode.getItem();
                                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                                         // If anything wrong with the decode --> we stop here with decode message in the action result.
@@ -598,7 +600,7 @@ public class ServiceService implements IServiceService {
                                 appService.setKafkaFilterHeaderValue(decodedFilterHeaderValue);
 
                                 String kafkaKey = kafkaService.getKafkaConsumerKey(decodedTopic, decodedServicePath);
-                                AnswerItem<String> resultSearch = kafkaService.searchEvent(tCExecution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
+                                AnswerItem<String> resultSearch = kafkaService.searchEvent(execution.getKafkaLatestOffset().get(kafkaKey), decodedTopic, decodedServicePath,
                                         appService.getHeaderList(), appService.getContentList(), decodedFilterPath, decodedFilterValue, decodedFilterHeaderPath, decodedFilterHeaderValue,
                                         appService.isAvroEnable(), decodedSchemaRegistryURL, appService.isAvroEnableKey(), appService.isAvroEnableValue(), targetNbEventsInt, targetNbSecInt);
 

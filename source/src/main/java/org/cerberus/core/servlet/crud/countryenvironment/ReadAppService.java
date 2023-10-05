@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.util.StringUtil;
 
 /**
  * @author bcivel
@@ -69,10 +70,10 @@ public class ReadAppService extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -242,7 +243,7 @@ public class ReadAppService extends HttpServlet {
      * using one service.
      *
      * @param appContext - context object used to get the required beans
-     * @param service    - identifier of the service
+     * @param service - identifier of the service
      * @return an answer item containing the information about the test cases
      * that use the entry
      * @throws JSONException
@@ -328,19 +329,22 @@ public class ReadAppService extends HttpServlet {
         JSONObject result = new JSONObject();
         if (appservice != null) {
             result = new JSONObject(gson.toJson(appservice));
+            String pass = StringUtil.getPasswordFromAnyUrl(result.getString("servicePath"));
+            if (pass != null) {
+                result.put("servicePath", result.getString("servicePath").replace(pass, StringUtil.SECRET_STRING));
+            }
         }
         return result;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -351,10 +355,10 @@ public class ReadAppService extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

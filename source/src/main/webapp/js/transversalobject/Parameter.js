@@ -154,7 +154,7 @@ function feedParameterModal(param, system, modalId) {
         $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field") + " (" + system + ")");
 
         if (data.isSecured) {
-            var localMessage = new Message("WARNING", "This parameter contain secure data. Original data is hidden and its modification is mandatory before saving it.");
+            var localMessage = new Message("WARNING", "This parameter contain secure data. Original data is hidden.");
             showMessage(localMessage, $('#editParameterModal'));
         }
 
@@ -166,35 +166,35 @@ function feedParameterModal(param, system, modalId) {
         } else {
             formEdit.find("#cerberusValue").removeAttr("readonly");
             formEdit.find("#editParameterButton").show();
-            if (data.isSecured) {
-                $('#editParameterButton').attr('disabled', true);
-                if (data.isSystemManaged) {
-                    $("#cerberusValue").change(function () {
-                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
-                        {
-                            $('#editParameterButton').attr('disabled', false);
-                        } else {
-                            $('#editParameterButton').attr('disabled', true);
-                        }
-                    });
-                    $("#systemValue").change(function () {
-                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
-                        {
-                            $('#editParameterButton').attr('disabled', false);
-                        } else {
-                            $('#editParameterButton').attr('disabled', true);
-                        }
-                    });
-
-                } else {
-                    $("#cerberusValue").change(function () {
-                        $('#editParameterButton').attr('disabled', false);
-                    });
-
-                }
-            } else {
+//            if (data.isSecured) {
                 $('#editParameterButton').attr('disabled', false);
-            }
+//                if (data.isSystemManaged) {
+//                    $("#cerberusValue").change(function () {
+//                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
+//                        {
+//                            $('#editParameterButton').attr('disabled', false);
+//                        } else {
+//                            $('#editParameterButton').attr('disabled', true);
+//                        }
+//                    });
+//                    $("#systemValue").change(function () {
+//                        if (($("#cerberusValue").val() !== "XXXXXXXXXX") && ($("#systemValue").val() !== "XXXXXXXXXX"))
+//                        {
+//                            $('#editParameterButton').attr('disabled', false);
+//                        } else {
+//                            $('#editParameterButton').attr('disabled', true);
+//                        }
+//                    });
+
+//                } else {
+//                    $("#cerberusValue").change(function () {
+//                        $('#editParameterButton').attr('disabled', false);
+//                    });
+//
+//                }
+//            } else {
+//                $('#editParameterButton').attr('disabled', false);
+//            }
         }
         if (data.isSystemManaged) {
             $("#systemValuePanel").show();

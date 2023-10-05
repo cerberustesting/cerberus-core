@@ -208,7 +208,9 @@ public class UpdateAppService extends HttpServlet {
                 appService.setType(type);
                 appService.setApplication(application);
                 appService.setMethod(method);
-                appService.setServicePath(servicePath);
+                if (StringUtil.isNotEmptyOrNullValue(servicePath) && !servicePath.contains(StringUtil.SECRET_STRING)) {
+                    appService.setServicePath(servicePath);
+                }
                 appService.setUsrModif(request.getRemoteUser());
                 appService.setKafkaKey(kafkaKey);
                 appService.setKafkaTopic(kafkaTopic);
