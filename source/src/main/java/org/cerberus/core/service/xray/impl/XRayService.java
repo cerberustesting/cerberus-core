@@ -259,7 +259,7 @@ public class XRayService implements IXRayService {
                                 LOG.debug("XRay Test Execution request http return code : " + rc);
                                 String responseString = EntityUtils.toString(response.getEntity());
                                 LOG.debug("Response : {}", responseString);
-                                JSONObject xRayResponse = new JSONObject(responseString);
+                                JSONObject xRayResponse = getXRayResponseJSON(execution, responseString);
                                 String xrayURL = "";
                                 String xrayTestExecution = "";
                                 if (xRayResponse.has("key")) {
@@ -313,6 +313,15 @@ public class XRayService implements IXRayService {
             LOG.error(ex, ex);
         }
 
+    }
+
+    private JSONObject getXRayResponseJSON(TestCaseExecution execution, String responseString) throws JSONException {
+        if (TestCase.TESTCASE_ORIGIN_JIRAXRAYDC.equalsIgnoreCase(execution.getTestCaseObj().getOrigine())) {
+            return new JSONObject(responseString).getJSONObject("testExecIssue");
+        }
+        else {
+            return new JSONObject(responseString);
+        }
     }
 
     private void getXRayAuthenticationToken(String origin, String system) throws Exception {
