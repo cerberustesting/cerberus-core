@@ -4,21 +4,21 @@
 * Fixed wrong status on manual test execution. #2455
 * Fixed impossibility to delete all property with the same name. #2454
 * Fixed the Job that CANCELLED execution queue entries so that it does not consider the timeout from the time it was inserted to the queue but the time when the execution was triggered. #2472
-* Service Call JSON now display the proper Kafka Filter Header path and value #2465
-* Record a file at control level was saving it at action level #2412
-* Fixed delete of Campaigns, Services and Users with special Characters #2486
-* Fix display of group 2 and 3 on campaign page
-* When executing a compaign that has XRay links, fixed an issue where campaign stays PENDING forever in case there is a connectivity issue with JIRA Backend. It now return ERROR with the correct trace message.
-* Fixed reading Jira XRay response Key when DC solution is used
+* Service Call JSON now display the proper Kafka Filter Header path and value. #2465
+* Record a file at control level was saving it at action level. #2412
+* Fixed delete of Campaigns, Services and Users with special Characters. #2486
+* Fixed display of group 2 and 3 on campaign page.
+* When executing a campaign that has XRay links, fixed an issue where campaign stays PENDING forever in case there is a connectivity issue with JIRA backend. It now return ERROR with the correct trace message.
+* Fixed reading Jira XRay response Key when DC solution is used. resulting multiplicity of XRay execution creation.
 
 *Improvements / New features*
 [square]
 * Support for MongoDB Service type.
 * Added background on steps according to the status and displayed condition when step NE on TestcaseExecution page. #2463
-* A pdf report is now available for campaign execution for download #2475
-* New action "Switch To Context" #2408
-* Added new execution parameter column on campaign list page #2489
-* Added new test case control 'Verify Text in Element does not contain' #2471
+* A pdf report is now available for campaign execution for download. #2475
+* New action "Switch To Context" for IOS and Android applications. #2408
+* Added new execution parameter column on campaign list page. #2489
+* Added new test case control 'Verify Text in Element does not contain'. #2471
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
