@@ -123,7 +123,7 @@ function addEntryModalSaveHandler() {
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));
     } else if (nameElementInvalid != -1) {
-    	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+    	var localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));  	
     }

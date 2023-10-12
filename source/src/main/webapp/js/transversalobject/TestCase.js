@@ -466,12 +466,12 @@ function confirmTestCaseModalHandler(mode) {
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testElementInvalid !== -1) {
-        localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+        localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
         // only the Test label will be put in red
         testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if (testIdElementInvalid !== -1) {
-        localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
+        localMessage = new Message("danger", "The testcase id cannot contain the symbol : &");
         // only the TestId label will be put in red
         testIdElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
