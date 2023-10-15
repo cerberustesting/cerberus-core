@@ -269,7 +269,7 @@ function displayExportDataLabel(doc) {
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("page_reportbytag", "title"));
     $("#title").html(doc.getDocOnline("page_reportbytag", "title"));
-    $("#loadbutton").html(doc.getDocLabel("page_reportbytag", "button_load"));
+    $("#loadbutton").html("<span class='glyphicon glyphicon-refresh'></span>&nbsp;" + doc.getDocLabel("page_reportbytag", "button_load"));
     $("#reloadbutton").html(doc.getDocLabel("page_reportbytag", "button_reload"));
     $("#filters").html(doc.getDocOnline("page_reportbytag", "filters"));
     $("#reportStatus").html(doc.getDocOnline("page_reportbytag", "report_status"));

@@ -67,7 +67,9 @@
                                             <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
                                             <div class="input-group-btn">
                                                 <button type="button" class="btn btn-default" style="margin-left: 10px;"
-                                                        id="loadbutton" onclick="loadAllReports()">Load
+                                                        id="loadbutton" onclick="loadAllReports()">
+                                                    <span class="glyphicon glyphicon-refresh"></span>
+                                                    Load
                                                 </button>
                                             </div>
                                         </div>
@@ -284,7 +286,9 @@
                                 </div>
                                 <div class="col-sm-3" >
                                     <a id="buttonDownloadPdfReport" class="pull-right">
-                                        <button type="button" class="btn btn-default" style="margin-left: 10px;">Download Report</button>
+                                        <button type="button" class="btn btn-default" style="margin-left: 10px;">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                            Download Report</button>
                                     </a>
                                 </div>
                             </div>
@@ -308,10 +312,14 @@
                                 <div class="col-sm-7">
                                     <div class="input-group-btn">
                                         <a id="buttonSeeStatsCampaign" class="pull-right">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">See Stats</button>
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">
+                                                <span class="glyphicon glyphicon-stats"></span>
+                                                See Stats</button>
                                         </a>
                                         <a id="buttonRunCampaign" class="pull-right">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">(Re)Run Campaign</button>
+                                            <button type="button" class="btn btn-default" style="margin-left: 10px;">
+                                                <span class="glyphicon glyphicon-forward"></span>
+                                                (Re)Run Campaign</button>
                                         </a>
                                     </div>
                                 </div>
