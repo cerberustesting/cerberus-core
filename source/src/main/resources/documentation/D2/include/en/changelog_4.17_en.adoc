@@ -10,6 +10,7 @@
 * Fixed display of group 2 and 3 on campaign page.
 * When executing a campaign that has XRay links, fixed an issue where campaign stays PENDING forever in case there is a connectivity issue with JIRA backend. It now return ERROR with the correct trace message.
 * Fixed reading Jira XRay response Key when DC solution is used. resulting multiplicity of XRay execution creation.
+* Fixed XML format guess method. #2496
 
 *Improvements / New features*
 [square]

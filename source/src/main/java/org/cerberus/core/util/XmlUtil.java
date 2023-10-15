@@ -49,6 +49,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -129,7 +130,8 @@ public final class XmlUtil {
      * A universal namespace cache to use when parsing XML files against XPath
      *
      * @author abourdon
-     * @see <a href="https://www.ibm.com/developerworks/library/x-nmspccontext/#N10158">...</a>
+     * @see
+     * <a href="https://www.ibm.com/developerworks/library/x-nmspccontext/#N10158">...</a>
      */
     @SuppressWarnings("unchecked")
     public static final class UniversalNamespaceCache implements NamespaceContext {
@@ -156,7 +158,7 @@ public final class XmlUtil {
          * find. If toplevelOnly is <code>true</code>, only namespaces in the
          * root are used.
          *
-         * @param document     source document
+         * @param document source document
          * @param toplevelOnly restriction of the search to enhance performance
          */
         public UniversalNamespaceCache(Document document, boolean toplevelOnly) {
@@ -173,7 +175,7 @@ public final class XmlUtil {
          * A single node is read, the namespace attributes are extracted and
          * stored.
          *
-         * @param node           to examine
+         * @param node to examine
          * @param attributesOnly if <code>true</code> no recursion happens
          */
         private void examineNode(Node node, boolean attributesOnly) {
@@ -213,7 +215,7 @@ public final class XmlUtil {
          * Put the given prefix and URI in cache
          *
          * @param prefix to put in cache
-         * @param uri    to put in cache
+         * @param uri to put in cache
          */
         private void putInCache(String prefix, String uri) {
             prefix2Uri.put(prefix, uri);
@@ -272,11 +274,11 @@ public final class XmlUtil {
      * argument
      *
      * @param node the {@link Node} from which create the {@link String}
-     *             representation
+     * representation
      * @return the {@link String} representation of the {@link Node} given in
      * argument
      * @throws XmlUtilException if {@link Node} cannot be represented as a
-     *                          {@link String}
+     * {@link String}
      */
     public static String toString(Node node) throws XmlUtilException {
         if (node == null) {
@@ -298,14 +300,14 @@ public final class XmlUtil {
      * Returns a {@link Document} representation of the {@link String} given in
      * argument
      *
-     * @param xml                the {@link String} from which create the {@link Document}
-     *                           representation
+     * @param xml the {@link String} from which create the {@link Document}
+     * representation
      * @param namespaceAwareness if namespaces have to be taking into account
-     *                           during parsing
+     * during parsing
      * @return the {@link Document} representation of the {@link String} given
      * in argument
      * @throws XmlUtilException if {@link String} cannot be represented as a
-     *                          {@link Document}
+     * {@link Document}
      */
     public static Document fromString(String xml, boolean namespaceAwareness) throws XmlUtilException {
         if (xml == null) {
@@ -331,14 +333,14 @@ public final class XmlUtil {
      * Returns a {@link Document} representation of the {@link URL} given in
      * argument
      *
-     * @param url                the {@link URL} from which create the {@link Document}
-     *                           representation
+     * @param url the {@link URL} from which create the {@link Document}
+     * representation
      * @param namespaceAwareness if namespaces have to be taking into account
-     *                           during parsing
+     * during parsing
      * @return the {@link Document} representation of the {@link URL} given in
      * argument
      * @throws XmlUtilException if {@link URL} cannot be represented as a
-     *                          {@link Document}
+     * {@link Document}
      */
     public static Document fromURL(URL url, boolean namespaceAwareness) throws XmlUtilException {
         if (url == null) {
@@ -367,7 +369,7 @@ public final class XmlUtil {
      * document which satisfy the xpath expression.
      *
      * @param document the document to search against the given xpath
-     * @param xpath    the xpath expression
+     * @param xpath the xpath expression
      * @return a list of new document which gather all results which satisfy the
      * xpath expression against the given document.
      * @throws XmlUtilException if an error occurred
@@ -401,7 +403,7 @@ public final class XmlUtil {
      * which satisfy the xpath expression.
      *
      * @param document the document to search against the given xpath
-     * @param xpath    the xpath expression
+     * @param xpath the xpath expression
      * @return a string which satisfy the xpath expression against the given
      * document.
      * @throws XmlUtilException if an error occurred
@@ -486,7 +488,7 @@ public final class XmlUtil {
      * @param nodeList to parse
      * @return a {@link Document} list from the given {@link NodeList}
      * @throws XmlUtilException if an error occurs. For instance if
-     *                          {@link NodeList} cannot be transforms as a {@link Document} list
+     * {@link NodeList} cannot be transforms as a {@link Document} list
      */
     public static List<Document> fromNodeList(NodeList nodeList) throws XmlUtilException {
         List<Document> result = new ArrayList<>();
@@ -503,11 +505,11 @@ public final class XmlUtil {
         DocumentBuilder dBuilder;
         try {
             dBuilder = newDocumentBuilder(true, true);
-            dBuilder.parse(xmlString);
+            dBuilder.parse(new ByteArrayInputStream(xmlString.getBytes()));
         } catch (ParserConfigurationException | SAXException e) {
             return false;
         } catch (IOException e) {
-            LOG.error("Unable to evaluate the document");
+            LOG.error("Unable to evaluate the document", e);
             return false;
         }
         return true;
@@ -518,9 +520,9 @@ public final class XmlUtil {
      * parameters
      *
      * @param namespaceAwareness if the created {@link DocumentBuilder} has to
-     *                           be aware of namespaces
-     * @param ignoringComment    if the created {@link DocumentBuilder} has to
-     *                           ignore comments
+     * be aware of namespaces
+     * @param ignoringComment if the created {@link DocumentBuilder} has to
+     * ignore comments
      * @return a new {@link DocumentBuilder} configured by the given
      * configuration parameters
      */
