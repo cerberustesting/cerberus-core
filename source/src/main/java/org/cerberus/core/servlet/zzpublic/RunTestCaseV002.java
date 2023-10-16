@@ -168,7 +168,7 @@ public class RunTestCaseV002 extends HttpServlet {
                 String outputFormat = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_OUTPUT_FORMAT), "compact");
                 int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SCREENSHOT), 1);
                 int video = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VIDEO), 0);
-                int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VERBOSE), 0);
+                int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VERBOSE), 1);
                 timeout = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(PARAMETER_TIMEOUT), "");
                 synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_SYNCHRONEOUS), false);
                 getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_PAGE_SOURCE), 1);

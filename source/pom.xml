@@ -42,7 +42,7 @@
         <spring.version>5.3.27</spring.version>
         <spring-security.version>5.6.12</spring-security.version>
         <!-- JSON Lib Version -->
-        <json.version>20231013</json.version>
+        <json.version>20080701</json.version>
         <gson.version>2.9.0</gson.version>
         <jackson-databind.version>2.14.0-rc1</jackson-databind.version>
         <jackson-datatype-jsr310.version>2.13.2</jackson-datatype-jsr310.version>
