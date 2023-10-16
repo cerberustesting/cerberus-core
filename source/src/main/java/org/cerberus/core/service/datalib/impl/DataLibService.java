@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.datalib.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -58,6 +59,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.File;
@@ -69,6 +71,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * @author bcivel
@@ -634,6 +639,9 @@ public class DataLibService implements IDataLibService {
 
         List<HashMap<String, String>> list;
         List<String> columnsToHide = new ArrayList<>();
+        
+        final boolean ignoreNonMatchedSubdata = parameterService.getParameterBooleanByKey("cerberus_testdatalib_ignoreNonMatchedSubdata", StringUtils.EMPTY, false);
+        final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
 
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
@@ -720,7 +728,7 @@ public class DataLibService implements IDataLibService {
                 columnsToHide = getListOfSecrets(lib.getTestDataLibID());
 
                 // CSV Call is made here.
-                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, execution);
+                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, ignoreNonMatchedSubdata ? ICsvFileService.IGNORE_NON_MATCHED_COLUMNS : ICsvFileService.DO_NOT_IGNORE_NON_MATCHED_COLUMNS, defaultSubdataValue, execution);
                 list = responseList.getDataList();
 
                 //if the query returns sucess then we can get the data
@@ -772,7 +780,7 @@ public class DataLibService implements IDataLibService {
                                 Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
 
                                 //performs a query that returns several rows containing n columns
-                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList, columnsToHide, execution);
+                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList, columnsToHide, ignoreNonMatchedSubdata ? ISQLService.IGNORE_NON_MATCHED_COLUMNS : ISQLService.DO_NOT_IGNORE_NON_MATCHED_COLUMNS, defaultSubdataValue, execution);
 
                                 //if the query returns sucess then, we can get the data
                                 if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
@@ -871,82 +879,90 @@ public class DataLibService implements IDataLibService {
                                     String subDataColumnToTreat = entry.getKey(); // SubData
                                     String subDataParsingAnswer = entry.getValue(); // Parsing Answer
                                     listTemp1 = new ArrayList<>();
+                                    NodeList candidates;
 
                                     try {
 
                                         // We try to parse the XML with the subdata Parsing Answer.
-                                        NodeList candidates = XmlUtil.evaluate(xmlDocument, subDataParsingAnswer);
-
-                                        if (candidates.getLength() > 0) {
-
-                                            for (int i = 0; i < candidates.getLength(); i++) { // Loop on all Values that match in XML.
-
-                                                //We get the value from XML
-                                                String value = candidates.item(i).getNodeValue();
-
-                                                if (value == null) { // No value found.
-                                                    if (candidates.item(i) != null) {
-                                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_CHECK_XPATH);
-                                                        msg.setDescription(msg.getDescription()
-                                                                .replace("%XPATH%", subDataParsingAnswer)
-                                                                .replace("%SUBDATA%", subDataColumnToTreat)
-                                                                .replace("%ENTRY%", lib.getName())
-                                                                .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
-                                                    } else {
-                                                        //no elements were returned by the XPATH expression
-                                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
-                                                        msg.setDescription(msg.getDescription()
-                                                                .replace("%XPATH%", subDataParsingAnswer)
-                                                                .replace("%SUBDATA%", subDataColumnToTreat)
-                                                                .replace("%ENTRY%", lib.getName())
-                                                                .replace("%XMLCONTENT%", responseString)
-                                                                .replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                                                        );
-                                                    }
-                                                } else { // Value were found we add it to the current list.
-
-                                                    listTemp1.add(value);
-
-                                                }
-                                            }
-
-                                            // If column is on the columns to hide we add it to the secret list
-                                            if (columnsToHide.contains(subDataColumnToTreat)) {
-                                                execution.appendSecrets(listTemp1);
-                                            }
-                                            // Add the Subdata with associated list in the HashMap.
-                                            hashTemp1.put(subDataColumnToTreat, listTemp1);
-
-                                            // Getting the nb of row of the final result. (Max of all the Subdata retrieved from the XML)
-                                            if (listTemp1.size() > finalnbRow) {
-                                                finalnbRow = listTemp1.size();
-                                            }
-
-                                        } else {
-                                            //no elements were returned by the XPATH expression
-                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
-                                            msg.setDescription(msg.getDescription()
-                                                    .replace("%XPATH%", subDataParsingAnswer)
-                                                    .replace("%SUBDATA%", subDataColumnToTreat)
-                                                    .replace("%ENTRY%", lib.getName())
-                                                    .replace("%XMLCONTENT%", responseString)
-                                                    .replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                                            );
+                                        candidates = XmlUtil.evaluate(xmlDocument, subDataParsingAnswer);
+                                        // If no candidates found but have to ignore non matched subdata, then create a dummy node that contains the default subdata value
+                                        if (ignoreNonMatchedSubdata && candidates.getLength() == 0) {
+                                        	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                    		candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
                                         }
-                                    } catch (XmlUtilException ex) {
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION);
+                                    } catch (final Exception e) {
+                                    	if (ignoreNonMatchedSubdata) {
+                                    		LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> e);
+                                    		candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
+                                    	} else {
+                                    		msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION)
+	                                    			 .resolveDescription("XPATH", lib.getSubDataParsingAnswer())
+	                                                 .resolveDescription("SUBDATA", "")
+	                                                 .resolveDescription("REASON", e.toString());
+	                                    	 break;
+                                    	}
+                                    	
+                                    }
+
+                                    if (candidates.getLength() > 0) {
+
+                                        for (int i = 0; i < candidates.getLength(); i++) { // Loop on all Values that match in XML.
+
+                                            //We get the value from XML
+                                            String value = candidates.item(i).getNodeValue();
+                                            if (ignoreNonMatchedSubdata && value == null) {
+                                            	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                            	value = defaultSubdataValue;
+                                            }
+
+                                            if (value == null) { // No value found.
+                                                if (candidates.item(i) != null) {
+                                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_CHECK_XPATH);
+                                                    msg.setDescription(msg.getDescription()
+                                                            .replace("%XPATH%", subDataParsingAnswer)
+                                                            .replace("%SUBDATA%", subDataColumnToTreat)
+                                                            .replace("%ENTRY%", lib.getName())
+                                                            .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+                                                } else {
+                                                    //no elements were returned by the XPATH expression
+                                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
+                                                    msg.setDescription(msg.getDescription()
+                                                            .replace("%XPATH%", subDataParsingAnswer)
+                                                            .replace("%SUBDATA%", subDataColumnToTreat)
+                                                            .replace("%ENTRY%", lib.getName())
+                                                            .replace("%XMLCONTENT%", responseString)
+                                                            .replace("%ENTRYID%", lib.getTestDataLibID().toString())
+                                                    );
+                                                }
+                                            } else { // Value were found we add it to the current list.
+
+                                                listTemp1.add(value);
+
+                                            }
+                                        }
+
+                                        // If column is on the columns to hide we add it to the secret list
+                                        if (columnsToHide.contains(subDataColumnToTreat)) {
+                                            execution.appendSecrets(listTemp1);
+                                        }
+                                        // Add the Subdata with associated list in the HashMap.
+                                        hashTemp1.put(subDataColumnToTreat, listTemp1);
+
+                                        // Getting the nb of row of the final result. (Max of all the Subdata retrieved from the XML)
+                                        if (listTemp1.size() > finalnbRow) {
+                                            finalnbRow = listTemp1.size();
+                                        }
+
+                                    } else {
+                                        //no elements were returned by the XPATH expression
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", subDataParsingAnswer)
                                                 .replace("%SUBDATA%", subDataColumnToTreat)
                                                 .replace("%ENTRY%", lib.getName())
+                                                .replace("%XMLCONTENT%", responseString)
                                                 .replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                                                .replace("%REASON%", ex.toString() + " Detail answer " + responseString));
-                                    } catch (Exception ex) {
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION);
-                                        msg.setDescription(msg.getDescription()
-                                                .replace("%XPATH%", lib.getSubDataParsingAnswer())
-                                                .replace("%SUBDATA%", "")
-                                                .replace("%REASON%", ex.toString()));
+                                        );
                                     }
                                 }
 
@@ -998,40 +1014,53 @@ public class DataLibService implements IDataLibService {
 
                                         // We try to parse the XML with the subdata Parsing Answer.
                                         listTemp1 = jsonService.getFromJson(responseString, subDataParsingAnswer);
-
-                                        if (listTemp1.size() > 0) {
-
-                                            // If column is on the columns to hide we add it to the secret list
-                                            if (columnsToHide.contains(subDataColumnToTreat)) {
-                                                execution.appendSecrets(listTemp1);
-                                            }
-
-                                            // Add the Subdata with associated list in the HashMap.
-                                            hashTemp1.put(subDataColumnToTreat, listTemp1);
-
-                                            // Getting the nb of row of the final result. (Max of all the Subdata retrieved from the XML)
-                                            if (listTemp1.size() > finalnbRow) {
-                                                finalnbRow = listTemp1.size();
-                                            }
-
-                                        } else {
-                                            //no elements were returned by the XPATH expression
-                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSON_NOTFOUND);
-                                            msg.setDescription(msg.getDescription()
-                                                    .replace("%XPATH%", subDataParsingAnswer)
-                                                    .replace("%SUBDATA%", subDataColumnToTreat)
-                                                    .replace("%ENTRY%", lib.getName())
-                                                    .replace("%XMLCONTENT%", responseString)
-                                                    .replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                                            );
+                                        if (ignoreNonMatchedSubdata && listTemp1.isEmpty()) {
+                                        	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                        	listTemp1.add(defaultSubdataValue);
                                         }
-                                    } catch (Exception ex) {
-                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSONEXCEPTION);
+                                    } catch (final Exception ex) {
+                                    	if (ignoreNonMatchedSubdata) {
+                                    		LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> ex);
+                                    		listTemp1.add(defaultSubdataValue);
+                                    	}
+                                    	else {
+                                    		msg = new MessageEvent(
+													MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSONEXCEPTION)
+													.resolveDescription("XPATH", lib.getSubDataParsingAnswer())
+													.resolveDescription("SUBDATA", "")
+													.resolveDescription("REASON", ex.toString() + "\n api response : "
+															+ appService.getResponseHTTPBody());
+											break;
+                                    		
+                                    	}
+                                    	
+                                    }
+
+                                    if (listTemp1.size() > 0) {
+
+                                        // If column is on the columns to hide we add it to the secret list
+                                        if (columnsToHide.contains(subDataColumnToTreat)) {
+                                            execution.appendSecrets(listTemp1);
+                                        }
+
+                                        // Add the Subdata with associated list in the HashMap.
+                                        hashTemp1.put(subDataColumnToTreat, listTemp1);
+
+                                        // Getting the nb of row of the final result. (Max of all the Subdata retrieved from the XML)
+                                        if (listTemp1.size() > finalnbRow) {
+                                            finalnbRow = listTemp1.size();
+                                        }
+
+                                    } else {
+                                        //no elements were returned by the XPATH expression
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSON_NOTFOUND);
                                         msg.setDescription(msg.getDescription()
-                                                .replace("%XPATH%", lib.getSubDataParsingAnswer())
-                                                .replace("%SUBDATA%", "")
-                                                .replace("%REASON%", ex.toString()
-                                                        + "\n api response : " + appService.getResponseHTTPBody()));
+                                                .replace("%XPATH%", subDataParsingAnswer)
+                                                .replace("%SUBDATA%", subDataColumnToTreat)
+                                                .replace("%ENTRY%", lib.getName())
+                                                .replace("%XMLCONTENT%", responseString)
+                                                .replace("%ENTRYID%", lib.getTestDataLibID().toString())
+                                        );
                                     }
                                 }
 
@@ -1120,6 +1149,38 @@ public class DataLibService implements IDataLibService {
 
         return result;
     }
+
+	/**
+	 * Utility method for
+	 * {@link #getFromDataLib(TestDataLib, TestCaseCountryProperties, TestCaseExecution, TestCaseExecutionData)}
+	 * that creates a dummy node list that contains a single dummy node associated
+	 * to the given node value
+	 * 
+	 * @param singleDummyNodeValue the value to set to the single node value of the
+	 *                             dummy node list returned
+	 * @return a dummy node list that contains a single dummy node associated to the
+	 *         given node value
+	 */
+	private NodeList getDataObjectList_defaultDummyNodeList(final String singleDummyNodeValue) {
+		return new NodeList() {
+			@Override
+			public Node item(int index) {
+				try {
+					final Node dummyNode = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument()
+							.createTextNode(StringUtils.EMPTY);
+					dummyNode.setNodeValue(singleDummyNodeValue);
+					return dummyNode;
+				} catch (ParserConfigurationException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			public int getLength() {
+				return 1;
+			}
+		};
+	}
 
     @Override
     public JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {
