@@ -23,4 +23,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Update JAVA KAFKA Client from 2.3.0 to 2.6.3
