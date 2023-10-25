@@ -90,16 +90,11 @@ public interface ISQLService {
 	 *                                     at least one column to get does not match
 	 *                                     with the SQL query result. In that case,
 	 *                                     each no match column's value will be set
-	 *                                     to the {@link String} empty value ("").
-	 *                                     Use {@link #IGNORE_NON_MATCHED_COLUMNS} &
-	 *                                     {@link #DO_NOT_IGNORE_NON_MATCHED_COLUMNS}
-	 *                                     for better readability
+	 *                                     to the {@link String} empty value ("")
 	 * @param defaultNonMatchedColumnValue the default value to set to any
 	 *                                     non-matched column if necessary
      * @param execution
      * @return
      */
     AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNonMatchedColumnValue, TestCaseExecution execution);
-    boolean IGNORE_NON_MATCHED_COLUMNS = true;
-	boolean DO_NOT_IGNORE_NON_MATCHED_COLUMNS = false;
 }

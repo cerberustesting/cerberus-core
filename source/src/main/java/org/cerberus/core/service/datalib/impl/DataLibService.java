@@ -728,7 +728,7 @@ public class DataLibService implements IDataLibService {
                 columnsToHide = getListOfSecrets(lib.getTestDataLibID());
 
                 // CSV Call is made here.
-                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, ignoreNonMatchedSubdata ? ICsvFileService.IGNORE_NON_MATCHED_COLUMNS : ICsvFileService.DO_NOT_IGNORE_NON_MATCHED_COLUMNS, defaultSubdataValue, execution);
+                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, ignoreNonMatchedSubdata, defaultSubdataValue, execution);
                 list = responseList.getDataList();
 
                 //if the query returns sucess then we can get the data
@@ -780,7 +780,7 @@ public class DataLibService implements IDataLibService {
                                 Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
 
                                 //performs a query that returns several rows containing n columns
-                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList, columnsToHide, ignoreNonMatchedSubdata ? ISQLService.IGNORE_NON_MATCHED_COLUMNS : ISQLService.DO_NOT_IGNORE_NON_MATCHED_COLUMNS, defaultSubdataValue, execution);
+                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList, columnsToHide, ignoreNonMatchedSubdata, defaultSubdataValue, execution);
 
                                 //if the query returns sucess then, we can get the data
                                 if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
