@@ -1394,8 +1394,7 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
-    console.info(data.controlStatus);
-    console.info(getExeStatusRowColor(data.controlStatus));
+
     var favicon = new Favico({
         animation: 'slide',
         bgColor: getExeStatusRowColor(data.controlStatus)
@@ -1568,6 +1567,8 @@ function setLinkOnEditTCStepInfoButton() {
 }
 
 function setLoadBar(data) {
+
+    // progress calculation in %. We compare nb of step, controls, action vs testcase definition.
     var total = 0;
     var ended = 0;
     if (data.testCaseObj !== undefined && data.testCaseObj.steps !== undefined) {
@@ -1600,8 +1601,8 @@ function setLoadBar(data) {
             }
         }
     }
-
     var progress = ended / total * 100;
+    
     updateDataBarVisual(data.controlStatus, progress);
 
 }
@@ -2787,6 +2788,7 @@ function triggerActionExecution(element, id, status) {
     var configPanel = $("#testCaseConfig");
     configPanel.find("#controlstatus").text(testCaseNewReturnCode);
     configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+
     updateDataBarVisual(testCaseNewReturnCode);
 }
 
@@ -2796,6 +2798,7 @@ function setTestCaseReturnCodeToNA() {
 
     configPanel.find("#controlstatus").text(testCaseNewReturnCode);
     configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+
     updateDataBarVisual(testCaseNewReturnCode);
 }
 
