@@ -157,7 +157,7 @@ public class XRayService implements IXRayService {
 
                 JSONObject xRayRequest = new JSONObject();
 
-                LOG.debug("Calling JIRA XRay TestExecution creation. {}", execution.getId());
+                LOG.debug("Checking call JIRA XRay TestExecution creation. {}", execution.getId());
 
                 if (!StringUtil.isEmpty(execution.getTag())) {
                     currentTag = tagService.convert(tagService.readByKey(execution.getTag()));
@@ -169,11 +169,11 @@ public class XRayService implements IXRayService {
                         // We lock the tag updating it to PENDING when empty.
                         if (StringUtil.isEmpty(currentTag.getXRayTestExecution())) {
                             lock = tagService.lockXRayTestExecution(currentTag.getTag(), currentTag);
-                            LOG.debug("Lock attempt : {}", lock);
+                            LOG.debug("Lock attempt : {} on {}", lock, execution.getId());
                         }
 
                         if (lock == 0) {
-
+                            currentTag.setXRayTestExecution("PENDING");
                             int maxIteration = 0;
                             // We wait that JIRA provide the Epic and Cerberus update it.
                             while ("PENDING".equals(currentTag.getXRayTestExecution()) && maxIteration++ < 20) {
