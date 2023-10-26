@@ -6236,3 +6236,8 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 -- 1756
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
     VALUES   ('CONTROL','verifyElementTextNotContains',4210, 'verifyElementTextNotContains');
+
+-- 1757
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_testdatalib_subdataDefaultValue', '', 'Default value when a subdata does not match with the datalib resultset (when the "cerberus_testdatalib_ignoreNonMatchedSubdata property" is set to true).'),
+         ('', 'cerberus_testdatalib_ignoreNonMatchedSubdata', 'false', 'If set to true, then allow subdata expression not to match the datalib resultset. Any non-matched subdata will be set by the "cerberus_testdatalib_subdataDefaultValue" property value.');

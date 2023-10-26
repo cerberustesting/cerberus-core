@@ -36,7 +36,13 @@ public interface ICsvFileService {
      * @param separator
      * @param columnsToGet
      * @param columnsToHide
+	 * @param ignoreNoMatchColumns      if <code>true</code> then populate all
+	 *                                  non-matched column with {@link String} empty
+	 *                                  value (""). Otherwise, all non-matched
+	 *                                  columns will not be included in the answer
+	 * @param defaultNoMatchColumnValue the default value to set to any non-matched
+	 *                                  column if necessary
      * @return
      */
-    AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet,List<String> columnsToHide, TestCaseExecution execution);
+    AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet,List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution);
 }
