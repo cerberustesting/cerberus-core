@@ -285,7 +285,8 @@ function initTags(configs, context) {
         var availableObjectProperties = [
             "value",
 //            "picturepath",
-            "pictureurl"
+            "pictureurl",
+            "base64"
         ];
         var availableSystemValues = [
             "SYSTEM",

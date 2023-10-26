@@ -8,8 +8,8 @@
 * Record a file at control level was saving it at action level. #2412
 * Fixed delete of Campaigns, Services and Users with special Characters. #2486
 * Fixed display of group 2 and 3 on campaign page.
-* When executing a campaign that has XRay links, fixed an issue where campaign stays PENDING forever in case there is a connectivity issue with JIRA backend. It now return ERROR with the correct trace message.
-* Fixed reading Jira XRay response Key when DC solution is used. resulting multiplicity of XRay execution creation.
+* When executing a campaign that has XRay links, fixed an issue where campaign stays PENDING forever in case there is a connectivity issue with JIRA backend. It now return ERROR with the correct trace message. #2108
+* Fixed reading Jira XRay response Key when DC solution is used. resulting multiplicity of XRay execution creation. #2108
 * Fixed XML format guess method. #2496
 
 *Improvements / New features*
@@ -21,6 +21,8 @@
 * Added new execution parameter column on campaign list page. #2489
 * Added new test case control 'Verify Text in Element does not contain'. #2471
 * Added support for a couple of new actions on Selenium IDE import. #2498
+* Added possibility to get base64 value from application object using syntax : %object.OBJNAME.base64%. That allow to use object pictures as file upload on test cases.
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
