@@ -48,7 +48,7 @@ public class CsvFileService implements ICsvFileService {
     private static final Logger LOG = LogManager.getLogger(CsvFileService.class);
 
     @Override
-    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution) {
+    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
         LOG.debug("Columns to hide : " + columnsToHide);
         String str = "";
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
@@ -79,6 +79,11 @@ public class CsvFileService implements ICsvFileService {
             boolean noDataMapped = true;
             while (null != (str = br.readLine())) {
                 HashMap<String, String> line = new HashMap<>();
+                // In case of no match columns ignore, then first populate list with all column and default value
+                if (ignoreNoMatchColumns) {
+                	LOG.debug("Unmatched columns parsing enabled: Prefill columns with default value");
+                	columnsToGet.keySet().forEach((column) -> line.put(column, defaultNoMatchColumnValue));
+                }
                 Integer columnPosition = 1;
                 /**
                  * For each line, split result by separator, and put it in

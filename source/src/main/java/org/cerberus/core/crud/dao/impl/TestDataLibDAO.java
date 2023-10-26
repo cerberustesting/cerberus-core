@@ -155,7 +155,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 .append(" and (`environment` = ? or `environment` = '')")
                 .append(" and (`country` = ? or `country` = '')")
                 .append(" ORDER BY `name` DESC, `system` DESC, environment DESC, country DESC, tdl.TestDataLibID ASC")
-                .append(" LIMIT 1").toString();
+                .append(" LIMIT 0,1").toString();
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

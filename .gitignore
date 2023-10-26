@@ -14,6 +14,7 @@
 /target
 /.project
 /.settings
+**/.factorypath
 *.iml
 /.idea/
 *.mwb.beforefix

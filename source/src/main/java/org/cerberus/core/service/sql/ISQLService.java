@@ -86,9 +86,15 @@ public interface ISQLService {
      * @param system
      * @param columnsToGet
      * @param columnsToHide
+	 * @param ignoreNoMatchColumns         if <code>true</code> then ignore error if
+	 *                                     at least one column to get does not match
+	 *                                     with the SQL query result. In that case,
+	 *                                     each no match column's value will be set
+	 *                                     to the {@link String} empty value ("")
+	 * @param defaultNonMatchedColumnValue the default value to set to any
+	 *                                     non-matched column if necessary
      * @param execution
      * @return
      */
-    AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution);
-
+    AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNonMatchedColumnValue, TestCaseExecution execution);
 }

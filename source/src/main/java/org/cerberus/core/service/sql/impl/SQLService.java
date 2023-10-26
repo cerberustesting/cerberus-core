@@ -405,7 +405,7 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, TestCaseExecution execution) {
+    public AnswerList<HashMap<String, String>> queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
         AnswerList<HashMap<String, String>> listResult = new AnswerList<>();
         List<HashMap<String, String>> list;
         int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100);
@@ -451,13 +451,13 @@ public class SQLService implements ISQLService {
                                 row.put(name, valueSQL); // We put the result of the subData.
                                 nbColMatch++;
                             } catch (SQLException exception) {
-                                if (nbFetch == 0) {
-                                    if ("".equals(error_desc)) {
-                                        error_desc = column;
-                                    } else {
-                                        error_desc = error_desc + ", " + column;
-                                    }
-                                }
+                            	if (ignoreNoMatchColumns) {
+                            		LOG.debug("Unmatched columns parsing enabled: Fill unmatched column '{}' with default value", () -> name, () -> exception);
+                            		row.put(name,  defaultNoMatchColumnValue);
+                            		nbColMatch++;
+                            	} else {
+                            		error_desc = error_desc.isEmpty() ? column : error_desc + ", " + column;
+                            	}
                             }
                         }
 
