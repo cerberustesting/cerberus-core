@@ -845,7 +845,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     testCase=this.loadFromResultSet(resultSet);
                     testCaseHashMap.put(testCase.getTest()+testCase.getTestcase(),testCase);
                 }
-                if (length != -1) {
+                if (length <= 0) {
                     for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
                         if (testCaseList.size() < length) {
                             testCaseList.add((TestCase) mapentry.getValue());
