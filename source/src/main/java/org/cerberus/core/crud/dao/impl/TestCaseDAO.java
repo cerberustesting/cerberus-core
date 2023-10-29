@@ -828,10 +828,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (campaign != null) {
             query.append(createInClauseFromList(campaign, "cpl.campaign", " AND (", ") "));
         }
-        query.append("GROUP BY tec.test, tec.testcase ");
-        if (length != -1) {
-            query.append("LIMIT ?");
-        }
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -841,14 +837,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
-            if (length != -1) {
-                preStat.setInt(1, length);
-            }
-
             try (ResultSet resultSet = preStat.executeQuery();) {
+                HashMap<String, TestCase> testCaseHashMap = new HashMap<>();
                 //gets the data
+                TestCase testCase;
                 while (resultSet.next()) {
-                    testCaseList.add(this.loadFromResultSet(resultSet));
+                    testCase=this.loadFromResultSet(resultSet);
+                    testCaseHashMap.put(testCase.getTest()+testCase.getTestcase(),testCase);
+                }
+                if (length <= 0) {
+                    for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
+                        if (testCaseList.size() < length) {
+                            testCaseList.add((TestCase) mapentry.getValue());
+                        }
+                    }
+                } else {
+                    for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
+                            testCaseList.add((TestCase) mapentry.getValue());
+                    }
                 }
 
                 if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
