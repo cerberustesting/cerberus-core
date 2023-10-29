@@ -1006,7 +1006,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#description").prop("readonly", "readonly");
-        if (tinyMCE.get('detailedDescription') !== null)
+        if (tinyMCE.get('detailedDescription').getBody() !== null)
             tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', false);
         formEdit.find("#isActive").prop("disabled", "disabled");
         formEdit.find("#fromMajor").prop("disabled", "disabled");
@@ -1048,7 +1048,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").removeProp("disabled");
         formEdit.find("#screenSize").removeProp("disabled");
         formEdit.find("#description").removeProp("readonly");
-        if (tinyMCE.get('detailedDescription') !== null)
+        if (tinyMCE.get('detailedDescription').getBody() !== null)
             tinyMCE.get('detailedDescription').getBody().setAttribute('contenteditable', true);
         formEdit.find("#isActive").removeProp("disabled");
         formEdit.find("#fromMajor").removeProp("disabled");
