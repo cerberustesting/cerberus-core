@@ -50,12 +50,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -845,7 +840,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     testCase=this.loadFromResultSet(resultSet);
                     testCaseHashMap.put(testCase.getTest()+testCase.getTestcase(),testCase);
                 }
-                if (length <= 0) {
+                if (length > 0) {
                     for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
                         if (testCaseList.size() < length) {
                             testCaseList.add((TestCase) mapentry.getValue());
@@ -856,6 +851,18 @@ public class TestCaseDAO implements ITestCaseDAO {
                             testCaseList.add((TestCase) mapentry.getValue());
                     }
                 }
+                Collections.sort(testCaseList, new Comparator<TestCase>() {
+                    @Override
+                    public int compare(TestCase testCase1, TestCase testCase2) {
+                        int compareResult = String.valueOf(testCase1.getTest()).compareTo(String.valueOf(testCase2.getTest()));
+
+                        if (compareResult == 0) {
+                            compareResult = testCase1.getTestcase().compareTo(testCase2.getTestcase());
+                        }
+
+                        return compareResult;
+                    }
+                });
 
                 if (testCaseList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
                     LOG.error("Partial Result in the query.");
