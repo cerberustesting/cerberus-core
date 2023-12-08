@@ -2982,7 +2982,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','TargetMinor','','en','Target Minor','',NULL)");
         b.append(",('page_runtest','TargetMinor','','fa','هدف جزئی','',NULL)");
         b.append(",('page_runtest','TargetMinor','','fr','Version mineure Cible','',NULL)");
-        b.append(",('page_runtest','TargetMajor','','en','هدف اصلی','',NULL)");
+        b.append(",('page_runtest','TargetMajor','','en','TargetMajor','',NULL)");
+        b.append(",('page_runtest','TargetMajor','','fa','هدف اصلی','',NULL)");
         b.append(",('page_runtest','TargetMajor','','fr','Version majeure cible','',NULL)");
         b.append(",('page_runtest','test','','en','Test Folder','',NULL)");
         b.append(",('page_runtest','test','','fa','پوشه آزمون','',NULL)");
