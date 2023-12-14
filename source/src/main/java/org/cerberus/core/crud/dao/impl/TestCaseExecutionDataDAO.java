@@ -334,6 +334,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.id : " + object.getId());
             LOG.debug("SQL.param.property : " + object.getProperty());
             LOG.debug("SQL.param.index : " + object.getIndex());
+            LOG.debug("SQL.param.rank : " + object.getRank());
+            LOG.debug("SQL.param.rowLimit : " + object.getRowLimit());
+            LOG.debug("SQL.param.retrynb : " + object.getRetryNb());
+            LOG.debug("SQL.param.retryperiod : " + object.getRetryPeriod());
             LOG.debug("SQL.param.value : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue(), 65000), secrets));
             LOG.debug("SQL.param.value1 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1(), 65000), secrets));
             LOG.debug("SQL.param.value2 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2(), 65000), secrets));
@@ -364,15 +368,15 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     ps.setString(i++, object.getNature());
                     ps.setInt(i++, object.getRetryNb());
                     ps.setInt(i++, object.getRetryPeriod());
-                    ps.setLong(i++, object.getId());
-                    ps.setString(i++, object.getProperty());
-                    ps.setInt(i++, object.getIndex());
                     ps.setString(i++, object.getSystem());
                     ps.setString(i++, object.getEnvironment());
                     ps.setString(i++, object.getCountry());
                     ps.setString(i++, object.getDataLib());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getJsonResult(), 65000), secrets));
                     ps.setString(i++, object.getFromCache());
+                    ps.setLong(i++, object.getId());
+                    ps.setString(i++, object.getProperty());
+                    ps.setInt(i++, object.getIndex());
                 }
         );
 
