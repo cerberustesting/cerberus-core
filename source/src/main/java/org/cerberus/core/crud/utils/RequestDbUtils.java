@@ -53,12 +53,11 @@ public class RequestDbUtils {
     }
 
     public static <T> T executeQuery(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                     SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
 
         LOG.debug(SQL_DEBUG, query);
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -67,7 +66,7 @@ public class RequestDbUtils {
                 }
             }
         } catch (SQLException exception) {
-            LOG.debug(exception);
+            LOG.error("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
         }
 
@@ -78,8 +77,7 @@ public class RequestDbUtils {
 
         LOG.debug(SQL_DEBUG, query);
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             functionPrepareStatement.apply(preStat);
             preStat.executeUpdate();
         } catch (SQLException exception) {
@@ -88,6 +86,7 @@ public class RequestDbUtils {
                 message.setDescription(message.getDescription().replace("%ITEM%", query).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_DUPLICATE), exception);
             } else {
+                LOG.error("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
             }
         }
@@ -96,14 +95,13 @@ public class RequestDbUtils {
     }
 
     public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                               SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
 
         LOG.debug(SQL_DEBUG, query);
 
         List<T> res = new LinkedList<>();
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -112,6 +110,7 @@ public class RequestDbUtils {
                 }
             }
         } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
         }
 
