@@ -537,7 +537,7 @@ public class ParameterDAO implements IParameterDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(").append(columnName).append(",'')");
+//        query.append(" group by ifnull(").append(columnName).append(",'')");
         query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
