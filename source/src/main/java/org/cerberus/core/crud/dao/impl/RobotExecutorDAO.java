@@ -110,7 +110,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
     @Override
     public List<RobotExecutor> readBestByKey(String robot) throws CerberusException {
-        final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and active = 'Y' order by DateLastExeSubmitted asc, rank asc";
+        final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and active = 'Y' order by DateLastExeSubmitted asc, `rank` asc";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
