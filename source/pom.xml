@@ -82,7 +82,9 @@
         <poi.version>4.1.2</poi.version>
         <asciidoctor.version>2.1.0</asciidoctor.version>
         <apache.tika.version>1.28.3</apache.tika.version>
-        <fluent-hc.version>4.5.3</fluent-hc.version>
+        <fluent-hc.version>4.5.14</fluent-hc.version>
+        <httpmime.version>4.5.14</httpmime.version>
+        
         <!-- 2FA -->
         <jboss.aerogear.version>1.0.0</jboss.aerogear.version>
         <!-- SOAP -->
@@ -174,7 +176,7 @@
             <artifactId>spring-expression</artifactId>
             <version>${spring.version}</version>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>7.0.4.Final</version>
@@ -489,6 +491,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>${fluent-hc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${httpmime.version}</version>
         </dependency>
 
         <!-- Quartz -->

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.rest.impl;
 
+import java.io.File;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -80,6 +81,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 
 /**
  * @author bcivel
@@ -345,6 +350,16 @@ public class RestService implements IRestService {
                         httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
+
+//                        final File file = new File("/home/vertigo/Downloads/450.ProductCatalogue_20231130_1800.xml");
+//                        final FileBody fileBody = new FileBody(file);
+//                        final StringBody stringBody1 = new StringBody("2000", ContentType.TEXT_PLAIN);
+//                        HttpEntity entity1 = MultipartEntityBuilder.create()
+//                                .addPart("shop", stringBody1)
+//                                .addPart("file", fileBody)
+//                                .build();
+//                        httpPost.setEntity(entity1);
+
                         // If requestString is not defined, we POST the list of key/value request.
                         List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
