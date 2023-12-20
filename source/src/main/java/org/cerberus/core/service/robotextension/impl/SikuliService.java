@@ -300,7 +300,7 @@ public class SikuliService implements ISikuliService {
             }
 
         } catch (IOException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex,ex);
             return false;
         } finally {
             if (os != null) {

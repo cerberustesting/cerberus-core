@@ -413,7 +413,7 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution);
+                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution, appService.getDescription());
                                 message = result.getResultMessage();
                                 break;
 

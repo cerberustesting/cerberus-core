@@ -48,6 +48,6 @@ public interface IRestService {
      * @return
      */
     AnswerItem<AppService> callREST(String servicePath, String queryString, String method,
-                                    List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system, boolean isFollowRedir, TestCaseExecution tcexecution);
+                                    List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description);
 
 }

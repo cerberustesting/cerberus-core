@@ -174,8 +174,8 @@ public class RestService implements IRestService {
 
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
-            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system, boolean isFollowRedir, TestCaseExecution tcexecution) {
+                                           List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+                                           String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description) {
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
                 "", null, "", null, null);
@@ -350,22 +350,44 @@ public class RestService implements IRestService {
                         httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
                         serviceREST.setServiceRequest(requestString);
                     } else {
-
-//                        final File file = new File("/home/vertigo/Downloads/450.ProductCatalogue_20231130_1800.xml");
-//                        final FileBody fileBody = new FileBody(file);
-//                        final StringBody stringBody1 = new StringBody("2000", ContentType.TEXT_PLAIN);
-//                        HttpEntity entity1 = MultipartEntityBuilder.create()
-//                                .addPart("shop", stringBody1)
-//                                .addPart("file", fileBody)
-//                                .build();
-//                        httpPost.setEntity(entity1);
-
                         // If requestString is not defined, we POST the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<>();
-                        for (AppServiceContent contentVal : contentList) {
-                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        if (description != null && description.contains("[form-data]")) {
+                            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+                            for (AppServiceContent contentVal : contentList) {
+                                if (contentVal.getValue().length() > 0 && contentVal.getValue().charAt(0) == '@') {
+                                    String filePath = contentVal.getValue().substring(1);
+                                    if (StringUtil.isEmptyOrNullValue(filePath)) {
+                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                        message.resolveDescription("DESCRIPTION", "file path '"+filePath+"' is empty for key '" + contentVal.getKey()+"' in request details");
+                                        result.setResultMessage(message);
+                                        return result;
+                                    } else {
+                                        File file = new File(filePath);
+                                        if (file.exists()) {
+                                            final FileBody fileBody = new FileBody(file);
+                                            builder.addPart(contentVal.getKey(), fileBody);
+                                        } else {
+                                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                            message.resolveDescription("DESCRIPTION", "file path '"+filePath+"' does not exist for key '" + contentVal.getKey()+"' in request details");
+                                            result.setResultMessage(message);
+                                            return result;
+                                        }
+                                    }
+                                } else {
+                                    builder.addPart(contentVal.getKey(), new StringBody(contentVal.getValue(), ContentType.TEXT_PLAIN));
+                                }
+                            }
+                            HttpEntity entity = builder.build();
+                            httpPost.setEntity(entity);
+                        } else {
+                            List<NameValuePair> nvps = new ArrayList<>();
+                            for (AppServiceContent contentVal : contentList) {
+                                nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                            }
+                            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
                         }
-                        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+
                         serviceREST.setContentList(contentList);
                     }
 
@@ -388,10 +410,9 @@ public class RestService implements IRestService {
                         serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
                     } else {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -490,7 +511,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -543,7 +564,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                + timeOutMs + ")"));
+                                        + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
