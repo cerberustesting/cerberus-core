@@ -22,7 +22,6 @@ package org.cerberus.core.crud.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -41,6 +40,14 @@ public interface IApplicationService {
      * @return
      */
     AnswerItem<Application> readByKey(String id);
+
+    /**
+     *
+     * @param id
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    Application readByKeyWithDependency(String id) throws CerberusException;
 
     /**
      *

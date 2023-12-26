@@ -23,15 +23,23 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.v001.AppServiceDTOV001;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
+import org.cerberus.core.api.dto.user.UserDTOV001;
+import org.cerberus.core.api.dto.user.UserMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
-import org.cerberus.core.api.mappers.v001.UserMapperV001;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
+import org.cerberus.core.crud.entity.User;
+import org.cerberus.core.crud.service.IUserService;
+import org.cerberus.core.exception.CerberusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +48,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.cerberus.core.api.dto.v001.UserDTOV001;
-import org.cerberus.core.crud.entity.User;
-import org.cerberus.core.crud.service.IUserService;
-import org.cerberus.core.exception.CerberusException;
 
 @AllArgsConstructor
 @Api(tags = "User")

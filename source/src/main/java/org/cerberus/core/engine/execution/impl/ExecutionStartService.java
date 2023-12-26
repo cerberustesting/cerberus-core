@@ -19,9 +19,30 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
+import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.entity.EventHook;
+import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.Robot;
+import org.cerberus.core.crud.entity.RobotExecutor;
+import org.cerberus.core.crud.entity.TestCase;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
+import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ICountryEnvParamService;
+import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.core.crud.service.IInvariantService;
+import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.crud.service.IRobotExecutorService;
+import org.cerberus.core.crud.service.IRobotService;
+import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.crud.service.ITestCaseService;
+import org.cerberus.core.crud.service.ITestService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.execution.IExecutionCheckService;
@@ -35,28 +56,6 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.CountryEnvParam;
-import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Invariant;
-import org.cerberus.core.crud.entity.Robot;
-import org.cerberus.core.crud.entity.RobotExecutor;
-import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.service.IApplicationService;
-import org.cerberus.core.crud.service.ICountryEnvParamService;
-import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
-import org.cerberus.core.crud.service.IInvariantService;
-import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.IRobotExecutorService;
-import org.cerberus.core.crud.service.IRobotService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.crud.service.ITestCaseExecutionService;
-import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.crud.service.ITestService;
 
 /**
  * @author bcivel
@@ -252,7 +251,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication(), execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
+                cea = this.factorycountryEnvironmentParameters.create(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication(),
+                         execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "", null, null, null, null);
                 cea.setIp(execution.getMyHost());
                 cea.setUrl(execution.getMyContextRoot());
                 appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");

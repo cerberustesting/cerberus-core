@@ -20,18 +20,19 @@
 package org.cerberus.core.crud.service.impl;
 
 import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ICountryEnvParamDAO;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.engine.entity.MessageGeneral;
-import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvParam;
+import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
+import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -39,8 +40,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
-import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 
 /**
  *
@@ -50,7 +49,7 @@ import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 public class CountryEnvParamService implements ICountryEnvParamService {
 
     private static final Logger LOG = LogManager.getLogger(CountryEnvParamService.class);
-    
+
     @Autowired
     ICountryEnvParamDAO countryEnvParamDao;
     @Autowired
@@ -69,7 +68,8 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     public List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
         List<JSONObject> result = new ArrayList<>();
         CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
-        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, CountryEnvironmentParameters.DEFAULT_POOLSIZE,null,null);
+        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, 
+                CountryEnvironmentParameters.DEFAULT_POOLSIZE, null, null, null, null, null, null);
 
         List<CountryEnvironmentParameters> ceaList = countryEnvironmentParametersService.findCountryEnvironmentParametersByCriteria(countryEnvironmentParameters);
         List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);
@@ -117,7 +117,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerList<CountryEnvParam> readByVarious(String system , String country, String environment, String build, String revision, String active) {
+    public AnswerList<CountryEnvParam> readByVarious(String system, String country, String environment, String build, String revision, String active) {
         return countryEnvParamDao.readByVariousByCriteria(new ArrayList<>(Arrays.asList(system)), country, environment, build, revision, active, null, 0, 0, null, null, null, null);
     }
 

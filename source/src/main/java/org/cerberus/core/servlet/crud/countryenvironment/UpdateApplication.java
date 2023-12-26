@@ -31,14 +31,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.impl.LogEventService;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
@@ -250,7 +250,7 @@ public class UpdateApplication extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, null, null, request.getRemoteUser(), null);
                 cedList.add(ced);
             }
         }

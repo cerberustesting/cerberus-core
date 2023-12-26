@@ -6241,3 +6241,12 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_testdatalib_subdataDefaultValue', '', 'Default value when a subdata does not match with the datalib resultset (when the "cerberus_testdatalib_ignoreNonMatchedSubdata property" is set to true).'),
          ('', 'cerberus_testdatalib_ignoreNonMatchedSubdata', 'false', 'If set to true, then allow subdata expression not to match the datalib resultset. Any non-matched subdata will be set by the "cerberus_testdatalib_subdataDefaultValue" property value.');
+
+-- 1758
+ALTER TABLE `countryenvironmentparameters` 
+    ADD COLUMN `UsrCreated` varchar(45) NOT NULL DEFAULT '',
+    ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN `UsrModif` varchar(45) NOT NULL DEFAULT '',
+    ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';
+
+

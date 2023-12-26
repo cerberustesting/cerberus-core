@@ -22,16 +22,17 @@ package org.cerberus.core.crud.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IApplicationDAO;
+import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -46,7 +47,9 @@ import org.springframework.stereotype.Service;
 public class ApplicationService implements IApplicationService {
 
     @Autowired
-    private IApplicationDAO ApplicationDAO;
+    private IApplicationDAO applicationDAO;
+    @Autowired
+    private ICountryEnvironmentParametersDAO countryEnvironnementParametersDAO;
 
     private static final Logger LOG = LogManager.getLogger("ApplicationService");
 
@@ -54,7 +57,19 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public AnswerItem<Application> readByKey(String id) {
-        return ApplicationDAO.readByKey(id);
+        return applicationDAO.readByKey(id);
+    }
+
+    @Override
+    public Application readByKeyWithDependency(String id) throws CerberusException {
+        Application appli = null;
+        AnswerItem<Application> app = applicationDAO.readByKey(id);
+        if (app.getItem() != null) {
+            appli = app.getItem();
+            List<CountryEnvironmentParameters> env = countryEnvironnementParametersDAO.readByKeyByApplication(id);
+            appli.setEnvironmentList(env);
+        }
+        return appli;
     }
 
     @Override
@@ -64,22 +79,22 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public AnswerList<Application> readBySystem(List<String> system) {
-        return ApplicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
+        return applicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
     }
 
     @Override
     public AnswerList<Application> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return ApplicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return applicationDAO.readBySystemByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
     public AnswerList<Application> readBySystemByCriteria(List<String> system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return ApplicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return applicationDAO.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
     public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
-        return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
+        return this.applicationDAO.readTestCaseCountersBySystemByStatus(system);
     }
 
     @Override
@@ -90,22 +105,22 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public Answer create(Application object) {
-        return ApplicationDAO.create(object);
+        return applicationDAO.create(object);
     }
 
     @Override
     public Answer delete(Application object) {
-        return ApplicationDAO.delete(object);
+        return applicationDAO.delete(object);
     }
 
     @Override
     public Answer update(String application, Application object) {
-        return ApplicationDAO.update(application, object);
+        return applicationDAO.update(application, object);
     }
 
     @Override
     public AnswerList readDistinctSystem() {
-        return this.ApplicationDAO.readDistinctSystem();
+        return this.applicationDAO.readDistinctSystem();
     }
 
     @Override
@@ -137,7 +152,7 @@ public class ApplicationService implements IApplicationService {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return ApplicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+        return applicationDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 
 }

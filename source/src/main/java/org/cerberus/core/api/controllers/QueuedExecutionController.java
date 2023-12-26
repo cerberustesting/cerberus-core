@@ -25,13 +25,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.v001.queuedexecution.QueuedExecutionDTOV001;
-import org.cerberus.core.api.dto.v001.queuedexecution.QueuedExecutionResultDTOV001;
+import org.cerberus.core.api.dto.queueexecution.QueuedExecutionDTOV001;
+import org.cerberus.core.api.dto.queueexecution.QueuedExecutionMapperV001;
+import org.cerberus.core.api.dto.queueexecution.QueuedExecutionResultDTOV001;
+import org.cerberus.core.api.dto.queueexecution.QueuedExecutionResultMapperV001;
 import org.cerberus.core.api.dto.views.View;
-import org.cerberus.core.api.mappers.v001.QueuedExecutionMapperV001;
-import org.cerberus.core.api.mappers.v001.QueuedExecutionResultMapperV001;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.api.services.QueuedExecutionService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -39,9 +41,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 
 /**
  * @author lucashimpens

@@ -19,9 +19,10 @@
  */
 package org.cerberus.core.crud.factory.impl;
 
+import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.springframework.stereotype.Service;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
+import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel
@@ -30,7 +31,9 @@ import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 public class FactoryCountryEnvironmentParameters implements IFactoryCountryEnvironmentParameters {
 
     @Override
-    public CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip, String domain, String url, String urlLogin, String var1, String var2, String var3, String var4, int poolSize, String mobileActivity, String mobilePackage) {
+    public CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip,
+            String domain, String url, String urlLogin, String var1, String var2, String var3, String var4, int poolSize,
+            String mobileActivity, String mobilePackage, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         CountryEnvironmentParameters object = new CountryEnvironmentParameters();
         object.setSystem(system);
         object.setCountry(country);
@@ -47,6 +50,10 @@ public class FactoryCountryEnvironmentParameters implements IFactoryCountryEnvir
         object.setPoolSize(poolSize);
         object.setMobileActivity(mobileActivity);
         object.setMobilePackage(mobilePackage);
+        object.setUsrCreated(usrCreated);
+        object.setDateCreated(dateCreated);
+        object.setUsrModif(usrModif);
+        object.setDateModif(dateModif);
         return object;
     }
 }

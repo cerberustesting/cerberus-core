@@ -23,6 +23,7 @@
 * Added new test case control 'Verify Text in Element does not contain'. #2471
 * Added support for a couple of new actions on Selenium IDE import. #2498
 * Added possibility to get base64 value from application object using syntax : %object.OBJNAME.base64%. That allow to use object pictures as file upload on test cases.
+* New API in order to get Application details and update application endpoints.
 
 
 *Warning to be considered before applying the version (deprecated features)*

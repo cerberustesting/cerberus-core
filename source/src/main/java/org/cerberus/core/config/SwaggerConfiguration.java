@@ -20,6 +20,8 @@
 
 package org.cerberus.core.config;
 
+import java.security.Principal;
+import java.util.Objects;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
@@ -31,9 +33,6 @@ import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.security.Principal;
-import java.util.Objects;
 
 /**
  * @author MorganLmd
@@ -52,6 +51,8 @@ public class SwaggerConfiguration {
     private static final Tag SERVICE_TAG = new Tag("Service", "Service endpoint");
     private static final Tag CAMPAIGNEXECUTION_TAG = new Tag("Campaign Execution", "Campaign Execution endpoint");
     private static final Tag QUEUEDEXECUTION_TAG = new Tag("Queued Execution", "Queued Execution endpoint");
+    private static final Tag USER_TAG = new Tag("User", "User endpoint");
+    private static final Tag APPLICATION_TAG = new Tag("Application", "Application endpoint");
 
     private static final String LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.en.html";
     private static final String GITHUB_REPOSITORY = "https://github.com/cerberustesting/cerberus-source";
@@ -92,6 +93,8 @@ public class SwaggerConfiguration {
                 .tags(SERVICE_TAG)
                 .tags(CAMPAIGNEXECUTION_TAG)
                 .tags(QUEUEDEXECUTION_TAG)
+                .tags(USER_TAG)
+                .tags(APPLICATION_TAG)
                 .useDefaultResponseMessages(false);
     }
 

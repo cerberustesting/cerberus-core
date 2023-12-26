@@ -19,16 +19,16 @@
  */
 package org.cerberus.core.crud.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
+import java.sql.Timestamp;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author vertigo
@@ -59,6 +59,12 @@ public class Application {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+    
+    /**
+     * From here are data outside database model.
+     */
+    @EqualsAndHashCode.Exclude
+    private List<CountryEnvironmentParameters> environmentList;
 
     public Application(String application) {
         this.application = application;

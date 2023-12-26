@@ -24,14 +24,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.security.Principal;
+import java.util.Optional;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.v001.AppServiceDTOV001;
+import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
+import org.cerberus.core.api.dto.appservice.AppServiceMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
-import org.cerberus.core.api.mappers.v001.AppServiceMapperV001;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.service.IAppServiceService;
@@ -46,10 +49,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Api(tags = "Service")

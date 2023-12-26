@@ -23,18 +23,19 @@ package org.cerberus.core.api.controllers.wrappers;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.cerberus.core.api.dto.views.View;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.views.View;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 @JsonView(View.Public.GET.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -52,6 +53,7 @@ public class ResponseWrapper<T> {
     private List<ISubErrorWrapper> subErrors;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
+    private static final Logger LOG = LogManager.getLogger(ResponseWrapper.class);
 
     private ResponseWrapper() {
         timestamp = LocalDateTime.now();
@@ -117,6 +119,8 @@ public class ResponseWrapper<T> {
             responseWrapper.setLength(((Collection<?>) t).size());
             responseWrapper.setData(t);
         } else {
+            LOG.debug("set data");
+            LOG.debug(t);
             responseWrapper.setData(t);
             responseWrapper.setLength(1);
         }

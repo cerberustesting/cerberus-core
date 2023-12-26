@@ -34,7 +34,6 @@ import org.cerberus.core.crud.entity.CountryEnvLink;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvDeployType;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvLink;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentDatabase;
@@ -46,6 +45,7 @@ import org.cerberus.core.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.impl.LogEventService;
+import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
@@ -300,7 +300,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, null, null, request.getRemoteUser(), null);
                 ceaList.add(cea);
             }
         }

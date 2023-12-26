@@ -23,39 +23,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.v001.ApplicationDTOV001;
-import org.cerberus.core.api.dto.v001.TestcaseDTOV001;
-import org.cerberus.core.api.dto.v001.TestcaseSimplifiedCreationDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseDTOV001;
+import org.cerberus.core.api.dto.testcase.TestcaseMapperV001;
+import org.cerberus.core.api.dto.testcase.TestcaseSimplifiedCreationDTOV001;
 import org.cerberus.core.api.dto.views.View;
-import org.cerberus.core.api.mappers.v001.TestcaseMapperV001;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
-import org.cerberus.core.exception.CerberusException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.security.Principal;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.Invariant;
@@ -74,6 +54,21 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
+import org.cerberus.core.exception.CerberusException;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author MorganLmd
@@ -100,7 +95,7 @@ public class TestcaseController {
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
 
-    @ApiOperation("Get all testcases filtered by test")
+    @ApiOperation("Get all testcases by test folder")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class, responseContainer = "List")
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -118,7 +113,7 @@ public class TestcaseController {
         );
     }
 
-    @ApiOperation("Get a testcase filtered by testFolderId and testCaseFolderId")
+    @ApiOperation("Get a testcase filtered by its FolderId and testCaseId")
     @ApiResponse(code = 200, message = "ok", response = TestcaseDTOV001.class)
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)

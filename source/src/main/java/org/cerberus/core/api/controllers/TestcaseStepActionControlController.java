@@ -23,13 +23,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
-import org.cerberus.core.api.dto.v001.TestcaseStepActionControlDTOV001;
+import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlDTOV001;
+import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlMapperV001;
 import org.cerberus.core.api.dto.views.View;
-import org.cerberus.core.api.mappers.v001.TestcaseStepActionControlMapperV001;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.security.Principal;
 
 /**
  * @author mlombard

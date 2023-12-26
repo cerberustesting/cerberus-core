@@ -19,10 +19,16 @@
  */
 package org.cerberus.core.crud.entity;
 
-import lombok.*;
-
+import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author bcivel
@@ -34,6 +40,7 @@ import javax.persistence.Id;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class CountryEnvironmentParameters {
 
     @Id
@@ -55,6 +62,10 @@ public class CountryEnvironmentParameters {
     private String mobileActivity;
     private String mobilePackage;
     private int poolSize;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     public CountryEnvironmentParameters(String system, String country, String environment, String application) {
         this.system=system;

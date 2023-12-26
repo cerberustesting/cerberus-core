@@ -20,7 +20,6 @@
 package org.cerberus.core.crud.dao;
 
 import java.util.List;
-
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -46,8 +45,28 @@ public interface ICountryEnvironmentParametersDAO {
      */
     AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application);
 
+    /**
+     *
+     * @param application
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    List<CountryEnvironmentParameters> readByKeyByApplication(String application) throws CerberusException;
+
+    /**
+     *
+     * @param country
+     * @param application
+     * @return
+     */
     List<String[]> getEnvironmentAvailable(String country, String application);
 
+    /**
+     *
+     * @param countryEnvironmentParameter
+     * @return
+     * @throws CerberusException
+     */
     List<CountryEnvironmentParameters> findCountryEnvironmentParametersByCriteria(CountryEnvironmentParameters countryEnvironmentParameter) throws CerberusException;
 
     /**

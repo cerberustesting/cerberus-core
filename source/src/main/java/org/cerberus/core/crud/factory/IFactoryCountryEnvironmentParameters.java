@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.factory;
 
+import java.sql.Timestamp;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 
 /**
@@ -28,5 +29,6 @@ import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 public interface IFactoryCountryEnvironmentParameters {
 
     CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip,
-            String Domain, String url, String urlLogin, String var1, String var2, String var3, String var4, int poolSize, String mobileActivity, String mobilePackage);
+            String Domain, String url, String urlLogin, String var1, String var2, String var3, String var4, int poolSize,
+            String mobileActivity, String mobilePackage, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

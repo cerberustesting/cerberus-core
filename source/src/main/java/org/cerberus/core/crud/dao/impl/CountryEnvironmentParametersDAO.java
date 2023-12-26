@@ -19,6 +19,13 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
@@ -38,13 +45,6 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {Insert class description here}
@@ -136,6 +136,58 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         //sets the message
         ans.setResultMessage(msg);
         return ans;
+    }
+
+    @Override
+    public List<CountryEnvironmentParameters> readByKeyByApplication(String application) throws CerberusException {
+        List<CountryEnvironmentParameters> result = new ArrayList<>();
+        boolean throwex = false;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM countryenvironmentparameters cea ");
+        query.append(" WHERE cea.Application = ? ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.application : " + application);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, application);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        result.add(loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.warn("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        if (throwex) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+        return result;
     }
 
     @Override
@@ -427,8 +479,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public Answer create(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage`, `UsrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -453,6 +505,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setInt(13, object.getPoolSize());
                 preStat.setString(14, object.getMobileActivity());
                 preStat.setString(15, object.getMobilePackage());
+                preStat.setString(16, object.getUsrModif());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -534,7 +587,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public Answer update(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, poolSize=?, mobileActivity=?, mobilePackage=?  where `system`=? and `country`=? and `environment`=? and `application`=? ";
+        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, poolSize=?, mobileActivity=?, mobilePackage=?, `UsrModif`= ?, `DateModif` = NOW()"
+                + " where `system`=? and `country`=? and `environment`=? and `application`=? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -556,11 +610,11 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getMobileActivity());
                 preStat.setString(i++, object.getMobilePackage());
+                preStat.setString(i++, object.getUsrModif());
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getApplication());
-
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -609,9 +663,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         if (mobilePackage == null) {
             mobilePackage = "";
         }
-
         int poolSize = resultSet.getInt("cea.poolSize");
-        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
+        String usrModif = resultSet.getString("cea.UsrModif");
+        String usrCreated = resultSet.getString("cea.UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("cea.DateCreated");
+        Timestamp dateModif = resultSet.getTimestamp("cea.DateModif");
+
+        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, usrCreated, dateCreated, usrModif, dateModif);
     }
 
 }
