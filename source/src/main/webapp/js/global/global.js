@@ -179,7 +179,11 @@ function displayRobotList(selectName, idName, forceReload, defaultValue) {
                     if (list[index].browser == "") {
                         browserImg = "";
                     }
-                    var line = $("<button type='button' data-robot='" + list[index].robot + "' class='list-group-item list-group-item-action' name='robotItem'>" +
+                    let isActive = "";
+                    if (list[index].robot === defaultValue) {
+                        isActive = " active";
+                    }
+                    var line = $("<button type='button' data-robot='" + list[index].robot + "' class='list-group-item list-group-item-action" + isActive + "' name='robotItem'>" +
                             "<span class='col-xs-6 grayscale'>" + list[index].robot + "</span>" +
                             "<img class='col-xs-2' style='width:60px;height:30px' src='images/platform-" + list[index].platform + ".png'/>" +
                             browserImg +
@@ -563,10 +567,14 @@ function displayEnvList(selectName, system, defaultValue) {
  * @param {String} application value to filter.
  * @returns {void}
  */
-function displayApplicationIpList(selectName, system, application) {
+function displayApplicationIpList(selectName, system, application, country, environment) {
     $.when($.getJSON("ReadCountryEnvironmentParameters", "system=" + system + "&application=" + application)).then(function (data) {
         for (var option in data.contentTable) {
-            var line = $("<button type='button' data-country='" + data.contentTable[option].country + "' data-environment='" + data.contentTable[option].environment + "' name='applicationIpItem' class='list-group-item list-group-item-action'>" +
+            let classActive = "";
+            if ((country === data.contentTable[option].country) && (environment === data.contentTable[option].environment)) {
+                classActive = " active";
+            }
+            var line = $("<button type='button' data-country='" + data.contentTable[option].country + "' data-environment='" + data.contentTable[option].environment + "' name='applicationIpItem' class='list-group-item list-group-item-action" + classActive + "'>" +
                     "<span class='col-lg-8 grayscale' style='word-wrap: break-word;text-overflow;'>" + data.contentTable[option].ip + "</span>" +
                     "<div class='col-lg-4'><span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].country + "</span>" +
                     "<span class='label label-primary' style='background-color:#000000'>" + data.contentTable[option].environment + "</span></div>" +

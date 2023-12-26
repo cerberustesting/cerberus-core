@@ -88,9 +88,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             loadExecutionInformation(executionId, steps, sockets);
 
             $('[data-toggle="popover"]').popover({
-                    'placement': 'auto',
-                    'container': 'body'
-                }
+                'placement': 'auto',
+                'container': 'body'
+            }
             );
         }
     });
@@ -415,7 +415,7 @@ function updatePage(data, steps) {
 
         $("#runTestCase").attr("disabled", false);
         $("#runTestCase").on('click', function () {
-            openModalExecutionSimple(data.application, data.test, data.testcase, data.description);
+            openModalExecutionSimple(data.application, data.test, data.testcase, data.description, data.country, data.environment, data.robot);
         });
         //$("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#rerunTestCase").attr("disabled", false);
@@ -702,10 +702,10 @@ function drawChart_HttpStatus(target) {
         type: 'pie',
         data: {
             datasets: [{
-                data: [],
-                backgroundColor: [],
-                label: 'Hits'
-            }],
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Hits'
+                }],
             labels: []
         },
         options: {
@@ -801,10 +801,10 @@ function drawChart_SizePerType(target) {
         type: 'pie',
         data: {
             datasets: [{
-                data: [],
-                backgroundColor: [],
-                label: 'Size'
-            }],
+                    data: [],
+                    backgroundColor: [],
+                    label: 'Size'
+                }],
             labels: []
         },
         options: {
@@ -1141,31 +1141,31 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
         },
         scales: {
             xAxes: [{
-                label: "Duration",
-                ticks: {
-                    beginAtZero: true,
-                    fontFamily: "'Open Sans Bold', sans-serif",
-                    fontSize: 11
-                },
-                scaleLabel: {
-                    display: false
-                },
-                gridLines: {},
-                stacked: true
-            }],
+                    label: "Duration",
+                    ticks: {
+                        beginAtZero: true,
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    scaleLabel: {
+                        display: false
+                    },
+                    gridLines: {},
+                    stacked: true
+                }],
             yAxes: [{
-                gridLines: {
-                    display: false,
-                    color: "#fff",
-                    zeroLineColor: "#fff",
-                    zeroLineWidth: 0
-                },
-                ticks: {
-                    fontFamily: "'Open Sans Bold', sans-serif",
-                    fontSize: 11
-                },
-                stacked: true
-            }]
+                    gridLines: {
+                        display: false,
+                        color: "#fff",
+                        zeroLineColor: "#fff",
+                        zeroLineWidth: 0
+                    },
+                    ticks: {
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize: 11
+                    },
+                    stacked: true
+                }]
         },
         legend: {
             display: true
@@ -1182,12 +1182,12 @@ function drawChart_GanttPerThirdParty(data, titletext, target) {
             labels: [],
 
             datasets: [{
-                label: "Start",
-                data: [],
-                backgroundColor: "rgba(63,103,126,0)",
-                hoverBackgroundColor: "rgba(50,90,100,0)"
+                    label: "Start",
+                    data: [],
+                    backgroundColor: "rgba(63,103,126,0)",
+                    hoverBackgroundColor: "rgba(50,90,100,0)"
 
-            },
+                },
                 {
                     label: "Duration",
                     data: [],
@@ -1294,27 +1294,27 @@ function createVideo(videos) {
         menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
-            "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
+                "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
 
         videoIndex++;
     });
 
     $("#testCaseDetails > div").append(
-        "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
-        "   <div class=\"row\">" +
-        "       <div class=\"col-md-2\">\n" +
-        "           <div class=\"list-group step-list side-item\">" +
-        menuEntry +
-        "           </div>\n" +
-        "       </div>" +
-        "       <div class=\"col-md-10\">" +
-        "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
-        videoEntry +
-        "           Your browser does not support the video tag." +
-        "           </video>\n" +
-        "       </div>" +
-        "   </div>" +
-        "</div>");
+            "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
+            "   <div class=\"row\">" +
+            "       <div class=\"col-md-2\">\n" +
+            "           <div class=\"list-group step-list side-item\">" +
+            menuEntry +
+            "           </div>\n" +
+            "       </div>" +
+            "       <div class=\"col-md-10\">" +
+            "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
+            videoEntry +
+            "           Your browser does not support the video tag." +
+            "           </video>\n" +
+            "       </div>" +
+            "   </div>" +
+            "</div>");
 
 
     var myvid = $('#videoTest').get(0);
@@ -1602,7 +1602,7 @@ function setLoadBar(data) {
         }
     }
     var progress = ended / total * 100;
-    
+
     updateDataBarVisual(data.controlStatus, progress);
 
 }
@@ -1670,7 +1670,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
-            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+                bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -2154,24 +2154,24 @@ function Step(json, steps, id) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');
         stepLabelContainer.append(labelOptions[0]);
     } else if ((this.conditionOperator !== "never")
-        && (this.conditionOperator !== "always")) {
+            && (this.conditionOperator !== "always")) {
         if (this.returnCode !== "NE") {
 
             var labelOptions = $('<span class="label label-primary optionLabel labelLight">Condition verified</span>')
-                .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                    .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
             stepLabelContainer.append(labelOptions[0]);
         } else {
             var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
-                .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                    .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
             stepLabelContainer.append(labelOptions[0]);
 
         }
 
     }
     if ((this.loop === "onceIfConditionTrue" && this.conditionOperator === "never")
-        || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
+            || (this.loop === "onceIfConditionFalse" && this.conditionOperator === "always")) {
         var labelOptions = $('<span class="label label-primary optionLabel labelLight">Not executed due to condition</span>')
-            .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
+                .attr("data-toggle", "tooltip").attr("data-html", "true").attr("data-original-title", conditionTooltip);
         stepLabelContainer.append(labelOptions[0]);
     }
 
@@ -2656,13 +2656,13 @@ function triggerActionExecution(element, id, status) {
     var newReturnCode = "WE";
     //update first all element of actionDiv in case of control change
     /*$(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.glyphicon").removeClass().addClass("glyphicon glyphicon-ok pull-left");
-    $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
-    $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").val("OK").change();
-    $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").attr("data-modified", "true");
-    $(element).parents("[name='fullActionDiv']").find(".action").addClass("itemStatusOK");
-    $(element).parents("[name='fullActionDiv']").find(".control").addClass("itemStatusOK");
-    $(element).parents("[name='fullActionDiv']").removeClass("initialStatus");
-    $(element).parents("[name='fullActionDiv']").find(".action-group").data("item").returnCode = "OK";*/
+     $(element).parents("[name='fullActionDiv']").find(".action-group").find(".status").find("span.label").removeClass().addClass("label label-primary labelGreen optionLabel pull-left");
+     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").val("OK").change();
+     $(element).parents("[name='fullActionDiv']").find(".action-group").find("input[name='returncode']").attr("data-modified", "true");
+     $(element).parents("[name='fullActionDiv']").find(".action").addClass("itemStatusOK");
+     $(element).parents("[name='fullActionDiv']").find(".control").addClass("itemStatusOK");
+     $(element).parents("[name='fullActionDiv']").removeClass("initialStatus");
+     $(element).parents("[name='fullActionDiv']").find(".action-group").data("item").returnCode = "OK";*/
 
     // update element checked
     if (status === "OK") {
@@ -3402,12 +3402,12 @@ function addFileLink(fileList, container, manual, idStep) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                .append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-                    .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                    .click(function (e) {
-                        changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
-                        return false;
-                    }));
+                    .append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+                            .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
+                            .click(function (e) {
+                                changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
+                                return false;
+                            }));
             container.append(linkBox);
 
 
@@ -3420,36 +3420,36 @@ function addFileLink(fileList, container, manual, idStep) {
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
                         .css("height", "30px").click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }));
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }));
             }
             container.append(linkBoxtxt);
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
@@ -3459,18 +3459,18 @@ function addFileLink(fileList, container, manual, idStep) {
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
 
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc).click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }))
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px")
+                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc).click(function (f) {
-                            changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                            return false;
-                        }))
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    return false;
+                }))
             }
 
             container.append(linkBoxtxt);
