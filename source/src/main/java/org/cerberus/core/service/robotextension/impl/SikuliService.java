@@ -296,11 +296,12 @@ public class SikuliService implements ISikuliService {
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
+                LOG.warn("Responce code different from 200 when calling '"+urlToConnect+"'");
                 return false;
             }
 
         } catch (IOException ex) {
-            LOG.warn(ex,ex);
+            LOG.warn("Exception catch when calling '"+urlToConnect+"' "+ex,ex);
             return false;
         } finally {
             if (os != null) {
