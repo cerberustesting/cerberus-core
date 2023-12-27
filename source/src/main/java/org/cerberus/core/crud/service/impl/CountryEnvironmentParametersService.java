@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.ILogEventService;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerUtil;
 
 /**
@@ -207,6 +208,10 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvironmentParameters objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
+                    // If new value has a SECRET String, we replace it by the initial Password.
+                    if (objectDifference.getIp().contains(StringUtil.SECRET_STRING)) {
+                        objectDifference.setIp(objectDifference.getIp().replace(StringUtil.SECRET_STRING, StringUtil.getPasswordFromAnyUrl(objectInDatabase.getIp())));
+                    }
                     ans = this.update(objectDifference);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);

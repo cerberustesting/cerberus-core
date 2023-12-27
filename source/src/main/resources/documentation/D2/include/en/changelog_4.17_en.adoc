@@ -25,6 +25,7 @@
 * Added possibility to get base64 value from application object using syntax : %object.OBJNAME.base64%. That allow to use object pictures as file upload on test cases.
 * New API in order to get Application details and update application endpoints.
 * Preselect country environment and robot on rerun testcase modal.
+* Secure Password display from URL in execution modal and application modal
 
 
 *Warning to be considered before applying the version (deprecated features)*

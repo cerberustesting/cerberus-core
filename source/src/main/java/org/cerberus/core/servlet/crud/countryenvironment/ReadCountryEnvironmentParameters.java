@@ -35,6 +35,7 @@ import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -79,7 +80,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -204,6 +205,10 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
     private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvironmentParameters cepl) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(cepl));
+        if (StringUtil.isNotEmptyOrNullValue(StringUtil.getPasswordFromAnyUrl(cepl.getIp()))) {
+            result.put("ip", cepl.getIp().replace(StringUtil.getPasswordFromAnyUrl(cepl.getIp()), StringUtil.SECRET_STRING));
+        }
+
         return result;
     }
 
