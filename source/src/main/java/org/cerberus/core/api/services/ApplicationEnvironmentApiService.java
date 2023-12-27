@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
+import org.cerberus.core.api.exceptions.InvalidRequestException;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.exception.CerberusException;
@@ -55,13 +56,8 @@ public class ApplicationEnvironmentApiService {
         return cep.getItem();
     }
 
-    public CountryEnvironmentParameters updateApplicationEnvironmentAPI(String system, String applicationId, String countryId, String environmentId,
+    public CountryEnvironmentParameters updateApplicationEnvironmentPATCH(String system, String applicationId, String countryId, String environmentId,
             CountryEnvironmentParameters newApplicationEnvironment, Principal principal) throws CerberusException {
-
-//        LOG.debug(applicationId);
-//        LOG.debug(countryId);
-//        LOG.debug(environmentId);
-//        LOG.debug(newApplicationEnvironment);
 
         AnswerItem<CountryEnvironmentParameters> cep = this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId);
         if (cep.getItem() == null) {
@@ -88,9 +84,32 @@ public class ApplicationEnvironmentApiService {
 
         newApplicationEnvironment.setPoolSize(0 == newApplicationEnvironment.getPoolSize() ? cep.getItem().getPoolSize() : newApplicationEnvironment.getPoolSize());
 
-//        LOG.debug(newApplicationEnvironment);
         applicationEnvironmentService.update(newApplicationEnvironment);
 
+        return this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId).getItem();
+    }
+
+    public CountryEnvironmentParameters updateApplicationEnvironmentPUT(String system, String applicationId, String countryId, String environmentId,
+            CountryEnvironmentParameters newApplicationEnvironment, Principal principal) throws CerberusException {
+
+        AnswerItem<CountryEnvironmentParameters> cep = this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId);
+        if (cep.getItem() == null) {
+            LOG.debug("not exist.");
+            throw new EntityNotFoundException(CountryEnvironmentParameters.class, "system", system, "application", applicationId, "country", countryId, "environment", environmentId);
+        }
+        LOG.debug("Exist.");
+
+        newApplicationEnvironment.setUsrModif(principal.getName());
+        newApplicationEnvironment.setSystem(system);
+        newApplicationEnvironment.setCountry(countryId);
+        newApplicationEnvironment.setEnvironment(environmentId);
+        newApplicationEnvironment.setApplication(applicationId);
+
+        try {
+            applicationEnvironmentService.convert(applicationEnvironmentService.update(newApplicationEnvironment));
+        } catch (CerberusException e) {
+            throw new InvalidRequestException("Missing data from Entity resulting : " + e.getMessage());
+        }
 
         return this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId).getItem();
     }

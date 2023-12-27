@@ -24,6 +24,7 @@
 * Added support for a couple of new actions on Selenium IDE import. #2498
 * Added possibility to get base64 value from application object using syntax : %object.OBJNAME.base64%. That allow to use object pictures as file upload on test cases.
 * New API in order to get Application details and update application endpoints.
+* Preselect country environment and robot on rerun testcase modal.
 
 
 *Warning to be considered before applying the version (deprecated features)*

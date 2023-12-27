@@ -17,16 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.views;
 
 public interface View {
 
     interface Public {
+
         interface POST {
         }
 
         interface PUT {
+        }
+
+        interface PATCH {
         }
 
         interface GET {

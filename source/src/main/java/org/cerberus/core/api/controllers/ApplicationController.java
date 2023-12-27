@@ -43,6 +43,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -116,7 +117,7 @@ public class ApplicationController {
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseWrapper<CountryEnvironmentParametersDTOV001> update(
+    public ResponseWrapper<CountryEnvironmentParametersDTOV001> updatePUT(
             @PathVariable("application") String applicationId,
             @PathVariable("country") String countryId,
             @PathVariable("environment") String environmentId,
@@ -134,7 +135,7 @@ public class ApplicationController {
 
         return ResponseWrapper.wrap(
                 this.applicationEnvironmentMapper.toDTO(
-                        this.applicationEnvironmentApiService.updateApplicationEnvironmentAPI(
+                        this.applicationEnvironmentApiService.updateApplicationEnvironmentPUT(
                                 system,
                                 applicationId,
                                 countryId,
@@ -145,4 +146,37 @@ public class ApplicationController {
         );
     }
 
+    @ApiOperation("Update an application environment")
+    @ApiResponse(code = 200, message = "ok")
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    @PatchMapping(path = "/{application}/{country}/{environment}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<CountryEnvironmentParametersDTOV001> updatePATCH(
+            @PathVariable("application") String applicationId,
+            @PathVariable("country") String countryId,
+            @PathVariable("environment") String environmentId,
+            @Valid @JsonView(View.Public.PATCH.class) @RequestBody CountryEnvironmentParametersDTOV001 applicationEnvironmentToUpdate,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            Principal principal) throws CerberusException {
+
+        this.apiAuthenticationService.authenticate(principal, apiKey);
+        // We first get the application in order to retreive the system.
+        Application applicationObj = this.applicationApiService.readByKey(applicationId);
+        if (applicationObj == null) {
+            throw new EntityNotFoundException(Application.class, "application", applicationId);
+        }
+        String system = applicationObj.getSystem();
+
+        return ResponseWrapper.wrap(
+                this.applicationEnvironmentMapper.toDTO(
+                        this.applicationEnvironmentApiService.updateApplicationEnvironmentPATCH(
+                                system,
+                                applicationId,
+                                countryId,
+                                environmentId,
+                                this.applicationEnvironmentMapper.toEntity(applicationEnvironmentToUpdate),
+                                principal
+                        ))
+        );
+    }
 }

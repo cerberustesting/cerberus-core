@@ -265,6 +265,6 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
             //if the service returns an OK message then we can get the item
             return;
         }
-        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_DETAIL).resolveDescription("DETAIL", answer.getMessageDescription()));
     }
 }
