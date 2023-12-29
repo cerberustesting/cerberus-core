@@ -23,6 +23,7 @@ import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.User;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * @author vertigo17
@@ -33,5 +34,21 @@ public interface UserMapperV001 {
     UserDTOV001 toDTO(User user);
 
     @InheritInverseConfiguration
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "resetPasswordToken", ignore = true)
+    @Mapping(target = "userID", ignore = true)
+    @Mapping(target = "request", ignore = true)
+    @Mapping(target = "apiKey", ignore = true)
+    @Mapping(target = "reportingFavorite", ignore = true)
+    @Mapping(target = "robotHost", ignore = true)
+    @Mapping(target = "robotPort", ignore = true)
+    @Mapping(target = "robotPlatform", ignore = true)
+    @Mapping(target = "robotVersion", ignore = true)
+    @Mapping(target = "robotBrowser", ignore = true)
+    @Mapping(target = "robot", ignore = true)
+    @Mapping(target = "defaultSystem", ignore = true)
+    @Mapping(target = "userPreferences", ignore = true)
+    @Mapping(target = "userSystems", ignore = true)
+    @Mapping(target = "userRoles", ignore = true)
     User toEntity(UserDTOV001 userDTO);
 }

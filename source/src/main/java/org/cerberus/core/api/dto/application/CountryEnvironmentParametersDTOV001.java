@@ -59,13 +59,11 @@ public class CountryEnvironmentParametersDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)
-    @JsonProperty("host")
-    private String ip;
+    private String host;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
-    @JsonProperty("contextRoot")
-    private String url;
+    private String contextRoot;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)

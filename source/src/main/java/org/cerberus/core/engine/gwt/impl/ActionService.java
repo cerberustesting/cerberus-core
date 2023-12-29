@@ -147,10 +147,10 @@ public class ActionService implements IActionService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
-         * Decode the step action description
+         * Decode the step action description, value1, value2 and value3
          */
         try {
-            // When starting a new action, we reset the property list that was already calculated.
+
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getDescription(),
@@ -178,7 +178,6 @@ public class ActionService implements IActionService {
          */
         try {
 
-            // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getValue1(), execution, actionExecution, false);
@@ -202,7 +201,6 @@ public class ActionService implements IActionService {
 
         try {
 
-            // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getValue2(), execution, actionExecution, false);
@@ -226,7 +224,6 @@ public class ActionService implements IActionService {
 
         try {
 
-            // When starting a new action, we reset the property list that was already calculated.
             execution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(actionExecution.getValue3(), execution, actionExecution, false);
@@ -304,6 +301,14 @@ public class ActionService implements IActionService {
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "2"));
         }
 
+        /**
+         * TODO add a wait in ms before the action.
+         */
+//        Thead.sleep();
+
+        /**
+         * Route the actions to the correct method.
+         */
         try {
             switch (actionExecution.getAction()) {
                 case TestCaseStepAction.ACTION_CLICK:
@@ -509,6 +514,11 @@ public class ActionService implements IActionService {
          * Action.
          */
         actionExecution.setStopExecution(res.isStopTest());
+
+        /**
+         * TODO add a wait in ms after the action.
+         */
+//        Thead.sleep();
 
         /**
          * Timestamp stops here.

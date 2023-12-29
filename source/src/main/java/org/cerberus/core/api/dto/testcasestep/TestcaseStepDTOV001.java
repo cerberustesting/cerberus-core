@@ -93,6 +93,7 @@ public class TestcaseStepDTOV001 {
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 11)
     @JsonProperty("isUsingLibraryStep")
+    @Builder.Default
     private boolean isUsingLibraryStep = false;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
@@ -119,11 +120,13 @@ public class TestcaseStepDTOV001 {
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(name = "isLibraryStep", position = 17)
     @JsonProperty("isLibraryStep")
+    @Builder.Default
     private boolean isLibraryStep = false;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 18)
     @JsonProperty("isExecutionForced")
+    @Builder.Default
     private boolean isExecutionForced = false;
 
     @Valid

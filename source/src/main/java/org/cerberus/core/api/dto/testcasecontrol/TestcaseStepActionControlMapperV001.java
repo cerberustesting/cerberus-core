@@ -38,5 +38,6 @@ public interface TestcaseStepActionControlMapperV001 {
 
     @Mapping(source = "testFolderId", target = "test")
     @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "fatal", target = "isFatal")
     TestCaseStepActionControl toEntity(TestcaseStepActionControlDTOV001 controlDTO);
 }

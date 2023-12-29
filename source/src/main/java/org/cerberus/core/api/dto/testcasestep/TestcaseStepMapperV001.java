@@ -34,11 +34,11 @@ import org.mapstruct.Mapping;
 @Mapper(
         componentModel = "spring",
         uses = {
-                TestcaseStepActionMapperV001.class,
-                TestcaseStepActionControlMapperV001.class,
-                TestcaseCountryPropertiesMapperV001.class,
-                JSONArrayMapper.class,
-                TimestampMapper.class
+            TestcaseStepActionMapperV001.class,
+            TestcaseStepActionControlMapperV001.class,
+            TestcaseCountryPropertiesMapperV001.class,
+            JSONArrayMapper.class,
+            TimestampMapper.class
         }
 )
 public interface TestcaseStepMapperV001 {
@@ -57,6 +57,11 @@ public interface TestcaseStepMapperV001 {
     @Mapping(source = "testcaseId", target = "testcase")
     @Mapping(source = "libraryStepTestFolderId", target = "libraryStepTest")
     @Mapping(source = "libraryStepTestcaseId", target = "libraryStepTestcase")
+    @Mapping(source = "stepInUseByOtherTestcase", target = "isStepInUseByOtherTestcase")
+    @Mapping(source = "executionForced", target = "isExecutionForced")
+    @Mapping(source = "libraryStep", target = "isLibraryStep")
+    @Mapping(source = "usingLibraryStep", target = "isUsingLibraryStep")
+    @Mapping(target = "testcaseObj", ignore = true)
     TestCaseStep toEntity(TestcaseStepDTOV001 stepDTO);
 
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.testcase;
 
 import org.cerberus.core.api.mappers.TimestampMapper;
@@ -37,5 +36,6 @@ public interface LabelMapperV001 {
     LabelDTOV001 toDTO(Label label);
 
     @InheritInverseConfiguration
+    @Mapping(target = "counter1", ignore = true)
     Label toEntity(LabelDTOV001 labelDTO);
 }

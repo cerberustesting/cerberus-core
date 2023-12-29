@@ -571,10 +571,10 @@ public class ApplicationDAO implements IApplicationDAO {
                 .deploytype(deployType)
                 .mavengroupid(mavenGroupId)
                 .description(description)
-                .UsrCreated(usrCreated)
-                .DateCreated(dateCreated)
-                .UsrModif(usrModif)
-                .DateModif(dateModif)
+                .usrCreated(usrCreated)
+                .dateCreated(dateCreated)
+                .usrModif(usrModif)
+                .dateModif(dateModif)
                 .build();
     }
 }

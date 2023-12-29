@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.appservice;
 
 import org.cerberus.core.api.mappers.TimestampMapper;
@@ -34,8 +33,34 @@ public interface AppServiceMapperV001 {
     @Mapping(source = "headerList", target = "headers")
     AppServiceDTOV001 toDTO(AppService appService);
 
-
     @InheritInverseConfiguration
     @Mapping(source = "followingRedirection", target = "followRedir")
+    @Mapping(target = "kafkaFilterHeaderPath", ignore = true)
+    @Mapping(target = "kafkaFilterHeaderValue", ignore = true)
+    @Mapping(target = "avroEnable", ignore = true)
+    @Mapping(target = "schemaRegistryURL", ignore = true)
+    @Mapping(target = "avroEnableKey", ignore = true)
+    @Mapping(target = "avroSchemaKey", ignore = true)
+    @Mapping(target = "avroSchemaValue", ignore = true)
+    @Mapping(target = "avroEnableValue", ignore = true)
+    @Mapping(target = "parentContentService", ignore = true)
+    @Mapping(target = "proxyHost", ignore = true)
+    @Mapping(target = "proxyPort", ignore = true)
+    @Mapping(target = "proxy", ignore = true)
+    @Mapping(target = "proxyWithCredential", ignore = true)
+    @Mapping(target = "proxyUser", ignore = true)
+    @Mapping(target = "responseHTTPVersion", ignore = true)
+    @Mapping(target = "responseHTTPCode", ignore = true)
+    @Mapping(target = "responseHTTPBody", ignore = true)
+    @Mapping(target = "responseHTTPBodyContentType", ignore = true)
+    @Mapping(target = "responseHeaderList", ignore = true)
+    @Mapping(target = "timeoutms", ignore = true)
+    @Mapping(target = "file", ignore = true)
+    @Mapping(target = "kafkaResponseOffset", ignore = true)
+    @Mapping(target = "kafkaResponsePartition", ignore = true)
+    @Mapping(target = "kafkaWaitNbEvent", ignore = true)
+    @Mapping(target = "kafkaWaitSecond", ignore = true)
+    @Mapping(target = "recordTraceFile", ignore = true)
+    @Mapping(target = "responseNb", ignore = true)
     AppService toEntity(AppServiceDTOV001 appServiceDTO);
 }

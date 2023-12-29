@@ -21,7 +21,6 @@
 package org.cerberus.core.api.dto.queueexecution;
 
 import org.cerberus.core.api.entity.ManualUrlParameters;
-import org.cerberus.core.api.entity.QueuedExecution;
 import org.mapstruct.Mapper;
 
 /**
@@ -33,5 +32,5 @@ public interface ManualUrlParametersMappersV001 {
 
     ManualUrlParametersDTOV001 toDto(ManualUrlParameters manualUrlParameters);
 
-    QueuedExecution toEntity(ManualUrlParametersDTOV001 manualUrlParametersDTO);
+    ManualUrlParameters toEntity(ManualUrlParametersDTOV001 manualUrlParametersDTO);
 }

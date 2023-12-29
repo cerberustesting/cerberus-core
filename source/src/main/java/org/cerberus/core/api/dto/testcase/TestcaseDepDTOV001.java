@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.sql.Timestamp;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
@@ -66,9 +67,27 @@ public class TestcaseDepDTOV001 {
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
     @JsonProperty("isActive")
+    @Builder.Default
     private boolean isActive = true;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)
     private String description;
+    
+    @ApiModelProperty(position = 7)
+    @JsonView(value = {View.Public.GET.class})
+    private String usrCreated;
+
+    @ApiModelProperty(position = 8)
+    @JsonView(value = {View.Public.GET.class})
+    private Timestamp dateCreated;
+
+    @ApiModelProperty(position = 9)
+    @JsonView(value = {View.Public.GET.class})
+    private String usrModif;
+
+    @ApiModelProperty(position = 10)
+    @JsonView(value = {View.Public.GET.class})
+    private Timestamp dateModif;
+    
 }

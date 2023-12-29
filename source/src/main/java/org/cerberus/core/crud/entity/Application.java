@@ -55,10 +55,10 @@ public class Application {
     private String deploytype;
     private String mavengroupid;
     private String description;
-    private String UsrCreated;
-    private Timestamp DateCreated;
-    private String UsrModif;
-    private Timestamp DateModif;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
     
     /**
      * From here are data outside database model.

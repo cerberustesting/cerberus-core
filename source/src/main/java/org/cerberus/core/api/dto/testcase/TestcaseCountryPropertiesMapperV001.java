@@ -39,5 +39,12 @@ public interface TestcaseCountryPropertiesMapperV001 {
     @Mapping(source = "testFolderId", target = "test")
     @Mapping(source = "testcaseId", target = "testcase")
     @Mapping(source = "countries", target = "invariantCountries")
+    @Mapping(target = "country", ignore = true)
+    @Mapping(target = "cacheExpire", ignore = true)
+    @Mapping(target = "retryNb", ignore = true)
+    @Mapping(target = "retryPeriod", ignore = true)
+    @Mapping(target = "result", ignore = true)
+    @Mapping(target = "testcaseCountry", ignore = true)
+    @Mapping(target = "testcaseCountries", ignore = true)
     TestCaseCountryProperties toEntity(TestcaseCountryPropertiesDTOV001 testcaseCountryPropertiesDTO);
 }

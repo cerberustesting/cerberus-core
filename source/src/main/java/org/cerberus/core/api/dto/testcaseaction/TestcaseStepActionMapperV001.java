@@ -40,6 +40,7 @@ public interface TestcaseStepActionMapperV001 {
 
     @Mapping(source = "testFolderId", target = "test")
     @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "fatal", target = "isFatal")
     TestCaseStepAction toEntity(TestcaseStepActionDTOV001 actionDTO);
 
 }

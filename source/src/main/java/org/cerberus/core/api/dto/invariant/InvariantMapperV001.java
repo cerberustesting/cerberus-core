@@ -39,8 +39,10 @@ public interface InvariantMapperV001 {
     @Mapping(source = "invariant.gp7", target = "attribute7")
     @Mapping(source = "invariant.gp8", target = "attribute8")
     @Mapping(source = "invariant.gp9", target = "attribute9")
+    @Mapping(target = "shortDescription", ignore = true)
     InvariantDTOV001 toDTO(Invariant invariant);
 
     @InheritInverseConfiguration
+    @Mapping(target = "veryShortDesc", ignore = true)
     Invariant toEntity(InvariantDTOV001 invariantDTO);
 }

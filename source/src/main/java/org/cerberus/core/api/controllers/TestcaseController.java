@@ -176,7 +176,7 @@ public class TestcaseController {
                             .svnurl("")
                             .bugTrackerNewUrl("")
                             .bugTrackerNewUrl("")
-                            .UsrCreated(principal.getName())
+                            .usrCreated(principal.getName())
                             .build());
 
             this.countryEnvironmentParametersService.create(

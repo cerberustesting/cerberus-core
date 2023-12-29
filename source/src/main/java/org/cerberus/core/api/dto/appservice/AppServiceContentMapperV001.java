@@ -31,5 +31,6 @@ public interface AppServiceContentMapperV001 {
     @Mapping(source = "active", target = "isActive")
     AppServiceContentDTOV001 toDTO(AppServiceContent appServiceContent);
 
+    @Mapping(target = "inherited", ignore = true)
     AppServiceContent toEntity(AppServiceContentDTOV001 appServiceContentDTO);
 }

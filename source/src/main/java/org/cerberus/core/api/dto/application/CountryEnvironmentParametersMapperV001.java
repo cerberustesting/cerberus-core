@@ -23,13 +23,16 @@ package org.cerberus.core.api.dto.application;
 import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {TimestampMapper.class})
 public interface CountryEnvironmentParametersMapperV001 {
 
-//    @Mapping(source = "url", target = "contextRoot")
-//    @Mapping(source = "ip", target = "host")
+    @Mapping(source = "ip", target = "host")
+    @Mapping(source = "url", target = "contextRoot")
     CountryEnvironmentParametersDTOV001 toDTO(CountryEnvironmentParameters countryEnvironmentParameters);
 
+    @Mapping(source = "host", target = "ip")
+    @Mapping(source = "contextRoot", target = "url")
     CountryEnvironmentParameters toEntity(CountryEnvironmentParametersDTOV001 countryEnvironmentParametersDTO);
 }

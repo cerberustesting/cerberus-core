@@ -6249,4 +6249,9 @@ ALTER TABLE `countryenvironmentparameters`
     ADD COLUMN `UsrModif` varchar(45) NOT NULL DEFAULT '',
     ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01';
 
+-- 1759
+DROP TABLE `dashboardEntry`, `dashboardGroupEntries`, `dashboardGroupEntriesApplication`, `dashboardGroupEntriesCampaign`, `dashboardReportItem`, `dashboardTypeReportItem` ;
 
+-- 1760
+CREATE TABLE `datafile` ( `ID` int(11) NOT NULL AUTO_INCREMENT,  `Fileid` varchar(150) NOT NULL,  `FileName` varchar(250) DEFAULT NULL,  `UsrCreated` varchar(45) DEFAULT NULL,  `DateCreated` timestamp NULL DEFAULT NULL,  `UsrModif` varchar(45) DEFAULT NULL,  `DateModif` timestamp NULL DEFAULT NULL,  PRIMARY KEY (`FileId`),  UNIQUE KEY `ID_UNIQUE` (`ID`) )
+  ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;

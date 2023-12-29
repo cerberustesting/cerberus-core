@@ -266,6 +266,11 @@ public class ControlService implements IControlService {
             controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "2"));
         }
 
+        /**
+         * TODO add a wait in ms before the control.
+         */
+//        Thead.sleep();
+                
         try {
 
             switch (controlExecution.getControl()) {
@@ -433,6 +438,11 @@ public class ControlService implements IControlService {
         if (res.isStopTest() && controlExecution.getFatal().equals("Y")) {
             controlExecution.setStopExecution(true);
         }
+        
+        /**
+         * TODO add a wait in ms after the control.
+         */
+//        Thead.sleep();
 
         controlExecution.setEnd(new Date().getTime());
         return controlExecution;

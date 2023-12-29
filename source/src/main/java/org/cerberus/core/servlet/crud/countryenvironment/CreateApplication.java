@@ -148,7 +148,7 @@ public class CreateApplication extends HttpServlet {
                     .deploytype(deployType)
                     .mavengroupid(mavenGpID)
                     .description(description)
-                    .UsrCreated(request.getRemoteUser())
+                    .usrCreated(request.getRemoteUser())
                     .build();
             ans = applicationService.create(app);
 
