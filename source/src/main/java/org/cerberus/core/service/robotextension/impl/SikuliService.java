@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
+ * 
  * This file is part of Cerberus.
- *
+ * 
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,6 +34,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +43,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -56,7 +59,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author bcivel
  */
 @Service
@@ -96,7 +98,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
 
     private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2,
-            long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+                                              long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
@@ -296,12 +298,12 @@ public class SikuliService implements ISikuliService {
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                LOG.warn("Responce code different from 200 when calling '"+urlToConnect+"'");
+                LOG.warn("Responce code different from 200 when calling '" + urlToConnect + "'");
                 return false;
             }
 
         } catch (IOException ex) {
-            LOG.warn("Exception catch when calling '"+urlToConnect+"' "+ex,ex);
+            LOG.warn("Exception catch when calling '" + urlToConnect + "' " + ex, ex);
             return false;
         } finally {
             if (os != null) {
@@ -827,7 +829,8 @@ public class SikuliService implements ISikuliService {
             String screenshotInBase64 = actionResult.getItem().getString("screenshot");
             byte[] data = Base64.decodeBase64(screenshotInBase64);
 
-            image = new File("screenshotsikuli" + UUID.randomUUID().toString().subSequence(0, 14) + ".png");
+            image = new File(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_exeautomedia_path, "", File.separator + "tmp") + File.separator + "tmp" + File.separator
+                    + "screenshotsikuli-" + UUID.randomUUID().toString().subSequence(0, 13) + ".png");
             FileUtils.writeByteArrayToFile(image, data);
 
             if (image != null) {
@@ -838,9 +841,9 @@ public class SikuliService implements ISikuliService {
             }
 
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         } catch (IOException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
         return image;
     }
