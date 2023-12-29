@@ -26,6 +26,7 @@ import org.mapstruct.Mapper;
  * @author lucashimpens
  */
 @Mapper(componentModel = "spring")
+
 public interface CampaignExecutionResultPriorityMapperV001 {
 
     CampaignExecutionResultPriorityDTOV001 toDto(CampaignExecutionResultPriority result);

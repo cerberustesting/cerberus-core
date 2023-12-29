@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.campaignexecution;
 
 import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
@@ -31,14 +30,15 @@ import org.mapstruct.Mapping;
 /**
  * @author lucashimpens
  */
-
 @Mapper(componentModel = "spring",
         uses = {
-                InvariantMapperV001.class,
-                TestcaseMapperV001.class,
-                TimestampMapper.class,
-                BooleanMapper.class
-        })
+            InvariantMapperV001.class,
+            TestcaseMapperV001.class,
+            TimestampMapper.class,
+            BooleanMapper.class
+        }
+)
+
 public interface TestcaseExecutionMapperV001 {
 
     @Mapping(source = "execution.id", target = "testcaseExecutionId")

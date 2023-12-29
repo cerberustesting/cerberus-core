@@ -28,6 +28,7 @@ import org.mapstruct.Mapping;
  * @author mlombard
  */
 @Mapper(componentModel = "spring")
+
 public interface InvariantMapperV001 {
 
     @Mapping(source = "invariant.gp1", target = "attribute1")

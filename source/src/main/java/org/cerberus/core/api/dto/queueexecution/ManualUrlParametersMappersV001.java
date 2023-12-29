@@ -28,6 +28,7 @@ import org.mapstruct.Mapper;
  */
 
 @Mapper(componentModel = "spring")
+
 public interface ManualUrlParametersMappersV001 {
 
     ManualUrlParametersDTOV001 toDto(ManualUrlParameters manualUrlParameters);

@@ -25,7 +25,14 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class, AppServiceHeaderMapperV001.class, AppServiceContentMapperV001.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            TimestampMapper.class,
+            AppServiceHeaderMapperV001.class,
+            AppServiceContentMapperV001.class
+        }
+)
+
 public interface AppServiceMapperV001 {
 
     @Mapping(source = "followRedir", target = "isFollowingRedirection")

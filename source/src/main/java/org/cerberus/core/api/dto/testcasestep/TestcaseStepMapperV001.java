@@ -41,6 +41,7 @@ import org.mapstruct.Mapping;
             TimestampMapper.class
         }
 )
+
 public interface TestcaseStepMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")

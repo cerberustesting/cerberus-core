@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.api.dto.testcase;
 
+import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionMapperV001;
 import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlMapperV001;
 import org.cerberus.core.api.dto.testcasestep.TestcaseStepMapperV001;
@@ -34,15 +35,18 @@ import org.mapstruct.Mapping;
 @Mapper(
         componentModel = "spring",
         uses = {
-                TestcaseStepMapperV001.class,
-                TestcaseStepActionMapperV001.class,
-                TestcaseStepActionControlMapperV001.class,
-                TestcaseCountryPropertiesMapperV001.class,
-                TestcaseDepMapperV001.class,
-                JSONArrayMapper.class,
-                TimestampMapper.class
+            TestcaseStepMapperV001.class,
+            TestcaseStepActionMapperV001.class,
+            TestcaseStepActionControlMapperV001.class,
+            TestcaseCountryPropertiesMapperV001.class,
+            TestcaseDepMapperV001.class,
+            LabelMapperV001.class,
+            InvariantMapperV001.class,
+            JSONArrayMapper.class,
+            TimestampMapper.class
         }
 )
+
 public interface TestcaseMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")
@@ -60,10 +64,19 @@ public interface TestcaseMapperV001 {
 
     @Mapping(source = "testFolderId", target = "test")
     @Mapping(source = "testcaseId", target = "testcase")
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "activeQA", target = "isActiveQA")
+    @Mapping(source = "activeUAT", target = "isActiveUAT")
+    @Mapping(source = "activePROD", target = "isActivePROD")
     @Mapping(source = "externalProvider", target = "origine")
     @Mapping(source = "externalReference", target = "refOrigine")
     @Mapping(source = "countries", target = "invariantCountries")
     @Mapping(source = "properties", target = "testCaseCountryProperties")
     @Mapping(source = "inheritedProperties", target = "testCaseInheritedProperties")
+    @Mapping(target = "ticket", ignore = true)
+    @Mapping(target = "system", ignore = true)
+    @Mapping(target = "lastExecutionStatus", ignore = true)
+    @Mapping(target = "testCaseCountries", ignore = true)
+    @Mapping(target = "testCaseLabels", ignore = true)
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
 }

@@ -28,6 +28,7 @@ import org.mapstruct.Mapper;
  */
 
 @Mapper(componentModel = "spring")
+
 public interface QueuedEntryMapperV001 {
 
     QueuedEntryDTOV001 toDto(QueuedEntry queuedEntry);

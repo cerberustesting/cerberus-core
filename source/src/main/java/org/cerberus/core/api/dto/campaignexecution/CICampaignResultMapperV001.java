@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.campaignexecution;
 
 import org.cerberus.core.api.entity.CICampaignResult;
@@ -29,12 +28,14 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring",
         uses = {
-                CampaignExecutionResultMapperV001.class,
-                CampaignExecutionResultPriorityMapperV001.class,
-                JSONArrayMapper.class
-        })
+            CampaignExecutionResultMapperV001.class,
+            CampaignExecutionResultPriorityMapperV001.class,
+            JSONArrayMapper.class
+        }
+)
+
 public interface CICampaignResultMapperV001 {
 
     CICampaignResultDTOV001 toDTO(CICampaignResult result);
-    //CICampaignResultDTOV001 toDto(JSONObject )
+
 }

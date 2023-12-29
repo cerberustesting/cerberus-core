@@ -27,6 +27,7 @@ import org.mapstruct.Mapping;
  * @author MorganLmd
  */
 @Mapper(componentModel = "spring")
+
 public interface TestcaseDepMapperV001 {
 
     @Mapping(source = "dependencyTest", target = "dependencyTestFolderId")

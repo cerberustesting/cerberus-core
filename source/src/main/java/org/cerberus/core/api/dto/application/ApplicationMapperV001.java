@@ -28,7 +28,13 @@ import org.mapstruct.Mapping;
 /**
  * @author mlombard
  */
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class, CountryEnvironmentParametersDTOV001.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            TimestampMapper.class,
+            CountryEnvironmentParametersMapperV001.class
+        }
+)
+
 public interface ApplicationMapperV001 {
 
     @Mapping(source = "environmentList", target = "environments")

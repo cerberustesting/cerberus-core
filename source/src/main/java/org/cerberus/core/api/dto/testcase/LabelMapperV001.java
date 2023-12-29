@@ -28,7 +28,12 @@ import org.mapstruct.Mapping;
 /**
  * @author MorganLmd
  */
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            TimestampMapper.class
+        }
+)
+
 public interface LabelMapperV001 {
 
     @Mapping(source = "requirementCriticity", target = "requirementCriticality")

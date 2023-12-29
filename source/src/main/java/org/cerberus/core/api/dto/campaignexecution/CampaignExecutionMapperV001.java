@@ -32,7 +32,9 @@ import org.mapstruct.Mapping;
         uses = {
                 TimestampMapper.class,
                 TestcaseExecutionMapperV001.class
-        })
+        }
+)
+
 public interface CampaignExecutionMapperV001 {
 
     @Mapping(source = "tag", target = "campaignExecutionId")

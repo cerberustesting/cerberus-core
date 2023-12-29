@@ -28,6 +28,7 @@ import org.mapstruct.Mapper;
  */
 
 @Mapper(componentModel = "spring")
+
 public interface QueuedExecutionTestcaseMapperV001 {
 
     QueuedExecutionTestcaseDTOV001 toDto(QueuedExecutionTestcase queuedExecutionTestcase);

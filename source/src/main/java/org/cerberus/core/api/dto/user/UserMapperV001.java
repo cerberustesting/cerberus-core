@@ -28,7 +28,12 @@ import org.mapstruct.Mapping;
 /**
  * @author vertigo17
  */
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            TimestampMapper.class
+        }
+)
+
 public interface UserMapperV001 {
 
     UserDTOV001 toDTO(User user);

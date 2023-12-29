@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.dto.appservice;
 
 import org.cerberus.core.api.mappers.TimestampMapper;
@@ -26,7 +25,13 @@ import org.cerberus.core.util.StringUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {TimestampMapper.class}, imports = {StringUtil.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            TimestampMapper.class
+        },
+        imports = {StringUtil.class}
+)
+
 public interface AppServiceHeaderMapperV001 {
 
     @Mapping(source = "active", target = "isActive")

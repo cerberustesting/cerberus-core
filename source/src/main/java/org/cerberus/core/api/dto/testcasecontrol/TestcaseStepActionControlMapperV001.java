@@ -28,7 +28,13 @@ import org.mapstruct.Mapping;
 /**
  * @author mlombard
  */
-@Mapper(componentModel = "spring", uses = {JSONArrayMapper.class, TimestampMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            JSONArrayMapper.class,
+            TimestampMapper.class
+        }
+)
+
 public interface TestcaseStepActionControlMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")

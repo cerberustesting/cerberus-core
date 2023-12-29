@@ -28,7 +28,13 @@ import org.mapstruct.Mapping;
 /**
  * @author MorganLmd
  */
-@Mapper(componentModel = "spring", uses = {InvariantMapperV001.class, TimestampMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+            InvariantMapperV001.class,
+            TimestampMapper.class
+        }
+)
+
 public interface TestcaseCountryPropertiesMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")

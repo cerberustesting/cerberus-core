@@ -29,8 +29,14 @@ import org.mapstruct.Mapping;
 /**
  * @author mlombard
  */
+@Mapper(componentModel = "spring",
+        uses = {
+            TestcaseStepActionControlMapperV001.class,
+            JSONArrayMapper.class,
+            TimestampMapper.class
+        }
+)
 
-@Mapper(componentModel = "spring", uses = {TestcaseStepActionControlMapperV001.class, JSONArrayMapper.class, TimestampMapper.class})
 public interface TestcaseStepActionMapperV001 {
 
     @Mapping(source = "test", target = "testFolderId")

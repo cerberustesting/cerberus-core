@@ -26,6 +26,7 @@ import org.mapstruct.Mapper;
  * @author lucashimpens
  */
 @Mapper(componentModel = "spring")
+
 public interface CampaignExecutionResultMapperV001 {
 
     CampaignExecutionResultDTOV001 toDTO(CampaignExecutionResult result);
