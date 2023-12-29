@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
+ * <p>
  * This file is part of Cerberus.
- *
+ * <p>
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -384,8 +384,8 @@ public class RecorderService implements IRecorderService {
                         fileDesc = "Desktop Screenshot Too Big !!";
                     } else {
                         // Copies the temp file to the execution file
-                        FileUtils.copyFile(newImageDesktop, new File(recorderDestop.getFullFilename()));
-                        LOG.debug("{}Copy file finished with success - source: {} destination: {}", logPrefix, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
+                        FileUtils.moveFile(newImageDesktop, new File(recorderDestop.getFullFilename()));
+                        LOG.debug("{}Moving file finished with success - source: {} destination: {}", logPrefix, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
                         LOG.info("File saved : {}", recorderDestop.getFullFilename());
                     }
 
@@ -395,8 +395,6 @@ public class RecorderService implements IRecorderService {
                     testCaseExecutionFileService.save(object);
 
                     //deletes the temporary file
-                    FileUtils.forceDelete(newImageDesktop);
-                    LOG.debug("{}Temp file deleted with success {}", logPrefix, newImageDesktop.getName());
                     LOG.debug("{}Desktop Screenshot done in : {}", logPrefix, recorderDestop.getRelativeFilenameURL());
                 }
             } catch (IOException | CerberusException ex) {
