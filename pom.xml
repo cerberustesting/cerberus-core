@@ -31,8 +31,10 @@
     <name>Cerberus Core Master</name>
 
     <properties>
-        <maven-release-plugin.version>2.5</maven-release-plugin.version>
-        <maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
+        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
     <scm>

@@ -41,7 +41,7 @@ git commit -m 'chore:source prepare the new ${RELEASE_VERSION} version and updat
 
 # Execute release
 mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
-mvn release:perform
+mvn release:perform -Darguments="-Dmaven.javadoc.skip=true"
 git push origin master
 
 # Create new changelog file
