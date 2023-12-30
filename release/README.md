@@ -21,7 +21,7 @@ Prerequisits are
 
 * JDK installation.
 
-      export JAVA_HOME=/opt/ibm/java-x86_64-60/
+      export JAVA_HOME=/opt/jdk1.8.0_251/
       export PATH=$JAVA_HOME/bin:$PATH
 
 ### Cerberus github release
@@ -36,10 +36,10 @@ Go to your cerberus/release folder
 
 And run the release cmd :
 
-    ./runcmds.sh
-       -e RELEASE_VERSION <release version> 
-       -e NEXT_DEVELOPMENT_VERSION <next development version> 
-       -e DATABASE_VERSION <current database version>
+    ./runcmds.sh \
+       -e RELEASE_VERSION <release version> \
+       -e NEXT_DEVELOPMENT_VERSION <next development version> \
+       -e DATABASE_VERSION <current database version> \
        -s ./release.cmds
 
 NB : If under Windows, you can submit the command from docker bash.
@@ -75,8 +75,8 @@ Go to your cerberus/docker folder
 
 And run the release cmd :
 
-    ../../../../runcmds.sh
-       -e RELEASE_VERSION <release version> 
+    ../../../../runcmds.sh \
+       -e RELEASE_VERSION <release version> \
        -s ./release.cmds
 
 Go to the other docker image in order to perform the same release command.
