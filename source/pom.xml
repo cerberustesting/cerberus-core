@@ -137,6 +137,8 @@
         <!-- Maven properties -->
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyyMMdd'-'HHmmss</maven.build.timestamp.format>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
     <dependencies>
@@ -881,6 +883,7 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
                             <additionalparam>-Xdoclint:none</additionalparam>
+                            <doclint>none</doclint>
                         </configuration>
                     </plugin>
                 </plugins>
