@@ -19,6 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.cerberus.core.crud.entity.LogEvent"%>
 <%@page import="org.cerberus.core.database.DocumentationDatabaseService"%>
 <%@page import="org.apache.logging.log4j.LogManager"%>
 <%@page import="org.apache.logging.log4j.Logger"%>
@@ -146,7 +147,7 @@
                                         }
                                         if (i >= 4) { // The log table is only available after the Version 4
                                             // Log the SQL execution here
-                                            logEventService.createForPrivateCalls("/DatabaseMaintenance.jsp", "SQL", "SQL " + MySQLRC + ": ['" + MySQL + "']", request);
+                                            logEventService.createForPrivateCalls("/DatabaseMaintenance.jsp", "SQL", LogEvent.STATUS_INFO, "SQL " + MySQLRC + ": ['" + MySQL + "']", request);
                                         }
                                         out.print("<td><textarea class=\"form-control\" name=\"SQL\" rows=\"" + rowLine + "\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQLRC);
