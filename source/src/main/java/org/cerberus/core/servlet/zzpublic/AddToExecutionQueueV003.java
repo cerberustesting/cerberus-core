@@ -77,6 +77,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -206,7 +207,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/AddToExecutionQueueV003", "CALL", "AddToExecutionQueueV003 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/AddToExecutionQueueV003", "CALL", LogEvent.STATUS_INFO, "AddToExecutionQueueV003 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
             // Parsing all parameters.

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.IBuildRevisionBatchService;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
@@ -146,7 +147,7 @@ public class NewChain extends HttpServlet {
 
                 if (!"OK".equals(me.getMessage().getCodeString())) {
                     LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
-                    logEventService.createForPrivateCalls("/NewChain", "NEWCHAIN", "Warning on registering new event on environment : ['" + system + "','" + country + "','" + env + "'] " + me.getMessage().getDescription(), request);
+                    logEventService.createForPrivateCalls("/NewChain", "NEWCHAIN", LogEvent.STATUS_WARN, "Warning on registering new event on environment : ['" + system + "','" + country + "','" + env + "'] " + me.getMessage().getDescription(), request);
                     OutputMessage = me.getMessage().getDescription();
                 }
 

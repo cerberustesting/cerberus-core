@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author Nouxx
@@ -74,7 +75,7 @@ public class GetTagDetailsV002 extends HttpServlet {
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/GetTagDetailsV002", "CALL", "GetTagDetails called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetTagDetailsV002", "CALL", LogEvent.STATUS_INFO, "GetTagDetails called : " + request.getRequestURL(), request);
 
         String tagParameter = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
 

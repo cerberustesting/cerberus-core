@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -130,7 +131,7 @@ public class UpdateTest extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTest", "UPDATE", "Updated Test : ['" + originalTest + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateTest", "UPDATE", LogEvent.STATUS_INFO, "Updated Test : ['" + originalTest + "']", request);
                 }
             }
 

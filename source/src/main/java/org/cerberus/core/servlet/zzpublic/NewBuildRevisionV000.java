@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.core.crud.service.IInvariantService;
@@ -81,7 +82,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/NewBuildRevisionV000", "CALL", "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewBuildRevisionV000", "CALL", LogEvent.STATUS_INFO, "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 
@@ -184,7 +185,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                         email = emailGenerationService.generateRevisionChangeEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision);
                     } catch (Exception ex) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
-                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + ex.getMessage(), request);
+                        logEventService.createForPublicCalls("/NewBuildRevisionV000", "NEWBUILDREV", LogEvent.STATUS_WARN, "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + ex.getMessage(), request);
                         OutputMessage = ex.getMessage();
                     }
 
@@ -208,7 +209,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                          * Update was successful.
                          */
                         // Adding Log entry.
-                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+                        logEventService.createForPublicCalls("/NewBuildRevisionV000", "UPDATE", LogEvent.STATUS_INFO, "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
 
                         // Adding CountryEnvParam Log entry.
                         countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision, "New Build Revision.", "PublicCall");
@@ -221,7 +222,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                             emailService.sendHtmlMail(email);
                         } catch (Exception e) {
                             LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                            logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                            logEventService.createForPublicCalls("/NewBuildRevisionV000", "NEWBUILDREV", LogEvent.STATUS_WARN, "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
                             OutputMessage = e.getMessage();
                         }
 

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  *
@@ -64,7 +65,7 @@ public class UpdateTestCase extends AbstractCreateUpdateTestCase {
 
     @Override
     protected void fireLogEvent (String keyTest, String keyTestCase, TestCase tc, HttpServletRequest request, HttpServletResponse response) {
-        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update TestCase Header : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getVersion(), request);
+        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", LogEvent.STATUS_INFO, "Update TestCase Header : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getVersion(), request);
     }
 
     @Override

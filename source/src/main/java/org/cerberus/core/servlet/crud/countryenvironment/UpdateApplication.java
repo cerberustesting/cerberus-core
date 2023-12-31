@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
@@ -188,7 +189,7 @@ public class UpdateApplication extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + originalApplication + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateApplication", "UPDATE", LogEvent.STATUS_INFO, "Updated Application : ['" + originalApplication + "']", request);
 
                     // Update the Database with the new list.
                     ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);

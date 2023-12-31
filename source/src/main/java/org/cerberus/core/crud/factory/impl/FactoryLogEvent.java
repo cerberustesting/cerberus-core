@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class FactoryLogEvent implements IFactoryLogEvent {
     
     @Override
-    public LogEvent create(long logEventID, long userID, String login, Timestamp time, String page, String action, String log, String remoteIP, String localIP) {
+    public LogEvent create(long logEventID, long userID, String login, Timestamp time, String page, String action, String status, String log, String remoteIP, String localIP) {
         LogEvent newLogEvent = new LogEvent();
         newLogEvent.setLogEventID(logEventID);
         newLogEvent.setUserID(userID);
@@ -41,8 +41,9 @@ public class FactoryLogEvent implements IFactoryLogEvent {
         newLogEvent.setTime(time);
         newLogEvent.setPage(page);
         newLogEvent.setAction(action);
+        newLogEvent.setStatus(status);
         newLogEvent.setLog(log);
-        newLogEvent.setremoteIP(remoteIP);
+        newLogEvent.setRemoteIP(remoteIP);
         newLogEvent.setLocalIP(localIP);
         return newLogEvent;
     }

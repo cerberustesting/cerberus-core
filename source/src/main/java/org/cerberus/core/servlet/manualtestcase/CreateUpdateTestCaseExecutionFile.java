@@ -38,6 +38,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCaseStepAction;
 import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
@@ -155,7 +156,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
              * Object created. Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createForPrivateCalls("/CreateUpdateTestCaseExecutionFile", "CREATE", "Create execution file", request);
+            logEventService.createForPrivateCalls("/CreateUpdateTestCaseExecutionFile", "CREATE", LogEvent.STATUS_INFO, "Create execution file", request);
         }
 
         /**

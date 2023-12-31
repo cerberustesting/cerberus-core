@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryInvariant;
 import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -150,7 +151,7 @@ public class CreateInvariant extends HttpServlet {
                      * Object updated. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateInvariant", "CREATE", "Create Invariant : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/CreateInvariant", "CREATE", LogEvent.STATUS_INFO, "Create Invariant : ['" + id + "']", request);
                 }
             } else {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

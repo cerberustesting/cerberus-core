@@ -22,6 +22,7 @@ package org.cerberus.core.service.notifications.email.impl;
 import java.nio.charset.Charset;
 import org.cerberus.core.service.notifications.email.entity.Email;
 import org.apache.commons.mail.HtmlEmail;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.service.notifications.email.IEmailService;
 import org.cerberus.core.util.StringUtil;
@@ -96,19 +97,19 @@ public class EmailService implements IEmailService {
                 }
             }
 
-            logEventService.createForPrivateCalls("", "EMAIL", "Start Sending email '" + cerberusEmail.getSubject() + "'.");
+            logEventService.createForPrivateCalls("", "EMAIL", LogEvent.STATUS_INFO, "Start Sending email '" + cerberusEmail.getSubject() + "'.");
             LOG.info("Start Sending email '" + cerberusEmail.getSubject() + "'.");
 
             try {
                 //Sending the email
                 email.send();
             } catch (Exception e) {
-                logEventService.createForPrivateCalls("", "EMAIL", "Error Sending email '" + cerberusEmail.getSubject() + "'");
+                logEventService.createForPrivateCalls("", "EMAIL", LogEvent.STATUS_ERROR, "Error Sending email '" + cerberusEmail.getSubject() + "'");
                 LOG.error("Exception catched when trying to send the mail '" + cerberusEmail.getSubject() + "' : ", e);
                 throw e;
             }
 
-            logEventService.createForPrivateCalls("", "EMAIL", "Email Sent '" + cerberusEmail.getSubject() + "'.");
+            logEventService.createForPrivateCalls("", "EMAIL", LogEvent.STATUS_INFO, "Email Sent '" + cerberusEmail.getSubject() + "'.");
             LOG.info("End Sending email '" + cerberusEmail.getSubject() + "'.");
 
         } else {

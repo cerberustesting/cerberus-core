@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import javax.servlet.annotation.WebServlet;
 import org.cerberus.core.config.Property;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.util.answer.AnswerUtil;
 import org.cerberus.core.service.notification.INotificationService;
 import org.cerberus.core.crud.factory.IFactoryUserRole;
@@ -167,7 +168,7 @@ public class CreateUser extends HttpServlet {
                  * Object updated. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateUser", "CREATE", "Create User : ['" + login + "']", request);
+                logEventService.createForPrivateCalls("/CreateUser", "CREATE", LogEvent.STATUS_INFO, "Create User : ['" + login + "']", request);
 
                 ans = AnswerUtil.agregateAnswer(ans, userRoleService.updateRolesByUser(userData, newRoles));
                 ans = AnswerUtil.agregateAnswer(ans, userSystemService.updateSystemsByUser(userData, newSystems));

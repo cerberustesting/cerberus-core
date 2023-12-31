@@ -465,13 +465,13 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(execution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
+                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
                     LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
                     break;
                 case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
                     res = this.doActionRemoveDifference(actionExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
+                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
                     LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
                     break;
                 default:
@@ -2093,7 +2093,7 @@ public class ActionService implements IActionService {
         if (!StringUtil.isEmpty(value1)) {
             return value1;
         } else if (!StringUtil.isEmpty(value2)) {
-            logEventService.createForPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
+            logEventService.createForPrivateCalls("ENGINE", action, LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
             LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
             return value2;
         }

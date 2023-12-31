@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
@@ -263,7 +264,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                                  * Update was successful. Adding Log entry.
                                  */
                                 logEventService = appContext.getBean(LogEventService.class);
-                                logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", "Created ExecutionQueue : ['" + id + "']", request);
+                                logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", LogEvent.STATUS_INFO, "Created ExecutionQueue : ['" + id + "']", request);
                             }
                         }
 

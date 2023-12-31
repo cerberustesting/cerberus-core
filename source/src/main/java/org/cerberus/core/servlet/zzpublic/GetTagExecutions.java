@@ -26,6 +26,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
@@ -59,7 +60,7 @@ public class GetTagExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/GetTagExecutions", "CALL", "GetTagExecutions called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetTagExecutions", "CALL", LogEvent.STATUS_INFO, "GetTagExecutions called : " + request.getRequestURL(), request);
         
         apiKeyService = appContext.getBean(IAPIKeyService.class);
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);

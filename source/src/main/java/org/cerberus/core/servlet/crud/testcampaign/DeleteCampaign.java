@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Campaign;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.ScheduleEntry;
 import org.cerberus.core.crud.service.ICampaignService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -136,7 +137,7 @@ public class DeleteCampaign extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : ['" + key + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", LogEvent.STATUS_INFO, "Delete Campaign : ['" + key + "']", request);
 
                 }
 

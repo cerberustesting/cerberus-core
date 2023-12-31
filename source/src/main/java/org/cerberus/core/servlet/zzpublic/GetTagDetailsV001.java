@@ -50,6 +50,7 @@ import org.springframework.web.util.JavaScriptUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.util.StringUtil;
 
 /**
@@ -88,7 +89,7 @@ public class GetTagDetailsV001 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/GetTagDetailsV001", "CALL", "TagDetails called : " + request.getRequestURL(),
+        logEventService.createForPublicCalls("/GetTagDetailsV001", "CALL", LogEvent.STATUS_INFO, "TagDetails called : " + request.getRequestURL(),
                 request);
 
         apiKeyService = appContext.getBean(IAPIKeyService.class);

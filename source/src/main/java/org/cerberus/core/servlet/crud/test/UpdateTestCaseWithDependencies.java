@@ -61,6 +61,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -227,7 +228,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", "Update TestCase Script : ['" + testcase.getTest() + "'|'" + testcase.getTestcase() + "'] version : " + testcase.getVersion(), request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", LogEvent.STATUS_INFO, "Update TestCase Script : ['" + testcase.getTest() + "'|'" + testcase.getTestcase() + "'] version : " + testcase.getVersion(), request);
                 }
 
             }

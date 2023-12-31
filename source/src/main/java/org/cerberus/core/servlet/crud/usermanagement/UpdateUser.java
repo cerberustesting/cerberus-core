@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.UserRole;
 import org.cerberus.core.crud.entity.User;
 import org.cerberus.core.crud.entity.UserSystem;
@@ -169,7 +170,7 @@ public class UpdateUser extends HttpServlet {
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : ['" + login + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", LogEvent.STATUS_INFO, "Updated user : ['" + login + "']", request);
                         
                         if (!newRoles.isEmpty()) {
                             userRoleService.updateUserRoles(myUser, newRoles);

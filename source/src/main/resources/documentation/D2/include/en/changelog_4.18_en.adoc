@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* Added status code for Logs (Menu Administration / Log Viewer)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.service.authentification.IAPIKeyService;
 
 /**
@@ -70,7 +71,7 @@ public class ResultCIV004 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/ResultCIV004", "CALL", "ResultCIV004 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/ResultCIV004", "CALL", LogEvent.STATUS_INFO, "ResultCIV004 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 
@@ -129,7 +130,7 @@ public class ResultCIV004 extends HttpServlet {
                     jsonResponse = ciService.getCIResult(tag, null);
 
                     // Log the result with calculation detail.
-                    logEventService.createForPublicCalls("/ResultCIV004", "CALLRESULT", "ResultCIV004 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);
+                    logEventService.createForPublicCalls("/ResultCIV004", "CALLRESULT", LogEvent.STATUS_INFO, "ResultCIV004 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);
 
                 } else {
 

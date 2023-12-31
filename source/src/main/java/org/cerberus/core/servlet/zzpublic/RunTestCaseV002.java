@@ -33,6 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
@@ -127,7 +128,7 @@ public class RunTestCaseV002 extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            logEventService.createForPublicCalls("/RunTestCaseV002", "CALL", "RunTestCaseV002 called : " + request.getRequestURL(), request);
+            logEventService.createForPublicCalls("/RunTestCaseV002", "CALL", LogEvent.STATUS_INFO, "RunTestCaseV002 called : " + request.getRequestURL(), request);
 
             if (apiKeyService.authenticate(request, response)) {
 

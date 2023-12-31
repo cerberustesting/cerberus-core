@@ -40,6 +40,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.entity.TestDataLibData;
 import org.cerberus.core.crud.factory.IFactoryTestDataLibData;
@@ -247,7 +248,7 @@ public class UpdateTestDataLib extends HttpServlet {
                          * logging entry must be added.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib : ['" + testdatalibid + "'] - name: '" + name + "' system: '"
+                        logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", LogEvent.STATUS_INFO, "Update TestDataLib : ['" + testdatalibid + "'] - name: '" + name + "' system: '"
                                 + system + "' environment: '" + environment + "' country: '" + country + "'", request);
                     }
 

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IMyVersionService;
 import org.cerberus.core.crud.service.IParameterService;
@@ -107,7 +108,7 @@ public class GetExecutionsInQueue extends HttpServlet {
             try {
 
                 logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/GetExecutionsInQueue", "START", "Forcing Queue execution Job.", request);
+                logEventService.createForPrivateCalls("/GetExecutionsInQueue", "START", LogEvent.STATUS_INFO, "Forcing Queue execution Job.", request);
 
                 threadPoolService.executeNextInQueueAsynchroneously(true);
                 response.setStatus(HttpStatus.OK.value());

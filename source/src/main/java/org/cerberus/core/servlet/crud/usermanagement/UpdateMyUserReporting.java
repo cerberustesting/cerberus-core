@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.impl.LogEventService;
 
@@ -53,7 +54,7 @@ public class UpdateMyUserReporting extends HttpServlet {
             userService.updateUser(user);
             
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createForPrivateCalls("/UpdateMyUserReporting", "UPDATE", "Update user reporting preference for user: " + login, request);
+            logEventService.createForPrivateCalls("/UpdateMyUserReporting", "UPDATE", LogEvent.STATUS_INFO, "Update user reporting preference for user: " + login, request);
             
         } catch (CerberusException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

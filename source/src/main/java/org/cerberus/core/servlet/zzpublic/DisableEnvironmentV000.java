@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.crud.service.ICountryEnvParam_logService;
@@ -92,7 +93,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", LogEvent.STATUS_INFO, "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 
@@ -177,7 +178,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
                          * Update was successful.
                          */
                         // Adding Log entry.
-                        logEventService.createForPrivateCalls("/DisableEnvironmentV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+                        logEventService.createForPublicCalls("/DisableEnvironmentV000", "UPDATE", LogEvent.STATUS_INFO, "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
 
                         // Adding CountryEnvParam Log entry.
                         countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), "", "", "Disabled.", "PublicCall");
@@ -193,7 +194,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
 
                         if (!"OK".equals(me.getMessage().getCodeString())) {
                             LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
-                            logEventService.createForPrivateCalls("/DisableEnvironmentV000", "DISABLE", "Warning on Disable environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
+                            logEventService.createForPublicCalls("/DisableEnvironmentV000", "DISABLE", LogEvent.STATUS_WARN, "Warning on Disable environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
                             OutputMessage = me.getMessage().getDescription();
                         }
 

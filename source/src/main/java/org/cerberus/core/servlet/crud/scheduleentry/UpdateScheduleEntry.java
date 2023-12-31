@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.ScheduleEntry;
 import org.cerberus.core.crud.factory.IFactoryLogEvent;
 import org.cerberus.core.crud.factory.IFactoryScheduleEntry;
@@ -131,7 +132,7 @@ public class UpdateScheduleEntry extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
-                logEventService.createForPrivateCalls("/UpdateScheduleEntry", "Update", "Update schedule entry : ['" + scheduleEntry.getName() + "']", request);
+                logEventService.createForPrivateCalls("/UpdateScheduleEntry", "UPDATE", LogEvent.STATUS_INFO, "Update schedule entry : ['" + scheduleEntry.getName() + "']", request);
             }
         }
 

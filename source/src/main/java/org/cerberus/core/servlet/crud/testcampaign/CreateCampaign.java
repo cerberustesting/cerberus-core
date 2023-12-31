@@ -34,6 +34,7 @@ import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.CampaignLabel;
 import org.cerberus.core.crud.entity.CampaignParameter;
 import org.cerberus.core.crud.entity.EventHook;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.ScheduleEntry;
 import org.cerberus.core.crud.factory.IFactoryCampaign;
 import org.cerberus.core.crud.factory.IFactoryCampaignLabel;
@@ -145,7 +146,7 @@ public class CreateCampaign extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : ['" + camp.getCampaign() + "']", request);
+                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", LogEvent.STATUS_INFO, "Create Campaign : ['" + camp.getCampaign() + "']", request);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
                 if (request.getParameter("ScheduledEntries") != null) {

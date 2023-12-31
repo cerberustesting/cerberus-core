@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
@@ -137,7 +138,7 @@ public class DeleteCountryEnvParam extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteCountryEnvParam", "DELETE", "Delete CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteCountryEnvParam", "DELETE", LogEvent.STATUS_INFO, "Delete CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
                 }
             }
         }

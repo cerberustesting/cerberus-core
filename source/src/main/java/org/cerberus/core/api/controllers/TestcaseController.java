@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +40,7 @@ import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
@@ -48,6 +50,7 @@ import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.IInvariantService;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseCountryService;
 import org.cerberus.core.crud.service.ITestCaseService;
@@ -93,6 +96,7 @@ public class TestcaseController {
     private final TestcaseMapperV001 testcaseMapper;
     private final IParameterService parameterService;
     private final PublicApiAuthenticationService apiAuthenticationService;
+    private final ILogEventService logEventService;
     private static final Logger LOG = LogManager.getLogger(TestcaseController.class);
 
     @ApiOperation("Get all testcases by test folder")
@@ -103,7 +107,10 @@ public class TestcaseController {
     public ResponseWrapper<List<TestcaseDTOV001>> findTestcasesByTest(
             @PathVariable("testFolderId") String testFolderId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+
+        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.testCaseService.findTestCaseByTest(testFolderId)
@@ -122,7 +129,10 @@ public class TestcaseController {
             @PathVariable("testFolderId") String testFolderId,
             @PathVariable("testcaseId") String testcaseId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
+
+        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.testcaseMapper
@@ -140,7 +150,10 @@ public class TestcaseController {
     public ResponseWrapper<TestcaseDTOV001> createTestcase(
             @Valid @JsonView(View.Public.POST.class) @RequestBody TestcaseDTOV001 newTestcase,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
+
+        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
 
         return ResponseWrapper.wrap(
@@ -159,7 +172,12 @@ public class TestcaseController {
     @PostMapping(path = "/create", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public String createSimplifiedTestcase(
             @Valid @JsonView(View.Public.POST.class) @RequestBody TestcaseSimplifiedCreationDTOV001 newTestcase,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
+
+        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases/create called with URL: %s", request.getRequestURL()), request);
+        this.apiAuthenticationService.authenticate(principal, apiKey);
 
         JSONObject jsonResponse = new JSONObject();
 
@@ -308,8 +326,10 @@ public class TestcaseController {
             @PathVariable("testFolderId") String testFolderId,
             @Valid @JsonView(View.Public.PUT.class) @RequestBody TestcaseDTOV001 testcaseToUpdate,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
 
+        logEventService.createForPublicCalls("/public/testcases", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
 
         return ResponseWrapper.wrap(

@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.crud.service.ICountryEnvParam_logService;
@@ -146,7 +147,7 @@ public class DisableEnvironment extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createForPrivateCalls("/DisableEnvironment", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
+                    logEventService.createForPrivateCalls("/DisableEnvironment", "UPDATE", LogEvent.STATUS_INFO, "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(system, country, env, "", "", "Disabled.", request.getUserPrincipal().getName());
@@ -159,7 +160,7 @@ public class DisableEnvironment extends HttpServlet {
 
                     if (!"OK".equals(me.getMessage().getCodeString())) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
-                        logEventService.createForPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + me.getMessage().getDescription(), request);
+                        logEventService.createForPrivateCalls("/DisableEnvironment", "DISABLE", LogEvent.STATUS_WARN, "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + me.getMessage().getDescription(), request);
                         OutputMessage = me.getMessage().getDescription();
                     }
 

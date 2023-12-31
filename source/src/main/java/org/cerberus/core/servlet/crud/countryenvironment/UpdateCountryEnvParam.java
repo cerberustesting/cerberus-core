@@ -34,6 +34,7 @@ import org.cerberus.core.crud.entity.CountryEnvLink;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvDeployType;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvLink;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentDatabase;
@@ -215,7 +216,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateCountryEnvParam", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateCountryEnvParam", "UPDATE", LogEvent.STATUS_INFO, "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
                 }
 
                 // Update the Database with the new list.

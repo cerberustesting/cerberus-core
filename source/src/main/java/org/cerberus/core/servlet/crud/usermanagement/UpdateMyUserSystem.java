@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.User;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IUserService;
@@ -84,7 +85,7 @@ public class UpdateMyUserSystem extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/UpdateMyUserSystem", "UPDATE", "Updated user : " + login, request);
+                logEventService.createForPrivateCalls("/UpdateMyUserSystem", "UPDATE", LogEvent.STATUS_INFO, "Updated user : " + login, request);
                 response.getWriter().print(sysArray);
             } catch (CerberusException ex) {
                 response.getWriter().print(ex.getMessageError().getDescription());

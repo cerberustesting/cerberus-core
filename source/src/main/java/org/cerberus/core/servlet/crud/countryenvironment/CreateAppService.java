@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author cte
@@ -190,7 +191,7 @@ public class CreateAppService extends HttpServlet {
                  * Adding Log entry.
                  */
                 logEventService = appContext.getBean(ILogEventService.class);
-                logEventService.createForPrivateCalls("/CreateAppService", "CREATE", "Create AppService : ['" + service + "']", request);
+                logEventService.createForPrivateCalls("/CreateAppService", "CREATE", LogEvent.STATUS_INFO, "Create AppService : ['" + service + "']", request);
 
                 if (file != null) {
                     AppService an = appServiceService.findAppServiceByKey(service);

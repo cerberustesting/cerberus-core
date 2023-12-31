@@ -21,13 +21,13 @@ package org.cerberus.core.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.IBatchInvariantService;
 import org.cerberus.core.crud.service.IBuildRevisionBatchService;
@@ -79,7 +79,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/NewEnvironmentEventV000", "CALL", "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewEnvironmentEventV000", "CALL", LogEvent.STATUS_INFO, "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 
@@ -175,7 +175,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
 
                     if (!"OK".equals(me.getMessage().getCodeString())) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
-                        logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
+                        logEventService.createForPublicCalls("/NewEnvironmentEventV000", "NEW", LogEvent.STATUS_WARN, "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
                         OutputMessage = me.getMessage().getDescription();
                     }
 

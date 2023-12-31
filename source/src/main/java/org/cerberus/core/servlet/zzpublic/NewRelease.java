@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BuildRevisionParameters;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.core.crud.service.IApplicationService;
@@ -81,7 +82,7 @@ public class NewRelease extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/NewRelease", "CALL", "NewRelease called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewRelease", "CALL", LogEvent.STATUS_INFO, "NewRelease called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
             

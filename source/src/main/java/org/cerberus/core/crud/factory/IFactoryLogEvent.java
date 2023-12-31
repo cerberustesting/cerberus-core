@@ -29,5 +29,5 @@ import org.cerberus.core.crud.entity.LogEvent;
  */
 public interface IFactoryLogEvent {
 
-    LogEvent create(long logEventID, long userID, String login, Timestamp time, String page, String action, String log, String remoteIP, String localIP);
+    LogEvent create(long logEventID, long userID, String login, Timestamp time, String page, String action, String status, String log, String remoteIP, String localIP);
 }

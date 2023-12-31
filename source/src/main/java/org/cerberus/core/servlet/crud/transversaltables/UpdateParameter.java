@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.Parameter;
@@ -128,7 +129,7 @@ public class UpdateParameter extends HttpServlet {
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateParameter", "UPDATE", "Update Parameter : ['" + id + "'|'" + system + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateParameter", "UPDATE", LogEvent.STATUS_INFO, "Update Parameter : ['" + id + "'|'" + system + "']", request);
                 }
                 if (system1 != null && system1value != null) {
                     Parameter para1 = factoryparameter.create(system1, id, system1value, "");
@@ -139,7 +140,7 @@ public class UpdateParameter extends HttpServlet {
                          * Object updated. Adding Log entry.
                          */
                         logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateParameter", "UPDATE", "Update Parameter : ['" + id + "'|'" + system1 + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateParameter", "UPDATE", LogEvent.STATUS_INFO, "Update Parameter : ['" + id + "'|'" + system1 + "']", request);
                     }
                 }
             }

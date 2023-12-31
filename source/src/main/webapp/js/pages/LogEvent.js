@@ -116,7 +116,7 @@ function aoColumnsFunc() {
             "data": "LogEventID",
             "like": true,
             "sName": "LogEventID",
-            "sWidth": "50px",
+            "sWidth": "40px",
             "title": doc.getDocOnline("logevent", "logeventid")
         },
         {
@@ -125,6 +125,23 @@ function aoColumnsFunc() {
             "sName": "Time",
             "sWidth": "90px",
             "title": doc.getDocOnline("logevent", "time")
+        },
+        {
+            "data": "status",
+            "sName": "Status",
+            "sWidth": "30px",
+            "title": doc.getDocOnline("logevent", "status"),
+            "mRender": function (data, type, obj) {
+                let statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
+                if (obj["status"] === "WARN") {
+                    statusEntry = '<span class="alert-warning">' + obj["status"] + '</span>';
+                } else if (obj["status"] === "INFO") {
+                    statusEntry = '<span class="alert-info">' + obj["status"] + '</span>';
+                } else if (obj["status"] === "ERROR") {
+                    statusEntry = '<span class="alert-danger">' + obj["status"] + '</span>';
+                }
+                return statusEntry;
+            }
         },
         {
             "data": "login",

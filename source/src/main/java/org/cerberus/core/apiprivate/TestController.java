@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.controller;
+package org.cerberus.core.apiprivate;
 
 import org.cerberus.core.util.datatable.DataTableInformation;
 import com.google.gson.Gson;
@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.factory.IFactoryLogEvent;
 import org.cerberus.core.crud.factory.IFactoryTest;
@@ -121,7 +122,7 @@ public class TestController {
                 /**
                  * Object created. Adding Log entry.
                  */
-                logEventService.createForPrivateCalls("/CreateTest", "CREATE", "Create Test : ['" + test + "']", request);
+                logEventService.createForPrivateCalls("/test", "CREATE", LogEvent.STATUS_INFO, "Create Test : ['" + test + "']", request);
             }
 
             /**
@@ -159,7 +160,7 @@ public class TestController {
             Answer ans = testService.deleteIfNotUsed(test);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                logEventService.createForPrivateCalls("/DeleteTest", "DELETE", "Delete Test : ['" + test + "']", request);
+                logEventService.createForPrivateCalls("/test", "DELETE", LogEvent.STATUS_INFO, "Delete Test : ['" + test + "']", request);
             }
 
             // Formating and returning the json result.
@@ -351,7 +352,7 @@ public class TestController {
                 /**
                  * Update was successful. Adding Log entry.
                  */
-                logEventService.createForPrivateCalls("/UpdateTest", "UPDATE", "Updated Test : ['" + originalTest + "']", request);
+                logEventService.createForPrivateCalls("/test", "UPDATE", LogEvent.STATUS_INFO, "Updated Test : ['" + originalTest + "']", request);
             }
 
             /**

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
@@ -74,7 +75,7 @@ public class ResultCIV001 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/ResultCIV001", "CALL", "ResultCIV001 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/ResultCIV001", "CALL", LogEvent.STATUS_INFO, "ResultCIV001 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 
@@ -230,7 +231,7 @@ public class ResultCIV001 extends HttpServlet {
                     response.getWriter().print(jsonResponse.toString());
 
                     // Log the result with calculation detail.
-                    logEventService.createForPublicCalls("/ResultCIV001", "CALLRESULT", "ResultCIV001 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
+                    logEventService.createForPublicCalls("/ResultCIV001", "CALLRESULT", LogEvent.STATUS_INFO, "ResultCIV001 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
 
                 } else {
 

@@ -40,6 +40,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.entity.TestDataLibData;
 import org.cerberus.core.crud.factory.IFactoryTestDataLib;
@@ -186,7 +187,7 @@ public class CreateTestDataLib extends HttpServlet {
                  */
                 if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : ['" + name + "']", request);
+                    logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", LogEvent.STATUS_INFO, "Create TestDataLib  : ['" + name + "']", request);
                 }
 
                 List<TestDataLibData> tdldList = new ArrayList<>();

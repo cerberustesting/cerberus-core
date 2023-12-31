@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author cte
@@ -235,7 +236,7 @@ public class UpdateAppService extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     logEventService = appContext.getBean(ILogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + originalService + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", LogEvent.STATUS_INFO, "Updated AppService : ['" + originalService + "']", request);
                 }
 
                 // Update content

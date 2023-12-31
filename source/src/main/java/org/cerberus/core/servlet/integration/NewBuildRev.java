@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.crud.service.ICountryEnvParam_logService;
@@ -156,7 +157,7 @@ public class NewBuildRev extends HttpServlet {
                     email = emailGenerationService.generateRevisionChangeEmail(system, country, env, build, revision);
                 } catch (Exception ex) {
                     LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
-                    logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + ex.getMessage(), request);
+                    logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", LogEvent.STATUS_WARN, "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + ex.getMessage(), request);
                     OutputMessage = ex.getMessage();
                 }
 
@@ -179,7 +180,7 @@ public class NewBuildRev extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createForPrivateCalls("/NewBuildRev", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
+                    logEventService.createForPrivateCalls("/NewBuildRev", "UPDATE", LogEvent.STATUS_INFO, "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(system, country, env, build, revision, "New Build Revision.", request.getUserPrincipal().getName());
@@ -191,7 +192,7 @@ public class NewBuildRev extends HttpServlet {
                         emailService.sendHtmlMail(email);
                     } catch (Exception e) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
+                        logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", LogEvent.STATUS_INFO, "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
                         OutputMessage = e.getMessage();
                     }
 

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +37,9 @@ import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.crud.entity.AppService;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.IAppServiceService;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +64,7 @@ public class AppServiceController {
     private static final Logger LOG = LogManager.getLogger(AppServiceController.class);
     private final AppServiceMapperV001 appServiceMapper;
     private final IAppServiceService appServiceService;
+    private final ILogEventService logEventService;
 
     @ApiOperation("Get a service by its service name")
     @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
@@ -71,8 +74,10 @@ public class AppServiceController {
     public ResponseWrapper<AppServiceDTOV001> findByKey(
             @PathVariable("service") String service,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal
-    ) {
+            HttpServletRequest request,
+            Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/services", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.readByKeyWithDependency(service).getItem());
         if (appServiceOptional.isPresent()) {
@@ -94,7 +99,10 @@ public class AppServiceController {
     public ResponseWrapper<AppServiceDTOV001> create(
             @Valid @JsonView(View.Public.POST.class) @RequestBody AppServiceDTOV001 serviceDTO,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/services", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.appServiceMapper.toDTO(
@@ -114,7 +122,10 @@ public class AppServiceController {
             @PathVariable("service") String service,
             @Valid @JsonView(View.Public.PUT.class) @RequestBody AppServiceDTOV001 serviceDTO,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/services", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.appServiceMapper.toDTO(

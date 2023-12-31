@@ -52,6 +52,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  *
@@ -190,7 +191,7 @@ public class UpdateApplicationObject extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateApplicationObject", "UPDATE", "Updated Application Object : ['" + application + "'|'" + object + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateApplicationObject", "UPDATE", LogEvent.STATUS_INFO, "Updated Application Object : ['" + application + "'|'" + object + "']", request);
                 }
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
             }

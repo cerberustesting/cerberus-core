@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Label;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.factory.IFactoryLabel;
 import org.cerberus.core.crud.service.ILabelService;
@@ -141,7 +142,7 @@ public class UpdateLabel extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateLabel", "UPDATE", "Update Label : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateLabel", "UPDATE", LogEvent.STATUS_INFO, "Update Label : ['" + id + "']", request);
                 }
 
             }

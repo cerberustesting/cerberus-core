@@ -24,6 +24,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,8 @@ import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlDTOV00
 import org.cerberus.core.api.dto.testcasecontrol.TestcaseStepActionControlMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
+import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +63,7 @@ public class TestcaseStepActionControlController {
     private final TestcaseStepActionControlMapperV001 controlMapper;
     private final ITestCaseStepActionControlService controlService;
     private final PublicApiAuthenticationService apiAuthenticationService;
+    private final ILogEventService logEventService;
 
     @ApiOperation("Find a Testcase Control by its key (testFolderId, testcaseId, stepId, actionId, controlId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionControlDTOV001.class)
@@ -73,7 +77,10 @@ public class TestcaseStepActionControlController {
             @PathVariable("actionId") int actionId,
             @PathVariable("controlId") int controlId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/testcasestepactioncontrols", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactioncontrols called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.controlMapper.toDTO(

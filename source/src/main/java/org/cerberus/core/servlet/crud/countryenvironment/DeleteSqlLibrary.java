@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.SqlLibrary;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ISqlLibraryService;
@@ -114,7 +115,7 @@ public class DeleteSqlLibrary extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : ['" + name + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteSqlLibrary", "DELETE", LogEvent.STATUS_INFO, "Delete SQLLibrary : ['" + name + "']", request);
                 }
             }
         }

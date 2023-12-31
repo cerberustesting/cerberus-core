@@ -43,6 +43,7 @@ import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  *
@@ -109,7 +110,7 @@ public class CreateSqlLibrary extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SQLLibrary : ['" + name + "']", request);
+                logEventService.createForPrivateCalls("/CreateSqlLibrary", "CREATE", LogEvent.STATUS_INFO, "Create SQLLibrary : ['" + name + "']", request);
             }
         }
 

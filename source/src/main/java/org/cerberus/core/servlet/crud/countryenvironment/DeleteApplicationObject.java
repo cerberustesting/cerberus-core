@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  *
@@ -129,7 +130,7 @@ public class DeleteApplicationObject extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteApplicationObject", "DELETE", "Delete Application Object: ['" + application + "'|'" + object + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteApplicationObject", "DELETE", LogEvent.STATUS_INFO, "Delete Application Object: ['" + application + "'|'" + object + "']", request);
                 }
             }
         }

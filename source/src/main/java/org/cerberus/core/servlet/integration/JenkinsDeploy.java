@@ -35,6 +35,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.impl.ParameterService;
@@ -119,7 +120,7 @@ public class JenkinsDeploy extends HttpServlet {
                  * Jenkins was called successfuly. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-                logEventService.createForPrivateCalls("/JenkinsDeploy", "DEPLOY", "JenkinsDeploy Triggered : ['" + final_url + "']", request);
+                logEventService.createForPrivateCalls("/JenkinsDeploy", "DEPLOY", LogEvent.STATUS_INFO, "JenkinsDeploy Triggered : ['" + final_url + "']", request);
                 out.print("Sent request : " + final_url);
 
             }

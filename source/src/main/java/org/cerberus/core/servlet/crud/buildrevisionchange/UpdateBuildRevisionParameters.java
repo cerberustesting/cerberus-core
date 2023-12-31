@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BuildRevisionParameters;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.IBuildRevisionParametersService;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -183,7 +184,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                             /**
                              * Update was successful. Adding Log entry.
                              */
-                            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getApplication() + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", LogEvent.STATUS_INFO, "Updated BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getApplication() + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
                         } else {
                             massErrorCounter++;
                             output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());
@@ -212,7 +213,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");
                 ans.setResultMessage(msg);
             }
-            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
+            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "MASSUPDATE", LogEvent.STATUS_INFO, msg.getDescription(), request);
         }
 
         /**

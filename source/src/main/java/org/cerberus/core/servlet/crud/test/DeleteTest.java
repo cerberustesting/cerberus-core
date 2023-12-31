@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author cerberus
@@ -149,7 +150,7 @@ public class DeleteTest extends HttpServlet {
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             // Delete was successful. Adding Log entry.
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/DeleteTest", "DELETE", "Delete Test : ['" + key + "']", request);
+                            logEventService.createForPrivateCalls("/DeleteTest", "DELETE", LogEvent.STATUS_INFO, "Delete Test : ['" + key + "']", request);
                         }
                     }
                 } catch (final CerberusException e) {

@@ -20,11 +20,13 @@
 package org.cerberus.core.crud.entity;
 
 import java.sql.Timestamp;
+import lombok.Data;
 
 /**
  *
- * @author ip100003
+ * @author vertigo17
  */
+@Data
 public class LogEvent {
 
     private long LogEventID;
@@ -33,79 +35,16 @@ public class LogEvent {
     private Timestamp time;
     private String page;
     private String action;
+    private String status;
     private String log;
     private String remoteIP;
     private String localIP;
 
-    public long getUserID() {
-        return UserID;
-    }
+    /**
+     * Invariant Log Status String.
+     */
+    public static final String STATUS_INFO = "INFO";
+    public static final String STATUS_WARN = "WARN";
+    public static final String STATUS_ERROR = "ERROR";
 
-    public void setUserID(long UserID) {
-        this.UserID = UserID;
-    }
-
-    public String getremoteIP() {
-        return remoteIP;
-    }
-
-    public void setremoteIP(String remoteIP) {
-        this.remoteIP = remoteIP;
-    }
-
-    public String getLocalIP() {
-        return localIP;
-    }
-
-    public void setLocalIP(String localIP) {
-        this.localIP = localIP;
-    }
-
-    public long getLogEventID() {
-        return LogEventID;
-    }
-
-    public void setLogEventID(long LogEventID) {
-        this.LogEventID = LogEventID;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    public String getPage() {
-        return page;
-    }
-
-    public void setPage(String page) {
-        this.page = page;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getLog() {
-        return log;
-    }
-
-    public void setLog(String log) {
-        this.log = log;
-    }
 }

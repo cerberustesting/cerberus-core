@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.controller;
+package org.cerberus.core.apiprivate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

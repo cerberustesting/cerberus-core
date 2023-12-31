@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * Creates a new property for the test case.
@@ -139,7 +140,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                 if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     //  Adding Log entry.
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/CreateNotDefinedProperty", "CREATE", "Create NotDefinedProperty:" + " " + propertyName, request);
+                    logEventService.createForPrivateCalls("/CreateNotDefinedProperty", "CREATE", LogEvent.STATUS_INFO, "Create NotDefinedProperty:" + " " + propertyName, request);
                 }
             } else {
                 rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

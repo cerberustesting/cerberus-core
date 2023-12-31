@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.entity.CampaignParameter;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.service.ICampaignParameterService;
@@ -180,7 +181,7 @@ public class AddToExecutionQueue extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/AddToExecutionQueue", "CALL", "AddToExecutionQueue called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/AddToExecutionQueue", "CALL", LogEvent.STATUS_INFO, "AddToExecutionQueue called : " + request.getRequestURL(), request);
 
         // Parsing all parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");

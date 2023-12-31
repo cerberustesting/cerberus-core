@@ -63,6 +63,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -179,7 +180,7 @@ public class UpdateCampaign extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : ['" + originalCampaign + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", LogEvent.STATUS_INFO, "Update Campaign : ['" + originalCampaign + "']", request);
 
                     if (request.getParameter("ScheduledEntries") != null) {
                         // Getting list of Schedule Entries from JSON Call

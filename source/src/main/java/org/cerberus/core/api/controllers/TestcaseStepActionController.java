@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,8 @@ import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionDTOV001;
 import org.cerberus.core.api.dto.testcaseaction.TestcaseStepActionMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
+import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +63,7 @@ public class TestcaseStepActionController {
     private final TestcaseStepActionMapperV001 actionMapper;
     private final ITestCaseStepActionService actionService;
     private final PublicApiAuthenticationService apiAuthenticationService;
+    private final ILogEventService logEventService;
 
     @ApiOperation("Find a testcase Action by its key (testFolderId, testcaseId, stepId, actionId)")
     @ApiResponse(code = 200, message = "operation successful", response = TestcaseStepActionDTOV001.class)
@@ -72,7 +76,10 @@ public class TestcaseStepActionController {
             @PathVariable("stepId") int stepId,
             @PathVariable("actionId") int actionId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/testcasestepactions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactions called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.actionMapper.toDTO(
@@ -92,7 +99,10 @@ public class TestcaseStepActionController {
             @PathVariable("testcaseId") String testcaseId,
             @PathVariable("stepId") int stepId,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/testcasestepactions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactions called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.actionService.readByVarious1WithDependency(testFolderId, testcaseId, stepId)

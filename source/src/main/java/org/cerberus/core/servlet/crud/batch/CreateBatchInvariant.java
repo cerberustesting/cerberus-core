@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.BatchInvariant;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.factory.IFactoryBatchInvariant;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -117,7 +118,7 @@ public class CreateBatchInvariant extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateBatchInvariant", "CREATE", "Create BatchInvariant : ['" + batch + "']", request);
+                logEventService.createForPrivateCalls("/CreateBatchInvariant", "CREATE", LogEvent.STATUS_INFO, "Create BatchInvariant : ['" + batch + "']", request);
             }
         }
 

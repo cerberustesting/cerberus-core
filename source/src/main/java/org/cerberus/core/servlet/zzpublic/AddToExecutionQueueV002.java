@@ -38,6 +38,7 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CampaignParameter;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
@@ -181,7 +182,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/AddToExecutionQueueV002", "CALL", "AddToExecutionQueueV002 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/AddToExecutionQueueV002", "CALL", LogEvent.STATUS_INFO, "AddToExecutionQueueV002 called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 

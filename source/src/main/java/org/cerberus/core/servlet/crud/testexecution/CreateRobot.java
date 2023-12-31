@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotCapability;
 import org.cerberus.core.crud.entity.RobotExecutor;
@@ -202,7 +203,7 @@ public class CreateRobot extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + robot + "']", request);
+                logEventService.createForPrivateCalls("/CreateRobot", "CREATE", LogEvent.STATUS_INFO, "Create Robot : ['" + robot + "']", request);
             }
         }
 

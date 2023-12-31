@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -146,7 +147,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestCaseProperties", "UPDATE", "Update testcaseProperties : ['" + tc.getTest() + "'|'" + tc.getTestcase() + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCaseProperties", "UPDATE", LogEvent.STATUS_INFO, "Update testcaseProperties : ['" + tc.getTest() + "'|'" + tc.getTestcase() + "']", request);
                     }
 
                 }

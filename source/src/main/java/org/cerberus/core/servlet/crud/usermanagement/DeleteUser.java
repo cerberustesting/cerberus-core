@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -108,7 +109,7 @@ public class DeleteUser extends HttpServlet {
                          * Object updated. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/DeleteUser", "DELETE", "Delete User : ['" + login + "']", request);
+                        logEventService.createForPrivateCalls("/DeleteUser", "DELETE", LogEvent.STATUS_INFO, "Delete User : ['" + login + "']", request);
                     }
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

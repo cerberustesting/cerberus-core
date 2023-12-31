@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -152,7 +153,7 @@ public class UpdateTestCaseMass extends HttpServlet {
                         /**
                          * Update was successful. Adding Log entry.
                          */
-                        logEventService.createForPrivateCalls("/UpdateTestCaseMass", "UPDATE", "Updated TestCase : ['" + tcData.getTest() + "'|'" + tcData.getTestcase() + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCaseMass", "UPDATE", LogEvent.STATUS_INFO, "Updated TestCase : ['" + tcData.getTest() + "'|'" + tcData.getTestcase() + "']", request);
                     } else {
                         massErrorCounter++;
                         output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(ans.getResultMessage().getDescription());
@@ -181,7 +182,7 @@ public class UpdateTestCaseMass extends HttpServlet {
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myTest.length + " object(s) updated successfuly.");
                 ans.setResultMessage(msg);
             }
-            logEventService.createForPrivateCalls("/UpdateTestCaseMass", "MASSUPDATE", msg.getDescription(), request);
+            logEventService.createForPrivateCalls("/UpdateTestCaseMass", "MASSUPDATE", LogEvent.STATUS_INFO, msg.getDescription(), request);
         }
 
         /**

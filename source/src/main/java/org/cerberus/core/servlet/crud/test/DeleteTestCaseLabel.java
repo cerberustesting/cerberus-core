@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCaseLabel;
 import org.cerberus.core.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.core.crud.service.ILabelService;
@@ -173,7 +174,7 @@ public class DeleteTestCaseLabel extends HttpServlet {
                                 /**
                                  * Update was successful. Adding Log entry.
                                  */
-                                logEventService.createForPrivateCalls("/DeleteTestCaseLabel", "DELETE", "Deleted TestCaseLabel : ['" + myIdInt + "'|'" + myTestList[j] + "'|'" + myTestCaseList[j] + "']", request);
+                                logEventService.createForPrivateCalls("/DeleteTestCaseLabel", "DELETE", LogEvent.STATUS_INFO, "Deleted TestCaseLabel : ['" + myIdInt + "'|'" + myTestList[j] + "'|'" + myTestCaseList[j] + "']", request);
                             } else {
                                 massErrorCounter++;
                                 output_message.append("<br>Label : ").append(myLabelId).append(" Test : '").append(myTestList[j]).append("' TestCase : '").append(myTestCaseList[j]).append("' - ").append(ans.getResultMessage().getDescription());
@@ -204,7 +205,7 @@ public class DeleteTestCaseLabel extends HttpServlet {
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + (myTestList.length * myLabelIdList.length) + " label links(s) deleted successfuly.");
                 ans.setResultMessage(msg);
             }
-            logEventService.createForPrivateCalls("/DeleteTestCaseLabel", "MASSUPDATE", msg.getDescription(), request);
+            logEventService.createForPrivateCalls("/DeleteTestCaseLabel", "MASSUPDATE", LogEvent.STATUS_INFO, msg.getDescription(), request);
         }
 
         /**

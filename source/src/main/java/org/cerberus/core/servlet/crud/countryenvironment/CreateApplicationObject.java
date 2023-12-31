@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  *
@@ -168,7 +169,7 @@ public class CreateApplicationObject extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
+                logEventService.createForPrivateCalls("/CreateApplicationObject", "CREATE", LogEvent.STATUS_INFO, "Create Application Object: ['" + application + "','" + object + "']", request);
 
                 if (file != null) {
                     AnswerItem an = applicationobjectService.readByKey(application, object);

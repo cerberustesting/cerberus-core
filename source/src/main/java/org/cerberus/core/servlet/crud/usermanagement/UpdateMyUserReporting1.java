@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.entity.User;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -145,7 +146,7 @@ public class UpdateMyUserReporting1 extends HttpServlet {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution reporting filters ").replace("%OPERATION%", "Update"));
 
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/UpdateMyUserReporting1", "UPDATE", "Update user reporting preference for user: " + login, request);
+                logEventService.createForPrivateCalls("/UpdateMyUserReporting1", "UPDATE", LogEvent.STATUS_INFO, "Update user reporting preference for user: " + login, request);
             } else {
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to update User was not found!"));
             }

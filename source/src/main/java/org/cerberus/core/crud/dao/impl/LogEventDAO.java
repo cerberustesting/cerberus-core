@@ -144,6 +144,7 @@ public class LogEventDAO implements ILogEventDAO {
             searchSQL.append(" or `login` like ?");
             searchSQL.append(" or `page` like ?");
             searchSQL.append(" or `action` like ?");
+            searchSQL.append(" or `status` like ? ");
             searchSQL.append(" or `log` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -178,6 +179,7 @@ public class LogEventDAO implements ILogEventDAO {
             try {
                 int i = 1;
                 if (!StringUtil.isEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -262,8 +264,8 @@ public class LogEventDAO implements ILogEventDAO {
     public Answer create(LogEvent logevent) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO logevent (userID, Login, Page, Action, Log, remoteIP, localIP) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?)");
+        query.append("INSERT INTO logevent (userID, Login, Page, Action, Status, Log, remoteIP, localIP) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -273,13 +275,15 @@ public class LogEventDAO implements ILogEventDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setLong(1, logevent.getUserID());
-                preStat.setString(2, logevent.getLogin());
-                preStat.setString(3, logevent.getPage());
-                preStat.setString(4, logevent.getAction());
-                preStat.setString(5, StringUtils.left(logevent.getLog(), 500));
-                preStat.setString(6, logevent.getremoteIP());
-                preStat.setString(7, logevent.getLocalIP());
+                int i=1;
+                preStat.setLong(i++, logevent.getUserID());
+                preStat.setString(i++, logevent.getLogin());
+                preStat.setString(i++, logevent.getPage());
+                preStat.setString(i++, logevent.getAction());
+                preStat.setString(i++, logevent.getStatus());
+                preStat.setString(i++, StringUtils.left(logevent.getLog(), 500));
+                preStat.setString(i++, logevent.getRemoteIP());
+                preStat.setString(i++, logevent.getLocalIP());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -322,10 +326,11 @@ public class LogEventDAO implements ILogEventDAO {
         Timestamp time = resultSet.getTimestamp("time");
         String page = resultSet.getString("page") == null ? "" : resultSet.getString("page");
         String action = resultSet.getString("action") == null ? "" : resultSet.getString("action");
+        String status = resultSet.getString("Status") == null ? "" : resultSet.getString("Status");
         String log = resultSet.getString("log") == null ? "" : resultSet.getString("log");
         String remoteIP = resultSet.getString("remoteIP") == null ? "" : resultSet.getString("remoteIP");
         String localIP = resultSet.getString("localIP") == null ? "" : resultSet.getString("localIP");
-        return factoryLogEvent.create(logEventID, userID, login, time, page, action, log, remoteIP, localIP);
+        return factoryLogEvent.create(logEventID, userID, login, time, page, action, status, log, remoteIP, localIP);
     }
 
     @Override
@@ -350,6 +355,7 @@ public class LogEventDAO implements ILogEventDAO {
             searchSQL.append(" or `login` like ?");
             searchSQL.append(" or `page` like ?");
             searchSQL.append(" or `action` like ?");
+            searchSQL.append(" or `status` like ?");
             searchSQL.append(" or `log` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -374,6 +380,7 @@ public class LogEventDAO implements ILogEventDAO {
 
             int i = 1;
             if (!StringUtil.isEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

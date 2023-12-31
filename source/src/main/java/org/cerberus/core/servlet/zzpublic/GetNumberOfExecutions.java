@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * This servlet is for monitoring purpose. It reports the number of execution of
@@ -100,7 +101,7 @@ public class GetNumberOfExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutions called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", LogEvent.STATUS_INFO, "GetNumberOfExecutions called : " + request.getRequestURL(), request);
 
         if (apiKeyService.authenticate(request, response)) {
 

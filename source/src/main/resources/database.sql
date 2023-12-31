@@ -6255,3 +6255,9 @@ DROP TABLE `dashboardEntry`, `dashboardGroupEntries`, `dashboardGroupEntriesAppl
 -- 1760
 CREATE TABLE `datafile` ( `ID` int(11) NOT NULL AUTO_INCREMENT,  `Fileid` varchar(150) NOT NULL,  `FileName` varchar(250) DEFAULT NULL,  `UsrCreated` varchar(45) DEFAULT NULL,  `DateCreated` timestamp NULL DEFAULT NULL,  `UsrModif` varchar(45) DEFAULT NULL,  `DateModif` timestamp NULL DEFAULT NULL,  PRIMARY KEY (`FileId`),  UNIQUE KEY `ID_UNIQUE` (`ID`) )
   ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+
+-- 1761
+ALTER TABLE logevent 
+    MODIFY COLUMN remoteIP varchar(200) NULL,
+    MODIFY COLUMN localIP varchar(200) NULL,
+    ADD Status varchar(50) NULL AFTER `Action`;

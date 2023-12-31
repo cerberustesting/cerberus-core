@@ -45,6 +45,7 @@ import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -130,7 +131,7 @@ public class UpdateSqlLibrary extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateSqlLibrary", "UPDATE", LogEvent.STATUS_INFO, "Updated SqlLibrary : ['" + name + "']", request);
                 }
 
             }

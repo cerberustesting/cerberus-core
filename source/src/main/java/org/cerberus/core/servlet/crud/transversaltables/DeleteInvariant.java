@@ -44,6 +44,7 @@ import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 
 /**
  * @author bcivel
@@ -112,7 +113,7 @@ public class DeleteInvariant extends HttpServlet {
                      * Object updated. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteInvariant", "DELETE", "Delete Invariant : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteInvariant", "DELETE", LogEvent.STATUS_INFO, "Delete Invariant : ['" + id + "']", request);
                 }
             } else {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

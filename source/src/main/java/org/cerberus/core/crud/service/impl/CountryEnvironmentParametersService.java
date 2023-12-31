@@ -25,6 +25,7 @@ import java.util.List;
 import org.cerberus.core.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.core.crud.entity.CountryEnvParam;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryCountryEnvParam;
 import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -101,7 +102,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
             if (!answer.isCodeStringEquals("OK")) {
                 return answer;
             } else {
-                logEventService.createForPrivateCalls("", "CREATE", "Create CountryEnvParam : ['" + object.getSystem() + "'|'" + object.getCountry() + "'|'" + object.getEnvironment() + "']");
+                logEventService.createForPrivateCalls("", "CREATE", LogEvent.STATUS_INFO , "Create CountryEnvParam : ['" + object.getSystem() + "'|'" + object.getCountry() + "'|'" + object.getEnvironment() + "']");
             }
         }
         answer = countryEnvironmentParametersDao.create(object);

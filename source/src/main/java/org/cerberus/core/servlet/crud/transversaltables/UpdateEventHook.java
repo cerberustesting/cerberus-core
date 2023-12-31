@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.EventHook;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.factory.IFactoryEventHook;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.crud.service.IEventHookService;
@@ -141,7 +142,7 @@ public class UpdateEventHook extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateEventHook", "UPDATE", "Update EventHook : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateEventHook", "UPDATE", LogEvent.STATUS_INFO, "Update EventHook : ['" + id + "']", request);
                 }
 
             }

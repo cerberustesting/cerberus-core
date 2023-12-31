@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiResponse;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,8 @@ import org.cerberus.core.api.dto.invariant.InvariantMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.InvariantApiService;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
+import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.exception.CerberusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,6 +61,7 @@ public class InvariantController {
     private static final String API_KEY = "X-API-KEY";
     private final InvariantApiService invariantApiService;
     private final InvariantMapperV001 invariantMapper;
+    private final ILogEventService logEventService;
     private final PublicApiAuthenticationService apiAuthenticationService;
     private static final Logger LOG = LogManager.getLogger(InvariantController.class);
 
@@ -69,7 +73,10 @@ public class InvariantController {
     public ResponseWrapper<List<InvariantDTOV001>> findInvariantByIdName(
             @PathVariable("idName") String idName,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
+        
+        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.invariantApiService.readyByIdName(idName)
@@ -88,7 +95,10 @@ public class InvariantController {
             @PathVariable("idName") String idName,
             @PathVariable("value") String value,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
             Principal principal) throws CerberusException {
+        
+        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.invariantMapper.toDTO(

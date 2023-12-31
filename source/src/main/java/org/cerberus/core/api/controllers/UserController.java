@@ -27,6 +27,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +38,9 @@ import org.cerberus.core.api.dto.user.UserMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.User;
+import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IUserService;
 import org.cerberus.core.exception.CerberusException;
 import org.springframework.http.HttpStatus;
@@ -61,6 +64,7 @@ public class UserController {
     private static final Logger LOG = LogManager.getLogger(UserController.class);
     private final UserMapperV001 userMapper;
     private final IUserService userService;
+    private final ILogEventService logEventService;
 
     @ApiOperation("Get a user by its login name")
     @ApiResponse(code = 200, message = "ok", response = AppServiceDTOV001.class)
@@ -70,8 +74,10 @@ public class UserController {
     public ResponseWrapper<UserDTOV001> findByKey(
             @PathVariable("user") String user,
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal
-    ) {
+            HttpServletRequest request,
+            Principal principal) {
+        
+        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         Optional<User> userOptional = Optional.ofNullable(this.userService.readByKey(user).getItem());
         if (userOptional.isPresent()) {
@@ -92,8 +98,10 @@ public class UserController {
     @GetMapping(path = "/", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWrapper<List<UserDTOV001>> findAll(
             @RequestHeader(name = API_KEY, required = false) String apiKey,
-            Principal principal
-    ) throws CerberusException {
+            HttpServletRequest request,
+            Principal principal) throws CerberusException {
+        
+        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.userService.findallUser()

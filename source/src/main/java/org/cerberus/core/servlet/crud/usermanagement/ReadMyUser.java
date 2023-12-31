@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.config.Property;
 import org.cerberus.core.crud.entity.Invariant;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.UserRole;
 import org.cerberus.core.crud.entity.User;
@@ -116,7 +117,7 @@ public class ReadMyUser extends HttpServlet {
                         LOG.debug("Create User.");
                         userService.insertUserNoAuth(myUser);
                         userSystemService.createSystemAutomatic(user);
-                        logEventService.createForPrivateCalls("/ReadMyUser", "CREATE", "Create User automaticaly: ['" + user + "']", request);
+                        logEventService.createForPrivateCalls("/ReadMyUser", "CREATE", LogEvent.STATUS_INFO, "Create User automaticaly: ['" + user + "']", request);
 
                     }
                 }

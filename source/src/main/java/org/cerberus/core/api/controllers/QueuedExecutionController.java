@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.core.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -36,6 +35,7 @@ import org.cerberus.core.api.dto.queueexecution.QueuedExecutionResultMapperV001;
 import org.cerberus.core.api.dto.views.View;
 import org.cerberus.core.api.services.PublicApiAuthenticationService;
 import org.cerberus.core.api.services.QueuedExecutionService;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author lucashimpens
  */
-
 @AllArgsConstructor
 @Api(tags = "Queued Execution")
 @Validated
@@ -55,17 +54,16 @@ public class QueuedExecutionController {
 
     private static final String API_VERSION_1 = "X-API-VERSION=1";
     private static final String API_KEY = "X-API-KEY";
+
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final QueuedExecutionService queuedExecutionService;
-
     private final QueuedExecutionMapperV001 queuedExecutionMapper;
     private final ILogEventService logEventService;
     private final QueuedExecutionResultMapperV001 queuedExecutionResultMapper;
 
     @ApiOperation(value = "Add a testcases list to the execution queue", notes = "testcases, countries, environments and robots are required.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Test cases successfully added to the execution queue", response = QueuedExecutionResultDTOV001.class),
-    })
+        @ApiResponse(code = 200, message = "Test cases successfully added to the execution queue", response = QueuedExecutionResultDTOV001.class),})
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
     @PostMapping(headers = {API_VERSION_1}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -74,7 +72,8 @@ public class QueuedExecutionController {
             @JsonView(View.Public.POST.class) @RequestBody(required = false) QueuedExecutionDTOV001 queuedExecution,
             HttpServletRequest request,
             Principal principal) {
-        logEventService.createForPublicCalls("/queuedexecutions", "CALL", String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
+        
+        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.queuedExecutionResultMapper.toDto(
@@ -86,12 +85,12 @@ public class QueuedExecutionController {
         );
     }
 
-    @ApiOperation(value = "Add a campaign to the execution queue", notes = "You can override the default campaign parameters with the JSON body. \n " +
-            "Write in the JSON only the parameters you want to override. \n" +
-            "If you don't want to override parameters, send an empty json ({}).")
+    @ApiOperation(value = "Add a campaign to the execution queue", notes = "You can override the default campaign parameters with the JSON body. \n "
+            + "Write in the JSON only the parameters you want to override. \n"
+            + "If you don't want to override parameters, send an empty json ({}).")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Campaign successfully added to the execution queue.", response = QueuedExecutionResultDTOV001.class),
-            @ApiResponse(code = 404, message = "Campaign doesn't exist.")
+        @ApiResponse(code = 200, message = "Campaign successfully added to the execution queue.", response = QueuedExecutionResultDTOV001.class),
+        @ApiResponse(code = 404, message = "Campaign doesn't exist.")
     })
     @JsonView(View.Public.GET.class)
     @ResponseStatus(HttpStatus.OK)
@@ -102,7 +101,8 @@ public class QueuedExecutionController {
             @PathVariable("campaignId") String campaignId,
             HttpServletRequest request,
             Principal principal) {
-        logEventService.createForPublicCalls("/queuedexecutions", "CALL", String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
+        
+        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
         this.apiAuthenticationService.authenticate(principal, apiKey);
         return ResponseWrapper.wrap(
                 this.queuedExecutionResultMapper.toDto(
