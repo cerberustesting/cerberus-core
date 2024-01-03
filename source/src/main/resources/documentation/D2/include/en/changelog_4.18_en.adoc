@@ -5,7 +5,8 @@
 *Improvements / New features*
 [square]
 * Added status code for Logs (Menu Administration / Log Viewer)
+* Size of war binary reduced by cleaning a few unnecessary maven dependencies.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Service /GetTestCasesV001 is no longuer working. Please use /GetTestCasesV002 in stead or (even better) the /api/public/testcases/Examples/0001A endpoint.

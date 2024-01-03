@@ -447,7 +447,8 @@ public class RecorderService implements IRecorderService {
             File newImage = new File(recorder.getFullFilename());
             OutputStream outStream = new FileOutputStream(newImage);
             outStream.write(bytes);
-            IOUtils.close(outStream);
+            outStream.close();
+//            IOUtils.close(outStream);
 
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorder.getLevel(), "Picture " + valueFieldName, recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);

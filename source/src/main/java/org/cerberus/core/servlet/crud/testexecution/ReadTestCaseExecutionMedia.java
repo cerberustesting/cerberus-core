@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.common.io.Files;
 import com.mortennobel.imagescaling.DimensionConstrain;
 import com.mortennobel.imagescaling.ResampleOp;
 import java.awt.image.BufferedImage;
@@ -50,7 +49,6 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.servlet.ServletUtil;
-import org.jfree.util.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -285,9 +283,9 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setContentType("application/pdf");
         response.setContentLength((int) pdfFile.length());
         try {
-            Files.copy(pdfFile, response.getOutputStream());
+            FileUtils.copyFile(pdfFile, response.getOutputStream());
         } catch (IOException e) {
-            Log.warn(e);
+            LOG.warn(e);
         }
 
     }
@@ -301,9 +299,9 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setContentLength((int) mp4File.length());
         response.setHeader("Content-Range",  "bytes start-end/length");
         try {
-            Files.copy(mp4File, response.getOutputStream());
+            FileUtils.copyFile(mp4File, response.getOutputStream());
         } catch (IOException e) {
-            Log.warn(e);
+            LOG.warn(e);
         }
 
     }

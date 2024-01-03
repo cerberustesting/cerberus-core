@@ -21,7 +21,6 @@ package org.cerberus.core.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jfree.util.Log;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -477,7 +476,7 @@ public final class XmlUtil {
             document.appendChild(document.adoptNode(node.cloneNode(true)));
             return document;
         } catch (DOMException e) {
-            Log.warn("Unable to create document from node " + node, e);
+            LOG.warn("Unable to create document from node " + node, e);
             return null;
         }
     }
