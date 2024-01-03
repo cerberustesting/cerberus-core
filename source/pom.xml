@@ -68,7 +68,7 @@
         <!-- SOAP -->
         <javax.xml.soap.version>1.4.0</javax.xml.soap.version>
         <jaxb.version>2.3.0</jaxb.version>
-        <!--        <saaj.version>1.5.1</saaj.version>-->
+        <saaj.version>1.5.1</saaj.version>
         <!--        <jaxws.version>2.2.6</jaxws.version>-->
         <!-- Kafka -->
         <kafka-clients.version>2.6.3</kafka-clients.version>
@@ -341,17 +341,24 @@
             <version>${sftm-tree-matching.version}</version>
         </dependency>
 
-        <!-- Compile scope -->
+        <!-- SOAP Calls -->
         <dependency>
             <groupId>javax.xml.soap</groupId>
             <artifactId>javax.xml.soap-api</artifactId>
             <version>${javax.xml.soap.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>${saaj.version}</version>
+        </dependency>
+        <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb.version}</version>
         </dependency>
+
+        <!-- General usage scope -->
         <!--        <dependency>
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
@@ -372,11 +379,6 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>${jaxb.version}</version>
-        </dependency>-->
-        <!--        <dependency>
-            <groupId>com.sun.xml.messaging.saaj</groupId>
-            <artifactId>saaj-impl</artifactId>
-            <version>${saaj.version}</version>
         </dependency>-->
         <!--        <dependency>
             <groupId>javax.servlet</groupId>
