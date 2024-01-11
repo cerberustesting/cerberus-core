@@ -66,7 +66,9 @@ public class ApplicationEnvironmentApiService {
         }
         LOG.debug("Exist.");
 
-        newApplicationEnvironment.setUsrModif(principal.getName());
+        if (principal != null) {
+            newApplicationEnvironment.setUsrModif(principal.getName());
+        }
         newApplicationEnvironment.setSystem(system);
         newApplicationEnvironment.setCountry(countryId);
         newApplicationEnvironment.setEnvironment(environmentId);
