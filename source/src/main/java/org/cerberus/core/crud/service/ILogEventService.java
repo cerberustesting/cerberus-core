@@ -97,11 +97,22 @@ public interface ILogEventService {
     void createForPublicCalls(String page, String action, String status, String log, HttpServletRequest request);
 
     /**
-     * 
+     *
+     * @param page
+     * @param action
+     * @param status
+     * @param log
+     * @param request
+     * @param login
+     */
+    void createForPublicCalls(String page, String action, String status, String log, HttpServletRequest request, String login);
+
+    /**
+     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

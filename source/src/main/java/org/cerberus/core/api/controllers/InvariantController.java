@@ -75,9 +75,10 @@ public class InvariantController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) throws CerberusException {
-        
-        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.invariantApiService.readyByIdName(idName)
                         .stream()
@@ -97,9 +98,10 @@ public class InvariantController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) throws CerberusException {
-        
-        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/invariants", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /invariants called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.invariantMapper.toDTO(
                         this.invariantApiService.readByKey(idName, value)

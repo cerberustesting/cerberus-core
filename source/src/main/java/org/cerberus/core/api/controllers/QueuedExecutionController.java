@@ -73,8 +73,9 @@ public class QueuedExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.queuedExecutionResultMapper.toDto(
                         this.queuedExecutionService.addTestcasesToExecutionQueue(
@@ -102,8 +103,9 @@ public class QueuedExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/queuedexecutions", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /queuedexecutions called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.queuedExecutionResultMapper.toDto(
                         this.queuedExecutionService.addCampaignToExecutionQueue(

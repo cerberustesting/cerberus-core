@@ -169,7 +169,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AppService createAPI(AppService newAppService) {
+    public AppService createAPI(AppService newAppService, String login) {
         if (newAppService.getService() == null || newAppService.getService().isEmpty()) {
             throw new InvalidRequestException("service is required to create an ApplicationService");
         }
@@ -181,7 +181,7 @@ public class AppServiceService implements IAppServiceService {
         if (newAppService.getMethod() == null || newAppService.getMethod().isEmpty()) {
             throw new InvalidRequestException("method is required to create an ApplicationService");
         }
-
+        newAppService.setUsrCreated(login);
         Answer answer = this.create(newAppService);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -190,27 +190,27 @@ public class AppServiceService implements IAppServiceService {
                     if (StringUtil.isEmpty(appServiceContent.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceContent");
                     }
-                    appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "defaultUser" : newAppService.getUsrCreated());
+                    appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "" : newAppService.getUsrCreated());
                     appServiceContent.setService(newAppService.getService());
                 });
 
                 Answer answerContent = this.appServiceContentService.createList(newAppService.getContentList());
-                if (answerContent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (!answerContent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     throw new FailedInsertOperationException("Failed to insert the content list in the database");
                 }
             }
 
             if (CollectionUtils.isNotEmpty(newAppService.getHeaderList())) {
                 newAppService.getHeaderList().forEach(appServiceHeader -> {
-                    if (StringUtil.isNotEmpty(appServiceHeader.getKey())) {
+                    if (StringUtil.isEmpty(appServiceHeader.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceHeader");
                     }
-                    appServiceHeader.setUsrCreated(newAppService.getUsrCreated());
+                    appServiceHeader.setUsrCreated(newAppService.getUsrCreated() == null ? "" : newAppService.getUsrCreated());
                     appServiceHeader.setService(newAppService.getService());
                 });
 
                 Answer answerHeader = this.appServiceHeaderService.createList(newAppService.getHeaderList());
-                if (answerHeader.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (!answerHeader.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     throw new FailedInsertOperationException("Failed to insert the content list in the database");
                 }
             }
@@ -239,7 +239,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AppService updateAPI(String service, AppService appServiceToUpdate) {
+    public AppService updateAPI(String service, AppService appServiceToUpdate, String login) {
         if (service == null || service.isEmpty()) {
             throw new InvalidRequestException("service is required to update an ApplicationService");
         }
@@ -250,17 +250,20 @@ public class AppServiceService implements IAppServiceService {
         }
 
         appServiceToUpdate.setService(appServiceFromDb.getService());
+        appServiceToUpdate.setUsrModif(login);
         if (appServiceToUpdate.getUsrModif() == null) {
-            appServiceToUpdate.setUsrModif("defaultUser");
+            appServiceToUpdate.setUsrModif("");
         }
         Answer answerService = this.update(service, appServiceToUpdate);
         if (answerService.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            appServiceToUpdate.getContentList().forEach(appServiceContent -> appServiceContent.setUsrModif(appServiceToUpdate.getUsrModif()));
+            appServiceToUpdate.getHeaderList().forEach(appServiceHeader -> appServiceHeader.setUsrModif(appServiceToUpdate.getUsrModif()));
+            appServiceToUpdate.getHeaderList().forEach(appServiceHeader -> appServiceHeader.setUsrCreated(appServiceToUpdate.getUsrModif()));
             Answer answerHeader = this.appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, appServiceToUpdate.getHeaderList());
             if (!answerHeader.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 throw new FailedInsertOperationException("Unable to update service headers for service=" + service);
             }
-            appServiceToUpdate.getHeaderList().forEach(appServiceHeader -> appServiceHeader.setUsrModif(appServiceToUpdate.getUsrModif()));
+            appServiceToUpdate.getContentList().forEach(appServiceContent -> appServiceContent.setUsrModif(appServiceToUpdate.getUsrModif()));
+            appServiceToUpdate.getContentList().forEach(appServiceContent -> appServiceContent.setUsrCreated(appServiceToUpdate.getUsrModif()));
             Answer answerContent = this.appServiceContentService.compareListAndUpdateInsertDeleteElements(service, appServiceToUpdate.getContentList());
             if (!answerContent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 throw new FailedInsertOperationException("Unable to update service contents for service=" + service);

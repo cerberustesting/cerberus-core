@@ -77,8 +77,9 @@ public class UserController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request, login);
+        
         Optional<User> userOptional = Optional.ofNullable(this.userService.readByKey(user).getItem());
         if (userOptional.isPresent()) {
             return ResponseWrapper.wrap(
@@ -101,8 +102,9 @@ public class UserController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
         
-        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/users", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /users called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.userService.findallUser()
                         .stream()

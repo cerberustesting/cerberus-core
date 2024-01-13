@@ -170,7 +170,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean verifyAPIKey(String apiKey) {
+    public String verifyAPIKey(String apiKey) {
         return userDAO.verifyAPIKey(apiKey);
     }
 

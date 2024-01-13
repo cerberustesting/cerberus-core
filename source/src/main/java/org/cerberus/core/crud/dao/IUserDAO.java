@@ -112,9 +112,9 @@ public interface IUserDAO {
 
     /**
      * @param apiKey
-     * @return true if password match and false if password does not match.
+     * @return null string if apikey does not match and userlogin if it match.
      */
-    boolean verifyAPIKey(String apiKey);
+    String verifyAPIKey(String apiKey);
     
     /**
      *

@@ -110,8 +110,9 @@ public class TestcaseController {
             HttpServletRequest request,
             Principal principal) {
 
-        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.testCaseService.findTestCaseByTest(testFolderId)
                         .stream()
@@ -132,8 +133,9 @@ public class TestcaseController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.testcaseMapper
                         .toDTO(
@@ -153,8 +155,8 @@ public class TestcaseController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request, login);
 
         return ResponseWrapper.wrap(
                 this.testcaseMapper.toDTO(
@@ -176,8 +178,8 @@ public class TestcaseController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases/create called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /testcases/create called with URL: %s", request.getRequestURL()), request, login);
 
         JSONObject jsonResponse = new JSONObject();
 
@@ -194,7 +196,7 @@ public class TestcaseController {
                             .svnurl("")
                             .bugTrackerNewUrl("")
                             .bugTrackerNewUrl("")
-                            .usrCreated(principal.getName())
+                            .usrCreated(login)
                             .build());
 
             this.countryEnvironmentParametersService.create(
@@ -231,7 +233,7 @@ public class TestcaseController {
                         .isActivePROD(true)
                         .isActiveQA(true)
                         .isActiveUAT(true)
-                        .usrCreated(principal.getName())
+                        .usrCreated(login)
                         .build());
 
         List<Invariant> countryInvariantList = this.invariantService.readByIdName("COUNTRY");
@@ -242,7 +244,7 @@ public class TestcaseController {
                             .test(newTestcase.getTestFolderId())
                             .testcase(newTestcase.getTestcaseId())
                             .country(countryInvariant.getValue())
-                            .usrCreated(principal.getName())
+                            .usrCreated(login)
                             .build());
         }
 
@@ -259,7 +261,7 @@ public class TestcaseController {
                             .loop("onceIfConditionTrue")
                             .conditionOperator("always")
                             .description("Go to the homepage and take a screenshot")
-                            .usrCreated(principal.getName())
+                            .usrCreated(login)
                             .build());
 
             this.testCaseStepActionService.create(
@@ -279,7 +281,7 @@ public class TestcaseController {
                             .value3("")
                             .description("Open the homepage")
                             .conditionOperator("always")
-                            .usrCreated(principal.getName())
+                            .usrCreated(login)
                             .build());
 
             this.testCaseStepActionControlService.create(
@@ -299,7 +301,7 @@ public class TestcaseController {
                             .value2("")
                             .value3("")
                             .description("Take a screenshot")
-                            .usrCreated(principal.getName())
+                            .usrCreated(login)
                             .build());
 
         }
@@ -310,7 +312,7 @@ public class TestcaseController {
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "success");
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOG.error(e, e);
         }
 
         return jsonResponse.toString();
@@ -329,8 +331,8 @@ public class TestcaseController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/testcases", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcases", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /testcases called with URL: %s", request.getRequestURL()), request, login);
 
         return ResponseWrapper.wrap(
                 this.testcaseMapper.toDTO(

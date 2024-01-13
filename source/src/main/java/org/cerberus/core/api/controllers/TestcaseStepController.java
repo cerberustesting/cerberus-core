@@ -80,8 +80,8 @@ public class TestcaseStepController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request, login);
 
         return ResponseWrapper.wrap(
                 this.testcaseStepApiService
@@ -103,8 +103,9 @@ public class TestcaseStepController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.testcaseStepApiService.findByTestFolderId(testFolderId)
                         .stream()
@@ -125,8 +126,9 @@ public class TestcaseStepController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.testCaseStepService.readByTestTestCaseAPI(testFolderId, testcaseId)
                         .stream()
@@ -149,8 +151,9 @@ public class TestcaseStepController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcasesteps", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasesteps called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.stepMapper.toDTO(
                         this.testCaseStepService.readTestcaseStepWithDependenciesAPI(

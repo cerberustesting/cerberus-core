@@ -78,9 +78,10 @@ public class TestcaseStepActionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/testcasestepactions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
         return ResponseWrapper.wrap(
                 this.actionMapper.toDTO(
                         this.actionService.findTestCaseStepActionbyKey(
@@ -101,9 +102,10 @@ public class TestcaseStepActionController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/testcasestepactions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
         return ResponseWrapper.wrap(
                 this.actionService.readByVarious1WithDependency(testFolderId, testcaseId, stepId)
                         .getDataList()

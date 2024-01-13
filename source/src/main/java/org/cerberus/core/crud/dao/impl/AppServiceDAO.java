@@ -511,6 +511,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(" WHERE `Service` = ?");
 
         LOG.debug(SQL_MESSAGE, query);
+        LOG.debug("SQL.param.service (new) : {}", object.getService());
         LOG.debug("SQL.param.application : {}", object.getApplication());
         LOG.debug("SQL.param.service : {}", service);
 

@@ -57,7 +57,7 @@ public class ApplicationEnvironmentApiService {
     }
 
     public CountryEnvironmentParameters updateApplicationEnvironmentPATCH(String system, String applicationId, String countryId, String environmentId,
-            CountryEnvironmentParameters newApplicationEnvironment, Principal principal) throws CerberusException {
+            CountryEnvironmentParameters newApplicationEnvironment, Principal principal, String login) throws CerberusException {
 
         AnswerItem<CountryEnvironmentParameters> cep = this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId);
         if (cep.getItem() == null) {
@@ -66,9 +66,8 @@ public class ApplicationEnvironmentApiService {
         }
         LOG.debug("Exist.");
 
-        if (principal != null) {
-            newApplicationEnvironment.setUsrModif(principal.getName());
-        }
+        newApplicationEnvironment.setUsrModif(login != null ? login : "");
+
         newApplicationEnvironment.setSystem(system);
         newApplicationEnvironment.setCountry(countryId);
         newApplicationEnvironment.setEnvironment(environmentId);
@@ -92,7 +91,7 @@ public class ApplicationEnvironmentApiService {
     }
 
     public CountryEnvironmentParameters updateApplicationEnvironmentPUT(String system, String applicationId, String countryId, String environmentId,
-            CountryEnvironmentParameters newApplicationEnvironment, Principal principal) throws CerberusException {
+            CountryEnvironmentParameters newApplicationEnvironment, Principal principal, String login) throws CerberusException {
 
         AnswerItem<CountryEnvironmentParameters> cep = this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId);
         if (cep.getItem() == null) {
@@ -101,7 +100,8 @@ public class ApplicationEnvironmentApiService {
         }
         LOG.debug("Exist.");
 
-        newApplicationEnvironment.setUsrModif(principal.getName());
+        newApplicationEnvironment.setUsrModif(login != null ? login : "");
+        
         newApplicationEnvironment.setSystem(system);
         newApplicationEnvironment.setCountry(countryId);
         newApplicationEnvironment.setEnvironment(environmentId);

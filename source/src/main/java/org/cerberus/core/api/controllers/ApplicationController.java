@@ -86,8 +86,10 @@ public class ApplicationController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) throws CerberusException {
-        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.applicationMapper.toDTO(
                         this.applicationApiService.readByKeyWithDependency(application)
@@ -108,8 +110,9 @@ public class ApplicationController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+        
         // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(application);
         if (applicationObj == null) {
@@ -137,8 +140,9 @@ public class ApplicationController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/applications", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/applications", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+        
         // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(applicationId);
         if (applicationObj == null) {
@@ -154,7 +158,8 @@ public class ApplicationController {
                                 countryId,
                                 environmentId,
                                 this.applicationEnvironmentMapper.toEntity(applicationEnvironmentToUpdate),
-                                principal
+                                principal,
+                                login
                         ))
         );
     }
@@ -173,8 +178,9 @@ public class ApplicationController {
             HttpServletRequest request,
             Principal principal) throws CerberusException {
 
-        logEventService.createForPublicCalls("/public/applications", "CALL-PATCH", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/applications", "CALL-PATCH", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
+
         // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(applicationId);
         if (applicationObj == null) {
@@ -190,7 +196,8 @@ public class ApplicationController {
                                 countryId,
                                 environmentId,
                                 this.applicationEnvironmentMapper.toEntity(applicationEnvironmentToUpdate),
-                                principal
+                                principal,
+                                login
                         ))
         );
     }

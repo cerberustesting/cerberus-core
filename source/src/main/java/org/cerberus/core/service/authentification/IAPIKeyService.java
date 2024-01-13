@@ -49,6 +49,14 @@ public interface IAPIKeyService {
 
     /**
      *
+     * @param principal
+     * @param apiKey
+     * @return null if not authenticated and login if authenticated.
+     */
+    public String authenticateLogin(Principal principal, String apiKey);
+    
+    /**
+     *
      * @return
      */
     public String getServiceAccountAPIKey();

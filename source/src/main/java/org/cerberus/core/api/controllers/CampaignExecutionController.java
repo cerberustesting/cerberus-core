@@ -109,8 +109,9 @@ public class CampaignExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.campaignExecutionMapper
                         .toDto(
@@ -135,8 +136,9 @@ public class CampaignExecutionController {
             Principal principal) {
         
         LOG.debug("pdf Called.");
-        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/pdf called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions/pdf called with URL: %s", request.getRequestURL()), request, login);
+        
         try {
             Tag campaignExeIdTag = this.campaignExecutionService.findByExecutionIdWithExecutions(campaignExecutionId, null);
 
@@ -194,7 +196,7 @@ public class CampaignExecutionController {
                 }
             }
 
-            logEventService.createForPublicCalls("/public/campaignexecutions", "CALLRESULT-GET", LogEvent.STATUS_INFO, String.format("PDFs calculated for campaign '%s'", campaignExecutionId), request);
+            logEventService.createForPublicCalls("/public/campaignexecutions", "CALLRESULT-GET", LogEvent.STATUS_INFO, String.format("PDFs calculated for campaign '%s'", campaignExecutionId), request, login);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentLength(zipFilePath.toFile().length())
@@ -234,8 +236,9 @@ public class CampaignExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /campaignexecutions called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.campaignExecutionMapper
                         .toDto(
@@ -259,10 +262,11 @@ public class CampaignExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request, login);
+        
         CICampaignResult ciCampaignResult = this.ciService.getCIResultApi(campaignExecutionId, "");
-        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for tag '%s' result [%s]", ciCampaignResult.getCampaignExecutionId(), ciCampaignResult.getGlobalResult()), request);
+        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for tag '%s' result [%s]", ciCampaignResult.getCampaignExecutionId(), ciCampaignResult.getGlobalResult()), request, login);
         return ResponseWrapper.wrap(
                 this.ciCampaignResultMapper.toDTO(
                         ciCampaignResult
@@ -285,10 +289,11 @@ public class CampaignExecutionController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALL-GET", String.format("API /campaignexecutions/ci called with URL: %s", request.getRequestURL()), request, login);
+        
         CICampaignResult ciCampaignResult = this.ciService.getCIResultApi("", campaignId);
-        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for campaign '%s' result [%s]", campaignId, ciCampaignResult.getGlobalResult()), request);
+        logEventService.createForPublicCalls("/public/campaignexecutions", LogEvent.STATUS_INFO, "CALLRESULT-GET", String.format("CI Results calculated for campaign '%s' result [%s]", campaignId, ciCampaignResult.getGlobalResult()), request, login);
         return ResponseWrapper.wrap(
                 this.ciCampaignResultMapper.toDTO(
                         ciCampaignResult
@@ -328,7 +333,7 @@ public class CampaignExecutionController {
         }
     }
 
-    @ApiOperation(value = "Get the last execution (CI Results) of a campaign with its name")
+    @ApiOperation(value = "Get the last execution (CI Results) of a campaign in SVG output with its name")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Campaign execution successfully returned."),
         @ApiResponse(code = 404, message = "Campaign execution was not found."),

@@ -102,6 +102,18 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
+    public void createForPublicCalls(String page, String action, String status, String log, HttpServletRequest request, String login) {
+        // Only log if cerberus_log_publiccalls parameter is equal to Y.
+
+        if (parameterService.getParameterBooleanByKey("cerberus_log_publiccalls", "", false)) { // The parameter cerberus_log_publiccalls is activated so we log all Public API calls.
+            if (!(request.getUserPrincipal() == null)) {
+                login = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+            }
+            this.create(factoryLogEvent.create(0, 0, login, null, page, action, status, log, request.getRemoteAddr(), request.getLocalAddr()));
+        }
+    }
+    
+    @Override
     public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return logEventDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }

@@ -106,9 +106,10 @@ public interface IAppServiceService {
 
     /**
      * @param newAppService
+     * @param login
      * @return
      */
-    AppService createAPI(AppService newAppService);
+    AppService createAPI(AppService newAppService, String login);
 
     /**
      * @param service
@@ -118,10 +119,12 @@ public interface IAppServiceService {
     Answer update(String service, AppService object);
 
     /**
+     * @param serviceName
      * @param appServiceToUpdate
+     * @param login
      * @return
      */
-    AppService updateAPI(String serviceName, AppService appServiceToUpdate);
+    AppService updateAPI(String serviceName, AppService appServiceToUpdate, String login);
 
     /**
      * @param object the {@link AppService} to Delete

@@ -80,8 +80,9 @@ public class TestcaseStepActionControlController {
             HttpServletRequest request,
             Principal principal) {
         
-        logEventService.createForPublicCalls("/public/testcasestepactioncontrols", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactioncontrols called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/testcasestepactioncontrols", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /testcasestepactioncontrols called with URL: %s", request.getRequestURL()), request, login);
+        
         return ResponseWrapper.wrap(
                 this.controlMapper.toDTO(
                         this.controlService.findTestCaseStepActionControlByKey(

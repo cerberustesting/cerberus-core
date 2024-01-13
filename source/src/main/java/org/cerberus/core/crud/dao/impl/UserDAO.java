@@ -515,8 +515,8 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
-    public boolean verifyAPIKey(String apiKey) {
-        boolean bool = false;
+    public String verifyAPIKey(String apiKey) {
+        String login = null;
         final String query = "SELECT login FROM user WHERE apiKey = ?";
 
         LOG.debug("SQL : {}", query);
@@ -529,7 +529,7 @@ public class UserDAO implements IUserDAO {
                 ResultSet rs = preStat.executeQuery();
                 try {
                     if (rs.first()) {
-                        bool = true;
+                        login = rs.getString("login");
                     }
                 } catch (SQLException ex) {
                     LOG.warn(ex.toString());
@@ -553,7 +553,7 @@ public class UserDAO implements IUserDAO {
             }
         }
 
-        return bool;
+        return login;
     }
 
     @Override

@@ -76,9 +76,10 @@ public class AppServiceController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
-        logEventService.createForPublicCalls("/public/services", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/services", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
+
         Optional<AppService> appServiceOptional = Optional.ofNullable(this.appServiceService.readByKeyWithDependency(service).getItem());
         if (appServiceOptional.isPresent()) {
             return ResponseWrapper.wrap(
@@ -101,13 +102,15 @@ public class AppServiceController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
-        logEventService.createForPublicCalls("/public/services", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/services", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.appServiceMapper.toDTO(
                         this.appServiceService.createAPI(
-                                this.appServiceMapper.toEntity(serviceDTO)
+                                this.appServiceMapper.toEntity(serviceDTO),
+                                login
                         )
                 )
         );
@@ -124,14 +127,16 @@ public class AppServiceController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) {
-        
-        logEventService.createForPublicCalls("/public/services", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request);
-        this.apiAuthenticationService.authenticate(principal, apiKey);
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/services", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /services called with URL: %s", request.getRequestURL()), request, login);
+
         return ResponseWrapper.wrap(
                 this.appServiceMapper.toDTO(
                         this.appServiceService.updateAPI(
                                 service,
-                                this.appServiceMapper.toEntity(serviceDTO)
+                                this.appServiceMapper.toEntity(serviceDTO),
+                                login
                         )
                 )
         );

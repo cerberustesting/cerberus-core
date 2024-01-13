@@ -45,8 +45,9 @@ public class PublicApiAuthenticationService {
         }
     }
 
-    public void authenticate(Principal principal, String apiKey) {
-        if (!this.apiKeyService.authenticate(principal, apiKey)) {
+    public String authenticateLogin(Principal principal, String apiKey) {
+        String login = this.apiKeyService.authenticateLogin(principal, apiKey);
+        if (login == null) {
             if (StringUtil.isNotEmpty(apiKey) && apiKey.length() > 10) {
                 logEventService.createForPrivateCalls("", "AUTHENT", LogEvent.STATUS_WARN, "Bad Credentials with APIKey starting by : " + apiKey.substring(0, 5));
             } else if (StringUtil.isNotEmpty(apiKey)) {
@@ -57,6 +58,8 @@ public class PublicApiAuthenticationService {
                 logEventService.createForPrivateCalls("", "AUTHENT", LogEvent.STATUS_WARN, "Bad Credentials");
             }
             throw new BadCredentialsException("authentication failed");
+        } else {
+            return login;
         }
     }
 }

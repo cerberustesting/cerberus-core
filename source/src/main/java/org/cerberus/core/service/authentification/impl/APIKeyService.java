@@ -68,7 +68,7 @@ public class APIKeyService implements IAPIKeyService {
 
                 String apiKey = request.getHeader("apikey");
 
-                if (isApiKeyValid(apiKey)) {
+                if (apiKeyValidLogin(apiKey) != null) {
                     return true;
                 } else {
                     JSONObject data = new JSONObject();
@@ -92,7 +92,7 @@ public class APIKeyService implements IAPIKeyService {
 
     @Override
     public boolean authenticate(String apiKey) {
-        return isApiKeyAuthEnabled() && isApiKeyValid(apiKey);
+        return isApiKeyAuthEnabled() && apiKeyValidLogin(apiKey) != null;
     }
 
     @Override
@@ -100,6 +100,17 @@ public class APIKeyService implements IAPIKeyService {
         return (principal != null && !StringUtil.isEmpty(principal.getName())) || this.authenticate(apiKey);
     }
 
+    @Override
+    public String authenticateLogin(Principal principal, String apiKey) {
+        if (principal != null && !StringUtil.isEmpty(principal.getName())) {
+            return principal.getName();
+        }
+        if  (isApiKeyAuthEnabled()) {
+            return apiKeyValidLogin(apiKey);
+        }
+        return null;
+    }
+    
     private boolean isApiKeyAuthEnabled() {
         return parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_apikey_enable, "", true);
     }
@@ -114,9 +125,13 @@ public class APIKeyService implements IAPIKeyService {
         return null;
     }
 
-    private boolean isApiKeyValid(String apiKey) {
-        return (!StringUtil.isEmpty(apiKey))
-                && (userService.verifyAPIKey(apiKey));
+    private String apiKeyValidLogin(String apiKey) {
+        String login = null;
+        if (!StringUtil.isEmpty(apiKey)) {
+            login = userService.verifyAPIKey(apiKey);
+        }
+        return login;
+
     }
 
 }
