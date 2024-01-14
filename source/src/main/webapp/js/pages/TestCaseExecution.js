@@ -300,6 +300,10 @@ function initPage(id) {
         })
     });
 
+    $("#editRobot").click(function () {
+        openModalRobot($("#tabRobot #robot").val(), "EDIT");
+    });
+
     $("#inheritedPropPanelWrapper").hide();
     $("[name='buttonSave']").hide();
     $("#addProperty").hide();

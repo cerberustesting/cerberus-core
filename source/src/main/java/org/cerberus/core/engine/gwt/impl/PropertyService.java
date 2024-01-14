@@ -74,6 +74,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
@@ -982,7 +983,7 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, boolean forceCalculation) {
-        if ("Y".equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyActive())) {
+        if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyType())) {
             String jsonPath = testCaseExecutionData.getValue2();
             if (StringUtil.isEmpty(jsonPath)) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);

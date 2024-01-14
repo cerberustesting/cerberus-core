@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.cerberus.core.crud.entity.BuildRevisionInvariant;
 import org.cerberus.core.crud.entity.CountryEnvParam;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.Test;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
@@ -366,7 +367,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private boolean checkExecutorProxy(TestCaseExecution tce) {
 
         //if executor proxy active, check cerberus-executor is available
-        if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
+        if (tce.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())) {
 
             //If ExecutorExtensionHost is null or empty, use the Robot Host
             if (tce.getRobotExecutorObj().getExecutorExtensionHost() == null || tce.getRobotExecutorObj().getExecutorExtensionHost().isEmpty()) {

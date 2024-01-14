@@ -50,7 +50,7 @@ public class RobotExecutor {
     private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
-    private String executorProxyActive;
+    private String executorProxyType;
     private String executorExtensionHost;
     private Integer executorExtensionPort;
     private String executorProxyHost;
@@ -59,6 +59,13 @@ public class RobotExecutor {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+
+    /**
+     * Static PROXY TYPE String.
+     */
+    public static final String PROXY_TYPE_NONE = "NONE"; // No Proxy. Browser will connect directly on Internet
+    public static final String PROXY_TYPE_MANUAL = "MANUAL"; // A Manual proxy is configured on executorProxyHost and executorProxyPort
+    public static final String PROXY_TYPE_NETWORKTRAFFIC = "NETWORKTRAFFIC"; // Proxy will be configured to Cerberus robot proxy component --> Network traffic features will be activated.
 
     public Integer getNodeProxyPort() {
         return nodeProxyPort;
@@ -240,12 +247,12 @@ public class RobotExecutor {
         this.executorProxyPort = executorProxyPort;
     }
 
-    public String getExecutorProxyActive() {
-        return executorProxyActive;
+    public String getExecutorProxyType() {
+        return executorProxyType;
     }
 
-    public void setExecutorProxyActive(String executorProxyActive) {
-        this.executorProxyActive = executorProxyActive;
+    public void setExecutorProxyType(String executorProxyType) {
+        this.executorProxyType = executorProxyType;
     }
 
     /**
@@ -357,7 +364,7 @@ public class RobotExecutor {
         if ((this.deviceLockUnlock == null) ? (other.deviceLockUnlock != null) : !this.deviceLockUnlock.equals(other.deviceLockUnlock)) {
             return false;
         }
-        if ((this.executorProxyActive == null) ? (other.executorProxyActive != null) : !this.executorProxyActive.equals(other.executorProxyActive)) {
+        if ((this.executorProxyType == null) ? (other.executorProxyType != null) : !this.executorProxyType.equals(other.executorProxyType)) {
             return false;
         }
         if ((this.executorExtensionHost == null) ? (other.executorExtensionHost != null) : !this.executorExtensionHost.equals(other.executorExtensionHost)) {
@@ -398,7 +405,7 @@ public class RobotExecutor {
             result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());
-            result.put("executorProxyActive", "Y".equals(this.getExecutorProxyActive()));
+            result.put("executorProxyType", this.getExecutorProxyType());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

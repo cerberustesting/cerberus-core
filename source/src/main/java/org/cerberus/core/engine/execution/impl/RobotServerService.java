@@ -86,6 +86,7 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.RobotCapability;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
@@ -244,7 +245,7 @@ public class RobotServerService implements IRobotServerService {
              * Starting Cerberus Executor Proxy if it has been activated at
              * robot level.
              */
-            if (execution.getRobotExecutorObj() != null && "Y".equals(execution.getRobotExecutorObj().getExecutorProxyActive())) {
+            if (execution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())) {
                 LOG.debug("Start Remote Proxy");
                 executorService.startRemoteProxy(execution);
                 LOG.debug("Started Remote Proxy on port: {}", execution.getRemoteProxyPort());
@@ -679,7 +680,7 @@ public class RobotServerService implements IRobotServerService {
                 }
 
                 //Create or override these capabilities if proxy required.
-                if (StringUtil.parseBoolean(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                if (StringUtil.parseBoolean(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                     caps.setCapability("browserstack.local", true);
                     caps.setCapability("browserstack.user", tCExecution.getRobotExecutorObj().getHostUser());
                     caps.setCapability("browserstack.key", tCExecution.getRobotExecutorObj().getHostPassword());
@@ -805,16 +806,15 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Activate DRM
-                        optionsFF.addPreference("media.eme.enabled",true);
-                        optionsFF.addPreference("media.gmp-manager.updateEnabled", true);
-
+                    optionsFF.addPreference("media.eme.enabled", true);
+                    optionsFF.addPreference("media.gmp-manager.updateEnabled", true);
 
                     // Verbose level and Headless
                     if (tCExecution.getVerbose() <= 0) {
                         optionsFF.setHeadless(true);
                     }
                     // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -823,7 +823,6 @@ public class RobotServerService implements IRobotServerService {
                         optionsFF.setProxy(proxy);
                     }
                     optionsFF.setProfile(profile);
-
 
                     // Accept Insecure Certificates.
                     optionsFF.setAcceptInsecureCerts(tCExecution.getRobotObj() == null || tCExecution.getRobotObj().isAcceptInsecureCerts());
@@ -878,10 +877,23 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    LOG.debug("Setting Chrome proxy");
+
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+                        proxy.setNoProxy("");
+                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+                        LOG.debug("Setting Chrome proxy with Cerberus Robot Proxy Service to : {}", proxy);
+                        optionsCH.setCapability(DEFAULT_PROXY_HOST, proxy);
+                    }
+
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_MANUAL.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())
+                            && tCExecution.getRobotExecutorObj().getExecutorProxyPort() != 0 && StringUtil.isNotEmpty(tCExecution.getRobotExecutorObj().getExecutorProxyHost())) {
+                        Proxy proxy = new Proxy();
+                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorProxyPort());
+                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorProxyPort());
                         proxy.setNoProxy("");
                         proxy.setProxyType(Proxy.ProxyType.MANUAL);
                         LOG.debug("Setting Chrome proxy to : {}", proxy);
@@ -907,7 +919,7 @@ public class RobotServerService implements IRobotServerService {
 
                 case "safari":
                     SafariOptions optionsSA = new SafariOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -918,7 +930,7 @@ public class RobotServerService implements IRobotServerService {
                 case "IE":
                     InternetExplorerOptions optionsIE = new InternetExplorerOptions();
                     // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -930,7 +942,7 @@ public class RobotServerService implements IRobotServerService {
 
                 case "edge":
                     EdgeOptions optionsED = new EdgeOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -940,7 +952,7 @@ public class RobotServerService implements IRobotServerService {
 
                 case "opera":
                     OperaOptions optionsOP = new OperaOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -954,7 +966,7 @@ public class RobotServerService implements IRobotServerService {
                     return optionsOP;
 
                 case "android":
-                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
+                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
                         Proxy proxy = new Proxy();
                         proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
                         proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
@@ -1091,7 +1103,7 @@ public class RobotServerService implements IRobotServerService {
             try {
                 // Get Har File when Cerberus Executor is activated.
                 // If proxy started and parameter verbose >= 1 activated
-                if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())
+                if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())
                         && tce.getVerbose() >= 1 && (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false))) {
 
                     // Before collecting the stats, we wait the network idles for few minutes
@@ -1252,7 +1264,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug("Setting Robot Options timeout to : {}", timeout);
             session.setCerberus_selenium_wait_element(timeout);
             session.setCerberus_sikuli_wait_element(timeout);
-            
+
             if ((session.getAppiumDriver() != null) && (session.getCerberus_appium_wait_element() != timeout)) {
                 LOG.debug("Setting Appium Robot Options timeout to : {}", timeout);
                 AppiumDriver appiumDriver = session.getAppiumDriver();

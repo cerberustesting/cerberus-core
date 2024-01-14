@@ -195,7 +195,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts,capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts, capabilities, executors, robotDecli, type);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -251,7 +251,7 @@ public class CreateRobot extends HttpServlet {
             if (reJson.has("executorProxyPort") && !StringUtil.isEmpty(reJson.getString("executorProxyPort"))) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
-            String executorProxyActive = reJson.getBoolean("executorProxyActive") ? "Y" : "N";
+            String executorProxyType = reJson.getString("executorProxyType");
             Integer executorExtensionPort = null;
             String executorExtensionHost = "";
             if (reJson.has("executorExtensionHost") && !StringUtil.isEmpty(reJson.getString("executorExtensionHost"))) {
@@ -274,7 +274,7 @@ public class CreateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, "", executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyActive, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, "", executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }

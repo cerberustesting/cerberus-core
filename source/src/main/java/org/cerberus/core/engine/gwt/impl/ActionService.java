@@ -1896,7 +1896,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!"Y".equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyActive()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -1950,7 +1950,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!"Y".equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyActive()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;

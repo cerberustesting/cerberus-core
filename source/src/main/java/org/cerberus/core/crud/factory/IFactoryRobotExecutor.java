@@ -49,7 +49,7 @@ public interface IFactoryRobotExecutor {
      * @param executorProxyPort
      * @param deviceUdid
      * @param UsrCreated
-     * @param executorProxyActive
+     * @param executorProxyType
      * @param DateCreated
      * @param UsrModif
      * @param DateModif
@@ -57,6 +57,6 @@ public interface IFactoryRobotExecutor {
      */
     RobotExecutor create(Integer ID, String robot, String executor, String active, 
             Integer rank, String host, String port, String hostUser, String hostPassword, Integer nodeProxyPort, String deviceUdid,
-            String deviceName, Integer devicePort, String deviceLockUnlock, String executorExtensionHost, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyActive, 
+            String deviceName, Integer devicePort, String deviceLockUnlock, String executorExtensionHost, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyType, 
             String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

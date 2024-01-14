@@ -425,7 +425,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     // Looping other every potential executor on the corresponding robot.
                     for (RobotExecutor robotExecutor1 : robotExelist) {
 
-                        if ("Y".equalsIgnoreCase(robotExecutor1.getExecutorProxyActive())) {
+                        if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(robotExecutor1.getExecutorProxyType())) {
                             robotExtHost = robotExecutor1.getExecutorExtensionHost();
                             if (StringUtil.isEmpty(robotExtHost)) {
                                 robotExtHost = robotExecutor1.getHost();

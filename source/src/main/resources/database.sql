@@ -6261,3 +6261,29 @@ ALTER TABLE logevent
     MODIFY COLUMN remoteIP varchar(200) NULL,
     MODIFY COLUMN localIP varchar(200) NULL,
     ADD Status varchar(50) NULL AFTER `Action`;
+
+-- 1762
+ALTER TABLE testcasestepaction 
+    ADD doScreenshotBefore TINYINT DEFAULT 0 NULL AFTER ScreenshotFileName,
+    ADD doScreenshotAfter TINYINT DEFAULT 0 NULL AFTER doScreenshotBefore,
+    ADD waitBefore INT DEFAULT 0 NULL AFTER doScreenshotAfter,
+    ADD waitAfter INT DEFAULT 0 NULL AFTER waitBefore;
+
+-- 1762
+ALTER TABLE testcasestepactioncontrol 
+    ADD doScreenshotBefore TINYINT DEFAULT 0 NULL AFTER ScreenshotFileName,
+    ADD doScreenshotAfter TINYINT DEFAULT 0 NULL AFTER doScreenshotBefore,
+    ADD waitBefore INT DEFAULT 0 NULL AFTER doScreenshotAfter,
+    ADD waitAfter INT DEFAULT 0 NULL AFTER waitBefore;
+
+-- 1763-1765
+ALTER TABLE robotexecutor CHANGE executorProxyActive executorProxyType varchar(50) DEFAULT 'NONE' NOT NULL AFTER deviceLockUnlock;
+UPDATE robotexecutor set executorProxyType='NETWORKTRAFFIC' where executorProxyType='Y';
+UPDATE robotexecutor set executorProxyType='NONE' where executorProxyType='N';
+
+-- 1766
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('PROXYTYPE', 'NONE', 100, 'No Proxy..')
+  ,('PROXYTYPE', 'MANUAL', 200, 'Manual Proxy.')
+  ,('PROXYTYPE', 'NETWORKTRAFFIC', 300, 'Proxy with Network Traffic analysis and control.')
+  ,('INVARIANTPUBLIC', 'PROXYTYPE', '950', 'Robot Executor Proxy type.');

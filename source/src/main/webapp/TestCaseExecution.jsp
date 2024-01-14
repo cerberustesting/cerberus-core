@@ -34,6 +34,7 @@
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/File.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
 
@@ -43,6 +44,7 @@
         <%@ include file="include/utils/modal-generic.html" %>
         <%@ include file="include/pages/testcasescript/manageProperties.html" %>
         <%@ include file="include/transversalobject/TestCaseSimpleExecution.html" %>
+        <%@ include file="include/transversalobject/Robot.html" %>
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
@@ -240,7 +242,7 @@
 
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
-                                <nav class="col-lg-4 col-md-12" id="nav-execution" style="z-index:1;">
+                                <nav class="col-lg-4 col-md-12 marginBottom20" id="nav-execution" style="z-index:1;">
                                     <div id="list-wrapper" style="top:107px;">
                                         <div id="steps">
                                             <ul class="list-group step-list side-item" id="steps"
@@ -545,7 +547,12 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="robot">Robot</label>
-                                        <input type="text" class="form-control" id="robot" placeholder="Robot" readonly>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="robot" placeholder="Robot" readonly>
+                                            <span class="input-group-btn">
+                                                <button id="editRobot" class="btn btn-default">Edit</button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
