@@ -1115,6 +1115,17 @@ function showMessage(obj, dialog, silentMode, waitinMs) {
     var code = getAlertType(obj.messageType);
 
     if (dialog !== undefined && dialog !== null) {
+
+        if (isEmpty(waitinMs)) {
+            // Automatically fadeout after n second.
+            waitinMs = 10000; // Default wait to 10 seconds.
+            if (code === "success") {
+                waitinMs = 2000;
+            } else if (code === "error") {
+                waitinMs = 5000;
+            }
+        }
+
         //shows the error message in the current dialog
         var elementAlert = dialog.find("div[id*='DialogMessagesAlert']");
         var elementAlertDescription = dialog.find("span[id*='DialogAlertDescription']");
@@ -1124,7 +1135,14 @@ function showMessage(obj, dialog, silentMode, waitinMs) {
         elementAlert.removeClass("alert-danger");
         elementAlert.removeClass("alert-warning");
         elementAlert.addClass("alert-" + code);
-        elementAlert.fadeIn();
+
+        // We slowly hide it after waitinMs ms delay.
+        elementAlert.fadeTo(waitinMs, 1, function () {
+            elementAlert.slideUp(500);
+        });
+
+
+//        elementAlert.fadeIn();
     } else {
         //shows the message in the main page
         showMessageMainPage(code, obj.message, silentMode, waitinMs);

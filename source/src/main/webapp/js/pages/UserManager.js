@@ -60,6 +60,10 @@ function initPage() {
     $('#setAPIKey').click(function (e) {
         $("#apiKey").val(generateUUID());
     });
+    $('#copyAPIKey').click(function (e) {
+        navigator.clipboard.writeText($("#apiKey").val());
+        showMessage(new Message("OK", 'apikey copied !!!'), $('#editUserModal'), false, 1000);
+    });
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&roles=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList", undefined, true);

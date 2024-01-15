@@ -8,6 +8,7 @@
 * Size of war binary reduced by cleaning a few unnecessary maven dependencies.
 * Edit Robot button is available directly from execution page.
 * MANUAL Proxy configuration is also supported (on top of NETWORKTRAFFIC).
+* Copy to Clipboard button on APIKey User screen.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
