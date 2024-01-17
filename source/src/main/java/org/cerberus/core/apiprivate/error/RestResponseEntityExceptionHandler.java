@@ -38,7 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  * @author bcivel
  */
-@ControllerAdvice(basePackages = "org.cerberus.controller")
+@ControllerAdvice(basePackages = "org.cerberus.core.apiprivate")
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     public RestResponseEntityExceptionHandler() {
