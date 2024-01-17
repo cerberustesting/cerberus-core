@@ -772,6 +772,7 @@ public class RobotServerService implements IRobotServerService {
 
             LoggingPreferences logPrefs = new LoggingPreferences();
             logPrefs.enable(LogType.BROWSER, Level.ALL);
+            Proxy proxy = null;
 
             switch (browser) {
 
@@ -814,13 +815,11 @@ public class RobotServerService implements IRobotServerService {
                         optionsFF.setHeadless(true);
                     }
                     // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                        LOG.debug("Setting Firefox proxy to : {}", proxy);
-                        optionsFF.setProxy(proxy);
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsFF.setProxy(proxy);
+                        }
                     }
                     optionsFF.setProfile(profile);
 
@@ -877,27 +876,11 @@ public class RobotServerService implements IRobotServerService {
                     }
 
                     // Add the WebDriver proxy capability.
-                    LOG.debug("Setting Chrome proxy");
-
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setNoProxy("");
-                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                        LOG.debug("Setting Chrome proxy with Cerberus Robot Proxy Service to : {}", proxy);
-                        optionsCH.setCapability(DEFAULT_PROXY_HOST, proxy);
-                    }
-
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_MANUAL.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())
-                            && tCExecution.getRobotExecutorObj().getExecutorProxyPort() != 0 && StringUtil.isNotEmpty(tCExecution.getRobotExecutorObj().getExecutorProxyHost())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorProxyPort());
-                        proxy.setNoProxy("");
-                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                        LOG.debug("Setting Chrome proxy to : {}", proxy);
-                        optionsCH.setCapability(DEFAULT_PROXY_HOST, proxy);
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsCH.setCapability(DEFAULT_PROXY_HOST, proxy);
+                        }
                     }
 
                     // Accept Insecure Certificates.
@@ -919,44 +902,45 @@ public class RobotServerService implements IRobotServerService {
 
                 case "safari":
                     SafariOptions optionsSA = new SafariOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        optionsSA.setProxy(proxy);
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsSA.setProxy(proxy);
+                        }
                     }
                     return optionsSA;
 
                 case "IE":
                     InternetExplorerOptions optionsIE = new InternetExplorerOptions();
                     // Add the WebDriver proxy capability.
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-                        LOG.debug("Setting IE proxy to : " + proxy.toString());
-                        optionsIE.setCapability(DEFAULT_PROXY_HOST, proxy);
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsIE.setCapability(DEFAULT_PROXY_HOST, proxy);
+                        }
                     }
                     return optionsIE;
 
                 case "edge":
                     EdgeOptions optionsED = new EdgeOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        optionsED.setProxy(proxy);
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsED.setProxy(proxy);
+                        }
                     }
                     return optionsED;
 
                 case "opera":
                     OperaOptions optionsOP = new OperaOptions();
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        optionsOP.setProxy(proxy);
+                    // Add the WebDriver proxy capability.
+                    if (tCExecution.getRobotExecutorObj() != null) {
+                        proxy = getProxyFromExecutor(tCExecution.getRobotExecutorObj(), tCExecution.getRemoteProxyPort());
+                        if (proxy != null) {
+                            optionsOP.setProxy(proxy);
+                        }
                     }
                     optionsOP.setCapability("browser", "opera");
                     // Forcing a profile in order to force UserAgent. This has been commented because it fail when using BrowserStack that does not allow to create the correcponding profile folder.
@@ -966,11 +950,6 @@ public class RobotServerService implements IRobotServerService {
                     return optionsOP;
 
                 case "android":
-                    if (tCExecution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                        Proxy proxy = new Proxy();
-                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-                    }
                     capabilities = DesiredCapabilities.android();
                     break;
 
@@ -1005,6 +984,30 @@ public class RobotServerService implements IRobotServerService {
             throw new CerberusException(mes);
         }
         return capabilities;
+    }
+
+    private Proxy getProxyFromExecutor(RobotExecutor executor, Integer remoteProxyPort) {
+        
+        if (executor != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())) {
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(executor.getExecutorProxyHost() + ":" + remoteProxyPort);
+            proxy.setSslProxy(executor.getExecutorProxyHost() + ":" + remoteProxyPort);
+            proxy.setNoProxy("");
+            proxy.setProxyType(Proxy.ProxyType.MANUAL);
+            LOG.debug("Setting Chrome proxy with Cerberus Robot Proxy Service to : {}", proxy);
+            return proxy;
+        }
+        if (executor != null && RobotExecutor.PROXY_TYPE_MANUAL.equals(executor.getExecutorProxyType())
+                && executor.getExecutorProxyPort() != 0 && StringUtil.isNotEmpty(executor.getExecutorProxyHost())) {
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(executor.getExecutorProxyHost() + ":" + executor.getExecutorProxyPort());
+            proxy.setSslProxy(executor.getExecutorProxyHost() + ":" + executor.getExecutorProxyPort());
+            proxy.setNoProxy("");
+            proxy.setProxyType(Proxy.ProxyType.MANUAL);
+            LOG.debug("Setting Chrome proxy to : {}", proxy);
+            return proxy;
+        }
+        return null;
     }
 
     /**
