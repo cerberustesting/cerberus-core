@@ -443,7 +443,12 @@ public class SQLService implements ISQLService {
                             try {
                                 String valueSQL = resultSet.getString(column);
                                 if (valueSQL == null) { // If data is null from the database, we convert it to the static string <NULL>. 
-                                    valueSQL = PropertyService.VALUE_NULL;
+                                	if (ignoreNoMatchColumns) {
+                                		LOG.debug("Unmatched columns parsing enabled: Fill null value for column '{}' with default value", () -> name);
+                                		valueSQL = defaultNoMatchColumnValue;
+                                	} else {
+                                		valueSQL = PropertyService.VALUE_NULL;
+                                	}
                                 }
                                 if (columnsToHide.contains(name)) {
                                     execution.appendSecret(valueSQL);
