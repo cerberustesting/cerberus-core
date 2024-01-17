@@ -21,6 +21,8 @@ package org.cerberus.core.engine.gwt.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.InvalidPathException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
@@ -1693,7 +1695,14 @@ public class PropertyService implements IPropertyService {
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = result.get(0).get("");
                 if (value == null) {
-                    testCaseExecutionData.setValue(VALUE_NULL);
+                	final boolean ignoreNonMatchedSubdata = parameterService.getParameterBooleanByKey("cerberus_testdatalib_ignoreNonMatchedSubdata", StringUtils.EMPTY, false);
+                	if (ignoreNonMatchedSubdata) {
+                		final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
+                		LOG.debug("Unmatched columns parsing enabled: Null answer received from service call of datalib '{}' with default value", () -> testDataLib.getName());
+                		testCaseExecutionData.setValue(defaultSubdataValue);
+                	} else {
+                		testCaseExecutionData.setValue(VALUE_NULL);
+                	}
                 } else {
                     testCaseExecutionData.setValue(value);
                     // Converting HashMap to json.
