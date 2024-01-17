@@ -2549,12 +2549,8 @@ Action.prototype.draw = function (idMotherStep, id) {
         media.append(buttonGroup).append(buttonUpload);
         showSaveTestCaseExecutionButton();
     } else {
-
-        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
-        } else {
-            elapsedTime.append("...");
-        }
+        elapsedTime.append("<br><br>");
+        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
     }
 
     if (action.returnCode === "OK") {
@@ -2607,6 +2603,21 @@ Action.prototype.draw = function (idMotherStep, id) {
     this.parentStep.stepActionContainer.append(fullActionElement);
     addFileLink(this.fileList, media, isTheExecutionManual, idMotherStep);
 };
+
+
+function generateCleanElapsed(endlong, startlong) {
+    if (endlong !== 19700101010000000 && endlong !== 0) {
+        let e1 = convToDate(endlong) - convToDate(startlong);
+        if (e1 > 999) {
+            return ((convToDate(endlong) - convToDate(startlong)) / 1000).toFixed(2) + ' s';
+        } else {
+            return e1 + " ms";
+        }
+    } else {
+        return "...";
+    }
+}
+
 
 Action.prototype.setControls = function (controls, idMotherStep, idMotherAction) {
     for (var i = 0; i < controls.length; i++) {
@@ -3121,13 +3132,8 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         media.append(buttonGroup).append(buttonUpload);
         showSaveTestCaseExecutionButton();
     } else {
-
-        var elapsedTime = $("<span>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;word-wrap: break-word;text-overflow: ellipsis;");
-        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
-        } else {
-            elapsedTime.append("...");
-        }
+        elapsedTime.append("<br><br>");
+        elapsedTime.append(generateCleanElapsed(this.endlong, this.startlong));
     }
 
 
