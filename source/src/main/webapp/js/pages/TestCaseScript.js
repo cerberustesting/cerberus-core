@@ -360,7 +360,8 @@ $.when($.getScript("js/global/global.js")
             });
             var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
-            $("#divPanelDefault").affix({offset: {top: height}});
+            $("#divPanelDefault").affix({offset: 120});
+//            $("#nav-execution").affix({offset: 120});
 
             var wrap = $(window);
 

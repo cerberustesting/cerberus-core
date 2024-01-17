@@ -108,7 +108,7 @@
                                 <div class="clearfix"></div>
                             </div>
                         </div>
-                        <div style="height:40px; background-color: #f5f6fa; padding-top:20px">
+                        <div style="height:60px; background-color: #f5f6fa; padding-top:20px">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" class="tabSteps" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" class="tabSteps"  name="tabProperties">Properties</a></li>
