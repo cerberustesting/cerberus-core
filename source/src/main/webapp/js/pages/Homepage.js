@@ -516,6 +516,11 @@ function loadTagExec() {
     //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
     var searchTag = localStorage.getItem("tagSearchString");
+    if (searchTag || (tagList && tagList.length > 0)) {
+        $("#tagSettings").addClass("btn-primary");
+    } else {
+        $("#tagSettings").removeClass("btn-primary");
+    }
 
     if (tagList === null || tagList.length === 0) {
         tagList = readLastTagExec(searchTag);
@@ -615,11 +620,11 @@ function aoColumnsFunc() {
             }
         },
         {
-            "data": "Total", 
+            "data": "Total",
             "bSortable": true,
             "sWidth": "10px",
-            "sClass": "datatable-alignright", 
-            "sName": "Total", 
+            "sClass": "datatable-alignright",
+            "sName": "Total",
             "title": "Total"
         }
     ];
@@ -636,10 +641,11 @@ function aoColumnsFunc() {
                 "mRender": function (data, type, oObj) {
                     if ((data) === 0) {
                         return "";
-                    };
-                    return data;
                     }
-                };
+                    ;
+                    return data;
+                }
+            };
             aoColumns.push(obj);
         }
     }
@@ -697,6 +703,11 @@ function appendBuildRevRow(dtb) {
 }
 
 function updateStats() {
+
+    $("#hp_TestcaseNumber").text("Calculating existing test cases...");
+    $("#hp_TestExecutionNumber").text("Calculating launched test cases...");
+    $("#hp_ApplicationNumber").text("Calculating configured applications...");
+
 
     var jqxhr = $.getJSON("ReadTestCase", "iDisplayLength=1");
     $.when(jqxhr).then(function (result) {
