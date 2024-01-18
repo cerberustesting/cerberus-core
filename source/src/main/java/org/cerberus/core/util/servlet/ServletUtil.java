@@ -62,6 +62,9 @@ public final class ServletUtil {
                     case "/ReadExecutionStat":
                         timeToWait = 30;
                         break;
+                    case "/ReadTestCase":
+                        timeToWait = 30;
+                        break;
                     default:
                 }
                 LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + timeToWait);

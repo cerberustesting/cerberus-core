@@ -152,7 +152,16 @@
                                                 </div>    
                                                 <div class="form-group col-sm-6"> 
                                                     <label name="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
-                                                    <input id="csvUrl" name="csvUrl" class="form-control">     
+                                                    <div class="input-group">
+                                                        <input id="csvUrl" name="csvUrl" class="form-control">
+                                                        <span class="input-group-btn">
+                                                            <a id="buttonDownloadCsvFile" class="pull-right" href="#">
+                                                                <button class="btn btn-default" type="button" id="downloadCSV">
+                                                                    <span class="glyphicon glyphicon-download-alt"></span>
+                                                                </button>
+                                                            </a>                                                            
+                                                        </span>
+                                                    </div>                                        
                                                 </div>
                                                 <div class="form-group col-sm-3"> 
                                                     <label name="lbl_separator" for="separator">Separator</label> 

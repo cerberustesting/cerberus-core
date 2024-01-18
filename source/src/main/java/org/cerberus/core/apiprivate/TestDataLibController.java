@@ -19,40 +19,32 @@
  */
 package org.cerberus.core.apiprivate;
 
-import org.cerberus.core.util.datatable.DataTableInformation;
-import com.google.gson.Gson;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.LogEvent;
-import org.cerberus.core.crud.entity.Test;
-import org.cerberus.core.crud.factory.IFactoryLogEvent;
-import org.cerberus.core.crud.factory.IFactoryTest;
+import org.cerberus.core.api.exceptions.EntityNotFoundException;
+import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.ITestService;
-import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
-import org.cerberus.core.engine.entity.MessageEvent;
-import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.crud.service.ITestDataLibService;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.servlet.ServletUtil;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,15 +60,9 @@ public class TestDataLibController {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    TestCaseExecutionService testCaseExecutionService;
-    @Autowired
-    ITestService testService;
-    @Autowired
-    IFactoryTest factoryTest;
+    ITestDataLibService testDataLibService;
     @Autowired
     ILogEventService logEventService;
-    @Autowired
-    IFactoryLogEvent factoryLogEvent;
     @Autowired
     IParameterService parameterService;
 
@@ -87,26 +73,48 @@ public class TestDataLibController {
      * @param request
      * @return
      */
-    @GetMapping(path = "/csv", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String readCsv(
-            //            @PathVariable("testdatalibid") String testdatalibid,
+    @GetMapping(path = "{testdatalibid}/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<Resource> downloadCsv(
+            @PathVariable("testdatalibid") int testdatalibid,
             HttpServletRequest request) {
-
-        JSONObject object = new JSONObject();
-        boolean userHasPermissions = request.isUserInRole("TestAdmin");
-
+        Resource resource;
+        String filename = "";
         try {
-            // Calling Servlet Transversal Util.
+
             ServletUtil.servletStart(request);
 
-//            testdatalibid = policy.sanitize(testdatalibid);
-//            AnswerItem<Test> answerTest = testService.readByKey(test);
-            object.put("hasPermissions", userHasPermissions);
+            AnswerItem<TestDataLib> answerTest = testDataLibService.readByKey(testdatalibid);
+            TestDataLib res = answerTest.getItem();
+            if ((res == null) || !(TestDataLib.TYPE_CSV.equals(res.getType())) || (StringUtil.isEmpty(res.getCsvUrl()))) {
+                throw new EntityNotFoundException(TestDataLib.class, "Data Library", testdatalibid);
+            }
 
-        } catch (JSONException ex) {
-            LOG.warn(ex, ex);
+            filename = res.getName();
+            String servicePathCsv = res.getCsvUrl();
+            if (!StringUtil.isURL(servicePathCsv)) {
+                // Url is still not valid. We try to add the path from csv parameter.
+                String csv_path = parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "");
+                csv_path = StringUtil.addSuffixIfNotAlready(csv_path, File.separator);
+                servicePathCsv = csv_path + servicePathCsv;
+                resource = new InputStreamResource(new FileInputStream(servicePathCsv));
+
+            } else {
+
+                resource = new UrlResource(servicePathCsv);
+
+            }
+
+        } catch (MalformedURLException e) {
+            LOG.error(e, e);
+            return null;
+        } catch (FileNotFoundException ex) {
+            LOG.error(ex, ex);
+            return null;
         }
-        return "toto";
+
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .body(resource);
 
     }
 
