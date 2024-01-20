@@ -59,10 +59,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author bcivel
  */
 @RestController
-@RequestMapping("/test")
-public class TestController {
+@RequestMapping("/tests")
+public class TestPrivateController {
 
-    private static final Logger LOG = LogManager.getLogger(TestController.class);
+    private static final Logger LOG = LogManager.getLogger(TestPrivateController.class);
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired

@@ -78,6 +78,11 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    public Integer getNbApplications(List<String> systems) {
+        return applicationDAO.getNbApplications(systems);
+    }
+
+    @Override
     public AnswerList<Application> readBySystem(List<String> system) {
         return applicationDAO.readBySystemByCriteria(system, 0, 0, "sort", "asc", null, null);
     }

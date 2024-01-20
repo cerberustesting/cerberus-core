@@ -60,6 +60,13 @@ public interface IApplicationService {
      * @param System
      * @return
      */
+    Integer getNbApplications(List<String> System);
+
+    /**
+     *
+     * @param System
+     * @return
+     */
     AnswerList<Application> readBySystem(List<String> System);
 
     /**

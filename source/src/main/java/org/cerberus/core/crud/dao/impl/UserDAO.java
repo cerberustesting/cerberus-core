@@ -785,6 +785,7 @@ public class UserDAO implements IUserDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.login : {}", login);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -1188,6 +1189,8 @@ public class UserDAO implements IUserDAO {
 
         // Debug message on SQL.
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.userid : {}", user.getUserID());
+        LOG.debug("SQL.param.login : {}", user.getLogin());
 
         Connection connection = this.databaseSpring.connect();
         try {

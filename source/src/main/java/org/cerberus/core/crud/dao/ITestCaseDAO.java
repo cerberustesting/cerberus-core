@@ -49,6 +49,12 @@ public interface ITestCaseDAO {
     List<TestCase> findTestCaseByTest(String test);
 
     /**
+     * @param systems
+     * @return
+     */
+    Integer getnbtc(List<String> systems);
+
+    /**
      * @param test
      * @param testCase
      * @return

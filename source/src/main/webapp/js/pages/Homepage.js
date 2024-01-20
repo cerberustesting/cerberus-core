@@ -709,17 +709,17 @@ function updateStats() {
     $("#hp_ApplicationNumber").text("Calculating configured applications...");
 
 
-    var jqxhr = $.getJSON("ReadTestCase", "iDisplayLength=1");
+    var jqxhr = $.getJSON("api/testcases/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         $("#hp_TestcaseNumber").text(result["iTotalRecords"] + " existing test cases");
     }).fail(handleErrorAjaxAfterTimeout);
 
-    var jqxhr = $.getJSON("ReadTestCaseExecution", "iDisplayLength=1");
+    var jqxhr = $.getJSON("api/executions/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         $("#hp_TestExecutionNumber").text(result["iTotalRecords"] + " launched test cases");
     }).fail(handleErrorAjaxAfterTimeout);
 
-    var jqxhr = $.getJSON("ReadApplication", "iDisplayLength=1");
+    var jqxhr = $.getJSON("api/applications/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         $("#hp_ApplicationNumber").text(result["iTotalRecords"] + " configured applications");
     }).fail(handleErrorAjaxAfterTimeout);

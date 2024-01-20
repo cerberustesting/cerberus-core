@@ -71,9 +71,9 @@ public class DeleteUser extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
-        String login = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("login"), "", charset);
-
+        LOG.debug(request.getParameter("login"));
+        String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
+        LOG.debug(login);
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
         /**

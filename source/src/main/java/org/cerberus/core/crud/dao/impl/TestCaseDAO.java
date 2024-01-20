@@ -99,8 +99,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
 
@@ -118,6 +117,69 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
 
         return list;
+    }
+
+    @Override
+    public Integer getnbtc(List<String> systems) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        StringBuilder query = new StringBuilder();
+        StringBuilder searchSQL = new StringBuilder();
+
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS count(*) FROM testcase tec ");
+        query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
+
+        searchSQL.append("WHERE 1=1");
+
+        if (systems != null && !systems.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("app.`system`", systems));
+        }
+
+        query.append(searchSQL);
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
+            int i = 1;
+            if (systems != null && !systems.isEmpty()) {
+                for (String string : systems) {
+                    preStat.setString(i++, string);
+                }
+            }
+
+            ResultSet resultSet = preStat.executeQuery();
+            try {
+                //gets the data
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+            } finally {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        return 0;
     }
 
     @Override
@@ -204,8 +266,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             if (system != null && !system.isEmpty()) {
@@ -294,8 +355,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testCase);
@@ -328,8 +388,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " WHERE ser.Service = ? "
                 + " group by tc.test, tc.TestCase";
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             preStat.setString(1, service);
             HashMap<String, TestListDTO> map = new HashMap<>();
@@ -408,8 +467,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 + " WHERE ser.Service = ?"
                 + " group by tc.test, tc.TestCase";
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             preStat.setString(1, service);
 
@@ -487,8 +545,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             int i = 1;
             preStat.setString(i++, testCase.getApplication());
@@ -543,8 +600,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql_count);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql_count);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql_count);) {
 
             preStat.setString(1, tc.getTest());
             preStat.setString(2, tc.getTestcase());
@@ -614,8 +670,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
 
             int i = 1;
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
@@ -663,8 +718,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TestCase> findTestCaseByApplication(final String application) {
         List<TestCase> testCases = null;
-        try (final Connection connection = databaseSpring.connect();
-             final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
+        try (final Connection connection = databaseSpring.connect(); final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
             statement.setString(1, application);
             testCases = new ArrayList<>();
             try (ResultSet resultSet = statement.executeQuery();) {
@@ -692,8 +746,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, application);
@@ -777,8 +830,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             list = new ArrayList<>();
             try (ResultSet resultSet = preStat.executeQuery();) {
@@ -796,7 +848,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
         AnswerList<TestCase> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -829,16 +881,15 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             try (ResultSet resultSet = preStat.executeQuery();) {
                 HashMap<String, TestCase> testCaseHashMap = new HashMap<>();
                 //gets the data
                 TestCase testCase;
                 while (resultSet.next()) {
-                    testCase=this.loadFromResultSet(resultSet);
-                    testCaseHashMap.put(testCase.getTest()+testCase.getTestcase(),testCase);
+                    testCase = this.loadFromResultSet(resultSet);
+                    testCaseHashMap.put(testCase.getTest() + testCase.getTestcase(), testCase);
                 }
                 if (length > 0) {
                     for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
@@ -848,7 +899,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
                 } else {
                     for (Map.Entry mapentry : testCaseHashMap.entrySet()) {
-                            testCaseList.add((TestCase) mapentry.getValue());
+                        testCaseList.add((TestCase) mapentry.getValue());
                     }
                 }
                 Collections.sort(testCaseList, new Comparator<TestCase>() {
@@ -904,9 +955,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-             ResultSet resultSet = preStat.executeQuery();) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query); ResultSet resultSet = preStat.executeQuery();) {
 
             list = new ArrayList<>();
             while (resultSet.next()) {
@@ -927,8 +976,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, testCase.getTest());
             preStat.setString(2, testCase.getTestcase());
@@ -952,8 +1000,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             int i = 1;
             preStat.setString(i++, testCase.getApplication());
@@ -995,7 +1042,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
     }
 
-
     @Override
     public void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException {
         final String query = new StringBuilder("UPDATE testcase tc ")
@@ -1010,8 +1056,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL.param.service " + "%\\%object." + oldObject + ".%");
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, application);
@@ -1023,7 +1068,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
     }
 
-
     @Override
     public String getMaxTestcaseIdByTestFolder(String test) {
         String max = "";
@@ -1033,8 +1077,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             preStat.setString(1, test);
 
@@ -1114,8 +1157,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
 
@@ -1173,8 +1215,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sb.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
 
             preStat.setString(1, test);
             preStat.setString(2, system);
@@ -1216,8 +1257,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sb.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sb.toString());) {
 
             try (ResultSet resultSet = preStat.executeQuery();) {
                 list = new ArrayList<>();
@@ -1243,8 +1283,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -1294,8 +1333,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             t1 = new Timestamp(to.getTime());
@@ -1361,8 +1399,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             try (ResultSet resultSet = preStat.executeQuery();) {
@@ -1467,9 +1504,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (system != null && !system.isEmpty()) {
@@ -1499,8 +1534,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -1591,8 +1625,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, tc.getTest());
@@ -1664,8 +1697,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + sql.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(sql.toString());) {
 
             int i = 1;
             preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
@@ -1738,8 +1770,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, testCase.getTest());
             preStat.setString(2, testCase.getTestcase());

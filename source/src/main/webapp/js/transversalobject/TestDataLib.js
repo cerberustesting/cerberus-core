@@ -492,7 +492,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         var obj = testDataLib;
         $('#editTestDataLibModal #testdatalibid').val(obj.testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
-        $("#buttonDownloadCsvFile").attr("href", "./api/testdatalib/" + encodeURI(obj.testDataLibID) + "/csv/");
+        $("#buttonDownloadCsvFile").attr("href", "./api/testdatalibs/" + encodeURI(obj.testDataLibID) + "/csv/");
 
         $('#editTestDataLibModal #types').prop("value", obj.type);
         collapseOrExpandTypes();

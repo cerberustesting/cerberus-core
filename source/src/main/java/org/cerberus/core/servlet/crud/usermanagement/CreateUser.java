@@ -95,7 +95,7 @@ public class CreateUser extends HttpServlet {
         String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
         String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"), "Y");
 
-        String login = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("login"), "", charset);
+        String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
         String email = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("email"), "", charset);
         String defaultSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("defaultSystem"), "", charset);
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset);

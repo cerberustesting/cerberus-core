@@ -740,6 +740,49 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         response.setDataList(objectList);
         return response;
     }
+    
+    @Override
+    public Integer getNbExecutions(List<String> systems) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        StringBuilder query = new StringBuilder();
+        
+        query.append("SELECT SQL_CALC_FOUND_ROWS count(*)  FROM testcaseexecution exe ");
+        query.append(" where 1=1 ");
+
+        if (CollectionUtils.isNotEmpty(systems)) {
+            query.append(" and ");
+            query.append(SqlUtil.generateInClause("`System`", systems));
+        }
+
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
+
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
+                }
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        return 0;
+    }
 
     @Override
     public AnswerList<TestCaseExecution> readByTag(String tag) {

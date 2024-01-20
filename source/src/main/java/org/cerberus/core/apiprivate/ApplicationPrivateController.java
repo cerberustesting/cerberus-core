@@ -19,11 +19,11 @@
  */
 package org.cerberus.core.apiprivate;
 
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
-import org.cerberus.core.exception.CerberusException;
-import org.json.JSONArray;
+import org.cerberus.core.crud.service.IApplicationService;
+import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,32 +36,28 @@ import org.springframework.web.bind.annotation.RestController;
  * @author bcivel
  */
 @RestController
-@RequestMapping("/testcaseexecution")
-public class TestCaseExecutionController {
+@RequestMapping("/applications")
+public class ApplicationPrivateController {
 
-    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionController.class);
+    private static final Logger LOG = LogManager.getLogger(ApplicationPrivateController.class);
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    TestCaseExecutionService testCaseExecutionService;
+    IApplicationService applicationService;
 
-    @GetMapping("/getLastByCriteria")
-    public String getLastByCriteria(
-            @RequestParam(name = "test", value = "test") String test,
-            @RequestParam(name = "testCase", value = "testCase") String testCase,
-            @RequestParam(name = "numberOfExecution", value = "Number of execution expected. If empty, all execution matching the criteria will be returned", required = false) Integer numberOfExecution,
-            @RequestParam(name = "tag", value = "Tag of the execution expected", required = false) String tag,
-            @RequestParam(name = "campaign", value = "Campaign name of the execution expected", required = false) String campaign) {
+    @GetMapping("/count")
+    public String getnbByCriteria(
+            @RequestParam(name = "system", value = "system", required = false) List<String> systems) {
+
+        JSONObject jsonResponse = new JSONObject();
 
         try {
-            test = policy.sanitize(test);
-            testCase = policy.sanitize(testCase);
-            tag = policy.sanitize(tag);
-            JSONArray ja = testCaseExecutionService.getLastByCriteria(test, testCase, tag, numberOfExecution);
-            return ja.toString();
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-            return "error";
+            LOG.debug(systems);
+
+            return jsonResponse.put("iTotalRecords", applicationService.getNbApplications(systems)).toString();
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return "error " + ex.getMessage();
         }
     }
 

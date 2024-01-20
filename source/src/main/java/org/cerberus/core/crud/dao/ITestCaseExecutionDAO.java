@@ -194,6 +194,12 @@ public interface ITestCaseExecutionDAO {
     public AnswerList<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments, List<String> robotDecli, List<TestCase> testcases, Date from, Date to);
 
     /**
+     * @param systems
+     * @return
+     */
+    public Integer getNbExecutions(List<String> systems);
+
+    /**
      * Read TestCaseExecution By Tag
      *
      * @param tag Tag used to filter execution

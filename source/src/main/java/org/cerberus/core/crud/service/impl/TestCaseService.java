@@ -214,6 +214,11 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
+    public Integer getnbtc(List<String> systems) {
+        return testCaseDao.getnbtc(systems);
+    }
+
+    @Override
     public AnswerList<TestCase> findTestCasesByTestByCriteriaWithDependencies(List<String> system, String test, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch, boolean isCalledFromListPage) throws CerberusException {
 
         AnswerList<TestCase> testCases = this.readByTestByCriteria(system, test, startPosition, length, sortInformation, searchParameter, individualSearch);

@@ -76,8 +76,7 @@ public class ApplicationDAO implements IApplicationDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.application : {}", application);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, application);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
@@ -152,9 +151,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -178,8 +175,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 }
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -214,6 +210,51 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
+    public Integer getNbApplications(List<String> systems) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT SQL_CALC_FOUND_ROWS count(*) FROM application app ");
+        query.append(" where 1=1 ");
+
+        if (CollectionUtils.isNotEmpty(systems)) {
+            query.append(" and ");
+            query.append(SqlUtil.generateInClause("`System`", systems));
+        }
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
+                }
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        return 0;
+    }
+
+    @Override
     public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
         AnswerItem<HashMap<String, HashMap<String, Integer>>> response = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -235,8 +276,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             for (String string : system) {
@@ -291,9 +331,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getApplication());
@@ -336,8 +374,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setString(1, object.getApplication());
             preStat.executeUpdate();
@@ -364,8 +401,7 @@ public class ApplicationDAO implements IApplicationDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.application : {}", object.getApplication());
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
 
             int i = 1;
             preStat.setString(i++, object.getApplication());
@@ -403,9 +439,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-             ResultSet resultSet = preStat.executeQuery()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query); ResultSet resultSet = preStat.executeQuery()) {
 
             while (resultSet.next()) {
                 result.add(resultSet.getString("system"));
@@ -475,9 +509,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(systems)) {
@@ -502,8 +534,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));

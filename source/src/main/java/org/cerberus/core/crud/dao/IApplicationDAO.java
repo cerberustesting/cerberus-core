@@ -65,6 +65,13 @@ public interface IApplicationDAO {
      * @param system
      * @return
      */
+    Integer getNbApplications(List<String> system);
+
+    /**
+     *
+     * @param system
+     * @return
+     */
     AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**

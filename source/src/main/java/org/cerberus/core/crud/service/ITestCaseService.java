@@ -70,6 +70,13 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByTest(String test);
 
     /**
+     *
+     * @param systems
+     * @return
+     */
+    Integer getnbtc(List<String> systems);
+
+    /**
      * @param system
      * @param test
      * @param startPosition

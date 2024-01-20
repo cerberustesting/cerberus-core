@@ -151,6 +151,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public Integer getNbExecutions(List<String> system) throws CerberusException {
+        return testCaseExecutionDao.getNbExecutions(system);
+    }
+
+    @Override
     public long registerRunID(TestCaseExecution tCExecution) throws CerberusException {
 
         // Insert TestCaseExecution
