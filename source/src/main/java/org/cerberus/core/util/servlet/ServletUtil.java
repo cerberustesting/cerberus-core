@@ -65,9 +65,12 @@ public final class ServletUtil {
                     case "/ReadTestCase":
                         timeToWait = 30;
                         break;
+                    case "/api":
+                        timeToWait = 30;
+                        break;
                     default:
                 }
-                LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + timeToWait);
+                LOG.debug("Servlet [" + request.getMethod() + "]" + request.getRequestURI() + " - Waiting : " + timeToWait);
                 LOG.debug("Servlet Query String " + request.getQueryString());
                 Thread.sleep(timeToWait);
 

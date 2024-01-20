@@ -20,10 +20,12 @@
 package org.cerberus.core.apiprivate;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -69,7 +71,11 @@ public class ExecutionPrivateController {
 
     @GetMapping("/count")
     public String getnbByCriteria(
-            @RequestParam(name = "system", value = "system", required = false) List<String> systems) {
+            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         JSONObject jsonResponse = new JSONObject();
 
@@ -82,5 +88,5 @@ public class ExecutionPrivateController {
             return "error " + ex.getMessage();
         }
     }
-    
+
 }

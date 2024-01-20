@@ -21,9 +21,11 @@ package org.cerberus.core.apiprivate;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.impl.TestCaseService;
+import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -48,7 +50,11 @@ public class TestCasePrivateController {
 
     @GetMapping("/count")
     public String getnbByCriteria(
-            @RequestParam(name = "system", value = "system", required = false) List<String> systems) {
+            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         JSONObject jsonResponse = new JSONObject();
 
