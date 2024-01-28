@@ -76,8 +76,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -112,8 +111,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.stepId : " + stepId);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -148,8 +146,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             try {
                 preStat.setString(1, test);
@@ -230,8 +227,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -312,8 +308,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -378,8 +373,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.options " + testCaseStepAction.getOptions().toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -427,8 +421,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.service " + service);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, service);
@@ -455,8 +448,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL.param.service " + "%\\%object." + oldObject + ".%");
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, application);
@@ -478,8 +470,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, tcsa.getTest());
             preStat.setString(2, tcsa.getTestcase());
@@ -506,8 +497,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setInt(1, newActionId);
             preStat.setString(2, test);
@@ -538,8 +528,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, testCaseStepAction.getTest());
@@ -596,6 +585,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         String description = resultSet.getString("tca.description");
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
         boolean isFatal = resultSet.getBoolean("tca.isFatal");
+        boolean doScreenshotBefore = resultSet.getBoolean("tca.doScreenshotBefore");
+        boolean doScreenshotAfter = resultSet.getBoolean("tca.doScreenshotAfter");
+        int waitBefore = resultSet.getInt("tca.waitBefore");
+        int waitAfter = resultSet.getInt("tca.waitAfter");
         String usrCreated = resultSet.getString("tca.UsrCreated");
         Timestamp dateCreated = resultSet.getTimestamp("tca.DateCreated");
         String usrModif = resultSet.getString("tca.UsrModif");
@@ -603,8 +596,9 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
         return factoryTestCaseStepAction.create(test, testcase, stepId, actionId, sort, conditionOperator,
                 conditionValue1, conditionValue2, conditionValue3, conditionOptions, action, value1,
-                value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated,
-                usrModif, dateModif);
+                value2, value3, options, isFatal, description, screenshotFilename,
+                doScreenshotBefore, doScreenshotAfter, waitBefore, waitAfter,
+                usrCreated, dateCreated, usrModif, dateModif);
     }
 
 }

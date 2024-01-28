@@ -25,6 +25,14 @@ import java.util.HashMap;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.entity.MessageEvent;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.util.DateUtil;
@@ -36,6 +44,14 @@ import org.json.JSONObject;
 /**
  * @author bcivel
  */
+@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class TestCaseStepActionExecution {
 
     private long id;
@@ -59,7 +75,7 @@ public class TestCaseStepActionExecution {
     private String value1;
     private String value2;
     private String value3;
-    private String isFatal; // FORCEEXESTATUS IN DATABASE
+    private String isFatal;
     private String description;
     private String returnCode;
     private String returnMessage;
@@ -82,6 +98,10 @@ public class TestCaseStepActionExecution {
     private List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private JSONArray conditionOptions;
     private JSONArray options;
+    private boolean doScreenshotBefore;
+    private boolean doScreenshotAfter;
+    private int waitBefore;
+    private int waitAfter;
 
     public JSONArray getConditionOptions() {
         return conditionOptions;
@@ -435,11 +455,6 @@ public class TestCaseStepActionExecution {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "TestCaseStepActionExecution{" + "id=" + id + ", test=" + test + ", testCase=" + testCase + ", stepId=" + stepId + ", index=" + index + ", sequence=" + sequence + ", sort=" + sort + ", conditionOperator=" + conditionOperator + ", conditionVal1Init=" + conditionVal1Init + ", conditionVal2Init=" + conditionVal2Init + ", conditionVal3Init=" + conditionVal3Init + ", conditionVal1=" + conditionVal1 + ", conditionVal2=" + conditionVal2 + ", conditionVal3=" + conditionVal3 + ", action=" + action + ", value1Init=" + value1Init + ", value2Init=" + value2Init + ", value3Init=" + value3Init + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", isFatal=" + isFatal + ", description=" + description + ", returnCode=" + returnCode + ", returnMessage=" + returnMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", testCaseStepAction=" + testCaseStepAction + ", testCaseStepExecution=" + testCaseStepExecution + ", actionResultMessage=" + actionResultMessage + ", executionResultMessage=" + executionResultMessage + ", propertyName=" + propertyName + ", stopExecution=" + stopExecution + ", fileList=" + fileList + ", testCaseExecutionDataList=" + testCaseExecutionDataList + ", testCaseStepActionControlExecutionList=" + testCaseStepActionControlExecutionList + '}';
     }
 
     /**

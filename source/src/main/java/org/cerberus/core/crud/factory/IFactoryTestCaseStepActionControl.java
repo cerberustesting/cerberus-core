@@ -53,7 +53,8 @@ public interface IFactoryTestCaseStepActionControl {
      */
     TestCaseStepActionControl create(String test, String testCase, int stepId, int actionId, int controlId, int sort,
             String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
-            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename);
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename,
+            boolean doScreenshotBefore, boolean doScreenshotAfter, int waitBefore, int waitAfter);
 
     /**
      *
@@ -76,6 +77,10 @@ public interface IFactoryTestCaseStepActionControl {
      * @param isFatal
      * @param description
      * @param screenshotFilename
+     * @param doScreenshotBefore
+     * @param doScreenshotAfter
+     * @param waitBefore
+     * @param waitAfter
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
@@ -84,5 +89,7 @@ public interface IFactoryTestCaseStepActionControl {
      */
     TestCaseStepActionControl create(String test, String testCase, int stepId, int actionId, int controlId, int sort,
             String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String control, String value1,
-            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename,
+            boolean doScreenshotBefore, boolean doScreenshotAfter, int waitBefore, int waitAfter,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

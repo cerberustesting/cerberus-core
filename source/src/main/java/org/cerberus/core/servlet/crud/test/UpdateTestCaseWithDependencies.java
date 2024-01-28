@@ -80,10 +80,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
-     * @throws ServletException                         if a servlet-specific error occurs
-     * @throws IOException                              if an I/O error occurs
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      * @throws org.cerberus.core.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -363,12 +363,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String value3 = tcsaJson.getString("value3");
             JSONArray optionsArray = tcsaJson.getJSONArray("options");
             boolean isFatal = tcsaJson.getBoolean("isFatal");
+            boolean doScreenshotBefore = tcsaJson.getBoolean("doScreenshotBefore");
+            boolean doScreenshotAfter = tcsaJson.getBoolean("doScreenshotAfter");
+            int waitBefore = tcsaJson.getInt("waitBefore");
+            int waitAfter = tcsaJson.getInt("waitAfter");
             String description = tcsaJson.getString("description");
             String screenshot = tcsaJson.getString("screenshotFileName");
             JSONArray controlArray = tcsaJson.getJSONArray("controls");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, condOptionsArray, action, value1, value2, value3, optionsArray, isFatal, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testcase, stepId, actionId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, condOptionsArray,
+                        action, value1, value2, value3, optionsArray, isFatal, description, screenshot,
+                        doScreenshotBefore, doScreenshotAfter, waitBefore, waitAfter);
                 tcsa.setControls(getTestCaseStepActionControlsFromParameter(request, appContext, test, testcase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -400,24 +406,29 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String value3 = controlJson.isNull("value3") ? "" : controlJson.getString("value3");
             JSONArray options = controlJson.getJSONArray("options");
             boolean isFatal = controlJson.getBoolean("isFatal");
+            boolean doScreenshotBefore = controlJson.getBoolean("doScreenshotBefore");
+            boolean doScreenshotAfter = controlJson.getBoolean("doScreenshotAfter");
+            int waitBefore = controlJson.getInt("waitBefore");
+            int waitAfter = controlJson.getInt("waitAfter");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, controlValue, value1, value2, value3, options, isFatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, 
+                        conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, 
+                        controlValue, value1, value2, value3, options, isFatal, description, screenshot, doScreenshotBefore, doScreenshotAfter, waitBefore, waitAfter));
             }
         }
         return testCaseStepActionControl;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -434,10 +445,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

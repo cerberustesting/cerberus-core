@@ -47,13 +47,21 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionAndControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
     /**
+     * @param testCaseStepActionExecution
+     * @param testCaseStepActionControlExecution
+     * @return
+     */
+    List<TestCaseExecutionFile> recordExecutionInformationBeforeStepActionAndControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+
+    /**
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
      * @param cropValues
+     * @param fileDescription
      * @return
      */
-    List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues);
+    List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues, String fileDescription, String fileName);
 
     /**
      * @param actionExecution
@@ -173,9 +181,11 @@ public interface IRecorderService {
      * @param file
      * @param fileName
      * @param fileID
+     * @param fileDescription
      * @return
      */
-    AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
+    AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, 
+            String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
 
     /**
      * @param testCaseExecution
@@ -183,13 +193,11 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution);
 
-
     /**
      * @param testCaseExecution
      * @return
      */
     TestCaseExecutionFile recordConsoleLog(TestCaseExecution testCaseExecution);
-
 
     /**
      * @param exeID
@@ -208,7 +216,7 @@ public interface IRecorderService {
     /**
      * attach a physique file to the testcase execution and save it to database
      *
-     * @param tce      the test case execution
+     * @param tce the test case execution
      * @param recorder the recorder that was created to save file on datastorage
      * @param fileDesc description of file : Exxemple : "Video"
      * @param fileType File type (PNG, MP4, etc.)

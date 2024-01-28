@@ -63,6 +63,11 @@ public class TestCaseStepAction {
     private boolean isFatal;
     private String description;
     private String screenshotFilename;
+    private boolean doScreenshotBefore;
+    private boolean doScreenshotAfter;
+    private int waitBefore;
+    private int waitAfter;
+
     @EqualsAndHashCode.Exclude
     private String usrCreated;
     @EqualsAndHashCode.Exclude
@@ -234,7 +239,6 @@ public class TestCaseStepAction {
         return true;
     }
 
-
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -254,6 +258,10 @@ public class TestCaseStepAction {
             result.put("conditionOptions", this.getConditionOptions());
             result.put("isFatal", this.isFatal());
             result.put("screenshotFilename", this.getScreenshotFilename());
+            result.put("waitBefore", this.getWaitBefore());
+            result.put("waitAfter", this.getWaitAfter());
+            result.put("doScreenshotBefore", this.isDoScreenshotBefore());
+            result.put("doScreenshotAfter", this.isDoScreenshotAfter());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestcase());
 

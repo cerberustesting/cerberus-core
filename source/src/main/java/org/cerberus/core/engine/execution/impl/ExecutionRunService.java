@@ -989,7 +989,7 @@ public class ExecutionRunService implements IExecutionRunService {
         List<TestCaseStepAction> testCaseStepActionList = stepExecution.getTestCaseStep().getActions();
         LOG.debug("{}Getting list of actions of the step. {} action(s) to perform.", logPrefix, testCaseStepActionList.size());
 
-        for (TestCaseStepAction testCaseStepAction : testCaseStepActionList) {
+        for (TestCaseStepAction tcAction : testCaseStepActionList) {
 
             // Start Execution of TestCaseStepAction
             long startAction = new Date().getTime();
@@ -998,16 +998,20 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Create and Register TestCaseStepActionExecution.
             TestCaseStepActionExecution actionExecution = factoryTestCaseStepActionExecution.create(
-                    stepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestcase(),
-                    testCaseStepAction.getStepId(), stepExecution.getIndex(), testCaseStepAction.getActionId(), testCaseStepAction.getSort(), null, null,
-                    testCaseStepAction.getConditionOperator(), testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
-                    testCaseStepAction.getConditionValue1(), testCaseStepAction.getConditionValue2(), testCaseStepAction.getConditionValue3(),
-                    testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue3(), testCaseStepAction.getValue1(),
-                    testCaseStepAction.getValue2(), testCaseStepAction.getValue3(),
-                    (testCaseStepAction.isFatal() ? "Y" : "N"), startAction, startAction, startLongAction, startLongAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
-                    testCaseStepAction.getDescription(), testCaseStepAction, stepExecution);
-            actionExecution.setOptions(testCaseStepAction.getOptionsActive());
-            actionExecution.setConditionOptions(testCaseStepAction.getConditionOptionsActive());
+                    stepExecution.getId(), tcAction.getTest(), tcAction.getTestcase(),
+                    tcAction.getStepId(), stepExecution.getIndex(), tcAction.getActionId(), tcAction.getSort(), null, null,
+                    tcAction.getConditionOperator(), tcAction.getConditionValue1(), tcAction.getConditionValue2(), tcAction.getConditionValue3(),
+                    tcAction.getConditionValue1(), tcAction.getConditionValue2(), tcAction.getConditionValue3(),
+                    tcAction.getAction(), tcAction.getValue1(), tcAction.getValue2(), tcAction.getValue3(), tcAction.getValue1(),
+                    tcAction.getValue2(), tcAction.getValue3(),
+                    (tcAction.isFatal() ? "Y" : "N"), startAction, startAction, startLongAction, startLongAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    tcAction.getDescription(), tcAction, stepExecution);
+            actionExecution.setOptions(tcAction.getOptionsActive());
+            actionExecution.setConditionOptions(tcAction.getConditionOptionsActive());
+            actionExecution.setWaitBefore(tcAction.getWaitBefore());
+            actionExecution.setWaitAfter(tcAction.getWaitAfter());
+            actionExecution.setDoScreenshotBefore(tcAction.isDoScreenshotBefore());
+            actionExecution.setDoScreenshotAfter(tcAction.isDoScreenshotAfter());
 
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(actionExecution, execution.getSecrets());
 
@@ -1202,13 +1206,21 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // If execution is not manual, do action and record files
         if (!execution.getManualExecution().equals("Y")) {
+
+            // Record Screenshot
+            try {
+                actionExecution.addFileList(recorderService.recordExecutionInformationBeforeStepActionAndControl(actionExecution, null));
+            } catch (Exception ex) {
+                LOG.warn("Unable to record Screenshot Before Action : {}", ex.toString(), ex);
+            }
+
             actionExecution = this.actionService.doAction(actionExecution);
 
             // Record Screenshot, PageSource
             try {
                 actionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionAndControl(actionExecution, null));
             } catch (Exception ex) {
-                LOG.warn("Unable to record Screenshot/PageSource : {}", ex.toString(), ex);
+                LOG.warn("Unable to record Screenshot/PageSource After Action : {}", ex.toString(), ex);
             }
 
         } else {
@@ -1261,6 +1273,10 @@ public class ExecutionRunService implements IExecutionRunService {
                             control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             controlExecution.setConditionOptions(control.getConditionOptionsActive());
             controlExecution.setOptions(control.getOptionsActive());
+            controlExecution.setDoScreenshotBefore(control.isDoScreenshotBefore());
+            controlExecution.setDoScreenshotAfter(control.isDoScreenshotAfter());
+            controlExecution.setWaitBefore(control.getWaitBefore());
+            controlExecution.setWaitAfter(control.getWaitAfter());
 
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
 
@@ -1465,10 +1481,19 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // If execution is not manual, do control and record files
         if (!execution.getManualExecution().equals("Y")) {
+
+            // Record Screenshot
+            try {
+                controlExecution.addFileList(recorderService.recordExecutionInformationBeforeStepActionAndControl(controlExecution.getTestCaseStepActionExecution(), controlExecution));
+            } catch (Exception ex) {
+                LOG.warn("Unable to record Screenshot Before Control : {}", ex.toString(), ex);
+            }
+
             controlExecution = this.controlService.doControl(controlExecution);
 
             // Record Screenshot, PageSource
             controlExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionAndControl(controlExecution.getTestCaseStepActionExecution(), controlExecution));
+
         } else {
             // If execution manual, set Control result message as notExecuted
             controlExecution.setControlResultMessage(new MessageEvent(MessageEventEnum.CONTROL_WAITINGEXECUTION));

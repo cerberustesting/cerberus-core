@@ -40,47 +40,48 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
     public TestCaseStepActionExecution create(long id, String test, String testCase, int stepId, int index, int sequence, int sort, String returnCode, String returnMessage,
             String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
             String action, String value1Init, String value2Init, String value3Init, String value1, String value2, String value3,
-            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction,
-            TestCaseStepExecution testCaseStepExecution) {
-        TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
-        testCaseStepActionExecution.setAction(action);
-        testCaseStepActionExecution.setEnd(end);
-        testCaseStepActionExecution.setEndLong(endLong);
-        testCaseStepActionExecution.setId(id);
-        testCaseStepActionExecution.setConditionOperator(conditionOperator);
-        testCaseStepActionExecution.setConditionVal1Init(conditionVal1Init);
-        testCaseStepActionExecution.setConditionVal2Init(conditionVal2Init);
-        testCaseStepActionExecution.setConditionVal3Init(conditionVal3Init);
-        testCaseStepActionExecution.setConditionVal1(conditionVal1);
-        testCaseStepActionExecution.setConditionVal2(conditionVal2);
-        testCaseStepActionExecution.setConditionVal3(conditionVal3);
-        testCaseStepActionExecution.setValue1(value1);
-        testCaseStepActionExecution.setValue2(value2);
-        testCaseStepActionExecution.setValue3(value3);
-        testCaseStepActionExecution.setValue1Init(value1Init);
-        testCaseStepActionExecution.setValue2Init(value2Init);
-        testCaseStepActionExecution.setValue3Init(value3Init);
-        testCaseStepActionExecution.setFatal(forceExeStatus);
-        testCaseStepActionExecution.setReturnCode(returnCode);
-        testCaseStepActionExecution.setReturnMessage(returnMessage);
-        testCaseStepActionExecution.setSequence(sequence);
-        testCaseStepActionExecution.setSort(sort);
-        testCaseStepActionExecution.setStart(start);
-        testCaseStepActionExecution.setStartLong(startLong);
-        testCaseStepActionExecution.setStepId(stepId);
-        testCaseStepActionExecution.setIndex(index);
-        testCaseStepActionExecution.setTest(test);
-        testCaseStepActionExecution.setTestCase(testCase);
-        testCaseStepActionExecution.setActionResultMessage(resultMessage);
-        testCaseStepActionExecution.setTestCaseStepAction(testCaseStepAction);
-        testCaseStepActionExecution.setTestCaseStepExecution(testCaseStepExecution);
-        testCaseStepActionExecution.setDescription(description);
+            String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description,
+            TestCaseStepAction tcAction, TestCaseStepExecution stepExecution) {
+        TestCaseStepActionExecution actionExecution = new TestCaseStepActionExecution();
+        actionExecution.setAction(action);
+        actionExecution.setEnd(end);
+        actionExecution.setEndLong(endLong);
+        actionExecution.setId(id);
+        actionExecution.setConditionOperator(conditionOperator);
+        actionExecution.setConditionVal1Init(conditionVal1Init);
+        actionExecution.setConditionVal2Init(conditionVal2Init);
+        actionExecution.setConditionVal3Init(conditionVal3Init);
+        actionExecution.setConditionVal1(conditionVal1);
+        actionExecution.setConditionVal2(conditionVal2);
+        actionExecution.setConditionVal3(conditionVal3);
+        actionExecution.setValue1(value1);
+        actionExecution.setValue2(value2);
+        actionExecution.setValue3(value3);
+        actionExecution.setValue1Init(value1Init);
+        actionExecution.setValue2Init(value2Init);
+        actionExecution.setValue3Init(value3Init);
+        actionExecution.setFatal(forceExeStatus);
+        actionExecution.setReturnCode(returnCode);
+        actionExecution.setReturnMessage(returnMessage);
+        actionExecution.setSequence(sequence);
+        actionExecution.setSort(sort);
+        actionExecution.setStart(start);
+        actionExecution.setStartLong(startLong);
+        actionExecution.setStepId(stepId);
+        actionExecution.setIndex(index);
+        actionExecution.setTest(test);
+        actionExecution.setTestCase(testCase);
+        actionExecution.setActionResultMessage(resultMessage);
+
+        actionExecution.setTestCaseStepAction(tcAction);
+        actionExecution.setTestCaseStepExecution(stepExecution);
+        actionExecution.setDescription(description);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
-        testCaseStepActionExecution.setFileList(objectFileList);
+        actionExecution.setFileList(objectFileList);
         List<TestCaseStepActionControlExecution> testCaseStepActionControlExecution = new ArrayList<>();
-        testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(testCaseStepActionControlExecution);
-        return testCaseStepActionExecution;
+        actionExecution.setTestCaseStepActionControlExecutionList(testCaseStepActionControlExecution);
+        return actionExecution;
     }
 
 }

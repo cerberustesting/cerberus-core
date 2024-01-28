@@ -118,21 +118,37 @@ public class TestcaseStepActionControlDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 18)
+    private boolean doScreenshotBefore;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 19)
+    private boolean doScreenshotAfter;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 20)
+    private int waitBefore;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 21)
+    private int waitAfter;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 22)
     private String screenshotFilename;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 19)
+    @ApiModelProperty(position = 23)
     private String usrCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 20)
+    @ApiModelProperty(position = 24)
     private String dateCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 21)
+    @ApiModelProperty(position = 25)
     private String usrModif;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(position = 22)
+    @ApiModelProperty(position = 26)
     private String dateModif;
 }

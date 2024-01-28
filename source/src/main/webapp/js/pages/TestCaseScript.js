@@ -2352,6 +2352,10 @@ function Action(json, parentStep, canUpdate) {
         this.value2 = json.value2;
         this.value3 = json.value3;
         this.options = json.options;
+        this.waitBefore = json.waitBefore;
+        this.waitAfter = json.waitAfter;
+        this.doScreenshotBefore = json.doScreenshotBefore;
+        this.doScreenshotAfter = json.doScreenshotAfter;
         this.controls = [];
         this.setControls(json.controls, canUpdate);
     } else {
@@ -2371,6 +2375,10 @@ function Action(json, parentStep, canUpdate) {
         this.value2 = "";
         this.value3 = "";
         this.options = [];
+        this.waitBefore = 0;
+        this.waitAfter = 0;
+        this.doScreenshotBefore = false;
+        this.doScreenshotAfter = false;
         this.controls = [];
     }
 
@@ -2894,6 +2902,10 @@ Action.prototype.getJsonData = function () {
     json.conditionValue3 = this.conditionValue3;
     json.conditionOptions = this.conditionOptions;
     json.screenshotFileName = "";
+    json.waitBefore = this.waitBefore;
+    json.waitAfter = this.waitAfter;
+    json.doScreenshotBefore = this.doScreenshotBefore;
+    json.doScreenshotAfter = this.doScreenshotAfter;
 
     return json;
 };
@@ -2919,6 +2931,10 @@ function Control(json, parentAction, canUpdate) {
         this.conditionValue3 = json.conditionValue3;
         this.conditionOptions = json.conditionOptions;
         this.screenshotFileName = "";
+        this.waitBefore = json.waitBefore;
+        this.waitAfter = json.waitAfter;
+        this.doScreenshotBefore = json.doScreenshotBefore;
+        this.doScreenshotAfter = json.doScreenshotAfter;
     } else {
         this.test = "";
         this.testcase = "";
@@ -2938,6 +2954,10 @@ function Control(json, parentAction, canUpdate) {
         this.conditionValue3 = "";
         this.conditionOptions = [];
         this.screenshotFileName = "";
+        this.waitBefore = 0;
+        this.waitAfter = 0;
+        this.doScreenshotBefore = false;
+        this.doScreenshotAfter = false;
     }
 
     this.parentStep = parentAction.parentStep;
@@ -3184,6 +3204,11 @@ Control.prototype.getJsonData = function () {
     json.conditionOptions = this.conditionOptions;
 
     json.screenshotFileName = this.screenshotFileName;
+
+    json.waitBefore = this.waitBefore;
+    json.waitAfter = this.waitAfter;
+    json.doScreenshotBefore = this.doScreenshotBefore;
+    json.doScreenshotAfter = this.doScreenshotAfter;
 
     return json;
 };

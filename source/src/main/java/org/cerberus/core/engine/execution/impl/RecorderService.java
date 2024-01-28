@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- * 
+ *
  * This file is part of Cerberus.
- * 
+ *
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -100,6 +100,7 @@ public class RecorderService implements IRecorderService {
 
         TestCaseExecution myExecution;
         boolean doScreenshot;
+        boolean doScreenshotAfter;
         boolean getPageSource;
         String applicationType;
         String returnCode;
@@ -108,12 +109,14 @@ public class RecorderService implements IRecorderService {
         if (controlExecution == null) {
             myExecution = actionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = actionExecution.getActionResultMessage().isDoScreenshot();
+            doScreenshotAfter = actionExecution.isDoScreenshotAfter();
             getPageSource = actionExecution.getActionResultMessage().isGetPageSource();
             applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
             returnCode = actionExecution.getReturnCode();
         } else {
             myExecution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = controlExecution.getControlResultMessage().isDoScreenshot();
+            doScreenshotAfter = controlExecution.isDoScreenshotAfter();
             getPageSource = controlExecution.getControlResultMessage().isGetPageSource();
             applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
             returnCode = controlExecution.getReturnCode();
@@ -126,7 +129,8 @@ public class RecorderService implements IRecorderService {
          * correct doScreenshot flag on the last action MessageEvent.
          */
         if (Screenshot.printScreenSystematicaly(myExecution.getScreenshot())
-                || (Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot))) {
+                || (Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot))
+                || (doScreenshotAfter)) {
             if (applicationType.equals(Application.TYPE_GUI)
                     || applicationType.equals(Application.TYPE_APK)
                     || applicationType.equals(Application.TYPE_IPA)
@@ -136,7 +140,7 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    objectFileList.addAll(this.recordScreenshot(myExecution, actionExecution, controlNumber, ""));
+                    objectFileList.addAll(this.recordScreenshot(myExecution, actionExecution, controlNumber, "", "Screenshot", "screenshot"));
                 } else {
                     LOG.debug("{}Not Doing screenshot because connectivity with selenium server lost.", logPrefix);
                 }
@@ -187,7 +191,68 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution actionExecution, TestCaseStepActionControlExecution controlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
+    public List<TestCaseExecutionFile> recordExecutionInformationBeforeStepActionAndControl(TestCaseStepActionExecution actionExecution, TestCaseStepActionControlExecution controlExecution) {
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
+
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        TestCaseExecution myExecution;
+        boolean doScreenshot;
+        boolean doScreenshotBefore;
+        boolean getPageSource;
+        String applicationType;
+        String returnCode;
+        Integer controlNumber = -1;
+
+        if (controlExecution == null) {
+            myExecution = actionExecution.getTestCaseStepExecution().gettCExecution();
+            doScreenshot = actionExecution.getActionResultMessage().isDoScreenshot();
+            doScreenshotBefore = actionExecution.isDoScreenshotBefore();
+            getPageSource = actionExecution.getActionResultMessage().isGetPageSource();
+            applicationType = actionExecution.getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            returnCode = actionExecution.getReturnCode();
+        } else {
+            myExecution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+            doScreenshot = controlExecution.getControlResultMessage().isDoScreenshot();
+            doScreenshotBefore = controlExecution.isDoScreenshotBefore();
+            getPageSource = controlExecution.getControlResultMessage().isGetPageSource();
+            applicationType = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getAppTypeEngine();
+            returnCode = controlExecution.getReturnCode();
+            controlNumber = controlExecution.getControlId();
+        }
+
+        /*
+         * SCREENSHOT Management. Screenshot only done when : screenshot
+         * parameter is eq to 2 or screenshot parameter is eq to 1 with the
+         * correct doScreenshot flag on the last action MessageEvent.
+         */
+        if (doScreenshotBefore) {
+            if (applicationType.equals(Application.TYPE_GUI)
+                    || applicationType.equals(Application.TYPE_APK)
+                    || applicationType.equals(Application.TYPE_IPA)
+                    || applicationType.equals(Application.TYPE_FAT)) {
+                /*
+                 * Only if the return code is not equal to Cancel, meaning lost
+                 * connectivity with selenium.
+                 */
+                if (!returnCode.equals("CA")) {
+                    objectFileList.addAll(this.recordScreenshot(myExecution, actionExecution, controlNumber, "", "Screenshot Before", "screenshot-before"));
+                } else {
+                    LOG.debug("{}Not Doing screenshot because connectivity with selenium server lost.", logPrefix);
+                }
+
+            }
+        } else {
+            LOG.debug("{}Not Doing screenshot because of the screenshot parameter or flag on the last Action result.", logPrefix);
+        }
+
+        return objectFileList;
+    }
+
+    @Override
+    public AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution actionExecution, TestCaseStepActionControlExecution controlExecution,
+            String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", "Can't upload file");
         AnswerItem<TestCaseExecutionFile> a = new AnswerItem<>();
         TestCaseExecutionFile object = null;
@@ -303,7 +368,7 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String cropValues) {
+    public List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String cropValues, String fileDescription, String fileName) {
 
         List<TestCaseExecutionFile> objectList = new ArrayList<>();
         TestCaseExecutionFile object = null;
@@ -343,7 +408,7 @@ public class RecorderService implements IRecorderService {
             try {
                 long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
 
-                Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png", false);
+                Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, fileName, "png", false);
                 LOG.debug("{}FullPath {}", logPrefix, recorder.getFullPath());
 
                 File dir = new File(recorder.getFullPath());
@@ -352,7 +417,7 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
                 }
                 // Getting the max size of the screenshot.
-                String fileDesc = "Screenshot";
+                String fileDesc = fileDescription;
                 if (maxSizeParam < newImage.length()) {
                     LOG.warn("{}Screenshot size exceeds the maximum defined in configurations ({}>={}) {} destination: {}", logPrefix, newImage.length(), maxSizeParam, newImage.getName(), recorder.getRelativeFilenameURL());
                     fileDesc = "Screenshot Too Big !!";
@@ -374,11 +439,11 @@ public class RecorderService implements IRecorderService {
                 LOG.debug("{}Screenshot done in : {}", logPrefix, recorder.getRelativeFilenameURL());
 
                 if (newImageDesktop != null) {
-                    Recorder recorderDestop = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot-desktop", "png", false);
+                    Recorder recorderDestop = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, fileName + "-desktop", "png", false);
                     LOG.debug("{}FullPath {}", logPrefix, recorderDestop.getFullPath());
 
                     // Getting the max size of the screenshot.
-                    fileDesc = "Desktop Screenshot";
+                    fileDesc = "Desktop " + fileDescription;
                     if (maxSizeParam < newImageDesktop.length()) {
                         LOG.warn("{}Screenshot size exceeds the maximum defined in configurations ({}>={}) {} destination: {}", logPrefix, newImageDesktop.length(), maxSizeParam, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
                         fileDesc = "Desktop Screenshot Too Big !!";

@@ -302,9 +302,15 @@ public class ActionService implements IActionService {
         }
 
         /**
-         * TODO add a wait in ms before the action.
+         * Wait in ms before the action.
          */
-//        Thead.sleep();
+        if (actionExecution.getWaitBefore() > 0) {
+            try {
+                Thread.sleep(Long.parseLong(String.valueOf(actionExecution.getWaitBefore())));
+            } catch (InterruptedException ex) {
+                LOG.error("Exception when waiting before action. {}-{}-{}", execution.getId(), actionExecution.getStepId(), actionExecution.getId(), ex);
+            }
+        }
 
         /**
          * Route the actions to the correct method.
@@ -501,6 +507,25 @@ public class ActionService implements IActionService {
             res.setMessage(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING);
         }
 
+        /**
+         * Put Wait in ms before the action to message.
+         */
+        if (actionExecution.getWaitBefore()> 0) {
+                res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitBefore()) + " ms Bafore.");
+        }
+
+        /**
+         * Wait in ms after the action.
+         */
+        if (actionExecution.getWaitAfter() > 0) {
+            try {
+                Thread.sleep(Long.parseLong(String.valueOf(actionExecution.getWaitAfter())));
+                res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitAfter()) + " ms After.");
+            } catch (InterruptedException ex) {
+                LOG.error("Exception when waiting after action. {}-{}-{}", execution.getId(), actionExecution.getStepId(), actionExecution.getId(), ex);
+            }
+        }
+
         actionExecution.setActionResultMessage(res);
 
         /**
@@ -515,10 +540,6 @@ public class ActionService implements IActionService {
          */
         actionExecution.setStopExecution(res.isStopTest());
 
-        /**
-         * TODO add a wait in ms after the action.
-         */
-//        Thead.sleep();
 
         /**
          * Timestamp stops here.

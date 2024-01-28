@@ -267,10 +267,20 @@ public class ControlService implements IControlService {
         }
 
         /**
+         * Wait in ms before the control.
+         */
+        if (controlExecution.getWaitBefore() > 0) {
+            try {
+                Thread.sleep(Long.parseLong(String.valueOf(controlExecution.getWaitBefore())));
+            } catch (InterruptedException ex) {
+                LOG.error("Exception when waiting before control. {}-{}-{}-{}", execution.getId(), controlExecution.getStepId(), controlExecution.getActionId(), controlExecution.getId(), ex);
+            }
+        }
+        /**
          * TODO add a wait in ms before the control.
          */
 //        Thead.sleep();
-                
+
         try {
 
             switch (controlExecution.getControl()) {
@@ -419,6 +429,25 @@ public class ControlService implements IControlService {
         // Reset Timeout to default
         robotServerService.setOptionsToDefault(execution.getSession());
 
+        /**
+         * Put Wait in ms before the action to message.
+         */
+        if (controlExecution.getWaitBefore() > 0) {
+            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(controlExecution.getWaitBefore()) + " ms Bafore.");
+        }
+
+        /**
+         * Wait in ms after the action.
+         */
+        if (controlExecution.getWaitAfter() > 0) {
+            try {
+                Thread.sleep(Long.parseLong(String.valueOf(controlExecution.getWaitAfter())));
+                res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(controlExecution.getWaitAfter()) + " ms After.");
+            } catch (InterruptedException ex) {
+                LOG.error("Exception when waiting after control. {}-{}-{}-{}", execution.getId(), controlExecution.getStepId(), controlExecution.getActionId(), controlExecution.getId(), ex);
+            }
+        }
+
         controlExecution.setControlResultMessage(res);
 
         /*
@@ -438,11 +467,6 @@ public class ControlService implements IControlService {
         if (res.isStopTest() && controlExecution.getFatal().equals("Y")) {
             controlExecution.setStopExecution(true);
         }
-        
-        /**
-         * TODO add a wait in ms after the control.
-         */
-//        Thead.sleep();
 
         controlExecution.setEnd(new Date().getTime());
         return controlExecution;
@@ -1311,13 +1335,13 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                                pathContent = jsonService.getFromJson(responseBody, null, path);
-                            } catch (Exception ex) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
-                                mes.resolveDescription("ERROR", ex.toString());
-                                return mes;
-                            }
-                            break;
+                            pathContent = jsonService.getFromJson(responseBody, null, path);
+                        } catch (Exception ex) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                            mes.resolveDescription("ERROR", ex.toString());
+                            return mes;
+                        }
+                        break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -1744,7 +1768,7 @@ public class ControlService implements IControlService {
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
-            List<TestCaseExecutionFile> file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId(), cropValues);
+            List<TestCaseExecutionFile> file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlId(), cropValues, "Screenshot", "screenshot");
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;

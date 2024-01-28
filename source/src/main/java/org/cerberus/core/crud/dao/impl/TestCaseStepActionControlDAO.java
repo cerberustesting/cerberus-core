@@ -80,8 +80,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -116,8 +115,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL.param.actionId : " + actionId);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -152,8 +150,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepActionControl.getTest());
@@ -194,8 +191,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -252,8 +248,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL.param.options : " + testCaseStepActionControl.getOptions().toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, testCaseStepActionControl.getTest());
@@ -305,8 +300,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL.param.service " + "%\\%object." + oldObject + ".%");
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
 
             int i = 1;
             preStat.setString(i++, application);
@@ -328,8 +322,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, tcsac.getTest());
             preStat.setString(2, tcsac.getTestcase());
             preStat.setInt(3, tcsac.getStepId());
@@ -361,8 +354,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString());) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
@@ -396,15 +388,12 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     controlList.add(this.loadFromResultSet(resultSet));
@@ -458,17 +447,14 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement();) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setInt(3, stepId);
             preStat.setInt(4, actionId);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     controlList.add(this.loadFromResultSet(resultSet));
@@ -524,8 +510,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, testCaseStepActionControl.getTest());
@@ -583,12 +568,20 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         String value3 = resultSet.getString("Value3");
         JSONArray options = SqlUtil.getJSONArrayFromColumn(resultSet, "options");
         String description = resultSet.getString("Description");
+        boolean doScreenshotBefore = resultSet.getBoolean("doScreenshotBefore");
+        boolean doScreenshotAfter = resultSet.getBoolean("doScreenshotAfter");
+        int waitBefore = resultSet.getInt("waitBefore");
+        int waitAfter = resultSet.getInt("waitAfter");
         String screenshotFilename = resultSet.getString("screenshotFilename");
         String usrCreated = resultSet.getString("UsrCreated");
         Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
         String usrModif = resultSet.getString("UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        return factoryTestCaseStepActionControl.create(test, testcase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, control, value1, value2, value3, options, isFatal, description, screenshotFilename, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryTestCaseStepActionControl.create(test, testcase, stepId, actionId, controlId, sort, conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions,
+                control, value1, value2, value3,
+                options, isFatal, description, screenshotFilename,
+                doScreenshotBefore, doScreenshotAfter, waitBefore, waitAfter,
+                usrCreated, dateCreated, usrModif, dateModif);
     }
 }

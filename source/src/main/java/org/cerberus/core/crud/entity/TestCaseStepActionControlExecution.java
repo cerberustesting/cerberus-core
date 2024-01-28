@@ -23,6 +23,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -36,6 +44,14 @@ import org.json.JSONObject;
 /**
  * @author bcivel
  */
+@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class TestCaseStepActionControlExecution {
 
     private long id;
@@ -78,6 +94,10 @@ public class TestCaseStepActionControlExecution {
     private boolean stopExecution;
     private JSONArray conditionOptions;
     private JSONArray options;
+    private boolean doScreenshotBefore;
+    private boolean doScreenshotAfter;
+    private int waitBefore;
+    private int waitAfter;
 
     public JSONArray getConditionOptions() {
         return conditionOptions;

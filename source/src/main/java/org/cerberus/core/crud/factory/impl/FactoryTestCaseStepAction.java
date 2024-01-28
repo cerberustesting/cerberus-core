@@ -34,60 +34,72 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
     public TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator,
-            String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String action, String value1, String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename) {
-        TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
-        testCaseStepAction.setConditionOperator(conditionOperator);
-        testCaseStepAction.setConditionValue1(conditionValue1);
-        testCaseStepAction.setConditionValue2(conditionValue2);
-        testCaseStepAction.setConditionValue3(conditionValue3);
-        testCaseStepAction.setConditionOptions(conditionOptions);
-        testCaseStepAction.setAction(action);
-        testCaseStepAction.setValue1(value1);
-        testCaseStepAction.setValue2(value2);
-        testCaseStepAction.setValue3(value3);
-        testCaseStepAction.setOptions(options);
-        testCaseStepAction.setFatal(isFatal);
-        testCaseStepAction.setActionId(actionId);
-        testCaseStepAction.setStepId(stepId);
-        testCaseStepAction.setSort(sort);
-        testCaseStepAction.setTest(test);
-        testCaseStepAction.setTestcase(testcase);
-        testCaseStepAction.setDescription(description);
-        testCaseStepAction.setScreenshotFilename(screenshotFilename);
-        testCaseStepAction.setControls(new ArrayList<>());
+            String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String action, String value1, String value2, String value3,
+            JSONArray options, boolean isFatal, String description, String screenshotFilename,
+            boolean doScreenshotBefore, boolean doScreenshotAfter, int waitBefore, int waitAfter) {
+        TestCaseStepAction tcAction = new TestCaseStepAction();
+        tcAction.setConditionOperator(conditionOperator);
+        tcAction.setConditionValue1(conditionValue1);
+        tcAction.setConditionValue2(conditionValue2);
+        tcAction.setConditionValue3(conditionValue3);
+        tcAction.setConditionOptions(conditionOptions);
+        tcAction.setAction(action);
+        tcAction.setValue1(value1);
+        tcAction.setValue2(value2);
+        tcAction.setValue3(value3);
+        tcAction.setOptions(options);
+        tcAction.setFatal(isFatal);
+        tcAction.setActionId(actionId);
+        tcAction.setStepId(stepId);
+        tcAction.setSort(sort);
+        tcAction.setTest(test);
+        tcAction.setTestcase(testcase);
+        tcAction.setDescription(description);
+        tcAction.setScreenshotFilename(screenshotFilename);
+        tcAction.setControls(new ArrayList<>());
+        tcAction.setDoScreenshotAfter(doScreenshotAfter);
+        tcAction.setDoScreenshotBefore(doScreenshotBefore);
+        tcAction.setWaitBefore(waitBefore);
+        tcAction.setWaitAfter(waitAfter);
 
-        return testCaseStepAction;
+        return tcAction;
     }
 
     @Override
     public TestCaseStepAction create(String test, String testcase, int stepId, int actionId, int sort, String conditionOperator,
-            String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String action, String value1, String value2, String value3, JSONArray options, boolean isFatal, String description, String screenshotFilename,
+            String conditionValue1, String conditionValue2, String conditionValue3, JSONArray conditionOptions, String action, String value1, String value2, String value3,
+            JSONArray options, boolean isFatal, String description, String screenshotFilename,
+            boolean doScreenshotBefore, boolean doScreenshotAfter, int waitBefore, int waitAfter,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
-        TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
-        testCaseStepAction.setConditionOperator(conditionOperator);
-        testCaseStepAction.setConditionValue1(conditionValue1);
-        testCaseStepAction.setConditionValue2(conditionValue2);
-        testCaseStepAction.setConditionValue3(conditionValue3);
-        testCaseStepAction.setConditionOptions(conditionOptions);
-        testCaseStepAction.setAction(action);
-        testCaseStepAction.setValue1(value1);
-        testCaseStepAction.setValue2(value2);
-        testCaseStepAction.setValue3(value3);
-        testCaseStepAction.setOptions(options);
-        testCaseStepAction.setFatal(isFatal);
-        testCaseStepAction.setActionId(actionId);
-        testCaseStepAction.setStepId(stepId);
-        testCaseStepAction.setSort(sort);
-        testCaseStepAction.setTest(test);
-        testCaseStepAction.setTestcase(testcase);
-        testCaseStepAction.setDescription(description);
-        testCaseStepAction.setScreenshotFilename(screenshotFilename);
-        testCaseStepAction.setControls(new ArrayList<>());
-        testCaseStepAction.setUsrCreated(usrCreated);
-        testCaseStepAction.setDateCreated(dateCreated);
-        testCaseStepAction.setUsrModif(usrModif);
-        testCaseStepAction.setDateModif(dateModif);
+        TestCaseStepAction tcAction = new TestCaseStepAction();
+        tcAction.setConditionOperator(conditionOperator);
+        tcAction.setConditionValue1(conditionValue1);
+        tcAction.setConditionValue2(conditionValue2);
+        tcAction.setConditionValue3(conditionValue3);
+        tcAction.setConditionOptions(conditionOptions);
+        tcAction.setAction(action);
+        tcAction.setValue1(value1);
+        tcAction.setValue2(value2);
+        tcAction.setValue3(value3);
+        tcAction.setOptions(options);
+        tcAction.setFatal(isFatal);
+        tcAction.setActionId(actionId);
+        tcAction.setStepId(stepId);
+        tcAction.setSort(sort);
+        tcAction.setTest(test);
+        tcAction.setTestcase(testcase);
+        tcAction.setDescription(description);
+        tcAction.setScreenshotFilename(screenshotFilename);
+        tcAction.setControls(new ArrayList<>());
+        tcAction.setDoScreenshotAfter(doScreenshotAfter);
+        tcAction.setDoScreenshotBefore(doScreenshotBefore);
+        tcAction.setWaitBefore(waitBefore);
+        tcAction.setWaitAfter(waitAfter);
+        tcAction.setUsrCreated(usrCreated);
+        tcAction.setDateCreated(dateCreated);
+        tcAction.setUsrModif(usrModif);
+        tcAction.setDateModif(dateModif);
 
-        return testCaseStepAction;
+        return tcAction;
     }
 }

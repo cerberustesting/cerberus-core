@@ -300,9 +300,11 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                     }
             }
             if (action != null) {
-                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, action_value1, action_value2, "", new JSONArray(), false, description, null);
+                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, action_value1, action_value2, "",
+                        new JSONArray(), false, description, null,
+                        false, false, 0, 0);
                 if (control != null) {
-                    newControl = testcaseStepActionControlFactory.create(targetFolder, targetTestcase, 1, i, 1, 1, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), control, control_value1, "", "", new JSONArray(), true, description, null);
+                    newControl = testcaseStepActionControlFactory.create(targetFolder, targetTestcase, 1, i, 1, 1, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), control, control_value1, "", "", new JSONArray(), true, description, null, false, false, 0, 0);
                     List<TestCaseStepActionControl> controlList = new ArrayList<>();
                     controlList.add(newControl);
                     newAction.setControls(controlList);
