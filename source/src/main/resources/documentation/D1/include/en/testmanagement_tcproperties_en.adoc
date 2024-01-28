@@ -140,9 +140,9 @@ NOTE: In order to force the calculation of a property at a certain timing, _calc
 Variables can be defined in a recursive way.
 That means that the following syntax :
 
-%property.%system.country%% will be first replaced by
+`%property.**%system.COUNTRY%**%` will be first replaced by
 
-%property.FR% and then by FR property value (if it exist).
+`%property.FR%` and then by FR property value (if it exist).
 
 Please note also that, if at the end of the decode operation, there are still references to %property.???% or %system.???% or %object.%%% in the field, the corresponding test case will report an error and generate an FA status.
 
@@ -151,86 +151,89 @@ Please note also that, if at the end of the decode operation, there are still re
 Property variable allow to have multi row content.
 As a consequence the full syntax will look like this :
 
-%property.NameOfTheVariable.rowNb.SubData%
+`%property.NameOfTheVariable.rowNb.SubData%`
 
-If rowNb is not defined, the 1st row will be used. As a consequence, the syntax %property.rowNb.nameOfTheVariable% is the same as %property.1.nameOfTheVariable%
+NOTE: If rowNb is not defined, the 1st row will be used. As a consequence, the syntax `%property.nameOfTheVariable%` is the same as `%property.1.nameOfTheVariable%`
+If SubData is not defined, the 'key' subdata will be used (ie, correspond to the empty subdata).
 
-If SubData is not defined, the key value subdata will be used.
+NOTE: You can also get the nb of rows your variable has by using the `**nbrows**` reserved word of the property :
+`%property.NameOfTheVariable.**nbrows**%`
 
 ==== Object Variables
 
-- %object.myobject.value% : Get the application object myobject's value
-- %object.myobject.picturepath% : Get the application object myobject's picture path
-- %object.myobject.pictureurl% : Get the application object myobject's picure url
+- `%object.myobject.**value**%` : Get the application object value of myobject
+- `%object.myobject.**picturepath**%` : Get the application object picture path of the file of myobject (that will be replaced by local path of the file)
+- `%object.myobject.**pictureurl**%` : Get the application object picture URL of the file of myobject (that will be replaced by a URL that provide the file content)
+- `%object.myobject.**base64**%` : Get the application object base64 value of the file of myobject
 
 ==== System Variables
 
 |=== 
 
 | *Value* | *Description*   
-| %system.SYSTEM% | System value 
-| %system.APPLI% |	Application name
-| %system.BROWSER% |	Browser name of the current execution.
-| %system.ROBOT% |	Robot name of the current execution.
-| %system.ROBOTDECLI% |	Robot declination name of the current execution.
-| %system.ROBOTHOST% |	current robot host.
-| %system.SCREENSIZE% |	Robot screensize of the current execution.
-| %system.APP_DOMAIN% |	Domain of the Application (defined at application level)
-| %system.APP_HOST% |	Host of the tested Application
-| %system.APP_CONTEXTROOT% |	Context Root of the tested Application
-| %system.EXEURL% |	Full Url of the tested Application
-| %system.APP_VAR1% |	VAR1 of the application on the environment.
-| %system.APP_VAR2% |	VAR2 of the application on the environment.
-| %system.APP_VAR3% |	VAR3 of the application on the environment.
-| %system.APP_VAR4% |	VAR4 of the application on the environment.
-| %system.ENV% |	Environment value
-| %system.ENVGP% |	Environment group code
-| %system.COUNTRY% |	Country code
-| %system.COUNTRYGP1% |	Country group1 value
-| %system.COUNTRYGP2% |	Country group2 value
-| %system.COUNTRYGP3% |	Country group3 value
-| %system.COUNTRYGP4% |	Country group4 value
-| %system.COUNTRYGP5% |	Country group5 value
-| %system.COUNTRYGP6% |	Country group6 value
-| %system.COUNTRYGP7% |	Country group7 value
-| %system.COUNTRYGP8% |	Country group8 value
-| %system.COUNTRYGP9% |	Country group9 value
-| %system.TEST% |	Test.
-| %system.TESTCASE% |	TestCase
-| %system.TESTCASEDESCRIPTION% |	TestCaseDescription
-| %system.SSIP% |	Selenium server IP
-| %system.SSPORT% |	Selenium server port
-| %system.TAG% |	Execution tag
-| %system.EXECUTIONID% |	Execution ID
-| %system.EXESTART% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
-| %system.EXESTORAGEURL% |	Path where media are stored (based from the exeid).
-| %system.EXEELAPSEDMS% |	Elapsed time in ms since the beginning of the execution (can be used to perform timing controls).
-| %system.CURRENTSTEP_INDEX% |	Index number of the current step execution. Can be used when looping over a step.
-| %system.CURRENTSTEP_SORT% |	Sort number of the current step execution. Can be used when looping over a step.
-| %system.CURRENTSTEP_STARTISO% |	ISO Timestamp of the beginning of the step execution.
-| %system.CURRENTSTEP_ELAPSEDMS% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
-| %system.STEP.n.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
-| %system.LASTSERVICE_HTTPCODE% |	Http return code of the last service called.
-| %system.LASTSERVICE_CALL% |	Last JSON Service call.
-| %system.LASTSERVICE_RESPONSE% |	Last JSON Service answer.
-| %system.TODAY-yyyy% |	Year of today
-| %system.TODAY-MM% |	Month of today
-| %system.TODAY-dd% |	Day of today
-| %system.TODAY-doy% |	Day of today from the beginning of the year
-| %system.TODAY-HH% |	Hour of today
-| %system.TODAY-mm% |	Minute of today
-| %system.TODAY-ss% |	Second of today
-| %system.YESTERDAY-yyyy% |	Year of yesterday
-| %system.YESTERDAY-MM% |	Month of yesterday
-| %system.YESTERDAY-dd% |	Day of yesterday
-| %system.YESTERDAY-doy% |	Day of yesterday from the beginning of the year
-| %system.YESTERDAY-HH% |	Hour of yesterday
-| %system.YESTERDAY-mm% |	Minute of yesterday
-| %system.YESTERDAY-ss% |	Second of yesterday
-| %system.TOMORROW-yyyy% |	Year of tomorrow
-| %system.TOMORROW-MM% |	Month of tomorrw
-| %system.TOMORROW-dd% |	Day of tomorrw
-| %system.TOMORROW-doy% |	Day of tomorrw from the beginning of the year
+| %system.**SYSTEM**% | System value 
+| %system.**APPLI**% |	Application name
+| %system.**BROWSER**% |	Browser name of the current execution.
+| %system.**ROBOT**% |	Robot name of the current execution.
+| %system.**ROBOTDECLI**% |	Robot declination name of the current execution.
+| %system.**ROBOTHOST**% |	current robot host.
+| %system.**SCREENSIZE**% |	Robot screensize of the current execution.
+| %system.**APP_DOMAIN**% |	Domain of the Application (defined at application level)
+| %system.**APP_HOST**% |	Host of the tested Application
+| %system.**APP_CONTEXTROOT**% |	Context Root of the tested Application
+| %system.**EXEURL**% |	Full Url of the tested Application
+| %system.**APP_VAR1**% |	VAR1 of the application on the environment.
+| %system.**APP_VAR2**% |	VAR2 of the application on the environment.
+| %system.**APP_VAR3**% |	VAR3 of the application on the environment.
+| %system.**APP_VAR4**% |	VAR4 of the application on the environment.
+| %system.**ENV**% |	Environment value
+| %system.**ENVGP**% |	Environment group code
+| %system.**COUNTRY**% |	Country code
+| %system.**COUNTRYGP1**% |	Country group1 value
+| %system.**COUNTRYGP2**% |	Country group2 value
+| %system.**COUNTRYGP3**% |	Country group3 value
+| %system.**COUNTRYGP4**% |	Country group4 value
+| %system.**COUNTRYGP5**% |	Country group5 value
+| %system.**COUNTRYGP6**% |	Country group6 value
+| %system.**COUNTRYGP7**% |	Country group7 value
+| %system.**COUNTRYGP8**% |	Country group8 value
+| %system.**COUNTRYGP9**% |	Country group9 value
+| %system.**TEST**% |	Test Folder.
+| %system.**TESTCASE**% |	TestCase ID
+| %system.**TESTCASEDESCRIPTION**% |	TestCase Description
+| %system.**SSIP**% |	Selenium Robot server IP
+| %system.**SSPORT**% |	Selenium Robot server port
+| %system.**TAG**% |	Execution tag or Campaign execution ID.
+| %system.**EXECUTIONID**% |	Execution ID
+| %system.**EXESTART**% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
+| %system.**EXESTORAGEURL**% |	Path where media are stored (based from the exeid).
+| %system.**EXEELAPSEDMS**% |	Elapsed time in ms since the beginning of the execution (can be used to perform timing controls).
+| %system.**CURRENTSTEP_INDEX**% |	Index number of the current step execution. Can be used when looping over a step.
+| %system.**CURRENTSTEP_SORT**% |	Sort number of the current step execution. Can be used when looping over a step.
+| %system.**CURRENTSTEP_STARTISO**% |	ISO Timestamp of the beginning of the step execution.
+| %system.**CURRENTSTEP_ELAPSEDMS**% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
+| %system.**STEP.n.n.RETURNCODE**% |	Return Code of the step n. n being the execution sequence of the step (sort).
+| %system.**LASTSERVICE_HTTPCODE**% |	Http return code of the last service called.
+| %system.**LASTSERVICE_CALL**% |	Last JSON Service call.
+| %system.**LASTSERVICE_RESPONSE**% |	Last JSON Service answer.
+| %system.**TODAY-yyyy**% |	Year of today
+| %system.**TODAY-MM**% |	Month of today
+| %system.**TODAY-dd**% |	Day of today
+| %system.**TODAY-doy**% |	Day of today from the beginning of the year
+| %system.**TODAY-HH**% |	Hour of today
+| %system.**TODAY-mm**% |	Minute of today
+| %system.**TODAY-ss**% |	Second of today
+| %system.**YESTERDAY-yyyy**% |	Year of yesterday
+| %system.**YESTERDAY-MM**% |	Month of yesterday
+| %system.**YESTERDAY-dd**% |	Day of yesterday
+| %system.**YESTERDAY-doy**% |	Day of yesterday from the beginning of the year
+| %system.**YESTERDAY-HH**% |	Hour of yesterday
+| %system.**YESTERDAY-mm**% |	Minute of yesterday
+| %system.**YESTERDAY-ss**% |	Second of yesterday
+| %system.**TOMORROW-yyyy**% |	Year of tomorrow
+| %system.**TOMORROW-MM**% |	Month of tomorrw
+| %system.**TOMORROW-dd**% |	Day of tomorrw
+| %system.**TOMORROW-doy**% |	Day of tomorrw from the beginning of the year
 
 |=== 
 
@@ -238,6 +241,8 @@ If SubData is not defined, the key value subdata will be used.
 
 You will find below some tricks which help you to implement specific test cases.
 
-NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
+NOTE: It is possible to create a random property with a number of char defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 8e4!9EsT5-GfZvJ3oZ7v
+Charset can be limited to any values by using Value field.
 image:testcaserandomproperty.png[TestCaseRandomProperty]
+
 

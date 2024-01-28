@@ -394,9 +394,17 @@ public class PropertyService implements IPropertyService {
                 /* Replacement in case of TestDataLib */
 
                 // Key value of the DataLib.
+                // %property.PROPERTY%
                 if (tced.getValue() != null) {
                     stringToReplace = stringToReplace.replace("%property." + tced.getProperty() + "%", tced.getValue());
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
+                }
+
+                // Nb of rows of the property.
+                // %property.PROPERTY.nbrows%
+                if ((tced.getValue() != null) && (!(tced.getDataLibRawData() == null))) {
+                    stringToReplace = stringToReplace.replace("%property." + tced.getProperty() + ".nbrows%", String.valueOf(tced.getDataLibRawData().size()));
+                    stringToReplace = stringToReplace.replace("%" + tced.getProperty() + ".nbrows%", String.valueOf(tced.getDataLibRawData().size()));
                 }
 
                 // For each subdata of the getFromDataLib property, we try to replace with PROPERTY(SUBDATA).
@@ -407,6 +415,8 @@ public class PropertyService implements IPropertyService {
                             if (dataRow.get(key) != null) {
                                 variableValue = dataRow.get(key);
 
+                                // %property.PROPERTY(m)(SUBDATA)%
+                                // %property.PROPERTY.m.SUBDATA%
                                 variableString1 = tced.getProperty() + "(" + (ind + 1) + ")" + "(" + key + ")";
                                 stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                 stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
@@ -414,6 +424,8 @@ public class PropertyService implements IPropertyService {
                                 stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
                                 stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
 
+                                // %property.PROPERTY(m)%
+                                // %property.PROPERTY.m%
                                 if (key.isEmpty()) { // If subdata is empty we can omit the () or .
                                     variableString1 = tced.getProperty() + "(" + (ind + 1) + ")";
                                     stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
@@ -423,6 +435,8 @@ public class PropertyService implements IPropertyService {
                                     stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
                                 }
 
+                                // %property.PROPERTY(SUBDATA)%
+                                // %property.PROPERTY.SUBDATA%
                                 if (ind == 0) { // Dimention of the data is not mandatory for the 1st row.
                                     variableString1 = tced.getProperty() + "(" + key + ")";
                                     stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
@@ -770,7 +784,6 @@ public class PropertyService implements IPropertyService {
 //                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
 //                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
 //                            break;
-
 //                        case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
 //                            testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
 //                            res = testCaseExecutionData.getPropertyResultMessage();
@@ -779,7 +792,6 @@ public class PropertyService implements IPropertyService {
 //                            logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
 //                            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
 //                            break;
-
                         default:
                             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
                             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -1191,7 +1203,7 @@ public class PropertyService implements IPropertyService {
         } else {
 
             if (execution.getAppTypeEngine().equals(Application.TYPE_GUI)
-            || execution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+                    || execution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
                 try {
                     valueFromJS = this.webdriverService.getValueFromJS(execution.getSession(), script);
                 } catch (Exception e) {
@@ -1695,14 +1707,14 @@ public class PropertyService implements IPropertyService {
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = result.get(0).get("");
                 if (value == null) {
-                	final boolean ignoreNonMatchedSubdata = parameterService.getParameterBooleanByKey("cerberus_testdatalib_ignoreNonMatchedSubdata", StringUtils.EMPTY, false);
-                	if (ignoreNonMatchedSubdata) {
-                		final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
-                		LOG.debug("Unmatched columns parsing enabled: Null answer received from service call of datalib '{}' with default value", () -> testDataLib.getName());
-                		testCaseExecutionData.setValue(defaultSubdataValue);
-                	} else {
-                		testCaseExecutionData.setValue(VALUE_NULL);
-                	}
+                    final boolean ignoreNonMatchedSubdata = parameterService.getParameterBooleanByKey("cerberus_testdatalib_ignoreNonMatchedSubdata", StringUtils.EMPTY, false);
+                    if (ignoreNonMatchedSubdata) {
+                        final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
+                        LOG.debug("Unmatched columns parsing enabled: Null answer received from service call of datalib '{}' with default value", () -> testDataLib.getName());
+                        testCaseExecutionData.setValue(defaultSubdataValue);
+                    } else {
+                        testCaseExecutionData.setValue(VALUE_NULL);
+                    }
                 } else {
                     testCaseExecutionData.setValue(value);
                     // Converting HashMap to json.
