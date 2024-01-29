@@ -9,59 +9,61 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="fieldRow row marginTop25" id="stepHiddenRow">
-                    <div class="col-sm-12 col-md-6">
+                <div class="row" id="stepHiddenRow">
+                    <div class="col-sm-12 col-md-12">
                         <div class="input-group marginBottom10">
                             <span type="button" class="input-group-addon" style="width: 90%;text-align: right;" id="fatalGroup">
-                                <span class='glyphicon glyphicon-tag pull-left'></span> Force execution even if fatal event triggered</span>
+                                <span class='glyphicon glyphicon-step-forward pull-left'></span> Force execution even if fatal event triggered</span>
                             <input type="text" class="form-control" disabled style="border-left: 0px;" aria-describedby="timeoutGroup">
                             <span class="input-group-addon"><input type="checkbox" id="stepForceExe"  aria-label="..."></span>
                         </div>
                     </div>
                     <div>
-                        <div class="col-sm-12">
+                        <div class="col-sm-12 marginTop20">
                             <div class="panel panel-default">
                                 <div class="pill40 light-primary pull-left">
                                     <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
                                 </div>
                                 <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
-                                    Loop :
+                                    Loop
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-12">
                             <div class="col-lg-3 col-md-6 col-sm-12 form-group">
-                                <label>Step Loop:</label>
+                                <label>Step Loop</label>
                                 <select class="form-control input-sm" id="stepLoop"></select>
                             </div>
                         </div>
                         <div class="col-sm-12 conditions">
                             <div class="col-lg-3 col-md-6 col-sm-12 form-group">
-                                <label>Step Condition Operation:</label>
+                                <label>Step Condition Operation</label>
                                 <select class="form-control input-sm" id="stepConditionOperator"></select>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 form-group v1">
-                                <label class="conditionVal1Label">Step Condition Parameter:</label>
+                                <label class="conditionVal1Label">Step Condition Parameter</label>
                                 <input class="form-control input-sm" id="stepConditionVal1">
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 form-group v2">
-                                <label class="conditionVal2Label">Step Condition Parameter:</label>
+                                <label class="conditionVal2Label">Step Condition Parameter</label>
                                 <input class="form-control input-sm" id="stepConditionVal2">
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 form-group v3">
-                                <label class="conditionVal3Label">Step Condition Parameter:</label>
+                                <label class="conditionVal3Label">Step Condition Parameter</label>
                                 <input class="form-control input-sm" id="stepConditionVal3">
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12" id="EditScriptPanel">
-                    <div class="panel panel-default">
-                        <div class="pill40 light-primary pull-left">
-                            <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
-                        </div>
-                        <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
-                            Condition Parameters :
+                <div class="row" id="EditScriptPanel">
+                    <div class="col-sm-12 marginTop20">
+                        <div class="panel panel-default">
+                            <div class="pill40 light-primary pull-left">
+                                <span class="card-img-top glyphicon glyphicon-edit" style="font-size:15px;"></span>
+                            </div>
+                            <div class="panel-heading bold" id="overrideStepConditionParameterLabel">
+                                Condition Parameters
+                            </div>
                         </div>
                     </div>
                     <div class="form-horizontal" id="overrideStepConditionParameter">
@@ -69,28 +71,28 @@
                             <div class="col-sm-12">
                                 <div class="col-sm-12 col-md-6">
                                     <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-tag pull-left'></span> Timeout</span>
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-time pull-left'></span> Timeout</span>
                                         <input type="text" class="form-control" id="timeoutStepConditionVal" aria-describedby="timeoutGroup">
                                         <span class="input-group-addon"><input type="checkbox" id="timeoutStepConditionAct"  aria-label="..."></span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-tag pull-left'></span> Min Similarity</span>
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-picture pull-left'></span> Min Similarity</span>
                                         <input type="text" class="form-control" id="minSimilarityStepConditionVal" aria-describedby="timeoutGroup">
                                         <span class="input-group-addon"><input type="checkbox" id="minSimilarityStepConditionAct"  aria-label="..."></span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-tag pull-left'></span> Highlight</span>
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-text-color pull-left'></span> Highlight</span>
                                         <input type="text" class="form-control" id="highlightStepConditionVal" aria-describedby="timeoutGroup">
                                         <span class="input-group-addon"><input type="checkbox" id="highlightStepConditionAct"  aria-label="..."></span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <div class="input-group marginBottom10">
-                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-tag pull-left'></span> TypeDelay</span>
+                                        <span type="button" class="input-group-addon" style="width: 150px;text-align: right;"><span class='glyphicon glyphicon-text-background pull-left'></span> TypeDelay</span>
                                         <input type="text" class="form-control" id="typeDelayStepConditionVal" aria-describedby="timeoutGroup">
                                         <span class="input-group-addon"><input type="checkbox" id="typeDelayStepConditionAct"  aria-label="..."></span>
                                     </div>

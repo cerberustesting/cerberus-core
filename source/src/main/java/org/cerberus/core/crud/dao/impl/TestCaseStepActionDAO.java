@@ -300,8 +300,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepaction (`test`, `testcase`, `stepId`, `actionId`, `sort`, ")
                 .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `action`, ")
-                .append("`value1`, `value2`, `value3`, `options`, `IsFatal`, `description`, `screenshotfilename`, `usrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("`value1`, `value2`, `value3`, `options`, `IsFatal`, `description`, `screenshotfilename`, `waitBefore`, `waitAfter`, `doScreenshotBefore`, `doScreenshotAfter`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -329,6 +329,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setInt(i++, testCaseStepAction.getWaitBefore());
+            preStat.setInt(i++, testCaseStepAction.getWaitAfter());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotBefore());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotAfter());
             preStat.setString(i++, testCaseStepAction.getUsrCreated() == null ? "" : testCaseStepAction.getUsrCreated());
 
             preStat.executeUpdate();
@@ -360,6 +364,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 .append("`IsFatal` = ?, ")
                 .append("`Description` = ?, ")
                 .append("`ScreenshotFilename` = ?, ")
+                .append("`waitBefore` = ?, ")
+                .append("`waitAfter` = ?, ")
+                .append("`doScreenshotBefore` = ?, ")
+                .append("`doScreenshotAfter` = ?, ")
                 .append("`UsrModif` = ?, ")
                 .append("`dateModif` = CURRENT_TIMESTAMP ")
                 .append("WHERE `Test` = ? AND `Testcase` = ? AND `StepId` = ? AND `actionId` = ? ")
@@ -394,6 +402,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setInt(i++, testCaseStepAction.getWaitBefore());
+            preStat.setInt(i++, testCaseStepAction.getWaitAfter());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotBefore());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotAfter());
             preStat.setString(i++, testCaseStepAction.getUsrModif() == null ? "" : testCaseStepAction.getUsrModif());
 
             preStat.setString(i++, testCaseStepAction.getTest());

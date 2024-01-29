@@ -2437,12 +2437,23 @@ function displayOverrideOptionsModal(action, htmlElement) {
     initOptionModal("");
     initOptionModal("Condition");
     $("#fatalCheckbox").prop("checked", false);
+    $("#screenshotBCheckbox").prop("checked", false);
+    $("#screenshotACheckbox").prop("checked", false);
     $("#conditionSelect").val("");
     $("#actionconditionval1").val("");
     $("#actionconditionval2").val("");
     $("#actionconditionval3").val("");
 
     //FEED FIELDS
+    //SCREENSHOT
+    if (action.doScreenshotBefore) {
+        $("#screenshotBCheckbox").prop("checked", true);
+    }
+    if (action.doScreenshotAfter) {
+        $("#screenshotACheckbox").prop("checked", true);
+    }
+    $("#waitBVal").val(action.waitBefore);
+    $("#waitAVal").val(action.waitAfter);
     //OPTIONS
     setOptionModal(action.options, "");
     setOptionModal(action.conditionOptions, "Condition");
@@ -2477,6 +2488,18 @@ function displayOverrideOptionsModal(action, htmlElement) {
     $("#actionconditionval3").on("change", function () {
         setModif(true);
     });
+    $("#screenshotBCheckbox").on("change", function () {
+        setModif(true);
+    });
+    $("#screenshotACheckbox").on("change", function () {
+        setModif(true);
+    });
+    $("#waitBVal").on("change", function () {
+        setModif(true);
+    });
+    $("#waitAVal").on("change", function () {
+        setModif(true);
+    });
     $("#fatalCheckbox").on("change", function () {
         setModif(true);
     });
@@ -2486,6 +2509,11 @@ function displayOverrideOptionsModal(action, htmlElement) {
     $("#optionsSave").click(function () {
 
         action.isFatal = $("#fatalCheckbox").is(':checked');
+
+        action.doScreenshotBefore = $("#screenshotBCheckbox").is(':checked');
+        action.doScreenshotAfter = $("#screenshotACheckbox").is(':checked');
+        action.waitBefore = $("#waitBVal").val();
+        action.waitAfter = $("#waitAVal").val();
 
         action.conditionOperator = $("#conditionSelectContainer").find('select').val();
         action.conditionValue1 = $("#actionconditionval1").val();
