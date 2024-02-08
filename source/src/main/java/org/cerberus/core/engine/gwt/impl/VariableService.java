@@ -62,7 +62,7 @@ public class VariableService implements IVariableService {
 
     @Override
     public AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
-                                                    TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+            TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
         AnswerItem<String> answer = new AnswerItem<>();
@@ -256,6 +256,8 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.BROWSER%", execution.getBrowser());
             stringToDecode = stringToDecode.replace("%system.ROBOT%", execution.getRobot());
             stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", execution.getRobotDecli());
+            stringToDecode = stringToDecode.replace("%system.ROBOTSESSIONID%", execution.getRobotSessionID());
+            stringToDecode = stringToDecode.replace("%system.ROBOTPROVIDERSESSIONID%", execution.getRobotProviderSessionID());
             if (execution.getRobotExecutorObj() != null) {
                 stringToDecode = stringToDecode.replace("%system.ROBOTHOST%", execution.getRobotExecutorObj().getHost());
             }
