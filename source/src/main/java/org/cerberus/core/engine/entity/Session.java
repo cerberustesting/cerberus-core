@@ -340,7 +340,7 @@ public class Session {
             driver.quit();
         }
         if (appiumDriver != null) {
-            appiumDriver.closeApp();
+            appiumDriver.close();
         }
     }
 
