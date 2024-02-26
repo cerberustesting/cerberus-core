@@ -280,8 +280,6 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
 
-            // TODO #FIXME SELENIUM #TEST
-
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
                             execution.getSession().getHostUser(),
@@ -333,7 +331,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -432,7 +430,7 @@ public class RobotServerService implements IRobotServerService {
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
-                getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
+                getIPOfNode(execution);
 
                 // If screenSize is defined, set the size of the screen.
                 String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
