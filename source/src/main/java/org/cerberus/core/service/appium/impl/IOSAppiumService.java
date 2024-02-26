@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.appium.impl;
 
+import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
@@ -93,7 +94,7 @@ public class IOSAppiumService extends AppiumService {
 
         // Then do the key press
         try {
-            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
+//            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode()); #FIXME
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage());
@@ -155,7 +156,7 @@ public class IOSAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration)))
+                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration)))
                     .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
 
@@ -235,9 +236,9 @@ public class IOSAppiumService extends AppiumService {
         try {
 
             if (StringUtil.isEmpty(appPackage)) {
-                session.getAppiumDriver().launchApp();
+//                session.getAppiumDriver().launchApp(); #FIXME
             } else {
-                session.getAppiumDriver().activateApp(appPackage);
+//                session.getAppiumDriver().activateApp(appPackage); #FIXME
             }
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
@@ -253,7 +254,7 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-            session.getAppiumDriver().closeApp();
+//            session.getAppiumDriver().closeApp(); #FIXME
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.appium.impl;
 
+import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
@@ -100,7 +101,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-            session.getAppiumDriver().hideKeyboard();
+//            session.getAppiumDriver().hideKeyboard(); #FIXME
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
         } catch (Exception e) {
             // Instead of http://stackoverflow.com/questions/35030794/soft-keyboard-not-present-cannot-hide-keyboard-appium-android?answertab=votes#tab-top
@@ -125,7 +126,7 @@ public class AndroidAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
+                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
                     .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
 
@@ -223,7 +224,7 @@ public class AndroidAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-            session.getAppiumDriver().closeApp();
+//            session.getAppiumDriver().closeApp(); #FIXME
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 
