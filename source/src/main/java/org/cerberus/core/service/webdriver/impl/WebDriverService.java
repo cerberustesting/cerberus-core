@@ -393,7 +393,7 @@ public class WebDriverService implements IWebDriverService {
          * with the required condition (visible or clickable)
          */
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             WebElement element;
             if (visible) {
                 if (session.isCerberus_selenium_autoscroll()) {
@@ -715,7 +715,7 @@ public class WebDriverService implements IWebDriverService {
         By locator = this.getBy(identifier);
         LOG.debug("Waiting for Element to be not present : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(locator)));
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element to be not present :" + exception);
@@ -743,7 +743,7 @@ public class WebDriverService implements IWebDriverService {
         By locator = this.getBy(identifier);
         LOG.debug("Waiting for Element to be not visible : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element to be not visible :" + exception);
@@ -928,7 +928,7 @@ public class WebDriverService implements IWebDriverService {
         By locator = this.getBy(identifier);
         LOG.debug("Waiting for Element to be not clickable : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             return wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(locator)));
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element to be not clickable :" + exception);
@@ -967,8 +967,8 @@ public class WebDriverService implements IWebDriverService {
                      * browser on real mobile device use the implementation
                      * click from Selenium instead
                      */
-                    if (Platform.ANDROID.equals(session.getDesiredCapabilities().getPlatform())
-                            || Platform.IOS.equals(session.getDesiredCapabilities().getPlatform())) {
+                    if (Platform.ANDROID.equals(session.getDesiredCapabilities().getPlatformName())
+                            || Platform.IOS.equals(session.getDesiredCapabilities().getPlatformName())) {
                         webElement.click();
                     } else {
                         Actions actions = new Actions(session.getDriver());
@@ -1224,7 +1224,7 @@ public class WebDriverService implements IWebDriverService {
     private boolean checkIfExpectedWindow(Session session, String identifier, String value) {
 
         boolean result = false;
-        WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+        WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
         String title;
 
         switch (identifier) {
@@ -1382,7 +1382,7 @@ public class WebDriverService implements IWebDriverService {
     public MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier) {
         MessageEvent message;
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(session.getCerberus_selenium_wait_element()));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(this.getBy(identifier)));
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -1556,7 +1556,7 @@ public class WebDriverService implements IWebDriverService {
                     this.disableHeadlessApplicationControl();
 
                     //create wait action
-                    WebDriverWait wait = new WebDriverWait(session.getDriver(), 01);
+                    WebDriverWait wait = new WebDriverWait(session.getDriver(), Duration.ofMillis(01));
 
                     //focus the browser window for Robot to work
                     if (this.focusBrowserWindow(session)) {
