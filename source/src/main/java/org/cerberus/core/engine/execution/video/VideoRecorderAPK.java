@@ -20,7 +20,6 @@
 package org.cerberus.core.engine.execution.video;
 
 import com.google.common.collect.Lists;
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import org.apache.commons.io.FileUtils;
 import org.cerberus.core.crud.entity.Application;
@@ -93,7 +92,7 @@ public class VideoRecorderAPK extends VideoRecorder {
     @Override
     public void endRecordVideo() {
 
-        AppiumDriver driver = null;
+        AndroidDriver driver = null;
         try {
             String applicationType = testCaseExecution.getAppTypeEngine();
 
@@ -107,8 +106,8 @@ public class VideoRecorderAPK extends VideoRecorder {
 
                 String test = testCaseExecution.getTest();
                 String testCase = testCaseExecution.getTestCase();
-                driver = session.getAppiumDriver();
-
+                driver = (AndroidDriver) session.getAppiumDriver();
+        
                 List<String> videosPath = new LinkedList<>();
 
                 for (int i = 0; i < cpt; i++) {
