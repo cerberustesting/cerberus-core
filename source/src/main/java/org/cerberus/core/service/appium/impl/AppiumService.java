@@ -22,21 +22,13 @@ package org.cerberus.core.service.appium.impl;
 import io.appium.java_client.NoSuchContextException;
 import io.appium.java_client.*;
 import io.appium.java_client.remote.SupportsContextSwitching; //#FIXME To remove cause already import above but seems like i need it
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.ElementOption;
-import io.appium.java_client.touch.offset.PointOption;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.*;
-import org.cerberus.core.engine.gwt.impl.ActionService;
 import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusEventException;
-import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appium.IAppiumService;
 import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.service.appium.SwipeAction.Direction;
@@ -53,10 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 /**
