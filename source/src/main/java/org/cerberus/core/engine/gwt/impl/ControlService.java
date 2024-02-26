@@ -22,6 +22,7 @@ package org.cerberus.core.engine.gwt.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
+import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.*;
@@ -1724,7 +1725,7 @@ public class ControlService implements IControlService {
             try {
                 LOG.debug("Before wait: {}", System.currentTimeMillis());
                 WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
-                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+                        Duration.ofMillis(tCExecution.getSession().getCerberus_selenium_wait_element()));
 
                 //Wait until the url is the expected one
                 wait.until(new Function<WebDriver, Boolean>() {
@@ -1770,7 +1771,7 @@ public class ControlService implements IControlService {
             try {
                 LOG.debug("Before wait {}", System.currentTimeMillis());
                 WebDriverWait wait = new WebDriverWait(tCExecution.getSession().getDriver(),
-                        TimeUnit.MILLISECONDS.toSeconds(tCExecution.getSession().getCerberus_selenium_wait_element()));
+                        Duration.ofMillis(tCExecution.getSession().getCerberus_selenium_wait_element()));
 
                 //Wait until the title is the expected one
                 wait.until(new Function<WebDriver, Boolean>() {

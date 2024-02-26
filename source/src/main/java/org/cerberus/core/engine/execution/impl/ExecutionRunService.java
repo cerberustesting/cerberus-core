@@ -322,8 +322,8 @@ public class ExecutionRunService implements IExecutionRunService {
             if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI) && !execution.getManualExecution().equals("Y")) {
                 try {
                     Capabilities caps = this.robotServerService.getUsedCapabilities(execution.getSession());
-                    execution.setVersion(caps.getVersion());
-                    execution.setPlatform(caps.getPlatform().toString());
+                    execution.setVersion(caps.getBrowserVersion());
+                    execution.setPlatform(caps.getPlatformName().toString());
                 } catch (Exception ex) {
                     LOG.error("{}Exception on Selenium getting Used Capabilities.", logPrefix, ex);
                 }
