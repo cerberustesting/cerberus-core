@@ -394,7 +394,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
-        String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and " + SqlUtil.generateInClause("value", Arrays.asList(systemList)) + ";";
+        String query = "INSERT INTO `usersystem` (`login`, `system`) SELECT ? , value FROM invariant where idname='SYSTEM' and " + SqlUtil.generateInClause("value", Arrays.asList(systemList)) + ";";
 
         // Debug message on SQL.
         LOG.debug("SQL : {}", query);
@@ -429,7 +429,7 @@ public class UserSystemDAO implements IUserSystemDAO {
         Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         MessageEvent msg = null;
 
-        String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and value not like 'US-%';";
+        String query = "INSERT INTO `usersystem` (`login`, `system`) SELECT ? , value FROM invariant where idname='SYSTEM' and value not like 'US-%';";
 
         // Debug message on SQL.
         LOG.debug("SQL : {}", query);
