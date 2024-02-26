@@ -53,8 +53,10 @@
         <!--        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>-->
         <groovy-sandbox.version>1.19</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>7.2.0</appium.version>
-        <selenium.version>3.141.59</selenium.version>
+<!--        <appium.version>7.2.0</appium.version>-->
+        <appium.version>8.5.1</appium.version>
+<!--        <selenium.version>3.141.59</selenium.version>-->
+        <selenium.version>4.13.0</selenium.version>
         <jna.version>4.1.0</jna.version>
         <!-- quartz -->
         <quartz.version>2.3.2</quartz.version>
