@@ -350,14 +350,17 @@ public class PDFService implements IPDFService {
                 }
             }
 
-            document.add(new Paragraph()
-                    .add(getTextFromString("Global result for campaign is ", 10, false))
-                    .add(getTextFromString(tag.getCiResult(), 12, true))
-                    .add(getTextFromString(" (with a Score of ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getCiScore()), 12, true))
-                    .add(getTextFromString(" vs ", 10, false))
-                    .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
-                    .add(getTextFromString(")", 10, false)));
+            if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplayciresult_boolean, "", true)) {
+                document.add(new Paragraph()
+                        .add(getTextFromString("Global result for campaign is ", 10, false))
+                        .add(getTextFromString(tag.getCiResult(), 12, true))
+                        .add(getTextFromString(" (with a Score of ", 10, false))
+                        .add(getTextFromString(String.valueOf(tag.getCiScore()), 12, true))
+                        .add(getTextFromString(" vs ", 10, false))
+                        .add(getTextFromString(String.valueOf(tag.getCiScoreThreshold()), 12, true))
+                        .add(getTextFromString(")", 10, false)));
+
+            }
 
             document.add(new Paragraph()
                     .add(getTextFromString(String.valueOf(tag.getNbExeUsefull()), 12, true))

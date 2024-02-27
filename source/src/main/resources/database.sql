@@ -6287,3 +6287,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   ,('PROXYTYPE', 'MANUAL', 200, 'Manual Proxy.')
   ,('PROXYTYPE', 'NETWORKTRAFFIC', 300, 'Proxy with Network Traffic analysis and control.')
   ,('INVARIANTPUBLIC', 'PROXYTYPE', '950', 'Robot Executor Proxy type.');
+
+-- 1767
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_pdfcampaignreportdisplayciresult_boolean', 'true', 'Boolean in order to show or hide the cicd campaign result on pdf campaign execution pdf report.');
