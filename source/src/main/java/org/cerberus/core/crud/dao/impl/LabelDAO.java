@@ -495,7 +495,7 @@ public class LabelDAO implements ILabelDAO {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT distinct ");
-        query.append(columnName);
+        query.append("`").append(columnName).append("`");
         query.append(" as distinctValues FROM label ");
 
         searchSQL.append("WHERE 1=1");
