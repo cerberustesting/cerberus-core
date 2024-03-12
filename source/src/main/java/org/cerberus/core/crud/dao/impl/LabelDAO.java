@@ -531,7 +531,7 @@ public class LabelDAO implements ILabelDAO {
         }
 
         query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
+        query.append(" order by `").append(columnName).append("` asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
