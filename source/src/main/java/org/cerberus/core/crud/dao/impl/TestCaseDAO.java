@@ -1277,7 +1277,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
         String result = "";
-        final String sql = "SELECT system from application app join testcase tec on tec.application=app.Application where tec.test= ? and tec.testcase= ?";
+        final String sql = "SELECT `system` from application app join testcase tec on tec.application=app.Application where tec.test= ? and tec.testcase= ?";
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sql);

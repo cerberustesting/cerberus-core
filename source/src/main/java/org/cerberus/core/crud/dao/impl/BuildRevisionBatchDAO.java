@@ -266,7 +266,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
     @Override
     public Answer update(BuildRevisionBatch buildRevisionBatch) {
         MessageEvent msg;
-        final String query = "UPDATE buildrevisionbatch SET system = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
+        final String query = "UPDATE buildrevisionbatch SET `system` = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
                 + "Batch = ?  WHERE id = ? ";
 
         LOG.debug("SQL : {}", query);

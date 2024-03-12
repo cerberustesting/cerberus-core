@@ -160,7 +160,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     @Override
     public TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException {
-        final String query = "select * from testcaseexecutiondata exd WHERE System=? and Environment=? and Country=? and FromCache='N' and Property=? and Start >= NOW()- INTERVAL ? SECOND and `index`=1 and jsonResult is not null and RC = 'OK' order by id desc;";
+        final String query = "select * from testcaseexecutiondata exd WHERE `System`=? and Environment=? and Country=? and FromCache='N' and Property=? and Start >= NOW()- INTERVAL ? SECOND and `index`=1 and jsonResult is not null and RC = 'OK' order by id desc;";
 
         return RequestDbUtils.executeQuery(databaseSpring, query,
                 ps -> {

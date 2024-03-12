@@ -332,7 +332,7 @@ public class TagSystemDAO implements ITagSystemDAO {
     @Override
     public Answer delete(TagSystem object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM tagsystem WHERE tag = ? and system = ? ";
+        final String query = "DELETE FROM tagsystem WHERE tag = ? and `system` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -374,8 +374,8 @@ public class TagSystemDAO implements ITagSystemDAO {
     @Override
     public Answer update(String tag,String system, TagSystem object) {
         MessageEvent msg = null;
-        String query = "UPDATE tagsystem SET tag = ?, system = ?, dateModif = NOW(), usrModif= ?";
-        query += "  WHERE Tag = ? and System = ?";
+        String query = "UPDATE tagsystem SET tag = ?, `system` = ?, dateModif = NOW(), usrModif= ?";
+        query += "  WHERE Tag = ? and `System` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

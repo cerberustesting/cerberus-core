@@ -248,7 +248,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
     @Override
     public Answer update(String batch, BatchInvariant object) {
         MessageEvent msg;
-        final String query = "UPDATE batchinvariant SET batch = ?, description = ?, System = ? WHERE batch = ?";
+        final String query = "UPDATE batchinvariant SET batch = ?, description = ?, `System` = ? WHERE batch = ?";
 
         LOG.debug("SQL : {}", query);
 

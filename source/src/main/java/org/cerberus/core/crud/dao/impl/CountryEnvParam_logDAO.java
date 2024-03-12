@@ -509,7 +509,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
     @Override
     public Answer update(CountryEnvParam_log countryEnvPramaLog) {
         MessageEvent msg = null;
-        final String query = "UPDATE countryenvparam_log SET system = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
+        final String query = "UPDATE countryenvparam_log SET `system` = ?, Country = ?, Environment = ?, Build = ?, Revision = ?, "
                 + "Chain = ?, Description = ?, Creator = ?  WHERE id = ? ";
 
         // Debug message on SQL.

@@ -233,7 +233,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     public Answer create(BuildRevisionInvariant buildRevisionInvariant) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO buildrevisioninvariant (system, level, seq, versionname) ");
+        query.append("INSERT INTO buildrevisioninvariant (`system`, level, seq, versionname) ");
         query.append("VALUES (?, ?, ?, ?)");
 
         LOG.debug("SQL : {}", query);
@@ -289,7 +289,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     @Override
     public Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant) {
         MessageEvent msg;
-        final String query = "UPDATE buildrevisioninvariant SET  system = ?, level = ?, seq = ?, versionname = ?  WHERE `system` = ? and level = ? and seq = ? ";
+        final String query = "UPDATE buildrevisioninvariant SET  `system` = ?, level = ?, seq = ?, versionname = ?  WHERE `system` = ? and level = ? and seq = ? ";
 
         LOG.debug("SQL : {}", query);
         try (Connection connection = this.databaseSpring.connect();
