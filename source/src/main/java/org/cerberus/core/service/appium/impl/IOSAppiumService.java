@@ -23,6 +23,7 @@ import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
+import io.appium.java_client.ios.IOSDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.impl.ParameterService;
@@ -94,7 +95,7 @@ public class IOSAppiumService extends AppiumService {
 
         // Then do the key press
         try {
-//            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode()); #FIXME
+//            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode()); #FIXME SELENIUM
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage());
@@ -156,7 +157,7 @@ public class IOSAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration)))
+                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration))) //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
                     .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
 
@@ -236,9 +237,9 @@ public class IOSAppiumService extends AppiumService {
         try {
 
             if (StringUtil.isEmpty(appPackage)) {
-//                session.getAppiumDriver().launchApp(); #FIXME
+                ((IOSDriver) session.getAppiumDriver()).launchApp(); //#FIXME SELENIUM #TEST (was cast to IOSDriver)
             } else {
-//                session.getAppiumDriver().activateApp(appPackage); #FIXME
+                ((IOSDriver) session.getAppiumDriver()).activateApp(appPackage);//#FIXME SELENIUM #TEST (was cast to IOSDriver)
             }
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
@@ -254,7 +255,7 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-//            session.getAppiumDriver().closeApp(); #FIXME
+            ((IOSDriver) session.getAppiumDriver()).closeApp();//#FIXME SELENIUM #TEST (was cast to IOSDriver)
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 

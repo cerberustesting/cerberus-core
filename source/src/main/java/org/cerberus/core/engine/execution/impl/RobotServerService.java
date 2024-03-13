@@ -286,8 +286,8 @@ public class RobotServerService implements IRobotServerService {
 
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
-            // TODO
-
+//            // TODO #FIXME SELENIUM
+//
 //            CloseableHttpClient httpclient = null;
 //            HttpClientBuilder httpclientBuilder;
 //            httpclientBuilder = HttpClientBuilder.create();
@@ -344,7 +344,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; //Fixme seems like selenium 4 won't accept the server start (commit comming)
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -819,8 +819,7 @@ public class RobotServerService implements IRobotServerService {
 
                     // Verbose level and Headless
                     if (tCExecution.getVerbose() <= 0) {
-                        // TODO
-//                        optionsFF.setHeadless(true);
+                        optionsFF.addArguments("-headless");
                     }
                     // Add the WebDriver proxy capability.
                     if (tCExecution.getRobotExecutorObj() != null) {
@@ -941,7 +940,7 @@ public class RobotServerService implements IRobotServerService {
                     }
                     return optionsED;
 
-//                case "opera":
+//                case "opera": //#FIXME SELENIUM
 //                    OperaOptions optionsOP = new OperaOptions();
 //                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
 //                        Proxy proxy = new Proxy();
@@ -956,20 +955,20 @@ public class RobotServerService implements IRobotServerService {
 ////                    }
 //                    return optionsOP;
                 case "android":
-//                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) { #FIXME Might have been deleted in rebase
+//                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) { #FIXME SELENIUM Might have been deleted in rebase
 //                        Proxy proxy = new Proxy();
 //                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                    }
-//                    capabilities = DesiredCapabilities.android();
+//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM
                     break;
 
                 case "ipad":
-//                    capabilities = DesiredCapabilities.ipad();
+//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM
                     break;
 
                 case "iphone":
-//                    capabilities = DesiredCapabilities.iphone();
+//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM
                     break;
 
                 case "":
@@ -1065,7 +1064,7 @@ public class RobotServerService implements IRobotServerService {
             //  We remove manually the package if it is defined.
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
-//                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage());
+//                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); //#FIXME SELENIUM
             }
 
             // We lock device if deviceLockUnlock is active.
