@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2025 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
+ * <p>
  * This file is part of Cerberus.
- *
+ * <p>
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -80,6 +80,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Invariant;
@@ -281,8 +282,8 @@ public class RobotServerService implements IRobotServerService {
 
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
-                    execution.getSession().getHostUser(),
-                    execution.getSession().getHostPassword(), session.getHost()),
+                            execution.getSession().getHostUser(),
+                            execution.getSession().getHostPassword(), session.getHost()),
                     session.getPort())) + "/wd/hub";
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
@@ -348,7 +349,9 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; //Fixme seems like selenium 4 won't accept the server start (commit comming)
+                    ChromeOptions browserOptions = new ChromeOptions();
+                    driver = new RemoteWebDriver(url, browserOptions); //FIXME SELENIUM (missing browserOptions, see https://www.selenium.dev/documentation/webdriver/troubleshooting/upgrade_to_selenium_4/ )
+//                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -447,7 +450,7 @@ public class RobotServerService implements IRobotServerService {
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
-                getIPOfNode(execution);
+//                getIPOfNode(execution); #FIXME SELENIUM
 
                 // If screenSize is defined, set the size of the screen.
                 String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
@@ -1117,11 +1120,11 @@ public class RobotServerService implements IRobotServerService {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                    tce.addFileList(recorderService.recordSeleniumLog(tce));
-                } catch (Exception ex) {
-                    LOG.error("Exception Getting Selenium Logs {}", tce.getId(), ex);
-                }
-                break;
+                        tce.addFileList(recorderService.recordSeleniumLog(tce));
+                    } catch (Exception ex) {
+                        LOG.error("Exception Getting Selenium Logs {}", tce.getId(), ex);
+                    }
+                    break;
                 default:
             }
 
@@ -1130,11 +1133,11 @@ public class RobotServerService implements IRobotServerService {
                 case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 case TestCaseExecution.ROBOTPROVIDER_NONE:
                     try {
-                    tce.addFileList(recorderService.recordConsoleLog(tce));
-                } catch (Exception ex) {
-                    LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
-                }
-                break;
+                        tce.addFileList(recorderService.recordConsoleLog(tce));
+                    } catch (Exception ex) {
+                        LOG.error("Exception Getting Console Logs " + tce.getId(), ex);
+                    }
+                    break;
                 default:
             }
 
