@@ -852,12 +852,15 @@ public class RobotServerService implements IRobotServerService {
                         if (invariant.getGp2() == null) {
                             LOG.warn("Country selected ({}) has no value of GP2 in Invariant table, default language set to English (en)", tCExecution.getCountry());
                             optionsCH.addArguments("--lang=en");
+                            optionsCH.addArguments("--accept-lang=en");
                         } else {
                             optionsCH.addArguments("--lang=" + invariant.getGp2());
+                            optionsCH.addArguments("--accept-lang=" + invariant.getGp2());
                         }
                     } catch (CerberusException ex) {
                         LOG.warn("Country selected ({}) not in Invariant table, default language set to English (en)", tCExecution.getCountry());
                         optionsCH.addArguments("--lang=en");
+                        optionsCH.addArguments("--accept-lang=en");
                     }
 
                     // Force a specific profile for that session (allows reusing cookies and browser preferences).
@@ -987,7 +990,7 @@ public class RobotServerService implements IRobotServerService {
     }
 
     private Proxy getProxyFromExecutor(RobotExecutor executor, Integer remoteProxyPort) {
-        
+
         if (executor != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())) {
             Proxy proxy = new Proxy();
             proxy.setHttpProxy(executor.getExecutorProxyHost() + ":" + remoteProxyPort);
