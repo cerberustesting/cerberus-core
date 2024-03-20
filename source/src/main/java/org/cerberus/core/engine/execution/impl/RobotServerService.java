@@ -829,6 +829,14 @@ public class RobotServerService implements IRobotServerService {
                     // Collect Logs on Selenium side.
                     optionsFF.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
+                    // Extra Browser Parameters.
+                    if (tCExecution.getRobotObj() != null && !StringUtil.isEmpty(tCExecution.getRobotObj().getExtraParam())) {
+                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" ");
+                        for (String param : paramList) {
+                            optionsFF.addArguments(param);
+                        }
+                    }
+
                     return optionsFF;
 
                 case "chrome":
@@ -895,7 +903,10 @@ public class RobotServerService implements IRobotServerService {
 
                     // Extra Browser Parameters.
                     if (tCExecution.getRobotObj() != null && !StringUtil.isEmpty(tCExecution.getRobotObj().getExtraParam())) {
-                        optionsCH.addArguments(tCExecution.getRobotObj().getExtraParam());
+                        String[] paramList = tCExecution.getRobotObj().getExtraParam().split(" ");
+                        for (String param : paramList) {
+                            optionsCH.addArguments(param);
+                        }
                     }
 
                     // Collect Logs on Selenium side.
