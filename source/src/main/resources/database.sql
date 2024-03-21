@@ -6291,3 +6291,6 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 -- 1767
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_pdfcampaignreportdisplayciresult_boolean', 'true', 'Boolean in order to show or hide the cicd campaign result on pdf campaign execution pdf report.');
+
+-- 1768
+ALTER TABLE countryenvparam_log MODIFY Creator VARCHAR(45);
