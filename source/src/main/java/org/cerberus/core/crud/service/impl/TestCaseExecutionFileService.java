@@ -73,7 +73,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
 
     @Override
     public AnswerList<TestCaseExecutionFile> readByVarious(long ExeId, String level) {
-        return testCaseExecutionFileDAO.readByVariousByCriteria(ExeId, level, 0, 0, null, null, null, null);
+        return testCaseExecutionFileDAO.readByVariousByCriteria(ExeId, level, 0, 0, "ID", "asc", null, null);
     }
 
     @Override

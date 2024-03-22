@@ -864,6 +864,42 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordRobotFile(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, byte[] fileContent, String preFileName, String fileName, String ext) {
+        TestCaseExecutionFile object = null;
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (actionExecution != null) {
+            test = execution.getTest();
+            testCase = execution.getTestCase();
+            step = String.valueOf(actionExecution.getStepId());
+            index = String.valueOf(actionExecution.getIndex());
+            sequence = String.valueOf(actionExecution.getSequence());
+        }
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = execution.getId();
+        int propertyIndex = 0;
+        if (!(StringUtil.isEmpty(property))) {
+            propertyIndex = 1;
+        }
+        try {
+
+            Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, preFileName, fileName, false);
+            recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), fileContent);
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), fileName, recorderResponse.getRelativeFilenameURL(), ext, "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result, HashMap<String, String> secrets) {
         TestCaseExecutionFile object = null;
         // Used for logging purposes
@@ -1134,6 +1170,31 @@ public class RecorderService implements IRecorderService {
         } catch (IOException ex) {
             LOG.error("Unable to save : {}{}{} ex: {}", path, File.separator, fileName, ex, ex);
         }
+    }
+
+    /**
+     * Auxiliary method that saves a file
+     *
+     * @param path - directory path
+     * @param fileName - name of the file
+     * @param content -content of the file
+     */
+    private void recordFile(String path, String fileName, byte[] content) {
+        LOG.debug("Starting to save File (recordRobotFile) : {} {}", path, fileName);
+
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        File outputFile = new File(dir.getAbsolutePath() + File.separator + fileName);
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            outputStream.write(content);
+            LOG.info("File saved : {}{}{}", path, File.separator, fileName);
+        } catch (IOException ex) {
+            LOG.error("Unable to save : {}{}{} ex: {}", path, File.separator, fileName, ex, ex);
+        }
+
     }
 
     @Override

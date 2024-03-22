@@ -510,8 +510,8 @@ public class ActionService implements IActionService {
         /**
          * Put Wait in ms before the action to message.
          */
-        if (actionExecution.getWaitBefore()> 0) {
-                res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitBefore()) + " ms Bafore.");
+        if (actionExecution.getWaitBefore() > 0) {
+            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitBefore()) + " ms Bafore.");
         }
 
         /**
@@ -539,7 +539,6 @@ public class ActionService implements IActionService {
          * Action.
          */
         actionExecution.setStopExecution(res.isStopTest());
-
 
         /**
          * Timestamp stops here.
@@ -625,6 +624,7 @@ public class ActionService implements IActionService {
                         if (null == contentType) {
                             file.put("content-type", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
                             file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
+                            actionExecution.addFileList(recorderService.recordRobotFile(execution, actionExecution, 0, null, filecontent, "robot-" + i + "-", files.getJSONObject(i).getString("filename"), "BIN"));
                         } else {
                             switch (contentType) {
                                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
@@ -646,6 +646,7 @@ public class ActionService implements IActionService {
                                     file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
                                     break;
                             }
+                            actionExecution.addFileList(recorderService.recordRobotFile(execution, actionExecution, 0, null, filecontent, "robot-" + i + "-", files.getJSONObject(i).getString("filename"), contentType));
                         }
                         newFiles.put(file);
                     }

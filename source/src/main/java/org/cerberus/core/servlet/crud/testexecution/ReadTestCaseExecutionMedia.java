@@ -206,8 +206,13 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     break;
                 case "PDF":
                     returnPDF(request, response, tceFile, pathString);
+                    break;
                 case "MP4":
                     returnMP4(request, response, tceFile, pathString);
+                    break;
+                case "BIN":
+                    returnBinFile(request, response, tceFile, pathString);
+                    break;
                 default:
                     returnNotSupported(request, response, tceFile, pathString);
             }
@@ -268,7 +273,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
 
         response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
-        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setDateHeader("Expires", 0);
         response.setHeader("Type", "PNG");
         response.setHeader("Description", tc.getFileDesc());
 
@@ -297,7 +302,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         mp4File = new File(filePath + tc.getFileName());
         response.setContentType("video/mp4");
         response.setContentLength((int) mp4File.length());
-        response.setHeader("Content-Range",  "bytes start-end/length");
+        response.setHeader("Content-Range", "bytes start-end/length");
         try {
             FileUtils.copyFile(mp4File, response.getOutputStream());
         } catch (IOException e) {
@@ -325,9 +330,44 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
 
         response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
-        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
+        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc());
+
+    }
+
+    private void returnBinFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+        LOG.debug("Accessing File : " + filePath + tc.getFileName());
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Type", tc.getFileType());
+        response.setHeader("Description", tc.getFileDesc());
+        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc());
+
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
+        File file = new File(filePath + tc.getFileName());
+
+        byte[] bytes;
+        LOG.debug("Accessing File : " + filePath + tc.getFileName());
+        try (FileInputStream inputStream = FileUtils.openInputStream(file); OutputStream os = response.getOutputStream()) {
+//            everything = IOUtils.toString(inputStream, "UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+            bytes = IOUtils.toByteArray(inputStream);
+            response.setContentLength(bytes.length);
+
+            os.write(bytes, 0, bytes.length);
+        } catch (FileNotFoundException e) {
+            LOG.error(e, e);
+        } catch (IOException e) {
+            LOG.error(e, e);
+        }
+
     }
 
     private void returnText(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
@@ -337,7 +377,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
 
         response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
-        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
     }

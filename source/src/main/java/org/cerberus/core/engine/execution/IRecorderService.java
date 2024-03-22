@@ -132,6 +132,21 @@ public interface IRecorderService {
     List<TestCaseExecutionFile> recordContent(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, String content, String contentType);
 
     /**
+     *
+     * @param execution
+     * @param actionExecution
+     * @param control
+     * @param property
+     * @param fileContent
+     * @param preFileName
+     * @param fileName
+     * @param ext
+     * @return
+     */
+    TestCaseExecutionFile recordRobotFile(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, byte[] fileContent, String preFileName, String fileName, String ext);
+    
+    
+    /**
      * @param runId
      * @param property
      * @param propertyIndex
