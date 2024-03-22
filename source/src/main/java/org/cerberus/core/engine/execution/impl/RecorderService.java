@@ -140,7 +140,7 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    objectFileList.addAll(this.recordScreenshot(myExecution, actionExecution, controlNumber, "", "Screenshot", "screenshot"));
+                    objectFileList.addAll(this.recordScreenshot(myExecution, actionExecution, controlNumber, "", "Screenshot After", "screenshot-after"));
                 } else {
                     LOG.debug("{}Not Doing screenshot because connectivity with selenium server lost.", logPrefix);
                 }

@@ -2851,9 +2851,12 @@ function printLabelForCondition(element, conditionOperator, conditionValue1, con
     } else if (conditionOperator !== 'always') {
         var title = "<div><b>Execution Condition : </b></div>";
         title += "<div>'Condition' : '" + conditionOperator + "'</div>";
-        title += "<div>'val1' : '" + conditionValue1 + "'</div>";
-        title += "<div>'val2' : '" + conditionValue2 + "'</div>";
-        title += "<div>'val3' : '" + conditionValue3 + "'</div>";
+        if (conditionValue1 !== undefined)
+            title += "<div>'val1' : '" + conditionValue1.replaceAll("'", '').replaceAll('"', '') + "'</div>";
+        if (conditionValue2 !== undefined)
+            title += "<div>'val2' : '" + conditionValue2.replaceAll("'", '').replaceAll('"', '') + "'</div>";
+        if (conditionValue3 !== undefined)
+            title += "<div>'val3' : '" + conditionValue3.replaceAll("'", '').replaceAll('"', '') + "'</div>";
         var labelOptions = $('<span data-toggle="tooltip" data-html="true"  data-original-title="' + title + '" class="label label-primary labelGreen pull-right optionLabel conditionLabel"><span class="glyphicon glyphicon-cog"></span> Conditional Execution</span>');
         $(element).append(labelOptions[0]);
     }

@@ -767,30 +767,41 @@ public class PDFService implements IPDFService {
             }
         }
 
+        Collections.sort(fileList, new SortExecutionFile());
+
         // If there is at least 1 image in the list
         if (nbImages > 0) {
             tableTmp = new Table(new float[]{150, 500});
 
             imageInserted = false;
-            for (TestCaseExecutionFile controlFile : fileList) {
+            for (TestCaseExecutionFile exeFile : fileList) {
 
-                if (controlFile.isImage() && !imageInserted) {
+                if (exeFile.isImage()) {
                     // Load screenshots to pdf.
                     ImageData imageData;
                     try {
-                        File f = new File(mediaPath + controlFile.getFileName());
-                        imageInserted = true;
-                        if (f.exists()) {
-                            imageData = ImageDataFactory.create(mediaPath + controlFile.getFileName());
-                            Image image = new Image(imageData).scaleToFit(500, 200);
-                            tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
-                                    .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
-                                    .addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                        File f = new File(mediaPath + exeFile.getFileName());
+                        if (exeFile.getFileDesc().contains("Picture") || !imageInserted) {
+                            if (f.exists()) {
+                                imageData = ImageDataFactory.create(mediaPath + exeFile.getFileName());
+                                Image image;
+                                if (!exeFile.getFileDesc().contains("Picture")) {
+                                    image = new Image(imageData).scaleToFit(500, 200);
+                                } else {
+                                    image = new Image(imageData).scaleToFit(500, 50);
+                                }
+                                tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(exeFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
+                                        .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
+                                        .addCell(new Cell().add(image.setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.RIGHT)).setBorder(Border.NO_BORDER));
 
-                        } else {
-                            tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(controlFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
-                                    .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
-                                    .addCell(new Cell().add(new Paragraph().add(getTextFromString("File no longuer exist !!!", 7, false)).setTextAlignment(TextAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                            } else {
+                                tableTmp.addCell(new Cell().add(new Paragraph().add(getTextFromString(exeFile.getFileDesc(), 7, false)).setTextAlignment(TextAlignment.LEFT))
+                                        .setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE))
+                                        .addCell(new Cell().add(new Paragraph().add(getTextFromString("File no longuer exist !!!", 7, false)).setTextAlignment(TextAlignment.RIGHT)).setBorder(Border.NO_BORDER));
+                            }
+                        }
+                        if (!exeFile.getFileDesc().contains("Picture")) {
+                            imageInserted = true;
                         }
                     } catch (MalformedURLException ex) {
                         LOG.error(ex, ex);
@@ -843,6 +854,20 @@ public class PDFService implements IPDFService {
 //                } else {
 //                    return aPrio - bPrio;
 //                }
+            } else {
+                return 1;
+            }
+        }
+    }
+
+    class SortExecutionFile implements Comparator<TestCaseExecutionFile> {
+        // Used for sorting in ascending order of 
+        // Label name. 
+
+        @Override
+        public int compare(TestCaseExecutionFile a, TestCaseExecutionFile b) {
+            if (a != null && b != null) {
+                return (int) (b.getId() - a.getId());
             } else {
                 return 1;
             }

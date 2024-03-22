@@ -2149,10 +2149,13 @@ function Step(json, steps, id) {
 
     var stepLabelContainer = $("<div class='col-sm-12 stepLabelContainer' style='padding-left: 0px;margin-top:10px'></div>");
 
-    var conditionTooltip = "<b>Condition : </b>" + this.conditionOperator + "</br>"
-    conditionTooltip += "<b>Val1 : </b>" + this.conditionVal1 + "</br>"
-    conditionTooltip += "<b>Val2 : </b>" + this.conditionVal2 + "</br>"
-    conditionTooltip += "<b>Val3 : </b>" + this.conditionVal3 + "</br>"
+    var conditionTooltip = "<b>Condition : </b>" + this.conditionOperator + "</br>";
+    if (conditionVal1 !== undefined)
+        conditionTooltip += "<b>Val1 : </b>" + this.conditionVal1.replaceAll("'", '').replaceAll('"', '') + "</br>";
+    if (conditionVal2 !== undefined)
+        conditionTooltip += "<b>Val2 : </b>" + this.conditionVal2.replaceAll("'", '').replaceAll('"', '') + "</br>";
+    if (conditionVal3 !== undefined)
+        conditionTooltip += "<b>Val3 : </b>" + this.conditionVal3.replaceAll("'", '').replaceAll('"', '') + "</br>";
 
     if (this.loop !== "onceIfConditionTrue" && this.loop !== "onceIfConditionFalse") {
         var labelOptions = $('<span class="label label-primary optionLabel labelLightGreen">Loop</span>');

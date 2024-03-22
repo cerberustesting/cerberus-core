@@ -292,13 +292,12 @@ public class ActionService implements IActionService {
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
             LOG.debug("Saving Image 1 on Action : " + identifier.getLocator());
-
-            actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "1"));
+            actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "value1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
             LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
-            actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "2"));
+            actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "value2"));
         }
 
         /**

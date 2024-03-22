@@ -115,7 +115,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         List<TestCaseStepActionExecution> list = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");
-        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.index = ? ");
+        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.index = ? order by `sort`");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());

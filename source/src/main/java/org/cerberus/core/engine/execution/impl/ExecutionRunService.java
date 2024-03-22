@@ -102,6 +102,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.cerberus.core.engine.entity.Identifier;
+import org.cerberus.core.engine.execution.IIdentifierService;
+import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
@@ -153,6 +156,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRobotProxyService executorService;
     private IEventService eventService;
     private IXRayService xRayService;
+    private IIdentifierService identifierService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution execution) throws CerberusException {
@@ -1076,6 +1080,18 @@ public class ExecutionRunService implements IExecutionRunService {
 
             if (!(conditionDecodeError)) {
 
+                // Record picture= files at Condition action level.
+                Identifier identifier = identifierService.convertStringToIdentifier(actionExecution.getConditionVal1());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                    LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "Condition1"));
+                }
+                identifier = identifierService.convertStringToIdentifier(actionExecution.getConditionVal2());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                    LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
+                    actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "Condition2"));
+                }
+
                 ConditionOperatorEnum actionConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(actionExecution.getConditionOperator());
 
                 conditionAnswer = this.conditionService.evaluateCondition(actionExecution.getConditionOperator(),
@@ -1341,6 +1357,18 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             if (!(conditionDecodeError)) {
+
+                // Record picture= files at Condition control level.
+                Identifier identifier = identifierService.convertStringToIdentifier(controlExecution.getConditionVal1());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                    LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordPicture(actionExecution, controlExecution.getControlId(), identifier.getLocator(), "Condition1"));
+                }
+                identifier = identifierService.convertStringToIdentifier(controlExecution.getConditionVal2());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                    LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
+                    controlExecution.addFileList(recorderService.recordPicture(actionExecution, controlExecution.getControlId(), identifier.getLocator(), "Condition2"));
+                }
 
                 ConditionOperatorEnum controlConditionOperatorEnum = ConditionOperatorEnum.getConditionOperatorEnumFromString(controlExecution.getConditionOperator());
 
