@@ -238,7 +238,7 @@ function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto
         })
 
         if ((manualFile.fileType == "JPG") || (manualFile.fileType == "PNG")) {
-            var image = $('<img>').addClass("selectedPicture").attr("src", urlImage + "&h=600&w=800");
+            var image = $('<img>').addClass("selectedPicture").attr("src", urlImage + "&r=true");
             $("#preview").append(image)
         } else if ((manualFile.fileType == "PDF") || (manualFile.fileType == "BIN")) {
             $("#preview").append("<p>impossible to get a preview of your file</p>");
