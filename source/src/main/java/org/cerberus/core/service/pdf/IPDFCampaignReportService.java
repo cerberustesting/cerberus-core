@@ -27,7 +27,7 @@ import org.cerberus.core.crud.entity.Tag;
 /**
  * @author bcivel
  */
-public interface IPDFService {
+public interface IPDFCampaignReportService {
 
     /**
      * @param tag

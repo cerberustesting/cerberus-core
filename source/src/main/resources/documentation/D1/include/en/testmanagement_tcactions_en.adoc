@@ -656,33 +656,57 @@ Will get a list of files located on the robot side. That allow to implement use 
 
 The Action will return a json file that follow the below json format:
 
+
     {
         "totalFilesAvailable": "3",
         "totalFilesDownloaded": "2",
         "files": [
         {
-            "path": "/home/seluser/Downloads/toto/titi/testnew1.json",
-            "filename": "testnew1.json",
-            "size": "5018",
-            "content-type": "JSON",
-            "lastModified": "2022.08.12:07.05.57",
-            "content": {
-                "content": "test"
-            }
-        }, 
+            "path": "/home/seluser/Downloads/pdf_digital_signature_timestamp.pdf",
+            "filename": "pdf_digital_signature_timestamp.pdf",
+            "size": "46016",
+            "lastModified": "2024.03.23:14.23.07",
+            "contentType": "PDF",
+            "pdfInfo": {
+                "pdfCertInfo": {
+                    "names": [
+                    {
+                        "names": ["Test Signing Certificate-1-1081166692", null],
+                        "reasons": ["I approve these details."],
+                        "contents": ["0\u0082\u001c)\u0006\t*\u0086H\u0086÷\r"],
+                        "dates": ["D:20180901125733-04'00'"],
+                        "locations": ["City"]
+                    }
+                    ],
+                    "blankSignatureNames": [""],
+                    "signatureNames": ["Test Signing Certificate-1-1081166692|"]
+                },
+                "pdfPageNb": 2,
+                "pdfText": {
+                    "allPages": "PDF Digital Signatures\n \n \ndigitally .\n ",
+                    "pages": [
+                        "PDF Digital Signatures\n \n \n",
+                        "digitally .\n "
+                    ]
+                }
+                },
+            "content": "%PDF-1.4\n%����\n5 0 obj\n<<\/C[0 0 1]/Border"
+        },
         {
             "path": "/home/seluser/Downloads/toto/titi/testnew2.json",
             "filename": "testnew2.json",
             "size": "0",
             "content-type": "UNKNOWN",
             "lastModified": "2022.08.12:07.05.57",
-            "content": ""
+            "content": {
+                "content": "test"
+            }
         }
         ]
     }
 [NOTE]
 ====
-Please note that on the above example, the 1st file is a json file that contain:
+Please note that on the above example, the 1st file is a pdf file and the 2nd a json file that contain:
 
     {"content": "test"} 
 ====

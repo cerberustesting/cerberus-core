@@ -134,6 +134,7 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
+    public static final String RESPONSEHTTPBODYCONTENTTYPE_PDF = "PDF";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN = "UNKNOWN";
 
     public void addResponseHeaderList(AppServiceHeader object) {

@@ -183,12 +183,6 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     }
                     returnImage(request, response, tceFile, pathString);
                     break;
-                case "HTML":
-                    if (autoContentType) {
-                        response.setContentType("text/html");
-                    }
-                    returnFile(request, response, tceFile, pathString);
-                    break;
                 case "XML":
                     if (autoContentType) {
                         response.setContentType("application/xml");
@@ -207,11 +201,17 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                 case "PDF":
                     returnPDF(request, response, tceFile, pathString);
                     break;
-                case "MP4":
-                    returnMP4(request, response, tceFile, pathString);
+                case "HTML":
+                    if (autoContentType) {
+                        response.setContentType("text/html");
+                    }
+                    returnDownloadTXTFile(request, response, tceFile, pathString);
                     break;
                 case "BIN":
-                    returnBinFile(request, response, tceFile, pathString);
+                    returnDownloadBinFile(request, response, tceFile, pathString);
+                    break;
+                case "MP4":
+                    returnMP4(request, response, tceFile, pathString);
                     break;
                 default:
                     returnNotSupported(request, response, tceFile, pathString);
@@ -312,38 +312,57 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
     }
 
     private void returnFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
-        String everything = "";
-        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
-        File file = new File(filePath + tc.getFileName());
-        LOG.debug("Accessing File : " + filePath + tc.getFileName());
-        try (FileInputStream inputStream = FileUtils.openInputStream(file);) {
-            everything = IOUtils.toString(inputStream, "UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().print(everything);
-        } catch (FileNotFoundException e) {
-
-        } catch (IOException e) {
-
-        }
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-
         response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
-        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc());
+
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
+        File file = new File(filePath + tc.getFileName());
+        LOG.debug("Accessing File : " + filePath + tc.getFileName());
+        try {
+            FileUtils.copyFile(file, response.getOutputStream());
+        } catch (FileNotFoundException e) {
+            LOG.warn(e);
+        } catch (IOException e) {
+            LOG.warn(e);
+        }
 
     }
 
-    private void returnBinFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+    private void returnDownloadTXTFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Type", tc.getFileType());
+        response.setHeader("Description", tc.getFileDesc());
+        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc() + "." + tc.getFileType().toLowerCase());
+
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
+        File file = new File(filePath + tc.getFileName());
+        LOG.debug("Accessing File : " + filePath + tc.getFileName());
+        try {
+            FileUtils.copyFile(file, response.getOutputStream());
+        } catch (FileNotFoundException e) {
+            LOG.warn(e);
+        } catch (IOException e) {
+            LOG.warn(e);
+        }
+
+    }
+
+    private void returnDownloadBinFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
         LOG.debug("Accessing File : " + filePath + tc.getFileName());
 
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-
         response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
@@ -352,16 +371,9 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
         File file = new File(filePath + tc.getFileName());
-
-        byte[] bytes;
         LOG.debug("Accessing File : " + filePath + tc.getFileName());
-        try (FileInputStream inputStream = FileUtils.openInputStream(file); OutputStream os = response.getOutputStream()) {
-//            everything = IOUtils.toString(inputStream, "UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-            bytes = IOUtils.toByteArray(inputStream);
-            response.setContentLength(bytes.length);
-
-            os.write(bytes, 0, bytes.length);
+        try {
+            FileUtils.copyFile(file, response.getOutputStream());
         } catch (FileNotFoundException e) {
             LOG.error(e, e);
         } catch (IOException e) {

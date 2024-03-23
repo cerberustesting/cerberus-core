@@ -79,20 +79,20 @@ import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
 import org.springframework.stereotype.Service;
 
-import org.cerberus.core.service.pdf.IPDFService;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.cerberus.core.service.pdf.IPDFCampaignReportService;
 
 /**
  * @author bcivel
  */
 @Service
-public class PDFService implements IPDFService {
+public class PDFCampaignReportService implements IPDFCampaignReportService {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(PDFService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(PDFCampaignReportService.class);
 
     private final int NB_EXECUTION_PER_APPENDIX_FILE = 50;
 
@@ -126,7 +126,7 @@ public class PDFService implements IPDFService {
         LOG.info("Starting to generate PDF Report on :" + dest);
         PdfWriter writer = new PdfWriter(dest);
 
-        // Creating a PdfDocument       
+        // Creating a PdfDocument
         PdfDocument pdfDoc = new PdfDocument(writer);
 
         boolean displayCountryColumn = parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_pdfcampaignreportdisplaycountry_boolean, "", true);
@@ -420,48 +420,6 @@ public class PDFService implements IPDFService {
             LOG.error(ex, ex);
         }
         return null;
-    }
-
-// TEmporary version of method in order to retreive signature information from pdf file.
-    private void checkSignature(String fileName) {
-
-        PdfDocument pdfDoc;
-        try {
-            pdfDoc = new PdfDocument(new PdfReader(fileName));
-            SignatureUtil signUtil = new SignatureUtil(pdfDoc);
-            List<String> names = signUtil.getSignatureNames();
-
-            List<String> names2 = signUtil.getBlankSignatureNames();
-
-            SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
-
-            LOG.debug(fileName);
-            for (String name : names) {
-                LOG.debug("===== " + name + " =====");
-            }
-            for (String name : names2) {
-                LOG.debug("===== " + name + " =====");
-            }
-
-            for (String name : names) {
-                LOG.debug("===== " + name + " =====");
-                PdfSignature toto = signUtil.getSignature(name);
-                LOG.debug("=====  =====");
-                LOG.debug(" " + toto.getDate());
-                LOG.debug("=====  =====");
-                LOG.debug(" " + toto.getContents());
-                LOG.debug("=====  =====");
-                LOG.debug(" " + toto.getLocation());
-                LOG.debug("=====  =====");
-                LOG.debug(" " + toto.getName());
-                LOG.debug("=====  =====");
-                LOG.debug(" " + toto.getReason());
-            }
-
-            pdfDoc.close();
-        } catch (Exception ex) {
-            Logger.getLogger(PDFService.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     @Override
@@ -818,22 +776,11 @@ public class PDFService implements IPDFService {
     }
 
     class SortExecution implements Comparator<TestCaseExecution> {
-        // Used for sorting in ascending order of 
-        // Label name. 
+        // Used for sorting in executions by the correct criterias.
 
         @Override
         public int compare(TestCaseExecution a, TestCaseExecution b) {
             if (a != null && b != null) {
-//                int aPrio = a.getTestCasePriority();
-//                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
-//                    aPrio = 999 + a.getTestCasePriority();
-//                }
-//                int bPrio = b.getTestCasePriority();
-//                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
-//                    bPrio = 999 + b.getTestCasePriority();
-//                }
-
-//                if (aPrio == bPrio) {
                 if (a.getTest().equals(b.getTest())) {
                     if (a.getTestCase().equals(b.getTestCase())) {
                         if (a.getEnvironment().equals(b.getEnvironment())) {
@@ -851,9 +798,6 @@ public class PDFService implements IPDFService {
                 } else {
                     return a.getTest().compareToIgnoreCase(b.getTest());
                 }
-//                } else {
-//                    return aPrio - bPrio;
-//                }
             } else {
                 return 1;
             }
@@ -861,8 +805,7 @@ public class PDFService implements IPDFService {
     }
 
     class SortExecutionFile implements Comparator<TestCaseExecutionFile> {
-        // Used for sorting in ascending order of 
-        // Label name. 
+        // Used for sorting in descending order of creation (using ID)
 
         @Override
         public int compare(TestCaseExecutionFile a, TestCaseExecutionFile b) {

@@ -20,6 +20,12 @@
 package org.cerberus.core.engine.gwt.impl;
 
 import com.google.common.primitives.Ints;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Optional;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +66,7 @@ import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
 import org.cerberus.core.service.xmlunit.IXmlUnitService;
+import org.cerberus.core.util.PDFUtil;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -69,13 +76,6 @@ import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * @author bcivel
@@ -620,14 +620,26 @@ public class ActionService implements IActionService {
                         byte[] filecontent = Base64.decodeBase64(fileContentBase64);
                         String sFileContent = new String(filecontent, StandardCharsets.UTF_8);
                         String contentType = appServiceService.guessContentType(sFileContent);
+                        LOG.debug(files.getJSONObject(i).getString("filename"));
                         if (null == contentType) {
-                            file.put("content-type", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
+                            if (PDFUtil.isPdf(filecontent)) {
+                                TestCaseExecutionFile localFile = recorderService.recordRobotFile(execution, actionExecution, 0, null, filecontent, "robot-" + i + "-", files.getJSONObject(i).getString("filename"), AppService.RESPONSEHTTPBODYCONTENTTYPE_PDF);
+                                actionExecution.addFileList(localFile);
+                                JSONObject pdfInfo = new JSONObject();
+                                pdfInfo.put("pdfPageNb", PDFUtil.getNumberOfPages(filecontent));
+                                pdfInfo.put("pdfCertInfo", PDFUtil.getSignatures(filecontent));
+                                pdfInfo.put("pdfText", PDFUtil.getTextFromPdf(filecontent));
+                                file.put("pdfInfo", pdfInfo);
+                                file.put("contentType", AppService.RESPONSEHTTPBODYCONTENTTYPE_PDF);
+                            } else {
+                                actionExecution.addFileList(recorderService.recordRobotFile(execution, actionExecution, 0, null, filecontent, "robot-" + i + "-", files.getJSONObject(i).getString("filename"), "BIN"));
+                                file.put("contentType", "BIN");
+                            }
                             file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
-                            actionExecution.addFileList(recorderService.recordRobotFile(execution, actionExecution, 0, null, filecontent, "robot-" + i + "-", files.getJSONObject(i).getString("filename"), "BIN"));
                         } else {
                             switch (contentType) {
                                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                                    file.put("content-type", contentType);
+                                    file.put("contentType", contentType);
                                     if (sFileContent.startsWith("[")) {
                                         JSONArray contentFileJSON = new JSONArray(sFileContent);
                                         file.put("content", contentFileJSON);
@@ -637,11 +649,11 @@ public class ActionService implements IActionService {
                                     }
                                     break;
                                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                                    file.put("content-type", contentType);
+                                    file.put("contentType", contentType);
                                     file.put("content", sFileContent);
                                     break;
                                 default:
-                                    file.put("content-type", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
+                                    file.put("contentType", AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN);
                                     file.put("content", sFileContent.substring(0, (100 > sFileContent.length()) ? sFileContent.length() : 100));
                                     break;
                             }

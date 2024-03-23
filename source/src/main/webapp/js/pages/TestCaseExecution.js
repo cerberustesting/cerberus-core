@@ -3431,39 +3431,13 @@ function addFileLink(fileList, container, manual, idStep) {
             ;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
-            if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
                         .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                        .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                        .css("height", "30px").click(function (e) {
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                     return false;
                 }));
-            } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                        .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
-            } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                        .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
-            } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                        .css("height", "30px").click(function (f) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
-                    return false;
-                }));
-            }
             container.append(linkBoxtxt);
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
 

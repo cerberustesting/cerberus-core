@@ -58,7 +58,6 @@ import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.service.ciresult.ICIService;
-import org.cerberus.core.service.pdf.IPDFService;
 import org.cerberus.core.util.DateUtil;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -66,6 +65,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.cerberus.core.service.pdf.IPDFCampaignReportService;
 
 /**
  * @author lucashimpens
@@ -88,7 +88,7 @@ public class CampaignExecutionController {
     private final CampaignExecutionService campaignExecutionService;
     private final PublicApiAuthenticationService apiAuthenticationService;
     private final ICIService ciService;
-    private final IPDFService pdfService;
+    private final IPDFCampaignReportService pdfService;
 
     private static final String EXECUTIONS_CAMPAIGN_CI_PATH = "/campaignexecutions/ci";
     private static final String EXECUTIONS_CAMPAIGN_CI_SVG_PATH = "/campaignexecutions/ci/svg";

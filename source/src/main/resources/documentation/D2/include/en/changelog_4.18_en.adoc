@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* none
+* Display small issue on testcase script page and execution when condition include value1 that contain quote or double quote.
 
 *Improvements / New features*
 [square]
@@ -14,6 +14,8 @@
 * new options on actions and controls in order to force screenshot before and after (that avoid the necessary takeScreenshot control)
 * new options on actions and controls in order to add a wait in ms before and after (that avoid the necessary wait action). This is to be used with care as Cerberus already wait for an element before interacting with it.
 * new parameter cerberus_pdfcampaignreportdisplayciresult_boolean in order to hide/display the cicd information on pdf report.
+* PDF Files content can now be controled after being downloaded.
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
