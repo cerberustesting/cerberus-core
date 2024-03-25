@@ -510,7 +510,7 @@ public class ActionService implements IActionService {
          * Put Wait in ms before the action to message.
          */
         if (actionExecution.getWaitBefore() > 0) {
-            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitBefore()) + " ms Bafore.");
+            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(actionExecution.getWaitBefore()) + " ms Before.");
         }
 
         /**

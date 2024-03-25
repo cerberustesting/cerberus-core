@@ -433,7 +433,7 @@ public class ControlService implements IControlService {
          * Put Wait in ms before the action to message.
          */
         if (controlExecution.getWaitBefore() > 0) {
-            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(controlExecution.getWaitBefore()) + " ms Bafore.");
+            res.setDescription(res.getDescription() + " -- Waited " + String.valueOf(controlExecution.getWaitBefore()) + " ms Before.");
         }
 
         /**
