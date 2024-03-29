@@ -2167,6 +2167,29 @@ function GetURLParameter(sParam, defaultValue) {
 /**
  * Get the parameter passed in the url Example : url?param=value
  * @param {String} sParam parameter you want to get value from
+ * @param {String} defaultValue Default value in case the parameter is not defined in the URL.
+ * @returns {GetURLParameter.sParameterName} the value or defaultValue does not exist in URL or null if not found in URL and no default value specified.
+ */
+function GetURLAnchorValue(sParam, defaultValue) {
+    var sPageURL = window.location.hash.substring(1);
+    var sURLVariables = sPageURL.split('|');
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            return decodeURIComponent(sParameterName[1]);
+        }
+    }
+    if (defaultValue === undefined) {
+        return null;
+    } else {
+        return defaultValue;
+    }
+}
+
+/**
+ * Get the parameter passed in the url Example : url?param=value
+ * @param {String} sParam parameter you want to get value from
  * @returns {GetURLParameter.sParameterName} the value or defaultValue does not exist in URL or null if not found in URL and no default value specified.
  */
 function GetURLParameters(sParam) {

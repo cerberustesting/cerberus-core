@@ -89,14 +89,14 @@
                                             <div class="btn-group ">
                                                 <a><button class="btn btn-default pull-right" id="editTcInfo">Edit Test Case Header</button></a>
                                             </div>
+                                            <div class="btn-group">
+                                                <a><button class="btn btn-default pull-left" id="seeLastExecUniq" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-saved"></span></button></a>
+                                            </div>
                                             <div class="btn-group" id="runTestCasePopover">
                                                 <a><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span></button></a>
                                             </div>
                                             <div class="btn-group">
                                                 <a><button class="btn btn-default pull-right" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span></button></a>
-                                            </div>
-                                            <div class="btn-group">
-                                                <a><button class="btn btn-default pull-left" id="seeLastExecUniq" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-saved"></span></button></a>
                                             </div>
                                             <div class="btn-group">
                                                 <a><button class="btn btn-default" id="saveScript" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span></button></a>

@@ -1,6 +1,8 @@
 *Bug fixes*
 [square]
 * Display small issue on testcase script page and execution when condition include value1 that contain quote or double quote.
+* Fixed language local management on recent Chrome versions
+* Homepage filters now also apply on all graphs on the page.
 
 *Improvements / New features*
 [square]
@@ -14,8 +16,14 @@
 * new options on actions and controls in order to force screenshot before and after (that avoid the necessary takeScreenshot control)
 * new options on actions and controls in order to add a wait in ms before and after (that avoid the necessary wait action). This is to be used with care as Cerberus already wait for an element before interacting with it.
 * new parameter cerberus_pdfcampaignreportdisplayciresult_boolean in order to hide/display the cicd information on pdf report.
-* PDF Files content can now be controled after being downloaded.
-
+* PDF Files content can now be controlled after being downloaded (text content + page numbers + pdf certificates information).
+* getRobotFile action now save the files on their initial format. Those files can be manually checked and saved.
+* Improved navigation of testcase edition between Testcase script page and execution page (step focused is kept during execution and between the 2 screens).
+* Screenshot preview is bigger.
+* Screenshot order display on execution page correspond to the timing of its creation. #2522
+* Allow multiple extraParameters on robot chrome (space seperator).
+* Added %system.ROBOTSESSIONID% and %system.ROBOTPROVIDERSESSIONID% system variable.
+* Allow to have optional subdata and feed cerberus_testdatalib_subdataDefaultValue parameter to defined its default value (Thanks to Promod team ;-)).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -25,6 +25,7 @@ var configNb = {};
 var configSize = {};
 var configGantt = {};
 var sortCol = 1;
+var stepFocus = -1;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -63,6 +64,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
+        stepFocus = GetURLAnchorValue("stepId", 99999);
         paramActivatewebsocketpush = getParameterString("cerberus_featureflipping_activatewebsocketpush", "", true);
         paramWebsocketpushperiod = getParameterString("cerberus_featureflipping_websocketpushperiod", "", true);
 
@@ -412,7 +414,7 @@ function updatePage(data, steps) {
         $("#editTcInfo").attr("disabled", false);
         $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);
-        $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + encodeURI(data.test) + "&testcase=" + encodeURI(data.testcase));
         $("#btnGroupDrop4").click(function () {
             setLinkOnEditTCStepInfoButton();
         });
@@ -579,7 +581,7 @@ function isIndexSelected(index, selectedIndex) {
 }
 
 function loadIndexSelect() {
-    console.info("loadingSelect...")
+//    console.info("loadingSelect...")
     $("#selectIndex").select2({
         width: '100%' // need to override the default to secure to take the full size available.
     });
@@ -1378,7 +1380,7 @@ function triggerTestCaseExecutionQueueandSee(queueId) {
             if (getAlertType(data.messageType) === "success") {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
                 var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
-                console.info("redir : " + url);
+//                console.info("redir : " + url);
                 window.location.replace(url);
             } else {
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
@@ -1718,7 +1720,6 @@ function createProperties(propList) {
             $('#secondaryPropTableHeader').css("display", "block");
             // TO DO : link it to the docTable
             secondaryPropCount++;
-            console.log(secondaryPropCount);
             $('#secondaryPropCount').html(secondaryPropCount);
         }
     }
@@ -2088,7 +2089,20 @@ function createStepList(data, steps) {
         steps.push(step);
     }
 
-    if (steps.length > 0) {
+    if ((stepFocus !== undefined) && (stepFocus !== 99999)) {
+        var find = false;
+        for (var i = 0; i < steps.length; i++) {
+            let curStepIndex = steps[i].step + "-" + steps[i].index;
+            // Use == in stead of ===
+            if (curStepIndex == stepFocus) {
+                find = true;
+                $(steps[i].html[0]).click();
+            }
+        }
+        if ((!find) && (steps.length > 0)) {
+            $(steps[0].html[0]).click();
+        }
+    } else if (steps.length > 0) {
         $("#steps a:last-child").trigger("click");
     }
     $("#steps").data("listOfStep", steps);
@@ -2234,11 +2248,20 @@ Step.prototype.update = function (idStep) {
 };
 
 
-Step.prototype.show = function () {
+Step.prototype.show = function (a) {
     var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-xs-10");
     var stepButton = $("<div id='stepPlus'></a>").addClass("col-xs-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+
+    if (a.cancelable) {
+        // the show action comes from a click so we save the step/index where focus was done and save it inside stepFocus for next refresh and inside the URL in case of F5.
+        const url = new URL(window.location);
+        url.hash = '#stepId=' + object.step + "-" + object.index;
+        stepFocus = object.step + "-" + object.index;
+        window.history.pushState({}, '', url);
+        $("#editTcStepInfo").parent().attr("href", "./TestCaseScript.jsp?test=" + encodeURI(object.test) + "&testcase=" + encodeURI(object.testcase) + '#stepId=' + object.step);
+    }
 
     for (var i = 0; i < object.steps.length; i++) {
         var step = object.steps[i];
@@ -3431,13 +3454,13 @@ function addFileLink(fileList, container, manual, idStep) {
             ;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
-                        .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
-                        .css("height", "30px").click(function (e) {
-                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
-                    return false;
-                }));
+            var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-12").css("margin-bottom", "5px")
+                    .prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .attr("data-toggle", "tooltip").attr("data-original-title", fileList[i].fileDesc)
+                    .css("height", "30px").click(function (e) {
+                changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
+                return false;
+            }));
             container.append(linkBoxtxt);
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
 

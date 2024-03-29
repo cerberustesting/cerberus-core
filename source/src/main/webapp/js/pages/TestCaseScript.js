@@ -23,6 +23,7 @@
 var canUpdate = false;
 var allDelete = false;
 var Tags = [];
+var exeId = 0;
 
 
 $.when($.getScript("js/global/global.js")
@@ -81,10 +82,12 @@ $.when($.getScript("js/global/global.js")
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
-        var step = GetURLParameter("step");
         var property = GetURLParameter("property");
-        var tabactive = GetURLParameter("tabactive");
         var oneclickcreation = GetURLParameter("oneclickcreation");
+
+        var tabactive = GetURLParameter("tabactive");
+        var step = GetURLAnchorValue("stepId");
+
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
@@ -229,6 +232,7 @@ $.when($.getScript("js/global/global.js")
                     $('[data-toggle="tooltip"]').tooltip();
 
                     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        var target = $(e.target).attr("href")
                         initModification();
                     });
                 },
@@ -323,7 +327,8 @@ $.when($.getScript("js/global/global.js")
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(data.contentTable.id));
+                        exeId = data.contentTable.id;
+                        $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(data.contentTable.id) + window.location.hash);
                         $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?Test=" + encodeURI(test) + "&TestCase=" + encodeURI(testcase));
                         $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
                         $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + encodeURI(test) + "&testcase=" + encodeURI(testcase) + "&country=" + encodeURI(data.contentTable.country) + "&environment=" + encodeURI(data.contentTable.env));
@@ -684,11 +689,13 @@ function saveScript(property) {
                 var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + url_sort + tutorialParameters + "&tabactive=" + tabActive;
                 // If the 1st 2 characters are // we remove 1 of them.
                 if ((new_uri[0] === '/') && (new_uri[1] === '/')) {
-                    new_uri = new_uri[0] + new_uri.slice(2)
+                    new_uri = new_uri[0] + new_uri.slice(2);
                 }
                 setModif(false);
 
-                window.location.href = new_uri;
+                location.replace(new_uri + window.location.hash);
+                window.location.reload();
+
             },
             error: showUnexpectedError
         });
@@ -1443,7 +1450,7 @@ function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrar
         var find = false;
         for (var i = 0; i < steps.length; i++) {
             // Use == in stead of ===
-            if (steps[i].sort == stepIndex) {
+            if (steps[i].stepId == stepIndex) {
                 find = true;
                 $(steps[i].html[0]).click();
             }
@@ -1854,7 +1861,7 @@ Step.prototype.draw = function () {
     var useStepContainer = $("<div class='col-sm-12 fieldRow row' class='useStepContainer' id='UseStepRow' style='display: none;'></div>");
     if (this.isUsingLibraryStep) {
         //useStepContainer.html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "&step=" + encodeURI(this.libraryStepSort) + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a>)").show();
-        var labelOptions = $("<span class='label label-primary optionLabel' style='background-color:rgba(114,124,245,.25);color:#727cf5'>" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "&step=" + encodeURI(this.libraryStepSort) + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a></span>");
+        var labelOptions = $("<span class='label label-primary optionLabel' style='background-color:rgba(114,124,245,.25);color:#727cf5'>" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + encodeURI(this.libraryStepTest) + "&testcase=" + encodeURI(this.libraryStepTestCase) + "#stepId=" + this.libraryStepStepId + "' >" + this.libraryStepTest + " - " + this.libraryStepTestCase + " - " + this.libraryStepSort + "</a></span>");
         stepLabelContainer.append(labelOptions[0]);
 
     }
@@ -1882,6 +1889,11 @@ Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
     $("#addActionBottomBtn").show();
+
+    const url = new URL(window.location);
+    url.hash = '#stepId=' + object.stepId;
+    window.history.pushState({}, '', url);
+    $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(exeId) + window.location.hash + "-1");
 
     for (var i = 0; i < object.steps.length; i++) {
         var step = object.steps[i];
