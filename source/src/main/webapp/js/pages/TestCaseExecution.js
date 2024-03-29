@@ -2261,6 +2261,8 @@ Step.prototype.show = function (a) {
         stepFocus = object.step + "-" + object.index;
         window.history.pushState({}, '', url);
         $("#editTcStepInfo").parent().attr("href", "./TestCaseScript.jsp?test=" + encodeURI(object.test) + "&testcase=" + encodeURI(object.testcase) + '#stepId=' + object.step);
+    } else if (stepFocus != 99999) {
+        $("#editTcStepInfo").parent().attr("href", "./TestCaseScript.jsp?test=" + encodeURI(object.test) + "&testcase=" + encodeURI(object.testcase) + '#stepId=' + object.step);
     }
 
     for (var i = 0; i < object.steps.length; i++) {
