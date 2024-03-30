@@ -84,7 +84,7 @@ public final class PDFUtil {
         try {
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(new ByteArrayInputStream(bytes)));
             int nbpages = pdfDoc.getNumberOfPages();
-                LOG.debug("Pages " + nbpages);
+            LOG.debug("Pages " + nbpages);
             SimpleTextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
             for (int i = 1; i <= nbpages; i++) {
                 LOG.debug("Page " + i);
@@ -135,13 +135,14 @@ public final class PDFUtil {
 
                 PdfSignature pdfSign = signUtil.getSignature(name);
                 signatureObject.append("dates", pdfSign.getDate());
-                signatureObject.append("contents", pdfSign.getContents());
+                signatureObject.append("contents", pdfSign.getContents().getValue());
                 signatureObject.append("locations", pdfSign.getLocation());
-                signatureObject.append("names", pdfSign.getName());
+                signatureObject.append("signatureNames", pdfSign.getName());
                 signatureObject.append("reasons", pdfSign.getReason());
                 signatureArray.put(signatureObject);
             }
             result.append("names", signatureObject);
+            result.put("certNb", names.size());
             pdfDoc.close();
         } catch (Exception ex) {
             LOG.error(ex, ex);

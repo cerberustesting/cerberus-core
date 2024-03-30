@@ -127,7 +127,7 @@
         <asciidoctor-maven-plugin.version>1.6.0</asciidoctor-maven-plugin.version>
         
         <!-- PDF Generation itext version -->
-        <com.itextpdf.version>8.0.1</com.itextpdf.version>
+        <com.itextpdf.version>8.0.3</com.itextpdf.version>
 
         <!-- Sonar Exclusion -->
         <sonar.exclusions>src/main/webapp/dependencies/Ace-1.2.6/worker-xquery.js</sonar.exclusions>
@@ -520,7 +520,7 @@
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>html2pdf</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.3</version>
         </dependency>
         <!-- Test scope -->
         <!--        <dependency>
