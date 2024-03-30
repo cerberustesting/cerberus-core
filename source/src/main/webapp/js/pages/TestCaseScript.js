@@ -86,7 +86,7 @@ $.when($.getScript("js/global/global.js")
         var oneclickcreation = GetURLParameter("oneclickcreation");
 
         var tabactive = GetURLParameter("tabactive");
-        var step = GetURLAnchorValue("stepId");
+        var step = GetURLParameter("stepId");
 
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
@@ -681,8 +681,11 @@ function saveScript(property) {
                 if (tutorielId !== null && startStep !== null) {
                     tutorialParameters = "&tutorielId=" + tutorielId + "&startStep=" + startStep;
                 }
-
-                var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + tutorialParameters + "&tabactive=" + tabActive + window.location.hash;
+                var url_step = "";
+                if (!(isEmpty(stepData))) {
+                    url_step = "&stepId=" + encodeURI(stepData.stepId);
+                }
+                var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + tutorialParameters + url_step + "&tabactive=" + tabActive;
                 // If the 1st 2 characters are // we remove 1 of them.
                 if ((new_uri[0] === '/') && (new_uri[1] === '/')) {
                     new_uri = new_uri[0] + new_uri.slice(2);
