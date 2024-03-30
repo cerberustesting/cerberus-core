@@ -682,19 +682,14 @@ function saveScript(property) {
                     tutorialParameters = "&tutorielId=" + tutorielId + "&startStep=" + startStep;
                 }
 
-                var url_sort = "";
-                if (!(isEmpty(stepData))) {
-                    url_sort = "&step=" + encodeURI(stepData.sort);
-                }
-                var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + url_sort + tutorialParameters + "&tabactive=" + tabActive;
+                var new_uri = parser.pathname + "?test=" + encodeURI(GetURLParameter("test")) + "&testcase=" + encodeURI(GetURLParameter("testcase")) + tutorialParameters + "&tabactive=" + tabActive + window.location.hash;
                 // If the 1st 2 characters are // we remove 1 of them.
                 if ((new_uri[0] === '/') && (new_uri[1] === '/')) {
                     new_uri = new_uri[0] + new_uri.slice(2);
                 }
                 setModif(false);
 
-                location.replace(new_uri + window.location.hash);
-                window.location.reload();
+                window.location.href = new_uri;
 
             },
             error: showUnexpectedError
