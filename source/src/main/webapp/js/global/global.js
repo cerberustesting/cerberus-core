@@ -2207,6 +2207,35 @@ function GetURLParameters(sParam) {
 }
 
 /**
+ * Replace the parameter passed in the url Example : url?param=value&toto=tutu is replaced to  url?param=newValue&toto=tutu
+ * @param {String} sParam parameter you want to replace value from
+ * @param {String} new Value of the sParam
+ * @returns {GetURLParameter.sParameterName} the value or defaultValue does not exist in URL or null if not found in URL and no default value specified.
+ */
+function ReplaceURLParameters(sParam, sValue) {
+    let sPageURL = window.location.search.substring(1);
+    let sURLVariables = sPageURL.split('&');
+    let result = "";
+    let replaced = false;
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            result += sParameterName[0] + "=" + sValue;
+            replaced = true;
+//            result.push(decodeURIComponent(sParameterName[1]));
+        } else {
+            result += sParameterName[0] + "=" + sParameterName[1];
+        }
+        result += "&";
+    }
+    if (!replaced) {
+        result += sParam + "=" + sValue + "&";
+    }
+    return result.substring(0, result.length - 1);
+}
+
+/**
  * Add an browser history entry only if different from the current one.
  * @param {string} sUrl Url to insert in the history.
  * @returns {void}

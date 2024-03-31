@@ -377,6 +377,24 @@ $.when($.getScript("js/global/global.js")
             if (tabactive !== null) {
                 $("a[name='" + tabactive + "']").click();
             }
+
+            $("a[name='tabProperties']").on("shown.bs.tab", function (e) {
+                e.target; // newly activated tab
+                e.relatedTarget; // previous active tab
+                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabProperties"));
+
+            })
+            $("a[name='tabSteps']").on("shown.bs.tab", function (e) {
+                e.target; // newly activated tab
+                e.relatedTarget; // previous active tab
+                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabSteps"));
+            })
+            $("a[name='tabInheritedProperties']").on("shown.bs.tab", function (e) {
+                e.target; // newly activated tab
+                e.relatedTarget; // previous active tab
+                InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("tabactive", "tabInheritedProperties"));
+            })
+
         }
         // close all Navbar menu
         closeEveryNavbarMenu();
@@ -1418,7 +1436,7 @@ function duplicateStep(event) {
     var step = steps[0];
     step.description = "New Step";
     var stepObj = new Step(step, steps, true);
-    console.info(stepObj);
+//    console.info(stepObj);
     stepObj.draw();
     steps.push(stepObj);
     stepObj.html.trigger("click");
@@ -1889,9 +1907,11 @@ Step.prototype.show = function () {
     $("#addActionBottomBtn").show();
 
     const url = new URL(window.location);
-    url.hash = '#stepId=' + object.stepId;
-    window.history.pushState({}, '', url);
-    $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(exeId) + window.location.hash + "-1");
+//    url.hash = '#stepId=' + object.stepId;
+//    console.info(ReplaceURLParameters("stepId", object.stepId));
+    InsertURLInHistory("./TestCaseScript.jsp?" + ReplaceURLParameters("stepId", object.stepId));
+//    window.history.pushState({}, '', url);
+    $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + encodeURI(exeId) + "#stepId=" + object.stepId + "-1");
 
     for (var i = 0; i < object.steps.length; i++) {
         var step = object.steps[i];
@@ -3434,14 +3454,14 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 modifyAutocompleteSource($(this), null, data);
             } catch (e) {
             }
-            console.log("trigger settingsButton.");
+//            console.log("trigger settingsButton.");
 
             $(this).trigger("settingsButton");
         }
 
         function modifyAutocomplete(e) {
-            console.log("modify feed autocomplete on input (generic).")
-            console.log("trigger settingsButton.");
+//            console.log("modify feed autocomplete on input (generic).")
+//            console.log("trigger settingsButton.");
             $(this).trigger("settingsButton");
         }
 
@@ -3472,7 +3492,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         // Adding Contextual buttons when 'settingsButton' event is triggered.
         $(document).on('settingsButton', "div.crb-contextual-button input", function (e) {
-            console.log("start generate buttons.");
+//            console.log("start generate buttons.");
             var doc = new Doc();
             let currentAction = $(this).parents(".secondRow").find("[name='actionSelect']").val();
             let htmlElement = $(this);
@@ -3676,11 +3696,11 @@ function setPlaceholderAction(action) {
 
 function setPlaceholderCondition(conditionElement) {
 
-    console.log(conditionElement);
+//    console.log(conditionElement);
     var user = getUser();
     var placeHolders = conditionNewUIList[conditionElement.val()];
 
-    console.log(placeHolders);
+//    console.log(placeHolders);
 
     if (typeof placeHolders === 'undefined') {
         placeHolders = conditionNewUIList["always"];
