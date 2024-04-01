@@ -465,10 +465,14 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#platform").val(robot.platform);
         if (robot.platform !== "") {
             $('#platformLogo').attr('src', './images/platform-' + robot.platform + '.png');
+        } else {
+            $('#platformLogo').attr('src', '');
         }
         formEdit.find("#browser").val(robot.browser);
-        if (robot.platform !== "") {
+        if (robot.browser !== "") {
             $('#browserLogo').attr('src', './images/browser-' + robot.browser + '.png');
+        } else {
+            $('#browserLogo').attr('src', '');
         }
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
