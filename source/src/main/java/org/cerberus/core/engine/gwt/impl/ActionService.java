@@ -597,10 +597,10 @@ public class ActionService implements IActionService {
 
                 // We copy the header values for the service answered.
                 if (contentJSON.has("totalFilesAvailable")) {
-                    contentJSONnew.put("totalFilesAvailable", contentJSON.getString("totalFilesAvailable"));
+                    contentJSONnew.put("totalFilesAvailable", contentJSON.getInt("totalFilesAvailable"));
                 }
                 if (contentJSON.has("totalFilesDownloaded")) {
-                    contentJSONnew.put("totalFilesDownloaded", contentJSON.getString("totalFilesDownloaded"));
+                    contentJSONnew.put("totalFilesDownloaded", contentJSON.getInt("totalFilesDownloaded"));
                 }
 
                 // We copy the file contents decoding content when it is in a compatible format.
@@ -613,7 +613,7 @@ public class ActionService implements IActionService {
                         JSONObject file = new JSONObject();
                         file.put("filename", files.getJSONObject(i).getString("filename"));
                         file.put("path", files.getJSONObject(i).getString("path"));
-                        file.put("size", files.getJSONObject(i).getString("size"));
+                        file.put("size", files.getJSONObject(i).getInt("size"));
                         file.put("lastModified", files.getJSONObject(i).getString("lastModified"));
                         // Getting the Base64 content in order to convert it back and guess its content.
                         String fileContentBase64 = files.getJSONObject(i).getString("contentBase64");
