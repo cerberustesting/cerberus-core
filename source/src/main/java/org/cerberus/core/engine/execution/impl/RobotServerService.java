@@ -349,9 +349,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    ChromeOptions browserOptions = new ChromeOptions();
-                    driver = new RemoteWebDriver(url, browserOptions); //FIXME SELENIUM (missing browserOptions, see https://www.selenium.dev/documentation/webdriver/troubleshooting/upgrade_to_selenium_4/ )
-//                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
+                    driver = new RemoteWebDriver(url, caps); //FIXME SELENIUM (see https://www.selenium.dev/documentation/webdriver/troubleshooting/upgrade_to_selenium_4/ )
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
