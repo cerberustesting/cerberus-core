@@ -6294,3 +6294,8 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 
 -- 1768
 ALTER TABLE countryenvparam_log MODIFY Creator VARCHAR(45);
+
+-- 1769
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+VALUES ('', 'cerberus_appium_scroll_endTopScreenPercentageScreenHeight', '0.125', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll ends. 0 for the top of the screen, 0.5 for the middle.')
+    ,('', 'cerberus_appium_scroll_startBottomPercentageScreenHeight', '0.8', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll starts. 0.5 for the middle of the screen, 1 for the bottom.');

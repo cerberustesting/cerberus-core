@@ -29,8 +29,12 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.enums.MessageGeneralEnum;
+import org.cerberus.core.exception.CerberusEventException;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.appium.IAppiumService;
 import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.service.appium.SwipeAction.Direction;
@@ -382,6 +386,9 @@ public abstract class AppiumService implements IAppiumService {
             message.setDescription(message.getDescription().replace("%VALUE%", element.toString()));
 
             return message;
+        } catch (CerberusEventException e) {
+            LOG.error("An error occured during scroll to (element:" + element + ",numberScrollDownMax:" + numberScrollDownMax + ")", e);
+            return e.getMessageError();
         } catch (Exception e) {
             LOG.error("An error occured during scroll to (element:" + element + ",numberScrollDownMax:" + numberScrollDownMax + ")", e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
@@ -397,13 +404,25 @@ public abstract class AppiumService implements IAppiumService {
      * @param element
      * @return
      */
-    private boolean scrollDown(AppiumDriver driver, By element, int numberOfScrollDown) {
+    private boolean scrollDown(AppiumDriver driver, By element, int numberOfScrollDown) throws CerberusEventException{
+
+        Dimension screenSize = driver.manage().window().getSize();
+
+        float screenTopPercentage = parameters.getParameterFloatByKey("cerberus_appium_scroll_endTopScreenPercentageScreenHeight", null, 0.125f);
+        float screenBottomPercentage = parameters.getParameterFloatByKey("cerberus_appium_scroll_startBottomPercentageScreenHeight", null, 0.8f);
+
+        /**
+         * Check if cerberus_appium_scroll_endTopScreenPercentageScreenHeight and cerberus_appium_scroll_startBottomPercentageScreenHeight parameters are float between 0 and 1
+         */
+        if (screenTopPercentage < 0 || screenTopPercentage > 1 ||  screenBottomPercentage < 0 || screenBottomPercentage > 1){
+            MessageEvent me  =new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_INVALID_PARAMETER);
+            throw new CerberusEventException(me);
+        }
 
         int pressX = driver.manage().window().getSize().width / 2;
 
-        int bottomY = driver.manage().window().getSize().height * 4 / 5;
-
-        int topY = driver.manage().window().getSize().height / 8;
+        int bottomY = (int) (screenSize.height * screenBottomPercentage);
+        int topY = (int) (screenSize.height * screenTopPercentage);
 
         int i = 0;
 
@@ -415,7 +434,7 @@ public abstract class AppiumService implements IAppiumService {
                 scroll(driver, pressX, bottomY, pressX, topY);
             }
             i++;
-        } while (i <= numberOfScrollDown);
+        } while (i < numberOfScrollDown);
 
         return false;
     }
