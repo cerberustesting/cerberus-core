@@ -6297,5 +6297,11 @@ ALTER TABLE countryenvparam_log MODIFY Creator VARCHAR(45);
 
 -- 1769
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
-  VALUES ('', 'cerberus_appium_scroll_endTopScreenPercentageScreenHeight', '0.125', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll ends. 0 for the top of the screen, 0.5 for the middle.')
-  ,('', 'cerberus_appium_scroll_startBottomPercentageScreenHeight', '0.8', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll starts. 0.5 for the middle of the screen, 1 for the bottom.');
+  VALUES ('', 'cerberus_appium_scroll_endTopScreenPercentageScreenHeight', '0.125', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll ends. 0 for the top of the screen, 0.5 for the middle. (default to : 0.125)')
+  ,('', 'cerberus_appium_scroll_startBottomPercentageScreenHeight', '0.8', 'Float value between 0 and 1 that represents the percentage of the screen height where the scroll starts. 0.5 for the middle of the screen, 1 for the bottom. (default to : 0.8)');
+
+-- 1770
+ALTER TABLE countryenvironmentparameters MODIFY COLUMN URLLOGIN varchar(300) DEFAULT '' NOT NULL;
+
+-- 1771
+ALTER TABLE application MODIFY COLUMN SubSystem varchar(200) DEFAULT '' NOT NULL;
