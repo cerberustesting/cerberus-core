@@ -21,6 +21,7 @@ package org.cerberus.core.service.appium.impl;
 
 import io.appium.java_client.NoSuchContextException;
 import io.appium.java_client.*;
+import io.appium.java_client.remote.SupportsContextSwitching; //#FIXME To remove cause already import above but seems like i need it
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
@@ -82,8 +83,8 @@ public abstract class AppiumService implements IAppiumService {
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
 
-//        @SuppressWarnings("unchecked")
-//        Set<String> contextNames = driver.getContextHandles(); #FIXME
+//        @SuppressWarnings("unchecked") #FIXME SELENIUM what's the purpose of the for if u set the driver after anyway
+//        Set<String> contextNames = driver.getContextHandles();
 //
 //        for (String contextName : contextNames) {
 //            LOG.error("Context : " + contextName);
@@ -93,7 +94,7 @@ public abstract class AppiumService implements IAppiumService {
 //                break;
 //            }
 //        }
-        //driver.context("WEBVIEW_1");
+//        driver.context("WEBVIEW_1");
         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
         message.setDescription(message.getDescription().replace("%WINDOW%", newContext));
         return message;
@@ -103,13 +104,13 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent switchToContext(Session session, String context) {
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
-//        Set<String> contexts = driver.getContextHandles(); #FIXME
+        Set<String> contexts = ((SupportsContextSwitching) driver).getContextHandles(); //#FIXME SELENIUM #TEST (was cast to SupportsContextSwitching)
 
         try {
             if (context.isEmpty()) {
                 context = "NATIVE_APP";
             }
-//            driver.context(context);
+            ((SupportsContextSwitching) driver).context(context); //#FIXME SELENIUM #TEST (was cast to SupportsContextSwitching)
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOCONTEXT);
             message.setDescription(message.getDescription().replace("%CONTEXT%", context));
         } catch (NoSuchContextException exception) {
@@ -117,7 +118,7 @@ public abstract class AppiumService implements IAppiumService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOCONTEXT_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription()
                     .replace("%CONTEXT%", context)
-//                    .replace("%CONTEXTS%", contexts.toString())
+                    .replace("%CONTEXTS%", contexts.toString()) //#FIXME SELENIUM
                     .replace("%ERROR%", exception.getMessage()));
         }
         return message;
@@ -191,7 +192,7 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent click(final Session session, final Identifier identifier, Integer hOffset, Integer vOffset) {
         try {
             MessageEvent foundElementMsg;
-            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            final TouchAction action = new TouchAction((PerformsTouchActions)session.getAppiumDriver());
 
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
@@ -300,21 +301,21 @@ public abstract class AppiumService implements IAppiumService {
         By locator = this.getBy(identifier);
 
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
-//        try {
-//            WebDriverWait wait = new WebDriverWait(driver, TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_appium_wait_element())); #FIXME SELENIUM
-//            if (visible) {
-//                if (clickable) {
-//                    wait.until(ExpectedConditions.elementToBeClickable(locator));
-//                } else {
-//                    wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-//                }
-//            } else {
-//                wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-//            }
-//        } catch (TimeoutException exception) {
-//            LOG.fatal("Exception waiting for element :" + exception.toString());
-//            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
-//        }
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(session.getCerberus_appium_wait_element()));
+            if (visible) {
+                if (clickable) {
+                    wait.until(ExpectedConditions.elementToBeClickable(locator));
+                } else {
+                    wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+                }
+            } else {
+                wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            }
+        } catch (TimeoutException exception) {
+            LOG.fatal("Exception waiting for element :" + exception.toString());
+            throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
+        }
         LOG.debug("Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
     }
@@ -477,7 +478,7 @@ public abstract class AppiumService implements IAppiumService {
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
 
-        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver);
+        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver); //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
         touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }
@@ -487,7 +488,7 @@ public abstract class AppiumService implements IAppiumService {
     public String getElementPosition(Session session, Identifier identifier) {
         AppiumDriver driver = session.getAppiumDriver();
 
-//        MobileElement element = (MobileElement) driver.findElement(this.getBy(identifier)); #FIXME SELENIUM
+//        MobileElement element = (MobileElement) driver.findElement(this.getBy(identifier)); //#FIXME SELENIUM
 //        Point location = element.getLocation();
 //
 //        return location.getX() + ";" + location.getY();
@@ -497,7 +498,7 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
+            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
@@ -520,7 +521,7 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent clearField(final Session session, final Identifier identifier) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
+            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 click(session, identifier,0, 0);
