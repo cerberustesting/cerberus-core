@@ -131,10 +131,24 @@ public final class StringUtil {
      * get converted to float. For ex, it replace , with .
      */
     public static String prepareToNumeric(String str) {
-        if (str.contains(",")) {
-            return str.replace(",", ".");
+        String result = str.replaceAll("[^0-9.,]", "");
+        if (result.contains(",")) {
+            result = result.replace(",", ".");
         }
-        return str;
+        int i = 0;
+        while (nbChars(result, ".") > 1 && i++ < 100) {
+            result = result.replaceFirst("\\.", "");
+            LOG.debug("replaced " + result);
+        }
+        LOG.debug("Cleaned string from {} to {}", str, result);
+
+        return result;
+    }
+
+    public static int nbChars(String str, String substr) {
+        LOG.debug(str.length() - str.replace(substr, "").length());
+        return str.length() - str.replace(substr, "").length();
+
     }
 
     /**

@@ -568,7 +568,8 @@ public class ControlService implements IControlService {
         } catch (NumberFormatException nfe) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
             mes.resolveDescription("COND", control);
-            mes.resolveDescription("STRINGVALUE", newControlValue1);
+            mes.resolveDescription("NEWSTRING", newControlValue1);
+            mes.resolveDescription("STRINGVALUE", controlValue1);
             return mes;
         }
 
@@ -579,7 +580,8 @@ public class ControlService implements IControlService {
         } catch (NumberFormatException nfe) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
             mes.resolveDescription("COND", control);
-            mes.resolveDescription("STRINGVALUE", newControlValue2);
+            mes.resolveDescription("NEWSTRING", newControlValue2);
+            mes.resolveDescription("STRINGVALUE", controlValue2);
             return mes;
         }
 
@@ -1204,22 +1206,26 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL:
                 double value1;
+                String actualCleaned = StringUtil.prepareToNumeric(actual);
                 try {
-                    value1 = Double.parseDouble(actual);
+                    value1 = Double.parseDouble(actualCleaned);
                 } catch (NumberFormatException nfe) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
                     mes.resolveDescription("COND", control);
+                    mes.resolveDescription("NEWSTRING", actualCleaned);
                     mes.resolveDescription("STRINGVALUE", actual);
                     return mes;
                 }
 
                 // We try to convert the strings value2 to numeric.
                 double value2;
+                String expectedCleaned = StringUtil.prepareToNumeric(expected);
                 try {
-                    value2 = Double.parseDouble(expected);
+                    value2 = Double.parseDouble(expectedCleaned);
                 } catch (NumberFormatException nfe) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
                     mes.resolveDescription("COND", control);
+                    mes.resolveDescription("NEWSTRING", expectedCleaned);
                     mes.resolveDescription("STRINGVALUE", expected);
                     return mes;
                 }
