@@ -331,7 +331,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; //Fixme seems like selenium 4 won't accept the server start (commit comming)
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -990,15 +990,15 @@ public class RobotServerService implements IRobotServerService {
 //                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                    }
-//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM #APPIUM
+//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM
                     break;
 
                 case "ipad":
-//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM #APPIUM
+//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM
                     break;
 
                 case "iphone":
-//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM #APPIUM
+//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM
                     break;
 
                 case "":
