@@ -697,20 +697,12 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public File takeScreenShotFile(Session session, String cropValues) {
-        /*
-        #FIXME SELENIUM seems like the img returned is null due to the followings timeout :
-        WARNING [AsyncHttpClient-1-3] org.openqa.selenium.remote.http.netty.NettyWebSocket.lambda$new$0 connection timed out: /172.18.0.4:4444
-	        java.net.ConnectException: connection timed out: /172.18.0.4:4444
-        WARNING [AsyncHttpClient-1-3] org.openqa.selenium.remote.http.WebSocket$Listener.onError connection timed out: /172.18.0.4:4444
-	        java.net.ConnectException: connection timed out: /172.18.0.4:4444
-         */
         boolean event = true;
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
             try {
-                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
-                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                File image = ((TakesScreenshot) session.getDriver()).getScreenshotAs(OutputType.FILE);
                 if (!StringUtil.isEmpty(cropValues)) {
                     BufferedImage fullImg = ImageIO.read(image);
                     // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
