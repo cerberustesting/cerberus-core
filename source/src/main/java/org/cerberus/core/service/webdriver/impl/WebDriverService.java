@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2025 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
+ * <p>
  * This file is part of Cerberus.
- *
+ * <p>
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -88,6 +88,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
+
 import org.openqa.selenium.interactions.Action;
 
 /**
@@ -798,7 +799,7 @@ public class WebDriverService implements IWebDriverService {
      * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
-     * Database) inside current URL (from Selenium)
+     *                                Database) inside current URL (from Selenium)
      */
     @Override
     public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
@@ -825,6 +826,13 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public File takeScreenShotFile(Session session, String cropValues) {
+        /*
+        #FIXME SELENIUM seems like the img returned is null due to the followings timeout :
+        WARNING [AsyncHttpClient-1-3] org.openqa.selenium.remote.http.netty.NettyWebSocket.lambda$new$0 connection timed out: /172.18.0.4:4444
+	        java.net.ConnectException: connection timed out: /172.18.0.4:4444
+        WARNING [AsyncHttpClient-1-3] org.openqa.selenium.remote.http.WebSocket$Listener.onError connection timed out: /172.18.0.4:4444
+	        java.net.ConnectException: connection timed out: /172.18.0.4:4444
+         */
         boolean event = true;
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
@@ -1502,13 +1510,13 @@ public class WebDriverService implements IWebDriverService {
 
             // Arbitrary
             String[] browsers = new String[]{
-                "",
-                "Google Chrome",
-                "Mozilla Firefox",
-                "Opera",
-                "Safari",
-                "Internet Explorer",
-                "Microsoft Edge",};
+                    "",
+                    "Google Chrome",
+                    "Mozilla Firefox",
+                    "Opera",
+                    "Safari",
+                    "Internet Explorer",
+                    "Microsoft Edge",};
 
             for (String browser : browsers) {
                 HWND window;
