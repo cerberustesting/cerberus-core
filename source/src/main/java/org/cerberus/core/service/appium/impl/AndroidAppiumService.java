@@ -84,14 +84,14 @@ public class AndroidAppiumService extends AppiumService {
         // Then press the key
         try {
             ((PressesKey) session.getAppiumDriver()).pressKey(new KeyEvent(AndroidKey.valueOf(keyName)));
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("KEY", keyName);
 
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
 
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage(), e);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER_NOELEMENT_NOMODIFIER)
                     .resolveDescription("KEY", keyName)
                     .resolveDescription("REASON", e.getMessage());
         }

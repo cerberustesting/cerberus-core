@@ -94,10 +94,10 @@ public class IOSAppiumService extends AppiumService {
         // Then do the key press
         try {
             session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage());
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER_NOELEMENT_NOMODIFIER)
                     .resolveDescription("KEY", keyName)
                     .resolveDescription("REASON", e.getMessage());
         }
@@ -116,7 +116,7 @@ public class IOSAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         MessageEvent keyPressResult = keyPress(session, KeyCode.RETURN.name());
-        return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT.equals(keyPressResult.getSource())
+        return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER.equals(keyPressResult.getSource())
                 ? MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD
                 : MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
     }

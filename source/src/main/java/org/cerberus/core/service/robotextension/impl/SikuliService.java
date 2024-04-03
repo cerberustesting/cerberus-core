@@ -722,14 +722,14 @@ public class SikuliService implements ISikuliService {
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS)
                     .resolveDescription("ELEMENT", locator)
-                    .resolveDescription("DATA", textToKey)
+                    .resolveDescription("KEY", textToKey)
                     .resolveDescription("MODIFIER", modifier);
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
                     .resolveDescription("ELEMENT", locator)
-                    .resolveDescription("DATA", textToKey)
+                    .resolveDescription("KEY", textToKey)
                     .resolveDescription("MODIFIER", modifier)
                     .resolveDescription("REASON", actionResult.getMessageDescription());
             return mes;
@@ -807,7 +807,7 @@ public class SikuliService implements ISikuliService {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, SikuliService.SIKULI_ENDEXECUTION, null, null, "", "");
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_ENDEXECUTION);
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {

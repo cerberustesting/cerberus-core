@@ -1337,9 +1337,9 @@ public class WebDriverService implements IWebDriverService {
                     WebElement webElement = (WebElement) answer.getItem();
                     if (webElement != null) {
                         webElement.sendKeys(Keys.valueOf(keyToPress));
-                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_MODIFIER);
                         message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                        message.setDescription(message.getDescription().replace("%DATA%", keyToPress));
+                        message.setDescription(message.getDescription().replace("%KEY%", keyToPress));
                         return message;
                     }
 
@@ -1374,10 +1374,10 @@ public class WebDriverService implements IWebDriverService {
                         Duration mydur = Duration.ofMillis(TIMEOUT_WEBELEMENT);
                         wait.withTimeout(mydur);
 
-                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT);
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("%KEY%", keyToPress);
                     } else {
                         //the key enterer is not valid
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE);
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("%KEY%", keyToPress);
                         LOG.debug("Key " + keyToPress + " is not available in the current context");
                     }
 
