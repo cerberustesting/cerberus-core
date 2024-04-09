@@ -320,8 +320,12 @@ public class TagService implements ITagService {
         switch (provider) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 if ((tag != null) && (StringUtil.isEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
-                    String newBuildHash = browserstackService.getBrowserStackBuildHash(system, tagS, user, pass);
+                    String newBuildHash = browserstackService.getBrowserStackBuildHashFromEndpoint(system, tagS, user, pass, "api.browserstack.com/automate/builds.json");
+                    LOG.debug("Result : " + newBuildHash);
                     tag.setBrowserstackBuildHash(newBuildHash);
+                    newBuildHash = browserstackService.getBrowserStackBuildHashFromEndpoint(system, tagS, user, pass, "api.browserstack.com/app-automate/builds.json");
+                    LOG.debug("Result : " + newBuildHash);
+                    tag.setBrowserstackAppBuildHash(newBuildHash);
                     Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
                     return newBuildHash;
                 }

@@ -1483,6 +1483,9 @@ function setConfigPanel(data) {
     if (data.robotProvider === "BROWSERSTACK") {
         if (data.tagObj !== undefined) {
             let targetUrl = "https://automate.browserstack.com/builds/" + data.tagObj.browserstackBuildHash + "/sessions/" + data.robotProviderSessionId;
+            if (data.tagObj.browserstackAppBuildHash.length > 8) {
+                targetUrl = "https://app-automate.browserstack.com/builds/" + data.tagObj.browserstackAppBuildHash + "/sessions/" + data.robotProviderSessionId;
+            }
             let provImg = $('<img src="./images/browserstack.png" width="20">');
             $("#sessionLinkHeader").empty().append(provImg).show();
             $("#sessionLinkHeader").parent().attr("href", targetUrl).attr("target", "_blank");

@@ -45,9 +45,10 @@ public interface IBrowserstackService {
      * @param tag Tag value.
      * @param user
      * @param pass
+     * @param endPoint
      * @return 
      */
-    public String getBrowserStackBuildHash(String system, String tag, String user, String pass);
+    public String getBrowserStackBuildHashFromEndpoint(String system, String tag, String user, String pass, String endPoint);
 
     /**
      *

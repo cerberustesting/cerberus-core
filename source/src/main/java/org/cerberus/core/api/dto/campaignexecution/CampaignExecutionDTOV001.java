@@ -76,9 +76,13 @@ public class CampaignExecutionDTOV001 {
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 9)
-    private String lambdaTestBuild;
+    private String browserstackAppBuildHash;
 
     @JsonView(value = {View.Public.GET.class})
     @ApiModelProperty(position = 10)
+    private String lambdaTestBuild;
+
+    @JsonView(value = {View.Public.GET.class})
+    @ApiModelProperty(position = 11)
     private List<TestcaseExecutionDTOV001> executions;
 }

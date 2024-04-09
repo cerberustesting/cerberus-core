@@ -568,7 +568,7 @@ public class TagDAO implements ITagDAO {
     @Override
     public Answer updateBrowserStackBuild(String tag, Tag object) {
         MessageEvent msg;
-        StringBuilder query = new StringBuilder("UPDATE tag SET browserstackBuildHash = ?, dateModif = NOW(), usrModif= ?");
+        StringBuilder query = new StringBuilder("UPDATE tag SET browserstackBuildHash = ?, browserstackAppBuildHash = ?, dateModif = NOW(), usrModif= ?");
         query.append("  WHERE Tag = ?");
 
         LOG.debug("SQL : {}", query);
@@ -578,6 +578,7 @@ public class TagDAO implements ITagDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, object.getBrowserstackBuildHash());
+            preStat.setString(i++, object.getBrowserstackAppBuildHash());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i, tag);
             preStat.executeUpdate();
@@ -898,6 +899,7 @@ public class TagDAO implements ITagDAO {
         String reqEnvironmentList = rs.getString("tag.ReqEnvironmentList");
         String reqCountryList = rs.getString("tag.ReqCountryList");
         String browserstackBuildHash = rs.getString("tag.BrowserstackBuildHash");
+        String browserstackAppBuildHash = rs.getString("tag.BrowserstackAppBuildHash");
         String lambdaTestBuild = rs.getString("tag.LambdaTestBuild");
         String xRayTestExecution = rs.getString("tag.XRayTestExecution");
         String xRayURL = rs.getString("tag.XRayURL");
@@ -913,7 +915,8 @@ public class TagDAO implements ITagDAO {
                 .countryList(countryList).robotDecliList(robotDecliList)
                 .systemList(systemList).applicationList(applicationList)
                 .reqEnvironmentList(reqEnvironmentList).reqCountryList(reqCountryList)
-                .browserstackBuildHash(browserstackBuildHash).lambdaTestBuild(lambdaTestBuild)
+                .browserstackBuildHash(browserstackBuildHash).browserstackAppBuildHash(browserstackAppBuildHash)
+                .lambdaTestBuild(lambdaTestBuild)
                 .xRayURL(xRayURL).xRayTestExecution(xRayTestExecution).xRayURL(xRayURL).xRayMessage(xRayMEssage)
                 .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif)
                 .dateModif(dateModif).build();

@@ -3,6 +3,7 @@
 * Display small issue on testcase script page and execution when condition include value1 that contains quote or double quote.
 * Fixed language local management on recent Chrome versions
 * Homepage filters now also apply on all summary counters (in order to be consistent with the graphs on the page).
+* Fixed Browserstack buildHash management for app automate campaigns.
 
 *Improvements / New features*
 [square]
@@ -25,6 +26,7 @@
 * Added %system.ROBOTSESSIONID% and %system.ROBOTPROVIDERSESSIONID% system variable.
 * Allow to have optional subdata and feed cerberus_testdatalib_subdataDefaultValue parameter to defined its default value (Thanks to Promod team ;-)).
 * Make Numeric conversion more robust (ex : 'EUR 123 123.5 €' will be converted to 123123.5 before performing the control)
+* More robust FTP connector
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -76,6 +76,7 @@ public class Tag {
     private String reqEnvironmentList;
     private String reqCountryList;
     private String browserstackBuildHash;
+    private String browserstackAppBuildHash;
     private String xRayTestExecution;
     private String xRayURL;
     private String xRayMessage;
@@ -110,6 +111,7 @@ public class Tag {
             result.put("campaign", this.campaign);
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("browserstackAppBuildHash", this.browserstackAppBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
@@ -154,6 +156,7 @@ public class Tag {
             result.put("UsrModif", this.usrModif);
             result.put("DateModif", this.dateModif);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("browserstackAppBuildHash", this.browserstackAppBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
             result.put("xRayTestExecution", this.xRayTestExecution);
             result.put("xRayURL", this.xRayURL);
@@ -191,6 +194,7 @@ public class Tag {
             result.put("campaign", this.campaign);
             result.put("description", this.description);
             result.put("browserstackBuildHash", this.browserstackBuildHash);
+            result.put("browserstackAppBuildHash", this.browserstackAppBuildHash);
             result.put("lambdaTestBuild", this.lambdaTestBuild);
             JSONObject result1 = new JSONObject();
             result1.put("OK", this.nbOK);

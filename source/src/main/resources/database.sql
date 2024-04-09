@@ -6305,3 +6305,6 @@ ALTER TABLE countryenvironmentparameters MODIFY COLUMN URLLOGIN varchar(300) DEF
 
 -- 1771
 ALTER TABLE application MODIFY COLUMN SubSystem varchar(200) DEFAULT '' NOT NULL;
+
+-- 1772
+ALTER TABLE `tag` ADD COLUMN `BrowserstackAppBuildHash` VARCHAR(100) NOT NULL DEFAULT '' AFTER `BrowserstackBuildHash`;
