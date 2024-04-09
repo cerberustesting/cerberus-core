@@ -55,6 +55,7 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.net.Authenticator;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.cerberus.core.util.StringUtil;
 
 /**
@@ -95,23 +96,47 @@ public class FtpService implements IFtpService {
         Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
         Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);
         Matcher pathMatcher = Pattern.compile("(\\/|\\\\)([^:]+)$").matcher(ftpChain);
+        LOG.debug("FTP info :");
+        LOG.debug(ftpChain);
 
-        if (accountMatcher.find() && hostMatcher.find() && pathMatcher.find()) {
+        if (accountMatcher.find()) {
             try {
                 tmp = accountMatcher.group(2);
                 String[] account = tmp.split(":", 2);
                 map.put("pseudo", account[0]);
                 map.put("password", account[1]);
-                tmp = hostMatcher.group(1);
-                String[] fullHost = tmp.split(":", 2);
-                map.put("host", fullHost[0]);
-                map.put("port", fullHost[1]);
-                map.put("path", pathMatcher.group(0));
             } catch (ArrayIndexOutOfBoundsException e) {
                 LOG.error("Exception when parsing ftp url.", e);
             }
 
         }
+        if (hostMatcher.find()) {
+            try {
+                tmp = hostMatcher.group(1);
+                if (tmp.contains(":")) {
+                    String[] fullHost = tmp.split(":", 2);
+                    map.put("host", fullHost[0]);
+                    map.put("port", fullHost[1]);
+                } else {
+                    map.put("host", tmp);
+                    map.put("port", "21"); // Default Port when not defined.
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOG.error("Exception when parsing ftp url.", e);
+            }
+
+        }
+        if (pathMatcher.find()) {
+            try {
+                map.put("path", pathMatcher.group(0));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOG.error("Exception when parsing ftp url.", e);
+            }
+
+        } else {
+            map.put("path", "/");
+        }
+        LOG.debug("Result of FTP Parsing : " + map);
         return map;
     }
 
@@ -155,15 +180,20 @@ public class FtpService implements IFtpService {
         HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
 
         if (informations.size() <= 4) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", chain));
-            message.setDescription(
-                    message.getDescription().replace("%DESCRIPTION%", "Ftp url bad format! you missed something. please modify ftp url with correct syntax"));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICE", chain)
+                    .resolveDescription("DESCRIPTION", "FTP url bad format! you missed something. please modify ftp url with correct syntax");
             result.setResultMessage(message);
             return result;
         }
 
-        FTPClient ftp = new FTPClient();
+        FTPClient ftp;
+        if (chain.startsWith("ftps://")) {
+            ftp = new FTPSClient();
+        } else {
+            ftp = new FTPClient();
+        }
+
         AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
                 method, "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
 
@@ -175,10 +205,9 @@ public class FtpService implements IFtpService {
             boolean logged = ftp.login(informations.get("pseudo"), informations.get("password"));
             if (!logged) {
                 LOG.error("Exception when logging to ftp server.");
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
-                message.setDescription(
-                        message.getDescription().replace("%DESCRIPTION%", "Error on logging to FTP Server"));
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICE", informations.get("path"))
+                        .resolveDescription("DESCRIPTION", "Error on logging to FTP Server using login : '" + informations.get("pseudo") + "'");
                 result.setResultMessage(message);
                 return result;
             } else {
@@ -195,10 +224,9 @@ public class FtpService implements IFtpService {
             }
 
         } catch (Exception e) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
-            message.setDescription(
-                    message.getDescription().replace("%DESCRIPTION%", "Error on CallFTP : " + e.toString()));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICE", informations.get("path"))
+                    .resolveDescription("DESCRIPTION", "Error on CallFTP : " + e.toString());
             result.setResultMessage(message);
         } finally {
             if (ftp.isConnected()) {
@@ -219,6 +247,7 @@ public class FtpService implements IFtpService {
         AnswerItem<AppService> result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
         FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
+        String fileList = "";
         if (ftpFile.length != 0) {
             InputStream done = ftp.retrieveFileStream(informations.get("path"));
             boolean success = ftp.completePendingCommand();
@@ -233,9 +262,9 @@ public class FtpService implements IFtpService {
                 byte[] content = baos.toByteArray();
                 myResponse.setFile(content);
                 LOG.info("ftp file successfully retrieve");
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
-                message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "GET"));
-                message.setDescription(message.getDescription().replace("%SERVICEPATH%", informations.get("path")));
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
+                        .resolveDescription("SERVICEMETHOD", "GET")
+                        .resolveDescription("SERVICEPATH", informations.get("path"));
                 result.setResultMessage(message);
                 String expectedContent = IOUtils.toString(new ByteArrayInputStream(content), "UTF-8");
                 String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
@@ -247,19 +276,17 @@ public class FtpService implements IFtpService {
                 baos.close();
             } else {
                 LOG.error("Error when downloading the file. Something went wrong");
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
-                message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                        "Error when downloading the file. Something went wrong"));
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICE", informations.get("path"))
+                        .resolveDescription("DESCRIPTION", "Error when downloading the file. Something went wrong");
                 result.setResultMessage(message);
             }
             done.close();
         } else {
-            LOG.error("The file is not present on FTP server. Please check the FTP path");
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                    "Impossible to retrieve the file. Please check the FTP path"));
+            LOG.error("The file '" + informations.get("path") + "' is not present on FTP server. Please check the FTP path");
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICE", informations.get("path"))
+                    .resolveDescription("DESCRIPTION", "Impossible to retrieve the file. Please check the FTP path : '" + informations.get("path") + "'");
             result.setResultMessage(message);
         }
         return result;
@@ -277,8 +304,8 @@ public class FtpService implements IFtpService {
             byteContent = IOUtils.toByteArray(inputStream);
             inputStream.close();
         } else if (!myResponse.getFileName().isEmpty()) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    "cerberus_ftpfile_path Parameter not found");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", "cerberus_ftpfile_path Parameter not found");
             AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 Parameter p = a.getItem();
@@ -290,8 +317,8 @@ public class FtpService implements IFtpService {
                 return result;
             }
         } else {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    "file path and service request are null ! you need to specify one of this field");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
+                    .resolveDescription("DESCRIPTION", "file path and service request are null ! you need to specify one of this field");
             result.setResultMessage(msg);
             return result;
         }
@@ -300,9 +327,9 @@ public class FtpService implements IFtpService {
         if (done) {
             myResponse.setFile(byteContent);
             LOG.info("ftp file successfully sending");
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "POST"));
-            message.setDescription(message.getDescription().replace("%SERVICEPATH%", informations.get("path")));
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
+                    .resolveDescription("SERVICEMETHOD", "POST")
+                    .resolveDescription("SERVICEPATH", informations.get("path"));
             result.setResultMessage(message);
             String expectedContent = IOUtils.toString(byteContent, "UTF-8");
             String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
@@ -313,10 +340,9 @@ public class FtpService implements IFtpService {
             result.setItem(myResponse);
         } else {
             LOG.error("Error when uploading the file. Something went wrong");
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                    "Error when uploading the file. Something went wrong"));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICE", informations.get("path"))
+                    .resolveDescription("DESCRIPTION", "Error when uploading the file. Something went wrong");
             result.setResultMessage(message);
         }
         return result;
