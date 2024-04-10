@@ -174,7 +174,7 @@ public class FtpService implements IFtpService {
     }
 
     @Override
-    public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service) {
+    public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
         HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
@@ -201,6 +201,9 @@ public class FtpService implements IFtpService {
             if (proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"), "", "", "ftp://"), system)) {
                 this.setProxy(ftp, system, myResponse);
             }
+            LOG.debug("Timeout : " + timeOutMs);
+            ftp.setDefaultTimeout(timeOutMs);
+            ftp.setConnectTimeout(timeOutMs);
             ftp.connect(informations.get("host"), Integer.valueOf(informations.get("port")));
             boolean logged = ftp.login(informations.get("pseudo"), informations.get("password"));
             if (!logged) {
@@ -226,7 +229,7 @@ public class FtpService implements IFtpService {
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
                     .resolveDescription("SERVICE", informations.get("path"))
-                    .resolveDescription("DESCRIPTION", "Error on CallFTP : " + e.toString());
+                    .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
             result.setResultMessage(message);
         } finally {
             if (ftp.isConnected()) {

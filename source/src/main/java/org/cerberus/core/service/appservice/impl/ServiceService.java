@@ -149,7 +149,7 @@ public class ServiceService implements IServiceService {
                     return result;
                 }
 
-                execution.appendSecret(StringUtil.getPasswordFromAnyUrl(servicePath)); 
+                execution.appendSecret(StringUtil.getPasswordFromAnyUrl(servicePath));
 
                 // Autocomplete of service path is disable for KAFKA and MONGODB service (this is because there could be a list of host).
                 if (!appService.getType().equals(AppService.TYPE_KAFKA) && !appService.getType().equals(AppService.TYPE_MONGODB)) {
@@ -634,8 +634,8 @@ public class ServiceService implements IServiceService {
                         switch (appService.getMethod()) {
                             case AppService.METHOD_HTTPGET:
                             case AppService.METHOD_HTTPPOST:
-                                result = ftpService.callFTP(decodedServicePath, system, decodedRequest,
-                                        appService.getMethod(), appService.getFileName(), appService.getService());
+                                appService.setTimeoutms(timeoutMs);
+                                result = ftpService.callFTP(decodedServicePath, system, decodedRequest, appService.getMethod(), appService.getFileName(), appService.getService(), timeoutMs);
                                 message = result.getResultMessage();
                                 break;
                             default:

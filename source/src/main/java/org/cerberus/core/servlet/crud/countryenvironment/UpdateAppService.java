@@ -209,7 +209,9 @@ public class UpdateAppService extends HttpServlet {
                 appService.setType(type);
                 appService.setApplication(application);
                 appService.setMethod(method);
-                if (StringUtil.isNotEmptyOrNullValue(servicePath) && !servicePath.contains(StringUtil.SECRET_STRING)) {
+                if (servicePath.contains(StringUtil.SECRET_STRING)) {
+                    appService.setServicePath(servicePath.replace(StringUtil.SECRET_STRING, StringUtil.getPasswordFromAnyUrl(appService.getServicePath())));
+                } else {
                     appService.setServicePath(servicePath);
                 }
                 appService.setUsrModif(request.getRemoteUser());
