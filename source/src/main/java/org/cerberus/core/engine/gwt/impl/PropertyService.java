@@ -1679,6 +1679,9 @@ public class PropertyService implements IPropertyService {
             // if we can, we set the value of testCaseExecutionData field `length` to the casted value
             if (decodedLength != null) {
                 try {
+                    if (StringUtil.isEmpty(decodedLength)) {
+                        decodedLength = "0";
+                    }
                     Integer.parseInt(decodedLength);
                     testCaseExecutionData.setLength(decodedLength);
 
@@ -1686,7 +1689,7 @@ public class PropertyService implements IPropertyService {
                     LOG.error(e.toString(), e);
                     MessageEvent msg = new MessageEvent(MessageEventEnum.CASTING_OPERATION_FAILED);
                     msg.setDescription(msg.getDescription().replace("%ERROR%", e.toString()));
-                    msg.setDescription(msg.getDescription().replace("%FIELD%", "field length"));
+                    msg.setDescription(msg.getDescription().replace("%FIELD%", "length of property " + testCaseCountryProperty.getProperty()));
                     testCaseExecutionData.setPropertyResultMessage(msg);
                     testCaseExecutionData.setStopExecution(msg.isStopTest());
                     return testCaseExecutionData;
