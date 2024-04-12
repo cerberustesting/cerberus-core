@@ -42,7 +42,6 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.factory.IFactoryAppService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionFileService;
@@ -55,7 +54,15 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.net.Authenticator;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.logging.Level;
 import org.apache.commons.net.ftp.FTPSClient;
+import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider;
 import org.cerberus.core.util.StringUtil;
 
 /**
@@ -90,90 +97,6 @@ public class FtpService implements IFtpService {
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     @Override
-    public HashMap<String, String> fromFtpStringToHashMap(String ftpChain) {
-        HashMap<String, String> map = new HashMap<>();
-        String tmp;
-        Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
-        Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);
-        Matcher pathMatcher = Pattern.compile("(\\/|\\\\)([^:]+)$").matcher(ftpChain);
-        LOG.debug("FTP info :");
-        LOG.debug(ftpChain);
-
-        if (accountMatcher.find()) {
-            try {
-                tmp = accountMatcher.group(2);
-                String[] account = tmp.split(":", 2);
-                map.put("pseudo", account[0]);
-                map.put("password", account[1]);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                LOG.error("Exception when parsing ftp url.", e);
-            }
-
-        }
-        if (hostMatcher.find()) {
-            try {
-                tmp = hostMatcher.group(1);
-                if (tmp.contains(":")) {
-                    String[] fullHost = tmp.split(":", 2);
-                    map.put("host", fullHost[0]);
-                    map.put("port", fullHost[1]);
-                } else {
-                    map.put("host", tmp);
-                    map.put("port", "21"); // Default Port when not defined.
-                }
-            } catch (ArrayIndexOutOfBoundsException e) {
-                LOG.error("Exception when parsing ftp url.", e);
-            }
-
-        }
-        if (pathMatcher.find()) {
-            try {
-                map.put("path", pathMatcher.group(0));
-            } catch (ArrayIndexOutOfBoundsException e) {
-                LOG.error("Exception when parsing ftp url.", e);
-            }
-
-        } else {
-            map.put("path", "/");
-        }
-        LOG.debug("Result of FTP Parsing : " + map);
-        return map;
-    }
-
-    @Override
-    public void setProxy(FTPClient client, String system, AppService myResponse) {
-        String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "",
-                DEFAULT_PROXY_HOST);
-        int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "",
-                DEFAULT_PROXY_PORT);
-
-        myResponse.setProxy(true);
-        myResponse.setProxyHost(proxyHost);
-        myResponse.setProxyPort(proxyPort);
-
-        SocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
-        if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
-                DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-            Authenticator.setDefault(
-                    new Authenticator() {
-                @Override
-                public PasswordAuthentication getPasswordAuthentication() {
-                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
-                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
-                    myResponse.setProxyWithCredential(true);
-                    myResponse.setProxyUser(proxyUser);
-                    return new PasswordAuthentication(
-                            proxyUser, proxyPassword.toCharArray()
-                    );
-                }
-            }
-            );
-        }
-        client.setProxy(proxy);
-    }
-
-    @Override
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
@@ -181,11 +104,26 @@ public class FtpService implements IFtpService {
 
         if (informations.size() <= 4) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("SERVICE", chain)
                     .resolveDescription("DESCRIPTION", "FTP url bad format! you missed something. please modify ftp url with correct syntax");
             result.setResultMessage(message);
             return result;
         }
+
+        if (chain.startsWith("sftp://")) {
+
+            return call_SFTP(informations, chain, system, content, method, filePath, service, timeOutMs);
+
+        } else {
+
+            return call_FTP_FTPS(informations, chain, system, content, method, filePath, service, timeOutMs);
+
+        }
+
+    }
+
+    private AnswerItem<AppService> call_FTP_FTPS(HashMap<String, String> informations, String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
+        MessageEvent message = null;
+        AnswerItem<AppService> result = new AnswerItem<>();
 
         FTPClient ftp;
         if (chain.startsWith("ftps://")) {
@@ -209,7 +147,6 @@ public class FtpService implements IFtpService {
             if (!logged) {
                 LOG.error("Exception when logging to ftp server.");
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                        .resolveDescription("SERVICE", informations.get("path"))
                         .resolveDescription("DESCRIPTION", "Error on logging to FTP Server using login : '" + informations.get("pseudo") + "'");
                 result.setResultMessage(message);
                 return result;
@@ -228,7 +165,6 @@ public class FtpService implements IFtpService {
 
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("SERVICE", informations.get("path"))
                     .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
             result.setResultMessage(message);
         } finally {
@@ -244,8 +180,7 @@ public class FtpService implements IFtpService {
         return result;
     }
 
-    @Override
-    public AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
+    private AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
@@ -295,59 +230,270 @@ public class FtpService implements IFtpService {
         return result;
     }
 
-    @Override
-    public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
+    private AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
         InputStream inputStream = null;
         byte[] byteContent = null;
-        LOG.info("Start retrieving ftp file");
+        String targetPathFilename = informations.get("path");
+        LOG.info("Start posting new ftp file");
         if (!myResponse.getServiceRequest().isEmpty()) {
+            // Posting from service content.
             inputStream = new ByteArrayInputStream(myResponse.getServiceRequest().getBytes("UTF-8"));
             byteContent = IOUtils.toByteArray(inputStream);
             inputStream.close();
         } else if (!myResponse.getFileName().isEmpty()) {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
-                    .resolveDescription("DESCRIPTION", "cerberus_ftpfile_path Parameter not found");
-            AnswerItem<Parameter> a = parameterService.readByKey("", "cerberus_ftpfile_path");
-            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                Parameter p = a.getItem();
-                String uploadPath = p.getValue();
-                Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());
-                byteContent = Files.readAllBytes(path);
-            } else {
-                result.setResultMessage(msg);
-                return result;
+            // Posting from file.
+            String uploadPath = parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", null);
+            Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());
+            byteContent = Files.readAllBytes(path);
+            if (targetPathFilename.endsWith("/")) {
+                targetPathFilename += myResponse.getFileName();
             }
         } else {
-            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED)
-                    .resolveDescription("DESCRIPTION", "file path and service request are null ! you need to specify one of this field");
+            LOG.info("no file to upload");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload.");
             result.setResultMessage(msg);
             return result;
         }
-        boolean done = ftp.storeFile(informations.get("path"), new ByteArrayInputStream(byteContent));
+        boolean done = ftp.storeFile(targetPathFilename, new ByteArrayInputStream(byteContent));
         myResponse.setResponseHTTPCode(ftp.getReplyCode());
         if (done) {
             myResponse.setFile(byteContent);
-            LOG.info("ftp file successfully sending");
+            LOG.info("ftp file successfully posted to " + targetPathFilename);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
                     .resolveDescription("SERVICEMETHOD", "POST")
-                    .resolveDescription("SERVICEPATH", informations.get("path"));
+                    .resolveDescription("SERVICEPATH", targetPathFilename);
             result.setResultMessage(message);
             String expectedContent = IOUtils.toString(byteContent, "UTF-8");
-            String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
+            String extension = testCaseExecutionFileService.checkExtension(targetPathFilename, "");
             if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
                 myResponse.setResponseHTTPBody(expectedContent);
             }
             myResponse.setResponseHTTPBodyContentType(extension);
             result.setItem(myResponse);
         } else {
-            LOG.error("Error when uploading the file. Something went wrong");
+            LOG.error("Error when uploading the ftp file to " + targetPathFilename);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("SERVICE", informations.get("path"))
-                    .resolveDescription("DESCRIPTION", "Error when uploading the file. Something went wrong");
+                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder).");
             result.setResultMessage(message);
         }
         return result;
     }
+
+    private AnswerItem<AppService> call_SFTP(HashMap<String, String> informations, String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
+        MessageEvent message = null;
+        AnswerItem<AppService> result = new AnswerItem<>();
+        LOG.debug("starting SFTP.");
+
+        AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
+                method, "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
+
+        URI uri = null;
+        try {
+            uri = new URI("sftp://" + informations.get("pseudo") + ":" + informations.get("password") + "@" + informations.get("host") + ":" + informations.get("port") + "/");
+
+            try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap(), new SftpFileSystemProvider().getClass().getClassLoader())) {
+
+                LOG.info("Successfully logged to the sftp server");
+                
+                if (method.equals("GET")) {
+                    result = this.getSFTP(informations, fs, myResponse);
+                } else {
+                    result = this.postSFTP(informations, fs, myResponse);
+                }
+
+            } catch (Exception e) {
+                LOG.error("Exception when logging to sftp server.", e);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
+                result.setResultMessage(message);
+            }
+
+        } catch (URISyntaxException ex) {
+            java.util.logging.Logger.getLogger(FtpService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return result;
+    }
+
+    private AnswerItem<AppService> getSFTP(HashMap<String, String> informations, FileSystem fs, AppService myResponse) throws IOException {
+        MessageEvent message = null;
+        AnswerItem<AppService> result = new AnswerItem<>();
+        LOG.info("Start retrieving sftp file ");
+        String remoteFilePath = informations.get("path");
+        if (remoteFilePath.startsWith("/")) {
+            remoteFilePath = remoteFilePath.substring(1);
+        }
+        Path remotePath = fs.getPath(remoteFilePath);
+        try {
+
+            byte[] byteArray = Files.readAllBytes(remotePath);
+            LOG.info("sftp file successfully retrieve");
+            myResponse.setFile(byteArray);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
+                    .resolveDescription("SERVICEMETHOD", "GET")
+                    .resolveDescription("SERVICEPATH", informations.get("path"));
+            result.setResultMessage(message);
+            String expectedContent = IOUtils.toString(new ByteArrayInputStream(byteArray), "UTF-8");
+            String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
+            if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
+                myResponse.setResponseHTTPBody(expectedContent);
+            }
+            myResponse.setResponseHTTPBodyContentType(extension);
+            result.setItem(myResponse);
+
+        } catch (Exception e) {
+            LOG.error("Error when downloading the sftp file. Something went wrong", e);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("DESCRIPTION", "Impossible to retrieve the file. Please check the SFTP path : '" + informations.get("path") + "' " + e.toString());
+            result.setResultMessage(message);
+        }
+        return result;
+    }
+
+    private AnswerItem<AppService> postSFTP(HashMap<String, String> informations, FileSystem fs, AppService myResponse) throws IOException {
+        MessageEvent message = null;
+        AnswerItem<AppService> result = new AnswerItem<>();
+        InputStream inputStream = null;
+        byte[] byteContent = null;
+        String targetPathFilename = informations.get("path");
+        LOG.info("Start posting new sftp file");
+        if (!myResponse.getServiceRequest().isEmpty()) {
+            // Posting from service content.
+            inputStream = new ByteArrayInputStream(myResponse.getServiceRequest().getBytes("UTF-8"));
+            byteContent = IOUtils.toByteArray(inputStream);
+            inputStream.close();
+        } else if (!myResponse.getFileName().isEmpty()) {
+            // Posting from file.
+            String uploadPath = parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", null);
+            Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());
+            byteContent = Files.readAllBytes(path);
+            if (targetPathFilename.endsWith("/")) {
+                targetPathFilename += myResponse.getFileName();
+            }
+        } else {
+            LOG.info("no sftp file to upload");
+            MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload.");
+            result.setResultMessage(msg);
+            return result;
+        }
+
+        if (targetPathFilename.startsWith("/")) {
+            targetPathFilename = targetPathFilename.substring(1);
+        }
+
+        Path remotePath = fs.getPath(targetPathFilename);
+        
+        try {
+
+            Files.write(remotePath, byteContent, StandardOpenOption.CREATE);
+            myResponse.setFile(byteContent);
+            LOG.info("sftp file successfully posted to " + targetPathFilename);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
+                    .resolveDescription("SERVICEMETHOD", "POST")
+                    .resolveDescription("SERVICEPATH", targetPathFilename);
+            result.setResultMessage(message);
+            String expectedContent = IOUtils.toString(byteContent, "UTF-8");
+            String extension = testCaseExecutionFileService.checkExtension(targetPathFilename, "");
+            if ("JSON".equals(extension) || "XML".equals(extension) || "TXT".equals(extension)) {
+                myResponse.setResponseHTTPBody(expectedContent);
+            }
+            myResponse.setResponseHTTPBodyContentType(extension);
+            result.setItem(myResponse);
+
+        } catch (Exception e) {
+            LOG.error("Error when uploading the sftp file to " + targetPathFilename, e);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder).");
+            result.setResultMessage(message);
+        }
+
+        return result;
+    }
+
+    private HashMap<String, String> fromFtpStringToHashMap(String ftpChain) {
+        HashMap<String, String> map = new HashMap<>();
+        String tmp;
+        Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
+        Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);
+        Matcher pathMatcher = Pattern.compile("(\\/|\\\\)([^:]+)$").matcher(ftpChain);
+        LOG.debug("FTP info :");
+        LOG.debug(ftpChain);
+
+        if (accountMatcher.find()) {
+            try {
+                tmp = accountMatcher.group(2);
+                String[] account = tmp.split(":", 2);
+                map.put("pseudo", account[0]);
+                map.put("password", account[1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOG.error("Exception when parsing ftp url.", e);
+            }
+
+        }
+        if (hostMatcher.find()) {
+            try {
+                tmp = hostMatcher.group(1);
+                if (tmp.contains(":")) {
+                    String[] fullHost = tmp.split(":", 2);
+                    map.put("host", fullHost[0]);
+                    map.put("port", fullHost[1]);
+                } else {
+                    map.put("host", tmp);
+                    if (ftpChain.startsWith("sftp://")) {
+                        map.put("port", "22"); // Default Port when not defined and sftp.
+                    } else {
+                        map.put("port", "21"); // Default Port when not defined.
+                    }
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOG.error("Exception when parsing ftp url.", e);
+            }
+
+        }
+        if (pathMatcher.find()) {
+            try {
+                map.put("path", pathMatcher.group(0));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOG.error("Exception when parsing ftp url.", e);
+            }
+
+        } else {
+            map.put("path", "/");
+        }
+        LOG.debug("Result of FTP Parsing : " + map);
+        return map;
+    }
+
+    private void setProxy(FTPClient client, String system, AppService myResponse) {
+        String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "", DEFAULT_PROXY_HOST);
+        int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "", DEFAULT_PROXY_PORT);
+
+        myResponse.setProxy(true);
+        myResponse.setProxyHost(proxyHost);
+        myResponse.setProxyPort(proxyPort);
+
+        SocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
+        if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
+                DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+            Authenticator.setDefault(
+                    new Authenticator() {
+                @Override
+                public PasswordAuthentication getPasswordAuthentication() {
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
+                    myResponse.setProxyWithCredential(true);
+                    myResponse.setProxyUser(proxyUser);
+                    return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                }
+            }
+            );
+        }
+        client.setProxy(proxy);
+    }
+
 }

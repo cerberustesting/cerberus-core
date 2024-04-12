@@ -27,6 +27,7 @@
 * Allow to have optional subdata and feed cerberus_testdatalib_subdataDefaultValue parameter to defined its default value (Thanks to Promod team ;-)).
 * Make Numeric conversion more robust (ex : 'EUR 123 123.5 €' will be converted to 123123.5 before performing the control)
 * More robust FTP connector (Timeout support, FTP URL can be edited preserving secrets to be modified,  more detailed and precise error messages)
+* SFTP support on call service Action.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

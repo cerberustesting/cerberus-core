@@ -34,14 +34,6 @@ import org.cerberus.core.util.answer.AnswerItem;
 public interface IFtpService {
 
     /**
-     * this method is used to transform a ftpString to a simple HashMap
-     *
-     * @param ftpChain
-     * @return
-     */
-    public Map<String, String> fromFtpStringToHashMap(String ftpChain);
-
-    /**
      * this method is used to interact with the ftp server
      *
      * @param chain
@@ -54,36 +46,5 @@ public interface IFtpService {
      * @return AppService
      */
     public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String ftpPath, String service, int timeOutMs);
-
-    /**
-     * this method is used to retrieve a file from FTP server
-     *
-     * @param informations
-     * @param ftp
-     * @param myResponse
-     * @return AppService
-     * @throws java.io.IOException
-     */
-    public AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException;
-
-    /**
-     * this method is used to post a file from FTP server
-     *
-     * @param informations
-     * @param ftp
-     * @param myResponse
-     * @return AppService
-     * @throws java.io.IOException
-     */
-    public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException;
-
-    /**
-     * this auxiliary method allow to set a PROXY to a FTPClient
-     *
-     * @param ftpClient
-     * @param system
-     * @param myResponse
-     */
-    public void setProxy(FTPClient ftpClient, String system, AppService myResponse);
 
 }

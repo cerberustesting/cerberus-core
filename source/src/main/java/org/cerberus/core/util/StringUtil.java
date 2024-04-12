@@ -58,6 +58,7 @@ public final class StringUtil {
     public static final String FILE_PREFIX = "file:/";
     public static final String FTP_PREFIX = "ftp://";
     public static final String FTPS_PREFIX = "ftps://";
+    public static final String SFTP_PREFIX = "sftp://";
     private static final Logger LOG = LogManager.getLogger(StringUtil.class);
     private static final int MAX_STRING_SIZE_IN_MESSAGE = 300;
     public static final String SECRET_STRING = "XXXXXXXXXX";
@@ -363,7 +364,8 @@ public final class StringUtil {
                 // File scheme can have no authority component, then only one slash is necessary
                 || url.startsWith(FILE_PREFIX)
                 || url.startsWith(FTP_PREFIX)
-                || url.startsWith(FTPS_PREFIX);
+                || url.startsWith(FTPS_PREFIX)
+                || url.startsWith(SFTP_PREFIX);
     }
 
     /**
