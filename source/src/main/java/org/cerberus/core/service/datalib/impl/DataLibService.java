@@ -111,7 +111,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty,
-                                                              TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
+            TestCaseExecution execution, TestCaseExecutionData testCaseExecutionData) {
         AnswerItem<HashMap<String, String>> resultColumns;
         AnswerList<HashMap<String, String>> resultData;
         AnswerList<HashMap<String, String>> result;
@@ -121,9 +121,6 @@ public class DataLibService implements IDataLibService {
         Integer nbRowsRequested = 0;
         try {
             nbRowsRequested = Integer.parseInt(testCaseExecutionData.getLength());
-            if (nbRowsRequested < 1) {
-                nbRowsRequested = 1;
-            }
         } catch (NumberFormatException e) {
             LOG.error(e.toString(), e);
         }
@@ -246,9 +243,9 @@ public class DataLibService implements IDataLibService {
     /**
      * This method route to the method regarding the nature
      *
-     * @param nature                    : Nature of the property
-     * @param dataObjectList            : List of dataObject
-     * @param tCExecution               : TestCaseExecution
+     * @param nature : Nature of the property
+     * @param dataObjectList : List of dataObject
+     * @param tCExecution : TestCaseExecution
      * @param testCaseCountryProperties : TestCaseCountryProperties
      * @return List of items (dataObject) from the dataObjectList filtered out
      * of records depending on the nature.
@@ -285,22 +282,27 @@ public class DataLibService implements IDataLibService {
     }
 
     @Override
-    public AnswerList<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedDimention) {
+    public AnswerList<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedLines) {
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
 
         List<HashMap<String, String>> resultObject;
         resultObject = new ArrayList<>();
-
-        for (int i = 0; i < outputRequestedDimention; i++) {
+        
+        int finalRequestedLines = outputRequestedLines;
+        if (outputRequestedLines == 0) {
+            // If nb of row requested = 0 we consider that all rows will be retreived.
+            finalRequestedLines = dataObjectList.getDataList().size();
+        }
+        for (int i = 0; i < finalRequestedLines; i++) {
             resultObject.add(dataObjectList.getDataList().get(i));
         }
 
         result.setDataList(resultObject);
         String rowMessage = "";
-        if (outputRequestedDimention < 2) {
+        if (finalRequestedLines < 2) {
             rowMessage = "row";
         } else {
-            rowMessage = Integer.toString(outputRequestedDimention) + " rows";
+            rowMessage = Integer.toString(finalRequestedLines) + " rows";
         }
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURESTATIC).resolveDescription("ROW", rowMessage));
         return result;
@@ -639,7 +641,7 @@ public class DataLibService implements IDataLibService {
 
         List<HashMap<String, String>> list;
         List<String> columnsToHide = new ArrayList<>();
-        
+
         final boolean ignoreNonMatchedSubdata = parameterService.getParameterBooleanByKey("cerberus_testdatalib_ignoreNonMatchedSubdata", StringUtils.EMPTY, false);
         final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
 
@@ -661,8 +663,7 @@ public class DataLibService implements IDataLibService {
                     if (!(StringUtil.isEmpty(lib.getDatabaseCsv()))) {
 
                         try {
-                            countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
-                                    country, environment, lib.getDatabaseCsv()));
+                            countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system, country, environment, lib.getDatabaseCsv()));
                             if (countryEnvironmentDatabase == null) {
                                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
                                 msg.setDescription(msg.getDescription()
@@ -887,21 +888,21 @@ public class DataLibService implements IDataLibService {
                                         candidates = XmlUtil.evaluate(xmlDocument, subDataParsingAnswer);
                                         // If no candidates found but have to ignore non matched subdata, then create a dummy node that contains the default subdata value
                                         if (ignoreNonMatchedSubdata && candidates.getLength() == 0) {
-                                        	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
-                                    		candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
+                                            LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                            candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
                                         }
                                     } catch (final Exception e) {
-                                    	if (ignoreNonMatchedSubdata) {
-                                    		LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> e);
-                                    		candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
-                                    	} else {
-                                    		msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION)
-	                                    			 .resolveDescription("XPATH", lib.getSubDataParsingAnswer())
-	                                                 .resolveDescription("SUBDATA", "")
-	                                                 .resolveDescription("REASON", e.toString());
-	                                    	 break;
-                                    	}
-                                    	
+                                        if (ignoreNonMatchedSubdata) {
+                                            LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> e);
+                                            candidates = getDataObjectList_defaultDummyNodeList(defaultSubdataValue);
+                                        } else {
+                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION)
+                                                    .resolveDescription("XPATH", lib.getSubDataParsingAnswer())
+                                                    .resolveDescription("SUBDATA", "")
+                                                    .resolveDescription("REASON", e.toString());
+                                            break;
+                                        }
+
                                     }
 
                                     if (candidates.getLength() > 0) {
@@ -911,8 +912,8 @@ public class DataLibService implements IDataLibService {
                                             //We get the value from XML
                                             String value = candidates.item(i).getNodeValue();
                                             if (ignoreNonMatchedSubdata && value == null) {
-                                            	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
-                                            	value = defaultSubdataValue;
+                                                LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                                value = defaultSubdataValue;
                                             }
 
                                             if (value == null) { // No value found.
@@ -1015,25 +1016,24 @@ public class DataLibService implements IDataLibService {
                                         // We try to parse the XML with the subdata Parsing Answer.
                                         listTemp1 = jsonService.getFromJson(responseString, subDataParsingAnswer);
                                         if (ignoreNonMatchedSubdata && listTemp1.isEmpty()) {
-                                        	LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
-                                        	listTemp1.add(defaultSubdataValue);
+                                            LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName());
+                                            listTemp1.add(defaultSubdataValue);
                                         }
                                     } catch (final Exception ex) {
-                                    	if (ignoreNonMatchedSubdata) {
-                                    		LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> ex);
-                                    		listTemp1.add(defaultSubdataValue);
-                                    	}
-                                    	else {
-                                    		msg = new MessageEvent(
-													MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSONEXCEPTION)
-													.resolveDescription("XPATH", lib.getSubDataParsingAnswer())
-													.resolveDescription("SUBDATA", "")
-													.resolveDescription("REASON", ex.toString() + "\n api response : "
-															+ appService.getResponseHTTPBody());
-											break;
-                                    		
-                                    	}
-                                    	
+                                        if (ignoreNonMatchedSubdata) {
+                                            LOG.debug("Unmatched subdata parsing enabled: Fill unmatched subdata '{}' from datalib '{}' with default value", () -> subDataColumnToTreat, () -> lib.getName(), () -> ex);
+                                            listTemp1.add(defaultSubdataValue);
+                                        } else {
+                                            msg = new MessageEvent(
+                                                    MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSONEXCEPTION)
+                                                    .resolveDescription("XPATH", lib.getSubDataParsingAnswer())
+                                                    .resolveDescription("SUBDATA", "")
+                                                    .resolveDescription("REASON", ex.toString() + "\n api response : "
+                                                            + appService.getResponseHTTPBody());
+                                            break;
+
+                                        }
+
                                     }
 
                                     if (listTemp1.size() > 0) {
@@ -1150,37 +1150,37 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
-	/**
-	 * Utility method for
-	 * {@link #getFromDataLib(TestDataLib, TestCaseCountryProperties, TestCaseExecution, TestCaseExecutionData)}
-	 * that creates a dummy node list that contains a single dummy node associated
-	 * to the given node value
-	 * 
-	 * @param singleDummyNodeValue the value to set to the single node value of the
-	 *                             dummy node list returned
-	 * @return a dummy node list that contains a single dummy node associated to the
-	 *         given node value
-	 */
-	private NodeList getDataObjectList_defaultDummyNodeList(final String singleDummyNodeValue) {
-		return new NodeList() {
-			@Override
-			public Node item(int index) {
-				try {
-					final Node dummyNode = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument()
-							.createTextNode(StringUtils.EMPTY);
-					dummyNode.setNodeValue(singleDummyNodeValue);
-					return dummyNode;
-				} catch (ParserConfigurationException e) {
-					throw new RuntimeException(e);
-				}
-			}
+    /**
+     * Utility method for
+     * {@link #getFromDataLib(TestDataLib, TestCaseCountryProperties, TestCaseExecution, TestCaseExecutionData)}
+     * that creates a dummy node list that contains a single dummy node
+     * associated to the given node value
+     *
+     * @param singleDummyNodeValue the value to set to the single node value of
+     * the dummy node list returned
+     * @return a dummy node list that contains a single dummy node associated to
+     * the given node value
+     */
+    private NodeList getDataObjectList_defaultDummyNodeList(final String singleDummyNodeValue) {
+        return new NodeList() {
+            @Override
+            public Node item(int index) {
+                try {
+                    final Node dummyNode = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument()
+                            .createTextNode(StringUtils.EMPTY);
+                    dummyNode.setNodeValue(singleDummyNodeValue);
+                    return dummyNode;
+                } catch (ParserConfigurationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
-			@Override
-			public int getLength() {
-				return 1;
-			}
-		};
-	}
+            @Override
+            public int getLength() {
+                return 1;
+            }
+        };
+    }
 
     @Override
     public JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {

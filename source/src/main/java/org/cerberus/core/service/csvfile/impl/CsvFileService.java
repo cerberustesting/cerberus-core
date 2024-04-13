@@ -81,8 +81,8 @@ public class CsvFileService implements ICsvFileService {
                 HashMap<String, String> line = new HashMap<>();
                 // In case of no match columns ignore, then first populate list with all column and default value
                 if (ignoreNoMatchColumns) {
-                	LOG.debug("Unmatched columns parsing enabled: Prefill columns with default value");
-                	columnsToGet.keySet().forEach((column) -> line.put(column, defaultNoMatchColumnValue));
+                    LOG.debug("Unmatched columns parsing enabled: Prefill columns with default value");
+                    columnsToGet.keySet().forEach((column) -> line.put(column, defaultNoMatchColumnValue));
                 }
                 Integer columnPosition = 1;
                 /**
