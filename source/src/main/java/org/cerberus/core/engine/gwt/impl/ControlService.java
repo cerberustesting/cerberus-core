@@ -105,6 +105,9 @@ public class ControlService implements IControlService {
         TestCaseExecution execution = controlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
+        // Empty Execution values depending of the action.
+        controlExecution = cleanValues(controlExecution);
+
         // Decode the step action control description
         try {
             // When starting a new control, we reset the property list that was already calculated.
@@ -469,6 +472,81 @@ public class ControlService implements IControlService {
         }
 
         controlExecution.setEnd(new Date().getTime());
+        return controlExecution;
+    }
+
+    private TestCaseStepActionControlExecution cleanValues(TestCaseStepActionControlExecution controlExecution) {
+        switch (controlExecution.getControl()) {
+
+            // No parameters
+            case TestCaseStepActionControl.CONTROL_GETPAGESOURCE:
+                controlExecution.setValue1("");
+                controlExecution.setValue1Init("");
+                controlExecution.setValue2("");
+                controlExecution.setValue2Init("");
+                controlExecution.setValue3("");
+                controlExecution.setValue3Init("");
+                break;
+            // Only Value1
+            case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
+            case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
+            case TestCaseStepActionControl.CONTROL_VERIFYURL:
+            case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
+            case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCHECKED:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCHECKED:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE:
+                controlExecution.setValue2("");
+                controlExecution.setValue2Init("");
+                controlExecution.setValue3("");
+                controlExecution.setValue3Init("");
+                break;
+            // Only Value 1 and Value 2
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATER:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATEROREQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOR:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOROREQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICEQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATER:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICGREATEROREQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTMATCHREGEX:
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICARRAYCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS:
+                controlExecution.setValue3("");
+                controlExecution.setValue3Init("");
+                break;
+            // Value 1 and Value 2 and Value 3
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGARRAYCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTEQUAL:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTDIFFERENT:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTNOTCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE:
+                break;
+            default:
+
+        }
         return controlExecution;
     }
 

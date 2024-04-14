@@ -45,6 +45,7 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.engine.execution.IConditionService;
 import org.cerberus.core.engine.execution.IExecutionCheckService;
 import org.cerberus.core.engine.execution.IExecutionStartService;
 import org.cerberus.core.engine.execution.IRobotServerService;
@@ -67,6 +68,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private IExecutionCheckService executionCheckService;
     @Autowired
     private ITestCaseService testCaseService;
+    @Autowired
+    private IConditionService conditionService;
     @Autowired
     private ITestService testService;
     @Autowired
@@ -154,12 +157,19 @@ public class ExecutionStartService implements IExecutionStartService {
                 execution.setTestCaseObj(tCase);
                 execution.setDescription(tCase.getDescription());
                 execution.setConditionOperator(tCase.getConditionOperator());
-                execution.setConditionVal1(tCase.getConditionValue1());
-                execution.setConditionVal1Init(tCase.getConditionValue1());
-                execution.setConditionVal2(tCase.getConditionValue2());
-                execution.setConditionVal2Init(tCase.getConditionValue2());
-                execution.setConditionVal3(tCase.getConditionValue3());
-                execution.setConditionVal3Init(tCase.getConditionValue3());
+
+                // Clean condition depending on the operatot.
+                String condval1 = conditionService.cleanValue1(tCase.getConditionOperator(), tCase.getConditionValue1());
+                String condval2 = conditionService.cleanValue2(tCase.getConditionOperator(), tCase.getConditionValue2());
+                String condval3 = conditionService.cleanValue3(tCase.getConditionOperator(), tCase.getConditionValue3());
+
+                execution.setConditionVal1(condval1);
+                execution.setConditionVal1Init(condval1);
+                execution.setConditionVal2(condval2);
+                execution.setConditionVal2Init(condval2);
+                execution.setConditionVal3(condval3);
+                execution.setConditionVal3Init(condval3);
+
                 execution.setTestCaseVersion(tCase.getVersion());
                 execution.setTestCasePriority(tCase.getPriority());
                 execution.setConditionOptions(tCase.getConditionOptionsActive());
@@ -252,7 +262,7 @@ public class ExecutionStartService implements IExecutionStartService {
             } else {
                 CountryEnvironmentParameters cea;
                 cea = this.factorycountryEnvironmentParameters.create(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication(),
-                         execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "", null, null, null, null);
+                        execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "", null, null, null, null);
                 cea.setIp(execution.getMyHost());
                 cea.setUrl(execution.getMyContextRoot());
                 appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");

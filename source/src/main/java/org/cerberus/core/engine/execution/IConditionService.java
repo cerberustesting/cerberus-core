@@ -41,4 +41,11 @@ public interface IConditionService {
      * @return
      */
     AnswerItem<Boolean> evaluateCondition(String conditionOperator, String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution tCExecution, JSONArray options);
+
+    String cleanValue1(String condition, String value1);
+
+    String cleanValue2(String condition, String value2);
+
+    String cleanValue3(String condition, String value3);
+
 }

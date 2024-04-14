@@ -146,6 +146,9 @@ public class ActionService implements IActionService {
         TestCaseExecution execution = actionExecution.getTestCaseStepExecution().gettCExecution();
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
+        // Empty Execution values depending of the action.
+        actionExecution = cleanValues(actionExecution);
+
         /**
          * Decode the step action description, value1, value2 and value3
          */
@@ -372,7 +375,7 @@ public class ActionService implements IActionService {
                     res = this.doActionRefreshCurrentPage(execution);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTEJS:
-                    res = this.doActionExecuteJS(execution, value1, value2);
+                    res = this.doActionExecuteJS(execution, value1);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTECOMMAND:
                     res = this.doActionExecuteCommand(execution, value1, value2);
@@ -544,6 +547,84 @@ public class ActionService implements IActionService {
          */
         actionExecution.setEnd(new Date().getTime());
 
+        return actionExecution;
+    }
+
+    private TestCaseStepActionExecution cleanValues(TestCaseStepActionExecution actionExecution) {
+        switch (actionExecution.getAction()) {
+
+            // No parameters
+            case TestCaseStepAction.ACTION_OPENURLLOGIN:
+            case TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME:
+            case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
+            case TestCaseStepAction.ACTION_HIDEKEYBOARD:
+            case TestCaseStepAction.ACTION_WAITNETWORKTRAFFICIDLE:
+            case TestCaseStepAction.ACTION_SETCONSOLECONTENT:
+            case TestCaseStepAction.ACTION_SETSERVICECALLCONTENT:
+            case TestCaseStepAction.ACTION_DONOTHING:
+                actionExecution.setValue1("");
+                actionExecution.setValue1Init("");
+                actionExecution.setValue2("");
+                actionExecution.setValue2Init("");
+                actionExecution.setValue3("");
+                actionExecution.setValue3Init("");
+                break;
+            // Only Value1
+            case TestCaseStepAction.ACTION_CLICK:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
+            case TestCaseStepAction.ACTION_DOUBLECLICK:
+            case TestCaseStepAction.ACTION_RIGHTCLICK:
+            case TestCaseStepAction.ACTION_MOUSEOVER:
+            case TestCaseStepAction.ACTION_MOUSEMOVE:
+            case TestCaseStepAction.ACTION_OPENURLWITHBASE:
+            case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
+            case TestCaseStepAction.ACTION_OPENURL:
+            case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
+            case TestCaseStepAction.ACTION_SWITCHTOCONTEXT:
+            case TestCaseStepAction.ACTION_MANAGEDIALOG:
+            case TestCaseStepAction.ACTION_MANAGEDIALOGKEYPRESS:
+            case TestCaseStepAction.ACTION_EXECUTEJS:
+            case TestCaseStepAction.ACTION_EXECUTECERBERUSCOMMAND:
+            case TestCaseStepAction.ACTION_CLEARFIELD:
+            case TestCaseStepAction.ACTION_CLOSEAPP:
+            case TestCaseStepAction.ACTION_INDEXNETWORKTRAFFIC:
+            case TestCaseStepAction.ACTION_INSTALLAPP:
+            case TestCaseStepAction.ACTION_REMOVEAPP:
+            case TestCaseStepAction.ACTION_WAIT:
+            case TestCaseStepAction.ACTION_WAITVANISH:
+            case TestCaseStepAction.ACTION_SETCONTENT:
+            case TestCaseStepAction.ACTION_CLEANROBOTFILE:
+                actionExecution.setValue2("");
+                actionExecution.setValue2Init("");
+                actionExecution.setValue3("");
+                actionExecution.setValue3Init("");
+                break;
+            // Only Value 1 and Value 2
+            case TestCaseStepAction.ACTION_LONGPRESS:
+            case TestCaseStepAction.ACTION_EXECUTECOMMAND:
+            case TestCaseStepAction.ACTION_OPENAPP:
+            case TestCaseStepAction.ACTION_DRAGANDDROP:
+            case TestCaseStepAction.ACTION_SELECT:
+            case TestCaseStepAction.ACTION_TYPE:
+            case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
+            case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
+            case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
+            case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
+            case TestCaseStepAction.ACTION_SWIPE:
+            case TestCaseStepAction.ACTION_SCROLLTO:
+            case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
+                actionExecution.setValue3("");
+                actionExecution.setValue3Init("");
+                break;
+            // Value 1 and Value 2 and Value 3
+            case TestCaseStepAction.ACTION_KEYPRESS:
+            case TestCaseStepAction.ACTION_CALLSERVICE:
+            case TestCaseStepAction.ACTION_GETROBOTFILE:
+                break;
+            default:
+
+        }
         return actionExecution;
     }
 
@@ -903,7 +984,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionExecuteJS(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionExecuteJS(TestCaseExecution tCExecution, String value1) {
 
         MessageEvent message;
         String script = value1;

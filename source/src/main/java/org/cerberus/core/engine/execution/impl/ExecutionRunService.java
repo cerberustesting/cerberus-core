@@ -431,7 +431,7 @@ public class ExecutionRunService implements IExecutionRunService {
             AnswerItem<Boolean> conditionAnswerTc;
             boolean conditionDecodeError = false;
 
-            // If execution is not manual, evaluate the condition at the step level
+            // If execution is not manual, evaluate the condition at the top level
             if (!execution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(execution.getConditionVal1(), execution, null, false);
@@ -514,13 +514,18 @@ public class ExecutionRunService implements IExecutionRunService {
                                 LOG.debug("{}Start execution of testcasestep", logPrefix);
                                 long startStep = new Date().getTime();
 
+                                // Clean condition depending on the operatot.
+                                String condval1 = conditionService.cleanValue1(step.getConditionOperator(), step.getConditionValue1());
+                                String condval2 = conditionService.cleanValue2(step.getConditionOperator(), step.getConditionValue2());
+                                String condval3 = conditionService.cleanValue3(step.getConditionOperator(), step.getConditionValue3());
+
                                 //Create and Register TestCaseStepExecution
                                 MessageEvent stepMess = new MessageEvent(MessageEventEnum.STEP_PENDING)
                                         .resolveDescription("STEP", String.valueOf(step.getSort()))
                                         .resolveDescription("STEPINDEX", String.valueOf(stepIndex));
                                 stepExecution = factoryTestCaseStepExecution.create(
                                         runID, step.getTest(), step.getTestcase(),
-                                        step.getStepId(), stepIndex, step.getSort(), step.getLoop(), step.getConditionOperator(), step.getConditionValue1(), step.getConditionValue2(), step.getConditionValue3(), step.getConditionValue1(), step.getConditionValue2(), step.getConditionValue3(), null,
+                                        step.getStepId(), stepIndex, step.getSort(), step.getLoop(), step.getConditionOperator(), condval1, condval2, condval3, condval1, condval2, condval3, null,
                                         startStep, startStep, startStep, startStep, new BigDecimal("0"), null, stepMess, step, execution,
                                         step.isUsingLibraryStep(), step.getLibraryStepTest(), step.getLibraryStepTestcase(), step.getLibraryStepStepId(), step.getDescription());
                                 stepExecution.setLoop(step.getLoop());
@@ -624,8 +629,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         || stepIndex > 1) {
                                     if (!(descriptionOrConditionStepDecodeError)) {
 
-                                        conditionAnswer = this.conditionService.evaluateCondition(
-                                                stepExecution.getConditionOperator(),
+                                        conditionAnswer = this.conditionService.evaluateCondition(stepExecution.getConditionOperator(),
                                                 stepExecution.getConditionValue1(), stepExecution.getConditionValue2(), stepExecution.getConditionValue3(),
                                                 execution, stepExecution.getConditionOptions());
 
@@ -1000,12 +1004,16 @@ public class ExecutionRunService implements IExecutionRunService {
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
             long startLongAction = Long.parseLong(df.format(startAction));
 
+            // Clean condition depending on the operatot.
+            String condval1 = conditionService.cleanValue1(tcAction.getConditionOperator(), tcAction.getConditionValue1());
+            String condval2 = conditionService.cleanValue2(tcAction.getConditionOperator(), tcAction.getConditionValue2());
+            String condval3 = conditionService.cleanValue3(tcAction.getConditionOperator(), tcAction.getConditionValue3());
+
             // Create and Register TestCaseStepActionExecution.
             TestCaseStepActionExecution actionExecution = factoryTestCaseStepActionExecution.create(
                     stepExecution.getId(), tcAction.getTest(), tcAction.getTestcase(),
                     tcAction.getStepId(), stepExecution.getIndex(), tcAction.getActionId(), tcAction.getSort(), null, null,
-                    tcAction.getConditionOperator(), tcAction.getConditionValue1(), tcAction.getConditionValue2(), tcAction.getConditionValue3(),
-                    tcAction.getConditionValue1(), tcAction.getConditionValue2(), tcAction.getConditionValue3(),
+                    tcAction.getConditionOperator(), condval1, condval2, condval3, condval1, condval2, condval3,
                     tcAction.getAction(), tcAction.getValue1(), tcAction.getValue2(), tcAction.getValue3(), tcAction.getValue1(),
                     tcAction.getValue2(), tcAction.getValue3(),
                     (tcAction.isFatal() ? "Y" : "N"), startAction, startAction, startLongAction, startLongAction, new MessageEvent(MessageEventEnum.ACTION_PENDING),
@@ -1277,13 +1285,18 @@ public class ExecutionRunService implements IExecutionRunService {
             DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
             long startLongControl = Long.parseLong(df.format(startControl));
 
+            // Clean condition depending on the operatot.
+            String condval1 = conditionService.cleanValue1(control.getConditionOperator(), control.getConditionValue1());
+            String condval2 = conditionService.cleanValue2(control.getConditionOperator(), control.getConditionValue2());
+            String condval3 = conditionService.cleanValue3(control.getConditionOperator(), control.getConditionValue3());
+
             // Create and Register TestCaseStepActionControlExecution
             LOG.debug("Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution controlExecution
                     = factoryTestCaseStepActionControlExecution.create(actionExecution.getId(), control.getTest(), control.getTestcase(),
                             control.getStepId(), actionExecution.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
-                            null, null,
-                            control.getConditionOperator(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(), control.getConditionValue1(), control.getConditionValue2(), control.getConditionValue3(),
+                            null, null, control.getConditionOperator(), condval1, condval2, condval3, condval1, condval2, condval3
+                            ,
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
                             control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
                             control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
