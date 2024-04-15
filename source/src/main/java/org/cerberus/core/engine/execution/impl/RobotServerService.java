@@ -1077,7 +1077,7 @@ public class RobotServerService implements IRobotServerService {
             //  We remove manually the package if it is defined.
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
-//                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); //#FIXME SELENIUM
+//                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); //#FIXME SELENIUM (should be cast to ISODriver or AndroidDriver)
             }
 
             // We lock device if deviceLockUnlock is active.
