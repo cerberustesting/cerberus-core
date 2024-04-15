@@ -118,7 +118,7 @@ public abstract class AppiumService implements IAppiumService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOCONTEXT_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription()
                     .replace("%CONTEXT%", context)
-                    .replace("%CONTEXTS%", contexts.toString()) //#FIXME SELENIUM
+                    .replace("%CONTEXTS%", contexts.toString()) //#FIXME SELENIUM #TEST (was not modified)
                     .replace("%ERROR%", exception.getMessage()));
         }
         return message;
@@ -488,11 +488,10 @@ public abstract class AppiumService implements IAppiumService {
     public String getElementPosition(Session session, Identifier identifier) {
         AppiumDriver driver = session.getAppiumDriver();
 
-//        MobileElement element = (MobileElement) driver.findElement(this.getBy(identifier)); //#FIXME SELENIUM
-//        Point location = element.getLocation();
-//
-//        return location.getX() + ";" + location.getY();
-        return null;
+        WebElement element = driver.findElement(this.getBy(identifier)); //#FIXME SELENIUM #TEST
+        Point location = element.getLocation();
+
+        return location.getX() + ";" + location.getY();
     }
 
     @Override
