@@ -258,8 +258,14 @@ public class ConditionService implements IConditionService {
         ConditionOperatorEnum conditionToEvaluate = ConditionOperatorEnum.getConditionOperatorEnumFromString(condition);
 
         switch (Objects.requireNonNull(conditionToEvaluate)) {
+            case CONDITIONOPERATOR_IFSTRINGEQUAL:
+            case CONDITIONOPERATOR_IFSTRINGDIFFERENT:
+            case CONDITIONOPERATOR_IFSTRINGCONTAINS:
+            case CONDITIONOPERATOR_IFSTRINGNOTCONTAINS:
+            case CONDITIONOPERATOR_IFTEXTINELEMENT:
+            case CONDITIONOPERATOR_IFTEXTNOTINELEMENT:
+                return value3;
             default:
-                // So far no condition require velue3
                 return "";
         }
     }
