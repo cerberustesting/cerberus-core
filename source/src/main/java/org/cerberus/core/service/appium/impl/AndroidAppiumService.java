@@ -102,7 +102,7 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-//            session.getAppiumDriver().hideKeyboard(); #FIXME SELENIUM
+            ((AndroidDriver) session.getAppiumDriver()).hideKeyboard(); //#FIXME SELENIUM #TEST
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
         } catch (Exception e) {
             // Instead of http://stackoverflow.com/questions/35030794/soft-keyboard-not-present-cannot-hide-keyboard-appium-android?answertab=votes#tab-top
