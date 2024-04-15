@@ -335,8 +335,6 @@ public class RobotServerService implements IRobotServerService {
 //                factory.builder().proxy(java.net.Proxy.NO_PROXY);
 //            }
 
-            executor = new HttpCommandExecutor(new HashMap<>(), url);
-
             // SetUp Driver
             LOG.debug("Set Driver");
             WebDriver driver = null;
@@ -349,7 +347,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = new RemoteWebDriver(url, caps); //FIXME SELENIUM (see https://www.selenium.dev/documentation/webdriver/troubleshooting/upgrade_to_selenium_4/ )
+                    driver = new RemoteWebDriver(url, caps); //FIXME SELENIUM #TEST
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
