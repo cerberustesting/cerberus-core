@@ -1000,15 +1000,15 @@ public class RobotServerService implements IRobotServerService {
 //                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                    }
-//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM
+//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM #APPIUM
                     break;
 
                 case "ipad":
-//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM
+//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM #APPIUM
                     break;
 
                 case "iphone":
-//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM
+//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM #APPIUM
                     break;
 
                 case "":
