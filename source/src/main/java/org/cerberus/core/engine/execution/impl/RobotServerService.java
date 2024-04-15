@@ -448,7 +448,7 @@ public class RobotServerService implements IRobotServerService {
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
-//                getIPOfNode(execution); #FIXME SELENIUM
+//                getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
 
                 // If screenSize is defined, set the size of the screen.
                 String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
@@ -980,7 +980,7 @@ public class RobotServerService implements IRobotServerService {
                     }
                     return optionsED;
 
-//                case "opera": //#FIXME SELENIUM
+//                case "opera": //Not supported anymore
 //                    OperaOptions optionsOP = new OperaOptions();
 //                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
 //                        Proxy proxy = new Proxy();
