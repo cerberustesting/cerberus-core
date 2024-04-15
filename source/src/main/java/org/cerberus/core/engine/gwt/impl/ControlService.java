@@ -490,7 +490,6 @@ public class ControlService implements IControlService {
             // Only Value1
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
-            case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
             case TestCaseStepActionControl.CONTROL_VERIFYURL:
             case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
             case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
@@ -507,6 +506,11 @@ public class ControlService implements IControlService {
                 controlExecution.setValue3("");
                 controlExecution.setValue3Init("");
                 break;
+            // Only Value 1 and Value 3
+            case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
+                controlExecution.setValue2("");
+                controlExecution.setValue2Init("");
+                break;
             // Only Value 1 and Value 2
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
@@ -521,8 +525,6 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOR:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICMINOROREQUAL:
             case TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR:
-            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
-            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTMATCHREGEX:
             case TestCaseStepActionControl.CONTROL_VERIFYNUMERICARRAYCONTAINS:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNUMERICARRAYCONTAINS:
@@ -534,6 +536,8 @@ public class ControlService implements IControlService {
             case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
             case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
             case TestCaseStepActionControl.CONTROL_VERIFYSTRINGARRAYCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
+            case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTTEXTARRAYCONTAINS:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS:
             case TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT:
