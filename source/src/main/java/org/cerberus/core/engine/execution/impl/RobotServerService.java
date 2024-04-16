@@ -319,6 +319,8 @@ public class RobotServerService implements IRobotServerService {
 
             executor = new HttpCommandExecutor(new java.util.HashMap<>(), url, factory);
 
+//            executor = new HttpCommandExecutor(new HashMap<>(), url, factory);
+
             // SetUp Driver
             LOG.debug("Set Driver");
             WebDriver driver = null;
@@ -331,7 +333,8 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = new RemoteWebDriver(url, caps); //FIXME SELENIUM #TEST
+                    driver = new RemoteWebDriver(url, caps); // #FIXME SELENIUM
+//                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
