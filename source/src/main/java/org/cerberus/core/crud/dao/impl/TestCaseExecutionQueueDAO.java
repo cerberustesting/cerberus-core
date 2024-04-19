@@ -205,7 +205,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
 
         query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country) ");
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             query.append("and (exq.`test` like ? ");
             query.append(" or exq.`testCase` like ? ");
             query.append(" or tec.`application` like ? ");

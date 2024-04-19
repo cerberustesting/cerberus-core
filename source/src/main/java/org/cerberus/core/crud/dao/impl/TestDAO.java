@@ -370,7 +370,7 @@ public class TestDAO implements ITestDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `datecreated` like ?) ");

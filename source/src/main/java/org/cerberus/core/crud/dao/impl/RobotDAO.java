@@ -253,7 +253,7 @@ public class RobotDAO implements IRobotDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");
@@ -587,7 +587,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" and 1=0 ");
         }
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");

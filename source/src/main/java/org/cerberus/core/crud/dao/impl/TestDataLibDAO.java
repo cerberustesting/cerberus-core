@@ -1069,7 +1069,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tdl.`name` like ?");
             searchSQL.append(" or tdl.`privateData` like ?");
             searchSQL.append(" or tdl.`group` like ?");

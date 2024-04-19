@@ -139,7 +139,7 @@ public class CountryEnvParam_logDAO implements ICountryEnvParam_logDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");

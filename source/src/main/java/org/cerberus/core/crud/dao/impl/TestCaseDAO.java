@@ -197,7 +197,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS tec.*, app.* FROM testcase tec ");
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
-        if (!StringUtil.isEmpty(searchTerm) || individualSearch.get("lab.label") != null
+        if (!Strings.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
             // We don't join the label table if we don't need to.
             query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
@@ -218,7 +218,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" AND tec.`test` = ?");
         }
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
@@ -335,7 +335,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
 
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         }
@@ -1469,7 +1469,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" AND tec.`test` = ?");
         }
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!Strings.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
