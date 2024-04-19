@@ -976,25 +976,54 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String html) {
-        LOG.debug("Control: verifyElementVisible on: {}", html);
+    private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String elementPath) {
+        LOG.debug("Control: verifyElementVisible on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
+        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(html);
-                    if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
+                    Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+
+                    } else if (this.webdriverService.isElementVisible(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_VISIBLE);
+                        mes.resolveDescription("STRING1", elementPath);
+                        return mes;
+
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VISIBLE);
+                        mes.resolveDescription("STRING1", elementPath);
+                        return mes;
                     }
-                    mes.resolveDescription("STRING1", html);
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
+
+            } else if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
+                if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator(), "");
+
+                } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), "", identifier.getLocator());
+
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
+                    mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
+                    mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
+                    mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                    return mes;
+
+                }
+
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE);
@@ -1006,34 +1035,61 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementNotVisible(TestCaseExecution tCExecution, String html) {
-        LOG.debug("Control: verifyElementNotVisible on: {}", html);
+    private MessageEvent verifyElementNotVisible(TestCaseExecution execution, String elementPath) {
+        LOG.debug("Control: verifyElementNotVisible on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
-            if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
+        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
+            if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
+                    || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(html);
-                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
-                        if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
+                    Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
+                    if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+
+                    } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+
+                    } else if (this.webdriverService.isElementPresent(execution.getSession(), identifier)) {
+                        if (this.webdriverService.isElementNotVisible(execution.getSession(), identifier)) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTVISIBLE);
                         } else {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE);
                         }
-                        mes.resolveDescription("STRING1", html);
+                        mes.resolveDescription("STRING1", elementPath);
+
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                     }
-                    mes.resolveDescription("STRING1", html);
+                    mes.resolveDescription("STRING1", elementPath);
+                    return mes;
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
+
+            } else if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
+                if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), identifier.getLocator(), "");
+
+                } else if (identifier.getIdentifier().equals(Identifier.IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliVerifyElementNotPresent(execution.getSession(), "", identifier.getLocator());
+
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION_AND_IDENTIFIER);
+                    mes.resolveDescription("IDENTIFIER", identifier.getIdentifier());
+                    mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE);
+                    mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
+                    return mes;
+
+                }
+
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.resolveDescription("CONTROL", TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE);
-                mes.resolveDescription("APPLICATIONTYPE", tCExecution.getAppTypeEngine());
+                mes.resolveDescription("APPLICATIONTYPE", execution.getAppTypeEngine());
             }
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTVISIBLE_NULL);

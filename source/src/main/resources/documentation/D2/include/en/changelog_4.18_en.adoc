@@ -31,6 +31,7 @@
 * SFTP support on call service Action.
 * A Property length of 0 now will take all available rows of the data (whether it is csv, internal, sql or service related). All existing properties with lengths of 0 will be changed to 1 in order to secure the behavior is unchanged.
 * Value1, 2 and 3 are no longer decoded when not used. (for ex, switching condition to 'always' or 'never' no longer force you to empty parameter values that could crash during decode) fix #2038
+* controls on element visible are now aligned with element present when using image recognition feature.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
