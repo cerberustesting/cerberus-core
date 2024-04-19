@@ -241,6 +241,7 @@ public class WebDriverService implements IWebDriverService {
             }
             LOG.debug(exception.toString());
             return message;
+
         } catch (Exception e) {
             LOG.error("An error occured during scroll to (element:" + identifier, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
@@ -266,8 +267,18 @@ public class WebDriverService implements IWebDriverService {
          * new Actions(driver); actions.moveToElement(element);
          * actions.perform();
          */
-        ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
-
+        LOG.debug("Scroll with offset : " + session.getCerberus_selenium_autoscroll_horizontal_offset() + " and " + session.getCerberus_selenium_autoscroll_vertical_offset());
+        LOG.debug(" on element : " + element.toString());
+        ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();", element);
+        if ((session.getCerberus_selenium_autoscroll_horizontal_offset() != 0) || (session.getCerberus_selenium_autoscroll_vertical_offset() != 0)) {
+            try {
+                Thread.sleep(2000); // This wait is necessary in order to let the browser the time to scroll to the element.
+                ((JavascriptExecutor) session.getDriver()).executeScript("window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");");
+                Thread.sleep(1000); // This wait is necessary in order to secure the offset scroll has been made until we continue the execution of the test.
+            } catch (InterruptedException ex) {
+                LOG.error("Exception when sleeping during browser scroll to action.", ex);
+            }
+        }
     }
 
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
