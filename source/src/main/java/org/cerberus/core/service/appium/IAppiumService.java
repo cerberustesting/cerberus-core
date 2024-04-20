@@ -108,11 +108,11 @@ public interface IAppiumService {
      *
      * @param session
      * @param element if not null or not empty, switch to this element
-     * @param text    if not null or not empty, switch to this text
+     * @param numberScrollDownMax    if not null or not empty, switch to this text
      * @return
      * @throws IllegalArgumentException
      */
-    MessageEvent scrollTo(Session session, Identifier element, String text) throws IllegalArgumentException;
+    MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax) throws IllegalArgumentException;
 
     /**
      * install an application on mobile devices

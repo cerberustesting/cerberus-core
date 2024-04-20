@@ -40,6 +40,11 @@ public class IdentifierService implements IIdentifierService {
     }
 
     @Override
+    public Identifier convertStringToIdentifierStrict(String input) {
+        return getIdentifier(input, "");
+    }
+
+    @Override
     public Identifier convertStringToSelectIdentifier(String input) {
         return getIdentifier(input, "value");
     }
@@ -49,7 +54,7 @@ public class IdentifierService implements IIdentifierService {
         String identifier;
         String locator;
 
-        if (input.startsWith("//")) {
+        if ((input.startsWith("//")) || (input.startsWith("(//"))) {
             identifier = Identifier.IDENTIFIER_XPATH;
             locator = input;
         } else {
@@ -60,6 +65,15 @@ public class IdentifierService implements IIdentifierService {
             } else {
                 identifier = strings[0];
                 locator = strings[1];
+
+                String[] selectOptionAttributes = {Identifier.IDENTIFIER_DATACERBERUS, Identifier.IDENTIFIER_QUERYSELECTOR, Identifier.IDENTIFIER_ID, Identifier.IDENTIFIER_NAME,
+                    Identifier.IDENTIFIER_CLASS, Identifier.IDENTIFIER_CSS, Identifier.IDENTIFIER_XPATH, Identifier.IDENTIFIER_LINK,
+                    Identifier.IDENTIFIER_PICTURE, Identifier.IDENTIFIER_ERRATUM, Identifier.IDENTIFIER_TEXT};
+
+                if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
+                    identifier = defaultIdentifier;
+                    locator = input;
+                }
             }
         }
 

@@ -204,10 +204,11 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
+    public MessageEvent scrollTo(Session session, Identifier identifier, String text, String offsets) {
         MessageEvent message = null;
         WebElement webElement = null;
         try {
+            LOG.debug("Start scrollTo Webdriver with : " + identifier + " and text " + text + " and " + offsets);
             if (StringUtil.isEmpty(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
@@ -217,16 +218,29 @@ public class WebDriverService implements IWebDriverService {
                 }
 
             } else {
-                webElement = session.getDriver().findElement(By.xpath("//*[contains(text()," + text + ")]"));
+                webElement = session.getDriver().findElement(By.xpath("//*[contains(text(),'" + text + "')]"));
             }
 
             if (webElement != null) {
 
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
+                String[] soffsets = offsets.split(",");
+                Integer finalH = session.getCerberus_selenium_autoscroll_horizontal_offset();
+                Integer finalV = session.getCerberus_selenium_autoscroll_vertical_offset();
+                if (soffsets.length == 2) {
+                    try {
+                        finalH = Integer.valueOf(soffsets[0]);
+                        finalV = Integer.valueOf(soffsets[1]);
+                    } catch (Exception e) {
+                        LOG.warn("Failed offset convertion to Interger : " + offsets);
+                    }
+                }
+
                 if (StringUtil.isEmpty(text)) {
-                    scrollElement(session, webElement);
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
+                    scrollElement(session, webElement, false, finalH, finalV);
                 } else {
-                    scrollText(session, webElement);
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", text);
+                    scrollElement(session, webElement, true, finalH, finalV);
                 }
             }
 
@@ -252,32 +266,28 @@ public class WebDriverService implements IWebDriverService {
 
     }
 
-    private void scrollText(Session session, WebElement element) {
-        // Create instance of Javascript executor
-        JavascriptExecutor je = (JavascriptExecutor) session.getDriver();
-
-        // now execute query which actually will scroll until that element is not appeared on page.
-        je.executeScript("arguments[0].scrollIntoView(true);window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");", element);
-    }
-
-    private void scrollElement(Session session, WebElement element) {
+    private void scrollElement(Session session, WebElement element, boolean isElementText, Integer horizontalOffset, Integer verticalOffset) {
         /**
          * WebElement element =
          * driver.findElement(By.id(identifier.getLocator())); Actions actions =
          * new Actions(driver); actions.moveToElement(element);
          * actions.perform();
          */
-        LOG.debug("Scroll with offset : " + session.getCerberus_selenium_autoscroll_horizontal_offset() + " and " + session.getCerberus_selenium_autoscroll_vertical_offset());
+        LOG.debug("Scroll with offset : " + horizontalOffset + " and " + verticalOffset);
         LOG.debug(" on element : " + element.toString());
-        ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();", element);
-        if ((session.getCerberus_selenium_autoscroll_horizontal_offset() != 0) || (session.getCerberus_selenium_autoscroll_vertical_offset() != 0)) {
-            try {
-                Thread.sleep(2000); // This wait is necessary in order to let the browser the time to scroll to the element.
-                ((JavascriptExecutor) session.getDriver()).executeScript("window.scrollBy(" + session.getCerberus_selenium_autoscroll_horizontal_offset() + "," + session.getCerberus_selenium_autoscroll_vertical_offset() + ");");
+        if (isElementText) {
+            ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+        } else {
+            ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();", element);
+        }
+        try {
+            Thread.sleep(2000); // This wait is necessary in order to let the browser the time to scroll to the element.
+            if ((horizontalOffset != 0) || (verticalOffset != 0)) {
+                ((JavascriptExecutor) session.getDriver()).executeScript("window.scrollBy(" + horizontalOffset + "," + verticalOffset + ");");
                 Thread.sleep(1000); // This wait is necessary in order to secure the offset scroll has been made until we continue the execution of the test.
-            } catch (InterruptedException ex) {
-                LOG.error("Exception when sleeping during browser scroll to action.", ex);
             }
+        } catch (InterruptedException ex) {
+            LOG.error("Exception when sleeping during browser scroll to action.", ex);
         }
     }
 
@@ -340,7 +350,7 @@ public class WebDriverService implements IWebDriverService {
             if (visible) {
                 if (session.isCerberus_selenium_autoscroll()) {
                     element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-                    scrollElement(session, element);
+                    scrollElement(session, element, false, session.getCerberus_selenium_autoscroll_horizontal_offset(), session.getCerberus_selenium_autoscroll_vertical_offset());
                 }
                 if (clickable) {
                     element = wait.until(ExpectedConditions.elementToBeClickable(locator));

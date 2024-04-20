@@ -58,7 +58,6 @@ public class Identifier {
     public static final String IDENTIFIER_NAME = "name";
     public static final String IDENTIFIER_CLASS = "class";
     public static final String IDENTIFIER_CSS = "css";
-    public static final String IDENTIFIER_PICTURE = "picture";
     public static final String IDENTIFIER_XPATH = "xpath";
     public static final String IDENTIFIER_LINK = "link";
     public static final String IDENTIFIER_DATACERBERUS = "data-cerberus";
@@ -69,6 +68,7 @@ public class Identifier {
     public static final String IDENTIFIER_ERRATUM = "erratum";
     public static final String IDENTIFIER_QUERYSELECTOR = "querySelector";
     public static final String IDENTIFIER_TEXT = "text";
+    public static final String IDENTIFIER_PICTURE = "picture";
     
 
     public String getIdentifier() {

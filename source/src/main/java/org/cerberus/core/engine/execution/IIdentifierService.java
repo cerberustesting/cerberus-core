@@ -30,6 +30,8 @@ public interface IIdentifierService {
 
     Identifier convertStringToIdentifier(String input);
 
+    Identifier convertStringToIdentifierStrict(String input);
+
     Identifier convertStringToSelectIdentifier(String input);
 
     void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException;

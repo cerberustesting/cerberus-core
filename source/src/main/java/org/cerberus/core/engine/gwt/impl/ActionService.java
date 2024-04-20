@@ -411,7 +411,7 @@ public class ActionService implements IActionService {
                     res = this.doActionSwipe(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
-                    res = this.doActionScrollTo(execution, value1, value2);
+                    res = this.doActionScrollTo(execution, value1, value2, value3);
                     break;
                 case TestCaseStepAction.ACTION_INSTALLAPP:
                     res = this.doActionInstallApp(execution, value1);
@@ -612,7 +612,6 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
             case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
             case TestCaseStepAction.ACTION_SWIPE:
-            case TestCaseStepAction.ACTION_SCROLLTO:
             case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
                 actionExecution.setValue3("");
                 actionExecution.setValue3Init("");
@@ -621,6 +620,7 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_KEYPRESS:
             case TestCaseStepAction.ACTION_CALLSERVICE:
             case TestCaseStepAction.ACTION_GETROBOTFILE:
+            case TestCaseStepAction.ACTION_SCROLLTO:
                 break;
             default:
 
@@ -858,29 +858,29 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
+    private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String maxScrollDown, String offsets) {
         MessageEvent message;
 
         try {
-            Identifier identifier = null;
-            if (!StringUtil.isEmpty(element)) {
-                identifier = identifierService.convertStringToIdentifier(element);
-            }
+
+            Identifier identifier = identifierService.convertStringToIdentifierStrict(element);
+            LOG.debug("toto Identifier :'" + identifier.getIdentifier() + "' Locator '" + identifier.getLocator() + "'");
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown);
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown);
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
+                return webdriverService.scrollTo(tCExecution.getSession(), identifier, identifier.isSameIdentifier("") ? element : null, offsets);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_SCROLLTO));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
+
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = "";
@@ -888,7 +888,7 @@ public class ActionService implements IActionService {
                 messageString = e.getMessage().split("\n")[0];
             }
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
-            LOG.debug("Exception Running scroll to  :" + messageString, e);
+            LOG.debug("Exception Running scroll to :" + messageString, e);
             return message;
         }
     }

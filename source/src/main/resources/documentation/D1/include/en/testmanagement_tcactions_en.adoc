@@ -330,19 +330,40 @@ Select an option in a <select> Element. this 'text' must be defined : <option va
 | *[green]#GUI#* | *[red]#SRV#* | *[green]#APK#* | *[green]#IPA#* | *[green]#FAT#* | *[red]#BAT#*
 
 |=== 
-will allow you to press any key in the current web page.
+will allow you to press any key in the current page. Value3 contains the modifier that can be used.
 
 *[blue]#Value1#* : Identifier and name of the element where the key is pressed in the form of : identifier=html_reference.
 
 *[blue]#Value2#* : Keycode of the key to press.
 
-.for a GUI application
+.Pressing ENTER Key for a GUI application
 ====
 ENTER
 ====
-.for a FAT application
+.Pressing ENTER Key for a FAT application
 ====
 Key.ENTER
+====
+.Pressing 1,2,3,4,5 and then ENTER keys for a FAT application
+====
+12345Key.ENTER
+====
+
+*[blue]#Value3#* : Keycode of the modifier key to press at the same time of the Value2 key pressed.
+
+.Pressing CTRL keys (during full keypress) for a FAT application
+====
+Key.CTRL
+====
+
+[NOTE]
+====
+You can force the keypress to be performed with sikuli backend when specifying Value1 with value : __**picture=**__.
+====
+
+[NOTE]
+====
+Speed of typing can be configured inside the *__TypeDelay__* options of the action.
 ====
 
 The keycodes (see. keypress action) also changes depending on the application type (GUI, IPA, APK or FAT). The syntaxes are:
@@ -433,13 +454,36 @@ Will swipe from the point (100;100) to the point (100;200)
 |=== 
 Scroll to either an element or a text.
 
-*[blue]#Value1#* : Identifier and name of the element where the scroll will move the screen to in the form of : identifier=html_reference.
+*[blue]#Value1#* : Identifier of the element or text where the scroll will move the screen to. Has the form of : identifier=html_reference.
 
-*[blue]#Value2#* : text in the screen where the scroll will move.
+.Scroll to an xpath element
+====
+///button[contains(@class,'product-rating-open-language')]//span
+====
+
+.Scroll to a text that appear on the page
+====
+My Playlist
+====
+
+*[blue]#Value2#* : Maximum number of scroll that will be performed in order to reach the element. This parameter is used only for *[green]#APK#* and *[green]#IPA#* applications. It default to 8 if empty or invalid.
+
+*[blue]#Value3#* : Scroll offset that will be perform after scrolling to the element. This parameter is used only for *[green]#GUI#* applications. Format is 2 integer values seperated by a comma.
+When empty, the global parameters *_cerberus_selenium_autoscroll_horizontal_offset_* and  **__cerberus_selenium_autoscroll_vertical_offset__** are used to offset to the given values.
+
+.Move back up by 100 pixel
+====
+0,-100
+====
+
+.Forcing no offset whatever the global parameters contains
+====
+0,0
+====
 
 [NOTE]
 ====
-Use either Value1 or Value2. If both are feed, the Value2 scroll will be used first.
+A temporisation of a few seconds will be done between the scrolls in order to secure that the browser has time to reach the element before doing the offset.
 ====
 
 ==== installApp

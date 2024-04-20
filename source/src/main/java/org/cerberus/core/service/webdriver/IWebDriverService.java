@@ -99,7 +99,7 @@ public interface IWebDriverService {
 
     JSONArray getJSONConsoleLog(Session session);
 
-    MessageEvent scrollTo(Session session, Identifier identifier, String text);
+    MessageEvent scrollTo(Session session, Identifier identifier, String text, String offsets);
 
     MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 

@@ -6311,3 +6311,6 @@ ALTER TABLE `tag` ADD COLUMN `BrowserstackAppBuildHash` VARCHAR(100) NOT NULL DE
 
 -- 1772
 UPDATE testcasecountryproperties SET `Length` = 1 where `Length` = 0;
+
+-- 1773
+UPDATE testcasestepaction SET Value1 = Value2, Value2 = "" where action = 'scrollTo' and Value1 = "" and Value2 != "";
