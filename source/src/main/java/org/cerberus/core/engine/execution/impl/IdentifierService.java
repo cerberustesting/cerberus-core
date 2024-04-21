@@ -66,9 +66,12 @@ public class IdentifierService implements IIdentifierService {
                 identifier = strings[0];
                 locator = strings[1];
 
-                String[] selectOptionAttributes = {Identifier.IDENTIFIER_DATACERBERUS, Identifier.IDENTIFIER_QUERYSELECTOR, Identifier.IDENTIFIER_ID, Identifier.IDENTIFIER_NAME,
+                String[] selectOptionAttributes = {
+                    Identifier.IDENTIFIER_DATACERBERUS, Identifier.IDENTIFIER_ID, Identifier.IDENTIFIER_NAME,
                     Identifier.IDENTIFIER_CLASS, Identifier.IDENTIFIER_CSS, Identifier.IDENTIFIER_XPATH, Identifier.IDENTIFIER_LINK,
-                    Identifier.IDENTIFIER_PICTURE, Identifier.IDENTIFIER_ERRATUM, Identifier.IDENTIFIER_TEXT};
+                    Identifier.IDENTIFIER_PICTURE, Identifier.IDENTIFIER_TEXT,
+                    Identifier.IDENTIFIER_ERRATUM, Identifier.IDENTIFIER_QUERYSELECTOR,
+                    Identifier.IDENTIFIER_TITLE, Identifier.IDENTIFIER_REGEXTITLE, Identifier.IDENTIFIER_URL, Identifier.IDENTIFIER_REGEXURL};
 
                 if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
                     identifier = defaultIdentifier;
