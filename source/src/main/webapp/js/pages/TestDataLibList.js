@@ -563,7 +563,10 @@ function aoColumnsFuncTestDataLib(tableId) {
             "like": true,
             "data": "created",
             "sWidth": "150px",
-            "title": doc.getDocOnline("testdatalib", "created")
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "mRender": function(data, type, oObj) {
+                return getDate(oObj["created"]).toLocaleString();
+            }
         },
         {
             "sName": "tdl.Creator",
@@ -578,9 +581,9 @@ function aoColumnsFuncTestDataLib(tableId) {
             "like": true,
             "data": "lastModified",
             "sWidth": "150px",
-            "title": doc.getDocOnline("testdatalib", "lastmodified"),
+            "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function(data, type, oObj) {
-                return getDate(oObj["lastModified"]);
+                return getDate(oObj["lastModified"]).toLocaleString();
             }
         },
         {

@@ -160,7 +160,7 @@ function aoColumnsFunc() {
                     var executionLink = "./TestCaseExecution.jsp?executionId=" + obj.id;
                     var glyphClass = getRowClass(obj.controlStatus);
                     var tooltip = generateTooltip(obj);
-                    var cell = '<a href="' + executionLink + '"><div class="progress-bar status' + obj.controlStatus + '" \n\
+                    var cell = '<a href="' + executionLink + '" target="_blank"><div class="progress-bar status' + obj.controlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 20px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5" style="margin-top:0;"></span>\n\
@@ -178,6 +178,17 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_executiondetail", "id"),
             "sWidth": "50px",
             "sDefaultContent": ""
+        },
+        {
+            "data": "start",
+            "sName": "exe.start",
+            "like": true,
+            "title": doc.getDocOnline("page_executiondetail", "start"),
+            "sWidth": "70px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                return new Date(obj.start).toLocaleString();
+            }
         },
         {
             "data": "test",
@@ -290,19 +301,6 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "start",
-            "visible": false,
-            "sName": "exe.start",
-            "like": true,
-            "title": doc.getDocOnline("page_executiondetail", "start"),
-            "sWidth": "70px",
-            "sDefaultContent": "",
-            "mRender": function (data, type, obj) {
-                return new Date(obj.start);
-//                    return new Date(obj);
-            }
-        },
-        {
             "data": "end",
             "visible": false,
             "sName": "exe.end",
@@ -311,8 +309,7 @@ function aoColumnsFunc() {
             "sWidth": "70px",
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
-                return new Date(obj.end);
-//                    return new Date(obj);
+                return new Date(obj.end).toLocaleString();
             }
         },
         {

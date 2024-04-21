@@ -74,7 +74,7 @@ public class ReadTagStat extends HttpServlet {
     private ITagService tagService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTagStat.class);
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
     private static final String DATE_FORMAT_DAY = "yyyy-MM-dd";
 
     /**
@@ -271,9 +271,9 @@ public class ReadTagStat extends HttpServlet {
 
                     pointObj = new JSONObject();
                     Date d = new Date(exeCur.getDateCreated().getTime());
-//                    TimeZone tz = TimeZone.getTimeZone("UTC");
+                    TimeZone tz = TimeZone.getTimeZone("UTC");
                     DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-//                    df.setTimeZone(tz);
+                    df.setTimeZone(tz);
                     pointObj.put("x", df.format(d));
 
                     pointObj.put("y", ymin);

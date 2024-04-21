@@ -44,8 +44,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        moment.locale("fr");
-
         $('#frompicker').datetimepicker();
         $('#topicker').datetimepicker({
             useCurrent: false //Important! See issue #1075

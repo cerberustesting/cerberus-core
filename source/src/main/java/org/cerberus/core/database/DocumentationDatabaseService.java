@@ -1411,7 +1411,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','group','','fr','Groupe',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodified','','en','Modification Date','','_data_library')");
         b.append(",('testdatalib','lastmodified','','ru','Дата модификации','','_data_library')");
-        b.append(",('testdatalib','lastmodified','','fr','Dernière modification',NULL,'_librairie_de_données')");
+        b.append(",('testdatalib','lastmodified','','fr','Date de modification',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','lastmodifier','','en','Last Modifier','User who last modified the data.','_data_library')");
         b.append(",('testdatalib','lastmodifier','','fr','Dernier modificateur','Utilisateur qui a modifié en dernier la donnée','_librairie_de_données')");
         b.append(",('testdatalib','method','','en','Operation','<p>Operation that is invoked by the SOAP request/call.</p>','_data_library')");

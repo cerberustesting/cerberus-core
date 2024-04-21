@@ -36,9 +36,6 @@ function initPage() {
     displayPageLabel();
     initGraph();
 
-    //Queue History tab
-    moment.locale("fr");
-
     $('#frompicker').datetimepicker();
     $('#topicker').datetimepicker({
         useCurrent: false //Important! See issue #1075

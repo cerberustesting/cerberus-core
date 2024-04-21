@@ -273,7 +273,7 @@ function aoColumnsFunc() {
             "sWidth": "150px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateCreated"]);
+                return getDate(oObj["dateCreated"]).toLocaleString();
             }
         },
         {
@@ -293,7 +293,7 @@ function aoColumnsFunc() {
             "sWidth": "150px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateModif"]);
+                return getDate(oObj["dateModif"]).toLocaleString();
             }
 
         },

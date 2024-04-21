@@ -36,8 +36,7 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="dependencies/Moment-2.24.0/moment.min.js"></script>
-        <script type="text/javascript" src="dependencies/Moment-2.24.0/locale/fr.js"></script>
+        <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Chart.js-2.9.3/Chart.min.js"></script>
         <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>

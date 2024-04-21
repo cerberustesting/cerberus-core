@@ -1084,7 +1084,10 @@ function aoColumnsFunc(countries, tableId) {
             "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "sWidth": "150px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]).toLocaleString();
+            }
         },
         {
             "data": "usrCreated",
@@ -1103,7 +1106,7 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "150px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateModif"]);
+                return getDate(oObj["dateModif"]).toLocaleString();
             }
         },
         {

@@ -596,7 +596,10 @@ function aoColumnsFunc(tableId) {
             "like": true,
             "sWidth": "80px",
             "sName": "dateCreated",
-            "title": doc.getDocOnline("transversal", "DateCreated")},
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]).toLocaleString();
+            }},
         {"data": "usrModif",
             "visible": false,
             "sWidth": "30px",
@@ -608,7 +611,10 @@ function aoColumnsFunc(tableId) {
             "like": true,
             "sWidth": "80px",
             "sName": "dateModif",
-            "title": doc.getDocOnline("transversal", "DateModif")
+            "title": doc.getDocOnline("transversal", "DateModif"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]).toLocaleString();
+            }
         }
 
     ];
