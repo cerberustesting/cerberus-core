@@ -74,7 +74,7 @@ public class ReadTagStat extends HttpServlet {
     private ITagService tagService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTagStat.class);
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S";
     private static final String DATE_FORMAT_DAY = "yyyy-MM-dd";
 
     /**
