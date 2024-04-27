@@ -359,9 +359,9 @@ function loadReportingData(selectTag) {
             refreshHistoryMenu();
 
             // Tag Detail feed.
-            $("#startExe").val(data.tagObject.DateCreated);
-            $("#endExe").val(getDateShort(data.tagObject.DateEndQueue));
-            $("#endLastExe").val(data.testFolderChart.globalEnd);
+            $("#startExe").val(getDate(data.tagObject.DateCreated).toLocaleString());
+            $("#endExe").val(getDate(data.tagObject.DateEndQueue).toLocaleTimeString());
+            $("#endLastExe").val(getDate(data.testFolderChart.globalEnd).toLocaleString());
             $("#TagUsrCreated").val(data.tagObject.UsrCreated);
             $("#Tagcampaign").val(data.tagObject.campaign);
             $("#TagComment").val(data.tagObject.comment);
@@ -1485,9 +1485,9 @@ function generateTooltip(data) {
     if ((data.RobotDecli !== undefined) && (data.RobotDecli !== '')) {
         htmlRes += '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>';
     }
-    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateShort(data.Start) + '</div>';
+    htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDate(data.Start).toLocaleTimeString() + '</div>';
     if (getDateShort(data.End) !== "") {
-        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDateShort(data.End) + '</div>';
+        htmlRes += '<div><span class=\'bold\'>End : </span>' + getDate(data.End).toLocaleTimeString() + '</div>';
     }
     htmlRes += '<div>' + ctrlmessage + '</div>';
 

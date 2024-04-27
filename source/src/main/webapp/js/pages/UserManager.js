@@ -148,9 +148,9 @@ function editEntryClick(param) {
         formEdit.find("#apiKey").prop("value", obj["apiKey"]);
 
         formEdit.find("#usrcreated").prop("value", obj.usrCreated);
-        formEdit.find("#datecreated").prop("value", obj.dateCreated);
+        formEdit.find("#datecreated").prop("value", getDate(obj.dateCreated).toLocaleString());
         formEdit.find("#usrmodif").prop("value", obj.usrModif);
-        formEdit.find("#datemodif").prop("value", obj.dateModif);
+        formEdit.find("#datemodif").prop("value", getDate(obj.dateModif).toLocaleString());
 
         formEdit.find("#defaultSystem").prop("value", obj["defaultSystem"]);
         formEdit.find("#defaultSystem").prop("readonly", "readonly");
@@ -729,6 +729,45 @@ function aoColumnsFunc(tableId) {
             "sName": "reqest",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "request_col")
+        },
+        {
+            "data": "usrCreated",
+            "visible": false,
+            "sName": "UsrCreated",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrCreated")
+        },
+        {
+            "data": "dateCreated",
+            "visible": false,
+            "like": true,
+            "sName": "DateCreated",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]).toLocaleString();
+            }
+        },
+        {
+            "data": "usrModif",
+            "visible": false,
+            "sName": "UsrModif",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrModif")
+        },
+        {
+            "data": "uateModif",
+            "visible": false,
+            "sName": "DateModif",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateModif"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]).toLocaleString();
+            }
         }
     ];
     return aoColumns;

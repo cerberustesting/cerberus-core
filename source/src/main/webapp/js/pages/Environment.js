@@ -1351,7 +1351,10 @@ function aoColumnsFuncChange(tableId) {
             "data": "datecre",
             "sName": "datecre",
             "sWidth": "195px",
-            "title": doc.getDocOnline("countryenvparam_log", "datecre")
+            "title": doc.getDocOnline("countryenvparam_log", "datecre"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["datecre"]).toLocaleString();
+            }
         },
         {
             "data": "description",
@@ -1387,7 +1390,10 @@ function aoColumnsFuncEvent(tableId) {
             "data": "dateBatch",
             "sName": "dateBatch",
             "sWidth": "195px",
-            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch")
+            "title": doc.getDocOnline("buildrevisionbatch", "dateBatch"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateBatch"]).toLocaleString();
+            }
         },
         {
             "data": "batch",

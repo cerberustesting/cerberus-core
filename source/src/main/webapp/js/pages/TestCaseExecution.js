@@ -1443,7 +1443,7 @@ function setConfigPanel(data) {
     configPanel.find("input#environmentData").val(data.environmentData);
     configPanel.find("input#status").val(data.status);
 
-    configPanel.find("input#end").val(getDate(data.end));
+    configPanel.find("input#end").val(new Date(data.end).toLocaleString());
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
@@ -1471,7 +1471,7 @@ function setConfigPanel(data) {
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#screenSize").val(data.screenSize);
     configPanel.find("input#userAgent").val(data.userAgent);
-    configPanel.find("input#start").val(new Date(data.start));
+    configPanel.find("input#start").val(new Date(data.start).toLocaleString());
     configPanel.find("input#tag").val(data.tag);
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#exetest").val(data.test);
@@ -1530,9 +1530,9 @@ function setConfigPanel(data) {
     }
 
     configPanel.find("input#usrcreated").val(data.usrCreated);
-    configPanel.find("input#datecreated").val(data.dateCreated);
+    configPanel.find("input#datecreated").val(getDate(data.dateCreated).toLocaleString());
     configPanel.find("input#usrmodif").val(data.usrModif);
-    configPanel.find("input#datemodif").val(data.dateModif);
+    configPanel.find("input#datemodif").val(getDate(data.dateModif).toLocaleString());
 
 
     //setTestCaseControlStatue(data.controlStatus);

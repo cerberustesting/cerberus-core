@@ -667,9 +667,9 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#service").prop("value", service.service);
         formEdit.find("#originalService").prop("value", service.service);
         formEdit.find("#usrcreated").prop("value", service.UsrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
+        formEdit.find("#datecreated").prop("value", getDate(service.DateCreated).toLocaleString());
         formEdit.find("#usrmodif").prop("value", service.UsrModif);
-        formEdit.find("#datemodif").prop("value", getDate(service.DateModif));
+        formEdit.find("#datemodif").prop("value", getDate(service.DateModif).toLocaleString());
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");

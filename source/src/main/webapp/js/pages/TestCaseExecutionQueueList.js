@@ -586,7 +586,10 @@ function aoColumnsFunc(tableId) {
             "like": true,
             "sName": "requestDate",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
-            "sWidth": "110px"
+            "sWidth": "110px",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["requestDate"]).toLocaleString();
+            }
         },
         {
             "data": "state",
@@ -639,7 +642,10 @@ function aoColumnsFunc(tableId) {
             "sName": "DateCreated",
             "sWidth": "110px",
             "defaultContent": "",
-            "title": doc.getDocOnline("transversal", "DateCreated")
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["DateCreated"]).toLocaleString();
+            }
         },
         {
             "data": "robotIP",
@@ -801,7 +807,7 @@ function aoColumnsFunc(tableId) {
             "defaultContent": "",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["DateModif"]);
+                return getDate(oObj["DateModif"]).toLocaleString();
             }
         }
     ];

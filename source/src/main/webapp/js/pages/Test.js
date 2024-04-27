@@ -114,20 +114,19 @@ function addEntryModalSaveHandler() {
 
     var nameElement = formAdd.find("#test");
     var nameElementEmpty = nameElement.prop("value") === '';
-    
+
     // if the Test field contains '&'
     var nameElementInvalid = nameElement.prop("value").search("&");
-    
+
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the test!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));
     } else if (nameElementInvalid != -1) {
-    	var localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
+        var localMessage = new Message("danger", "The test folder name cannot contain the symbol : &");
         nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));  	
-    }
-    else {
+        showMessage(localMessage, $('#addEntryModal'));
+    } else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
@@ -245,7 +244,7 @@ function aoColumnsFunc() {
         {
             "data": "description",
             "sName": "description",
-            "like":true,
+            "like": true,
             "sWidth": "100px",
             "title": doc.getDocOnline("test", "description")
         },
@@ -256,12 +255,12 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("test", "isActive"),
             "className": "center",
             "mRender": function (data, type, obj) {
-                    if (data) {
-                        return '<input type="checkbox" checked disabled />';
-                    } else {
+                if (data) {
+                    return '<input type="checkbox" checked disabled />';
+                } else {
 //                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testcase"]) + '"]').attr("disabled", "disabled");
-                        return '<input type="checkbox" disabled />';
-                    }
+                    return '<input type="checkbox" disabled />';
+                }
             }
         },
         {

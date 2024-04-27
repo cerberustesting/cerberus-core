@@ -343,7 +343,7 @@ function editEntryClick(id, system) {
         if ($("#editApplicationModal #applicationObjectsTable_wrapper").length > 0) {
             $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
         } else {
-            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application=" + obj["application"], "contentTable", aoColumnsFunc_object("applicationObjectsTable"), [1, 'asc']);
+            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application=" + encodeURIComponent(obj["application"]), "contentTable", aoColumnsFunc_object("applicationObjectsTable"), [1, 'asc']);
             var table = createDataTableWithPermissions(configurations, function (data) {
                 renderOptionsForApplicationObject(obj["application"], data);
             }, "#applicationObjectList", undefined, true);
@@ -521,11 +521,11 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
+                var editApplication = '<button id="editApplication" onclick="editEntryClick(\'' + encodeURIComponent(obj["application"]) + '\', \'' + encodeURIComponent(obj["system"]) + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["system"] + '\');"\n\
+                var viewApplication = '<button id="editApplication" onclick="editEntryClick(\'' + encodeURIComponent(obj["application"]) + '\', \'' + encodeURIComponent(obj["system"]) + '\');"\n\
                                     class="editApplication btn btn-default btn-xs margin-right5" \n\
                                     name="editApplication" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
@@ -661,7 +661,10 @@ function aoColumnsFunc_object(tableId) {
             "like": true,
             "visible" : false,
             "sName": "dateCreated",
-            "title": doc.getDocOnline("transversal", "DateCreated")
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]).toLocaleString();
+            }
         },
         {
             "data": "usrModif",
@@ -674,7 +677,10 @@ function aoColumnsFunc_object(tableId) {
             "like": true,
             "visible" : false,
             "sName": "dateModif",
-            "title": doc.getDocOnline("transversal", "DateModif")
+            "title": doc.getDocOnline("transversal", "DateModif"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]).toLocaleString();
+            }
         }
     ];
     return aoColumns;

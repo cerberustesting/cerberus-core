@@ -543,9 +543,9 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #libdescription').prop("value", obj.description);
         $('#editTestDataLibModal #group').prop("value", obj.group);
 
-        $('#editTestDataLibModal #created').prop("value", obj.created);
+        $('#editTestDataLibModal #created').prop("value", getDate(obj.created).toLocaleString());
         $('#editTestDataLibModal #creator').prop("value", obj.creator);
-        $('#editTestDataLibModal #lastModified').prop("value", getDate(obj.lastModified));
+        $('#editTestDataLibModal #lastModified').prop("value", getDate(obj.lastModified).toLocaleString());
         $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
         changeAppServiceFromHere();

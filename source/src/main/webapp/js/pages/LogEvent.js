@@ -81,7 +81,7 @@ function editEntryClick(id) {
         var formEdit = $('#editEntryModal');
 
         formEdit.find("#logeventid").prop("value", id);
-        formEdit.find("#time").prop("value", obj["time"]);
+        formEdit.find("#time").prop("value", getDate(obj["time"]).toLocaleString());
         formEdit.find("#remoteip").prop("value", obj["remoteIP"]);
         formEdit.find("#localip").prop("value", obj["localIP"]);
         formEdit.find("#page").prop("value", obj["page"]);
@@ -124,7 +124,10 @@ function aoColumnsFunc() {
             "like": true,
             "sName": "Time",
             "sWidth": "90px",
-            "title": doc.getDocOnline("logevent", "time")
+            "title": doc.getDocOnline("logevent", "time"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["time"]).toLocaleString();
+            }
         },
         {
             "data": "status",

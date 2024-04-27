@@ -279,7 +279,10 @@ function aoColumnsFunc(tableId) {
             "like": true,
             "sName": "dateCreated",
             "sWidth": "80px",
-            "title": doc.getDocOnline("page_applicationObject", "DateCreated")
+            "title": doc.getDocOnline("page_applicationObject", "DateCreated"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]).toLocaleString();
+            }
         },
         {
             "data": "usrModif",
@@ -295,7 +298,10 @@ function aoColumnsFunc(tableId) {
             "visible": false,
             "sName": "dateModif",
             "sWidth": "80px",
-            "title": doc.getDocOnline("page_applicationObject", "DateModif")
+            "title": doc.getDocOnline("page_applicationObject", "DateModif"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]).toLocaleString();
+            }
         }];
     return aoColumns;
 }
