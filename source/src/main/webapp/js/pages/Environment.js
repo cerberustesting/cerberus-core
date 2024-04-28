@@ -1353,7 +1353,7 @@ function aoColumnsFuncChange(tableId) {
             "sWidth": "195px",
             "title": doc.getDocOnline("countryenvparam_log", "datecre"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["datecre"]).toLocaleString();
+                return getDate(oObj["datecre"]);
             }
         },
         {
@@ -1392,7 +1392,7 @@ function aoColumnsFuncEvent(tableId) {
             "sWidth": "195px",
             "title": doc.getDocOnline("buildrevisionbatch", "dateBatch"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateBatch"]).toLocaleString();
+                return getDate(oObj["dateBatch"]);
             }
         },
         {

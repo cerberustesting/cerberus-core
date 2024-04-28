@@ -777,6 +777,35 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public Answer updateDateStartExe(Tag tag) {
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE tag SET DateStartExe = ? ");
+        query.append("WHERE Tag = ?");
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", tag.getTag());
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setTimestamp(i++, tag.getDateStartExe());
+            preStat.setString(i, tag.getTag());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -871,6 +900,7 @@ public class TagDAO implements ITagDAO {
         String comment = ParameterParserUtil.parseStringParam(rs.getString("tag.comment"), "");
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("tag.campaign"), "");
         Timestamp dateEndQueue = rs.getTimestamp("tag.DateEndQueue");
+        Timestamp dateStartExe = rs.getTimestamp("tag.DateStartExe");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("tag.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("tag.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("tag.DateModif");
@@ -907,7 +937,7 @@ public class TagDAO implements ITagDAO {
 
         return Tag.builder()
                 .id(id).tag(tag).description(description).comment(comment)
-                .campaign(campaign).dateEndQueue(dateEndQueue).nbExe(nbExe)
+                .campaign(campaign).dateEndQueue(dateEndQueue).dateStartExe(dateStartExe).nbExe(nbExe)
                 .nbExeUsefull(nbExeUsefull).nbOK(nbOK).nbKO(nbKO).nbFA(nbFA)
                 .nbNA(nbNA).nbNE(nbNE).nbWE(nbWE).nbPE(nbPE).nbQU(nbQU).nbQE(nbQE)
                 .nbCA(nbCA).ciScore(ciScore).ciScoreThreshold(ciScoreThreshold)

@@ -53,6 +53,7 @@ public class Tag {
     private String comment;
     private String campaign;
     private Timestamp dateEndQueue;
+    private Timestamp dateStartExe;
     private int nbExe;
     private int nbExeUsefull;
     private int nbOK;
@@ -129,6 +130,7 @@ public class Tag {
             result.put("description", this.description);
             result.put("comment", this.comment);
             result.put("DateEndQueue", this.dateEndQueue);
+            result.put("DateStartExe", this.dateStartExe);
             result.put("nbExe", this.nbExe);
             result.put("nbExeUsefull", this.nbExeUsefull);
             result.put("nbOK", this.nbOK);
@@ -185,11 +187,12 @@ public class Tag {
             cerberusURL = StringUtil.addSuffixIfNotAlready(cerberusURL, "/");
             result.put("link", cerberusURL + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(this.tag, "UTF-8"));
             result.put("tag", this.tag);
-            if (this.dateEndQueue != null && this.dateCreated != null) {
-                result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateCreated.getTime()));
+            if (this.dateEndQueue != null && this.dateStartExe != null) {
+                result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateStartExe.getTime()));
             }
             result.put("CI", this.ciResult);
             result.put("start", this.dateCreated);
+            result.put("startExe", this.dateStartExe);
             result.put("end", this.dateEndQueue);
             result.put("campaign", this.campaign);
             result.put("description", this.description);

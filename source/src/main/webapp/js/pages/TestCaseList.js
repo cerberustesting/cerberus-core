@@ -1086,7 +1086,7 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "150px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateCreated"]).toLocaleString();
+                return getDate(oObj["dateCreated"]);
             }
         },
         {
@@ -1106,7 +1106,7 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "150px",
             "sDefaultContent": "",
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateModif"]).toLocaleString();
+                return getDate(oObj["dateModif"]);
             }
         },
         {

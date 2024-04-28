@@ -1,39 +1,41 @@
 *Bug fixes*
 [square]
-* Display small issue on testcase script page and execution when condition include value1 that contains quote or double quote.
-* Fixed language local management on recent Chrome versions
-* Homepage filters now also apply on all summary counters (in order to be consistent with the graphs on the page).
-* Fixed Browserstack buildHash management for app automate campaigns.
-* Fixed error message when filtering some pages with empty string.
-* Make scrollto action more robust #2458
+* [GUI] Display issue on testcase script and execution page when condition include value1 that contains quote or double quote.
+* [GUI] Homepage filters now also apply on all summary counters (in order to be consistent with the graphs on the page).
+* [GUI] Fixed error message when filtering some pages with empty string.
+* [ENGINE] Fixed language local management on recent Chrome versions
+* [ENGINE] Fixed Browserstack buildHash management for app automate campaigns.
+* [ENGINE] Make scrollto action more robust (a 1 second tempo has been added in order to let the browser scroll the page. 2 extras seconds on top of it if you offset the scroll to extra values) #2458
 
 *Improvements / New features*
 [square]
-* Added status code for Logs (Menu Administration / Log Viewer).
-* Size of war binary reduced by cleaning a few unnecessary maven dependencies.
-* Edit Robot button is now available directly from execution page.
-* MANUAL Proxy configuration is also supported (on top of NETWORKTRAFFIC).
-* Copy to Clipboard button added on APIKey User screen.
-* CSV file can now be downloaded from test data lib screen.
-* new variable %property.PROP-0.nbrows% that returns the number of rows of a property.
-* new options on actions and controls in order to force screenshot before and after it gets executed (that avoid additional takeScreenshot control)
-* new options on actions and controls in order to add a wait in ms before and after it gets executed (that avoid additional wait action). This is to be used with care as Cerberus already wait for an element before interacting with it.
-* new parameter cerberus_pdfcampaignreportdisplayciresult_boolean in order to hide/display the cicd information on pdf report.
-* PDF Files content can now be controlled after being downloaded (text content + page numbers + pdf certificates information).
-* getRobotFile action now save the files on their initial format. Those files can be manually checked and saved.
-* Improved navigation between Testcase script page and execution page (step focused is kept during execution and between the 2 screens).
-* Screenshot preview is now bigger.
-* Screenshot order display on execution page correspond to the timing of its creation. #2522
-* Allow multiple extraParameters on robot chrome (space character is used as separator).
-* Added %system.ROBOTSESSIONID% and %system.ROBOTPROVIDERSESSIONID% system variable.
-* Allow to have optional subdata and feed cerberus_testdatalib_subdataDefaultValue parameter to defined its default value (Thanks to Promod team ;-)).
-* Make Numeric conversion more robust (ex : 'EUR 123 123.5 €' will be converted to 123123.5 before performing the control)
-* More robust FTP connector (Timeout support, FTP URL can be edited preserving secrets to be modified,  more detailed and precise error messages)
-* SFTP support on call service Action.
-* A Property length of 0 now will take all available rows of the data (whether it is csv, internal, sql or service related). All existing properties with lengths of 0 will be changed to 1 in order to secure the behavior is unchanged.
-* Value1, 2 and 3 are no longer decoded when not used. (for ex, switching condition to 'always' or 'never' no longer force you to empty parameter values that could crash during decode) fix #2038
-* controls on element visible are now aligned with element present when using image recognition feature.
-* scrollTo action now allow to configure horizontal or vertical offset [GUI Only]
+* [GUI] Added status code for Logs (Menu Administration / Log Viewer).
+* [GUI] Edit Robot button is now available directly from execution page.
+* [GUI] Copy to Clipboard button added on APIKey User screen.
+* [GUI] CSV file can now be downloaded from test data lib screen.
+* [GUI] Improved navigation between Testcase script page and execution page (step focused is kept during execution and between the 2 screens).
+* [GUI] Screenshot preview is now bigger.
+* [GUI] Screenshot order display on execution page correspond to the timing of its creation. #2522
+* [GUI] Made date and time always display in local format.
+* [GUI] Added start of execution at tag level (campaign execution). Information on 'submitted date' and 'start of execution date' are now both displayed. Duration on Campaign execution report by time is calculated from that date.
+* [ENGINE] MANUAL Proxy configuration is also supported (on top of NETWORKTRAFFIC).
+* [ENGINE] new variable %property.PROP-0.nbrows% that returns the number of rows of a property.
+* [ENGINE] new options on actions and controls in order to force screenshot before and after it gets executed (that avoid additional takeScreenshot control)
+* [ENGINE] new options on actions and controls in order to add a wait in ms before and after it gets executed (that avoid additional wait action). This is to be used with care as Cerberus already wait for an element before interacting with it.
+* [ENGINE] new parameter cerberus_pdfcampaignreportdisplayciresult_boolean in order to hide/display the cicd information on pdf report.
+* [ENGINE] PDF Files content can now be controlled after being downloaded (text content + page numbers + pdf certificates information).
+* [ENGINE] getRobotFile action now save the files on their initial format. Those files can be manually checked and saved.
+* [ENGINE] Allow multiple extraParameters on robot chrome (space character is used as separator).
+* [ENGINE] Added %system.ROBOTSESSIONID% and %system.ROBOTPROVIDERSESSIONID% system variable.
+* [ENGINE] Allow to have optional subdata and feed cerberus_testdatalib_subdataDefaultValue parameter to defined its default value (Thanks to Promod team ;-)).
+* [ENGINE] Make Numeric conversion more robust (ex : 'EUR 123 123.5 €' will be converted to 123123.5 before performing the numerical controls)
+* [ENGINE] More robust FTP connector (Timeout support, FTP URL can be edited on application without secrets to be modified,  more detailed and precise error messages)
+* [ENGINE] SFTP support on call service Action.
+* [ENGINE] A Property length of 0 now will load all available rows of the data (whether it is csv, internal, sql or service related). All existing properties with lengths of 0 will be changed to 1 in order to secure the behavior is unchanged.
+* [ENGINE] Value1, 2 and 3 are no longer decoded when not used. (for ex, switching condition to 'always' or 'never' no longer force you to empty parameter values that could crash during decode) fix #2038
+* [ENGINE] controls on 'element visible' are now activated when using image recognition feature (they perform the same controls as 'element present').
+* [ENGINE] scrollTo action now allow to configure horizontal or vertical offset [GUI Only]. Warning of text to scroll parameter that moved from value 2 to value 1 field (update is done automaticaly by Cerberus).
+* [OTHERS] Size of war binary reduced by cleaning a few unnecessary maven dependencies.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

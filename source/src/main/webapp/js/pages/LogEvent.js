@@ -81,7 +81,7 @@ function editEntryClick(id) {
         var formEdit = $('#editEntryModal');
 
         formEdit.find("#logeventid").prop("value", id);
-        formEdit.find("#time").prop("value", getDate(obj["time"]).toLocaleString());
+        formEdit.find("#time").prop("value", getDate(obj["time"]));
         formEdit.find("#remoteip").prop("value", obj["remoteIP"]);
         formEdit.find("#localip").prop("value", obj["localIP"]);
         formEdit.find("#page").prop("value", obj["page"]);
@@ -126,7 +126,7 @@ function aoColumnsFunc() {
             "sWidth": "90px",
             "title": doc.getDocOnline("logevent", "time"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["time"]).toLocaleString();
+                return getDate(oObj["time"]);
             }
         },
         {

@@ -385,7 +385,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["DateCreated"]).toLocaleString();
+                return getDate(oObj["DateCreated"]);
             }
         }, {
             "sName": "srv.UsrCreated",
@@ -401,7 +401,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["DateModif"]).toLocaleString();
+                return getDate(oObj["DateModif"]);
             }
         }, {
             "sName": "srv.UsrModif",

@@ -404,6 +404,28 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public void manageCampaignStartOfExecution(String tag, Timestamp startOfExecution) throws CerberusException {
+
+        try {
+            if (!StringUtil.isEmpty(tag)) {
+                Tag currentTag = this.convert(this.readByKey(tag));
+                if ((currentTag != null)) {
+                    if (currentTag.getDateStartExe().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
+                        currentTag.setDateStartExe(startOfExecution);
+                        tagDAO.updateDateStartExe(currentTag);
+                    } else {
+                        LOG.debug("Tag is already flaged with recent start of exe timestamp. " + currentTag.getDateStartExe());
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            LOG.error(e, e);
+        }
+
+    }
+    
+    @Override
     public String formatResult(Tag tag) {
         StringBuilder result = new StringBuilder();
         result.append(tag.getNbExeUsefull());

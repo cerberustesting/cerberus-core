@@ -1530,9 +1530,9 @@ function setConfigPanel(data) {
     }
 
     configPanel.find("input#usrcreated").val(data.usrCreated);
-    configPanel.find("input#datecreated").val(getDate(data.dateCreated).toLocaleString());
+    configPanel.find("input#datecreated").val(getDate(data.dateCreated));
     configPanel.find("input#usrmodif").val(data.usrModif);
-    configPanel.find("input#datemodif").val(getDate(data.dateModif).toLocaleString());
+    configPanel.find("input#datemodif").val(getDate(data.dateModif));
 
 
     //setTestCaseControlStatue(data.controlStatus);

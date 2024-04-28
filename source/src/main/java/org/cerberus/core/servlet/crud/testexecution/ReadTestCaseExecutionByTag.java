@@ -188,7 +188,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             if (mytag != null) {
                 JSONObject tagJSON = convertTagToJSONObject(mytag);
                 jsonResponse.put("tagObject", tagJSON);
-                jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000);
+                jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime() - mytag.getDateStartExe().getTime()) / 60000);
             }
 
             answer.setItem(jsonResponse);

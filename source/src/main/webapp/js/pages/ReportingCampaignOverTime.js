@@ -393,13 +393,17 @@ function getOptions(title, unit, axisType) {
                 label: function (t, d) {
                     var xLabel = d.datasets[t.datasetIndex].label;
                     let com = "";
-                    if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].desc)) {
+                    if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].tag)) {
                         com += " - ";
-                        com += d.datasets[t.datasetIndex].data[t.index].desc;
+                        com += d.datasets[t.datasetIndex].data[t.index].tag;
                     }
                     if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].comment)) {
                         com += " - ";
                         com += d.datasets[t.datasetIndex].data[t.index].comment;
+                    }
+                    if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].desc)) {
+                        com += " - ";
+                        com += d.datasets[t.datasetIndex].data[t.index].desc.replace(/<[^>]*>/g, "");
                     }
                     if (unit === "size") {
                         return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb" + com;

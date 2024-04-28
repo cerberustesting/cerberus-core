@@ -281,7 +281,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject", "DateCreated"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateCreated"]).toLocaleString();
+                return getDate(oObj["dateCreated"]);
             }
         },
         {
@@ -300,7 +300,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject", "DateModif"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateModif"]).toLocaleString();
+                return getDate(oObj["dateModif"]);
             }
         }];
     return aoColumns;

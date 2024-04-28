@@ -439,9 +439,9 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
         formEdit.find("#id").prop("value", exeQ.id);
         formEdit.find("#usrcreated").prop("value", exeQ.UsrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(exeQ.DateCreated).toLocaleString());
+        formEdit.find("#datecreated").prop("value", getDate(exeQ.DateCreated));
         formEdit.find("#usrmodif").prop("value", exeQ.UsrModif);
-        formEdit.find("#datemodif").prop("value", getDate(exeQ.DateModif).toLocaleString());
+        formEdit.find("#datemodif").prop("value", getDate(exeQ.DateModif));
         formEdit.find("#priority").prop("value", exeQ.priority);
         formEdit.find("#debugFlag").prop("value", exeQ.debugFlag);
     } else { // DUPLICATE or ADD
@@ -472,7 +472,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#timeout").prop("value", "");
     } else {
         formEdit.find("#tag").val(exeQ.tag);
-        formEdit.find("#requestDate").val(getDate(exeQ.requestDate).toLocaleString());
+        formEdit.find("#requestDate").val(getDate(exeQ.requestDate));
         formEdit.find("#state").val(exeQ.state);
         formEdit.find("#comment").prop("value", exeQ.comment);
         formEdit.find("#exeId").prop("value", exeQ.exeId);

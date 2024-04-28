@@ -369,9 +369,9 @@ function editEntryClick(param) {
         formEdit.find("#manualExecution").prop("value", obj["ManualExecution"]);
 
         formEdit.find("#usrcreated").prop("value", obj["UsrCreated"]);
-        formEdit.find("#datecreated").prop("value", getDate(obj["DateCreated"]).toLocaleString());
+        formEdit.find("#datecreated").prop("value", getDate(obj["DateCreated"]));
         formEdit.find("#usrmodif").prop("value", obj["UsrModif"]);
-        formEdit.find("#datemodif").prop("value", getDate(obj["DateModif"]).toLocaleString());
+        formEdit.find("#datemodif").prop("value", getDate(obj["DateModif"]));
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#campaign").prop("readonly", "readonly");
@@ -1002,7 +1002,7 @@ function aoColumnsFunc_Tag() {
             "sWidth": "150px", 
             "title": doc.getDocLabel("page_tag", "datecreated"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["4"]).toLocaleString();
+                return getDate(oObj["4"]);
             }
         },
         {
@@ -1067,7 +1067,7 @@ function aoColumnsFunc_Tag() {
             "sName": "DateEndQueue",
             "sWidth": "150px",
             "mRender": function (data, type, obj) {
-                return getDate(obj[0].DateEndQueue).toLocaleString();
+                return getDate(obj[0].DateEndQueue);
             },
             "title": doc.getDocOnline("tag", "dateendqueue")
         }
@@ -1160,7 +1160,7 @@ function appendSchedulerRow(scheduler) {
     loadCronList(cronInput);
     var descInput = $("<input name=\"cronDescription\" maxlength=\"200\">").addClass("form-control input-sm").val(scheduler.description);
     var activeInput = $("<input name=\"cronActive\" type='checkbox'>").addClass("form-control").prop("checked", activebool);
-    var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(getDate(scheduler.lastExecution).toLocaleString());
+    var lastExecInput = $("<input name=\"cronLastExecInput\" readonly>").addClass("form-control input-sm").val(getDate(scheduler.lastExecution));
     var userCreateInput = $("<input name=\"cronUserCreateInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrCreated);
     var userModifInput = $("<input name=\"cronUserModifInput\" readonly>").addClass("form-control input-sm").val(scheduler.usrModif);
 

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.engine.execution.impl;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,16 +40,17 @@ import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.IRobotExecutorService;
 import org.cerberus.core.crud.service.IRobotService;
+import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestService;
+import org.cerberus.core.crud.service.impl.TagService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.execution.IConditionService;
 import org.cerberus.core.engine.execution.IExecutionCheckService;
 import org.cerberus.core.engine.execution.IExecutionStartService;
-import org.cerberus.core.engine.execution.IRobotServerService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.event.IEventService;
@@ -87,7 +89,7 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     ExecutionUUID executionUUIDObject;
     @Autowired
-    private IRobotServerService serverService;
+    private ITagService tagService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -566,6 +568,8 @@ public class ExecutionStartService implements IExecutionStartService {
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);
                 }
+
+                tagService.manageCampaignStartOfExecution(execution.getTag(), new Timestamp(executionStart));
 
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_EXECUTION_START, execution, null, null, null);
 

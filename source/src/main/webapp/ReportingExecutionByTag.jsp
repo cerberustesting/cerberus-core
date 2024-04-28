@@ -209,17 +209,22 @@
                         </div>
                         <div class="panel-body" id="TagInfo">
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <label for="startExe">Start :</label>
+                                <div class="col-sm-4">
+                                    <label for="startExe">Submitted :</label>
+                                    <input type="text" class="form-control" name="submitted" id="submitted" readonly
+                                           aria-describedby="basic-addon1">
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="startExe">Started :</label>
                                     <input type="text" class="form-control" name="startExe" id="startExe" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <label for="endExe">End :</label>
                                     <input type="text" class="form-control" name="endExe" id="endExe" readonly
                                            aria-describedby="basic-addon1">
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <label for="durExe">Dur (Min) :</label>
                                     <input type="text" class="form-control" name="durExe" id="durExe" readonly
                                            aria-describedby="basic-addon1">

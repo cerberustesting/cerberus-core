@@ -250,7 +250,7 @@ public class ReadTagStat extends HttpServlet {
 
                 long y = 0;
                 long ymin = 0;
-                y = exeCur.getDateEndQueue().getTime() - exeCur.getDateCreated().getTime();
+                y = exeCur.getDateEndQueue().getTime() - exeCur.getDateStartExe().getTime();
                 ymin = y / 60000;
 
                 if (!countryMap.containsKey(exeCur.getCountryList())) {
@@ -270,7 +270,7 @@ public class ReadTagStat extends HttpServlet {
                     robotDecliMap.put(exeCur.getRobotDecliList(), true);
 
                     pointObj = new JSONObject();
-                    Date d = new Date(exeCur.getDateCreated().getTime());
+                    Date d = new Date(exeCur.getDateStartExe().getTime());
                     TimeZone tz = TimeZone.getTimeZone("UTC");
                     DateFormat df = new SimpleDateFormat(DATE_FORMAT);
                     df.setTimeZone(tz);

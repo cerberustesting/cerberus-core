@@ -275,9 +275,9 @@ function feedEventHookModalData(eventhookid, modalId, mode, hasPermissionsUpdate
     if (mode === "EDIT") {
         formEdit.find("#id").prop("value", eventhookid.id);
         formEdit.find("#usrcreated").prop("value", eventhookid.usrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(eventhookid.dateCreated).toLocaleString());
+        formEdit.find("#datecreated").prop("value", getDate(eventhookid.dateCreated));
         formEdit.find("#usrmodif").prop("value", eventhookid.usrModif);
-        formEdit.find("#datemodif").prop("value", getDate(eventhookid.dateModif).toLocaleString());
+        formEdit.find("#datemodif").prop("value", getDate(eventhookid.dateModif));
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");

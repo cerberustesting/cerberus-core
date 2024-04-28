@@ -169,6 +169,13 @@ public interface ITagDAO {
     Answer updateDateEndQueue(Tag tag);
 
     /**
+     *
+     * @param tag
+     * @return
+     */
+    public Answer updateDateStartExe(Tag tag);
+
+    /**
      * Uses data of ResultSet to create object {@link Application}
      *
      * @param rs ResultSet relative to select from table Application

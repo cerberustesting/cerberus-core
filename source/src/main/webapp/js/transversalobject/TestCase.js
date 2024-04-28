@@ -875,9 +875,9 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#testCase").prop("value", testCase.testcase);
         formEdit.find("#status").prop("value", testCase.status);
         formEdit.find("#usrcreated").prop("value", testCase.usrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(testCase.dateCreated).toLocaleString());
+        formEdit.find("#datecreated").prop("value", getDate(testCase.dateCreated));
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
-        formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif).toLocaleString());
+        formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif));
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
@@ -1088,8 +1088,8 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var actInput = $("<input type='checkbox'>").addClass("form-control input-sm").prop("checked", obj.act);
     var bugidInput = $("<input  maxlength=\"15\">").addClass("form-control input-sm").val(obj.id);
     var bugdescInput = $("<input  maxlength=\"50\">").addClass("form-control input-sm").val(obj.desc);
-    var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated).toLocaleString());
-    var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed).toLocaleString());
+    var dateCreatedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateCreated));
+    var dateClosedInput = $("<input readonly=\"true\">").addClass("form-control input-sm").val(getDate(obj.dateClosed));
     if (newbugTrackerUrl !== "") {
         var buglinkText = $("<a></a>").text(obj.id);
         buglinkText.prop("href", newbugTrackerUrl).prop("target", "_blank");

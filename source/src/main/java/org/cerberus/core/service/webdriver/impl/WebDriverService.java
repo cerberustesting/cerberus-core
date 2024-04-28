@@ -281,8 +281,9 @@ public class WebDriverService implements IWebDriverService {
             ((JavascriptExecutor) session.getDriver()).executeScript("arguments[0].scrollIntoView();", element);
         }
         try {
-            Thread.sleep(2000); // This wait is necessary in order to let the browser the time to scroll to the element.
+            Thread.sleep(1000); // This wait is necessary in order to let the browser the time to scroll to the element.
             if ((horizontalOffset != 0) || (verticalOffset != 0)) {
+                Thread.sleep(1000); // This wait is necessary in order to let the browser the time to scroll to the element.
                 ((JavascriptExecutor) session.getDriver()).executeScript("window.scrollBy(" + horizontalOffset + "," + verticalOffset + ");");
                 Thread.sleep(1000); // This wait is necessary in order to secure the offset scroll has been made until we continue the execution of the test.
             }

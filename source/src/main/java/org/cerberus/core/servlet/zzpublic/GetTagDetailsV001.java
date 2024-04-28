@@ -113,7 +113,7 @@ public class GetTagDetailsV001 extends HttpServlet {
                 if (tag != null) {
                     jsonResponse.put("tag", Tag);
                     jsonResponse.put("tagDurationInMs",
-                            (tag.getDateEndQueue().getTime() - tag.getDateCreated().getTime()));
+                            (tag.getDateEndQueue().getTime() - tag.getDateStartExe().getTime()));
                     jsonResponse.put("CI", tag.getCiResult());
                     jsonResponse.put("start", tag.getDateCreated());
                     jsonResponse.put("end", tag.getDateEndQueue());

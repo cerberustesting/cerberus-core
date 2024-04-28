@@ -2443,7 +2443,22 @@ function getDate(date) {
     var d1 = new Date('1980-01-01');
     var endExe = new Date(date);
     if (endExe > d1) {
-        return endExe;
+        return endExe.toLocaleString();
+    } else {
+        return "";
+    }
+}
+
+/**
+ * Method that return a String that contain the date. If date is 1970, the string return will be empty.
+ * @param {string} date
+ * @returns {string} date in string format
+ */
+function getDateTime(date) {
+    var d1 = new Date('1980-01-01');
+    var endExe = new Date(date);
+    if (endExe > d1) {
+        return endExe.toLocaleTimeString();
     } else {
         return "";
     }

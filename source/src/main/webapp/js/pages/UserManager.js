@@ -148,9 +148,9 @@ function editEntryClick(param) {
         formEdit.find("#apiKey").prop("value", obj["apiKey"]);
 
         formEdit.find("#usrcreated").prop("value", obj.usrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(obj.dateCreated).toLocaleString());
+        formEdit.find("#datecreated").prop("value", getDate(obj.dateCreated));
         formEdit.find("#usrmodif").prop("value", obj.usrModif);
-        formEdit.find("#datemodif").prop("value", getDate(obj.dateModif).toLocaleString());
+        formEdit.find("#datemodif").prop("value", getDate(obj.dateModif));
 
         formEdit.find("#defaultSystem").prop("value", obj["defaultSystem"]);
         formEdit.find("#defaultSystem").prop("readonly", "readonly");
@@ -747,7 +747,7 @@ function aoColumnsFunc(tableId) {
             "defaultContent": "",
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateCreated"]).toLocaleString();
+                return getDate(oObj["dateCreated"]);
             }
         },
         {
@@ -766,7 +766,7 @@ function aoColumnsFunc(tableId) {
             "defaultContent": "",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "mRender": function (data, type, oObj) {
-                return getDate(oObj["dateModif"]).toLocaleString();
+                return getDate(oObj["dateModif"]);
             }
         }
     ];
