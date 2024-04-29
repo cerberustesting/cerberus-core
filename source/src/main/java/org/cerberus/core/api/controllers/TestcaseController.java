@@ -206,6 +206,8 @@ public class TestcaseController {
                             .environment(newTestcase.getEnvironment())
                             .application(newTestcase.getApplication())
                             .ip(newTestcase.getUrl())
+                            .mobileActivity("")
+                            .mobilePackage("")
                             .domain("")
                             .url("")
                             .urlLogin("")
@@ -213,6 +215,7 @@ public class TestcaseController {
                             .var2("")
                             .var3("")
                             .var4("")
+                            .usrCreated(login)
                             .build());
         }
 

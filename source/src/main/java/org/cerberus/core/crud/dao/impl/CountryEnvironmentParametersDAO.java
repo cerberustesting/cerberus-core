@@ -505,7 +505,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setInt(13, object.getPoolSize());
                 preStat.setString(14, object.getMobileActivity());
                 preStat.setString(15, object.getMobilePackage());
-                preStat.setString(16, object.getUsrModif());
+                preStat.setString(16, object.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
