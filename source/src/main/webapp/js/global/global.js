@@ -1137,8 +1137,10 @@ function showMessage(obj, dialog, silentMode, waitinMs) {
         elementAlert.addClass("alert-" + code);
 
         // We slowly hide it after waitinMs ms delay.
-        elementAlert.fadeTo(waitinMs, 1, function () {
-            elementAlert.slideUp(500);
+        elementAlert.fadeTo(500, 1, function () {
+            setTimeout(function () {
+                elementAlert.slideUp(500);
+            }, waitinMs);
         });
 
 
@@ -1205,9 +1207,12 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
         $("#mainAlert").slideDown(10);
 
         // We slowly hide it after waitinMs ms delay.
-        $("#mainAlert").fadeTo(waitinMs, 1, function () {
-            $("#mainAlert").slideUp(500);
+        $("#mainAlert").fadeTo(500, 1, function () {
+            setTimeout(function () {
+                $("#mainAlert").slideUp(500);
+            }, waitinMs);
         });
+        
 
     }
 }

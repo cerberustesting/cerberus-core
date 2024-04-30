@@ -432,10 +432,10 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `ServiceRequest`, ")
+                .append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, ")
                 .append("   `isAvroEnable`, `SchemaRegistryUrl`,  `isAvroEnableKey`, `AvroSchemaKey`,  `isAvroEnableValue`, `AvroSchemaValue`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
                 .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ")
-                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
@@ -455,6 +455,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getServicePath());
             preStat.setBoolean(i++, object.isFollowRedir());
             preStat.setString(i++, object.getOperation());
+            preStat.setString(i++, object.getBodyType());
             preStat.setString(i++, object.getServiceRequest());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
@@ -499,7 +500,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer update(String service, AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, ServiceRequest = ?, ")
+                .append("UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ")
                 .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `isAvroEnableKey` = ?, `AvroSchemaKey` = ?, `isAvroEnableValue` = ?, `AvroSchemaValue` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
                 .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, ")
                 .append("`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
@@ -524,6 +525,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getServicePath());
             preStat.setBoolean(i++, object.isFollowRedir());
             preStat.setString(i++, object.getOperation());
+            preStat.setString(i++, object.getBodyType());
             preStat.setString(i++, object.getServiceRequest());
             preStat.setBoolean(i++, object.isAvroEnable());
             preStat.setString(i++, object.getSchemaRegistryURL());
@@ -633,6 +635,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         String group = ParameterParserUtil.parseStringParam(rs.getString("srv.Group"), "");
         String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
         String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
+        String bodyType = ParameterParserUtil.parseStringParam(rs.getString("srv.BodyType"), "");
         String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
         String attachementURL = ParameterParserUtil.parseStringParam(rs.getString("srv.AttachementURL"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
@@ -658,7 +661,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         boolean isAvroEnableValue = rs.getBoolean("srv.isAvroEnableValue");
         String avroSchemaValue = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchemaValue"), "");
         String parentContentService = ParameterParserUtil.parseStringParam(rs.getString("srv.ParentContentService"), "");
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
+        return factoryAppService.create(service, type, method, application, group, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
                 description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, isAvroEnableKey, avroSchemaKey, isAvroEnableValue, avroSchemaValue, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
 

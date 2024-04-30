@@ -149,7 +149,7 @@ public class RobotProxyService implements IRobotProxyService {
             Integer i = 0;
             for (i = 0; i < maxLoop; i++) {
                 AnswerItem<AppService> result = new AnswerItem<>();
-                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
+                result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
 
                 if (result.isCodeStringEquals("OK")) {
 
@@ -200,7 +200,7 @@ public class RobotProxyService implements IRobotProxyService {
 
             LOG.debug("Getting Network Traffic content from URL : " + url);
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
 
             AppService appSrv = result.getItem();
             har = new JSONObject(appSrv.getResponseHTTPBody());
@@ -237,7 +237,7 @@ public class RobotProxyService implements IRobotProxyService {
         Integer nbHits = 0;
         try {
             AnswerItem<AppService> result = new AnswerItem<>();
-            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
+            result = restService.callREST(url, "", AppService.METHOD_HTTPGET, AppService.SRVBODYTYPE_RAW, new ArrayList<>(), new ArrayList<>(), null, 10000, "", true, null, "");
 
             if (result.isCodeStringEquals("OK")) {
 

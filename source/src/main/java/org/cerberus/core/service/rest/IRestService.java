@@ -38,6 +38,7 @@ public interface IRestService {
      * @param servicePath
      * @param queryString
      * @param method
+     * @param bodyType
      * @param headerList
      * @param contentList
      * @param token if != null the token will be added to http header 'cerberus-token'
@@ -45,9 +46,10 @@ public interface IRestService {
      * @param system
      * @param isFollowRedir
      * @param tcexecution
+     * @param description
      * @return
      */
-    AnswerItem<AppService> callREST(String servicePath, String queryString, String method,
+    AnswerItem<AppService> callREST(String servicePath, String queryString, String method, String bodyType, 
                                     List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description);
 
 }

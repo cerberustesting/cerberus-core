@@ -74,6 +74,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -85,6 +86,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
+import org.cerberus.core.exception.CerberusEventException;
 
 /**
  * @author bcivel
@@ -148,7 +150,7 @@ public class RestService implements IRestService {
             // Create a custom response handler
             ResponseHandler<AppService> responseHandler = (final HttpResponse response) -> {
                 AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null, "", null, "", null, null);
+                        AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null, "", null, "", null, null);
                 int responseCode = response.getStatusLine().getStatusCode();
                 myResponse.setResponseHTTPCode(responseCode);
                 myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -173,11 +175,12 @@ public class RestService implements IRestService {
     }
 
     @Override
-    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
-                                           List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-                                           String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description) {
+    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, String bodyType,
+            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description) {
+
         AnswerItem<AppService> result = new AnswerItem<>();
-        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
                 "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
@@ -293,6 +296,7 @@ public class RestService implements IRestService {
                     .setSocketTimeout(timeOutMs).build();
 
             AppService responseHttp = null;
+            HttpEntity entity = null;
 
             switch (method) {
                 case AppService.METHOD_HTTPGET:
@@ -334,6 +338,7 @@ public class RestService implements IRestService {
                     }
 
                     break;
+
                 case AppService.METHOD_HTTPPOST:
 
                     LOG.info("Start preparing the REST Call (POST). " + servicePath);
@@ -344,51 +349,12 @@ public class RestService implements IRestService {
                     // Timeout setup.
                     httpPost.setConfig(requestConfig);
 
-                    // Content
-                    if (!(StringUtil.isEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
-                        serviceREST.setServiceRequest(requestString);
-                    } else {
-                        // If requestString is not defined, we POST the list of key/value request.
-                        if (description != null && description.contains("[form-data]")) {
-                            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-                            for (AppServiceContent contentVal : contentList) {
-                                if (contentVal.getValue().length() > 0 && contentVal.getValue().charAt(0) == '@') {
-                                    String filePath = contentVal.getValue().substring(1);
-                                    if (StringUtil.isEmptyOrNullValue(filePath)) {
-                                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                        message.resolveDescription("DESCRIPTION", "file path '"+filePath+"' is empty for key '" + contentVal.getKey()+"' in request details");
-                                        result.setResultMessage(message);
-                                        return result;
-                                    } else {
-                                        File file = new File(filePath);
-                                        if (file.exists()) {
-                                            final FileBody fileBody = new FileBody(file);
-                                            builder.addPart(contentVal.getKey(), fileBody);
-                                        } else {
-                                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                            message.resolveDescription("DESCRIPTION", "file path '"+filePath+"' does not exist for key '" + contentVal.getKey()+"' in request details");
-                                            result.setResultMessage(message);
-                                            return result;
-                                        }
-                                    }
-                                } else {
-                                    builder.addPart(contentVal.getKey(), new StringBody(contentVal.getValue(), ContentType.TEXT_PLAIN));
-                                }
-                            }
-                            HttpEntity entity = builder.build();
-                            httpPost.setEntity(entity);
-                        } else {
-                            List<NameValuePair> nvps = new ArrayList<>();
-                            for (AppServiceContent contentVal : contentList) {
-                                nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
-                            }
-                            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                        }
+                    // Calculate entity.
+                    entity = getEntity(bodyType, requestString, contentList, serviceREST);
 
-
-                        serviceREST.setContentList(contentList);
+                    // Setting entity when defined.
+                    if (entity != null) {
+                        httpPost.setEntity(entity);
                     }
 
                     // Header.
@@ -412,7 +378,7 @@ public class RestService implements IRestService {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -429,19 +395,12 @@ public class RestService implements IRestService {
                     // Timeout setup.
                     httpDelete.setConfig(requestConfig);
 
-                    // Content
-                    if (!(StringUtil.isEmpty(requestString))) {
-                        // If requestString is defined, we POST it.
-                        httpDelete.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
-                        serviceREST.setServiceRequest(requestString);
-                    } else {
-                        // If requestString is not defined, we POST the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<>();
-                        for (AppServiceContent contentVal : contentList) {
-                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
-                        }
-                        httpDelete.setEntity(new UrlEncodedFormEntity(nvps));
-                        serviceREST.setContentList(contentList);
+                    // Calculate entity.
+                    entity = getEntity(bodyType, requestString, contentList, serviceREST);
+
+                    // Setting entity when defined.
+                    if (entity != null) {
+                        httpDelete.setEntity(entity);
                     }
 
                     // Header.
@@ -474,19 +433,12 @@ public class RestService implements IRestService {
                     // Timeout setup.
                     httpPut.setConfig(requestConfig);
 
-                    // Content
-                    if (!(StringUtil.isEmpty(requestString))) {
-                        // If requestString is defined, we PUT it.
-                        httpPut.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
-                        serviceREST.setServiceRequest(requestString);
-                    } else {
-                        // If requestString is not defined, we PUT the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<>();
-                        for (AppServiceContent contentVal : contentList) {
-                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
-                        }
-                        httpPut.setEntity(new UrlEncodedFormEntity(nvps));
-                        serviceREST.setContentList(contentList);
+                    // Calculate entity.
+                    entity = getEntity(bodyType, requestString, contentList, serviceREST);
+
+                    // Setting entity when defined.
+                    if (entity != null) {
+                        httpPut.setEntity(entity);
                     }
 
                     // Header.
@@ -511,7 +463,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -519,7 +471,7 @@ public class RestService implements IRestService {
                     break;
 
                 case AppService.METHOD_HTTPPATCH:
-                    LOG.info("Start preparing the REST Call (PUT). " + servicePath);
+                    LOG.info("Start preparing the REST Call (PATCH). " + servicePath);
 
                     serviceREST.setServicePath(servicePath);
                     HttpPatch httpPatch = new HttpPatch(servicePath);
@@ -527,19 +479,12 @@ public class RestService implements IRestService {
                     // Timeout setup.
                     httpPatch.setConfig(requestConfig);
 
-                    // Content
-                    if (!(StringUtil.isEmpty(requestString))) {
-                        // If requestString is defined, we PATCH it.
-                        httpPatch.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
-                        serviceREST.setServiceRequest(requestString);
-                    } else {
-                        // If requestString is not defined, we PATCH the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<>();
-                        for (AppServiceContent contentVal : contentList) {
-                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
-                        }
-                        httpPatch.setEntity(new UrlEncodedFormEntity(nvps));
-                        serviceREST.setContentList(contentList);
+                    // Calculate entity.
+                    entity = getEntity(bodyType, requestString, contentList, serviceREST);
+
+                    // Setting entity when defined.
+                    if (entity != null) {
+                        httpPatch.setEntity(entity);
                     }
 
                     // Header.
@@ -564,7 +509,7 @@ public class RestService implements IRestService {
                         message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
                         message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                                 "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                        + timeOutMs + ")"));
+                                + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
 
@@ -584,6 +529,10 @@ public class RestService implements IRestService {
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
             result.setResultMessage(message);
 
+        } catch (CerberusEventException ex) {
+            result.setResultMessage(ex.getMessageError());
+            return result;
+
         } catch (SocketTimeoutException ex) {
             LOG.info("Exception when performing the REST Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
@@ -591,6 +540,7 @@ public class RestService implements IRestService {
             message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(timeOutMs)));
             result.setResultMessage(message);
             return result;
+
         } catch (Exception ex) {
             LOG.error("Exception when performing the REST Call. " + ex.toString(), ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
@@ -599,6 +549,7 @@ public class RestService implements IRestService {
                     message.getDescription().replace("%DESCRIPTION%", "Error on CallREST : " + ex.toString()));
             result.setResultMessage(message);
             return result;
+
         } finally {
             try {
                 if (httpclient != null) {
@@ -610,6 +561,76 @@ public class RestService implements IRestService {
         }
 
         return result;
+    }
+
+    private HttpEntity getEntity(String bodyType, String requestString, List<AppServiceContent> contentList, AppService serviceREST) throws CerberusEventException, UnsupportedEncodingException {
+        MultipartEntityBuilder builder;
+        List<NameValuePair> nvps = new ArrayList<>();
+        HttpEntity entity = null;
+        MessageEvent message = null;
+
+        switch (bodyType) {
+
+            case AppService.SRVBODYTYPE_RAW:
+                serviceREST.setServiceRequest(requestString);
+                entity = new StringEntity(requestString, StandardCharsets.UTF_8);
+                break;
+
+            case AppService.SRVBODYTYPE_FORMDATA:
+                serviceREST.setContentList(contentList);
+                builder = MultipartEntityBuilder.create();
+                for (AppServiceContent contentVal : contentList) {
+                    if (contentVal.getValue().length() > 0 && contentVal.getValue().charAt(0) == '@') {
+                        String filePath = contentVal.getValue().substring(1);
+                        if (StringUtil.isEmptyOrNullValue(filePath)) {
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                            message.resolveDescription("DESCRIPTION", "file path '" + filePath + "' is empty for key '" + contentVal.getKey() + "' in request details");
+                            throw new CerberusEventException(message);
+                        } else {
+                            File file = new File(filePath);
+                            if (file.exists()) {
+                                final FileBody fileBody = new FileBody(file);
+                                builder.addPart(contentVal.getKey(), fileBody);
+                            } else {
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.resolveDescription("DESCRIPTION", "file path '" + filePath + "' does not exist for key '" + contentVal.getKey() + "' in request details");
+                                throw new CerberusEventException(message);
+                            }
+                        }
+                    } else {
+                        builder.addPart(contentVal.getKey(), new StringBody(contentVal.getValue(), ContentType.TEXT_PLAIN));
+                    }
+                }
+                entity = builder.build();
+                break;
+
+            case AppService.SRVBODYTYPE_FORMURLENCODED:
+                serviceREST.setContentList(contentList);
+                for (AppServiceContent contentVal : contentList) {
+                    nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                }
+                entity = new UrlEncodedFormEntity(nvps);
+                break;
+
+            case AppService.SRVBODYTYPE_NONE:
+                break;
+
+            default:
+                if (!(StringUtil.isEmpty(requestString))) {
+                    // If requestString is defined, we POST it.
+                    serviceREST.setServiceRequest(requestString);
+                    entity = new StringEntity(requestString, StandardCharsets.UTF_8);
+//                        httpPost.setEntity(new StringEntity(requestString, StandardCharsets.UTF_8));
+                } else {
+                    serviceREST.setContentList(contentList);
+                    // If requestString is not defined, we POST the list of key/value request.
+                    for (AppServiceContent contentVal : contentList) {
+                        nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                    }
+                    entity = new UrlEncodedFormEntity(nvps);
+                }
+        }
+        return entity;
     }
 
 }

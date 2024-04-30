@@ -133,7 +133,7 @@ public class FtpService implements IFtpService {
         }
 
         AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
-                method, "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
+                method, "", "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
 
         try {
             if (proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"), "", "", "ftp://"), system)) {
@@ -288,7 +288,7 @@ public class FtpService implements IFtpService {
         LOG.debug("starting SFTP.");
 
         AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
-                method, "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
+                method, "", "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
 
         URI uri = null;
         try {

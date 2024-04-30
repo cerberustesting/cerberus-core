@@ -6321,3 +6321,17 @@ ALTER TABLE `tag` ADD COLUMN `DateStartExe` TIMESTAMP NOT NULL DEFAULT '1970-01-
 -- 1777
 UPDATE `tag` SET `DateStartExe` = `DateCreated`;
 
+-- 1778
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('SRVBODYTYPE', 'none', 200, '')
+  ,('SRVBODYTYPE', 'raw', 300, '')
+  ,('SRVBODYTYPE', 'form-data', 400, '')
+  ,('SRVBODYTYPE', 'form-urlencoded', 500, '')
+  ,('INVARIANTPRIVATE', 'SRVBODYTYPE', '950', 'Service Body type.');
+
+-- 1779
+UPDATE invariant SET idname='INVARIANTPRIVATE' WHERE idname='INVARIANTPUBLIC' AND value='PROXYTYPE';
+
+-- 1780
+ALTER TABLE `appservice` ADD COLUMN `BodyType` VARCHAR(60) NOT NULL DEFAULT '' AFTER `AttachementURL`;
+

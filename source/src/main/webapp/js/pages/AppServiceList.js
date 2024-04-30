@@ -260,6 +260,12 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("appservice", "servicePath")
         },
         {
+            "sName": "BodyType",
+            "data": "bodyType",
+            "sWidth": "70px",
+            "title": doc.getDocLabel("appservice", "bodyType")
+        },
+        {
             "sName": "srv.ServiceRequest",
             "visible": false,
             "like": true,

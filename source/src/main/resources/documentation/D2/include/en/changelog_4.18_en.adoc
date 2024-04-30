@@ -35,6 +35,7 @@
 * [ENGINE] Value1, 2 and 3 are no longer decoded when not used. (for ex, switching condition to 'always' or 'never' no longer force you to empty parameter values that could crash during decode) fix #2038
 * [ENGINE] controls on 'element visible' are now activated when using image recognition feature (they perform the same controls as 'element present').
 * [ENGINE] scrollTo action now allow to configure horizontal or vertical offset [GUI Only]. Warning of text to scroll parameter that moved from value 2 to value 1 field (update is done automaticaly by Cerberus).
+* [ENGINE] Added REST Service Body type support that can be : none, raw, form-data, form-urlencoded.
 * [OTHERS] Size of war binary reduced by cleaning a few unnecessary maven dependencies.
 
 *Warning to be considered before applying the version (deprecated features)*

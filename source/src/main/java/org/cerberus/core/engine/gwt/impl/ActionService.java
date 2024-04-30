@@ -673,7 +673,7 @@ public class ActionService implements IActionService {
                 }
                 LOG.debug(contentJSON.toString(1));
 
-                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
+                AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
                 JSONObject contentJSONnew = new JSONObject();
 
                 // We copy the header values for the service answered.
@@ -2030,7 +2030,7 @@ public class ActionService implements IActionService {
 
             har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
-            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", "", "", null, "", null, null);
+            AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", "", "", null, "", null, null);
             appSrv.setResponseHTTPBody(har.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -2111,7 +2111,7 @@ public class ActionService implements IActionService {
             consoleStat = consolelogService.enrichWithStats(consoleLogs);
             consoleRecap.put("stat", consoleStat);
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", null, "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", null, "", null, "", null, "");
             appSrv.setResponseHTTPBody(consoleRecap.toString());
             appSrv.setResponseHTTPBodyContentType(AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON);
             appSrv.setRecordTraceFile(false);
@@ -2144,7 +2144,7 @@ public class ActionService implements IActionService {
              */
             LOG.debug("Setting static content.");
 
-            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
+            AppService appSrv = factoryAppService.create("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", false, "", false, "", false, "", "", "", null, "", null, "");
             appSrv.setResponseHTTPBody(textContent);
             appSrv.setResponseHTTPBodyContentType(appServiceService.guessContentType(appSrv, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             appSrv.setRecordTraceFile(false);

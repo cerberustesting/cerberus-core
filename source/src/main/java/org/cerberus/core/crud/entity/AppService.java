@@ -42,14 +42,15 @@ public class AppService {
 
     private String service; // Name and reference of the service
     private String application; // application that reference the service.
-    private String type; // either SOAP/REST
+    private String type; // either SOAP/REST/KAFKA/FTP
     private String method; // Method used : POST/GET
     private String servicePath; // Path to access the service
     private boolean isFollowRedir; // Path to access the service
-    private String operation; // Operation used for SOAP Requests
-    private String serviceRequest; // Content of the request.
-    private String attachementURL; // Attachement in cas of SOAP call with attachement.
     private String fileName;
+    private String operation; // Operation used for SOAP Requests
+    private String attachementURL; // Attachement in cas of SOAP call with attachement.
+    private String bodyType; // Body type used : none/raw/form-data/form-urlencoded
+    private String serviceRequest; // Content of the request.
     private String kafkaTopic;
     private String kafkaKey;
     private String kafkaFilterPath;
@@ -136,6 +137,10 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_PDF = "PDF";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN = "UNKNOWN";
+    public static final String SRVBODYTYPE_NONE = "none";
+    public static final String SRVBODYTYPE_RAW = "raw";
+    public static final String SRVBODYTYPE_FORMDATA = "form-data";
+    public static final String SRVBODYTYPE_FORMURLENCODED = "form-urlencoded";
 
     public void addResponseHeaderList(AppServiceHeader object) {
         this.responseHeaderList.add(object);

@@ -134,6 +134,7 @@ public class UpdateAppService extends HttpServlet {
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("type"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
+        String bodyType = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("bodyType"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParam(fileData.get("isFollowRedir"), true);
@@ -209,6 +210,7 @@ public class UpdateAppService extends HttpServlet {
                 appService.setType(type);
                 appService.setApplication(application);
                 appService.setMethod(method);
+                appService.setBodyType(bodyType);
                 if (servicePath.contains(StringUtil.SECRET_STRING)) {
                     appService.setServicePath(servicePath.replace(StringUtil.SECRET_STRING, StringUtil.getPasswordFromAnyUrl(appService.getServicePath())));
                 } else {

@@ -80,7 +80,7 @@ public class MongodbService implements IMongodbService {
         MessageEvent message = null;
         AnswerItem<AppService> result = new AnswerItem<>();
 
-        AppService serviceMONGODB = factoryAppService.create("", AppService.TYPE_MONGODB, method, "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
+        AppService serviceMONGODB = factoryAppService.create("", AppService.TYPE_MONGODB, method, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
                 "", null, "", null, null);
         serviceMONGODB.setProxy(false);
         serviceMONGODB.setProxyHost(null);
