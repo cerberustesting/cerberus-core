@@ -261,6 +261,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "sName": "BodyType",
+            "visible": false,
             "data": "bodyType",
             "sWidth": "70px",
             "title": doc.getDocLabel("appservice", "bodyType")
