@@ -129,10 +129,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadBuildRevTable();
 
         // Display Changelog;
-        $("#documentationFrame").attr("src", "./documentation/D2/changelog_4.18_en.html");
+        $("#documentationFrame").attr("src", "./documentation/D2/changelog_4.19_en.html");
         var windowsHeight = $(window).height() + 'px';
         $('#documentationFrame').css('height', '400px');
-        $("#changelogLabel").html("Changelog 4.18");
+        $("#changelogLabel").html("Changelog 4.19");
 
         //close all sidebar menu
         closeEveryNavbarMenu();
