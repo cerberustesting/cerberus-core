@@ -451,7 +451,7 @@ public class SQLService implements ISQLService {
                                 	}
                                 }
                                 if (columnsToHide.contains(name)) {
-                                    execution.appendSecret(valueSQL);
+                                    execution.addSecret(valueSQL);
                                 }
                                 row.put(name, valueSQL); // We put the result of the subData.
                                 nbColMatch++;

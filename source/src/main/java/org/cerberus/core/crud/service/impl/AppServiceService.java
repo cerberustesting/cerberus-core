@@ -19,6 +19,9 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -362,19 +365,36 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public String convertContentListToQueryString(List<AppServiceContent> serviceContent) {
+    public String convertContentListToQueryString(List<AppServiceContent> serviceContent, boolean encodeParameters) {
         StringBuilder result = new StringBuilder();
         if (serviceContent == null || serviceContent.isEmpty()) {
             return result.toString();
         }
 
-        for (AppServiceContent object : serviceContent) {
-            if (object.isActive()) {
-                result.append(object.getKey());
-                result.append("=");
-                result.append(object.getValue());
-                result.append("&");
+        try {
+
+            for (AppServiceContent object : serviceContent) {
+                if (object.isActive()) {
+                    if (encodeParameters) {
+                        result.append(URLEncoder.encode(object.getKey(), StandardCharsets.UTF_8.toString()));
+                    } else {
+                        result.append(object.getKey());
+                    }
+
+                    result.append("=");
+
+                    if (encodeParameters) {
+                        result.append(URLEncoder.encode(object.getValue(), StandardCharsets.UTF_8.toString()));
+                    } else {
+                        result.append(object.getValue());
+                    }
+
+                    result.append("&");
+                }
             }
+
+        } catch (UnsupportedEncodingException ex) {
+            LOG.error(ex, ex);
         }
         result = new StringBuilder(StringUtil.removeLastChar(result.toString()));
         return result.toString();

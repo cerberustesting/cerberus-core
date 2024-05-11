@@ -151,10 +151,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','description','','ru','Описание','','_service_library')");
         b.append(",('appservice','description','','fr','Description','','_librairie_de_services')");
         b.append(",('appservice','description','','fa','توصیف','','_service_library')");
-        b.append(",('appservice','group','','en','Group','','_service_library')");
-        b.append(",('appservice','group','','ru','Группа','','_service_library')");
-        b.append(",('appservice','group','','fr','Groupe','','_librairie_de_services')");
-        b.append(",('appservice','group','','fa','گروه','','_service_library')");
+        b.append(",('appservice','collection','','en','Collection','','_service_library')");
+        b.append(",('appservice','collection','','fr','Collection','','_librairie_de_services')");
         b.append(",('appservice','method','','en','Method','','_service_library')");
         b.append(",('appservice','method','','ru','Метод','','_service_library')");
         b.append(",('appservice','method','','fr','Méthode','','_librairie_de_services')");
@@ -2255,6 +2253,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','buttonLoad','','ru','Загрузить','',NULL)");
         b.append(",('page_global','buttonLoad','','fr','Charger','',NULL)");
         b.append(",('page_global','buttonLoad','','fa','بارگذاری','',NULL)");
+        b.append(",('page_global','buttonCall','','en','Save and Call','',NULL)");
+        b.append(",('page_global','buttonCall','','fr','Sauvegarder et Appeler','',NULL)");
         b.append(",('page_global','button_massAction','','en','Mass Action',NULL,NULL)");
         b.append(",('page_global','button_massAction','','ru','Массовая операция',NULL,NULL)");
         b.append(",('page_global','button_massAction','','fr','Action en masse',NULL,NULL)");

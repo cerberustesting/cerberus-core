@@ -694,6 +694,55 @@ function getUserArray(forceReload, addValue1, asyn) {
     return result;
 }
 
+/**
+ * Method that return a list of value retrieved from the invariant list
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @returns {array}
+ */
+function getCollectionArray(forceReload, asyn) {
+    var result = [];
+
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    var async = true;
+    if (asyn !== undefined) {
+        async = asyn;
+    }
+
+    var cacheEntryName = "COLLECTIONLIST";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadAppService?columnName=srv.collection",
+            async: async,
+            success: function (data) {
+                list = data.distinctValues;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data.distinctValues));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index];
+                    result.push(item);
+                }
+            },
+            error: showUnexpectedError
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index];
+
+            result.push(item);
+        }
+    }
+
+    return result;
+}
 
 /**
  * Auxiliary method that retrieves a list containing the values that belong to the invariant that matches the provided idname.

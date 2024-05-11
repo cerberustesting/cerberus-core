@@ -174,9 +174,10 @@ public interface IAppServiceService {
      * query string (ex : key1=value1&key2=value2&key3=value3
      *
      * @param serviceContent
+     * @param encodeParameters
      * @return
      */
-    String convertContentListToQueryString(List<AppServiceContent> serviceContent);
+    String convertContentListToQueryString(List<AppServiceContent> serviceContent, boolean encodeParameters);
 
     /**
      * this method will store local file into application server

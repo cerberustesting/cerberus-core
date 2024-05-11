@@ -423,6 +423,7 @@ public class VariableService implements IVariableService {
 
         } catch (Exception e) {
             LOG.error("Error when decoding system variable on exe : " + execution.getId(), e);
+            LOG.error(e, e);
         }
         return stringToDecode;
     }

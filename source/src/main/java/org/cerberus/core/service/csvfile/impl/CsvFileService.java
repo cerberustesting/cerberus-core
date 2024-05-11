@@ -98,7 +98,7 @@ public class CsvFileService implements ICsvFileService {
                             line.put(subDataName, element);
                             // If column is on the columns to hide we add it to the secret list
                             if (columnsToHide.contains(subDataName)) {
-                                execution.appendSecret(element);
+                                execution.addSecret(element);
                             }
                             noDataMapped = false;
                         }

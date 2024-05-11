@@ -127,7 +127,7 @@ public class UpdateAppService extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
         String originalService = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("originalService"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), null, charset);
+        String collection = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("collection"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
         String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), null, charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), null, charset);
@@ -201,8 +201,14 @@ public class UpdateAppService extends HttpServlet {
                     }
                 }
 
+                if (fileData.get("callInfo") != null) {
+                    JSONObject objCall = new JSONObject(fileData.get("callInfo"));
+                    LOG.debug(objCall.toString(1));
+                    appService.setSimulationParameters(objCall);
+                }
+                
                 appService.setService(service);
-                appService.setGroup(group);
+                appService.setCollection(collection);
                 appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
                 appService.setServiceRequest(serviceRequest);

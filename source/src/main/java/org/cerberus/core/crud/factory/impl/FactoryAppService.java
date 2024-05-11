@@ -47,7 +47,7 @@ public class FactoryAppService implements IFactoryAppService {
         s.setService(service);
         s.setBodyType(bodyType);
         s.setServiceRequest(serviceRequest);
-        s.setGroup(collection);
+        s.setCollection(collection);
         s.setDescription(description);
         s.setServicePath(servicePath);
         s.setAttachementURL(attachementURL);

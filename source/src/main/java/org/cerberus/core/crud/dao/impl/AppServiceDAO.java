@@ -55,6 +55,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * {Insert class description here}
@@ -81,8 +82,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` = ?";
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, service);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -108,15 +108,12 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         LOG.debug(SQL_MESSAGE, query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query); Statement stm = connection.createStatement()) {
 
             preStat.setString(1, "%" + service + "%");
             preStat.setInt(2, limit);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
                 }
@@ -170,7 +167,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.KafkaFilterHeaderValue like ?");
             searchSQL.append(" or srv.SchemaRegistryUrl like ?");
             searchSQL.append(" or srv.AttachementURL like ?");
-            searchSQL.append(" or srv.Group like ?");
+            searchSQL.append(" or srv.Collection like ?");
             searchSQL.append(" or srv.Description like ?");
             searchSQL.append(" or srv.UsrCreated like ?");
             searchSQL.append(" or srv.DateCreated like ?");
@@ -216,9 +213,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         LOG.debug(SQL_MESSAGE, query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -254,9 +249,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 }
             }
 
-
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -301,8 +294,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug(SQL_MESSAGE, query);
         LOG.debug("SQL.param.service : {}", key);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setString(1, key);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -342,7 +334,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         if (StringUtil.isNotEmpty(searchTerm)) {
             searchSQL.append(" and (srv.Service like ?");
-            searchSQL.append(" or srv.Group like ?");
+            searchSQL.append(" or srv.Collection like ?");
             searchSQL.append(" or srv.ServicePath like ?");
             searchSQL.append(" or srv.Operation like ?");
             searchSQL.append(" or srv.KafkaTopic like ?");
@@ -369,9 +361,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         LOG.debug(SQL_MESSAGE, query);
 
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (!StringUtil.isEmpty(searchTerm)) {
@@ -391,8 +381,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -432,19 +421,18 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, ")
+                .append("INSERT INTO appservice (`Service`, `Collection`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, ")
                 .append("   `isAvroEnable`, `SchemaRegistryUrl`,  `isAvroEnableKey`, `AvroSchemaKey`,  `isAvroEnableValue`, `AvroSchemaValue`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
-                .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `UsrCreated`) ")
-                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `SimulationParameters`, `UsrCreated`) ")
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
-            preStat.setString(i++, object.getGroup());
+            preStat.setString(i++, object.getCollection());
             if (StringUtil.isNotEmpty(object.getApplication())) {
                 preStat.setString(i++, object.getApplication());
             } else {
@@ -477,6 +465,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getAttachementURL());
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getFileName());
+            preStat.setString(i++, object.getSimulationParameters().toString());
             preStat.setString(i, object.getUsrCreated());
 
             preStat.executeUpdate();
@@ -500,9 +489,9 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer update(String service, AppService object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder()
-                .append("UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ")
+                .append("UPDATE appservice srv SET `Service` = ?, `Collection` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ")
                 .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `isAvroEnableKey` = ?, `AvroSchemaKey` = ?, `isAvroEnableValue` = ?, `AvroSchemaValue` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
-                .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, ")
+                .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, SimulationParameters = ?, ")
                 .append("`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
             query.append(" ,Application = ?");
@@ -516,12 +505,11 @@ public class AppServiceDAO implements IAppServiceDAO {
         LOG.debug("SQL.param.application : {}", object.getApplication());
         LOG.debug("SQL.param.service : {}", service);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getService());
-            preStat.setString(i++, object.getGroup());
+            preStat.setString(i++, object.getCollection());
             preStat.setString(i++, object.getServicePath());
             preStat.setBoolean(i++, object.isFollowRedir());
             preStat.setString(i++, object.getOperation());
@@ -545,6 +533,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getKafkaFilterHeaderPath());
             preStat.setString(i++, object.getKafkaFilterHeaderValue());
             preStat.setString(i++, object.getAttachementURL());
+            preStat.setString(i++, object.getSimulationParameters().toString());
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getMethod());
@@ -573,8 +562,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         LOG.debug(SQL_MESSAGE, query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
 
             preStat.setString(1, object.getService());
             preStat.executeUpdate();
@@ -632,7 +620,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public AppService loadFromResultSet(ResultSet rs) throws SQLException {
         String service = ParameterParserUtil.parseStringParam(rs.getString("srv.Service"), "");
-        String group = ParameterParserUtil.parseStringParam(rs.getString("srv.Group"), "");
+        String collection = ParameterParserUtil.parseStringParam(rs.getString("srv.Collection"), "");
         String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
         String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
         String bodyType = ParameterParserUtil.parseStringParam(rs.getString("srv.BodyType"), "");
@@ -661,8 +649,11 @@ public class AppServiceDAO implements IAppServiceDAO {
         boolean isAvroEnableValue = rs.getBoolean("srv.isAvroEnableValue");
         String avroSchemaValue = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchemaValue"), "");
         String parentContentService = ParameterParserUtil.parseStringParam(rs.getString("srv.ParentContentService"), "");
-        return factoryAppService.create(service, type, method, application, group, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
+        JSONObject simulationParameters = SqlUtil.getJSONObjectFromColumn(rs, "srv.SimulationParameters");
+        AppService result = factoryAppService.create(service, type, method, application, collection, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
                 description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, isAvroEnableKey, avroSchemaKey, isAvroEnableValue, avroSchemaValue, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
+        result.setSimulationParameters(simulationParameters);
+        return result;
     }
 
     private static void deleteFolder(File folder, boolean deleteit) {

@@ -246,19 +246,22 @@ public class RestService implements IRestService {
 
         // if it is an GUI REST, share the GUI context with api call
         if ((tcexecution != null) && (tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
-            WebDriver driver = tcexecution.getSession().getDriver();
+            // When performing a simulation service call, the session may be null, 
+            if (tcexecution.getSession() != null) {
+                WebDriver driver = tcexecution.getSession().getDriver();
 
-            BasicCookieStore cookieStore = new BasicCookieStore();
+                BasicCookieStore cookieStore = new BasicCookieStore();
 
-            driver.manage().getCookies().forEach(cookieSelenium -> {
-                BasicClientCookie cookie = new BasicClientCookie(cookieSelenium.getName(), cookieSelenium.getValue());
-                cookie.setDomain(cookieSelenium.getDomain());
-                cookie.setPath(cookieSelenium.getPath());
-                cookie.setExpiryDate(cookieSelenium.getExpiry());
-                cookieStore.addCookie(cookie);
-            });
+                driver.manage().getCookies().forEach(cookieSelenium -> {
+                    BasicClientCookie cookie = new BasicClientCookie(cookieSelenium.getName(), cookieSelenium.getValue());
+                    cookie.setDomain(cookieSelenium.getDomain());
+                    cookie.setPath(cookieSelenium.getPath());
+                    cookie.setExpiryDate(cookieSelenium.getExpiry());
+                    cookieStore.addCookie(cookie);
+                });
 
-            httpclientBuilder.setDefaultCookieStore(cookieStore);
+                httpclientBuilder.setDefaultCookieStore(cookieStore);
+            }
         }
 
         try {
@@ -287,6 +290,7 @@ public class RestService implements IRestService {
                 httpclientBuilder.disableRedirectHandling();
                 serviceREST.setFollowRedir(false);
             }
+            serviceREST.setBodyType(bodyType);
 
             httpclient = httpclientBuilder.build();
 
@@ -303,12 +307,20 @@ public class RestService implements IRestService {
 
                     LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
 
-                    // Adding query string from requestString
-                    servicePath = StringUtil.addQueryString(servicePath, requestString);
+                    if (AppService.SRVBODYTYPE_FORMDATA.equals(bodyType)) {
+                        // Adding query string from requestString
+//                    servicePath = StringUtil.addQueryString(servicePath, requestString);
 
-                    // Adding query string from contentList
-                    String newRequestString = AppServiceService.convertContentListToQueryString(contentList);
-                    servicePath = StringUtil.addQueryString(servicePath, newRequestString);
+                        // Adding query string from contentList
+                        String newRequestString = AppServiceService.convertContentListToQueryString(contentList, false);
+                        servicePath = StringUtil.addQueryString(servicePath, newRequestString);
+
+                    } else if (AppService.SRVBODYTYPE_FORMURLENCODED.equals(bodyType)) {
+
+                        String newRequestString = AppServiceService.convertContentListToQueryString(contentList, true);
+                        servicePath = StringUtil.addQueryString(servicePath, newRequestString);
+
+                    }
 
                     serviceREST.setServicePath(servicePath);
                     HttpGet httpGet = new HttpGet(servicePath);
@@ -524,9 +536,9 @@ public class RestService implements IRestService {
             }
 
             result.setItem(serviceREST);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", method));
-            message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE)
+                    .resolveDescription("SERVICEMETHOD", method)
+                    .resolveDescription("SERVICEPATH", servicePath);
             result.setResultMessage(message);
 
         } catch (CerberusEventException ex) {
@@ -535,18 +547,17 @@ public class RestService implements IRestService {
 
         } catch (SocketTimeoutException ex) {
             LOG.info("Exception when performing the REST Call. " + ex.toString());
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%SERVICEURL%", servicePath));
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(timeOutMs)));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT)
+                    .resolveDescription("TIMEOUT", String.valueOf(timeOutMs))
+                    .resolveDescription("SERVICEURL", servicePath);
             result.setResultMessage(message);
             return result;
 
         } catch (Exception ex) {
             LOG.error("Exception when performing the REST Call. " + ex.toString(), ex);
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
-            message.setDescription(
-                    message.getDescription().replace("%DESCRIPTION%", "Error on CallREST : " + ex.toString()));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("DESCRIPTION", "Error on CallREST : " + ex.toString())
+                    .resolveDescription("SERVICE", servicePath);
             result.setResultMessage(message);
             return result;
 

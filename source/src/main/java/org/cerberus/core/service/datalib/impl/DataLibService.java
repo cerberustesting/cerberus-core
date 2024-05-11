@@ -944,7 +944,7 @@ public class DataLibService implements IDataLibService {
 
                                         // If column is on the columns to hide we add it to the secret list
                                         if (columnsToHide.contains(subDataColumnToTreat)) {
-                                            execution.appendSecrets(listTemp1);
+                                            execution.addSecrets(listTemp1);
                                         }
                                         // Add the Subdata with associated list in the HashMap.
                                         hashTemp1.put(subDataColumnToTreat, listTemp1);
@@ -1040,7 +1040,7 @@ public class DataLibService implements IDataLibService {
 
                                         // If column is on the columns to hide we add it to the secret list
                                         if (columnsToHide.contains(subDataColumnToTreat)) {
-                                            execution.appendSecrets(listTemp1);
+                                            execution.addSecrets(listTemp1);
                                         }
 
                                         // Add the Subdata with associated list in the HashMap.

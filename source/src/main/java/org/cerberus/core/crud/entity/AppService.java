@@ -64,7 +64,8 @@ public class AppService {
     private boolean isAvroEnableValue;
     private String avroSchemaValue;
     private String parentContentService;
-    private String group; // Information in order to group the services in order to organise them
+    private String collection; // Information in order to group the services in order to organise them
+    private JSONObject simulationParameters;
     private String description;
     private String UsrCreated;
     private Timestamp DateCreated;
@@ -197,6 +198,7 @@ public class AppService {
                 jsonMyRequest.put("Content", jsonContent);
             }
             jsonMyRequest.put("HTTP-Request", this.getServiceRequest());
+            jsonMyRequest.put("HTTP-BodyRequestType", this.getBodyType());
 
             JSONObject jsonProxy = new JSONObject();
             jsonProxy.put("HTTP-Proxy", this.isProxy());

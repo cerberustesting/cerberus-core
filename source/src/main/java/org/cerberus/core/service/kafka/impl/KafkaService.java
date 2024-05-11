@@ -345,7 +345,7 @@ public class KafkaService implements IKafkaService {
     @SuppressWarnings("unchecked")
     @Override
     public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
-            List<AppServiceContent> serviceContent, int timeoutMs) {
+            List<AppServiceContent> kafkaProps, int timeoutMs) {
 
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA);
         AnswerItem<Map<TopicPartition, Long>> result = new AnswerItem<>();
@@ -355,17 +355,17 @@ public class KafkaService implements IKafkaService {
         try {
 
             Properties props = new Properties();
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers, true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false", true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "10", true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer", true, 0, "", "", null, "", null));
             // Setting timeout although does not seem to work fine as result on aiven is always 60000 ms.
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
-            serviceContent.add(factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
+            kafkaProps.add(factoryAppServiceContent.create(null, ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, String.valueOf(timeoutMs), true, 0, "", "", null, "", null));
 
-            for (AppServiceContent object : serviceContent) {
+            for (AppServiceContent object : kafkaProps) {
                 if (object.isActive()) {
                     props.put(object.getKey(), object.getValue());
                 }

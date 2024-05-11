@@ -6332,8 +6332,10 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 -- 1779
 UPDATE invariant SET idname='INVARIANTPRIVATE' WHERE idname='INVARIANTPUBLIC' AND value='PROXYTYPE';
 
--- 1780-1783
+-- 1780-1785
 ALTER TABLE `appservice` ADD COLUMN `BodyType` VARCHAR(60) NOT NULL DEFAULT '' AFTER `AttachementURL`;
 UPDATE appservice a  SET a.bodytype = 'raw' where `Type` ='REST' and ServiceRequest != '';
 UPDATE appservice a  SET a.bodytype = 'form-data' where `Type` ='REST' and Description like '%[form-data]%';
 UPDATE appservice a  SET a.bodytype = 'form-urlencoded' where `Type` ='REST' and ServiceRequest = '' and a.bodytype = '';
+ALTER TABLE appservice CHANGE `Group` Collection varchar(100) DEFAULT '' NULL;
+ALTER TABLE `appservice` ADD COLUMN `SimulationParameters` TEXT AFTER `Collection`;

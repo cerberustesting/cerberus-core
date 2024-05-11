@@ -60,7 +60,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
-import java.util.logging.Level;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.sshd.sftp.client.fs.SftpFileSystemProvider;
 import org.cerberus.core.util.StringUtil;
@@ -104,6 +103,7 @@ public class FtpService implements IFtpService {
 
         if (informations.size() <= 4) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICENAME", service)
                     .resolveDescription("DESCRIPTION", "FTP url bad format! you missed something. please modify ftp url with correct syntax");
             result.setResultMessage(message);
             return result;
@@ -119,6 +119,44 @@ public class FtpService implements IFtpService {
 
         }
 
+    }
+
+    private AnswerItem<AppService> call_SFTP(HashMap<String, String> informations, String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
+        MessageEvent message = null;
+        AnswerItem<AppService> result = new AnswerItem<>();
+        LOG.debug("starting SFTP.");
+
+        AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
+                method, "", "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
+
+        URI uri = null;
+        try {
+            uri = new URI("sftp://" + informations.get("pseudo") + ":" + informations.get("password") + "@" + informations.get("host") + ":" + informations.get("port") + "/");
+
+            try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap(), new SftpFileSystemProvider().getClass().getClassLoader())) {
+
+                LOG.info("Successfully logged to the sftp server");
+
+                if (method.equals("GET")) {
+                    result = this.getSFTP(informations, fs, myResponse);
+                } else {
+                    result = this.postSFTP(informations, fs, myResponse);
+                }
+
+            } catch (Exception e) {
+                LOG.error("Exception when logging to sftp server.", e);
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICENAME", service)
+                        .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
+                result.setResultMessage(message);
+            }
+
+        } catch (URISyntaxException ex) {
+            LOG.error(ex, ex);
+        }
+        result.getResultMessage()
+                .resolveDescription("SERVICENAME", service);
+        return result;
     }
 
     private AnswerItem<AppService> call_FTP_FTPS(HashMap<String, String> informations, String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
@@ -147,6 +185,7 @@ public class FtpService implements IFtpService {
             if (!logged) {
                 LOG.error("Exception when logging to ftp server.");
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                        .resolveDescription("SERVICENAME", service)
                         .resolveDescription("DESCRIPTION", "Error on logging to FTP Server using login : '" + informations.get("pseudo") + "'");
                 result.setResultMessage(message);
                 return result;
@@ -165,6 +204,7 @@ public class FtpService implements IFtpService {
 
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
+                    .resolveDescription("SERVICENAME", service)
                     .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
             result.setResultMessage(message);
         } finally {
@@ -177,6 +217,8 @@ public class FtpService implements IFtpService {
                 }
             }
         }
+        result.getResultMessage()
+                .resolveDescription("SERVICENAME", service);
         return result;
     }
 
@@ -253,7 +295,7 @@ public class FtpService implements IFtpService {
         } else {
             LOG.info("no file to upload");
             MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload.");
+                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload");
             result.setResultMessage(msg);
             return result;
         }
@@ -276,45 +318,9 @@ public class FtpService implements IFtpService {
         } else {
             LOG.error("Error when uploading the ftp file to " + targetPathFilename);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder).");
+                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder)");
             result.setResultMessage(message);
         }
-        return result;
-    }
-
-    private AnswerItem<AppService> call_SFTP(HashMap<String, String> informations, String chain, String system, String content, String method, String filePath, String service, int timeOutMs) {
-        MessageEvent message = null;
-        AnswerItem<AppService> result = new AnswerItem<>();
-        LOG.debug("starting SFTP.");
-
-        AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
-                method, "", "", "", content, "", "", "", "", "", "", "", informations.get("path"), true, "", "", false, "", false, "", false, "", "", "", null, "", null, filePath);
-
-        URI uri = null;
-        try {
-            uri = new URI("sftp://" + informations.get("pseudo") + ":" + informations.get("password") + "@" + informations.get("host") + ":" + informations.get("port") + "/");
-
-            try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap(), new SftpFileSystemProvider().getClass().getClassLoader())) {
-
-                LOG.info("Successfully logged to the sftp server");
-                
-                if (method.equals("GET")) {
-                    result = this.getSFTP(informations, fs, myResponse);
-                } else {
-                    result = this.postSFTP(informations, fs, myResponse);
-                }
-
-            } catch (Exception e) {
-                LOG.error("Exception when logging to sftp server.", e);
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                        .resolveDescription("DESCRIPTION", "Error on CallFTP '" + informations.get("host") + ":" + informations.get("port") + "' : " + e.toString());
-                result.setResultMessage(message);
-            }
-
-        } catch (URISyntaxException ex) {
-            java.util.logging.Logger.getLogger(FtpService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         return result;
     }
 
@@ -376,7 +382,7 @@ public class FtpService implements IFtpService {
         } else {
             LOG.info("no sftp file to upload");
             MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload.");
+                    .resolveDescription("DESCRIPTION", "No data to upload. You need to specify either a file content on service request or file to upload");
             result.setResultMessage(msg);
             return result;
         }
@@ -386,7 +392,7 @@ public class FtpService implements IFtpService {
         }
 
         Path remotePath = fs.getPath(targetPathFilename);
-        
+
         try {
 
             Files.write(remotePath, byteContent, StandardOpenOption.CREATE);
@@ -407,7 +413,7 @@ public class FtpService implements IFtpService {
         } catch (Exception e) {
             LOG.error("Error when uploading the sftp file to " + targetPathFilename, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
-                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder).");
+                    .resolveDescription("DESCRIPTION", "Error when uploading to '" + targetPathFilename + "'. Something went wrong that prevent the file to be uploaded (maybe target does not exist or is a folder)");
             result.setResultMessage(message);
         }
 

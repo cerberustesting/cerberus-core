@@ -204,9 +204,7 @@ public class PropertyService implements IPropertyService {
                     eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), execution.getApplicationObj().getSystem(), execution.getEnvironment(), execution.getCountry(), "", null, "N");
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(execution);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
-            }
+            LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
 
             /*  First check if property has already been calculated
              *  if action is calculateProperty, then set isKnownData to false.
@@ -228,7 +226,9 @@ public class PropertyService implements IPropertyService {
                 msg = tcExeData.getPropertyResultMessage();
                 //saves the result
                 try {
-                    testCaseExecutionDataService.save(tcExeData, execution.getSecrets());
+                    if (tcExeData.getId() > 0) { // Data is not saved to database in case the property is calculated from a service call simulation.
+                        testCaseExecutionDataService.save(tcExeData, execution.getSecrets());
+                    }
                     /**
                      * Add TestCaseExecutionData in TestCaseExecutionData List
                      * of the TestCaseExecution
@@ -883,7 +883,7 @@ public class PropertyService implements IPropertyService {
 
     private void addPropertyASecret(TestCaseExecutionData executionData, TestCaseExecution execution) {
         if (executionData.getProperty().contains("PASSW")) {
-            execution.appendSecret(executionData.getValue());
+            execution.addSecret(executionData.getValue());
         }
     }
 

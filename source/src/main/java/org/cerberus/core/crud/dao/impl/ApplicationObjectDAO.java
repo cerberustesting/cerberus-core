@@ -111,6 +111,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg;
         final String query = "SELECT * FROM `applicationobject` obj WHERE `Application` = ? AND `Object` = ?";
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.app : {}", application);
+        LOG.debug("SQL.param.obj : {}", object);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query)) {

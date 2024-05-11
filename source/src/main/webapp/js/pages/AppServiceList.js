@@ -230,6 +230,11 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
+            "sName": "srv.collection",
+            "data": "collection",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("appservice", "collection")
+        }, {
             "sName": "srv.Service",
             "data": "service",
             "sWidth": "150px",
@@ -245,28 +250,30 @@ function aoColumnsFunc(tableId) {
                         .append($("<img style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.type).attr('src', './images/logo-' + obj.type + '.png'))
                         .html();
             }
-        },
-        {
+        }, {
+            "sName": "srv.Method",
+            "visible": true,
+            "data": "method",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("appservice", "method")
+        }, {
             "sName": "srv.Application",
             "data": "application",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "application")
-        },
-        {
+        }, {
             "sName": "ServicePath",
             "like": true,
             "data": "servicePath",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "servicePath")
-        },
-        {
+        }, {
             "sName": "BodyType",
             "visible": false,
             "data": "bodyType",
             "sWidth": "70px",
             "title": doc.getDocLabel("appservice", "bodyType")
-        },
-        {
+        }, {
             "sName": "srv.ServiceRequest",
             "visible": false,
             "like": true,
@@ -288,12 +295,6 @@ function aoColumnsFunc(tableId) {
             "data": "operation",
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "operation")
-        }, {
-            "sName": "srv.Method",
-            "visible": false,
-            "data": "method",
-            "sWidth": "50px",
-            "title": doc.getDocLabel("appservice", "method")
         }, {
             "sName": "srv.kafkaTopic",
             "visible": false,
@@ -373,12 +374,6 @@ function aoColumnsFunc(tableId) {
             "sWidth": "150px",
             "title": doc.getDocLabel("appservice", "parentContentService")
         }, {
-            "sName": "srv.group",
-            "visible": false,
-            "data": "group",
-            "sWidth": "150px",
-            "title": doc.getDocLabel("appservice", "group")
-        }, {
             "sName": "srv.Description",
             "like": true,
             "data": "description",
@@ -455,26 +450,3 @@ function deleteEntryClick(service) {
     removeEntryClick(service);
 }
 
-/**
- * After table feeds,
- *
- * @returns {undefined}
- */
-function afterTableLoad() {
-    $.each($("pre[name='envelopeField']"), function (i, e) {
-        // Highlight envelop on modal loading
-        var editor = ace.edit($(e).get(0));
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode(
-                defineAceMode(editor.getSession().getDocument().getValue()));
-        editor.setOptions({
-            maxLines: 1,
-            showLineNumbers: false,
-            showGutter: false,
-            highlightActiveLine: false,
-            highlightGutterLine: false,
-            readOnly: true
-        });
-        editor.renderer.$cursorLayer.element.style.opacity = 0;
-    });
-}

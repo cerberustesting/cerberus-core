@@ -38,6 +38,7 @@ public interface AppServiceMapperV001 {
     @Mapping(source = "followRedir", target = "isFollowingRedirection")
     @Mapping(source = "contentList", target = "contents")
     @Mapping(source = "headerList", target = "headers")
+    @Mapping(source = "collection", target = "group")
     AppServiceDTOV001 toDTO(AppService appService);
 
     @InheritInverseConfiguration
@@ -69,5 +70,7 @@ public interface AppServiceMapperV001 {
     @Mapping(target = "kafkaWaitSecond", ignore = true)
     @Mapping(target = "recordTraceFile", ignore = true)
     @Mapping(target = "responseNb", ignore = true)
+    @Mapping(target = "bodyType", ignore = true)
+    @Mapping(target = "simulationParameters", ignore = true)
     AppService toEntity(AppServiceDTOV001 appServiceDTO);
 }

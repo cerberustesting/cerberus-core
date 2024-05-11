@@ -329,6 +329,8 @@ public class ReadAppService extends HttpServlet {
         JSONObject result = new JSONObject();
         if (appservice != null) {
             result = new JSONObject(gson.toJson(appservice));
+            result.remove("map");
+            result.put("simulationParameters", appservice.getSimulationParameters());
             String pass = StringUtil.getPasswordFromAnyUrl(result.getString("servicePath"));
             if (pass != null) {
                 result.put("servicePath", result.getString("servicePath").replace(pass, StringUtil.SECRET_STRING));

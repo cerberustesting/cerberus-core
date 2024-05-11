@@ -127,7 +127,7 @@ public class CreateAppService extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), "", charset);
+        String collection = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("collection"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), "", charset);
         String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), "", charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), "", charset);
@@ -137,7 +137,7 @@ public class CreateAppService extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
         boolean isFollowRedir = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isFollowRedir"), true, charset);
-        String bodyType = ParameterParserUtil.parseStringParamAndDecode(fileData.get("bodyType"), null, charset);
+        String bodyType = ParameterParserUtil.parseStringParamAndDecode(fileData.get("bodyType"), "", charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String kafkaTopic = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaTopic"), "", charset);
         boolean isAvroEnable = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("isAvroEnable"), true, charset);
@@ -182,8 +182,13 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
             LOG.debug(request.getUserPrincipal().getName());
-            AppService appService = appServiceFactory.create(service, type, method, application, group, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue, description, servicePath,
+            AppService appService = appServiceFactory.create(service, type, method, application, collection, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue, description, servicePath,
                     isFollowRedir, attachementurl, operation, isAvroEnable, schemaRegistryUrl, isAvroEnableKey, avroSchemaKey, isAvroEnableValue, avroSchemaValue, parentContentService, request.getUserPrincipal().getName(), null, null, null, fileName);
+            // Feed the Simulation parameters in case they exist.
+            if (fileData.get("callInfo") != null) {
+                JSONObject objCall = new JSONObject(fileData.get("callInfo"));
+                appService.setSimulationParameters(objCall);
+            }
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 

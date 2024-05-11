@@ -268,7 +268,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea.setIp(execution.getMyHost());
                 cea.setUrl(execution.getMyContextRoot());
                 appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
-                execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
+                execution.addSecret(StringUtil.getPasswordFromUrl(appURL));
                 execution.setUrl(appURL);
                 // If domain is empty we guess it from URL.
                 if (StringUtil.isEmpty(cea.getDomain())) {
@@ -308,7 +308,7 @@ public class ExecutionStartService implements IExecutionStartService {
                         }
                     }
                     appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
-                    execution.appendSecret(StringUtil.getPasswordFromUrl(appURL));
+                    execution.addSecret(StringUtil.getPasswordFromUrl(appURL));
                     execution.setUrl(appURL);
                     if ("GUI".equals(execution.getApplicationObj().getType()) && StringUtil.isEmpty(cea.getDomain())) {
                         // Domain calculation only make sense for Web applications.

@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
+import org.cerberus.core.api.dto.appservice.AppServiceCallDTO;
 import org.cerberus.core.api.dto.appservice.AppServiceDTOV001;
 import org.cerberus.core.api.dto.appservice.AppServiceMapperV001;
 import org.cerberus.core.api.dto.views.View;
@@ -40,6 +41,10 @@ import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.IAppServiceService;
 import org.cerberus.core.crud.service.ILogEventService;
+import org.cerberus.core.service.appservice.IServiceService;
+import org.cerberus.core.util.answer.AnswerItem;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +69,7 @@ public class AppServiceController {
     private static final Logger LOG = LogManager.getLogger(AppServiceController.class);
     private final AppServiceMapperV001 appServiceMapper;
     private final IAppServiceService appServiceService;
+    private final IServiceService serviceService;
     private final ILogEventService logEventService;
 
     @ApiOperation("Get a service by its service name")
@@ -141,4 +147,41 @@ public class AppServiceController {
                 )
         );
     }
+
+    @ApiOperation("Call a service and get the result")
+    @ApiResponse(code = 200, message = "ok")
+    @JsonView(View.Public.GET.class)
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(path = "/call/{service}", headers = {API_VERSION_1}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper<String> call(
+            @PathVariable("service") String service,
+            @Valid @JsonView(View.Public.POST.class) @RequestBody AppServiceCallDTO serviceCallDTO,
+            @RequestHeader(name = API_KEY, required = false) String apiKey,
+            HttpServletRequest request,
+            Principal principal) {
+
+        String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
+        logEventService.createForPublicCalls("/public/services/call", "CALL-POST", LogEvent.STATUS_INFO, String.format("API /services/call called with URL: %s", request.getRequestURL()), request, login);
+
+        JSONObject result = new JSONObject();
+
+        AnswerItem<AppService> ans = serviceService.callAPI(service, serviceCallDTO.getCountry(), serviceCallDTO.getEnvironment(), serviceCallDTO.getApplication(), serviceCallDTO.getSystem(),
+                serviceCallDTO.getTimeout(), serviceCallDTO.getKafkanb(), serviceCallDTO.getKafkaTime(), serviceCallDTO.getProps(), login);
+
+        if (ans != null) {
+            try {
+                result.put("message", ans.getMessageDescription());
+                result.put("messageCode", ans.getMessageCodeString());
+                if (ans.getItem() != null) {
+                    result.put("call", ans.getItem().toJSONOnExecution());
+                }
+            } catch (JSONException ex) {
+                LOG.error(ex, ex);
+            }
+        }
+
+        return ResponseWrapper.wrap(result.toString());
+
+    }
+
 }

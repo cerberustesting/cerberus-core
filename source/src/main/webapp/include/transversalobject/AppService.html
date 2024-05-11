@@ -8,13 +8,13 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit SoapLibrary</h4>
+                <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit Service</h4>
             </div>
             <div class="modal-body">
 
                 <!--edit form-->
                 <form id="editSoapLibraryModalForm" name="editSoapLibraryModalForm" role="form">
-                    <div class="container-fluid center">
+                    <div class="container-fluid center marginBottom20">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert" style="display:none;">
@@ -46,12 +46,18 @@
                             <li><a data-toggle="tab" href="#tabsEdit-2" id="tabRequest" name="tabsEdit2">Request</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-3" id="tabRequestDetail" name="tabsEdit3">Request Detail</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-4" id="tabHeader" name="tabsEdit4">Header</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-6" id="tabFilters" name="tabsEdit6">Fafka Filters</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Traceability</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
                                 <div class="row">
-                                    <div class="form-group form-group-sm col-sm-12">
+                                    <div class="form-group col-xs-6">
+                                        <label for="collection" name="collectionField">Collection</label>
+                                        <input type="text" class="form-control" name="collection" id="collection"
+                                               aria-describedby="basic-editon1" autocomplete="off">
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-6">
                                         <label class="control-label" for="application" name="applicationField">Application</label>
                                         <div class="input-group col-xs-12">                               	
                                             <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
@@ -106,33 +112,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <label for="kafkaFilter" name="kafkaFilterField">Kafka Filters</label>
-                                <div class="well well-sm" id="kafkaFilter">
-                                    <div class="row">
-                                        <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterPath" name="kafkaFilterPathField">Event Filter JSON Path</label>
-                                            <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
-                                                   aria-describedby="basic-editon1">
-                                        </div>
-                                        <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterValue" name="kafkaFilterValueField">Event Filter Value</label>
-                                            <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
-                                                   aria-describedby="basic-editon1">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterHeaderPath" name="kafkaFilterHeaderPathField">Header Filter JSON Path</label>
-                                            <input type="text" class="form-control" name="kafkaFilterHeaderPath" id="kafkaFilterHeaderPath"
-                                                   aria-describedby="basic-editon1">
-                                        </div>
-                                        <div class="form-group col-xs-6">
-                                            <label for="kafkaFilterHeaderValue" name="kafkaFilterHeaderValueField">Header Filter Value</label>
-                                            <input type="text" class="form-control" name="kafkaFilterHeaderValue" id="kafkaFilterHeaderValue"
-                                                   aria-describedby="basic-editon1">
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="form-group col-sm-3">
                                         <label for="isFollowRedir" name="isFollowRedirField">Follow Redirect</label>
@@ -142,13 +121,6 @@
                                         <label for="bodyType" name="bodyTypeField">Body Type</label>
                                         <select class="form-control"  id="bodyType" name="bodyType">
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="group" name="groupField">Group</label>
-                                        <input type="text" class="form-control" name="group" id="group"
-                                               aria-describedby="basic-editon1">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -264,6 +236,39 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-6">
+                                <div id="listPanelFilter">
+                                    <div class="row">
+                                        <label for="kafkaFilter" name="kafkaFilterField">Kafka Filters</label>
+                                        <div class="well well-sm" id="kafkaFilter">
+                                            <div class="row">
+                                                <div class="form-group col-xs-6">
+                                                    <label for="kafkaFilterPath" name="kafkaFilterPathField">Event Filter JSON Path</label>
+                                                    <input type="text" class="form-control" name="kafkaFilterPath" id="kafkaFilterPath"
+                                                           aria-describedby="basic-editon1">
+                                                </div>
+                                                <div class="form-group col-xs-6">
+                                                    <label for="kafkaFilterValue" name="kafkaFilterValueField">Event Filter Value</label>
+                                                    <input type="text" class="form-control" name="kafkaFilterValue" id="kafkaFilterValue"
+                                                           aria-describedby="basic-editon1">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-xs-6">
+                                                    <label for="kafkaFilterHeaderPath" name="kafkaFilterHeaderPathField">Header Filter JSON Path</label>
+                                                    <input type="text" class="form-control" name="kafkaFilterHeaderPath" id="kafkaFilterHeaderPath"
+                                                           aria-describedby="basic-editon1">
+                                                </div>
+                                                <div class="form-group col-xs-6">
+                                                    <label for="kafkaFilterHeaderValue" name="kafkaFilterHeaderValueField">Header Filter Value</label>
+                                                    <input type="text" class="form-control" name="kafkaFilterHeaderValue" id="kafkaFilterHeaderValue"
+                                                           aria-describedby="basic-editon1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -306,50 +311,117 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
                     <button type="button" id="editSoapLibraryButton" class="btn btn-primary" name="buttonEdit">Save</button>
-<!--                    <button type="button" id="editSoapLibraryButton" class="btn btn-primary" name="buttonEdit">Save and Call</button>-->
+                    <button type="button" id="callSoapLibraryButton" class="btn btn-primary" name="buttonCall">Save and Call</button>
                     <button type="button" id="addSoapLibraryButton" class="btn btn-primary" name="buttonAdd">Add</button>
                     <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary" name="buttonDuplicate">Duplicate</button>
                 </div>
 
-<!--                <div class="container-fluid center">
+                <div class="container-fluid center marginBottom20">
                     <ul id="tabsSimul" class="nav nav-tabs" data-tabs="tabsSimul">
-                        <li class="active"><a data-toggle="tab" href="#tabsSimul-1" id="tabSimulResult" name="tabsSimul1">Result</a></li>
+                        <li class="active"><a data-toggle="tab" href="#tabsSimul-4" id="tabSimulParam" name="tabsSimul4">Simulation Parameters</a></li>
+                        <li><a data-toggle="tab" href="#tabsSimul-1" id="tabSimulResult" name="tabsSimul1">Response</a></li>
                         <li><a data-toggle="tab" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Details</a></li>
-                        <li><a data-toggle="tab" href="#tabsSimul-3" id="tabSimulParam" name="tabsSimu31">Parameters</a></li>
+                        <li><a data-toggle="tab" href="#tabsSimul-3" id="tabSimulRequest" name="tabsSimul3">Request</a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabsSimul-1">
+                        <div class="center marginTop25 tab-pane fade in" id="tabsSimul-1">
                             <div class="row">
-                                <div class="form-group form-group-sm col-sm-12">
-                                    <label class="control-label" for="application" name="applicationField">Application 1</label>
-                                    <div class="input-group col-xs-12">                               	
-                                        <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
+                                <div class="col-xs-12" id="srvResponseDiv">
+                                    <label for="serviceResponse" name="serviceResponseField">Simulation Response</label>
+                                    <div name="serviceResponse" id="serviceResponse" aria-describedby="basic-editon1">
+                                        <pre id='srvResponse' name='srvResponse' style="min-height: 150px"></pre>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade in " id="tabsSimul-2">
                             <div class="row">
-                                <div class="form-group form-group-sm col-sm-12">
-                                    <label class="control-label" for="application" name="applicationField">Application 2</label>
-                                    <div class="input-group col-xs-12">                               	
-                                        <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
+                                <div class="col-xs-12" id="srvResponseDetDiv">
+                                    <label for="serviceResponseDet" name="serviceResponseDetField">Simulation Response Detail</label>
+                                    <div name="serviceResponseDet" id="serviceResponseDet" aria-describedby="basic-editon1">
+                                        <pre id='srvResponseDet' name='srvResponseDet' style="min-height: 150px"></pre>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade in " id="tabsSimul-3">
                             <div class="row">
-                                <div class="form-group form-group-sm col-sm-12">
-                                    <label class="control-label" for="application" name="applicationField">Application 3</label>
-                                    <div class="input-group col-xs-12">                               	
-                                        <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
+                                <div class="col-xs-12" id="srvCallRequestDiv">
+                                    <label for="serviceCallRequest" name="serviceCallRequestField">Simulation Request</label>
+                                    <div name="serviceCallRequest" id="serviceCallRequest" aria-describedby="basic-editon1">
+                                        <pre id='srvCallRequest' name='srvCallRequest' style="min-height: 150px"></pre>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="center marginTop25 tab-pane fade in active" id="tabsSimul-4">
+                            <div id="lineStatus" class="row">
+                                <!--                                <h2 id="callStatus" class="glyphicon pull-left text-info glyphicon-refresh spin col-sm-2" style="font-size:4em;text-align:center"></h2>-->
+                                <b>
+                                    <div class="form-group col-sm-12 alert" id="resmessage" name="resmessage">
+                                    </div>
+                                </b>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="callCountry" name="callCountryField">Simulation Country</label>
+                                    <select class="form-control"  id="callCountry" name="callCountry">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="callEnv" name="callEnvField">Simulation Environment</label>
+                                    <select class="form-control"  id="callEnv" name="callEnv">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="callSystem" name="callSystemField">Simulation System</label>
+                                    <select class="form-control"  id="callSystem" name="callSystem">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-4">
+                                    <label for="callTimeout" name="callTimeoutField">Timeout (ms)</label>
+                                    <input class="form-control"  id="callTimeout" name="callTimeout"/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="callKafkaNb" name="callKafkaNbField">Nb events to wait (Kafka)</label>
+                                    <input class="form-control"  id="callKafkaNb" name="callKafkaNb"/>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="callKafkaTime" name="callKafkaTimeField">Time to wait in s (Kafka)</label>
+                                    <input class="form-control"  id="callKafkaTime" name="callKafkaTime"/>
+                                </div>
+                            </div>
+
+                            <div id="listPanelCallProp">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label for="callPropTable" name="callPropTableField">Simulation Properties</label>
+                                        <table class="table table-bordered table-hover nomarginbottom" id="callPropTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="callPropActiveHeader" name="callPropActiveHeader">Active</th>
+                                                    <th class="text-center" id="callPropKeyHeader" name="callPropKeyHeader">Key</th>
+                                                    <th class="text-center" id="callPropValueHeader" name="callPropValueHeader">Value</th>
+                                                    <th class="text-center" id="callPropDescriptionHeader" name="callPropDescriptionHeader">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="callPropTableBody">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default marginTop20" id="addcallProp">Add Simulation Property</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
                     </div>
-                </div>-->
+                </div>
 
             </div>
 

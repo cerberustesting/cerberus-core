@@ -2082,7 +2082,7 @@ public class ActionService implements IActionService {
             }
             nti.setName(value1);
             nti.setIndexRequestNb(nbHits);
-            exe.appendNetworkTrafficIndexList(nti);
+            exe.addNetworkTrafficIndexList(nti);
 
             LOG.debug("New Index : " + exe.getNetworkTrafficIndexList());
 

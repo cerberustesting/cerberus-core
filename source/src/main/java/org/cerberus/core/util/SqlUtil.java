@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -241,6 +242,28 @@ public class SqlUtil {
                 colValue = new JSONArray(colValueString);
             } else {
                 colValue = new JSONArray();
+            }
+        } catch (JSONException ex) {
+            LOG.error("Could not convert '" + colValueString + "' to JSONArray.", ex);
+        }
+        return colValue;
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @param columnName
+     * @return a JSONArray from the column name and resultset defined.
+     * @throws SQLException
+     */
+    public static JSONObject getJSONObjectFromColumn(ResultSet resultSet, String columnName) throws SQLException {
+        String colValueString = resultSet.getString(columnName);
+        JSONObject colValue = new JSONObject();
+        try {
+            if (!StringUtil.isEmpty(colValueString)) {
+                colValue = new JSONObject(colValueString);
+            } else {
+                colValue = new JSONObject();
             }
         } catch (JSONException ex) {
             LOG.error("Could not convert '" + colValueString + "' to JSONArray.", ex);

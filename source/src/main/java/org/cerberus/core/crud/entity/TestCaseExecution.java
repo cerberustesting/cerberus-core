@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,9 +217,7 @@ public class TestCaseExecution {
 
     public enum ControlStatus {
         OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
-    }
-
-    ;
+    };
 
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
@@ -228,23 +227,6 @@ public class TestCaseExecution {
     public static final String ROBOTPROVIDER_KOBITON = "KOBITON";
     public static final String ROBOTPROVIDER_LAMBDATEST = "LAMBDATEST";
     public static final String ROBOTPROVIDER_NONE = "NONE";
-
-
-    public void appendNetworkTrafficIndexList(NetworkTrafficIndex newIndex) {
-        this.networkTrafficIndexList.add(newIndex);
-    }
-
-    public void appendSecret(String secret) {
-        if (secret != null) {
-            this.secrets.put(secret, "");
-        }
-    }
-
-    public void appendSecrets(List<String> secrets) {
-        secrets.forEach(secret -> {
-            this.secrets.put(secret, "");
-        });
-    }
 
     public void setResultMessage(MessageGeneral resultMessage) {
         this.resultMessage = resultMessage;
@@ -280,6 +262,42 @@ public class TestCaseExecution {
                 this.testCaseStepExecutionList.add(stepExecution);
             }
         }
+    }
+
+    public void addTestCaseCountryPropertyList(TestCaseCountryProperties property) {
+        if (testCaseCountryPropertyList == null) {
+            testCaseCountryPropertyList = new ArrayList<>();
+        }
+        if (property != null) {
+            this.testCaseCountryPropertyList.add(property);
+        }
+    }
+
+    public void addTestCaseCountryPropertyList(List<TestCaseCountryProperties> propertyList) {
+        if (testCaseCountryPropertyList == null) {
+            testCaseCountryPropertyList = new ArrayList<>();
+        }
+        if (propertyList != null) {
+            for (TestCaseCountryProperties property : propertyList) {
+                this.testCaseCountryPropertyList.add(property);
+            }
+        }
+    }
+
+    public void addNetworkTrafficIndexList(NetworkTrafficIndex newIndex) {
+        this.networkTrafficIndexList.add(newIndex);
+    }
+
+    public void addSecret(String secret) {
+        if (secret != null) {
+            this.secrets.put(secret, "");
+        }
+    }
+
+    public void addSecrets(List<String> secrets) {
+        secrets.forEach(secret -> {
+            this.secrets.put(secret, "");
+        });
     }
 
     /**
@@ -409,12 +427,12 @@ public class TestCaseExecution {
      * Convert the current TestCaseExecution into a public JSON format.
      *
      * @param cerberusURL
-     * @param prioritiesList   : send the invariant list of priorities to the
-     *                         method (this is to avoid getting value from database for every entries)
-     * @param countriesList    : send the invariant list of countries to the method
-     *                         (this is to avoid getting value from database for every entries)
+     * @param prioritiesList : send the invariant list of priorities to the
+     * method (this is to avoid getting value from database for every entries)
+     * @param countriesList : send the invariant list of countries to the method
+     * (this is to avoid getting value from database for every entries)
      * @param environmentsList : send the invariant list of environments to the
-     *                         method (this is to avoid getting value from database for every entries)
+     * method (this is to avoid getting value from database for every entries)
      * @return TestCaseExecution in JSONObject format
      */
     public JSONObject toJsonV001(String cerberusURL, List<Invariant> prioritiesList, List<Invariant> countriesList, List<Invariant> environmentsList) {

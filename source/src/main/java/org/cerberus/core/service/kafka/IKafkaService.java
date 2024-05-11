@@ -73,14 +73,14 @@ public interface IKafkaService {
      *
      * @param topic
      * @param bootstrapServers
-     * @param serviceHeader
+     * @param kafkaProps
      * @param timeoutMs
      * @return a map that contain the last offset of every partition.
      * @throws InterruptedException
      * @throws ExecutionException
      */
     public AnswerItem<Map<TopicPartition, Long>> seekEvent(String topic, String bootstrapServers,
-            List<AppServiceContent> serviceHeader, int timeoutMs) throws InterruptedException, ExecutionException;
+            List<AppServiceContent> kafkaProps, int timeoutMs) throws InterruptedException, ExecutionException;
 
     /**
      *

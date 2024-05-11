@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.service.appservice;
 
+import java.util.List;
+import org.cerberus.core.api.dto.appservice.AppServiceCallPropertyDTO;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -40,13 +42,30 @@ public interface IServiceService {
      * @param targetNbEvents
      * @param targetNbSec
      * @param database
-     * @param request
-     * @param servicePath
-     * @param operation
-     * @param tCExecution
+     * @param manualRequest Used when service not defined.
+     * @param manualServicePath Used when service not defined.
+     * @param manualOperation Used when service not defined.
+     * @param execution
      * @param timeoutMs
      * @return
      */
-    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution, int timeoutMs);
+    AnswerItem<AppService> callService(String service, String targetNbEvents, String targetNbSec, String database, String manualRequest, String manualServicePath, String manualOperation, TestCaseExecution execution, int timeoutMs);
+
+    /**
+     * Simulate a call from outside a normal testcase execution.
+     *
+     * @param service
+     * @param country
+     * @param environment
+     * @param application
+     * @param system
+     * @param timeout
+     * @param kafkaNb
+     * @param kafkaTime
+     * @param props
+     * @param login
+     * @return
+     */
+    AnswerItem<AppService> callAPI(String service, String country, String environment, String application, String system, int timeout, String kafkaNb, String kafkaTime, List<AppServiceCallPropertyDTO> props, String login);
 
 }

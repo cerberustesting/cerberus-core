@@ -128,7 +128,7 @@ public class TestDataLibService implements ITestDataLibService {
                 row.put(tdld.getSubData(), tdld.getValue());
                 if (ParameterParserUtil.parseBooleanParam(tdld.getEncrypt(), false)) {
                     LOG.debug("Adding string to secret list : " + tdld.getSubData() + " - " + tdld.getValue() + " --> " + tdld.getEncrypt());
-                    execution.appendSecret(tdld.getValue());
+                    execution.addSecret(tdld.getValue());
                 }
             }
             row.put("TestDataLibID", String.valueOf(tdl.getTestDataLibID()));
