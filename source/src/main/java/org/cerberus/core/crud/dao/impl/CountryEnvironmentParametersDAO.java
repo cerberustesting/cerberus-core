@@ -485,6 +485,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.usrCreated : " + object.getUsrCreated());
         }
         Connection connection = this.databaseSpring.connect();
         try {

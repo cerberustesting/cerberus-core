@@ -124,6 +124,13 @@ public class UpdateApplication extends HttpServlet {
         List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
 
+        boolean emptycountryenv_error = false;
+        for (CountryEnvironmentParameters cea : ceaList) {
+            if ((StringUtil.isEmpty(cea.getCountry())) || (StringUtil.isEmpty(cea.getEnvironment()))) {
+                emptycountryenv_error = true;
+            }
+        }
+
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
@@ -136,19 +143,25 @@ public class UpdateApplication extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Application ID (application) is missing."));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (StringUtil.isEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "System is missing!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value."));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
+        } else if (emptycountryenv_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "One of the environment defined has an empty value on country or environment value."));
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
@@ -251,7 +264,7 @@ public class UpdateApplication extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, null, null, request.getRemoteUser(), null);
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
                 cedList.add(ced);
             }
         }

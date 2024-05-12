@@ -1165,7 +1165,7 @@ function Message(messageType, message) {
 function clearResponseMessage(dialog) {
     var elementAlert = dialog.find("div[id*='DialogMessagesAlert']");
     if (Boolean(elementAlert)) {
-        elementAlert.fadeOut();
+        elementAlert.slideUp(0);
     }
 }
 
@@ -1176,7 +1176,7 @@ function clearResponseMessageMainPage() {
     $("#mainAlert").removeClass("alert-success");
     $("#mainAlert").removeClass("alert-danger");
     $("#alertDescription").html("");
-    $("#mainAlert").fadeOut();
+    $("#mainAlert").slideUp(0);
 }
 
 /**

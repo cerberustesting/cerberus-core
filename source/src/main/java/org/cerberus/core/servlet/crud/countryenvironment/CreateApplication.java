@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
@@ -108,6 +109,14 @@ public class CreateApplication extends HttpServlet {
             sort_error = true;
         }
 
+        
+        boolean emptycountryenv_error = false;
+//        for (CountryEnvironmentParameters cea : ceaList) {
+//            if ((StringUtil.isEmpty(cea.getCountry())) || (StringUtil.isEmpty(cea.getEnvironment()))) {
+//                emptycountryenv_error = true;
+//            }
+//        }
+        
         /**
          * Checking all constrains before calling the services.
          */
@@ -128,6 +137,12 @@ public class CreateApplication extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
+            ans.setResultMessage(msg);
+        } else if (emptycountryenv_error) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "One of the environment defined has an empty value on country or environment value."));
             ans.setResultMessage(msg);
         } else {
             /**
