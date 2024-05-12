@@ -207,7 +207,7 @@ function addAppServiceClick(service, page) {
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
     srv_listennerForInputTypeFile('#editSoapLibraryModal')
     srv_pasteListennerForClipboardPicture('#editSoapLibraryModal');
-    $('#service').val("");
+    $('#editServiceModal #service').val("");
 
 }
 
@@ -272,8 +272,8 @@ function prepareAppServiceModal() {
 function confirmAppServiceModalHandler(mode, page, doCall = false) {
     clearResponseMessage($('#editSoapLibraryModal'));
 
-    var serviceName = $('#service').val();
-    $('#service').val($.trim(serviceName));
+    var serviceName = $('#editServiceModal #service').val();
+    $('#editServiceModal #service').val($.trim(serviceName));
     serviceName = $('#editServiceModal #service').val();
 
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
@@ -369,8 +369,8 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
         success: function (data) {
 
             // Update the original Service value.
-            console.info($('#service').val());
-            $('#editSoapLibraryModal #originalService').prop("value", $('#service').val());
+            console.info($('#editServiceModal #service').val());
+            $('#editSoapLibraryModal #originalService').prop("value", $('#editServiceModal #service').val());
 
             data = JSON.parse(data);
 
@@ -432,11 +432,10 @@ function getCallParam() {
     let callCountry = $('#callCountry').val();
     let callSystem = $('#callSystem').val();
     let callEnv = $('#callEnv').val();
-    let callApp = $('#application').val();
+    let callApp = $('#editSoapLibraryModalForm #application').val();
     let callTimeout = $('#callTimeout').val();
     let callKafkaNb = $('#callKafkaNb').val();
     let callKafkaTime = $('#callKafkaTime').val();
-    let callProps = $('#application').val();
     // Getting Data from Header TAB
     var table3 = $("#callPropTableBody tr");
     var table_callProp = [];
