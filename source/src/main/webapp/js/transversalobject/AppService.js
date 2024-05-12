@@ -274,6 +274,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
 
     var serviceName = $('#service').val();
     $('#service').val($.trim(serviceName));
+    serviceName = $('#editServiceModal #service').val();
 
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
 
