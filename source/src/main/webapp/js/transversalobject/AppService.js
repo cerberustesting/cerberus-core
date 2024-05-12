@@ -368,6 +368,11 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
         processData: false,
         contentType: false,
         success: function (data) {
+            
+            // Update the original Service value.
+            console.info($('#service').val());
+            $('#editSoapLibraryModal #originalService').prop("value", $('#service').val());
+            
             data = JSON.parse(data);
 
             if (getAlertType(data.messageType) === "success") {
@@ -462,7 +467,7 @@ function performCall(service) {
     let callData = getCallParam();
 
     $.ajax({
-        url: "api/public/services/call/" + service,
+        url: "api/public/services/call/" + encodeURIComponent(service),
         async: false,
         method: "POST",
         headers: {'X-API-VERSION': 1},
