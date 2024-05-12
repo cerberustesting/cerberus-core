@@ -53,8 +53,6 @@ function initModalAppService() {
     displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw");
     displayApplicationList("application", "", "", "");
     displayAppServiceList("parentContentService", "", "", "");
-    displayInvariantList("callCountry", "COUNTRY", false);
-    displayInvariantList("callEnv", "ENVIRONMENT", false);
     displayInvariantList("callSystem", "SYSTEM", false);
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
@@ -368,11 +366,11 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
         processData: false,
         contentType: false,
         success: function (data) {
-            
+
             // Update the original Service value.
             console.info($('#service').val());
             $('#editSoapLibraryModal #originalService').prop("value", $('#service').val());
-            
+
             data = JSON.parse(data);
 
             if (getAlertType(data.messageType) === "success") {
@@ -889,7 +887,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
                     // Feed the data to the screen and manage authorities.
                     var service = data.contentTable;
-                    feedAppServiceModalData(service, modalId, mode, service.hasPermissions);
+                    feedAppServiceModalData(service, modalId, mode, service.hasPermissions, data.extraInformation);
 
                     // Force a change event on method field.
                     refreshDisplayOnTypeChange();
@@ -970,7 +968,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
  * @param {String} hasPermissionsUpdate - boolean if premition is granted.
  * @returns {null}
  */
-function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
+function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, extraInfo) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -1071,13 +1069,24 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         } else {
             srv_updateDropzone(service.fileName, "#" + modalId);
         }
-//        console.info(service.simulationParameters);
         formEdit.find("#callTimeout").prop("value", service.simulationParameters.timeout);
         formEdit.find("#callKafkaNb").prop("value", service.simulationParameters.kafkanb);
         formEdit.find("#callKafkaTime").prop("value", service.simulationParameters.kafkaTime);
-        formEdit.find("#callCountry").val(service.simulationParameters.country);
-        formEdit.find("#callEnv").val(service.simulationParameters.environment);
-        formEdit.find("#callSystem").val(service.simulationParameters.system);
+        if (extraInfo !== undefined) {
+            formEdit.find("#callSystem").val(extraInfo.system);
+            $("[name='callCountry']").empty();
+            displayListFromData("callCountry", extraInfo.countries, service.simulationParameters.country);
+            $("[name='callEnv']").empty();
+            displayListFromData("callEnv", extraInfo.environments, service.simulationParameters.environment);
+        } else {
+            formEdit.find("#callSystem").val(service.simulationParameters.system);
+            $("[name='callCountry']").empty();
+            displayInvariantList("callCountry", "COUNTRY", false);
+            $("[name='callEnv']").empty();
+            displayInvariantList("callEnv", "ENVIRONMENT", false);
+            formEdit.find("#callCountry").val(service.simulationParameters.country);
+            formEdit.find("#callEnv").val(service.simulationParameters.environment);
+        }
 
         // Feed the simulation parameters.
         feedAppServiceModalDataCallProp(service.simulationParameters.props);

@@ -802,6 +802,7 @@ public class ServiceService implements IServiceService {
         CountryEnvironmentParameters env = null;
         try {
             env = cepService.convert(cepService.readByKey(system, country, environment, application));
+            execution.setUrl(env.getIp());
         } catch (CerberusException e) {
             LOG.error(e, e);
         }

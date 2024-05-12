@@ -24,9 +24,12 @@ import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
+import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.service.IAppServiceService;
+import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.crud.service.impl.AppServiceService;
 import org.cerberus.core.dto.TestCaseListDTO;
 import org.cerberus.core.dto.TestListDTO;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -36,6 +39,7 @@ import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
+import org.cerberus.core.exception.CerberusException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +69,8 @@ public class ReadAppService extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadAppService.class);
     private IAppServiceService appServiceService;
+    private IApplicationService applicationService;
+    private ICountryEnvironmentParametersService cepService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -148,7 +154,7 @@ public class ReadAppService extends HttpServlet {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        appServiceService = appContext.getBean(AppServiceService.class);
+        appServiceService = appContext.getBean(IAppServiceService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -198,7 +204,9 @@ public class ReadAppService extends HttpServlet {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
 
         JSONObject response = new JSONObject();
-        appServiceService = appContext.getBean(AppServiceService.class);
+        appServiceService = appContext.getBean(IAppServiceService.class);
+        applicationService = appContext.getBean(IApplicationService.class);
+        cepService = appContext.getBean(ICountryEnvironmentParametersService.class);
 
         AnswerItem<AppService> resp = appServiceService.readByKeyWithDependency(key);
         AppService p = null;
@@ -210,6 +218,43 @@ public class ReadAppService extends HttpServlet {
         if (p != null) {
             item.put("hasPermissions", userHasPermissions);
         }
+        String system = "";
+        if (StringUtil.isNotEmpty(p.getApplication())) {
+            try {
+                
+                Application app = applicationService.convert(applicationService.readByKey(p.getApplication()));
+                system = app.getSystem();
+                List<CountryEnvironmentParameters> cepValue = cepService.convert(cepService.readByVarious(system, null, null, p.getApplication()));
+                Map<String, String> distinctEnv = new HashMap<>();
+                Map<String, String> distinctCountry = new HashMap<>();
+                for (CountryEnvironmentParameters countryEnvironmentParameters : cepValue) {
+                    distinctCountry.put(countryEnvironmentParameters.getCountry(), "");
+                    distinctEnv.put(countryEnvironmentParameters.getEnvironment(), "");
+                }
+                JSONObject extraInfo = new JSONObject();
+                extraInfo.put("system", system);
+                JSONArray countries = new JSONArray();
+                JSONArray environments = new JSONArray();
+
+                for (Map.Entry<String, String> entry : distinctCountry.entrySet()) {
+                    String mycountry = entry.getKey();
+                    countries.put(mycountry);
+                }
+                for (Map.Entry<String, String> entry : distinctEnv.entrySet()) {
+                    String myenv = entry.getKey();
+                    environments.put(myenv);
+                }
+                extraInfo.put("countries", countries);
+                extraInfo.put("environments", environments);
+                response.put("extraInformation", extraInfo);
+                
+            } catch (CerberusException e) {
+                LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
+            } catch (Exception e) {
+                LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
+            }
+
+        }
         answerItem.setItem(response);
         answerItem.setResultMessage(resp.getResultMessage());
 
@@ -219,7 +264,7 @@ public class ReadAppService extends HttpServlet {
     private AnswerItem<JSONObject> findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
         AnswerItem<JSONObject> answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
-        appServiceService = appContext.getBean(AppServiceService.class);
+        appServiceService = appContext.getBean(IAppServiceService.class);
         AnswerList<AppService> resp = appServiceService.readByLikeName(key, limit);
         AppService p = null;
         JSONArray jsonArray = new JSONArray();

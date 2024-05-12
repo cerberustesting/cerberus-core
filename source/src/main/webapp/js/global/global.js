@@ -149,6 +149,33 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
 }
 
 /**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} defaultValue [optional] value to be selected in combo.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @param {String} funcAfterLoad [optional] Function to call after load.
+ * @returns {void}
+ */
+function displayListFromData(selectName, data, defaultValue) {
+    // Adding the specific value when defined.
+    let list = data;
+    //var select = $("<select></select>").addClass("form-control input-sm");
+
+        for (const element of list) {
+//            const desc = element + " - " + element;
+            $("[name='" + selectName + "']").append($('<option></option>').text(element).val(element));
+        }
+        if (defaultValue !== undefined) {
+            $("[name='" + selectName + "']").val(defaultValue);
+        }
+}
+
+
+
+/**
  * Method that display a list-group-item with the value retrieved from the Application IP list
  * @param {String} selectName value name of the list-group in the html to append the items
  * @param {String} system value to filter.
