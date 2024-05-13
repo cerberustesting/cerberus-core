@@ -28,7 +28,7 @@ function openModalAppService(service, mode, page = undefined) {
 
     $("#callSoapLibraryButton").off("click");
     $("#callSoapLibraryButton").click(function () {
-        confirmAppServiceModalHandler("EDIT", page, true);
+        confirmAppServiceModalHandler(mode, page, true);
     });
 
     reloadCollections();
