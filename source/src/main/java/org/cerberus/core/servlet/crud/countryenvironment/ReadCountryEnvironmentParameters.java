@@ -178,7 +178,7 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Chain,Disable,datecre,creator");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,cea.system,cea.country,Environment,Build,Revision,Chain,Disable,datecre,creator");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");

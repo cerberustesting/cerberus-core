@@ -19,6 +19,29 @@
  */
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
+var autocompleteHeaders = [
+    "Accept",
+    "Accept-Charset",
+    "Accept-Encoding",
+    "Accept-Language",
+    "Authorization",
+    "Cache-Control",
+    "Connection",
+    "Content-Encoding",
+    "Content-Length",
+    "Content-Type",
+    "Cookie",
+    "Date",
+    "DNT",
+    "Expect",
+    "Origin",
+    "Proxy-Authorization",
+    "Referer",
+    "Transfer-Encoding",
+    "User-Agent",
+    "X-Api-Key",
+    "X-Requested-With"
+];
 
 function openModalAppService(service, mode, page = undefined) {
     if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
@@ -368,8 +391,11 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
         contentType: false,
         success: function (data) {
 
+            hideLoaderInModal('#editSoapLibraryModal');
+            console.info("hide loader");
+            
             // Update the original Service value.
-            console.info($('#editServiceModal #service').val());
+//            console.info($('#editServiceModal #service').val());
             $('#editSoapLibraryModal #originalService').prop("value", $('#editServiceModal #service').val());
 
             data = JSON.parse(data);
@@ -400,7 +426,6 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
                 showMessage(data, $('#editSoapLibraryModal'));
             }
 
-            hideLoaderInModal('#editSoapLibraryModal');
         },
         error: showUnexpectedError
     });
@@ -462,6 +487,12 @@ function performCall(service) {
 
 //    console.info(dataCall);
 
+// TODO Show waithing icon.
+    console.info("show");
+
+    $('#callStatus').removeClass("spin glyphicon-minus").removeClass("glyphicon-ok").removeClass("glyphicon-remove").addClass("spin glyphicon-refresh");
+
+
     let callData = getCallParam();
 
     $.ajax({
@@ -493,6 +524,12 @@ function performCall(service) {
 
                 // Show Parameters and Message Tab
                 $('.nav-tabs a[href="#tabsSimul-4"]').tab('show');
+
+                $('#callStatus').removeClass("spin glyphicon-refresh").addClass("glyphicon-remove");
+
+            } else {
+
+                $('#callStatus').removeClass("spin glyphicon-refresh").addClass("glyphicon-ok");
 
             }
 
@@ -583,6 +620,10 @@ function performCall(service) {
 
 
             }
+
+            console.info("hide");
+//            $('#callStatus').removeClass("spin glyphicon-refresh").addClass("glyphicon-ok").addClass("glyphicon-remove");
+            // TODO Hide  waiting icon.
 
         },
         error: showUnexpectedError
@@ -1355,7 +1396,19 @@ function appendHeaderRow(content) {
     });
     keyInput.change(function () {
         content.key = $(this).val();
+        console.info(content.key);
     });
+    keyInput.autocomplete({
+        source: autocompleteHeaders,
+        minLength: 0,
+        messages: {
+            noResults: '',
+            results: function (amount) {
+                return '';
+            }
+        }
+    });
+
     valueInput.change(function () {
         content.value = $(this).val();
     });
@@ -1370,6 +1423,8 @@ function appendHeaderRow(content) {
     row.append(descriptionName);
     row.data("header", content);
     table.append(row);
+
+
 }
 
 function addNewHeaderRow() {

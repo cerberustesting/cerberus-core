@@ -324,8 +324,9 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvironmentparameters cea");
-
+        query.append("SELECT SQL_CALC_FOUND_ROWS cea.* FROM countryenvironmentparameters cea");
+        query.append(" JOIN application app on app.Application = cea.Application and app.`System` = cea.`System` ");
+        
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isEmpty(searchTerm)) {
@@ -356,7 +357,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         query.append(searchSQL);
 
         if (!StringUtil.isEmpty(column)) {
-            query.append(" order by `").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {

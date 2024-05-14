@@ -62,6 +62,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.util.servlet.ServletUtil;
 
 /**
  * @author cte
@@ -95,6 +96,8 @@ public class UpdateAppService extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
+        
+        ServletUtil.servletStart(request);
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
