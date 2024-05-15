@@ -554,7 +554,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 if ((envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment))
                                                         || (environment.equals("MANUAL"))) {
 
-                                                    if (envAppMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment + LOCAL_SEPARATOR + app.getApplication())) {
+                                                    if ((envAppMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment + LOCAL_SEPARATOR + app.getApplication()))
+                                                            || (environment.equals("MANUAL"))) {
 
                                                         // Create Tag only if not already done and defined.
                                                         if (!StringUtil.isEmpty(tag) && !tagAlreadyAdded) {
