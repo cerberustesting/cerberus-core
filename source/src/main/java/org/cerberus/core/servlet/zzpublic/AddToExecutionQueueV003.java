@@ -77,7 +77,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -149,6 +151,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ICampaignParameterService campaignParameterService;
     private ICampaignService campaignService;
     private ICountryEnvParamService countryEnvParamService;
+    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
     private IRobotService robotService;
     private IFactoryRobot robotFactory;
     private IParameterService parameterService;
@@ -188,6 +191,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
         campaignService = appContext.getBean(ICampaignService.class);
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        countryEnvironmentParametersService = appContext.getBean(ICountryEnvironmentParametersService.class);
         robotService = appContext.getBean(IRobotService.class);
         robotFactory = appContext.getBean(IFactoryRobot.class);
         parameterService = appContext.getBean(IParameterService.class);
@@ -509,6 +513,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                         envMap.put(envParam.getSystem() + LOCAL_SEPARATOR + envParam.getCountry() + LOCAL_SEPARATOR + envParam.getEnvironment(), envParam);
                     }
 
+                    HashMap<String, CountryEnvironmentParameters> envAppMap = new HashMap<>();
+                    LOG.debug("Loading all environments.");
+                    for (CountryEnvironmentParameters envAppParam : countryEnvironmentParametersService.convert(countryEnvironmentParametersService.readByVarious(null, null, null, null))) {
+                        envAppMap.put(envAppParam.getSystem() + LOCAL_SEPARATOR + envAppParam.getCountry() + LOCAL_SEPARATOR + envAppParam.getEnvironment() + LOCAL_SEPARATOR + envAppParam.getApplication(), envAppParam);
+                    }
+
                     if (!StringUtil.isEmpty(campaign)) {
                         LOG.info("Campaign [" + campaign + "] asked to triggered.");
                         LOG.info(" [" + campaign + "] tests : " + selectTest);
@@ -544,72 +554,79 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 if ((envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment))
                                                         || (environment.equals("MANUAL"))) {
 
-                                                    // Create Tag only if not already done and defined.
-                                                    if (!StringUtil.isEmpty(tag) && !tagAlreadyAdded) {
-                                                        // We create or update it.
-                                                        tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
-                                                        tagAlreadyAdded = true;
-                                                    }
+                                                    if (envAppMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment + LOCAL_SEPARATOR + app.getApplication())) {
 
-                                                    // manage manual host for this execution
-                                                    String manualHostforThisApplication = getManualHostForThisApplication(myHostMap, app.getApplication());
+                                                        // Create Tag only if not already done and defined.
+                                                        if (!StringUtil.isEmpty(tag) && !tagAlreadyAdded) {
+                                                            // We create or update it.
+                                                            tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
+                                                            tagAlreadyAdded = true;
+                                                        }
 
-                                                    if ((app != null)
-                                                            && (app.getType() != null)
-                                                            && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
-                                                            || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
+                                                        // manage manual host for this execution
+                                                        String manualHostforThisApplication = getManualHostForThisApplication(myHostMap, app.getApplication());
 
-                                                        for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
-                                                            String key = entry.getKey();
-                                                            Robot robot = entry.getValue();
+                                                        if ((app != null)
+                                                                && (app.getType() != null)
+                                                                && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
+                                                                || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
 
-                                                            try {
-                                                                if ("".equals(robot.getType()) || app.getType().equals(robot.getType())) {
-                                                                    // Robot type is not feeded (not attached to any techno) or robot type match the one of the application.
-                                                                    LOG.debug("Insert Queue Entry.");
-                                                                    // We get here the corresponding robotDecli value from robot.
-                                                                    String robotDecli = robot.getRobotDecli();
-                                                                    if (StringUtil.isEmpty(robotDecli)) {
-                                                                        robotDecli = robot.getRobot();
-                                                                    }
-                                                                    if ("".equals(robot.getRobot()) && StringUtil.isEmpty(robotIP)) {
-                                                                        // We don't insert the execution for robot application that have no robot and robotIP defined.
-                                                                        nbrobotmissing++;
+                                                            for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
+                                                                String key = entry.getKey();
+                                                                Robot robot = entry.getValue();
+
+                                                                try {
+                                                                    if ("".equals(robot.getType()) || app.getType().equals(robot.getType())) {
+                                                                        // Robot type is not feeded (not attached to any techno) or robot type match the one of the application.
+                                                                        LOG.debug("Insert Queue Entry.");
+                                                                        // We get here the corresponding robotDecli value from robot.
+                                                                        String robotDecli = robot.getRobotDecli();
+                                                                        if (StringUtil.isEmpty(robotDecli)) {
+                                                                            robotDecli = robot.getRobot();
+                                                                        }
+                                                                        if ("".equals(robot.getRobot()) && StringUtil.isEmpty(robotIP)) {
+                                                                            // We don't insert the execution for robot application that have no robot and robotIP defined.
+                                                                            nbrobotmissing++;
+                                                                        } else {
+                                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(),
+                                                                                    test, testCase, country.getCountry(), environment,
+                                                                                    robot.getRobot(), robotDecli, robotIP, robotPort, browser,
+                                                                                    browserVersion, platform, screenSize, manualURL,
+                                                                                    manualHostforThisApplication, manualContextRoot,
+                                                                                    manualLoginRelativeURL, manualEnvData, tag,
+                                                                                    screenshot, video, verbose, timeout, pageSource,
+                                                                                    robotLog, consoleLog, 0, retries, manualExecution, priority,
+                                                                                    user, null, null, null));
+                                                                        }
                                                                     } else {
-                                                                        toInserts.add(inQueueFactoryService.create(app.getSystem(),
-                                                                                test, testCase, country.getCountry(), environment,
-                                                                                robot.getRobot(), robotDecli, robotIP, robotPort, browser,
-                                                                                browserVersion, platform, screenSize, manualURL,
-                                                                                manualHostforThisApplication, manualContextRoot,
-                                                                                manualLoginRelativeURL, manualEnvData, tag,
-                                                                                screenshot, video, verbose, timeout, pageSource,
-                                                                                robotLog, consoleLog, 0, retries, manualExecution, priority,
-                                                                                user, null, null, null));
+                                                                        LOG.debug("Not inserted because app type '" + app.getType() + "' does not match robot type '" + robot.getType() + "'.");
                                                                     }
-                                                                } else {
-                                                                    LOG.debug("Not inserted because app type '" + app.getType() + "' does not match robot type '" + robot.getType() + "'.");
+                                                                } catch (FactoryCreationException e) {
+                                                                    LOG.error("Unable to insert record due to: " + e, e);
+                                                                    LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
                                                                 }
+                                                            }
+
+                                                        } else {
+                                                            // Application does not support robot so we force an empty value.
+                                                            LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
+                                                            try {
+                                                                LOG.debug("Insert Queue Entry.");
+                                                                toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
+                                                                        testCase, country.getCountry(), environment, "", "", "", "",
+                                                                        "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
+                                                                        manualLoginRelativeURL, manualEnvData, tag, screenshot, video,
+                                                                        verbose, timeout, pageSource, robotLog, consoleLog, 0, retries,
+                                                                        manualExecution, priority, user, null, null, null));
                                                             } catch (FactoryCreationException e) {
                                                                 LOG.error("Unable to insert record due to: " + e, e);
                                                                 LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
                                                             }
                                                         }
-
                                                     } else {
-                                                        // Application does not support robot so we force an empty value.
-                                                        LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
-                                                        try {
-                                                            LOG.debug("Insert Queue Entry.");
-                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
-                                                                    testCase, country.getCountry(), environment, "", "", "", "",
-                                                                    "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
-                                                                    manualLoginRelativeURL, manualEnvData, tag, screenshot, video,
-                                                                    verbose, timeout, pageSource, robotLog, consoleLog, 0, retries,
-                                                                    manualExecution, priority, user, null, null, null));
-                                                        } catch (FactoryCreationException e) {
-                                                            LOG.error("Unable to insert record due to: " + e, e);
-                                                            LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
-                                                        }
+                                                        LOG.debug("Env Application does not exist.");
+//                                                messages.add(String.format("Environment '%s' and Country %s doesn't exist for application '%s'", environment, country.getCountry(), tc.getApplication()));
+                                                        nbenvnotexist += nbrobot;
                                                     }
                                                 } else {
                                                     LOG.debug("Env does not exist or is not active.");
@@ -706,33 +723,33 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             switch (outputFormat) {
                 case "json":
                     try {
-                        JSONObject jsonResponse = new JSONObject();
-                        jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-                        jsonResponse.put("message", errorMessage.toString());
-                        if (error) {
-                            // Only display help message if error.
-                            jsonResponse.put("helpMessage", helpMessage);
-                        }
-                        jsonResponse.put("tag", tag);
-                        jsonResponse.put("nbExe", nbExe);
-                        jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
-                        jsonResponse.put("nbErrorTCNotExist", nbtestcasenotexist);
-                        jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
-                        jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
-                        jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
-                        jsonResponse.put("queueList", jsonArray);
-
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(jsonResponse.toString());
-                    } catch (JSONException e) {
-                        LOG.warn(e);
-                        //returns a default error message with the json format that is able to be parsed by the client-side
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("utf8");
-                        response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                    JSONObject jsonResponse = new JSONObject();
+                    jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                    jsonResponse.put("message", errorMessage.toString());
+                    if (error) {
+                        // Only display help message if error.
+                        jsonResponse.put("helpMessage", helpMessage);
                     }
-                    break;
+                    jsonResponse.put("tag", tag);
+                    jsonResponse.put("nbExe", nbExe);
+                    jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
+                    jsonResponse.put("nbErrorTCNotExist", nbtestcasenotexist);
+                    jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
+                    jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
+                    jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
+                    jsonResponse.put("queueList", jsonArray);
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(jsonResponse.toString());
+                } catch (JSONException e) {
+                    LOG.warn(e);
+                    //returns a default error message with the json format that is able to be parsed by the client-side
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                }
+                break;
                 default:
                     response.setContentType("text");
                     response.setCharacterEncoding("utf8");
@@ -825,14 +842,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -843,10 +859,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
