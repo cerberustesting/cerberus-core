@@ -125,19 +125,26 @@ Set back the focus to the previous frame on the current page.
 | *[green]#GUI#* | *[red]#SRV#* | *[red]#APK#* | *[red]#IPA#* | *[red]#FAT#* | *[red]#BAT#*
 
 |=== 
-Switch the focus to another window (like popup dialog).
+Switch the focus to another window (like popup dialog). 
 
-*[blue]#Value1#*	Title or URL of the other window to switch to.
+*[blue]#Value1#*	Title or URL of the other window to switch to. identifier=html_reference
+identifier can be **__title__**, **__url__**, *_regexUrl_* or *_regexTitle_*
 
 .By Tittle
 ====
 title=titleOfThisNewWindow
 ====
 
-.By Tittle
+.By Url
 ====
 url=http://url_of_this_new_window
 ====
+
+.By Regex Url
+====
+regexUrl=.\*_this_new.*
+====
+
 
 ==== switchToContext
 |===

@@ -492,8 +492,9 @@ function performCall(service) {
 //    console.info(dataCall);
 
 // TODO Show waithing icon.
-    console.info("show");
+//    console.info("show");
 
+    $('#callStatus').show();
     $('#callStatus').removeClass("spin glyphicon-minus").removeClass("glyphicon-ok").removeClass("glyphicon-remove").addClass("spin glyphicon-refresh");
 
 

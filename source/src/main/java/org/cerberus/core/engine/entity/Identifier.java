@@ -57,26 +57,31 @@ public class Identifier {
      * Identifier String.
      */
     public static final String IDENTIFIER_ID = "id";
+    public static final String IDENTIFIER_XPATH = "xpath";
     public static final String IDENTIFIER_NAME = "name";
     public static final String IDENTIFIER_CLASS = "class";
     public static final String IDENTIFIER_CSS = "css";
-    public static final String IDENTIFIER_XPATH = "xpath";
     public static final String IDENTIFIER_LINK = "link";
     public static final String IDENTIFIER_DATACERBERUS = "data-cerberus";
+    
     public static final String IDENTIFIER_TITLE = "title";
     public static final String IDENTIFIER_REGEXTITLE = "regexTitle";
-    public static final String IDENTIFIER_REGEXURL = "regexUrl";
     public static final String IDENTIFIER_URL = "url";
+    public static final String IDENTIFIER_REGEXURL = "regexUrl";
+
     public static final String IDENTIFIER_LABEL = "label";
     public static final String IDENTIFIER_REGEXLABEL = "regexLabel";
     public static final String IDENTIFIER_VALUE = "value";
     public static final String IDENTIFIER_REGEXVALUE = "regexValue";
     public static final String IDENTIFIER_INDEX = "index";
     public static final String IDENTIFIER_REGEXINDEX = "regexIndex";
-    public static final String IDENTIFIER_ERRATUM = "erratum";
+
     public static final String IDENTIFIER_QUERYSELECTOR = "querySelector";
-    public static final String IDENTIFIER_TEXT = "text";
+    public static final String IDENTIFIER_ERRATUM = "erratum";
+
     public static final String IDENTIFIER_PICTURE = "picture";
+    public static final String IDENTIFIER_TEXT = "text";
+
     public static final String IDENTIFIER_COORD = "coord";
 
     public String getIdentifier() {

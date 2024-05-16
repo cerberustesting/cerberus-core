@@ -309,18 +309,32 @@ function initTags(configs, context) {
             "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
         ];
         var availableIdentifiers = [
-            "data-cerberus",
-            "querySelector",
             "id",
+            "xpath",
             "name",
             "class",
             "css",
-            "xpath",
             "link",
+            "data-cerberus",
+            "querySelector",
             "erratum",
             "picture",
             "text"
         ];
+//        var availableIdentifiersSwitch = [
+//            "title",
+//            "regexTitle",
+//            "url",
+//            "regexUrl"
+//        ];
+//        var availableIdentifiersSelect = [
+//            "label",
+//            "regexLabel",
+//            "value",
+//            "regexValue",
+//            "index",
+//            "regexIndex"
+//        ];
         let tags = [
             {
                 name: 'objectProperty',
@@ -366,14 +380,34 @@ function initTags(configs, context) {
 
         if (configs.identifier) {
             tags.push({
-                name: 'indentifier',
+                name: 'identifier',
                 array: availableIdentifiers,
                 regex: "((^[a-zA-Z])|(^$))",
                 addBefore: "",
                 addAfter: "=",
                 isCreatable: false
             });
+//        } else if (configs.identifierSelect) {
+//            tags.push({
+//                name: 'identifier',
+//                array: availableIdentifiersSelect,
+//                regex: "((^[a-zA-Z])|(^$))",
+//                addBefore: "",
+//                addAfter: "=",
+//                isCreatable: false
+//            });
+//        } else if (configs.identifier) {
+//            tags.push({
+//                name: 'identifier',
+//                array: availableIdentifiersSwitch,
+//                regex: "((^[a-zA-Z])|(^$))",
+//                addBefore: "",
+//                addAfter: "=",
+//                isCreatable: false
+//            });
         }
+
+
         return tags;
     });
 }
@@ -414,5 +448,5 @@ function initAutocompleteforSpecificFields(el) {
     $(el).each(data => {
         autocompleteSpecificFields(el[data]);
     });
-    
+
 }

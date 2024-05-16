@@ -972,13 +972,16 @@ public class WebDriverService implements IWebDriverService {
                 }
                 LOG.debug("windowHandle=" + windowHandle);
             }
+
         } catch (NoSuchElementException exception) {
             LOG.debug(exception.toString());
+
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
             message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             LOG.warn(exception.toString());
             return message;
+
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
             return parseWebDriverException(exception);
@@ -1079,10 +1082,12 @@ public class WebDriverService implements IWebDriverService {
         String title;
 
         switch (identifier) {
+
             case Identifier.IDENTIFIER_URL:
                 wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
                 result = session.getDriver().getCurrentUrl().equals(value);
                 break;
+
             case Identifier.IDENTIFIER_REGEXURL:
                 wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
                 String currentUrl = session.getDriver().getCurrentUrl();
@@ -1090,6 +1095,7 @@ public class WebDriverService implements IWebDriverService {
                 Matcher matcherUrl = patternUrl.matcher(currentUrl);
                 result = matcherUrl.find();
                 break;
+
             case Identifier.IDENTIFIER_REGEXTITLE:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();
@@ -1097,6 +1103,7 @@ public class WebDriverService implements IWebDriverService {
                 Matcher matcher = pattern.matcher(title);
                 result = matcher.find();
                 break;
+
             default:
                 wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
                 title = session.getDriver().getTitle();

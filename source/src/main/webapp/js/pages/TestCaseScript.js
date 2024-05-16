@@ -167,7 +167,9 @@ $.when($.getScript("js/global/global.js")
                         'system': true,
                         'object': testcaseObject.application,
                         'property': data,
-                        'identifier': true
+                        'identifier': true,
+                        'identifierSelect': true,
+                        'identifierSwitch': true
                     };
                     var context = data;
                     initTags(configs, context).then(function (tags) {
@@ -3426,7 +3428,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         function initAutocompleteVariablesOnly(e) {
 //            console.log("start feed autocomplete on focus (variable only).");
-            configs.indentifier = false;
+            configs.identifier = false;
             initAutocompleteWithTagsNoElement($(this), configs, contextInfo);
 
         }
@@ -3466,7 +3468,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-varaible (include Variables ONLY) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-variable (include Variables ONLY) #####
         $(document).on('focus', "div.crb-autocomplete-variable input:not([readonly])", initAutocompleteVariablesOnly);
         $(document).on('input', "div.crb-autocomplete-variable input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-variable:not([readonly])", initAutocompleteVariablesOnly);

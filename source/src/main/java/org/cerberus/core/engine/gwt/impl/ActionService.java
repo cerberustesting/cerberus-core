@@ -1150,12 +1150,16 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.switchToContext(tCExecution.getSession(), identifier);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.switchToContext(tCExecution.getSession(), identifier);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliActionSwitchApp(tCExecution.getSession(), identifier.getLocator());
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "SwitchToWindow")
@@ -1169,10 +1173,13 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionSwitchToContext(TestCaseExecution tCExecution, String context) {
         String applicationType = tCExecution.getApplicationObj().getType();
+
         if (applicationType.equalsIgnoreCase(Application.TYPE_APK)) {
             return androidAppiumService.switchToContext(tCExecution.getSession(), context);
+
         } else if (applicationType.equalsIgnoreCase(Application.TYPE_IPA)) {
             return iosAppiumService.switchToContext(tCExecution.getSession(), context);
+
         } else {
             return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                     .resolveDescription("ACTION", "SwitchToContext")
