@@ -320,11 +320,15 @@
                     <ul id="tabsSimul" class="nav nav-tabs" data-tabs="tabsSimul">
                         <li class="active"><a data-toggle="tab" href="#tabsSimul-4" id="tabSimulParam" name="tabsSimul4">Simulation Parameters</a></li>
                         <li><a data-toggle="tab" href="#tabsSimul-1" id="tabSimulResult" name="tabsSimul1">Response</a></li>
-                        <li><a data-toggle="tab" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Details</a></li>
+                        <li><a data-toggle="tab" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Response Details</a></li>
                         <li><a data-toggle="tab" href="#tabsSimul-3" id="tabSimulRequest" name="tabsSimul3">Request</a></li>
+                        <li><a data-toggle="tab" href="#tabsSimul-5" id="tabSimulRequestDetails" name="tabsSimul5">Request Details</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in" id="tabsSimul-1">
+                            <div class="row">
+                                <div class="col-xs-12" id="htmlDisplay"></div>
+                            </div>
                             <div class="row">
                                 <div class="col-xs-12" id="srvResponseDiv">
                                     <label for="serviceResponse" name="serviceResponseField">Simulation Response</label>
@@ -350,6 +354,16 @@
                                     <label for="serviceCallRequest" name="serviceCallRequestField">Simulation Request</label>
                                     <div name="serviceCallRequest" id="serviceCallRequest" aria-describedby="basic-editon1">
                                         <pre id='srvCallRequest' name='srvCallRequest' style="min-height: 150px"></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade in " id="tabsSimul-5">
+                            <div class="row">
+                                <div class="col-xs-12" id="srvRequestDetDiv">
+                                    <label for="serviceRequestDet" name="serviceRequestDetField">Simulation Request Detail</label>
+                                    <div name="serviceRequestDet" id="serviceRequestDet" aria-describedby="basic-editon1">
+                                        <pre id='srvRequestDet' name='srvRequestDet' style="min-height: 150px"></pre>
                                     </div>
                                 </div>
                             </div>

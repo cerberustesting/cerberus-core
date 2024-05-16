@@ -137,6 +137,7 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_PDF = "PDF";
+    public static final String RESPONSEHTTPBODYCONTENTTYPE_HTML = "HTML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN = "UNKNOWN";
     public static final String SRVBODYTYPE_NONE = "none";
     public static final String SRVBODYTYPE_RAW = "raw";

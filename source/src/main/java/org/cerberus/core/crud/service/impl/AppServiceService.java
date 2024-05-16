@@ -327,6 +327,9 @@ public class AppServiceService implements IAppServiceService {
                 } else if (object.getValue().contains("application/xml")) {
                     LOG.debug("XML format guessed from header : {} : {}", object.getKey(), object.getValue());
                     return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                } else if (object.getValue().contains("text/html")) {
+                    LOG.debug("HTML format guessed from header : {} : {}", object.getKey(), object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_HTML;
                 }
             }
         }
@@ -342,8 +345,11 @@ public class AppServiceService implements IAppServiceService {
 
         // Header did not define the format and could not guess from file content.
         if (StringUtil.isEmpty(defaultValue)) {
+            LOG.debug("Format guessed to value : " + AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT + " (No default value defined)");
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
+
+        LOG.debug("Format guessed returned to default value : " + defaultValue);
         return defaultValue;
     }
 

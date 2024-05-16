@@ -59,10 +59,15 @@ function openModalAppService(service, mode, page = undefined) {
     initBeforePerformCall();
 
     if (mode === "EDIT") {
+        $('#callSoapLibraryButton').show();
         editAppServiceClick(service, page);
+
     } else if (mode === "ADD") {
+        $('#callSoapLibraryButton').hide();
         addAppServiceClick(service, page);
+
     } else {
+        $('#callSoapLibraryButton').hide();
         duplicateAppServiceClick(service);
 }
 
@@ -143,7 +148,6 @@ function initModalAppService() {
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
-
 
 }
 
@@ -393,7 +397,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
 
             hideLoaderInModal('#editSoapLibraryModal');
             console.info("hide loader");
-            
+
             // Update the original Service value.
 //            console.info($('#editServiceModal #service').val());
             $('#editSoapLibraryModal #originalService').prop("value", $('#editServiceModal #service').val());
@@ -548,7 +552,7 @@ function performCall(service) {
                     editorResponse.setTheme("ace/theme/chrome");
                     editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
                     editorResponse.setOptions({
-                        maxLines: Infinity
+                        maxLines: 50
                     });
                     $($("#editSoapLibraryModal #srvResponseDet").get(0)).keyup(function () {
                         if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
@@ -556,11 +560,20 @@ function performCall(service) {
                         }
                     });
 
+                    $('#htmlDisplay').hide();
+                    document.getElementById("htmlDisplay").innerHTML = "";
+
                     if (CallContent.call.Response.hasOwnProperty('HTTP-ResponseBody')) {
                         // Response
                         ace.edit($("#editSoapLibraryModal #srvResponse")[0]).destroy();
                         if (CallContent.call.Response["HTTP-ResponseContentType"] === "JSON") {
                             $('#editSoapLibraryModal  #srvResponse').text(JSON.stringify(CallContent.call.Response["HTTP-ResponseBody"], null, '\t'));
+                        } else if (CallContent.call.Response["HTTP-ResponseContentType"] === "XML") {
+                            $('#editSoapLibraryModal  #srvResponse').text(vkbeautify.xml(CallContent.call.Response["HTTP-ResponseBody"]));
+                        } else if (CallContent.call.Response["HTTP-ResponseContentType"] === "HTML") {
+                            $('#editSoapLibraryModal  #srvResponse').text(CallContent.call.Response["HTTP-ResponseBody"].replace(/<[^>]*>?/gm, ''));
+                            document.getElementById("htmlDisplay").innerHTML = CallContent.call.Response["HTTP-ResponseBody"];
+                            $('#htmlDisplay').show();
                         } else {
                             $('#editSoapLibraryModal  #srvResponse').text(CallContent.call.Response["HTTP-ResponseBody"]);
                         }
@@ -569,7 +582,7 @@ function performCall(service) {
                         editorResponse.setTheme("ace/theme/chrome");
                         editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
                         editorResponse.setOptions({
-                            maxLines: Infinity
+                            maxLines: 50
                         });
                         $($("#editSoapLibraryModal #srvResponse").get(0)).keyup(function () {
                             if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
@@ -597,14 +610,34 @@ function performCall(service) {
                 if (CallContent.call.hasOwnProperty('Request')) {
 
                     // Request detail
+                    ace.edit($("#editSoapLibraryModal #srvRequestDet")[0]).destroy();
+                    $('#editSoapLibraryModal  #srvRequestDet').text(JSON.stringify(CallContent.call.Request, null, '\t'));
+                    //Highlight envelop on modal loading
+                    var editorResponse = ace.edit($('#editSoapLibraryModal  #srvRequestDet')[0]);
+                    editorResponse.setTheme("ace/theme/chrome");
+                    editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                    editorResponse.setOptions({
+                        maxLines: 50
+                    });
+                    $($("#editSoapLibraryModal #srvRequestDet").get(0)).keyup(function () {
+                        if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
+                            editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                        }
+                    });
+
+                    // Request
                     ace.edit($("#editSoapLibraryModal #srvCallRequest")[0]).destroy();
-                    $('#editSoapLibraryModal  #srvCallRequest').text(JSON.stringify(CallContent.call.Request, null, '\t'));
+                    if (CallContent.call.Request.ServiceType === "SOAP") {
+                        $('#editSoapLibraryModal  #srvCallRequest').text(CallContent.call.Request["HTTP-Request"], null, '\t');
+                    } else {
+                        $('#editSoapLibraryModal  #srvCallRequest').text(JSON.stringify(CallContent.call.Request["HTTP-Request"], null, '\t'));
+                    }
                     //Highlight envelop on modal loading
                     var editorResponse = ace.edit($('#editSoapLibraryModal  #srvCallRequest')[0]);
                     editorResponse.setTheme("ace/theme/chrome");
                     editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
                     editorResponse.setOptions({
-                        maxLines: Infinity
+                        maxLines: 50
                     });
                     $($("#editSoapLibraryModal #srvCallRequest").get(0)).keyup(function () {
                         if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
@@ -640,9 +673,16 @@ function initBeforePerformCall() {
 
     $('#editSoapLibraryModal').find("#srvCallRequest").text("");
 
+    $('#editSoapLibraryModal').find("#srvRequestDet").text("");
+    
     $('#resmessage').html("");
     $('#resmessage').removeClass("alert-danger");
     $('#resmessage').hide();
+
+    $('#callStatus').hide();
+
+    document.getElementById("htmlDisplay").innerHTML = " ";
+    $('#htmlDisplay').hide();
 
 }
 
@@ -1144,25 +1184,25 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     editor.setTheme("ace/theme/chrome");
     editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
     editor.setOptions({
-        maxLines: Infinity
+        maxLines: 50
     });
     var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
     editorKey.setTheme("ace/theme/chrome");
     editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
     editorKey.setOptions({
-        maxLines: Infinity
+        maxLines: 50
     });
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     editorSchemaKey.setTheme("ace/theme/chrome");
     editorSchemaKey.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
     editorSchemaKey.setOptions({
-        maxLines: Infinity
+        maxLines: 50
     });
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
     editorSchemaValue.setTheme("ace/theme/chrome");
     editorSchemaValue.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
     editorSchemaValue.setOptions({
-        maxLines: Infinity
+        maxLines: 50
     });
 
     //On ADD, try to autodetect Ace mode until it is defined
