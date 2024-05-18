@@ -319,22 +319,37 @@ function initTags(configs, context) {
             "querySelector",
             "erratum",
             "picture",
-            "text"
+            "text",
+            "coord"
         ];
-//        var availableIdentifiersSwitch = [
-//            "title",
-//            "regexTitle",
-//            "url",
-//            "regexUrl"
-//        ];
-//        var availableIdentifiersSelect = [
-//            "label",
-//            "regexLabel",
-//            "value",
-//            "regexValue",
-//            "index",
-//            "regexIndex"
-//        ];
+        var availableIdentifiersSwitch = [
+            "title",
+            "regexTitle",
+            "url",
+            "regexUrl"
+        ];
+        var availableIdentifiersSelect = [
+            "label",
+            "regexLabel",
+            "value",
+            "regexValue",
+            "index",
+            "regexIndex"
+        ];
+        var availableIdentifiersBoolean = [
+            "true",
+            "false"
+        ];
+        var availableIdentifiersFileSortFlag = [
+            "LASTMODIFIED",
+            "IGNORECASEDESC",
+            "IGNORECASEASC",
+            "DESC",
+            "ASC"
+        ];
+        var availableIdentifiersFileUploadFlag = [
+            "EMPTYFOLDER"
+        ];
         let tags = [
             {
                 name: 'objectProperty',
@@ -377,36 +392,40 @@ function initTags(configs, context) {
                 isCreatable: false
             }
         ];
-
-        if (configs.identifier) {
-            tags.push({
-                name: 'identifier',
-                array: availableIdentifiers,
-                regex: "((^[a-zA-Z])|(^$))",
-                addBefore: "",
-                addAfter: "=",
-                isCreatable: false
-            });
-//        } else if (configs.identifierSelect) {
-//            tags.push({
-//                name: 'identifier',
-//                array: availableIdentifiersSelect,
-//                regex: "((^[a-zA-Z])|(^$))",
-//                addBefore: "",
-//                addAfter: "=",
-//                isCreatable: false
-//            });
-//        } else if (configs.identifier) {
-//            tags.push({
-//                name: 'identifier',
-//                array: availableIdentifiersSwitch,
-//                regex: "((^[a-zA-Z])|(^$))",
-//                addBefore: "",
-//                addAfter: "=",
-//                isCreatable: false
-//            });
+        var finalArray = [];
+        let finalAddAfter = "=";
+        if (configs.identifier === "element") {
+            finalArray.push(...availableIdentifiers);
+        } else if (configs.identifier === "switch") {
+            finalArray.push(...availableIdentifiersSwitch);
+        } else if (configs.identifier === "select") {
+            finalArray.push(...availableIdentifiersSelect);
+        } else if (configs.identifier === "boolean") {
+            finalArray.push(...availableIdentifiersBoolean);
+            finalAddAfter = "";
+        } else if (configs.identifier === "fileuploadflag") {
+            finalArray.push(...availableIdentifiersFileUploadFlag);
+            finalAddAfter = "";
+        } else if (configs.identifier === "filesortflag") {
+            finalArray.push(...availableIdentifiersFileSortFlag);
+            finalAddAfter = "";
         }
 
+        if (configs.identifier !== "none") {
+            tags.push({
+                name: 'identifier',
+                array: finalArray,
+                regex: "((^[a-zA-Z])|(^$))",
+                addBefore: "",
+                addAfter: finalAddAfter,
+                isCreatable: false
+            });
+        }
+
+        console.info("return tags");
+        console.info(tags);
+        console.info(configs);
+        console.info(context);
 
         return tags;
     });

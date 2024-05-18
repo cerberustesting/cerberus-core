@@ -64,6 +64,14 @@ public class Identifier {
     public static final String IDENTIFIER_LINK = "link";
     public static final String IDENTIFIER_DATACERBERUS = "data-cerberus";
     
+    public static final String IDENTIFIER_QUERYSELECTOR = "querySelector";
+    public static final String IDENTIFIER_ERRATUM = "erratum";
+
+    public static final String IDENTIFIER_PICTURE = "picture";
+    public static final String IDENTIFIER_TEXT = "text";
+
+    public static final String IDENTIFIER_COORD = "coord";
+
     public static final String IDENTIFIER_TITLE = "title";
     public static final String IDENTIFIER_REGEXTITLE = "regexTitle";
     public static final String IDENTIFIER_URL = "url";
@@ -75,14 +83,6 @@ public class Identifier {
     public static final String IDENTIFIER_REGEXVALUE = "regexValue";
     public static final String IDENTIFIER_INDEX = "index";
     public static final String IDENTIFIER_REGEXINDEX = "regexIndex";
-
-    public static final String IDENTIFIER_QUERYSELECTOR = "querySelector";
-    public static final String IDENTIFIER_ERRATUM = "erratum";
-
-    public static final String IDENTIFIER_PICTURE = "picture";
-    public static final String IDENTIFIER_TEXT = "text";
-
-    public static final String IDENTIFIER_COORD = "coord";
 
     public String getIdentifier() {
         return identifier;

@@ -5,6 +5,7 @@
 *Improvements / New features*
 [square]
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
+* [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -957,12 +957,15 @@ public class ActionService implements IActionService {
                         return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                     }
                 }
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.click(tCExecution.getSession(), identifier);
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmpty(identifier.getLocator())) {
                     return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", "");
@@ -973,6 +976,7 @@ public class ActionService implements IActionService {
                 } else {
                     return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
                 }
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Click")

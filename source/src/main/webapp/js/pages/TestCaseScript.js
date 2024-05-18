@@ -3411,6 +3411,37 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         function initAutocompleteElement(e) {
 //            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "element";
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteElementSwitch(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "switch";
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteElementSelect(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "select";
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteElementBoolean(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "boolean";
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteElementFileUploadFlag(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "fileuploadflag";
+            initAutocompleteWithTags($(this), configs, contextInfo);
+        }
+
+        function initAutocompleteElementFileSortFlag(e) {
+//            console.log("start feed autocomplete on focus (element).");
+            configs.identifier = "filesortflag";
             initAutocompleteWithTags($(this), configs, contextInfo);
         }
 
@@ -3428,7 +3459,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         function initAutocompleteVariablesOnly(e) {
 //            console.log("start feed autocomplete on focus (variable only).");
-            configs.identifier = false;
+            configs.identifier = "none";
             initAutocompleteWithTagsNoElement($(this), configs, contextInfo);
 
         }
@@ -3491,6 +3522,36 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         $(document).on('input', "div.crb-autocomplete-element input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-element:not([readonly])", initAutocompleteElement);
         $(document).on('input', "input.crb-autocomplete-element:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-switch input:not([readonly])", initAutocompleteElementSwitch);
+        $(document).on('input', "div.crb-autocomplete-switch input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-switch:not([readonly])", initAutocompleteElementSwitch);
+        $(document).on('input', "input.crb-autocomplete-switch:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-select input:not([readonly])", initAutocompleteElementSelect);
+        $(document).on('input', "div.crb-autocomplete-select input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-select:not([readonly])", initAutocompleteElementSelect);
+        $(document).on('input', "input.crb-autocomplete-select:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-boolean input:not([readonly])", initAutocompleteElementBoolean);
+        $(document).on('input', "div.crb-autocomplete-boolean input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-boolean:not([readonly])", initAutocompleteElementBoolean);
+        $(document).on('input', "input.crb-autocomplete-boolean:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-fileuploadflag input:not([readonly])", initAutocompleteElementFileUploadFlag);
+        $(document).on('input', "div.crb-autocomplete-fileuploadflag input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-fileuploadflag:not([readonly])", initAutocompleteElementFileUploadFlag);
+        $(document).on('input', "input.crb-autocomplete-fileuploadflag:not([readonly])", modifyAutocomplete);
+
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        $(document).on('focus', "div.crb-autocomplete-filesortflag input:not([readonly])", initAutocompleteElementFileSortFlag);
+        $(document).on('input', "div.crb-autocomplete-filesortflag input:not([readonly])", modifyAutocomplete);
+        $(document).on('focus', "input.crb-autocomplete-filesortflag:not([readonly])", initAutocompleteElementFileSortFlag);
+        $(document).on('input', "input.crb-autocomplete-filesortflag:not([readonly])", modifyAutocomplete);
 
         // Adding Contextual buttons when 'settingsButton' event is triggered.
         $(document).on('settingsButton', "div.crb-contextual-button input", function (e) {
