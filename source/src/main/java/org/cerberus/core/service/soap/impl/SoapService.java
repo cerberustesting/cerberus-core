@@ -189,13 +189,13 @@ public class SoapService implements ISoapService {
         if (proxyUser != null && proxyPassword != null) {
             Authenticator.setDefault(
                     new Authenticator() {
-                        @Override
-                        public PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(
-                                    proxyUser, proxyPassword.toCharArray()
-                            );
-                        }
-                    }
+                @Override
+                public PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(
+                            proxyUser, proxyPassword.toCharArray()
+                    );
+                }
+            }
             );
             System.setProperty("http.proxyUser", proxyUser);
             System.setProperty("http.proxyPassword", proxyPassword);
@@ -356,14 +356,14 @@ public class SoapService implements ISoapService {
 
             result.setItem(serviceSOAP);
 
-        } catch (SOAPException | UnsupportedOperationException | IOException | SAXException |
-                 ParserConfigurationException | CerberusException e) {
+        } catch (SOAPException | UnsupportedOperationException | IOException | SAXException
+                | ParserConfigurationException | CerberusException e) {
             LOG.error("Exception when trying to callSOAP on URL : '" + servicePath + "' for operation : '" + soapOperation + "'", e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
                     .replace("%SOAPMETHOD%", soapOperation)
-                    .replace("%DESCRIPTION%", e.getMessage()));
+                    .replace("%DESCRIPTION%", StringUtil.getExceptionCauseFromString(e)));
             result.setResultMessage(message);
             return result;
         } finally {

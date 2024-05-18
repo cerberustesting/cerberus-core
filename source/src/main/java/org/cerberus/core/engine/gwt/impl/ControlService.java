@@ -1241,7 +1241,8 @@ public class ControlService implements IControlService {
                     return mes;
 
                 case Application.TYPE_SRV:
-                    if (tCExecution.getLastServiceCalled() != null) {
+                    if (tCExecution.getLastServiceCalled() != null && tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType() != null) {
+                            
                         String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                         switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
 
