@@ -350,6 +350,119 @@ function initTags(configs, context) {
         var availableIdentifiersFileUploadFlag = [
             "EMPTYFOLDER"
         ];
+        var availableIdentifiersHeaderValues = [
+            "application/java-archive",
+            "application/EDI-X12",
+            "application/EDIFACT",
+            "application/javascript",
+            "application/octet-stream",
+            "application/ogg",
+            "application/pdf",
+            "application/xhtml+xml",
+            "application/x-shockwave-flash",
+            "application/json",
+            "application/ld+json",
+            "application/xml",
+            "application/zip",
+            "application/x-www-form-urlencoded",
+            "application/vnd.android.package-archive",
+            "application/vnd.oasis.opendocument.text",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "application/vnd.oasis.opendocument.presentation",
+            "application/vnd.oasis.opendocument.graphics",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.mozilla.xul+xml",
+            "audio/mpeg",
+            "audio/x-ms-wma",
+            "audio/vnd.rn-realaudio",
+            "audio/x-wav",
+            "image/gif",
+            "image/jpeg",
+            "image/png",
+            "image/tiff",
+            "image/vnd.microsoft.icon",
+            "image/x-icon",
+            "image/vnd.djvu",
+            "image/svg+xml",
+            "multipart/mixed",
+            "multipart/alternative",
+            "multipart/related",
+            "multipart/form-data",
+            "text/css",
+            "text/csv",
+            "text/html",
+            "text/html; charset=UTF-8",
+            "text/javascript",
+            "text/plain",
+            "text/xml",
+            "video/mpeg",
+            "video/mp4",
+            "video/quicktime",
+            "video/x-ms-wmv",
+            "video/x-msvideo",
+            "video/x-flv",
+            "video/webm",
+            "en",
+            "fr"
+        ];
+        var availableIdentifiersHeader = [
+// Standard Heasders
+            "A-IM",
+            "Accept",
+            "Accept-Charset",
+            "Accept-Datetime",
+            "Accept-Encoding",
+            "Accept-Language",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "Authorization",
+            "Cache-Control",
+            "Connection",
+            "Content-Encoding",
+            "Content-Length",
+            "Content-MD5",
+            "Content-Type",
+            "Cookie",
+            "Date",
+            "Expect",
+            "Forwarded",
+            "From",
+            "Host",
+            "HTTP2-Settings",
+            "If-Match",
+            "If-Modified-Since",
+            "If-None-Match",
+            "If-Range",
+            "If-Unmodified-Since",
+            "Max-Forwards",
+            "Origin",
+            "Pragma",
+            "Prefer",
+            "Proxy-Authorization",
+            "Range",
+            "Referer",
+            "TE",
+            "Trailer",
+            "Transfer-Encoding",
+            "User-Agent",
+            "Upgrade",
+            "Via",
+            "Warning",
+// Non Standard Heasders
+            "X-Api-Key",
+            "DNT",
+            "X-Forwarded-For",
+            "X-Forwarded-Host",
+            "X-Forwarded-Proto",
+            "X-Http-Method-Override",
+            "Proxy-Connection",
+            "X-Requested-With"
+        ];
         let tags = [
             {
                 name: 'objectProperty',
@@ -409,6 +522,12 @@ function initTags(configs, context) {
         } else if (configs.identifier === "filesortflag") {
             finalArray.push(...availableIdentifiersFileSortFlag);
             finalAddAfter = "";
+        } else if (configs.identifier === "header") {
+            finalArray.push(...availableIdentifiersHeader);
+            finalAddAfter = "";
+        } else if (configs.identifier === "headervalue") {
+            finalArray.push(...availableIdentifiersHeaderValues);
+            finalAddAfter = "";
         }
 
         if (configs.identifier !== "none") {
@@ -422,10 +541,10 @@ function initTags(configs, context) {
             });
         }
 
-        console.info("return tags");
-        console.info(tags);
-        console.info(configs);
-        console.info(context);
+//        console.info("return tags");
+//        console.info(tags);
+//        console.info(configs);
+//        console.info(context);
 
         return tags;
     });

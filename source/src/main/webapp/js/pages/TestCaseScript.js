@@ -167,9 +167,7 @@ $.when($.getScript("js/global/global.js")
                         'system': true,
                         'object': testcaseObject.application,
                         'property': data,
-                        'identifier': true,
-                        'identifierSelect': true,
-                        'identifierSwitch': true
+                        'identifier': "element",
                     };
                     var context = data;
                     initTags(configs, context).then(function (tags) {
@@ -3523,31 +3521,31 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         $(document).on('focus', "input.crb-autocomplete-element:not([readonly])", initAutocompleteElement);
         $(document).on('input', "input.crb-autocomplete-element:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Switch Elements+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-switch input:not([readonly])", initAutocompleteElementSwitch);
         $(document).on('input', "div.crb-autocomplete-switch input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-switch:not([readonly])", initAutocompleteElementSwitch);
         $(document).on('input', "input.crb-autocomplete-switch:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Select Option Elements+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-select input:not([readonly])", initAutocompleteElementSelect);
         $(document).on('input', "div.crb-autocomplete-select input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-select:not([readonly])", initAutocompleteElementSelect);
         $(document).on('input', "input.crb-autocomplete-select:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Boolean+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-boolean input:not([readonly])", initAutocompleteElementBoolean);
         $(document).on('input', "div.crb-autocomplete-boolean input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-boolean:not([readonly])", initAutocompleteElementBoolean);
         $(document).on('input', "input.crb-autocomplete-boolean:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include File Flags+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-fileuploadflag input:not([readonly])", initAutocompleteElementFileUploadFlag);
         $(document).on('input', "div.crb-autocomplete-fileuploadflag input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-fileuploadflag:not([readonly])", initAutocompleteElementFileUploadFlag);
         $(document).on('input', "input.crb-autocomplete-fileuploadflag:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include File Flags+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-filesortflag input:not([readonly])", initAutocompleteElementFileSortFlag);
         $(document).on('input', "div.crb-autocomplete-filesortflag input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-filesortflag:not([readonly])", initAutocompleteElementFileSortFlag);

@@ -19,29 +19,6 @@
  */
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
-var autocompleteHeaders = [
-    "Accept",
-    "Accept-Charset",
-    "Accept-Encoding",
-    "Accept-Language",
-    "Authorization",
-    "Cache-Control",
-    "Connection",
-    "Content-Encoding",
-    "Content-Length",
-    "Content-Type",
-    "Cookie",
-    "Date",
-    "DNT",
-    "Expect",
-    "Origin",
-    "Proxy-Authorization",
-    "Referer",
-    "Transfer-Encoding",
-    "User-Agent",
-    "X-Api-Key",
-    "X-Requested-With"
-];
 
 function openModalAppService(service, mode, page = undefined) {
     if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
@@ -104,14 +81,66 @@ function initModalAppService() {
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
 
+
+    /**
+     * 
+     * Trigger all autocomple events.
+     * 
+     */
+
     var configs = {
         'system': true,
         'object': false,
-        'propertie': false,
-        'identifier': false
-    }
+        'property': false,
+        'identifier': "none"
+    };
 
     initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
+
+
+    function modifyAutocomplete(e) {
+//            console.log("modify feed autocomplete on input (generic).")
+//            console.log("trigger settingsButton.");
+        $(this).trigger("settingsButton");
+    }
+
+
+    function initAutocompleteElementHeader(e) {
+//            console.log("start feed autocomplete on focus (element).");
+        configs.identifier = "header";
+        initAutocompleteWithTags($(this), configs, null);
+    }
+
+    function initAutocompleteElementHeaderValue(e) {
+//            console.log("start feed autocomplete on focus (element).");
+        configs.identifier = "headervalue";
+        initAutocompleteWithTags($(this), configs, null);
+    }
+
+    function initAutocompleteElementVariable(e) {
+//            console.log("start feed autocomplete on focus (element).");
+        configs.identifier = "none";
+        initAutocompleteWithTags($(this), configs, null);
+    }
+
+    // Adding Autocomplete on all fields. ##### crb-autocomplete-XXXX  #####
+    $(document).on('focus', "input.crb-autocomplete-header:not([readonly])", initAutocompleteElementHeader);
+    $(document).on('input', "input.crb-autocomplete-header:not([readonly])", modifyAutocomplete);
+
+    $(document).on('focus', "textarea.crb-autocomplete-variable:not([readonly])", initAutocompleteElementVariable);
+    $(document).on('input', "textarea.crb-autocomplete-variable:not([readonly])", modifyAutocomplete);
+    $(document).on('focus', "input.crb-autocomplete-variable:not([readonly])", initAutocompleteElementVariable);
+    $(document).on('input', "input.crb-autocomplete-variable:not([readonly])", modifyAutocomplete);
+
+    $(document).on('focus', "textarea.crb-autocomplete-headervalue:not([readonly])", initAutocompleteElementHeaderValue);
+    $(document).on('input', "textarea.crb-autocomplete-headervalue:not([readonly])", modifyAutocomplete);
+
+    /**
+     * 
+     * End of autocomple configuration.
+     * 
+     */
+
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -675,7 +704,7 @@ function initBeforePerformCall() {
     $('#editSoapLibraryModal').find("#srvCallRequest").text("");
 
     $('#editSoapLibraryModal').find("#srvRequestDet").text("");
-    
+
     $('#resmessage').html("");
     $('#resmessage').removeClass("alert-danger");
     $('#resmessage').hide();
@@ -690,9 +719,9 @@ function initBeforePerformCall() {
 
 function refreshDisplayOnTypeChange() {
 
-    newValueMethod = $("#editSoapLibraryModal #method").val();
-    newValueType = $("#editSoapLibraryModal #type").val();
-    newValueBodyType = $("#editSoapLibraryModal #bodyType").val();
+    let newValueMethod = $("#editSoapLibraryModal #method").val();
+    let newValueType = $("#editSoapLibraryModal #type").val();
+    let newValueBodyType = $("#editSoapLibraryModal #bodyType").val();
 
     $('#editSoapLibraryModal #typeLogo').attr('src', './images/logo-' + newValueType + '.png').attr('alt', newValueType);
 
@@ -1293,8 +1322,16 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
 
 function appendApplicationListServiceModal(defaultValue) {
     $('#editServiceModal [name="application"]').select2(getComboConfigApplicationList());
-    var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
-    $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
+//    console.info($("#editServiceModal [name='application']")[0].options);
+//    console.info(defaultValue);
+    const select = $("#editServiceModal [name='application']")[0];
+    const optionLabels = Array.from(select.options).map((opt) => opt.value);
+    const hasOption = optionLabels.includes(defaultValue);
+
+    if (!hasOption) {
+        var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
+        $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
+    }
 }
 
 function appendAppServiceListServiceModal(defaultValue) {
@@ -1329,8 +1366,8 @@ function appendContentRow(content) {
     }
 
     var sortInput = $("<input " + ro + "maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
-    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
-    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
+    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm crb-autocomplete-variable").val(content.key);
+    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm crb-autocomplete-variable").val(content.value);
     var descriptionInput = $("<input  " + ro + "maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
     var table = $("#contentTableBody");
 
@@ -1408,8 +1445,8 @@ function appendHeaderRow(content) {
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
     var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
+    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm crb-autocomplete-header").val(content.key);
+    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm crb-autocomplete-headervalue").val(content.value);
     var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
     var table = $("#headerTableBody");
 
@@ -1437,17 +1474,7 @@ function appendHeaderRow(content) {
     });
     keyInput.change(function () {
         content.key = $(this).val();
-        console.info(content.key);
-    });
-    keyInput.autocomplete({
-        source: autocompleteHeaders,
-        minLength: 0,
-        messages: {
-            noResults: '',
-            results: function (amount) {
-                return '';
-            }
-        }
+//        console.info(content.key);
     });
 
     valueInput.change(function () {
