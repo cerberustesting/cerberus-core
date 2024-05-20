@@ -754,6 +754,7 @@ function refreshDisplayOnTypeChange() {
         $("#editSoapLibraryModal #avrSchemaValueDiv").hide();
         $("label[name='isFollowRedirField']").parent().hide();
         $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
+        $("#editSoapLibraryModal #tabRequestDetail").hide();
 
     } else if (newValueType === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);

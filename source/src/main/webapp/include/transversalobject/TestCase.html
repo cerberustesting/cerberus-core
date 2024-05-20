@@ -85,45 +85,52 @@
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabTCSettings">
                                 <div class="row">
-                                    <div class="form-group form-group-sm col-sm-3">
+                                    <div class="form-group form-group-xs col-xs-3">
                                         <label for="isActive" name="isActiveField">Active</label>
-                                        <select type="text" class="form-control input-sm" name="isActive" id="isActive">
-                                            <option value="true">true</option>
-                                            <option value="false">false</option>
-                                        </select>
+                                        <input class="form-control input-xs" id="isActive" name="isActive" type="checkbox" value="1">
+                                        <!--                                        <select type="text" class="form-control input-sm" name="isActive" id="isActive">
+                                                                                    <option value="true">true</option>
+                                                                                    <option value="false">false</option>
+                                                                                </select>-->
                                     </div>
-                                    <div class="form-group form-group-sm col-sm-3">
+                                    <div class="form-group form-group-xs col-xs-3">
                                         <label for="isActiveQA" name="isActiveQAField">Active QA</label>
-                                        <select type="text" class="form-control input-sm" name="isActiveQA" id="isActiveQA">
-                                            <option value="true">true</option>
-                                            <option value="false">false</option>
-                                        </select>
+                                        <input class="form-control input-xs" id="isActiveQA" name="isActiveQA" type="checkbox" value="1">
+                                        <!--                                        <select type="text" class="form-control input-sm" name="isActiveQA" id="isActiveQA">
+                                                                                    <option value="true">true</option>
+                                                                                    <option value="false">false</option>
+                                                                                </select>-->
                                     </div>
-                                    <div class="form-group form-group-sm col-sm-3">
+                                    <div class="form-group form-group-xs col-xs-3">
                                         <label for="isActiveUAT" name="isActiveUATField">Active UAT</label>
-                                        <select type="text" class="form-control input-sm" name="isActiveUAT" id="isActiveUAT">
-                                            <option value="true">true</option>
-                                            <option value="false">false</option>
-                                        </select>
+                                        <input class="form-control input-xs" id="isActiveUAT" name="isActiveUAT" type="checkbox" value="1">
+                                        <!--                                        <select type="text" class="form-control input-sm" name="isActiveUAT" id="isActiveUAT">
+                                                                                    <option value="true">true</option>
+                                                                                    <option value="false">false</option>
+                                                                                </select>-->
                                     </div>
-                                    <div class="form-group form-group-sm col-sm-3">
+                                    <div class="form-group form-group-xs col-xs-3">
                                         <label for="isActivePROD" name="isActivePRODField">Active Prod</label>
-                                        <select type="text" class="form-control input-sm" name="isActivePROD" id="isActivePROD">
-                                            <option value="true">true</option>
-                                            <option value="false">false</option>
-                                        </select>
+                                        <input class="form-control input-xs" id="isActivePROD" name="isActivePROD" type="checkbox" value="1">
+                                        <!--                                        <select type="text" class="form-control input-sm" name="isActivePROD" id="isActivePROD">
+                                                                                    <option value="true">true</option>
+                                                                                    <option value="false">false</option>
+                                                                                </select>-->
                                     </div>
                                 </div>
                                 <label name="countriesLabel">Countries :</label>
                                 <div class="well well-sm">
                                     <div class="row">
-                                        <div class="form-group col-xs-1">
-                                            <label class="checkbox-inline bold">
-                                                <input type="checkbox" id="select_all"/>
-                                                ALL
+                                        <div class="form-group col-sm-2">
+                                            <label class="" style="text-align: center">
+                                                Select ALL
                                             </label>
+                                            <input type="checkbox" class="form-control input-sm"  id="select_all"/>
                                         </div>
-                                        <div class="form-group col-xs-11">
+                                        <div class="form-group col-sm-10">
+                                            <label class="" style="text-align: center">
+                                                Countries
+                                            </label>
                                             <div id="countries" name="countries" >
                                             </div>
                                         </div>
