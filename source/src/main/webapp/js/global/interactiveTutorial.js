@@ -60,25 +60,21 @@ function displayTuto(doc) {
     // remove all into the modal
     $("#interactiveTutoList").html("");
     $('#interactiveTutoList').append("<div class='row' id='link-line'>");
-    $('#link-line').append("<div class='col-lg-1'>");
-    $('#link-line').append("<div class='col-lg-4 panel' id='createTest-line'>");
-    $('#link-line').append("<div class='col-lg-1' >");
-    $('#link-line').append("<div class='col-lg-5 panel' id='tutolist-line'>");
-    $('#link-line').append("<div class='col-lg-1'>");
-
+    $('#link-line').append("<div class='col-lg-6 panel' id='createTest-line'>");
+    $('#link-line').append("<div class='col-lg-6 panel' id='tutolist-line'>");
 
     $('#createTest-line').append("<div id='tutoWelcome6' class='panel-heading bold text-center'>CREATE AND EXECUTE TESTCASE IN MINUTES</div>");
     $('#createTest-line').append(
-        "<div class='col-md-12 marginTop10 marginBottom10 text-center'  data-dismiss=\"modal\" id=createTestcaseTutorial>" +
-        "  <a href='#' class='btn btn-success'>" +
-        "  <div class='card' style='width: 18rem;'>" +
-        "  <span class=\"card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20\" style=\"font-size:70px;\"></span>" +
-        "  <div class='card-body'>" +
-        "  <p id='tutoCreateTestcaseLabel' class='card-text'>Create Testcase</p>" +
-        "  </div>" +
-        "  </div>" +
-        "    </a>" +
-        "</div>");
+            "<div class='marginTop10 marginBottom10 text-center'  data-dismiss=\"modal\" id=createTestcaseTutorial>" +
+            "  <a href='#' class='btn btn-success'>" +
+            "  <div class='card' style='width: 18rem;'>" +
+            "  <span class=\"card-img-top glyphicon glyphicon-pencil marginBottom20 marginTop20\" style=\"font-size:70px;\"></span>" +
+            "  <div class='card-body'>" +
+            "  <p id='tutoCreateTestcaseLabel' class='card-text'>Create Testcase</p>" +
+            "  </div>" +
+            "  </div>" +
+            "    </a>" +
+            "</div>");
 
     $('#tutolist-line').append("<div id='tutoWelcome7' class='panel-heading bold text-center'>FOLLOW ONE OF OUR INTERACTIVE TUTORIAL</div>");
     $('#tutolist-line').append("<div class='panel-body' id='tuto-line'></div>");
@@ -92,7 +88,6 @@ function displayTuto(doc) {
     $("#tutoWelcome7").html(doc.getDocDescription("transversal", "tuto_line7"));
     $("#tutoCreateTestcaseLabel").html(doc.getDocDescription("transversal", "tuto_createTestCaseButton"));
 
-
     $.get('api/interactiveTuto/list',
             function (data, status) {
                 if (status === 'success') {
@@ -105,10 +100,8 @@ function displayTuto(doc) {
                     console.error('api/interactiveTuto/list respond with error' + status);
                 }
             });
-//    $('#interactiveTutoList').append("</tr></table>");
 
     $('#interactiveTutoModal').modal();
-
 
     $("#createTestcaseTutorial").click(function () {
         openModalTestCaseSimple();
@@ -133,7 +126,7 @@ function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
     // populate the modal
     $('#tuto-line').append(
-            "<div class='col-md-4 marginTop10 marginBottom10 text-center'  data-dismiss=\"modal\" id=tuto-" + id + ">" +
+            "<div class='col-sm-4 marginTop10 marginBottom10 text-center'  data-dismiss=\"modal\" id=tuto-" + id + ">" +
             "  <a href='#' class='btn btn-primary'>" +
             "  <div class='card' style='width: 8rem;'>" +
             "  <span class=\"card-img-top glyphicon glyphicon-" + title + " marginBottom20 marginTop20\" style=\"font-size:20px;\"></span>" +
