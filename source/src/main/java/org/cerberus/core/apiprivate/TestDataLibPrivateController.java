@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
@@ -85,7 +86,7 @@ public class TestDataLibPrivateController {
 
             AnswerItem<TestDataLib> answerTest = testDataLibService.readByKey(testdatalibid);
             TestDataLib res = answerTest.getItem();
-            if ((res == null) || !(TestDataLib.TYPE_CSV.equals(res.getType())) || (StringUtil.isEmpty(res.getCsvUrl()))) {
+            if ((res == null) || !(TestDataLib.TYPE_FILE.equals(res.getType())) || (StringUtil.isEmpty(res.getCsvUrl()))) {
                 throw new EntityNotFoundException(TestDataLib.class, "Data Library", testdatalibid);
             }
 
@@ -93,7 +94,7 @@ public class TestDataLibPrivateController {
             String servicePathCsv = res.getCsvUrl();
             if (!StringUtil.isURL(servicePathCsv)) {
                 // Url is still not valid. We try to add the path from csv parameter.
-                String csv_path = parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "");
+                String csv_path = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", "");
                 csv_path = StringUtil.addSuffixIfNotAlready(csv_path, File.separator);
                 servicePathCsv = csv_path + servicePathCsv;
                 resource = new InputStreamResource(new FileInputStream(servicePathCsv));

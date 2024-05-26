@@ -41,6 +41,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.TestDataLib;
 import org.cerberus.core.crud.entity.TestDataLibData;
 import org.cerberus.core.crud.factory.IFactoryTestDataLibData;
@@ -263,7 +264,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     // When File has just been uploaded to servlet and flag to load the subdata value has been checked, we will parse it in order to automatically feed the subdata.
                     if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                         String str = "";
-                        try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", null) + lib.getCsvUrl()));) {
                             // First line of the file is split by separator.
                             str = reader.readLine();
                             String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");

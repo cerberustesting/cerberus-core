@@ -46,7 +46,17 @@ public interface IPropertyService {
      */
     AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
-    
+
+    /**
+     *
+     * @param stringToDecode
+     * @param execution
+     * @param forceCalculation
+     * @return
+     * @throws CerberusEventException
+     */
+    String decodeStringWithDatalib(String stringToDecode, TestCaseExecution execution, boolean forceCalculation) throws CerberusEventException;
+
     /**
      *
      * @param testCaseExecutionData

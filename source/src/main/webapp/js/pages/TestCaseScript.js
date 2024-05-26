@@ -79,6 +79,8 @@ $.when($.getScript("js/global/global.js")
         getSelectInvariant("ACTIONFATAL", false, false);
         getSelectInvariant("STEPLOOP", false, false);
         getSelectInvariant("STEPCONDITIONOPERATOR", false, false);
+        // Load Application Combo (used on service modal).
+        displayApplicationList("application", "", "", "");
         bindToggleCollapse();
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
@@ -3503,13 +3505,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         $(document).on('focus', "input.crb-autocomplete-variable:not([readonly])", initAutocompleteVariablesOnly);
         $(document).on('input', "input.crb-autocomplete-variable:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Services+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-service (include Services+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-service input:not([readonly])", initAutocompleteService);
         $(document).on('input', "div.crb-autocomplete-service input:not([readonly])", modifyAutocompleteService);
         $(document).on('focus', "input.crb-autocomplete-service:not([readonly])", initAutocompleteService);
         $(document).on('input', "input.crb-autocomplete-service:not([readonly])", modifyAutocompleteService);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Properties+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-property (include Properties+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-property input:not([readonly])", initAutocompleteProperty);
         $(document).on('input', "div.crb-autocomplete-property input:not([readonly])", modifyAutocompleteProperty);
         $(document).on('focus', "input.crb-autocomplete-property:not([readonly])", initAutocompleteProperty);
@@ -3521,31 +3523,31 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         $(document).on('focus', "input.crb-autocomplete-element:not([readonly])", initAutocompleteElement);
         $(document).on('input', "input.crb-autocomplete-element:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Switch Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-switch (include Switch Elements+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-switch input:not([readonly])", initAutocompleteElementSwitch);
         $(document).on('input', "div.crb-autocomplete-switch input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-switch:not([readonly])", initAutocompleteElementSwitch);
         $(document).on('input', "input.crb-autocomplete-switch:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Select Option Elements+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-select (include Select Option Elements+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-select input:not([readonly])", initAutocompleteElementSelect);
         $(document).on('input', "div.crb-autocomplete-select input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-select:not([readonly])", initAutocompleteElementSelect);
         $(document).on('input', "input.crb-autocomplete-select:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include Boolean+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-boolean (include Boolean+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-boolean input:not([readonly])", initAutocompleteElementBoolean);
         $(document).on('input', "div.crb-autocomplete-boolean input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-boolean:not([readonly])", initAutocompleteElementBoolean);
         $(document).on('input', "input.crb-autocomplete-boolean:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include File Flags+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-fileuploadflag (include File Flags+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-fileuploadflag input:not([readonly])", initAutocompleteElementFileUploadFlag);
         $(document).on('input', "div.crb-autocomplete-fileuploadflag input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-fileuploadflag:not([readonly])", initAutocompleteElementFileUploadFlag);
         $(document).on('input', "input.crb-autocomplete-fileuploadflag:not([readonly])", modifyAutocomplete);
 
-        // Adding Autocomplete on all fields. ##### crb-autocomplete-element (include File Flags+Variables) #####
+        // Adding Autocomplete on all fields. ##### crb-autocomplete-filesortflag (include File Flags+Variables) #####
         $(document).on('focus', "div.crb-autocomplete-filesortflag input:not([readonly])", initAutocompleteElementFileSortFlag);
         $(document).on('input', "div.crb-autocomplete-filesortflag input:not([readonly])", modifyAutocomplete);
         $(document).on('focus', "input.crb-autocomplete-filesortflag:not([readonly])", initAutocompleteElementFileSortFlag);
@@ -3720,7 +3722,9 @@ function setPlaceholderAction(action) {
     }
 
     if (typeof placeHolders.field1 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field1.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('#field1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
@@ -3731,7 +3735,9 @@ function setPlaceholderAction(action) {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
     }
     if (typeof placeHolders.field2 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field2.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('#field2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
@@ -3742,7 +3748,9 @@ function setPlaceholderAction(action) {
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").hide();
     }
     if (typeof placeHolders.field3 !== 'undefined') {
-        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field3.class);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").show();
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
         $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('#field3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
@@ -3769,7 +3777,9 @@ function setPlaceholderCondition(conditionElement) {
 
     if (typeof placeHolders.field1 !== 'undefined') {
         // $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9").addClass(placeHolders.field1.class);
-        $(conditionElement).parents("div[class*='conditions']").find(".v1").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
+        $(conditionElement).parents("div[class*='conditions']").find(".v1").find("input")
+                .removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field1.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal1Label']").text(placeHolders.field1.label[user.language]);
         if (typeof placeHolders.field1.picto !== 'undefined') {
@@ -3780,7 +3790,9 @@ function setPlaceholderCondition(conditionElement) {
     }
 
     if (typeof placeHolders.field2 !== 'undefined') {
-        $(conditionElement).parents("div[class*='conditions']").find(".v2").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
+        $(conditionElement).parents("div[class*='conditions']").find(".v2").find("input")
+                .removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field2.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal2Label']").text(placeHolders.field2.label[user.language]);
 
@@ -3789,7 +3801,9 @@ function setPlaceholderCondition(conditionElement) {
     }
 
     if (typeof placeHolders.field3 !== 'undefined') {
-        $(conditionElement).parents("div[class*='conditions']").find(".v3").find("input").removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
+        $(conditionElement).parents("div[class*='conditions']").find(".v3").find("input")
+                .removeClass("crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field3.class);
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").parent().show();
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").text(placeHolders.field3.label[user.language]);
 
@@ -3817,7 +3831,9 @@ function setPlaceholderControl(control) {
     }
 
     if (typeof placeHolders.field1 !== 'undefined') {
-        control.find("div[class*='v1']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field1.class);
+        control.find("div[class*='v1']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field1.class);
         control.find("div[class*='v1']").show();
         control.find("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
         control.find("div[class*='v1']").find('#controlField1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
@@ -3829,7 +3845,9 @@ function setPlaceholderControl(control) {
         control.find("div[class*='v1']").hide();
     }
     if (typeof placeHolders.field2 !== 'undefined') {
-        control.find("div[class*='v2']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field2.class);
+        control.find("div[class*='v2']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field2.class);
         control.find("div[class*='v2']").show();
         control.find("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
         control.find("div[class*='v2']").find('#controlField2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
@@ -3840,7 +3858,9 @@ function setPlaceholderControl(control) {
         control.find("div[class*='v2']").hide();
     }
     if (typeof placeHolders.field3 !== 'undefined') {
-        control.find("div[class*='v3']").removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-contextual-button").addClass(placeHolders.field3.class);
+        control.find("div[class*='v3']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.field3.class);
         control.find("div[class*='v3']").show();
         control.find("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
         control.find("div[class*='v3']").find('#controlField3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);

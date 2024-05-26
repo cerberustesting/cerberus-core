@@ -263,15 +263,37 @@ function loadApplicationObject(dataInit) {
     });
 }
 
+function loadDatalib(dataInit) {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        $.ajax({
+            url: "ReadApplicationObject?application=" + dataInit,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    array.push(data.contentTable[i]);
+                }
+                resolve(array);
+            }
+        });
+    });
+}
+
 function initTags(configs, context) {
+
     var inheritedProperties = [], testCaseProperties = [], objectsPromise = [];
+
+//    console.info(configs);
+
     if (configs.property && context instanceof Object) {
         inheritedProperties = context.contentTable[0].properties.inheritedProperties.map(prop => prop.property);
         testCaseProperties = context.contentTable[0].properties.testCaseProperties.map(prop => prop.property);
         objectsPromise = loadApplicationObject(context.contentTable[0].application)
     }
+
     if (configs.object && !configs.property && context instanceof String)
         objectsPromise = loadApplicationObject(context);
+
     return Promise.all([objectsPromise]).then(function (data) {
         var availableObjects = data[0];
         var availableProperties = testCaseProperties.concat(inheritedProperties.filter(function (item) {
@@ -280,12 +302,19 @@ function initTags(configs, context) {
         var availableTags = [
             "property",
             "system",
-            "object"
+            "object",
+            "datalib"
         ];
         var availableObjectProperties = [
             "value",
 //            "picturepath",
             "pictureurl",
+            "base64"
+        ];
+        var availableDatalibProperties = [
+            "value",
+//            "picturepath",
+//            "pictureurl",
             "base64"
         ];
         var availableSystemValues = [
@@ -465,6 +494,14 @@ function initTags(configs, context) {
         ];
         let tags = [
             {
+                name: 'datalibProperty',
+                array: availableDatalibProperties,
+                regex: "%datalib\\.[^\\.]*\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
+            },
+            {
                 name: 'objectProperty',
                 array: availableObjectProperties,
                 regex: "%object\\.[^\\.]*\\.",
@@ -476,6 +513,14 @@ function initTags(configs, context) {
                 name: 'object',
                 array: availableObjects,
                 regex: "%object\\.",
+                addBefore: "",
+                addAfter: ".",
+                isCreatable: true
+            },
+            {
+                name: 'datalib',
+                array: availableObjects,
+                regex: "%datalib\\.",
                 addBefore: "",
                 addAfter: ".",
                 isCreatable: true

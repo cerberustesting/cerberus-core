@@ -125,8 +125,8 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                             byte[] fileContent = Files.readAllBytes(file.toPath());
                             val = Base64.getEncoder().encodeToString(fileContent);
                         } catch (IOException e) {
-                            LOG.error("could not read file :'" + filePath + "'", e);
-                            val = "could not read file :'" + filePath + "'";
+                            val = "!! DECODE ERROR - could not read file :'" + filePath + "' !!";
+                            LOG.error(val, e);
                         }
                     }
                     if (val != null) {

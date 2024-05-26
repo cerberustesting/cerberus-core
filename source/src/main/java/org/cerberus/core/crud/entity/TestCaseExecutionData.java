@@ -77,8 +77,17 @@ public class TestCaseExecutionData {
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+    private TestDataLib dataLibObj;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionData.class);
+
+    public TestDataLib getDataLibObj() {
+        return dataLibObj;
+    }
+
+    public void setDataLibObj(TestDataLib dataLibObj) {
+        this.dataLibObj = dataLibObj;
+    }
 
     public String getFromCache() {
         return fromCache;

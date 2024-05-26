@@ -21,6 +21,8 @@ package org.cerberus.core.engine.gwt.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.InvalidPathException;
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,10 +74,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
@@ -91,6 +98,10 @@ public class PropertyService implements IPropertyService {
     private static final Logger LOG = LogManager.getLogger(PropertyService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
     public static final String VALUE_NULL = "<NULL>";
+    /**
+     * The property variable {@link Pattern}
+     */
+    public static final Pattern DATALIB_VARIABLE_PATTERN = Pattern.compile("%datalib\\.[^%]+%");
 
     @Autowired
     private IWebDriverService webdriverService;
@@ -563,6 +574,113 @@ public class PropertyService implements IPropertyService {
         }
         item.setItem(testCaseCountryProperty);
         return item;
+    }
+
+    @Override
+    public String decodeStringWithDatalib(String stringToDecode, TestCaseExecution execution, boolean forceCalculation) throws CerberusEventException {
+        String stringToDecodeInit = stringToDecode;
+        String system = "";
+        String environment = "";
+        String country = "";
+
+        if (execution != null) {
+            system = execution.getApplicationObj().getSystem();
+            environment = execution.getEnvironmentData();
+            country = execution.getCountry();
+        }
+
+        LOG.debug("Starting to decode string (Datalib) : " + stringToDecode);
+
+        /**
+         * Look at all the potential properties still contained in
+         * StringToDecode (considering that properties are between %).
+         */
+        List<String> internalDatalibFromStringToDecode = this.getDatalibStringListFromString(stringToDecode);
+        LOG.debug("Internal potencial Datalib still found inside String '" + stringToDecode + "' : " + internalDatalibFromStringToDecode);
+
+        if (internalDatalibFromStringToDecode.isEmpty()) { // We escape if no property found on the string to decode
+            LOG.debug("Finished to decode (no Datalib detected in string). Result : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+            return stringToDecode;
+        }
+
+        Iterator i = internalDatalibFromStringToDecode.iterator();
+        while (i.hasNext()) {
+            String value = (String) i.next();
+            String[] valueA = value.split("\\.");
+            if (valueA.length >= 3) {
+                LOG.debug("datalib name : " + valueA[1]);
+                LOG.debug("datalib varaible requested : " + valueA[2]);
+
+                String propName = "ENGINE-" + value;
+                TestCaseExecutionData dataExecution = factoryTestCaseExecutionData.create(0, propName, 0, "Engine Data", valueA[1], TestCaseCountryProperties.TYPE_GETFROMDATALIB, 0, valueA[1], "", "",
+                        null, 0, 0, 0, 0, null, 0, 0, "", "", "", "1", "1", 1, "STATIC", system, environment, country, valueA[1], "{}", "N");
+                TestCaseCountryProperties property = TestCaseCountryProperties.builder().nature(TestCaseCountryProperties.NATURE_STATIC).cacheExpire(0).length("1").property(propName).build();
+                dataExecution = property_getFromDataLib(dataExecution, execution, null, property, false);
+                String val = null;
+                if ("value".equals(valueA[2])) {
+                    val = dataExecution.getValue();
+                } else if ("base64".equals(valueA[2])) {
+                    if ((dataExecution.getDataLibObj() != null) && StringUtil.isNotEmpty(dataExecution.getDataLibObj().getCsvUrl())) {
+
+                        if (!StringUtil.isURL(dataExecution.getDataLibObj().getCsvUrl())) {
+                            String filePath = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", ""), File.separator) + dataExecution.getDataLibObj().getCsvUrl();
+                            try {
+                                File file = new File(filePath);
+                                byte[] fileContent = Files.readAllBytes(file.toPath());
+                                val = Base64.getEncoder().encodeToString(fileContent);
+                            } catch (IOException e) {
+                                val = "!! DECODE ERROR - could not read file :'" + filePath + "' !!";
+                                LOG.warn(val, e);
+                            }
+                        } else {
+                            URL urlToCall;
+                            try {
+                                urlToCall = new URL(dataExecution.getDataLibObj().getCsvUrl());
+                                byte[] fileContent = urlToCall.openStream().readAllBytes();
+                                val = Base64.getEncoder().encodeToString(fileContent);
+                            } catch (Exception ex) {
+                                val = "!! DECODE ERROR - could not read file :'" + dataExecution.getDataLibObj().getCsvUrl() + "' !!";
+                                LOG.warn(val, ex);
+                            }
+                        }
+
+                    }
+                }
+                if (val != null) {
+                    stringToDecode = stringToDecode.replace("%" + value + "%", val);
+                }
+            }
+        }
+
+        LOG.debug("Finished to decode String (Datalib) : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+        return stringToDecode;
+    }
+
+    /**
+     * Gets all properties names contained into the given {@link String}
+     *
+     * <p>
+     * A property is defined by including its name between two '%' character.
+     * </p>
+     *
+     * @param str the {@link String} to get all properties
+     * @return a list of properties contained into the given {@link String}
+     * @see #PROPERTY_VARIABLE_PATTERN
+     */
+    private List<String> getDatalibStringListFromString(String str) {
+        List<String> datalibs = new ArrayList<>();
+        if (str == null) {
+            return datalibs;
+        }
+
+        Matcher datalibMatcher = DATALIB_VARIABLE_PATTERN.matcher(str);
+        while (datalibMatcher.find()) {
+            String rawDatalib = datalibMatcher.group();
+            // Removes the first and last '%' character to only get the property name
+            rawDatalib = rawDatalib.substring(1, rawDatalib.length() - 1);
+            datalibs.add(rawDatalib);
+        }
+        return datalibs;
     }
 
     @Override
@@ -1620,8 +1738,8 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromDataLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution,
-            TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
+    private TestCaseExecutionData property_getFromDataLib(TestCaseExecutionData executionData, TestCaseExecution execution,
+            TestCaseStepActionExecution actionExecution, TestCaseCountryProperties property, boolean forceRecalculation) {
 
         MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
 
@@ -1630,7 +1748,7 @@ public class PropertyService implements IPropertyService {
         AnswerItem<String> answerDecode = new AnswerItem<>();
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
-        AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
+        AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(executionData.getValue1(),
                 execution.getApplicationObj().getSystem(), execution.getEnvironmentData(),
                 execution.getCountry());
 
@@ -1643,15 +1761,15 @@ public class PropertyService implements IPropertyService {
             try {
                 if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
-                    answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), execution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), execution, actionExecution, false);
                     String decodedScript = answerDecode.getItem();
                     testDataLib.setScript(decodedScript);
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SQL Script"));
-                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                        executionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SQL Script"));
+                        executionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SQL Script'.");
-                        return testCaseExecutionData;
+                        return executionData;
                     }
                 }
             } catch (CerberusEventException cex) {
@@ -1662,13 +1780,13 @@ public class PropertyService implements IPropertyService {
 
             // Here, we try to decode testCaseCountryProperty field `length` to get the value of property if needed
             try {
-                answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), execution, testCaseStepActionExecution, false);
+                answerDecode = variableService.decodeStringCompletly(property.getLength(), execution, actionExecution, false);
                 decodedLength = answerDecode.getItem();
                 if (!(answerDecode.isCodeStringEquals("OK"))) {
-                    testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "length"));
-                    testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    executionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "length"));
+                    executionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     LOG.debug("Property interupted due to decode 'Length field'.");
-                    return testCaseExecutionData;
+                    return executionData;
                 }
             } catch (CerberusEventException cex) {
                 LOG.error(cex.toString(), cex);
@@ -1683,29 +1801,30 @@ public class PropertyService implements IPropertyService {
                         decodedLength = "0";
                     }
                     Integer.parseInt(decodedLength);
-                    testCaseExecutionData.setLength(decodedLength);
+                    executionData.setLength(decodedLength);
 
                 } catch (NumberFormatException e) {
                     LOG.error(e.toString(), e);
                     MessageEvent msg = new MessageEvent(MessageEventEnum.CASTING_OPERATION_FAILED);
                     msg.setDescription(msg.getDescription().replace("%ERROR%", e.toString()));
-                    msg.setDescription(msg.getDescription().replace("%FIELD%", "length of property " + testCaseCountryProperty.getProperty()));
-                    testCaseExecutionData.setPropertyResultMessage(msg);
-                    testCaseExecutionData.setStopExecution(msg.isStopTest());
-                    return testCaseExecutionData;
+                    msg.setDescription(msg.getDescription().replace("%FIELD%", "length of property " + property.getProperty()));
+                    executionData.setPropertyResultMessage(msg);
+                    executionData.setStopExecution(msg.isStopTest());
+                    return executionData;
                 }
             }
 
             // We calculate here the result for the lib
-            serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, execution, testCaseExecutionData);
-            testCaseExecutionData.setDataLib(testDataLib.getName());
+            serviceAnswer = dataLibService.getFromDataLib(testDataLib, property, execution, executionData);
+            executionData.setDataLib(testDataLib.getName());
+            executionData.setDataLibObj(testDataLib);
 
             res = serviceAnswer.getResultMessage();
             result = serviceAnswer.getDataList(); //test data library returned by the service
 
             if (result != null) {
                 // Keeping raw data to testCaseExecutionData object.
-                testCaseExecutionData.setDataLibRawData(result);
+                executionData.setDataLibRawData(result);
 
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = result.get(0).get("");
@@ -1714,12 +1833,12 @@ public class PropertyService implements IPropertyService {
                     if (ignoreNonMatchedSubdata) {
                         final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
                         LOG.debug("Unmatched columns parsing enabled: Null answer received from service call of datalib '{}' with default value", () -> testDataLib.getName());
-                        testCaseExecutionData.setValue(defaultSubdataValue);
+                        executionData.setValue(defaultSubdataValue);
                     } else {
-                        testCaseExecutionData.setValue(VALUE_NULL);
+                        executionData.setValue(VALUE_NULL);
                     }
                 } else {
-                    testCaseExecutionData.setValue(value);
+                    executionData.setValue(value);
                     // Converting HashMap to json.
                     String jsonText = "";
                     JSONArray jsonResult = null;
@@ -1730,11 +1849,11 @@ public class PropertyService implements IPropertyService {
                         java.util.logging.Logger.getLogger(PropertyService.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    testCaseExecutionData.setJsonResult(jsonText);
+                    executionData.setJsonResult(jsonText);
                 }
 
                 //Record result in filessytem.
-                testCaseExecutionData.addFileList(recorderService.recordTestDataLibProperty(execution.getId(), testCaseCountryProperty.getProperty(), 1, result, execution.getSecrets()));
+                executionData.addFileList(recorderService.recordTestDataLibProperty(execution.getId(), property.getProperty(), 1, result, execution.getSecrets()));
 
             }
 
@@ -1743,24 +1862,24 @@ public class PropertyService implements IPropertyService {
 
         } else {//no TestDataLib found was returned
             //the library does not exist at all
-            AnswerList nameExistsAnswer = testDataLibService.readNameListByName(testCaseExecutionData.getValue1(), 1, false);
+            AnswerList nameExistsAnswer = testDataLibService.readNameListByName(executionData.getValue1(), 1, false);
             if (nameExistsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && nameExistsAnswer.getTotalRows() > 0) {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
-                res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()).
+                res.setDescription(res.getDescription().replace("%ITEM%", executionData.getValue1()).
                         replace("%COUNTRY%", execution.getCountryEnvironmentParameters().getCountry()).
                         replace("%ENVIRONMENT%", execution.getCountryEnvironmentParameters().getEnvironment()).
                         replace("%SYSTEM%", execution.getCountryEnvironmentParameters().getSystem()));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_EXIST_ERROR);
-                res.setDescription(res.getDescription().replace("%ITEM%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%ITEM%", executionData.getValue1()));
             }
 
         }
-        res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
-        testCaseExecutionData.setPropertyResultMessage(res);
+        res.setDescription(res.getDescription().replace("%VALUE1%", executionData.getValue1()));
+        executionData.setPropertyResultMessage(res);
 
-        return testCaseExecutionData;
+        return executionData;
     }
 
 }

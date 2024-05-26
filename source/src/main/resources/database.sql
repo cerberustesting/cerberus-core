@@ -6339,3 +6339,9 @@ UPDATE appservice a  SET a.bodytype = 'form-data' where `Type` ='REST' and Descr
 UPDATE appservice a  SET a.bodytype = 'form-urlencoded' where `Type` ='REST' and ServiceRequest = '' and a.bodytype = '';
 ALTER TABLE appservice CHANGE `Group` Collection varchar(100) DEFAULT '' NULL;
 ALTER TABLE `appservice` ADD COLUMN `SimulationParameters` TEXT AFTER `Collection`;
+
+-- 1786-1789
+UPDATE invariant SET sort=15 WHERE idname='TESTDATATYPE' AND value='CSV';
+UPDATE invariant SET value='FILE' WHERE idname='TESTDATATYPE' AND value='CSV';
+UPDATE testdatalib  SET `Type` = 'FILE' where `Type` ='CSV';
+UPDATE parameter  SET `param` = 'cerberus_testdatalibfile_path' where `param` ='cerberus_testdatalibcsv_path';

@@ -56,8 +56,7 @@ function initModalAppService() {
     displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw");
-    displayApplicationList("application", "", "", "");
-    displayAppServiceList("parentContentService", "", "", "");
+    displayAppServiceList("parentContentService", "", "");
     displayInvariantList("callSystem", "SYSTEM", false);
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
@@ -602,8 +601,9 @@ function performCall(service) {
                             $('#editSoapLibraryModal  #srvResponse').text(vkbeautify.xml(CallContent.call.Response["HTTP-ResponseBody"]));
                         } else if (CallContent.call.Response["HTTP-ResponseContentType"] === "HTML") {
                             $('#editSoapLibraryModal  #srvResponse').text(CallContent.call.Response["HTTP-ResponseBody"].replace(/<[^>]*>?/gm, ''));
-                            document.getElementById("htmlDisplay").innerHTML = CallContent.call.Response["HTTP-ResponseBody"];
-                            $('#htmlDisplay').show();
+                            // TODO SECURE that HTML does not change the page layout
+//                            document.getElementById("htmlDisplay").innerHTML = CallContent.call.Response["HTTP-ResponseBody"];
+//                            $('#htmlDisplay').show();
                         } else {
                             $('#editSoapLibraryModal  #srvResponse').text(CallContent.call.Response["HTTP-ResponseBody"]);
                         }
@@ -1005,7 +1005,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
                     refreshDisplayOnTypeChange();
 
                     //initialize the select2
-                    $('#editSoapLibraryModal #application').select2(getComboConfigApplicationList());
+                    $('#editSoapLibraryModal #application').select2();
                     // set it with the service value
                     $("#editSoapLibraryModal #application").val(service.application).trigger('change');
 

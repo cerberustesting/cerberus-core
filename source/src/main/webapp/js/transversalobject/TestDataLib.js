@@ -31,6 +31,7 @@ $(function () {
 })
 
 function collapseOrExpandTypes() {
+
     var typesVal = $('#editTestDataLibModal #types').val();
     if (typesVal === "SQL") {
         $("#panelSQLEdit").collapse("show");
@@ -40,7 +41,7 @@ function collapseOrExpandTypes() {
         $("#panelSQLEdit").collapse("hide");
         $("#panelSERVICEEdit").collapse("show");
         $("#panelCSVEdit").collapse("hide");
-    } else if (typesVal === "CSV") {
+    } else if (typesVal === "FILE") {
         $("#panelSQLEdit").collapse("hide");
         $("#panelSERVICEEdit").collapse("hide");
         $("#panelCSVEdit").collapse("show");
@@ -61,22 +62,21 @@ function changeAppServiceFromHere() {
 
     if (!isEmpty($('#editTestDataLibModal #service').val())) {
 
-
-        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
+//        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
 
         var editEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
             class="buttonObject btn btn-default " \n\
            title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
             <span class="glyphicon glyphicon-pencil"></span></button></span>';
-        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
-            class="buttonObject btn btn-default " \n\
-           title="Empty" type="button">\n\
-            <span class="glyphicon glyphicon-remove"></span></button></span>';
-        $('#editTestDataLibModal #service').parent().append(editEntry).append(emptyEntry);
+//        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
+//            class="buttonObject btn btn-default " \n\
+//           title="Empty" type="button">\n\
+//            <span class="glyphicon glyphicon-remove"></span></button></span>';
+        $('#editTestDataLibModal #service').parent().append(editEntry);
 
-    } else {
+//    } else {
 
-        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
+//        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
 
     }
 
@@ -148,8 +148,7 @@ function initModalDataLib() {
     displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("types", "TESTDATATYPE", false, "INTERNAL");
 
-    $("select[id='service']").append($('<option></option>').text("").val(""));
-    displayAppServiceList("service", "");
+    displayAppServiceList("service", "", "", "");
 
 
     $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
@@ -448,21 +447,21 @@ function feedDataLibModal(serviceName, modalId, mode) {
 
 }
 
-function activateSOAPServiceFields(modal, serviceValue) {
-    if (isEmpty(serviceValue)) {
-        $(modal + " #servicepaths").prop("readonly", false);
-        $(modal + " #methods").prop("readonly", false);
+//function activateSOAPServiceFields(modal, serviceValue) {
+//    if (isEmpty(serviceValue)) {
+//        $(modal + " #servicepaths").prop("readonly", false);
+//        $(modal + " #methods").prop("readonly", false);
 //        var editor = ace.edit($(modal + " #envelope")[0]);
 //        editor.container.style.opacity = 1;
 //        editor.renderer.setStyle("disabled", false);
-    } else {
-        $(modal + " #servicepaths").prop("readonly", true);
-        $(modal + " #methods").prop("readonly", true);
+//    } else {
+//        $(modal + " #servicepaths").prop("readonly", true);
+//        $(modal + " #methods").prop("readonly", true);
 //        var editor = ace.edit($(modal + " #envelope")[0]);
 //        editor.container.style.opacity = 0.5;
 //        editor.renderer.setStyle("disabled", true);
-    }
-}
+//    }
+//}
 
 /***
  * Feed the TestCase modal with all the data from the TestCase.
@@ -482,7 +481,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
     ace.edit($("#editTestDataLibModal #script")[0]).destroy();
 
     if (isEmpty(testDataLib)) {
-        activateSOAPServiceFields("#editTestDataLibModal", "");
+//        activateSOAPServiceFields("#editTestDataLibModal", "");
         // Cleaning the Subdata Table.
         $('#subdataTableBody_edit tr').remove();
         addNewSubDataKeyRow("subdataTableBody_edit");
@@ -526,14 +525,15 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
 //        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
         // init the select2
-        $('#editTestDataLibModal #service').select2(getComboConfigService());
+//        $('#editTestDataLibModal #service').select2(getComboConfigService());
+        $('#editTestDataLibModal #service').select2();
         // set it with the service value
         $("#editTestDataLibModal #service").val(obj.service).trigger('change');
 
         $('#editTestDataLibModal #servicepaths').prop("value", obj.servicePath);
         $('#editTestDataLibModal #methods').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').text(obj.envelope);
-        activateSOAPServiceFields("#editTestDataLibModal", obj.service);
+//        activateSOAPServiceFields("#editTestDataLibModal", obj.service);
         $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#editTestDataLibModal #separator').prop("value", obj.separator);
@@ -631,7 +631,7 @@ function appendSubDataRow(subdata, targetTableBody) {
         var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
     }
     subdata.encrypt === "Y" ? subdata.encrypt = true : subdata.encrypt = false;
-    var encryptInput = $("<input type='checkbox' \">").prop("checked", subdata.encrypt);
+    var encryptInput = $("<input type='checkbox' \">").prop("checked", subdata.encrypt).addClass("form-control input-sm");
     var typeStyle = subdata.encrypt === true ? "password" : "";
     var valueInput = $("<input type=\"" + typeStyle + "\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
     var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control input-sm").val(subdata.column);

@@ -30,6 +30,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
+    // Load Application Combo (used on service modal).
+    displayApplicationList("application", "", "", "");
+
     // configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("soapLibrarysTable",
             "ReadAppService", "contentTable",

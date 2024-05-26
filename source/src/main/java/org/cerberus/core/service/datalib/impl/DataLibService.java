@@ -488,7 +488,7 @@ public class DataLibService implements IDataLibService {
 
         switch (dataLib.getType()) {
 
-            case TestDataLib.TYPE_CSV:
+            case TestDataLib.TYPE_FILE:
                 answerData = testDataLibDataService.readByVarious(dataLib.getTestDataLibID(), null, null, "N");
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
                     objectDataList = answerData.getDataList();
@@ -646,7 +646,7 @@ public class DataLibService implements IDataLibService {
         final String defaultSubdataValue = ignoreNonMatchedSubdata ? parameterService.getParameterStringByKey("cerberus_testdatalib_subdataDefaultValue", StringUtils.EMPTY, StringUtils.EMPTY) : StringUtils.EMPTY;
 
         switch (lib.getType()) {
-            case TestDataLib.TYPE_CSV:
+            case TestDataLib.TYPE_FILE:
 
                 /**
                  * Before making the call we check if the Service Path is
@@ -665,7 +665,7 @@ public class DataLibService implements IDataLibService {
                         try {
                             countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system, country, environment, lib.getDatabaseCsv()));
                             if (countryEnvironmentDatabase == null) {
-                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
+                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_URLKOANDDATABASEFILEURLNOTEXIST);
                                 msg.setDescription(msg.getDescription()
                                         .replace("%SERVICEURL%", lib.getCsvUrl())
                                         .replace("%SYSTEM%", system)
@@ -678,7 +678,7 @@ public class DataLibService implements IDataLibService {
                             } else {
                                 String csvURL = countryEnvironmentDatabase.getCsvUrl();
                                 if (StringUtil.isEmpty(csvURL)) {
-                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLEMPTY);
+                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_URLKOANDDATABASEFILEURLEMPTY);
                                     msg.setDescription(msg.getDescription()
                                             .replace("%SERVICEURL%", lib.getCsvUrl())
                                             .replace("%SYSTEM%", system)
@@ -692,7 +692,7 @@ public class DataLibService implements IDataLibService {
                                 servicePathCsv = csvURL + lib.getCsvUrl();
 
                                 if (!StringUtil.isURL(servicePathCsv)) {
-                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKO);
+                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_URLKO);
                                     msg.setDescription(msg.getDescription()
                                             .replace("%SERVICEURL%", servicePathCsv)
                                             .replace("%SOAPURL%", csvURL)
@@ -704,7 +704,7 @@ public class DataLibService implements IDataLibService {
                                 }
                             }
                         } catch (CerberusException ex) {
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_URLKOANDDATABASEFILEURLNOTEXIST);
                             msg.setDescription(msg.getDescription()
                                     .replace("%SERVICEURL%", lib.getCsvUrl())
                                     .replace("%SYSTEM%", system)
@@ -720,7 +720,7 @@ public class DataLibService implements IDataLibService {
                 // Trying make a valid path with csv parameter path.
                 if (!StringUtil.isURL(servicePathCsv)) {
                     // Url is still not valid. We try to add the path from csv parameter.
-                    String csv_path = parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "");
+                    String csv_path = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", "");
                     csv_path = StringUtil.addSuffixIfNotAlready(csv_path, File.separator);
                     servicePathCsv = csv_path + servicePathCsv;
                 }
@@ -736,11 +736,11 @@ public class DataLibService implements IDataLibService {
                 if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_CSV.getCode()) {
                     if (list != null && !list.isEmpty()) {
                         result.setDataList(list);
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_CSV);
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_FILE);
                         msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size())).replace("%CSVURL%", servicePathCsv));
 
                     } else {
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSVDATABASENODATA);
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILEDATABASENODATA);
                         msg.setDescription(msg.getDescription().replace("%CSVURL%", servicePathCsv));
                     }
                 } else {

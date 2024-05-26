@@ -446,7 +446,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(i++, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000), secrets));
-                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getDescription(), 65000), secrets));
+                preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getDescription(), 150), secrets));
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
                 preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000), secrets));
                 preStat.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(testCaseStepActionExecution.getValue2Init(), 65000), secrets));

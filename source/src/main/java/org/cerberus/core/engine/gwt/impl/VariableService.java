@@ -61,37 +61,37 @@ public class VariableService implements IVariableService {
     private IRecorderService recorderService;
 
     @Override
-    public AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
+    public AnswerItem<String> decodeStringCompletly(String initStringToDecode, TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
         AnswerItem<String> answer = new AnswerItem<>();
         answer.setResultMessage(msg);
-        answer.setItem(stringToDecode);
+        answer.setItem(initStringToDecode);
 
-        String result = stringToDecode;
+        String stringToDecode = initStringToDecode;
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Start Decoding : " + result);
+            LOG.debug("Start Decoding : " + stringToDecode);
         }
 
         /**
          * Nothing to decode if null or empty string.
          */
-        if (StringUtil.isEmpty(result)) {
+        if (StringUtil.isEmpty(stringToDecode)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Stop Decoding : Nothing to decode on : " + result);
+                LOG.debug("Stop Decoding : Nothing to decode on : " + stringToDecode);
             }
             return answer;
         }
-        if (result.startsWith(Identifier.IDENTIFIER_ERRATUM + "=")) {
+        if (stringToDecode.startsWith(Identifier.IDENTIFIER_ERRATUM + "=")) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Stop Decoding : String starts by erratum= : " + result);
+                LOG.debug("Stop Decoding : String starts by erratum= : " + stringToDecode);
             }
             return answer;
         }
 
         int count_decode = 1;
-        while (result.contains("%") && count_decode <= 2) {
+        while (stringToDecode.contains("%") && count_decode <= 2) {
             /**
              * We iterate the property decode because properties names could be
              * inside other properties.
@@ -99,38 +99,39 @@ public class VariableService implements IVariableService {
             /**
              * Decode System Variables.
              */
-            if (result.contains("%")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Starting to decode (system variable) string iteration#" + count_decode + ": " + result);
-                }
-                result = this.decodeStringWithSystemVariable(result, testCaseExecution);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Finished to decode (system variable) iteration#" + count_decode + ". Result : " + result);
-                }
+            if (stringToDecode.contains("%")) {
+                LOG.debug("Starting to decode (system variable) string iteration#" + count_decode + ": " + stringToDecode);
+                stringToDecode = this.decodeStringWithSystemVariable(stringToDecode, testCaseExecution);
+                LOG.debug("Finished to decode (system variable) iteration#" + count_decode + ". Result : " + stringToDecode);
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode System variable) : " + result);
-                }
-                answer.setItem(result);
+                LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode System variable) : " + stringToDecode);
+                answer.setItem(stringToDecode);
                 return answer;
             }
 
             /**
              * Decode ApplicationObject.
              */
-            if (result.contains("%")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Starting to decode (Application Object) string iteration#" + count_decode + ": " + result);
-                }
-                result = applicationObjectVariableService.decodeStringWithApplicationObject(result, testCaseExecution, forceCalculation);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Finished to decode (Application Object) iteration#" + count_decode + ". Result : " + result);
-                }
+            if (stringToDecode.contains("%")) {
+                LOG.debug("Starting to decode (Application Object) string iteration#" + count_decode + ": " + stringToDecode);
+                stringToDecode = applicationObjectVariableService.decodeStringWithApplicationObject(stringToDecode, testCaseExecution, forceCalculation);
+                LOG.debug("Finished to decode (Application Object) iteration#" + count_decode + ". Result : " + stringToDecode);
             } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationObject variable) : " + result);
-                }
-                answer.setItem(result);
+                LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationObject variable) : " + stringToDecode);
+                answer.setItem(stringToDecode);
+                return answer;
+            }
+
+            /**
+             * Decode Datalib.
+             */
+            if (stringToDecode.contains("%datalib.")) {
+                LOG.debug("Starting to decode (Datalib) string iteration#" + count_decode + ": " + stringToDecode);
+                stringToDecode = propertyService.decodeStringWithDatalib(stringToDecode, testCaseExecution, forceCalculation);
+                LOG.debug("Finished to decode (Datalib) iteration#" + count_decode + ". Result : " + stringToDecode);
+            } else {
+                LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode Datalib variable) : " + stringToDecode);
+                answer.setItem(stringToDecode);
                 return answer;
             }
 
@@ -138,14 +139,12 @@ public class VariableService implements IVariableService {
              * Decode Properties.
              */
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + result);
+                LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + stringToDecode);
             }
-            answer = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
-            result = answer.getItem();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + result);
-                LOG.debug("   Result Message : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
-            }
+            answer = propertyService.decodeStringWithExistingProperties(stringToDecode, testCaseExecution, testCaseStepActionExecution, forceCalculation);
+            stringToDecode = answer.getItem();
+            LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + stringToDecode);
+            LOG.debug("   Result Message : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
 
             /**
              *
@@ -160,7 +159,7 @@ public class VariableService implements IVariableService {
                 String prop_message = answer.getResultMessage().getDescription();
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DECODE_FAILED_GENERIC)
                         .resolveDescription("ERROR", prop_message));
-                answer.setItem(result);
+                answer.setItem(stringToDecode);
                 return answer;
             }
             count_decode++;
@@ -168,7 +167,7 @@ public class VariableService implements IVariableService {
 
         // Checking if after the decode we still have some variable not decoded.
         LOG.debug("Checking If after decode we still have uncoded variable.");
-        List<String> variableList = getVariableListFromString(result);
+        List<String> variableList = getVariableListFromString(stringToDecode);
         if (variableList.size() > 0) {
             String messageList = "";
             for (String var : variableList) {
@@ -178,22 +177,22 @@ public class VariableService implements IVariableService {
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DECODE_FAILED_VARIABLENOTDECODED)
                     .resolveDescription("NB", String.valueOf(variableList.size()))
                     .resolveDescription("VAR", messageList));
-            answer.setItem(result);
+            answer.setItem(stringToDecode);
             LOG.debug("Stop Decoding with error : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
             return answer;
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Stop Decoding : All iteration finished : " + result);
+            LOG.debug("Stop Decoding : All iteration finished : " + stringToDecode);
         }
-        answer.setItem(result);
+        answer.setItem(stringToDecode);
         return answer;
     }
 
     private List<String> getVariableListFromString(String str) {
         List<String> variable = new ArrayList<>();
 
-        final String regex = "%(property|system|object|service)\\..*?%";
+        final String regex = "%(property|system|object|service|datalib)\\..*?%";
 
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(str);

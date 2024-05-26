@@ -66,141 +66,137 @@
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1">
                             <!--SERVICE-->
-                            <div class="row" >
-                                <div class="col-xs-12" id="soapConfigurationsPanelEdit">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSERVICEEdit">
-                                            <label name="serviceConfigurationsLbl">SERVICE Configurations </label>
-                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                        </div>
-                                        <div id="panelSERVICEEdit" class="panel-body collapse">
-                                            <div class="row">
-                                                <div class="form-group  col-sm-4"> 
-                                                    <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
-                                                    <select class="form-control" id="databaseUrl" name="databaseUrl">
-                                                    </select> 
-                                                </div>
-                                                <div class="input-group col-sm-7"> 
-                                                    <label name="lbl_service" for="service">Service</label> 
-                                                    <select type="text" class="form-control" id="service" name="service" aria-describedby="basic-addon1" maxlength="100">
-                                                    </select> 
-                                                </div>
-                                            </div>    
-                                            <div class="row">
-                                                <div class="form-group col-sm-8" >
-                                                    <label name="lbl_service_path" for="servicepath">Service Path</label>
-                                                    <input id="servicepaths" name="servicepaths"  class="form-control" maxlength="255"  />  
-                                                </div>
-                                                <div class="form-group col-sm-4">
-                                                    <label name="lbl_method" for="method">Method</label>
-                                                    <input id="methods" name="methods" class="form-control" maxlength="255"  />
-                                                </div>
+                            <div class="well well-sm" >
+
+                                <!--FILE-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="csvConfigurationsPanelEdit">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSVEdit">
+                                                <label name="csvConfigurationsLbl">FILE Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <label name="lbl_envelope" for="envelope">Envelope</label> 
-                                                    <div name="envelopeContainer" id="envelopeContainer" aria-describedby="basic-editon1">
-                                                        <pre style="min-height:150px" id="envelope" name="envelope"></pre>
+                                            <div id="panelCSVEdit" class="panel-body collapse">
+                                                <div class="row">
+                                                    <div class="form-group  col-sm-3"> 
+                                                        <label name="lbl_databaseCsv" for="databaseCsv">Database URL</label> 
+                                                        <select class="form-control" id="databaseCsv" name="databaseCsv">
+                                                        </select> 
+                                                    </div>    
+                                                    <div class="form-group col-sm-9"> 
+                                                        <label name="lbl_csvUrl" for="csvUrl">File Url</label> 
+                                                        <div class="input-group">
+                                                            <input id="csvUrl" name="csvUrl" class="form-control">
+                                                            <span class="input-group-btn">
+                                                                <a id="buttonDownloadCsvFile" class="pull-right" href="#">
+                                                                    <button class="btn btn-default" type="button" id="downloadCSV">
+                                                                        <span class="glyphicon glyphicon-download-alt"></span>
+                                                                    </button>
+                                                                </a>                                                            
+                                                            </span>
+                                                        </div>                                        
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div> 
-                                    </div>
-                                </div>
-                            </div>
-                            <!--SQL-->
-                            <div class="row" >
-                                <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLEdit">
-                                            <label name="sqlConfigurationsLbl">SQL Configurations </label>
-                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                        </div>
-                                        <div id="panelSQLEdit" class="panel-body collapse">
-                                            <div class="row form-group  col-sm-6 col-xs-12"> 
-                                                <label name="lbl_database" for="database">Database</label> 
-                                                <select class="form-control" id="database" name="database">
-                                                </select> 
-                                            </div>    
-                                            <div class="row">
-                                                <div class="col-xs-12"> 
-                                                    <label name="lbl_script" for="script">Script</label> 
-                                                    <div name="scriptContainer" id="scriptContainer" aria-describedby="basic-editon1">
-                                                        <pre style="min-height:150px" id="script" name="script"></pre>
-                                                    </div>  
-                                                </div>                       
-                                            </div>
 
-                                        </div> 
+                                                <div class="row">
+
+                                                    <div class="form-group col-sm-9 col-sm-offset-3 col-xs-12">
+                                                        <label name="lbl_csvFile" for="csvFile">Upload File</label> 
+                                                        <input type="file" class="form-control" id="inputFile" aria-describedby="fileHelp">
+                                                    </div>
+                                                </div>
+
+                                            </div> 
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!--CSV-->
-                            <div class="row" >
-                                <div class="col-xs-12" id="csvConfigurationsPanelEdit">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSVEdit">
-                                            <label name="csvConfigurationsLbl">CSV Configurations </label>
-                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                        </div>
-                                        <div id="panelCSVEdit" class="panel-body collapse">
-                                            <div class="row">
-                                                <div class="form-group  col-sm-3"> 
-                                                    <label name="lbl_databaseCsv" for="databaseCsv">Database URL</label> 
-                                                    <select class="form-control" id="databaseCsv" name="databaseCsv">
+
+                                <!--SQL-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLEdit">
+                                                <label name="sqlConfigurationsLbl">SQL Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelSQLEdit" class="panel-body collapse">
+                                                <div class="row form-group  col-sm-6 col-xs-12"> 
+                                                    <label name="lbl_database" for="database">Database</label> 
+                                                    <select class="form-control" id="database" name="database">
                                                     </select> 
                                                 </div>    
-                                                <div class="form-group col-sm-6"> 
-                                                    <label name="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
-                                                    <div class="input-group">
-                                                        <input id="csvUrl" name="csvUrl" class="form-control">
-                                                        <span class="input-group-btn">
-                                                            <a id="buttonDownloadCsvFile" class="pull-right" href="#">
-                                                                <button class="btn btn-default" type="button" id="downloadCSV">
-                                                                    <span class="glyphicon glyphicon-download-alt"></span>
-                                                                </button>
-                                                            </a>                                                            
-                                                        </span>
-                                                    </div>                                        
+                                                <div class="row">
+                                                    <div class="col-xs-12"> 
+                                                        <label name="lbl_script" for="script">Script</label> 
+                                                        <div name="scriptContainer" id="scriptContainer" aria-describedby="basic-editon1">
+                                                            <pre style="min-height:150px" id="script" name="script"></pre>
+                                                        </div>  
+                                                    </div>                       
                                                 </div>
-                                                <div class="form-group col-sm-3"> 
-                                                    <label name="lbl_separator" for="separator">Separator</label> 
-                                                    <input id="separator" name="separator" class="form-control">   
-                                                </div>
-                                            </div>
 
-                                            <div class="row">
-                                                <div class="form-group col-sm-9 col-sm-offset-3 col-xs-12">
-                                                    <label name="lbl_csvFile" for="csvFile">CSV File</label> 
-                                                    <input type="file" class="form-control" id="inputFile" aria-describedby="fileHelp">
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="form-group col-sm-9 col-sm-offset-3 col-xs-12">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input class="form-check-input" id="subdataCheck" name="subdataCheck" type="checkbox" value="1">
-                                                            Automatically feed subdata's list with the first line of csv ?
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div> 
+                                            </div> 
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!--SERVICE-->
+                                <div class="row" >
+                                    <div class="col-xs-12" id="soapConfigurationsPanelEdit">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSERVICEEdit">
+                                                <label name="serviceConfigurationsLbl">SERVICE Configurations </label>
+                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                            </div>
+                                            <div id="panelSERVICEEdit" class="panel-body collapse">
+                                                <div class="row">
+                                                    <div class="form-group  col-sm-4"> 
+                                                        <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
+                                                        <select class="form-control" id="databaseUrl" name="databaseUrl">
+                                                        </select> 
+                                                    </div>
+                                                    <div class="input-group col-sm-7"> 
+                                                        <label name="lbl_service" for="service">Service</label> 
+                                                        <select type="text" class="form-control input-sm" id="service" name="service" style="width:100%;">
+                                                        </select> 
+                                                    </div>
+                                                </div>    
+                                                <div class="row" style="display: none">
+                                                    <div class="form-group col-sm-8" >
+                                                        <label name="lbl_service_path" for="servicepath">Service Path</label>
+                                                        <input id="servicepaths" name="servicepaths"  class="form-control" maxlength="255"  />  
+                                                    </div>
+                                                    <div class="form-group col-sm-4">
+                                                        <label name="lbl_method" for="method">Method</label>
+                                                        <input id="methods" name="methods" class="form-control" maxlength="255"  />
+                                                    </div>
+                                                </div>
+                                                <div class="row"  style="display: none">
+                                                    <div class="col-xs-12">
+                                                        <label name="lbl_envelope" for="envelope">Envelope</label> 
+                                                        <div name="envelopeContainer" id="envelopeContainer" aria-describedby="basic-editon1">
+                                                            <pre style="min-height:150px" id="envelope" name="envelope"></pre>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                            <!--group infomation -->
+
+                            <!--group information -->
                             <div class="row">
-                                <div class="form-group col-sm-6">
+                                <div class="form-group col-sm-9">
                                     <label name="lbl_group"  for="groupedit">or enter new group</label>
                                     <input id="group" name="group" class="form-control" />     
                                 </div>                  
-                                <div class="form-group col-sm-6">
+                                <div class="form-group col-sm-3">
                                     <label name="lbl_privateData" for="privateData">Private</label><br>
-                                    <input class="col-xs-2" type="checkbox" id="privateData" name="privateData"/>
-                                    <p class="text-warning col-xs-10" ><strong id="messagePrivate"></strong></p>
+                                    <input class="col-xs-2 form-control input-sm" type="checkbox" id="privateData" name="privateData"/>
+                                    <div class="marginTop10 pull-left text-info">
+                                        <p><strong id="messagePrivate"></strong></p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -214,6 +210,27 @@
                         </div>
                         <div class="center tab-pane fade marginTop25" id="tabsedit-2">
                             <div id="listPanelSubdata">
+
+                                <div class="well well-sm" >
+
+                                    <div class="row">
+                                        <div class="form-group col-sm-3"> 
+                                            <label name="lbl_separator" for="separator">CSV File Separator</label> 
+                                            <input id="separator" name="separator" class="form-control">   
+                                        </div>
+                                        <div class="form-group col-sm-3">
+                                            <div class="form-check">
+                                                <label class="form-check-label">
+                                                    First line of csv contain column names ?
+                                                </label>
+                                                <input class="form-check-input form-control input-sm" id="subdataCheck" name="subdataCheck" type="checkbox" value="1">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <table class="table table-bordered table-hover nomarginbottom" id="SubdataTable_edit">

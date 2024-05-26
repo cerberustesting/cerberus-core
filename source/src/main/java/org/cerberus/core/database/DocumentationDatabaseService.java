@@ -1389,9 +1389,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','creator','','en','Creator','User who created the data.','_data_library')");
         b.append(",('testdatalib','creator','','fa','سازنده','کاربری که داده ها را ایجاد کرده است.','_data_library')");
         b.append(",('testdatalib','creator','','fr','Créateur',NULL,'_librairie_de_données')");
-        b.append(",('testdatalib','csvUrl','','en','CSV URL','<p>CSV URL specifies the URL where the CSV can be reached.</p>','_data_library')");
-        b.append(",('testdatalib','csvUrl','','fa','آدرس URL فایل CSV','<p>CSV URL آدرسی را که می توان به CSV دسترسی پیدا کرد را مشخص می کند.</p>','_data_library')");
-        b.append(",('testdatalib','csvUrl','','fr','URL du CSV','<p>L’URL du CSV représente l’URL du fichier CSV à décrypter.</p>','_librairie_de_données')");
+        b.append(",('testdatalib','csvUrl','','en','File URL','<p>File URL specifies the URL where the File can be reached.</p>','_data_library')");
+        b.append(",('testdatalib','csvUrl','','fa','آدرس URL فایل File','<p>File URL آدرسی را که می توان به File دسترسی پیدا کرد را مشخص می کند.</p>','_data_library')");
+        b.append(",('testdatalib','csvUrl','','fr','URL du Fichier','<p>L’URL du Fichier représente l’URL du fichier à acceder.</p>','_librairie_de_données')");
         b.append(",('testdatalib','database','','en','Database','<p>Specifies the database where the <i>script</i> attribute should be executed. </p> You can then configure the JDBC Connection pool on that database at the environment level. That allows to create testdata independant from the environment where the testcase is executed.','_data_library')");
         b.append(",('testdatalib','database','','fa','پایگاه داده','<p>پایگاه داده را مشخص می کند که ویژگی <i>اسکریپت</i> باید در آن اجرا شود. </p> سپس می توانید مخزن اتصال JDBC را در آن پایگاه داده در سطح محیط پیکربندی کنید. این اجازه می دهد تا داده های آزمون را مستقل از محیطی که مورد آزمون در آن اجرا می شود ایجاد کنید.','_data_library')");
         b.append(",('testdatalib','database','','fr','Base de Données',NULL,'_librairie_de_données')");
@@ -1423,8 +1423,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','privateData','','fr','Privé','<p>Défini si la donnée est privée ou non</p><p><b><u>Note</u></b>: Une donnée privée ne peut être modifiée que par le créateur.</p>','_librairie_de_données')");
         b.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>','_data_library')");
         b.append(",('testdatalib','script','','fr','Scenario',NULL,'_librairie_de_données')");
-        b.append(",('testdatalib','separator','','en','Separator','<p>Separator used parsing a CSV.</p>','_data_library')");
-        b.append(",('testdatalib','separator','','fr','Séparateur','<p>Séparateur à utiliser pour le décryptage du CSV.</p>','_librairie_de_données')");
+        b.append(",('testdatalib','separator','','en','CSV File Separator','<p>Separator used parsing a CSV.</p>','_data_library')");
+        b.append(",('testdatalib','separator','','fr','Séparateur CSV','<p>Séparateur à utiliser pour la lecture du CSV.</p>','_librairie_de_données')");
         b.append(",('testdatalib','service','','en','Service','','_data_library')");
         b.append(",('testdatalib','service','','fr','Service',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','servicepath','','en','Service Path','<p>Location of the service.</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table>','_data_library')");
@@ -1433,7 +1433,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','system','','fr','Système',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','testdatalibid','','en','ID','<p>Unique identifier of the test data library entry</p>','_data_library')");
         b.append(",('testdatalib','testdatalibid','','fr','Identifiant','<p>Identifiant unique de librairie de donnée</p>','_librairie_de_données')");
-        b.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SERVICE.</p>','_data_library')");
+        b.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, FILE, SQL and SERVICE.</p>','_data_library')");
         b.append(",('testdatalib','type','','fr','Type',NULL,'_librairie_de_données')");
         b.append(",('testdatalib','currentname','','en','Current name','This corresponds to the Datalib name that needs to be updated',NULL)");
         b.append(",('testdatalib','currentname','','fr','Nom actuel','Correspond au nom des Datalib qui seront modifiees massivement',NULL)");
@@ -1442,7 +1442,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>','_data_library')");
         b.append(",('testdatalibdata','column','','fr','Colonne','<p>Nom de la colonne représentant la vakeur qui devrait être obtenu après l\\'execution du SQL</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','columnPosition','','en','Column Position','<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>','_data_library')");
-        b.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>','_librairie_de_données')");
+        b.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors de la lecture du CSV.</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>','_data_library')");
         b.append(",('testdatalibdata','description','','ru','Описание','<p>Текстовое описание для ввода дополнительных данных.</p>','_data_library')");
         b.append(",('testdatalibdata','description','','fr','Description',NULL,'_librairie_de_données')");
@@ -3925,8 +3925,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testdatalib','table_testdatalib','','fr','Liste de Données',NULL,NULL)");
         b.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SERVICE</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>','_data_library')");
         b.append(",('page_testdatalib','title','','fr','Librairie de données',NULL,'_librairie_de_données')");
-        b.append(",('page_testdatalib','title_csv_configurations','','en','CSV configurations','',NULL)");
-        b.append(",('page_testdatalib','title_csv_configurations','','fr','Configuration CSV','',NULL)");
+        b.append(",('page_testdatalib','title_csv_configurations','','en','File configurations','',NULL)");
+        b.append(",('page_testdatalib','title_csv_configurations','','fr','Configuration Fichier','',NULL)");
         b.append(",('page_testdatalib','title_service_configurations','','en','SERVICE configurations','',NULL)");
         b.append(",('page_testdatalib','title_service_configurations','','fr','SERVICE configurations',NULL,NULL)");
         b.append(",('page_testdatalib','title_soap_configurations','','fr','Configurations SOAP',NULL,NULL)");

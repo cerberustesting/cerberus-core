@@ -48,7 +48,7 @@ public class CsvFileService implements ICsvFileService {
     private static final Logger LOG = LogManager.getLogger(CsvFileService.class);
 
     @Override
-    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
+    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
         LOG.debug("Columns to hide : " + columnsToHide);
         String str = "";
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
@@ -56,20 +56,20 @@ public class CsvFileService implements ICsvFileService {
         /**
          * Init message with generic failed message
          */
-        result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_GENERIC)
-                .resolveDescription("URL", urlToCSVFile));
+        result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_GENERIC)
+                .resolveDescription("URL", urlToFile));
 
         BufferedReader br = null;
 
         try {
             /**
-             * Get CSV File and parse it line by line
+             * Get File and parse it line by line
              */
-            if (StringUtil.isURL(urlToCSVFile)) {
-                URL urlToCall = new URL(urlToCSVFile);
+            if (StringUtil.isURL(urlToFile)) {
+                URL urlToCall = new URL(urlToFile);
                 br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
             } else {
-                br = new BufferedReader(new FileReader(urlToCSVFile));
+                br = new BufferedReader(new FileReader(urlToFile));
                 br.readLine();
             }
 
@@ -118,12 +118,12 @@ public class CsvFileService implements ICsvFileService {
              * Set result with datalist and resultMeassage.
              */
             result.setDataList(csv);
-            result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_CSV).resolveDescription("URL", urlToCSVFile));
+            result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_CSV).resolveDescription("URL", urlToFile));
             result.setTotalRows(csv.size());
         } catch (Exception exception) {
-            LOG.warn("Error Getting CSV File " + exception);
-            result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_FILENOTFOUND)
-                    .resolveDescription("URL", urlToCSVFile).resolveDescription("EX", exception.toString()));
+            LOG.warn("Error Getting File " + exception);
+            result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_FILE_FILENOTFOUND)
+                    .resolveDescription("URL", urlToFile).resolveDescription("EX", exception.toString()));
         } finally {
             if (br != null) {
                 try {

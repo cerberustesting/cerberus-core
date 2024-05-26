@@ -319,7 +319,7 @@ public class ManageV001 extends HttpServlet {
                 fsSize.put("cerberus_applicationobject_path", getFSSize(parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "/")));
                 fsSize.put("cerberus_exemanualmedia_path", getFSSize(parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "/")));
                 fsSize.put("cerberus_ftpfile_path", getFSSize(parameterService.getParameterStringByKey("cerberus_ftpfile_path", "", "/")));
-                fsSize.put("cerberus_testdatalibcsv_path", getFSSize(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "/")));
+                fsSize.put(Parameter.VALUE_cerberus_testdatalibfile_path, getFSSize(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", "/")));
 
                 data.put("fileSystemSize", fsSize);
 

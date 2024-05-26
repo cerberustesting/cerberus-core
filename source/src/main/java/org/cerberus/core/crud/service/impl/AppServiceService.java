@@ -330,6 +330,9 @@ public class AppServiceService implements IAppServiceService {
                 } else if (object.getValue().contains("text/html")) {
                     LOG.debug("HTML format guessed from header : {} : {}", object.getKey(), object.getValue());
                     return AppService.RESPONSEHTTPBODYCONTENTTYPE_HTML;
+                } else if (object.getValue().contains("text/csv")) {
+                    LOG.debug("CSV format guessed from header : {} : {}", object.getKey(), object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_CSV;
                 }
             }
         }

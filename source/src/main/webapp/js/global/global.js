@@ -164,13 +164,13 @@ function displayListFromData(selectName, data, defaultValue) {
     let list = data;
     //var select = $("<select></select>").addClass("form-control input-sm");
 
-        for (const element of list) {
+    for (const element of list) {
 //            const desc = element + " - " + element;
-            $("[name='" + selectName + "']").append($('<option></option>').text(element).val(element));
-        }
-        if (defaultValue !== undefined) {
-            $("[name='" + selectName + "']").val(defaultValue);
-        }
+        $("[name='" + selectName + "']").append($('<option></option>').text(element).val(element));
+    }
+    if (defaultValue !== undefined) {
+        $("[name='" + selectName + "']").val(defaultValue);
+    }
 }
 
 
@@ -340,6 +340,7 @@ function displayDeployTypeList(selectName, defaultValue) {
  * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
  * @param {String} selectName value name of the select tag in the html
  * @param {String} defaultValue to be selected
+ * @param {String} extraValue to be added
  * @returns {void}
  */
 function displayAppServiceList(selectName, defaultValue, extraValue) {
@@ -349,7 +350,7 @@ function displayAppServiceList(selectName, defaultValue, extraValue) {
         if (extraValue === "") {
             extraText = "-- No Service --";
         }
-        $("[name='" + selectName + "']").append($("<option value='" + extraValue + "'></option>").text(extraText));
+        $("select[id='" + selectName + "']").append($('<option></option>').text(extraText).val(extraValue));
     }
 
 
@@ -362,6 +363,7 @@ function displayAppServiceList(selectName, defaultValue, extraValue) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
     });
+
 }
 
 function displayDataLibList(selectName, defaultValue, data) {
@@ -1288,7 +1290,7 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
                 $("#mainAlert").slideUp(500);
             }, waitinMs);
         });
-        
+
 
     }
 }

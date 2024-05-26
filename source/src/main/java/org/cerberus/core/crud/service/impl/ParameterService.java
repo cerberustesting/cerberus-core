@@ -120,7 +120,7 @@ public class ParameterService implements IParameterService {
                     && cacheEntry.get(cacheKey) != null
                     && cacheEntry.get(cacheKey).getCacheEntryCreation() != null
                     && cacheEntry.get(cacheKey).getCacheEntryCreation().plusSeconds(Parameter.CACHE_DURATION).isAfter(currentTime)) {
-                LOG.debug("Return parameter from cache Value.");
+                LOG.debug("Return parameter '" + key + "' from cache Value.");
                 return cacheEntry.get(cacheKey);
             }
         }
@@ -373,7 +373,7 @@ public class ParameterService implements IParameterService {
                     || Parameter.VALUE_cerberus_exeautomedia_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_exemanualmedia_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_ftpfile_path.equalsIgnoreCase(parameter.getParam())
-                    || Parameter.VALUE_cerberus_testdatalibcsv_path.equalsIgnoreCase(parameter.getParam())
+                    || Parameter.VALUE_cerberus_testdatalibfile_path.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_gui_url.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_screenshot_max_size.equalsIgnoreCase(parameter.getParam())
                     || Parameter.VALUE_cerberus_smtp_host.equalsIgnoreCase(parameter.getParam())

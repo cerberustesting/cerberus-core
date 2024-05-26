@@ -241,8 +241,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public Answer uploadFile(int id, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "cerberus_testdatalibcsv_path Parameter not found");
-        AnswerItem a = parameterService.readByKey("", "cerberus_testdatalibcsv_path");
+                "cerberus_testdatalibfile_path Parameter not found");
+        AnswerItem a = parameterService.readByKey("", Parameter.VALUE_cerberus_testdatalibfile_path);
         if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
@@ -263,8 +263,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 try {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                            "TestDataLib CSV file uploaded");
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "testDatalib CSV").replace("%OPERATION%", "Upload"));
+                            "TestDataLib File uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "testDatalib File").replace("%OPERATION%", "Upload"));
                 } catch (Exception e) {
                     LOG.warn("Unable to upload testdatalib csv file: " + e.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

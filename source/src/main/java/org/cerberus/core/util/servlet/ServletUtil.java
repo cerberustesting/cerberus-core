@@ -62,6 +62,9 @@ public final class ServletUtil {
                     case "/ReadExecutionStat":
                         timeToWait = 30;
                         break;
+                    case "/ReadApplication":
+                        timeToWait = 30;
+                        break;
                     case "/UpdateAppService":
                         timeToWait = 1000;
                         break;
