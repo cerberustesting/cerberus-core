@@ -125,10 +125,12 @@ public class VariableService implements IVariableService {
             /**
              * Decode Datalib.
              */
-            if (stringToDecode.contains("%datalib.")) {
-                LOG.debug("Starting to decode (Datalib) string iteration#" + count_decode + ": " + stringToDecode);
-                stringToDecode = propertyService.decodeStringWithDatalib(stringToDecode, testCaseExecution, forceCalculation);
-                LOG.debug("Finished to decode (Datalib) iteration#" + count_decode + ". Result : " + stringToDecode);
+            if (stringToDecode.contains("%")) {
+                if (stringToDecode.contains("%datalib.")) {
+                    LOG.debug("Starting to decode (Datalib) string iteration#" + count_decode + ": " + stringToDecode);
+                    stringToDecode = propertyService.decodeStringWithDatalib(stringToDecode, testCaseExecution, forceCalculation);
+                    LOG.debug("Finished to decode (Datalib) iteration#" + count_decode + ". Result : " + stringToDecode);
+                }
             } else {
                 LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode Datalib variable) : " + stringToDecode);
                 answer.setItem(stringToDecode);
@@ -138,9 +140,7 @@ public class VariableService implements IVariableService {
             /**
              * Decode Properties.
              */
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + stringToDecode);
-            }
+            LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + stringToDecode);
             answer = propertyService.decodeStringWithExistingProperties(stringToDecode, testCaseExecution, testCaseStepActionExecution, forceCalculation);
             stringToDecode = answer.getItem();
             LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + stringToDecode);
