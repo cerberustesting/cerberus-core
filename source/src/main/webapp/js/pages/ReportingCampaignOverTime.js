@@ -301,28 +301,50 @@ function updateNbDistinct(data) {
 }
 
 function setTimeRange(id) {
-    let fromD;
+    let fromD = new Date();
+    fromD.setHours(23);
+    fromD.setMinutes(59);
+
     let toD = new Date();
     toD.setHours(23);
     toD.setMinutes(59);
-    fromD = new Date();
-    fromD.setHours(23);
-    fromD.setMinutes(59);
-    if (id === 1) { // 1 month
+
+//    fromD ;
+    if (id === 1) { // Previous Month
         fromD.setMonth(fromD.getMonth() - 1);
-    } else if (id === 2) { // 3 months
+    } else if (id === 2) { // Previous 3 Months
         fromD.setMonth(fromD.getMonth() - 3);
-    } else if (id === 3) { // 6 months
+    } else if (id === 3) { // Previous 6 Months
         fromD.setMonth(fromD.getMonth() - 6);
-    } else if (id === 4) { //
+    } else if (id === 4) { // Previous Year
         fromD.setMonth(fromD.getMonth() - 12);
-    } else if (id === 5) {
+    } else if (id === 5) { // Previous Week
         fromD.setHours(fromD.getHours() - 168);
-    } else if (id === 6) {
+    } else if (id === 6) { // Current Day
         fromD.setHours(fromD.getHours() - 24);
+    } else if (id === 7) { // This Month
+        fromD.setDate(1);
+    } else if (id === 8) { // Last Calendar Month
+        fromD.setMonth(fromD.getMonth() - 1);
+        fromD.setDate(1);
+//        toD.setMonth(toD.getMonth() + 1);
+//        console.info(toD.toLocaleString());
+        toD.setDate(0);
+//        console.info(toD.toLocaleString());
+    } else if (id === 9) { // Previous Calendar Month
+        fromD.setMonth(fromD.getMonth() - 2);
+        fromD.setDate(1);
+//        console.info(toD.toLocaleString());
+        toD.setMonth(toD.getMonth() - 1);
+        console.info(toD.toLocaleString());
+        toD.setDate(0);
+        console.info(toD.toLocaleString());
     }
+
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
+
+//    console.info("From : " + fromD.toLocaleString() + " - To : " + toD.toLocaleString());
 }
 
 function loadCombos(data) {
@@ -712,7 +734,7 @@ function buildTagBarGraphs(data) {
 function buildAvailabilityGraphs(data) {
 
     let curves = data.curvesTime;
-    console.info(curves);
+
     var len = curves.length;
 
     let nbOK = 0;
@@ -723,18 +745,13 @@ function buildAvailabilityGraphs(data) {
 
     for (var i = 0; i < len; i++) {
         let newCurve = curves[i];
-        console.info(newCurve);
         let lend = newCurve.points.length;
         for (var j = 0; j < lend; j++) {
             let dur = 0;
-            console.info(j + " / " + lend)
             if (j === (lend - 1)) {
                 dur = 0;
             } else {
-                console.info(newCurve.points[j].x)
-                console.info(newCurve.points[j + 1].x)
                 dur = (new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000;
-                console.info((new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000)
             }
             if (newCurve.points[j].ciRes === "OK") {
                 nbOK++;
@@ -767,23 +784,12 @@ function buildAvailabilityGraphs(data) {
     configAvailability2.data.labels.display = false;
 //    display: true,
 
-
-
-
 //    configAvailability1.data.datasets = [nbOK, nbKO];
 //    configTagBar.data.labels = data.curvesTag;
 
-
-    console.info(configAvailability2);
-
-    console.info(nbOK / (nbOK + nbKO) * 100);
     document.getElementById('ChartAvailabilty1Counter').innerHTML = Math.round(nbOK / (nbOK + nbKO) * 100) + " %";
-
-    console.info();
     document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
 
-
-//    console.info(configTagBar);
     window.myAvailability1.update();
     window.myAvailability2.update();
 }

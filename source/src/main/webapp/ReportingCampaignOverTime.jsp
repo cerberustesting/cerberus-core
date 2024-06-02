@@ -122,12 +122,15 @@
                                             Preset Range<span class="caret"></span>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                            <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
-                                            <button class="btn btn-default pull-left" id="last1Week" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
-                                            <button class="btn btn-default pull-left" id="last1Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(1)"><span class=""></span> Previous Month</button>
-                                            <button class="btn btn-default pull-left" id="last3Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(2)"><span class=""></span> Previous 3 Months</button>
-                                            <button class="btn btn-default pull-left" id="last6Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(3)"><span class=""></span> Previous 6 Months</button>
-                                            <button class="btn btn-default pull-left" id="last12Months" style="margin-left: 5px; margin-right: 5px;" onclick="setTimeRange(4)"><span class=""></span> Previous Year</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Week" onclick="setTimeRange(6)"><span class=""></span> Current Day</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Week" onclick="setTimeRange(5)"><span class=""></span> Previous Week</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(1)"><span class=""></span> Last 30 Days</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(7)"><span class=""></span> This Month</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(8)"><span class=""></span> Last Calendar Month</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last1Months" onclick="setTimeRange(9)"><span class=""></span> Previous Calendar Month</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last3Months" onclick="setTimeRange(2)"><span class=""></span> Last 3 Months</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last6Months" onclick="setTimeRange(3)"><span class=""></span> Last 6 Months</button>
+                                            <button class="btn btn-default btn-block pull-left" id="last12Months" onclick="setTimeRange(4)"><span class=""></span> Last 12 Months</button>
                                         </div>
                                     </div>
 
