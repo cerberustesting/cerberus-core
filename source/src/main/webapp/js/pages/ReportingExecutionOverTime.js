@@ -25,6 +25,8 @@ var configTime = {};
 var configParty = {};
 var configTcTime = {};
 var configTcBar = {};
+var configAvailability1 = {};
+var configAvailability2 = {};
 // Counters of different countries, env and robotdecli (used to shorten the labels)
 var nbCountries = 0;
 var nbEnv = 0;
@@ -303,6 +305,7 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
                 buildGraphs(data);
                 buildExeGraphs(data);
                 buildExeBarGraphs(data);
+                buildAvailabilityGraphs(data);
                 loadCombos(data);
             } else {
                 showMessageMainPage(messageType, data.message, false);
@@ -742,6 +745,85 @@ function buildExeBarGraphs(data) {
     window.myLineTcBar.update();
 }
 
+function buildAvailabilityGraphs(data) {
+    console.info(data);
+
+    let curves = data.datasetExeTime;
+    console.info(curves);
+    var len = curves.length;
+
+    let nbOK = 0;
+    let nbKO = 0;
+
+    let durOK = 0;
+    let durKO = 0;
+
+    for (var i = 0; i < len; i++) {
+        let newCurve = curves[i];
+        console.info(newCurve);
+        let lend = newCurve.points.length;
+        for (var j = 0; j < lend; j++) {
+            let dur = 0;
+            console.info(j + " / " + lend)
+            if (j === (lend - 1)) {
+                dur = 0;
+            } else {
+                console.info(newCurve.points[j].x)
+                console.info(newCurve.points[j + 1].x)
+                dur = (new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000;
+                console.info((new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000)
+            }
+            if (newCurve.points[j].exeControlStatus === "OK") {
+                nbOK++;
+                durOK = durOK + dur;
+            } else {
+                nbKO++;
+                durKO = durKO + dur;
+            }
+        }
+    }
+
+
+    configAvailability1.data.datasets = [];
+    configAvailability1.data.datasets.push({
+        data: [nbOK, nbKO],
+        backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
+//        label: 'Nb',
+//        labels: ["OK", "Others"]
+    });
+    configAvailability1.data.labels = ["nb OK", "nb Others"];
+
+    configAvailability2.data.datasets = [];
+    configAvailability2.data.datasets.push({
+        data: [durOK, durKO],
+        backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
+//        label: 'Nb',
+//        labels: ["OK", "Others"]
+    });
+    configAvailability2.data.labels = ["OK duration (s)", "Others duration (s)"];
+    configAvailability2.data.labels.display = false;
+//    display: true,
+
+
+
+
+//    configAvailability1.data.datasets = [nbOK, nbKO];
+//    configTagBar.data.labels = data.curvesTag;
+
+
+    console.info(configAvailability2);
+
+    console.info(nbOK / (nbOK + nbKO) * 100);
+    document.getElementById('ChartAvailabilty1Counter').innerHTML = Math.round(nbOK / (nbOK + nbKO) * 100) + " %";
+
+    console.info();
+    document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
+
+
+//    console.info(configTagBar);
+    window.myAvailability1.update();
+    window.myAvailability2.update();
+}
 
 function getLabel(tcDesc, country, env, robot, unit, party, type, testcaseid) {
     let lab = tcDesc;
@@ -792,6 +874,8 @@ function initGraph() {
     let partydatasets = [];
     let tctimedatasets = [];
     let tcbardatasets = [];
+    let availability1datasets = [];
+    let availability2datasets = [];
 
     configRequests = {
         type: 'line',
@@ -836,6 +920,43 @@ function initGraph() {
         options: tcbaroption
     };
 
+    configAvailability1 = {
+        type: 'pie',
+        data: {
+            datasets: availability1datasets
+        },
+        options: {
+            circumference: Math.PI,
+            rotation: Math.PI,
+            responsive: true,
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: "Campaign Availability (Nb)"
+            }
+        }
+    };
+    configAvailability2 = {
+        type: 'pie',
+        data: {
+            datasets: availability2datasets
+        },
+        options: {
+            circumference: Math.PI,
+            rotation: Math.PI,
+            responsive: true,
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: "Campaign Availability (Time)"
+            }
+        }
+    };
+
     var ctx = document.getElementById('canvasRequests').getContext('2d');
     window.myLineReq = new Chart(ctx, configRequests);
 
@@ -853,6 +974,12 @@ function initGraph() {
 
     var ctx = document.getElementById('canvasTestStatBar').getContext('2d');
     window.myLineTcBar = new Chart(ctx, configTcBar);
+
+    var ctx = document.getElementById('canvasAvailability1').getContext('2d');
+    window.myAvailability1 = new Chart(ctx, configAvailability1);
+
+    var ctx = document.getElementById('canvasAvailability2').getContext('2d');
+    window.myAvailability2 = new Chart(ctx, configAvailability2);
 
 
     document.getElementById('canvasRequests').onclick = function (evt) {
