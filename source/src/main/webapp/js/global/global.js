@@ -2572,6 +2572,51 @@ function getDateMedium(date) {
     }
 }
 
+function setTimeRange(id) {
+    let fromD = new Date();
+    fromD.setHours(00);
+    fromD.setMinutes(00);
+    fromD.setSeconds(00);
+
+    let toD = new Date();
+    toD.setHours(24);
+    toD.setMinutes(00);
+    toD.setSeconds(00);
+
+//    fromD ;
+    if (id === 1) { // Previous Month
+        fromD.setMonth(toD.getMonth() - 1);
+    } else if (id === 2) { // Previous 3 Months
+        fromD.setMonth(fromD.getMonth() - 3);
+    } else if (id === 3) { // Previous 6 Months
+        fromD.setMonth(fromD.getMonth() - 6);
+    } else if (id === 4) { // Previous Year
+        fromD.setMonth(fromD.getMonth() - 12);
+    } else if (id === 5) { // Previous Week
+        fromD.setDate(toD.getDate() - 7);
+    } else if (id === 6) { // Current Day
+        fromD.setDate(toD.getDate() - 1);
+    } else if (id === 7) { // This Month
+        fromD.setDate(1);
+    } else if (id === 8) { // Last Calendar Month
+        fromD.setMonth(fromD.getMonth() - 1);
+        fromD.setDate(1);
+        toD.setDate(1);
+    } else if (id === 9) { // Previous Calendar Month
+        fromD.setMonth(fromD.getMonth() - 2);
+        fromD.setDate(1);
+        toD.setMonth(toD.getMonth() - 1);
+        toD.setDate(1);
+    }
+    
+    $('#frompicker').data("DateTimePicker").date(moment(fromD));
+    $('#topicker').data("DateTimePicker").date(moment(toD));
+    
+    console.info("From : " + fromD.toLocaleString() + " - To : " + toD.toLocaleString());
+}
+
+
+
 /**
  * Method used to restrict usage of some specific caracters.
  * @param {String} val value to test

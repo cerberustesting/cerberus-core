@@ -51,12 +51,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
             useCurrent: false //Important! See issue #1075
         });
 
-        $("#frompicker").on("dp.change", function (e) {
-            $('#topicker').data("DateTimePicker").minDate(e.date);
-        });
-        $("#topicker").on("dp.change", function (e) {
-            $('#frompicker').data("DateTimePicker").maxDate(e.date);
-        });
+//        $("#frompicker").on("dp.change", function (e) {
+//            $('#topicker').data("DateTimePicker").minDate(e.date);
+//        });
+//        $("#topicker").on("dp.change", function (e) {
+//            $('#frompicker').data("DateTimePicker").maxDate(e.date);
+//        });
 
 
         var tests = GetURLParameters("tests");
@@ -336,46 +336,6 @@ function updateNbDistinct(data) {
             nbRobot++;
         }
     }
-}
-function setTimeRange(id) {
-    let fromD = new Date();
-    fromD.setHours(23);
-    fromD.setMinutes(59);
-
-    let toD = new Date();
-    toD.setHours(23);
-    toD.setMinutes(59);
-
-//    fromD ;
-    if (id === 1) { // Previous Month
-        fromD.setMonth(fromD.getMonth() - 1);
-    } else if (id === 2) { // Previous 3 Months
-        fromD.setMonth(fromD.getMonth() - 3);
-    } else if (id === 3) { // Previous 6 Months
-        fromD.setMonth(fromD.getMonth() - 6);
-    } else if (id === 4) { // Previous Year
-        fromD.setMonth(fromD.getMonth() - 12);
-    } else if (id === 5) { // Previous Week
-        fromD.setHours(fromD.getHours() - 168);
-    } else if (id === 6) { // Current Day
-        fromD.setHours(fromD.getHours() - 24);
-    } else if (id === 7) { // This Month
-        fromD.setDate(1);
-    } else if (id === 8) { // Last Calendar Month
-        fromD.setMonth(fromD.getMonth() - 1);
-        fromD.setDate(1);
-        toD.setDate(0);
-    } else if (id === 9) { // Previous Calendar Month
-        fromD.setMonth(fromD.getMonth() - 2);
-        fromD.setDate(1);
-        toD.setMonth(toD.getMonth() - 1);
-        toD.setDate(0);
-    }
-    
-    $('#frompicker').data("DateTimePicker").date(moment(fromD));
-    $('#topicker').data("DateTimePicker").date(moment(toD));
-    
-//    console.info("From : " + fromD.toLocaleString() + " - To : " + toD.toLocaleString());
 }
 
 function loadCombos(data) {
