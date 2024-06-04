@@ -991,7 +991,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
 
         } catch (WebDriverException exception) {
-            LOG.warn(exception.toString());
+            LOG.warn(exception.toString(),exception);
             return parseWebDriverException(exception);
         }
 
