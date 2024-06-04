@@ -6,6 +6,10 @@
 [square]
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
+* [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
+* [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
+* [GUI] direct access to Both campaign and execution reporting over time from campaign execution and test case execution screen.
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -117,47 +117,43 @@
                                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                     <a>
                                                         <button class="btn btn-default pull-left" id="deleteTestCaseExecution"
-                                                                style="margin-left: 5px; margin-left: 5px;" disabled><span
-                                                                class="glyphicon glyphicon-trash"></span>Delete
+                                                                style="margin-left: 5px; margin-left: 5px;" disabled>
+                                                            <span class="glyphicon glyphicon-trash"></span>Delete
                                                         </button>
                                                     </a>
                                                     <a>
                                                         <button class="btn btn-default pull-left" id="lastExecution"
-                                                                style="margin-left: 5px; margin-right: 5px;"><span
-                                                                class="glyphicon glyphicon-list"></span> Last Executions
+                                                                style="margin-left: 5px; margin-right: 5px;">
+                                                            <span class="glyphicon glyphicon-list"></span> Last Executions
                                                         </button>
                                                     </a>
                                                     <a>
-                                                        <button class="btn btn-default pull-left" id="lastExecutionoT"
-                                                                style="margin-left: 5px; margin-right: 5px;"><span
-                                                                class="glyphicon glyphicon-list"></span> Reporting over Time
+                                                        <button class="btn btn-default pull-left" id="lastExecutionwithEnvCountry"
+                                                                style="margin-left: 5px; margin-right: 5px;">
+                                                            <span class="glyphicon glyphicon-list"></span> Last Executions With Country Env
                                                         </button>
                                                     </a>
                                                     <a>
-                                                        <button class="btn btn-default pull-left"
-                                                                id="lastExecutionwithEnvCountry"
-                                                                style="margin-left: 5px; margin-right: 5px;"><span
-                                                                class="glyphicon glyphicon-list"></span> Last Executions With
-                                                            Country Env
+                                                        <button class="btn btn-default pull-left" id="ExecutionByTag"
+                                                                style="margin-left: 5px; margin-right: 5px;">
+                                                            <span class="glyphicon glyphicon-tasks"></span> Campaign Report
                                                         </button>
                                                     </a>
                                                     <a>
                                                         <button class="btn btn-default pull-left" id="ExecutionQueue"
-                                                                style="margin-left: 5px; margin-right: 5px;"><span
-                                                                class="glyphicon glyphicon-eye-open"></span> See Queue
-                                                            Parameters
+                                                                style="margin-left: 5px; margin-right: 5px;">
+                                                            <span class="glyphicon glyphicon-eye-open"></span> See Queue Parameters
                                                         </button>
                                                     </a>
                                                     <a>
                                                         <button class="btn btn-default pull-left" id="ExecutionQueueByTag"
-                                                                style="margin-left: 5px; margin-right: 5px;"><span
-                                                                class="glyphicon glyphicon-list"></span> See Queue By Tag
+                                                                style="margin-left: 5px; margin-right: 5px;">
+                                                            <span class="glyphicon glyphicon-list"></span> See Queue By Tag
                                                         </button>
                                                     </a>
                                                     <a>
                                                         <button class="btn btn-default pull-left" id="sessionLinkHeader"
-                                                                style="margin-left: 5px; margin-right: 5px;">Link External
-                                                            Provider
+                                                                style="margin-left: 5px; margin-right: 5px;">Link External Provider
                                                         </button>
                                                     </a>
                                                 </div>
@@ -165,17 +161,16 @@
                                             <div class="btn-group ">
                                                 <a>
                                                     <button class="btn btn-default" id="editTcHeader"
-                                                            style="margin-left: 5px; margin-left: 5px;"><span
-                                                            class="glyphicon glyphicon-pencil"></span> Edit Test Case Header
+                                                            style="margin-left: 5px; margin-left: 5px;">
+                                                        <span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group ">
                                                 <a>
                                                     <button class="btn btn-default" id="editTcStepInfo"
-                                                            style="margin-left: 5px; margin-left: 5px;"><span
-                                                            class="glyphicon glyphicon-new-window"></span> Edit Test Case from
-                                                        the current Step
+                                                            style="margin-left: 5px; margin-left: 5px;">
+                                                        <span class="glyphicon glyphicon-new-window"></span> Edit Test Case from the current Step
                                                     </button>
                                                 </a>
                                             </div>
@@ -183,29 +178,32 @@
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="runTestCase"
                                                             style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip">
-                                                        <span class="glyphicon glyphicon-play"></span></button>
+                                                        <span class="glyphicon glyphicon-play"></span>
+                                                    </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group">
                                                 <a>
                                                     <button class="btn btn-default pull-right" id="rerunFromQueueandSee"
-                                                            style="margin-left: 5px; margin-left: 5px;"><span
-                                                            class="glyphicon glyphicon-forward"></span></button>
+                                                            style="margin-left: 5px; margin-left: 5px;">
+                                                        <span class="glyphicon glyphicon-forward"></span>
+                                                    </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group">
                                                 <a>
-                                                    <button class="btn btn-default pull-left" id="ExecutionByTag"
-                                                            style="margin-left: 5px; margin-right: 5px;"><span
-                                                            class="glyphicon glyphicon-tasks"></span> Campaign Report
+                                                    <button class="btn btn-default pull-left" id="lastExecutionoT"
+                                                            style="margin-left: 5px; margin-right: 5px;">
+                                                        <span class="glyphicon glyphicon-stats"></span> Reporting over Time
                                                     </button>
                                                 </a>
                                             </div>
                                             <div class="btn-group">
                                                 <a>
                                                     <button class="btn btn-default" id="saveTestCaseExecution" disabled
-                                                            style="margin-left: 5px;display:none"><span
-                                                            class="glyphicon glyphicon-save"></span></button>
+                                                            style="margin-left: 5px;display:none">
+                                                        <span class="glyphicon glyphicon-save"></span>
+                                                    </button>
                                                 </a>
                                             </div>
                                         </div>

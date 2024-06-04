@@ -2572,6 +2572,14 @@ function getDateMedium(date) {
     }
 }
 
+function getFromStorage(sSessionEntry, defaultValue) {
+    if (sessionStorage.getItem(sSessionEntry) !== null) {
+        return sessionStorage.getItem(sSessionEntry);
+    } else {
+        return defaultValue;
+    }
+}
+
 function setTimeRange(id) {
     let fromD = new Date();
     fromD.setHours(00);
@@ -2608,10 +2616,10 @@ function setTimeRange(id) {
         toD.setMonth(toD.getMonth() - 1);
         toD.setDate(1);
     }
-    
+
     $('#frompicker').data("DateTimePicker").date(moment(fromD));
     $('#topicker').data("DateTimePicker").date(moment(toD));
-    
+
     console.info("From : " + fromD.toLocaleString() + " - To : " + toD.toLocaleString());
 }
 

@@ -886,7 +886,7 @@ function initGraph() {
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let tag = window.myLineTagDur.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
-            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag);
         }
     };
 
@@ -895,7 +895,7 @@ function initGraph() {
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let tag = window.myLineTagSco.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
-            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag);
         }
     };
 
@@ -904,7 +904,7 @@ function initGraph() {
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let tag = window.myLineTagExe.data.datasets[activePoints[0]._datasetIndex].data[activePoints[0]._index].tag;
-            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag);
         }
     };
 
@@ -913,7 +913,7 @@ function initGraph() {
         // make sure click was on an actual point
         if (activePoints.length > 0) {
             let tag = window.myLineTagBar.data.labels[activePoints[0]._index];
-            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag, '_blank');
+            window.open('./ReportingExecutionByTag.jsp?Tag=' + tag);
         }
     };
 

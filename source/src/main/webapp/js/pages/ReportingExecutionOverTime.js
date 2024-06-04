@@ -910,7 +910,7 @@ function initGraph() {
             },
             title: {
                 display: true,
-                text: "Campaign Availability (Nb)"
+                text: "Execution Availability (Nb)"
             }
         }
     };
@@ -928,7 +928,7 @@ function initGraph() {
             },
             title: {
                 display: true,
-                text: "Campaign Availability (Time)"
+                text: "Execution Availability (Time)"
             }
         }
     };

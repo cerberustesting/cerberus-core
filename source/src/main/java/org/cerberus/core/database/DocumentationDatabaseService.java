@@ -1988,7 +1988,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Executions List (same Environment & Country)','',NULL)");
         b.append(",('page_executiondetail','lastexecutionwithenvcountry','','fa','فهرست اجرا ها (محیط و کشور یکسان)','',NULL)");
         b.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Liste d\\'Executions (même Environnement & Pays)','',NULL)");
-        b.append(",('page_executiondetail','lastexecutionoT','','en','Report over Time','',NULL)");
+        b.append(",('page_executiondetail','lastexecutionoT','','en','Executions Over Time','',NULL)");
         b.append(",('page_executiondetail','lastexecutionoT','','fa','گزارش در طول زمان','',NULL)");
         b.append(",('page_executiondetail','lastexecutionoT','','fr','Rapport dans le temps','',NULL)");
         b.append(",('page_executiondetail','lastexecutionoTwithenvcountry','','en','Report over Time (same Environment & Country)','',NULL)");

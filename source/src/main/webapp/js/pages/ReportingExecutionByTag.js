@@ -23,6 +23,10 @@ var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 // Define if execution detail must automaticly hide OK records.
 var isRefreshAutoHide = true;
 
+var displayFolder = 'false';
+var displayByEnv = false;
+var displayByLabel = false;
+
 tinyMCE.init({
     selector: ".wysiwyg",
     menubar: false,
@@ -41,6 +45,27 @@ $.when($.getScript("js/global/global.js")).then(function () {
         bindToggleCollapse();
 
         var urlTag = GetURLParameter('Tag');
+
+        displayFolder = getFromStorage("#displayFolder", 'false');
+        refreshToggleButtons('#displayFolder', '#ReportByTestFolderPanel', displayFolder);
+        $('#displayFolder').click(function () {
+            displayFolder = (displayFolder === 'true') ? 'false' : 'true';
+            refreshToggleButtons('#displayFolder', '#ReportByTestFolderPanel', displayFolder);
+        });
+
+        displayByEnv = getFromStorage("#displayByEnv", 'false');
+        refreshToggleButtons('#displayByEnv', '#reportByEnvCountryBrowser', displayByEnv);
+        $('#displayByEnv').click(function () {
+            displayByEnv = (displayByEnv === 'true') ? 'false' : 'true';
+            refreshToggleButtons('#displayByEnv', '#reportByEnvCountryBrowser', displayByEnv);
+        });
+
+        displayByLabel = getFromStorage("#displayByLabel", 'false');
+        refreshToggleButtons('#displayByLabel', '#reportByLabel', displayByLabel);
+        $('#displayByLabel').click(function () {
+            displayByLabel = (displayByLabel === 'true') ? 'false' : 'true';
+            refreshToggleButtons('#displayByLabel', '#reportByLabel', displayByLabel);
+        });
 
         $("#splitFilter input").click(function () {
             //save the filter preferences in the session storage
@@ -71,31 +96,31 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
-            stopPropagation(event);
-            $(this).parent().find(".active").removeClass("active");
-            $(this).addClass("active");
-            if ($(this).prop("id") === "tab") {
-                $("#progressEnvCountryBrowser").hide();
-                $("#summaryTableDiv").show();
-            } else if ($(this).prop("id") === "graph") {
-                $("#progressEnvCountryBrowser").show();
-                $("#summaryTableDiv").hide();
-            }
-        });
+//        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
+//            stopPropagation(event);
+//            $(this).parent().find(".active").removeClass("active");
+//            $(this).addClass("active");
+//            if ($(this).prop("id") === "tab") {
+//                $("#progressEnvCountryBrowser").hide();
+//                $("#summaryTableDiv").show();
+//            } else if ($(this).prop("id") === "graph") {
+//                $("#progressEnvCountryBrowser").show();
+//                $("#summaryTableDiv").hide();
+//            }
+//        });
 
-        $("#reportByLabel .nav li").on("click", function (event) {
-            stopPropagation(event);
-            $(this).parent().find(".active").removeClass("active");
-            $(this).addClass("active");
-            if ($(this).prop("id") === "requirements") {
-                $("#mainTreeExeS").hide();
-                $("#mainTreeExeR").show();
-            } else if ($(this).prop("id") === "stickers") {
-                $("#mainTreeExeS").show();
-                $("#mainTreeExeR").hide();
-            }
-        });
+//        $("#reportByLabel .nav li").on("click", function (event) {
+//            stopPropagation(event);
+//            $(this).parent().find(".active").removeClass("active");
+//            $(this).addClass("active");
+//            if ($(this).prop("id") === "requirements") {
+//                $("#mainTreeExeS").hide();
+//                $("#mainTreeExeR").show();
+//            } else if ($(this).prop("id") === "stickers") {
+//                $("#mainTreeExeS").show();
+//                $("#mainTreeExeR").hide();
+//            }
+//        });
 
         loadTagFilters(urlTag);
         if (urlTag !== null) {
@@ -116,6 +141,25 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
     });
 });
+
+
+
+function refreshToggleButtons(buttonElement, reportPanelElement, doDisplay) {
+    sessionStorage.setItem(buttonElement, doDisplay);
+    $(buttonElement).find('.btn').toggleClass('active');
+//            if ($(this).find('.btn').size() > 0) {
+    if (doDisplay === "true") {
+        $(buttonElement).find('.btn-ON').addClass('btn-primary');
+        $(buttonElement).find('.btn-OFF').removeClass('btn-info');
+        $(reportPanelElement).show()
+    } else {
+        $(buttonElement).find('.btn-ON').removeClass('btn-primary');
+        $(buttonElement).find('.btn-OFF').addClass('btn-info');
+        $(reportPanelElement).hide()
+    }
+//            }
+
+}
 
 /*
  * Loading functions
@@ -368,12 +412,18 @@ function loadReportingData(selectTag) {
             $("#TagComment").val(data.tagObject.comment);
             $("#TagDesc").val(data.tagObject.description);
             $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
+            $("#buttonOpenQueue").attr("href", "./TestCaseExecutionQueueList.jsp?tag=" + data.tagObject.tag);
+
             if (isEmpty(data.tagObject.campaign)) {
                 $("#TagcampaignCel1").addClass("hidden");
                 $("#TagcampaignCel2").addClass("hidden");
+                $("#buttonRunCampaign").addClass("hidden");
+                $("#buttonSeeStatsCampaign").addClass("hidden");
             } else {
                 $("#TagcampaignCel1").removeClass("hidden");
                 $("#TagcampaignCel2").removeClass("hidden");
+                $("#buttonRunCampaign").removeClass("hidden");
+                $("#buttonSeeStatsCampaign").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
             }
@@ -778,7 +828,7 @@ function loadEnvCountryBrowserReport(data) {
     var len = data.contentTable.split.length;
     if (len > 0) {
 
-        $("#reportByEnvCountryBrowser").show();
+//        $("#reportByEnvCountryBrowser").show();
         createSummaryTable(data.contentTable);
         for (var index = 0; index < len; index++) {
             //draw a progress bar for each combo retrieved
@@ -802,7 +852,7 @@ function loadLabelReport(data) {
     $("#progressLabel").empty();
 
     if (data !== undefined) {
-        $("#reportByLabel").show();
+//        $("#reportByLabel").show();
         $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
         $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
     } else {
@@ -1125,7 +1175,7 @@ function loadReportTestFolderChart(dataset) {
     var data = convertData(dataset.axis);
 
     if (dataset.axis.length > 0) {
-        $("#ReportByTestFolderPanel").show();
+//        $("#ReportByTestFolderPanel").show();
 
         var offsetW = document.getElementById('testFolderChart').offsetWidth;
         if (offsetW === 0) {
@@ -1576,12 +1626,13 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginRight10'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        // buttonRunCampaign
+//        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginRight10'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
 //        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
         contentToAdd += "<div class='btn-group marginRight10'>";
 
-        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
-        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
 
 
         if (isRefreshAutoHide) {
@@ -1590,7 +1641,7 @@ function renderOptionsForExeList(selectTag) {
             contentToAdd += buttonrefreshAll;
         }
 //        contentToAdd += "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
-        contentToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-xs dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentToAdd += "<div class='dropdown-menu'>";
         if (isRefreshAutoHide) {
             contentToAdd += buttonrefreshAll;

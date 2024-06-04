@@ -193,18 +193,18 @@
                         </div>-->
                         <div class="panel-body collapse in" id="availabiltyChart">
                             <div class="row">
-                                <div class="col-xs-9 paddingRight0" id="ChartAvailabilty1" >
+                                <div class="col-xs-8 paddingRight0" id="ChartAvailabilty1" >
                                     <canvas id="canvasAvailability1"></canvas>
                                 </div>
-                                <div class="col-xs-3 paddingLeft0"  >
+                                <div class="col-xs-4 paddingLeft0"  >
                                     <h2 class="statistic-counter" id="ChartAvailabilty1Counter"></h2>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-9 paddingRight0" id="ChartAvailabilty2" >
+                                <div class="col-xs-8 paddingRight0" id="ChartAvailabilty2" >
                                     <canvas id="canvasAvailability2"></canvas>
                                 </div>
-                                <div class="col-xs-3 paddingLeft0"  >
+                                <div class="col-xs-4 paddingLeft0"  >
                                     <h2 class="statistic-counter" id="ChartAvailabilty2Counter" style="height: 100px;position: absolute;top: 50%;align-items: center; justify-content: center;"></h2>
                                 </div>
                             </div>
