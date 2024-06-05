@@ -612,7 +612,6 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
             case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
             case TestCaseStepAction.ACTION_SWIPE:
-            case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
                 actionExecution.setValue3("");
                 actionExecution.setValue3Init("");
                 break;
@@ -621,6 +620,7 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_CALLSERVICE:
             case TestCaseStepAction.ACTION_GETROBOTFILE:
             case TestCaseStepAction.ACTION_SCROLLTO:
+            case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
                 break;
             default:
 

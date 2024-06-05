@@ -73,14 +73,20 @@
                                         </div>
                                     </div>
 
-                                    <label id="countryLabel" class="bold marginTop10">Country :</label>
-                                    <button id="countrySelectAll" class="glyphicon glyphicon-check"
-                                            title="select all countries"></button>
-                                    <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
-                                            title="unselect all countries"></button>
-                                    <button class="btn pull-right" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1"><span class="glyphicon glyphicon-chevron-down"></span></button>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label id="countryLabel" class="bold marginTop10">Country :</label>
+                                            <button id="countrySelectAll" class="glyphicon glyphicon-check"
+                                                    title="select all countries"></button>
+                                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked"
+                                                    title="unselect all countries"></button>
+                                            <button class="btn pull-right marginTop10" type="button" data-toggle="collapse" data-target="#countryFilter" aria-expanded="true" aria-controls="col1">
+                                                <span class="glyphicon glyphicon-chevron-down"></span>
+                                            </button>
 
-                                    <div class="form-group collapse in" id="countryFilter">
+                                            <div class="form-group collapse in" id="countryFilter">
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <label id="statusLabel" class="bold marginTop10">Status :</label>
@@ -500,11 +506,11 @@
                         <div class="panel-heading card" >
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="List">List</label>
-<!--                            <div class="btn-group pull-right">
-                                <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTagHistoBar();"><span
-                                        class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                            </div>-->
+                            <!--                            <div class="btn-group pull-right">
+                                                            <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
+                                                                    onclick="stopPropagation(event); loadTagHistoBar();"><span
+                                                                    class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
+                                                        </div>-->
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="listReport">
