@@ -90,6 +90,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
 /**
  * @author bcivel
@@ -508,7 +509,7 @@ public class RobotServerService implements IRobotServerService {
         } catch (Exception exception) {
             LOG.error(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
+            mes.resolveDescription("MES", getExceptionCauseFromString(exception));
             executorService.stopRemoteProxy(execution);
             throw new CerberusException(mes, exception);
         } finally {
