@@ -3634,6 +3634,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 }
+                                console.info(TagsToUse[1]);
+                                console.info(name);
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
                                     var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\

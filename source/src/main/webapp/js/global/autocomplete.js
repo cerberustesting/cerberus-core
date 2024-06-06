@@ -296,6 +296,7 @@ function initTags(configs, context) {
 
     return Promise.all([objectsPromise]).then(function (data) {
         var availableObjects = data[0];
+//        console.info(availableObjects);
         var availableProperties = testCaseProperties.concat(inheritedProperties.filter(function (item) {
             return testCaseProperties.indexOf(item) < 0;
         }));
@@ -494,14 +495,6 @@ function initTags(configs, context) {
         ];
         let tags = [
             {
-                name: 'datalibProperty',
-                array: availableDatalibProperties,
-                regex: "%datalib\\.[^\\.]*\\.",
-                addBefore: "",
-                addAfter: "%",
-                isCreatable: false
-            },
-            {
                 name: 'objectProperty',
                 array: availableObjectProperties,
                 regex: "%object\\.[^\\.]*\\.",
@@ -516,6 +509,14 @@ function initTags(configs, context) {
                 addBefore: "",
                 addAfter: ".",
                 isCreatable: true
+            },
+            {
+                name: 'datalibProperty',
+                array: availableDatalibProperties,
+                regex: "%datalib\\.[^\\.]*\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
             },
             {
                 name: 'datalib',
