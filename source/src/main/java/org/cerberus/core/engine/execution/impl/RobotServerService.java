@@ -85,6 +85,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
 import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
