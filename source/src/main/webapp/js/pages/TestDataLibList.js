@@ -411,7 +411,6 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Name",
-            "like": true,
             "data": "name",
             "sWidth": "200px",
             "title": doc.getDocOnline("testdatalib", "name")

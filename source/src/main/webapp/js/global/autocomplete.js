@@ -263,15 +263,15 @@ function loadApplicationObject(dataInit) {
     });
 }
 
-function loadDatalib(dataInit) {
+function loadDatalib() {
     return new Promise(function (resolve, reject) {
         var array = [];
         $.ajax({
-            url: "ReadApplicationObject?application=" + dataInit,
+            url: "ReadTestDataLib?columnName=tdl.Name",
             dataType: "json",
             success: function (data) {
-                for (var i = 0; i < data.contentTable.length; i++) {
-                    array.push(data.contentTable[i]);
+                for (var i = 0; i < data.distinctValues.length; i++) {
+                    array.push(data.distinctValues[i]);
                 }
                 resolve(array);
             }
@@ -281,22 +281,27 @@ function loadDatalib(dataInit) {
 
 function initTags(configs, context) {
 
-    var inheritedProperties = [], testCaseProperties = [], objectsPromise = [];
+    var inheritedProperties = [], testCaseProperties = [], objectsPromise = [], datalibPromise = [];
 
 //    console.info(configs);
 
     if (configs.property && context instanceof Object) {
         inheritedProperties = context.contentTable[0].properties.inheritedProperties.map(prop => prop.property);
         testCaseProperties = context.contentTable[0].properties.testCaseProperties.map(prop => prop.property);
-        objectsPromise = loadApplicationObject(context.contentTable[0].application)
+        objectsPromise = loadApplicationObject(context.contentTable[0].application);
+        datalibPromise = loadDatalib();
     }
 
-    if (configs.object && !configs.property && context instanceof String)
+    if (configs.object && !configs.property && context instanceof String){
         objectsPromise = loadApplicationObject(context);
+        datalibPromise = loadDatalib();
+    }
 
-    return Promise.all([objectsPromise]).then(function (data) {
+    return Promise.all([objectsPromise, datalibPromise]).then(function (data) {
         var availableObjects = data[0];
+        var datalibObjects = data[1];
 //        console.info(availableObjects);
+//        console.info(datalibObjects);
         var availableProperties = testCaseProperties.concat(inheritedProperties.filter(function (item) {
             return testCaseProperties.indexOf(item) < 0;
         }));
@@ -520,7 +525,7 @@ function initTags(configs, context) {
             },
             {
                 name: 'datalib',
-                array: availableObjects,
+                array: datalibObjects,
                 regex: "%datalib\\.",
                 addBefore: "",
                 addAfter: ".",
