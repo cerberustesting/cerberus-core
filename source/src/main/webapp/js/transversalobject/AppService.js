@@ -424,7 +424,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
         success: function (data) {
 
             hideLoaderInModal('#editSoapLibraryModal');
-            console.info("hide loader");
+//            console.info("hide loader");
 
             // Update the original Service value.
 //            console.info($('#editServiceModal #service').val());
@@ -684,7 +684,7 @@ function performCall(service) {
 
             }
 
-            console.info("hide");
+//            console.info("hide");
 //            $('#callStatus').removeClass("spin glyphicon-refresh").addClass("glyphicon-ok").addClass("glyphicon-remove");
             // TODO Hide  waiting icon.
 

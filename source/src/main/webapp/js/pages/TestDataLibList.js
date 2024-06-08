@@ -130,7 +130,7 @@ function renderOptionsForTestDataLib(data) {
 
             $("#createLibButton").off("click");
             $('#createLibButton').click(function () {
-                openModalDataLib(null, undefined, "ADD");
+                openModalDataLib(null, null, "ADD");
 
             });
 
@@ -374,11 +374,11 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocLabel("testdatalib", "actions"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(' + null + ",'" + obj["testDataLibID"] + '\', \'EDIT\'  );" \n\
+                var editElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'EDIT\', \'TestDataLibList\', null);" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(' + null + ",'" + obj["testDataLibID"] + '\', \'EDIT\'  );" \n\
+                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'EDIT\', \'TestDataLibList\', null);" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right25" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-eye-open"></span></button>';
@@ -389,7 +389,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                             <span class="glyphicon glyphicon-trash"></span></button>';
                 var duplicateEntryElement = '<button class="btn btn-default btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
-                                 type="button" onclick="openModalDataLib(' + null + ",'" + obj["testDataLibID"] + '\', \'DUPLICATE\'  )">\n\
+                                 type="button" onclick="openModalDataLib(\'' + obj.testDataLibID + '\', \'' + obj.name + '\', \'DUPLICATE\', \'TestDataLibList\', null)">\n\
                                 <span class="glyphicon glyphicon-duplicate"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
                 var viewTestCase = '<button class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\

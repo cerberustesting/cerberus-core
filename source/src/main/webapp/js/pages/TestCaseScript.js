@@ -3634,10 +3634,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             .attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime())
                                             .attr("data-toggle", "tooltip").attr("title", name).attr("onclick", "displayPictureOfMinitature1(this)");
                                 }
-                                console.info(TagsToUse[1]);
-                                console.info(name);
                                 if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
-                                    var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                                    var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\' , \'testCaseScript\');"\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
 	                                		title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-plus"></span></button></span>');
@@ -3646,7 +3644,26 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     typeNotExist = "applicationObject";
                                     $(htmlElement).attr("style", "width:80%").parent().append(addEntry);
                                 } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
-                                    var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+                                    var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\' , \'testCaseScript\');"\n\
+	                                class="buttonObject btn btn-default input-sm " \n\
+	                                title="' + name + '" type="button">\n\
+	                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
+                                    $(htmlElement).attr("style", "width:80%").parent().append(editEntry);
+                                }
+                            } else if (betweenPercent[i].startsWith("%datalib.") && findname !== null && findname.length > 0) {
+                                name = findname[0];
+                                name = name.slice(1, name.length - 1);
+                                if (!objectIntoTagToUseExist(TagsToUse[3], name)) {
+                                    var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalDataLib(null, \'' + name + '\', \'ADD\'  ,\'TestCaseScript_Steps\', null);"\n\
+	                                		class="buttonObject btn btn-default input-sm " \n\
+	                                		title="' + name + '" type="button">\n\
+	                                <span class="glyphicon glyphicon-plus"></span></button></span>');
+                                    objectNotExist = true;
+                                    nameNotExist = name;
+                                    typeNotExist = "applicationObject";
+                                    $(htmlElement).attr("style", "width:80%").parent().append(addEntry);
+                                } else if (objectIntoTagToUseExist(TagsToUse[3], name)) {
+                                    var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalDataLib(null, \'' + name + '\', \'EDIT\'  ,\'TestCaseScript_Steps\', null);"\n\
 	                                class="buttonObject btn btn-default input-sm " \n\
 	                                title="' + name + '" type="button">\n\
 	                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
@@ -3656,7 +3673,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 let data = loadGuiProperties();
                                 name = findname[0];
                                 name = name.slice(1, name.length - 1);
-                                if (objectIntoTagToUseExist(TagsToUse[2], name)) {
+                                if (objectIntoTagToUseExist(TagsToUse[4], name)) {
                                     var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
 	                                		class="buttonObject btn btn-default input-sm " \n\
 	                                		title="' + name + '" type="button">\n\
@@ -3907,39 +3924,19 @@ function setPlaceholderProperty(propertyElement, property) {
                                 // Feed the data to the screen and manage
                                 // authorities.
                                 var service = data.contentTable;
-                                if (service.length >= 2) {
-
-                                    $("#" + editor.container.id).parent().find('.input-group').remove();
-                                    $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
-
-                                    var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
-                                    $("#" + editor.container.id).parent().append(editEntry);
-
-                                    displayDataLibList(editor.container.id, undefined, data);
-                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
-                                    $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
-                                    });
-
-
+                                $("#" + editor.container.id).parent().find('.input-group').remove();
+                                $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
+                                if (service.length >= 1) {
+                                    var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
+                                    $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
+                                    $("#" + editor.container.id).parent().parent().append(editEntry);
+                                    $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(null, \'' + escaped + "\', 'EDIT', \'TestCaseScript_Props\', \'" + editor.container.id + "\')");
                                 } else {
-                                    $("#" + editor.container.id).parent().find('.input-group').remove();
-                                    $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
-                                    if (service.length === 1) {
-                                        var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
-                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
-                                        $("#" + editor.container.id).parent().parent().append(editEntry);
-                                        $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
-                                    } else {
-                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
-                                        addEntry.find("button").attr("disabled", !canUpdate);
-                                        $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
-                                        $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
-                                    }
+                                    var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+                                    addEntry.find("button").attr("disabled", !canUpdate);
+                                    $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
+                                    $("#" + editor.container.id).parent().parent().append(addEntry);
+                                    $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(null, \'' + escaped + "\', 'ADD', \'TestCaseScript_Props\', \'" + editor.container.id + "\')");
                                 }
                             }
                         },

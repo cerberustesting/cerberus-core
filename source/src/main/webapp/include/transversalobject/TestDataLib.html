@@ -7,7 +7,8 @@
                 <h4 class="modal-title" id="editTestDataLibModalLabel"><span id="editTestDataLibTitle">Edit Test Data Lib </span> <span id="NameEdit" ></span> </h4>
             </div>
             <div class="modal-body"> 
-                <form id="editTestLibData" role="form" >
+                <form id="editTestLibData" role="form" autocomplete="off" >
+                    <input autocomplete="false" name="hidden" type="text" style="display:none;">
                     <!-- messages area-->
                     <div id="DialogMessagesAreaEdit">
                         <div class="alert" id="DialogMessagesAlertEdit"  style="display:none;">
@@ -18,6 +19,15 @@
                         </div>
                     </div>
                     <!-- type and system-->
+                    <div class="row" id="selectDatalibID">
+                        <div class="form-group col-sm-12">
+                            <label name="lbl_datalibEntry" for="datalibEntry">Select the datalib to edit</label>
+                            <div>
+                                <select class="form-control" id="datalibEntry" name="datalibEntry">
+                                </select>  
+                            </div>
+                        </div> 
+                    </div>    
                     <div class="row">
                         <div class="form-group col-sm-2">
                             <label name="lbl_id" for="testdatalibid">ID</label>
@@ -26,9 +36,9 @@
                             </div>
                         </div> 
                         <div class="form-group col-sm-6">
-                            <label name="lbl_name" for="name">Name</label>
+                            <label name="lbl_tdlname" for="tdlname">Data Lib Name</label>
                             <div>
-                                <input id="name" name="name" class="form-control" readonly="readonly" />     
+                                <input id="tdlname" name="tdlname" class="form-control" readonly="readonly" />     
                             </div>
                         </div> 
                         <div class="form-group col-sm-4">
