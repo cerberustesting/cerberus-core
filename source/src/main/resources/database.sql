@@ -6345,3 +6345,7 @@ UPDATE invariant SET sort=15 WHERE idname='TESTDATATYPE' AND value='CSV';
 UPDATE invariant SET value='FILE' WHERE idname='TESTDATATYPE' AND value='CSV';
 UPDATE testdatalib  SET `Type` = 'FILE' where `Type` ='CSV';
 UPDATE parameter  SET `param` = 'cerberus_testdatalibfile_path' where `param` ='cerberus_testdatalibcsv_path';
+
+-- 1790
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_reportbytag_nblinestotriggerautohide_int', '50', 'If Report by Tag has more that this value of test case lines, it will automaticaly hide the full OK execution without any pending bug defined.');

@@ -22,6 +22,7 @@
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 // Define if execution detail must automaticly hide OK records.
 var isRefreshAutoHide = true;
+var isRefreshAutoHideManualDefined = false;
 
 var displayFolder = 'false';
 var displayByEnv = false;
@@ -372,29 +373,17 @@ function loadReportingData(selectTag) {
     $("#Tagcampaign").val("");
 
     var fullL = "";
-    fullL = "fullList=" + !isRefreshAutoHide;
-
-//    var fullListSelected = "";
-//    if (!isRefreshAutoHide) {
-//        fullListSelected = "checked";
-//    } else {
-//        fullListSelected = "";
-//    }
-
-//    if (document.getElementById("fullList") !== null) {
-//        var fullL = "fullList=" + document.getElementById("fullList").checked;
-//        if (document.getElementById("fullList").checked === true) {
-//            fullListSelected = "checked";
-//        } else {
-//            fullListSelected = "";
-//        }
-//    }
+    if (isRefreshAutoHideManualDefined) {
+        fullL = "fullList=" + !isRefreshAutoHide;
+    }
 
     var param = "?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
 
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
     $.when(jqxhr).then(function (data) {
+
+        isRefreshAutoHide = !data.table.fullList;
 
         if (data.hasOwnProperty('tagObject')) {
 
@@ -662,7 +651,6 @@ function buildTagBar(obj) {
     $("#tagDetailBar").empty();
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
-    console.info(obj);
 
     var tooltip = generateTagBarTooltip(obj);
     buildBar = '<div class="row"><div class="col-sm-12 pull-right marginTop-10" style="display: inline;">Total executions : ' + obj.nbExeUsefull + '</div>';
@@ -1607,11 +1595,10 @@ function refreshNbChecked() {
 
 function renderOptionsForExeList(selectTag) {
     if ($("#blankSpace").length === 0) {
+
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10' id='statusFilterList'>";
-
         contentToAdd += "<label class='marginRight10'>Status :</label>";
-
         contentToAdd += "<button type='button' id='selectAllStatus' class='glyphicon glyphicon-check'></button>";
         contentToAdd += "<button type='button' id='unselectAllStatus' class='glyphicon glyphicon-unchecked marginRight10'></button>";
         contentToAdd += "<label class='checkbox-inline fontOK'><input id='selectAllQueueOK' type='checkbox'></input>OK</label>";
@@ -1626,35 +1613,44 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<button id='btnGroupDrop4' type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentToAdd += "<div class='dropdown-menu'><button id='submitExewithDep' type='button' disabled='disabled' title='Submit again the selected executions with all dependencies.' class='btn btn-default marginLeft20'><span class='glyphicon glyphicon-play'></span> Submit Again with Dep</button></div>";
         contentToAdd += "</div>";
-        // buttonRunCampaign
-//        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default marginRight10'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
-//        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='fullList' type='checkbox' " + fullListSelected + "></input>Full List</label>";
-        contentToAdd += "<div class='btn-group marginRight10'>";
-
-        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
-        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
-
-
-        if (isRefreshAutoHide) {
-            contentToAdd += buttonrefresh;
-        } else {
-            contentToAdd += buttonrefreshAll;
-        }
-//        contentToAdd += "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
-        contentToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-xs dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
-        contentToAdd += "<div class='dropdown-menu'>";
-        if (isRefreshAutoHide) {
-            contentToAdd += buttonrefreshAll;
-        } else {
-            contentToAdd += buttonrefresh;
-        }
-//        contentToAdd += "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
         contentToAdd += "</div>";
-        contentToAdd += "</div>";
-        contentToAdd += "</div>";
-
-
         $("#listTable_length").before(contentToAdd);
+
+
+//        var contentHeaderToAdd = "<div class='marginBottom10' id='refreshButtons'>";
+        var contentHeaderToAdd = "<div class='btn-group marginRight10 pull-right' id='refreshButtons'>";
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
+        if (isRefreshAutoHide) {
+            contentHeaderToAdd += buttonrefresh;
+        } else {
+            contentHeaderToAdd += buttonrefreshAll;
+        }
+        contentHeaderToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-xs dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentHeaderToAdd += "<div class='dropdown-menu'>";
+        if (isRefreshAutoHide) {
+            contentHeaderToAdd += buttonrefreshAll;
+        } else {
+            contentHeaderToAdd += buttonrefresh;
+        }
+        contentHeaderToAdd += "</div>";
+        $(".refreshButtonsHeader #refreshButtons").remove();
+        $(".refreshButtonsHeader").append(contentHeaderToAdd);
+
+
+
+        var contentHeaderSimpleToAdd = "<div class='marginRight10 pull-right' id='refreshButton'>";
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        var buttonrefresh = "<button id='refresh' type='button' title='Refresh' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
+        if (isRefreshAutoHide) {
+            contentHeaderSimpleToAdd += buttonrefresh;
+        } else {
+            contentHeaderSimpleToAdd += buttonrefreshAll;
+        }
+        contentHeaderSimpleToAdd += "</div>";
+        $(".refreshButtonHeader #refreshButton").remove();
+        $(".refreshButtonHeader").append(contentHeaderSimpleToAdd);
+
 
         $('#selectAllQueueQEERROR').click(function () {
             selectAllQueue("selectAllQueueQEERROR", "", "QEERROR");

@@ -13,6 +13,7 @@
 * [ENGINE] Submit execution from campaign, only if application environment exist avoiding Errors in queue.
 * [GUI] Testcase environment selection combo has been replaced by checkbox
 * [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%
+* [GUI] new parameter in order to tune the nb of row above which the report by tag will auto hide the unnecessary lines cerberus_reportbytag_nblinestotriggerautohide_int (default to 50).
 
 
 *Warning to be considered before applying the version (deprecated features)*

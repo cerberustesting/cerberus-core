@@ -186,10 +186,10 @@
                     </div>
 
                     <div class="panel panel-default" id="BugReportByStatusPanel">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#BugReportByStatus">
+                        <div class="panel-heading card refreshButtonHeader" >
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="BugReportByStatus">
                             <div class="row">
@@ -212,10 +212,10 @@
                     </div>
 
                     <div class="panel panel-default" id="ManualReportByExecutorPanel">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#ManualReportByExecutor">
+                        <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Manual Executor Status</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="ManualReportByExecutor">
                             <div class="row">
@@ -241,7 +241,7 @@
 
                 <div class="col-lg-6" id="ReportByStatusPanel">
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="reportStatus">Report by Status</label>
                             <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
@@ -273,7 +273,7 @@
                 <div class="col-sm-12">
 
                     <div class="panel panel-default">
-                        <div class="panel-heading card">
+                        <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-tag fa-fw"></span>
                             <label id="TagDetailLab">Tag Information</label>
                         </div>
@@ -355,48 +355,13 @@
                 </div>
             </div>
 
-            <!--            <div class="row">
-                            <div class="col-sm-12">
-            
-                                <div class="panel panel-default">
-                                    <div class="panel-heading card" data-toggle="collapse" data-target="#TagDetail">
-                                        <span class="fa fa-pie-chart fa-fw"></span>
-                                        <label id="TagDetailLab">Tag detail</label>
-                                        <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                    </div>
-                                    <div class="panel-body collapse in" id="TagDetail">
-            
-            
-                                        <div class="row" id="panelDuration">
-                                            <div class="col-sm-6">
-                                                <label for="endLastExe">Last Execution :</label>
-                                                <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly
-                                                       aria-describedby="basic-addon1">
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <label for="TagUsrCreated">Created by :</label>
-                                                <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly
-                                                       aria-describedby="basic-addon1">
-                                            </div>
-                                        </div>
-            
-                                    </div>
-                                </div>
-            
-                            </div>
-                        </div>-->
-
-
-
-
-
             <div class="row" id="ReportByTestFolderPanel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#testFolderChart">
+                        <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="reportTestFolder">Report by Test folder</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="testFolderChart">
                             <div class="row">
@@ -411,9 +376,9 @@
             <div class="row" id="reportByEnvCountryBrowser">
                 <div class="col-lg-12" >
                     <div class="panel panel-default">
-                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportEnvCountryBrowser">
+                        <div class="panel-heading card clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
                                 <li class="active" id="graph"><a>Graph</a></li>
                                 <li class="" id="tab"><a>Tab</a></li>
@@ -483,9 +448,9 @@
             <div class="row" id="reportByLabel">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportLabel">
+                        <div class="panel-heading card clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by Label</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
                                 <li class="active" id="stickers"><a>Stickers</a></li>
                                 <li class="" id="requirements"><a>Requirements</a></li>
@@ -503,15 +468,9 @@
             <div class="row">
                 <div class="col-lg-12" id="ListPanel">
                     <div class="panel panel-default">
-                        <div class="panel-heading card" >
+                        <div class="panel-heading card refreshButtonsHeader" id="listPanelHeader">
                             <span class="glyphicon glyphicon-list"></span>
                             <label id="List">List</label>
-                            <!--                            <div class="btn-group pull-right">
-                                                            <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                                                    onclick="stopPropagation(event); loadTagHistoBar();"><span
-                                                                    class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
-                                                        </div>-->
-                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="listReport">
                             <div id="tableArea">
