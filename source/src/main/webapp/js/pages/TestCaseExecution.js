@@ -1449,6 +1449,12 @@ function setConfigPanel(data) {
     configPanel.find("input#controlstatus2").val(data.controlStatus);
     configPanel.find("textarea#controlmessage").val(data.controlMessage);
     configPanel.find("input#robot").val(data.robot);
+    if (isEmpty(data.robot)) {
+        configPanel.find("#editRobot").attr("disabled", true);
+    } else {
+        configPanel.find("#editRobot").attr("disabled", false);
+    }
+
     configPanel.find("input#robotexe").val(data.robotExecutor);
     configPanel.find("input#robothost").val(data.robotHost);
     configPanel.find("input#robotport").val(data.robotPort);

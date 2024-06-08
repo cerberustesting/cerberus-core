@@ -237,7 +237,7 @@ function feedContent() {
             row.append(cel1);
             var cel1 = $("<td rowspan='2'></td>").append(obj.triggerName);
             row.append(cel1);
-            var cel1 = $("<td></td>").append(obj.triggerNextFiretime);
+            var cel1 = $("<td></td>").append(new Date(obj.triggerNextFiretime).toLocaleString());
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.triggerUserCreated);
             row.append(cel1);

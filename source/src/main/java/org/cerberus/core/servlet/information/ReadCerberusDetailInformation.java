@@ -70,7 +70,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusDetailInformation.class);
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S";
 
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
@@ -132,7 +132,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                     objectTrig.put("triggerName", triggerSet.getJobDataMap().getString("name"));
                     objectTrig.put("triggerType", triggerSet.getJobDataMap().getString("type"));
                     objectTrig.put("triggerUserCreated", triggerSet.getJobDataMap().getString("user"));
-                    objectTrig.put("triggerNextFiretime", triggerSet.getFireTimeAfter(new Date()));
+                    objectTrig.put("triggerNextFiretime", new SimpleDateFormat(DATE_FORMAT).format(triggerSet.getFireTimeAfter(new Date())));
                     objectTrig.put("triggerCronDefinition", triggerSet.getJobDataMap().getString("cronDefinition"));
                     triggerList.add(objectTrig);
                 }

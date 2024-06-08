@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
-* 
+* [ENGINE] Fixed NPE when making a control on non successful service answer.
+* [GUI] Fixed an issue when adding an environment to an existing application
 
 *Improvements / New features*
 [square]
@@ -9,8 +10,11 @@
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
 * [GUI] direct access to Both campaign and execution reporting over time from campaign execution and test case execution screen.
+* [ENGINE] Submit execution from campaign, only if application environment exist avoiding Errors in queue.
+* [GUI] Testcase environment selection combo has been replaced by checkbox
+* [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%
 
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* 
+* [ENGINE] Datalib no longuer support direct definition of SOAP Calls. You need to replace them by SOAP services.
