@@ -724,5 +724,10 @@ function updateStats() {
         $("#hp_ApplicationNumber").text(result["iTotalRecords"] + " configured applications");
     }).fail(handleErrorAjaxAfterTimeout);
 
+    var jqxhr = $.getJSON("api/services/count", getUser().defaultSystemsQuery);
+    $.when(jqxhr).then(function (result) {
+        $("#hp_ServiceNumber").text(result["iTotalRecords"] + " configured services");
+    }).fail(handleErrorAjaxAfterTimeout);
+
 }
 

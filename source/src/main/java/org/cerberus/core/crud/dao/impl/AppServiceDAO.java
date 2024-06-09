@@ -284,6 +284,54 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
+    public Integer getNbServices(List<String> systems) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT SQL_CALC_FOUND_ROWS count(*) FROM appservice srv ");
+        query.append(" LEFT OUTER JOIN application app ON app.application = srv.application ");
+        query.append(" where 1=1 ");
+
+        if (CollectionUtils.isNotEmpty(systems)) {
+            systems.add(""); // authorize transversal object
+            query.append(" and ( app.Application is null or ");
+            query.append(SqlUtil.generateInClause("app.system", systems));
+            query.append(" ) ");
+        }
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
+            int i = 1;
+            if (CollectionUtils.isNotEmpty(systems)) {
+                for (String system : systems) {
+                    preStat.setString(i++, system);
+                }
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                while (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+
+        return 0;
+    }
+    
+    @Override
     public AnswerItem<AppService> readByKey(String key) {
         AnswerItem<AppService> ans = new AnswerItem<>();
         AppService result;

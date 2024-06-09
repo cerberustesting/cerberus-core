@@ -70,6 +70,13 @@ public interface IAppServiceDAO {
     AnswerList<AppService> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
+     *
+     * @param systems
+     * @return
+     */
+    Integer getNbServices(List<String> systems);
+
+    /**
      * Get the {@link AppService} of the given key
      *
      * @param key the key of the {@link AppService} to get

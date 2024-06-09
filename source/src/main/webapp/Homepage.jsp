@@ -73,7 +73,7 @@
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
 
             <div class="row marginBottom20 hidden-xs">
-                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
@@ -84,13 +84,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
                                 <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row" style="height: 100px;">
+                            <div class="col-sm-12">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Services</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_ServiceNumber"></div>
+                                <a href="./AppServiceList.jsp" class="marginLeft15">Edit & Call Service</a>
                             </div>
                         </div>
                     </div>

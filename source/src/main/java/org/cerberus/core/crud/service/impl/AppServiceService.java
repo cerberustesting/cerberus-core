@@ -167,6 +167,11 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
+    public Integer getNbServices(List<String> systems) {
+        return appServiceDao.getNbServices(systems);
+    }
+    
+    @Override
     public Answer create(AppService object) {
         return appServiceDao.create(object);
     }

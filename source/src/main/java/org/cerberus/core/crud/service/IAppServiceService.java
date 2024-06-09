@@ -99,6 +99,13 @@ public interface IAppServiceService {
     AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
+     *
+     * @param systems
+     * @return
+     */
+    Integer getNbServices(List<String> systems);
+
+    /**
      * @param object the {@link AppService} to Create
      * @return {@link AnswerItem}
      */
