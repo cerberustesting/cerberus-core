@@ -2531,6 +2531,25 @@ function getDateMedium(date) {
     }
 }
 
+function getHumanReadableDuration(durInMs) {
+    let dur = durInMs;
+    let unit = "s";
+    if (dur > 60) {
+        dur = dur / 60
+        unit = "min"
+    }
+    if (dur > 60) {
+        dur = dur / 60
+        unit = "h"
+    }
+    if (dur > 24) {
+        dur = dur / 24
+        unit = "d"
+    }
+    return Math.round(dur * 10) / 10 + " " + unit;
+}
+
+
 function getFromStorage(sSessionEntry, defaultValue) {
     if (sessionStorage.getItem(sSessionEntry) !== null) {
         return sessionStorage.getItem(sSessionEntry);
@@ -3118,7 +3137,7 @@ function comboConfigApplication_format(application) {
     }
     return $('<span name="appNameLabel">' + application.id + ' <span name="appTypeLabel" class="label ' + color + '" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">' + appType + '</span></span>');
 }
-;
+
 
 
 function getBugIdList(data, appUrl) {

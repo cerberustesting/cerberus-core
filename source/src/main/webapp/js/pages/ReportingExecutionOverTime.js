@@ -764,8 +764,6 @@ function buildAvailabilityGraphs(data) {
     configAvailability1.data.datasets.push({
         data: [nbOK, nbKO],
         backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
-//        label: 'Nb',
-//        labels: ["OK", "Others"]
     });
     configAvailability1.data.labels = ["nb OK", "nb Others"];
 
@@ -773,28 +771,16 @@ function buildAvailabilityGraphs(data) {
     configAvailability2.data.datasets.push({
         data: [durOK, durKO],
         backgroundColor: [getExeStatusRowColor("OK"), getExeStatusRowColor("OTHERS")],
-//        label: 'Nb',
-//        labels: ["OK", "Others"]
     });
     configAvailability2.data.labels = ["OK duration (s)", "Others duration (s)"];
     configAvailability2.data.labels.display = false;
-//    display: true,
 
-
-
-
-//    configAvailability1.data.datasets = [nbOK, nbKO];
-//    configTagBar.data.labels = data.curvesTag;
-
-
-    console.info(configAvailability2);
-
-    console.info(nbOK / (nbOK + nbKO) * 100);
     document.getElementById('ChartAvailabilty1Counter').innerHTML = Math.round(nbOK / (nbOK + nbKO) * 100) + " %";
+    document.getElementById('ChartAvailabilty1CounterDet').innerHTML = "<b style='color:lightgrey'>" + nbKO + "</b> / " + (nbOK + nbKO);
 
-    console.info();
     document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
-
+    document.getElementById('ChartAvailabilty2CounterDet').innerHTML = "<b style='color:lightgrey'>" + getHumanReadableDuration(durKO) + "</b> / " + getHumanReadableDuration((durOK + durKO));
+    
 
 //    console.info(configTagBar);
     window.myAvailability1.update();

@@ -741,7 +741,9 @@ function buildAvailabilityGraphs(data) {
 //    configTagBar.data.labels = data.curvesTag;
 
     document.getElementById('ChartAvailabilty1Counter').innerHTML = Math.round(nbOK / (nbOK + nbKO) * 100) + " %";
+    document.getElementById('ChartAvailabilty1CounterDet').innerHTML = "<b style='color:#e63757'>" + nbKO + "</b> / " + (nbOK + nbKO);
     document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
+    document.getElementById('ChartAvailabilty2CounterDet').innerHTML = "<b style='color:#e63757'>" + getHumanReadableDuration(durKO) + "</b> / " + getHumanReadableDuration((durOK + durKO));
 
     window.myAvailability1.update();
     window.myAvailability2.update();

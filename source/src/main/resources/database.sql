@@ -6349,3 +6349,11 @@ UPDATE parameter  SET `param` = 'cerberus_testdatalibfile_path' where `param` ='
 -- 1790
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_reportbytag_nblinestotriggerautohide_int', '50', 'If Report by Tag has more that this value of test case lines, it will automaticaly hide the full OK execution without any pending bug defined.');
+
+-- 1791-1796
+ALTER TABLE testcaseexecution MODIFY COLUMN `Start` timestamp(3)  NULL;
+ALTER TABLE testcaseexecution MODIFY COLUMN `End` timestamp(3) NULL;
+ALTER TABLE testcasestepactionexecution MODIFY COLUMN `Start` timestamp(3) NULL;
+ALTER TABLE testcasestepactionexecution MODIFY COLUMN `End` timestamp(3) NULL;
+ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3) NULL;
+ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NULL;

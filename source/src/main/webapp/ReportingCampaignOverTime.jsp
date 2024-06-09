@@ -198,6 +198,7 @@
                                 </div>
                                 <div class="col-xs-4 paddingLeft0"  >
                                     <h2 class="statistic-counter" id="ChartAvailabilty1Counter"></h2>
+                                    <p class="statistic-counter" id="ChartAvailabilty1CounterDet"></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -205,7 +206,8 @@
                                     <canvas id="canvasAvailability2"></canvas>
                                 </div>
                                 <div class="col-xs-4 paddingLeft0"  >
-                                    <h2 class="statistic-counter" id="ChartAvailabilty2Counter" style="height: 100px;position: absolute;top: 50%;align-items: center; justify-content: center;"></h2>
+                                    <h2 class="statistic-counter" id="ChartAvailabilty2Counter"></h2>
+                                    <p class="statistic-counter" id="ChartAvailabilty2CounterDet"></p>
                                 </div>
                             </div>
                         </div>
