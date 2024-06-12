@@ -6357,3 +6357,7 @@ ALTER TABLE testcasestepactionexecution MODIFY COLUMN `Start` timestamp(3) NULL;
 ALTER TABLE testcasestepactionexecution MODIFY COLUMN `End` timestamp(3) NULL;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3) NULL;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NULL;
+
+-- 1797
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_featureflipping_tagstatistics_enable', 'false', 'Temporary parameter used during development of new statistics dashboard.');
