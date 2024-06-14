@@ -528,6 +528,14 @@ function loadTagExec() {
         nbTagLoadedTarget = tagList.length;
     }
 
+    var tagScheduled = readNextTagScheduled();
+    if (tagScheduled.length > 0) {
+        for (var index = 0; index < tagScheduled.length; index++) {
+            var idDiv = '<div id="tagScheduledStatusRow' + index + '"<div class="progress" style="">' + tagScheduled[index] + '</div></div>';
+            reportArea.append(idDiv);
+        }
+    }
+
     if (tagList.length > 0) {
         for (var index = 0; index < tagList.length; index++) {
             var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
@@ -589,6 +597,38 @@ function readLastTagExec(searchString) {
     });
     return tagList;
 }
+
+function readNextTagScheduled() {
+    let tagList = [];
+
+    var nbExe = getParameter("cerberus_homepage_nbdisplayedscheduledtag", getUser().defaultSystem, true);
+    var paramExe = nbExe.value;
+
+    if (!((paramExe >= 0) && (paramExe <= 20))) {
+        paramExe = 5;
+    }
+    nbTagLoadedTargetScheduled = paramExe;
+
+    var myUrl = "api/campaigns/scheduled";
+
+    $.ajax({
+        type: "GET",
+        url: myUrl,
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            if (data.schedulerTriggers.length < nbTagLoadedTargetScheduled) {
+                nbTagLoadedTargetScheduled = data.schedulerTriggers.length;
+            }
+            for (var s = 0; s < nbTagLoadedTargetScheduled; s++) {
+                let item = data.schedulerTriggers[s];
+                tagList.splice(0, 0, "<b>" + item.triggerName + "</b> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + " <b>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
+            }
+        }
+    });
+    return tagList;
+}
+
 
 function getCountryFilter() {
     return $.ajax({

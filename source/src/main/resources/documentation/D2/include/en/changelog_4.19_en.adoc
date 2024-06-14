@@ -19,6 +19,7 @@
 * [GUI] new reset button on pages with datatable in order to put back the default layout view.
 * [ENGINE] Added ignoreFirstLine boolean at datalib level.
 * [GUI] New 'Application Edit' button from testcase header, execution and campaign execution pages.
+* [GUI] Homepage now display also upcoming campaign execution from scheduler (nb can be tuned by 'cerberus_homepage_nbdisplayedscheduledtag' parameter).
 
 
 *Warning to be considered before applying the version (deprecated features)*

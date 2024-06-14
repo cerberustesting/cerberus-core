@@ -2554,16 +2554,20 @@ function getDateMedium(date) {
     }
 }
 
-function getHumanReadableDuration(durInMs) {
-    let dur = durInMs;
+function getHumanReadableDuration(durInSec) {
+    let dur = durInSec;
     let unit = "s";
     if (dur > 60) {
         dur = dur / 60
         unit = "min"
+    } else {
+        return Math.round(dur * 10) / 10 + " " + unit;
     }
     if (dur > 60) {
         dur = dur / 60
         unit = "h"
+    } else {
+        return Math.round(dur * 10) / 10 + " " + unit;
     }
     if (dur > 24) {
         dur = dur / 24

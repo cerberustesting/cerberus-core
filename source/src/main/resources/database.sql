@@ -6364,3 +6364,8 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 
 -- 1798
 ALTER TABLE testdatalib ADD IgnoreFirstLine BOOLEAN NOT NULL AFTER `Separator`;
+
+-- 1799
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_homepage_nbdisplayedscheduledtag', '3', 'Number of scheduled not yet executed tag displayed inside homepage.');
+
