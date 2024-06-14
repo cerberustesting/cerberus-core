@@ -6359,4 +6359,8 @@ ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NULL;
 
 -- 1797
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_featureflipping_tagstatistics_enable', 'false', 'Temporary parameter used during development of new statistics dashboard.');
+
+-- 1798
 ALTER TABLE testdatalib ADD IgnoreFirstLine BOOLEAN NOT NULL AFTER `Separator`;

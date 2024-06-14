@@ -22,10 +22,15 @@ package org.cerberus.core.servlet.zzpublic;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.service.authentification.IAPIKeyService;
 import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
@@ -44,9 +49,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
-import org.cerberus.core.crud.entity.LogEvent;
-import org.cerberus.core.service.authentification.IAPIKeyService;
 
 /**
  * @author bcivel
@@ -56,6 +60,7 @@ public class ResultCIV004 extends HttpServlet {
 
     private static Logger LOG = LogManager.getLogger(ResultCIV004.class);
     private IAPIKeyService apiKeyService;
+    private ITestCaseExecutionService testCaseExecutionService;
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
@@ -127,7 +132,9 @@ public class ResultCIV004 extends HttpServlet {
                 if (!error) {
 
                     ICIService ciService = appContext.getBean(ICIService.class);
-                    jsonResponse = ciService.getCIResult(tag, null);
+                    testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+                    List<TestCaseExecution> executions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+                    jsonResponse = ciService.getCIResult(tag, null, executions);
 
                     // Log the result with calculation detail.
                     logEventService.createForPublicCalls("/ResultCIV004", "CALLRESULT", LogEvent.STATUS_INFO, "ResultCIV004 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);
@@ -144,6 +151,8 @@ public class ResultCIV004 extends HttpServlet {
                 LOG.warn(e);
                 //returns a default error message with the json format that is able to be parsed by the client-side
                 response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+            } catch (CerberusException | ParseException exception) {
+                LOG.error(exception, exception);
             }
         }
 

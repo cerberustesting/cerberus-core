@@ -68,7 +68,7 @@ public class CIService implements ICIService {
     private ITagService tagService;
 
     @Override
-    public JSONObject getCIResult(String tag, String campaign) {
+    public JSONObject getCIResult(String tag, String campaign, List<TestCaseExecution> executions) {
         try {
 
             // If campaign is not defined here, we try to get it from tag. At the same time, we check that tag exist.
@@ -77,27 +77,26 @@ public class CIService implements ICIService {
                 campaign = myTag.getCampaign();
             }
 
-            List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
-            JSONObject jsonResponse = CIService.this.getCIResult(tag, campaign, myList);
+            JSONObject jsonResponse = CIService.this.calculateCIResult(tag, campaign, executions);
 
-            jsonResponse.put("detail_by_declinaison", generateStats(myList));
+            jsonResponse.put("detail_by_declinaison", generateStats(executions));
 
-            jsonResponse.put("environment_List", generateEnvList(myList));
-            jsonResponse.put("country_list", generateCountryList(myList));
-            jsonResponse.put("robotdecli_list", generateRobotDecliList(myList));
-            jsonResponse.put("system_list", generateSystemList(myList));
-            jsonResponse.put("application_list", generateApplicationList(myList));
+            jsonResponse.put("environment_List", generateEnvList(executions));
+            jsonResponse.put("country_list", generateCountryList(executions));
+            jsonResponse.put("robotdecli_list", generateRobotDecliList(executions));
+            jsonResponse.put("system_list", generateSystemList(executions));
+            jsonResponse.put("application_list", generateApplicationList(executions));
 
-            jsonResponse.put("nb_of_retry", myList.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
+            jsonResponse.put("nb_of_retry", executions.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
 
             return jsonResponse;
-        } catch (CerberusException | ParseException | JSONException ex) {
+        } catch (CerberusException | JSONException ex) {
             LOG.error(ex, ex);
         }
         return null;
     }
 
-    private JSONObject getCIResult(String tag, String campaign, List<TestCaseExecution> myList) {
+    private JSONObject calculateCIResult(String tag, String campaign, List<TestCaseExecution> myList) {
         try {
             JSONObject jsonResponse = new JSONObject();
 

@@ -19,15 +19,8 @@
  */
 package org.cerberus.core.crud.service.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITagDAO;
 import org.cerberus.core.crud.entity.Campaign;
 import org.cerberus.core.crud.entity.EventHook;
@@ -56,6 +49,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  *
@@ -184,8 +181,10 @@ public class TagService implements ITagService {
             // Total execution.
             mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
 
+            List<TestCaseExecution> executions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+
             // All the rest of the data are coming from ResultCI Servlet.
-            JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign());
+            JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign(), executions);
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
 
@@ -215,7 +214,7 @@ public class TagService implements ITagService {
             mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
 
             if (!StringUtil.isEmpty(mytag.getCampaign())) {
-                // We get the campaig here and potencially trigger the event.
+                // We get the campaign here and potencially trigger the event.
                 eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END, mytag, null, null, null);
                 if (mytag.getCiResult().equalsIgnoreCase("KO")) {
                     eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO, mytag, null, null, null);
