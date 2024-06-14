@@ -1,7 +1,7 @@
 *Bug fixes*
 [square]
 * [ENGINE] Fixed NPE when making a control on non successful service answer.
-* [GUI] Fixed an issue when adding an environment to an existing application
+* [GUI] Fixed an issue when adding an environment to an existing application.
 
 *Improvements / New features*
 [square]
@@ -11,9 +11,14 @@
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
 * [GUI] direct access to Both campaign and execution reporting over time from campaign execution and test case execution screen.
 * [ENGINE] Submit execution from campaign, only if application environment exist avoiding Errors in queue.
-* [GUI] Testcase environment selection combo has been replaced by checkbox
-* [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%
+* [GUI] Testcase environment selection combo has been replaced by checkbox.
+* [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%.
 * [GUI] new parameter in order to tune the nb of row above which the report by tag will auto hide the unnecessary lines cerberus_reportbytag_nblinestotriggerautohide_int (default to 50).
+* [GUI] Save datatable layout on pages no longer save the current page position.
+* [GUI] new refresh button on pages with datatable on order to refresh the data content without a full reload of the page.
+* [GUI] new reset button on pages with datatable in order to put back the default layout view.
+* [ENGINE] Added ignoreFirstLine boolean at datalib level.
+* [GUI] New 'Application Edit' button from testcase header, execution and campaign execution pages.
 
 
 *Warning to be considered before applying the version (deprecated features)*

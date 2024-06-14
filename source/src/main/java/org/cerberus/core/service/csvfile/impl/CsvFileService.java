@@ -48,7 +48,7 @@ public class CsvFileService implements ICsvFileService {
     private static final Logger LOG = LogManager.getLogger(CsvFileService.class);
 
     @Override
-    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToFile, String separator, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
+    public AnswerList<HashMap<String, String>> parseCSVFile(String urlToFile, String separator, boolean ignoreFirstLine, HashMap<String, String> columnsToGet, List<String> columnsToHide, boolean ignoreNoMatchColumns, String defaultNoMatchColumnValue, TestCaseExecution execution) {
         LOG.debug("Columns to hide : " + columnsToHide);
         String str = "";
         AnswerList<HashMap<String, String>> result = new AnswerList<>();
@@ -70,43 +70,46 @@ public class CsvFileService implements ICsvFileService {
                 br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
             } else {
                 br = new BufferedReader(new FileReader(urlToFile));
-                br.readLine();
             }
 
             if ("".equals(separator)) {
                 separator = ",";
             }
             boolean noDataMapped = true;
+            int i = 0;
             while (null != (str = br.readLine())) {
-                HashMap<String, String> line = new HashMap<>();
-                // In case of no match columns ignore, then first populate list with all column and default value
-                if (ignoreNoMatchColumns) {
-                    LOG.debug("Unmatched columns parsing enabled: Prefill columns with default value");
-                    columnsToGet.keySet().forEach((column) -> line.put(column, defaultNoMatchColumnValue));
-                }
-                Integer columnPosition = 1;
-                /**
-                 * For each line, split result by separator, and put it in
-                 * result object if it has been defined in subdata
-                 */
-                for (String element : str.split(separator)) {
-                    // Looping against all subdata to get any column that match the current element position.
-                    for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
-                        String columnPos = entry.getValue();
-                        String subDataName = entry.getKey();
-                        if (columnPos.equals(String.valueOf(columnPosition))) { // If columns defined from subdata match the column number, we add the value here.
-                            line.put(subDataName, element);
-                            // If column is on the columns to hide we add it to the secret list
-                            if (columnsToHide.contains(subDataName)) {
-                                execution.addSecret(element);
-                            }
-                            noDataMapped = false;
-                        }
+                i++;
+                if (!((ignoreFirstLine) && (i == 1))) {
+                    HashMap<String, String> line = new HashMap<>();
+                    // In case of no match columns ignore, then first populate list with all column and default value
+                    if (ignoreNoMatchColumns) {
+                        LOG.debug("Unmatched columns parsing enabled: Prefill columns with default value");
+                        columnsToGet.keySet().forEach((column) -> line.put(column, defaultNoMatchColumnValue));
                     }
+                    Integer columnPosition = 1;
+                    /**
+                     * For each line, split result by separator, and put it in
+                     * result object if it has been defined in subdata
+                     */
+                    for (String element : str.split(separator)) {
+                        // Looping against all subdata to get any column that match the current element position.
+                        for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
+                            String columnPos = entry.getValue();
+                            String subDataName = entry.getKey();
+                            if (columnPos.equals(String.valueOf(columnPosition))) { // If columns defined from subdata match the column number, we add the value here.
+                                line.put(subDataName, element);
+                                // If column is on the columns to hide we add it to the secret list
+                                if (columnsToHide.contains(subDataName)) {
+                                    execution.addSecret(element);
+                                }
+                                noDataMapped = false;
+                            }
+                        }
 
-                    columnPosition++;
+                        columnPosition++;
+                    }
+                    csv.add(line);
                 }
-                csv.add(line);
             }
             if (noDataMapped) { // No columns at all could be mapped on the full file.
                 result.setDataList(null);

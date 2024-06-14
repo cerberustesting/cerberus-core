@@ -6357,3 +6357,6 @@ ALTER TABLE testcasestepactionexecution MODIFY COLUMN `Start` timestamp(3) NULL;
 ALTER TABLE testcasestepactionexecution MODIFY COLUMN `End` timestamp(3) NULL;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3) NULL;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NULL;
+
+-- 1797
+ALTER TABLE testdatalib ADD IgnoreFirstLine BOOLEAN NOT NULL AFTER `Separator`;

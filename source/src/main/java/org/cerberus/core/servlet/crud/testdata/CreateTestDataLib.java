@@ -151,10 +151,12 @@ public class CreateTestDataLib extends HttpServlet {
             String script = fileData.get("script");
             String servicePath = fileData.get("servicepath");
             String method = fileData.get("method");
-            String envelope =fileData.get("envelope");
-            String csvUrl =fileData.get("csvUrl");
+            String envelope = fileData.get("envelope");
+            String csvUrl = fileData.get("csvUrl");
             String separator = fileData.get("separator");
             String activateAutoSubdata = fileData.get("subdataCheck");
+            boolean ignoreFirstLine = ParameterParserUtil.parseBooleanParamAndDecode(fileData.get("ignoreFirstLine"), false, "UTF8");
+
             /**
              * Checking all constrains before calling the services.
              */
@@ -168,6 +170,7 @@ public class CreateTestDataLib extends HttpServlet {
                         .replace("%OPERATION%", "Create")
                         .replace("%REASON%", "Test data library name is missing! "));
                 finalAnswer.setResultMessage(msg);
+
             } else {
                 /**
                  * All data seems cleans so we can call the services.
@@ -176,7 +179,7 @@ public class CreateTestDataLib extends HttpServlet {
                 IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
                 TestDataLib lib = factoryLibService.create(0, name, system, environment, country, privateData, group,
-                        type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
+                        type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, ignoreFirstLine, description,
                         request.getRemoteUser(), null, "", null, null, null, null, null);
 
                 //Creates the entries and the subdata list
@@ -193,27 +196,21 @@ public class CreateTestDataLib extends HttpServlet {
 
                 List<TestDataLibData> tdldList = new ArrayList<>();
                 TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
-
-                if (file != null) {
-                    ans = libService.uploadFile(dataLibWithUploadedFile.getTestDataLibID(), file);
-                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        dataLibWithUploadedFile.setCsvUrl(File.separator + dataLibWithUploadedFile.getTestDataLibID() + File.separator + file.getName());
-                        libService.update(dataLibWithUploadedFile);
+                
+                    // Getting list of SubData from JSON Call
+                    if (fileData.get("subDataList") != null) {
+                        JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
+                        tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray, (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
                     }
-                }
 
-                // Getting list of SubData from JSON Call
-                if (fileData.get("subDataList") != null) {
-                    JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                    tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray);
-                }
-
-                    if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
+                if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
                     try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", null) + lib.getCsvUrl()));) {
                         firstLine = reader.readLine();
                         secondLine = reader.readLine();
+                        LOG.debug(firstLine);
+                        LOG.debug(secondLine);
                         String[] firstLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? firstLine.split(dataLibWithUploadedFile.getSeparator()) : firstLine.split(",");
                         String[] secondLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? secondLine.split(dataLibWithUploadedFile.getSeparator()) : secondLine.split(",");
                         int i = 0;
@@ -231,7 +228,7 @@ public class CreateTestDataLib extends HttpServlet {
                         }
                         tdldList.add(firstLineLibData);
                         for (String item : firstLineSubData) {
-                            TestDataLibData tdld = tdldFactory.create(null, dataLibWithUploadedFile.getTestDataLibID(), item + "_" + y,"N", secondLineSubData[i], item, null, Integer.toString(y), null);
+                            TestDataLibData tdld = tdldFactory.create(null, dataLibWithUploadedFile.getTestDataLibID(), item + "_" + y, "N", secondLineSubData[i], item, null, Integer.toString(y), null);
                             tdldList.add(tdld);
                             i++;
                             y++;
@@ -244,6 +241,7 @@ public class CreateTestDataLib extends HttpServlet {
                         } catch (Throwable ignore) {
                         }
                     }
+                } else {
                 }
 
                 ans = tdldService.compareListAndUpdateInsertDeleteElements(dataLibWithUploadedFile.getTestDataLibID(), tdldList);
@@ -266,13 +264,17 @@ public class CreateTestDataLib extends HttpServlet {
 
     }
 
-    private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
+    private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json, boolean onlyFirstLine) throws JSONException {
         List<TestDataLibData> tdldList = new ArrayList<>();
         IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
-        for (int i = 0; i < json.length(); i++) {
+        int maxiteration = json.length();
+        if (onlyFirstLine) {
+            maxiteration = 1;
+        }
+        for (int i = 0; i < maxiteration; i++) {
             JSONObject objectJson = json.getJSONObject(i);
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them

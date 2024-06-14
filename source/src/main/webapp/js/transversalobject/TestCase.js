@@ -168,6 +168,7 @@ function initModalTestCase() {
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
+
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({
         source: availableUserAgent,
@@ -181,6 +182,7 @@ function initModalTestCase() {
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
+
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
     $('#editTestCaseModal').find("#screenSize").autocomplete({
         source: availableScreenSize,
@@ -194,16 +196,12 @@ function initModalTestCase() {
     }).on("focus", function () {
         $(this).autocomplete("search", "");
     });
-//    var availableFunctions = getInvariantArray("FUNCTION", false);
-//    $('#editTestCaseModal').find("#function").autocomplete({
-//        source: availableFunctions
-//    });
+
     $("#select_all").change(function () {  //"select all" change
         $("#countries input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
     $("#addTestCaseDependencyButton").click(function () {
-
         var test = $("#selectTest").val();
         var testCase = $("#selectTestCase").val();
         var testCaseTxt = $("#selectTestCase option:selected").text();
@@ -747,7 +745,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Loading the label list from aplication of the testcase.
             loadLabel(testCase.labels, t.system, "#selectLabel", undefined, testCase.test, testCase.testcase);
             // Loading application combo from the system of the current application.
-            appendApplicationList(testCase.application, t.system);
+            appendApplicationList(testCase.application, t.system, modalId);
 
         });
 
@@ -990,14 +988,14 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     // Authorities
 
     //We define here the rule that enable or nt the fields depending on if user has the credentials to edit.
-    var doBloackAllFields = false;
+    var doBlockAllFields = false;
     if (mode === "EDIT") {
-        doBloackAllFields = !(hasPermissionsUpdate);
+        doBlockAllFields = !(hasPermissionsUpdate);
     } else { // DUPLICATE or ADD
-        doBloackAllFields = false;
+        doBlockAllFields = false;
     }
 
-    if (doBloackAllFields) { // If readonly, we only readonly all fields
+    if (doBlockAllFields) { // If readonly, we only readonly all fields
         //test case info
         formEdit.find("#test").prop("disabled", "disabled");
         formEdit.find("#testCase").prop("readonly", "readonly");
@@ -1325,7 +1323,7 @@ function loadLabel(labels, mySystem, myLabelDiv, labelSize, test, testCase) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendApplicationList(defautValue, mySystem) {
+function appendApplicationList(defautValue, mySystem, modalId) {
 
     $("[name=application]").empty();
 
@@ -1345,7 +1343,14 @@ function appendApplicationList(defautValue, mySystem) {
                 applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
             }
         }
-        $("#application").val(defautValue);
+        $("#editTestCaseModalForm #application").val(defautValue);
+
+        $('#' + modalId + " #editApplication").off("click");
+        $('#' + modalId + " #editApplication").click(function () {
+            openModalApplication($("#editTestCaseModalForm #application").val(), "EDIT");
+        });
+
+
     });
 }
 

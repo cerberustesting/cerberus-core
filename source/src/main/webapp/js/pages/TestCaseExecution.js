@@ -306,6 +306,18 @@ function initPage(id) {
         openModalRobot($("#tabRobot #robot").val(), "EDIT");
     });
 
+    $("#tabEnv #editApplication").click(function () {
+        openModalApplication($("#tabEnv #application").val(), "EDIT");
+    });
+
+    $("#tabEnv #editCountry").click(function () {
+        openModalInvariant("COUNTRY", $("#tabEnv #country").val(), "EDIT");
+    });
+
+    $("#tabEnv #editEnvironment").click(function () {
+        openModalInvariant("ENVIRONMENT", $("#tabEnv #environment").val(), "EDIT");
+    });
+
     $("#inheritedPropPanelWrapper").hide();
     $("[name='buttonSave']").hide();
     $("#addProperty").hide();

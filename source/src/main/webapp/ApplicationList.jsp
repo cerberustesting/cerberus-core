@@ -25,7 +25,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/Application.js"></script>
+        <script type="text/javascript" src="js/pages/ApplicationList.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Applications</title>
     </head>
     <body>
@@ -33,8 +34,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/pages/application/addApplication.html"%> 
-            <%@ include file="include/pages/application/editApplication.html"%> 
+            <%@ include file="include/transversalobject/Application.html"%>
 
             <h1 class="page-title-line" id="title">Application</h1>
             <div class="panel panel-default">

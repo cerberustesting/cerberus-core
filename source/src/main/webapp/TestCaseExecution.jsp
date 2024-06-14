@@ -35,6 +35,8 @@
         <script type="text/javascript" src="js/transversalobject/File.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet"/>
 
@@ -43,13 +45,15 @@
         <%@ include file="include/global/header.html" %>
         <%@ include file="include/utils/modal-generic.html" %>
         <%@ include file="include/pages/testcasescript/manageProperties.html" %>
+        <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
+        <%@ include file="include/transversalobject/TestCase.html" %>
+        <%@ include file="include/transversalobject/File.html" %>
         <%@ include file="include/transversalobject/TestCaseSimpleExecution.html" %>
         <%@ include file="include/transversalobject/Robot.html" %>
+        <%@ include file="include/transversalobject/Application.html" %>
+        <%@ include file="include/transversalobject/Invariant.html" %>
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/global/messagesArea.html" %>
-            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
-            <%@ include file="include/transversalobject/TestCase.html" %>
-            <%@ include file="include/transversalobject/File.html" %>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel no-border" id="testCaseConfig">
                 <div style="background-color: #f5f6fa">
@@ -647,28 +651,40 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="application">Application</label>
-                                        <input type="text" class="form-control" id="application" placeholder="Application"
-                                               readonly>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="application" placeholder="Application" readonly>
+                                            <span class="input-group-btn">
+                                                <button id="editApplication" class="btn btn-default">Edit</button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="country">Country</label>
-                                        <input type="text" class="form-control" id="country" placeholder="Country" readonly>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="country" placeholder="Country" readonly>
+                                            <span class="input-group-btn">
+                                                <button id="editCountry" class="btn btn-default">Edit</button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="environment">Environment</label>
-                                        <input type="text" class="form-control" id="environment" placeholder="Environment"
-                                               readonly>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="environment" placeholder="Environment" readonly>
+                                            <span class="input-group-btn">
+                                                <button id="editEnvironment" class="btn btn-default">Edit</button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="environmentData">Environment Data</label>
-                                        <input type="text" class="form-control" id="environmentData"
-                                               placeholder="Environment Data" readonly>
+                                        <input type="text" class="form-control" id="environmentData" placeholder="Environment Data" readonly>
                                     </div>
                                 </div>
                             </div>

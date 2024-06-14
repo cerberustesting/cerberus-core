@@ -34,6 +34,7 @@
         <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
@@ -51,6 +52,7 @@
             <%@ include file="include/transversalobject/ApplicationObject.html"%>
             <%@ include file="include/transversalobject/TestDataLib.html"%>
             <%@ include file="include/transversalobject/AppService.html"%>
+            <%@ include file="include/transversalobject/Application.html"%>
             <%@ include file="include/transversalobject/Property.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>

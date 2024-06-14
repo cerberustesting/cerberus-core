@@ -20,6 +20,8 @@
 package org.cerberus.core.servlet.crud.countryenvironment;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,16 +32,20 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.impl.LogEventService;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
+import org.cerberus.core.util.answer.AnswerUtil;
 import org.cerberus.core.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +61,7 @@ import org.owasp.html.Sanitizers;
 public class CreateApplication extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateApplication.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -69,6 +75,7 @@ public class CreateApplication extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
+
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -76,12 +83,15 @@ public class CreateApplication extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
+        IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
         response.setContentType("application/json");
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -109,14 +119,22 @@ public class CreateApplication extends HttpServlet {
             sort_error = true;
         }
 
-        
+        // Getting list of application from JSON Call
+        JSONArray objApplicationArray = new JSONArray(request.getParameter("environmentList"));
+        List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
+        ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
+
         boolean emptycountryenv_error = false;
-//        for (CountryEnvironmentParameters cea : ceaList) {
-//            if ((StringUtil.isEmpty(cea.getCountry())) || (StringUtil.isEmpty(cea.getEnvironment()))) {
-//                emptycountryenv_error = true;
-//            }
-//        }
-        
+        for (CountryEnvironmentParameters cea : ceaList) {
+            if ((StringUtil.isEmpty(cea.getCountry())) || (StringUtil.isEmpty(cea.getEnvironment()))) {
+                emptycountryenv_error = true;
+            }
+        }
+
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -125,31 +143,29 @@ public class CreateApplication extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Application name is missing!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (StringUtil.isEmpty(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "System is missing!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (emptycountryenv_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "One of the environment defined has an empty value on country or environment value."));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
             Application app = Application.builder()
                     .application(application)
@@ -167,6 +183,7 @@ public class CreateApplication extends HttpServlet {
                     .usrCreated(request.getRemoteUser())
                     .build();
             ans = applicationService.create(app);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -174,18 +191,71 @@ public class CreateApplication extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateApplication", "CREATE", LogEvent.STATUS_INFO, "Create Application : ['" + application + "']", request);
+
+                // Update the Database with the new list.
+                ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
+
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 
+    }
+
+    private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
+        List<CountryEnvironmentParameters> cedList = new ArrayList<>();
+        ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
+        IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject tcsaJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = tcsaJson.getBoolean("toDelete");
+            String country = policy.sanitize(tcsaJson.getString("country"));
+            String environment = policy.sanitize(tcsaJson.getString("environment"));
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            String ip = tcsaJson.getString("ip");
+            String domain = tcsaJson.getString("domain");
+            String url = tcsaJson.getString("url");
+            String urlLogin = tcsaJson.getString("urlLogin");
+            String var1 = tcsaJson.getString("var1");
+            String var2 = tcsaJson.getString("var2");
+            String var3 = tcsaJson.getString("var3");
+            String var4 = tcsaJson.getString("var4");
+            String strPoolSize = tcsaJson.getString("poolSize");
+            String mobileActivity = tcsaJson.getString("mobileActivity");
+            String mobilePackage = tcsaJson.getString("mobilePackage");
+
+            int poolSize;
+            if (strPoolSize.isEmpty()) {
+                poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
+            } else {
+                try {
+                    poolSize = Integer.parseInt(strPoolSize);
+                } catch (NumberFormatException e) {
+                    LOG.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
+                    poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
+                }
+            }
+
+            if (!delete) {
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
+                cedList.add(ced);
+            }
+        }
+        return cedList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

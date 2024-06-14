@@ -112,7 +112,7 @@
                             <div class="col-sm-12">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
-                                <a href="./Application.jsp" class="marginLeft15">See or Create Application</a>
+                                <a href="./ApplicationList.jsp" class="marginLeft15">See or Create Application</a>
                             </div>
                         </div>
                     </div>

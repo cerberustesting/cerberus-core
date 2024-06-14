@@ -40,10 +40,6 @@ function initPage() {
     $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
 
-    displayInvariantList("notifystart", "CAMPAIGNSTARTNOTIF", false);
-    displayInvariantList("notifyend", "CAMPAIGNENDNOTIF", false);
-    displayInvariantList("notifySlackstart", "CAMPAIGNSTARTNOTIF", false);
-    displayInvariantList("notifySlackend", "CAMPAIGNENDNOTIF", false);
     displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
     displayInvariantList("video", "VIDEO", false, undefined, "");
     displayInvariantList("verbose", "VERBOSE", false, undefined, "");

@@ -48,6 +48,7 @@ public interface IFactoryTestDataLib {
      * @param databaseCsv
      * @param csvUrl
      * @param separator
+     * @param ignoreFirstLine
      * @param description
      * @param creator
      * @param Created
@@ -62,7 +63,7 @@ public interface IFactoryTestDataLib {
     TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String privateData, String group, String type,
             String database, String script, String databaseUrl, String service, String servicePath,
-            String method, String envelope, String databaseCsv, String csvUrl, String separator, String description,
+            String method, String envelope, String databaseCsv, String csvUrl, String separator, boolean ignoreFirstLine, String description,
             String creator, Timestamp Created, String LastModifier, Timestamp LastModified,
             String subDataValue, String subDataColumn, String subDataParsingAnswer, String subDataColumnPosition);
 

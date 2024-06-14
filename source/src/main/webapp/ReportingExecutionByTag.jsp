@@ -40,6 +40,7 @@
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
@@ -48,6 +49,8 @@
             <%@ include file="include/global/messagesArea.html" %>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html" %>
             <%@ include file="include/transversalobject/TestCase.html" %>
+            <%@ include file="include/transversalobject/Campaign.html" %>
+            <%@ include file="include/transversalobject/Application.html" %>
             <%@ include file="include/pages/testcampaign/viewStatcampaign.html" %>
 
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
@@ -66,11 +69,11 @@
                                     <label for="selectTag">Tag :</label>
                                     <div class="input-group">
                                         <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadAllReports()">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-sm btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadAllReports()">
                                                 <span class="glyphicon glyphicon-refresh"></span> Load
                                             </button>
-                                        </div>
+                                        </span>
                                     </div>
 
                                     <div class="row">
@@ -189,7 +192,7 @@
                         <div class="panel-heading card refreshButtonHeader" >
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
-<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="BugReportByStatus">
                             <div class="row">
@@ -215,7 +218,7 @@
                         <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Manual Executor Status</label>
-<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="ManualReportByExecutor">
                             <div class="row">
@@ -332,7 +335,16 @@
                             <div class="row marginTop10">
                                 <div class="col-sm-6" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
-                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1">
+                                        <span class="input-group-btn">
+                                            <a id="buttonEditCampaign">
+                                                <button type="button" class="btn btn-default" >
+                                                    Edit
+                                                </button>
+                                            </a>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div class="col-sm-6" id="xRayTestExecutionBlock">
@@ -361,7 +373,7 @@
                         <div class="panel-heading card refreshButtonHeader">
                             <span class="fa fa-bar-chart fa-fw"></span>
                             <label id="reportTestFolder">Report by Test folder</label>
-<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                         </div>
                         <div class="panel-body collapse in" id="testFolderChart">
                             <div class="row">
@@ -378,7 +390,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by EnvCountryBrowser</label>
-<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
                                 <li class="active" id="graph"><a>Graph</a></li>
                                 <li class="" id="tab"><a>Tab</a></li>
@@ -450,7 +462,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading card clearfix refreshButtonHeader">
                             <label id="envCountryBrowser">Report by Label</label>
-<!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
                             <ul class="nav nav-tabs pull-right">
                                 <li class="active" id="stickers"><a>Stickers</a></li>
                                 <li class="" id="requirements"><a>Requirements</a></li>

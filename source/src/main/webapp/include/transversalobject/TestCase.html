@@ -7,6 +7,7 @@
                 <h4 class="modal-title" id="editTestCaseModalLabel" name="editTestCaseField">Edit Test Case</h4>
             </div>
             <div class="modal-body">
+
                 <!--edit form-->
                 <form id="editTestCaseModalForm" name="editTestCaseModalForm"  title="EditTestCase" role="form">
                     <div class="container-fluid center">
@@ -40,6 +41,7 @@
                             <li><a data-toggle="tab" href="#tabTCTraceability" id="editTCtracability" name="tabTracability">Traceability</a></li>
                         </ul>
                         <div class="tab-content">
+
                             <div class="center marginTop25 tab-pane fade in active" id="tabTCDefinition">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-12">
@@ -50,7 +52,12 @@
                                 <div class="row">
                                     <div class="form-group form-group-sm col-sm-4">
                                         <label for="application" name="applicationField">Application</label>
-                                        <select type="text" class="form-control input-sm" name="application" id="application"></select>
+                                        <div class="input-group">
+                                            <select type="text" class="form-control" name="application" id="application"></select>
+                                            <span class="input-group-btn">
+                                                <button type="button" id="editApplication" class="btn btn-sm btn-default">Edit</button>
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-3">
                                         <label for="status" name="statusField">Status</label>

@@ -908,7 +908,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','FromMajor','','en','From Major',' ','_testcase')");
         b.append(",('testcase','FromMajor','','fr','De Majeure','','_cas_de_test')");
         b.append(",('testcase','FromMajor','','fa','از ماژور',' ','_testcase')");
-        b.append(",('testcase','FromMinor','','en','From minor',' ','_testcase')");
+        b.append(",('testcase','FromMinor','','en','From Minor',' ','_testcase')");
         b.append(",('testcase','FromMinor','','fr','De Mineure','','_cas_de_test')");
         b.append(",('testcase','FromMinor','','fa','از کوچک',' ','_testcase')");
         b.append(",('testcase','Function','','en','Function','The function is the functionnality that the <code class=\\'doc-crbvvoca\\'>test case</code> is testing.','_testcase')");
@@ -954,6 +954,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ticket','','en','Ticket','The is the Ticket Number that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','ticket','','fr','Ticket','','_cas_de_test')");
         b.append(",('testcase','ticket','','fa','تیکت','شماره تیکت است که پیاده سازی  <code class=\\'doc-crbvvoca\\'>مورد آزمون</code> را ارائه می دهد.','_testcase')");
+        b.append(",('testcase','BugID','','en','List of Bug IDs','The is the Ticket Number that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
+        b.append(",('testcase','BugID','','fr','Liste des Bugs associés','','_cas_de_test')");
         b.append(",('testcase','ToMajor','','en','To Major',' ','_testcase')");
         b.append(",('testcase','ToMajor','','fr','A Majeure','','_cas_de_test')");
         b.append(",('testcase','ToMajor','','fa','به اصلی',' ','_testcase')");
@@ -2221,6 +2223,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','btn_savetableconfig','','ru','Сохранить','',NULL)");
         b.append(",('page_global','btn_savetableconfig','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','btn_savetableconfig','','fa','ذخیره','',NULL)");
+        b.append(",('page_global','btn_resettableconfig','','en','Reset','',NULL)");
+        b.append(",('page_global','btn_resettableconfig','','fr','Reset','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','en','Show/Hide','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','ru','Показать/Скрыть','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
@@ -2343,10 +2347,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','tooltip_restoreuserpreferences','','ru','Восстановить конфигурацию таблицы','Восстановить конфигурацию таблицы из пользовательских настроек. Фильтры и отображение столбцов доступны в пользовательских настройках.',NULL)");
         b.append(",('page_global','tooltip_restoreuserpreferences','','fr','Restaurer la configuration de la table','Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur',NULL)");
         b.append(",('page_global','tooltip_restoreuserpreferences','','fa','پیکربندی جدول را بازیابی کنید','پیکربندی جدول را از تنظیمات برگزیده کاربر بازیابی کنید.فیلترها و نمایش ستون در تنظیمات کاربر در دسترس هستند.',NULL)");
-        b.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration','Save the table configuration. Filters and column display is stored in пользовательских настройках',NULL)");
+        b.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration','Save the table configuration. Filters and column display are stored in user preferences',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','ru','Сохранить конфигурацию таблицы','Фильтры и показываемые колонки сохранены в ',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','fa','ذخیره سازی پیکربندی جول','پیکربندی جدول را ذخیره کنید.فیلترها و نمایش ستون ها در تنظیمات برگزیده کاربر ذخیره می شوند.',NULL)");
+        b.append(",('page_global','tooltip_resettableconfig','','en','Reset the table configuration to its default value','Reset the table configuration. Filters and column display will go back to its default value',NULL)");
+        b.append(",('page_global','tooltip_resettableconfig','','fr','Restaurer la configuration par defaut de la table','Restaurer la configuration de la table par defaut. Les filtres et l\\'affichage des colonnes seront restauré à leur valeur d\\'origine',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','en','Show/hide columns','',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','ru','Показать/Скрыть колонки','',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','',NULL)");

@@ -1835,27 +1835,44 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var saveTableConfigurationButtonTooltip = doc.getDocDescription("page_global", "tooltip_savetableconfig");
     var restoreFilterButtonLabel = doc.getDocLabel("page_global", "btn_restoreuserpreferences");
     var restoreFilterButtonTooltip = doc.getDocDescription("page_global", "tooltip_restoreuserpreferences");
+    var resetTableConfigurationButtonLabel = doc.getDocLabel("page_global", "btn_resettableconfig");
+    var resetTableConfigurationButtonTooltip = doc.getDocDescription("page_global", "tooltip_resettableconfig");
     if (tableConfigurations.showColvis) {
         //Display button show/hide columns and Save table configuration
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
+        $("#" + tableConfigurations.divId + "_wrapper #resetFilterButton").remove();
+
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
                 .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
+
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
                 $("<button type='button' id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
             updateUserPreferences(objectWaitingLayer);
         })
                 );
+
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
                 $("<button type='button' id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
             location.reload();
         })
                 );
+
+        $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").before(
+                $("<button type='button' id='resetFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-remove'></span> " + resetTableConfigurationButtonLabel)
+                .attr("data-toggle", "tooltip").attr("title", resetTableConfigurationButtonTooltip).click(function () {
+            localStorage.removeItem('DataTables_' + tableConfigurations.divId + '_' + location.pathname);
+            updateUserPreferences(objectWaitingLayer);
+            location.reload();
+        })
+                );
+
+
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1864,6 +1881,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
+    $("#" + tableConfigurations.divId + "_filter").find('label').addClass("input-group");
+    $("#" + tableConfigurations.divId + "_filter").find('label').append("<span class='input-group-btn'><button id='dataTableRefresh' class='buttonObject btn btn-default input-sm' title='Refresh' type='button'><span class='glyphicon glyphicon-refresh'></span></button></span>");
+
+    $("#dataTableRefresh").click(function () {
+        $("#" + tableConfigurations.divId).dataTable().fnDraw(false);
+    });
 
     return oTable;
 }
@@ -2326,18 +2349,18 @@ function bindToggleCollapse() {
     $(".collapse").each(function () {
         if (this.id !== "sidenavbar-subnavlist") {//disable interaction with the navbar
             $(this).on('shown.bs.collapse', function () {
-                localStorage.setItem(this.id, true);
+                localStorage.setItem("PanelCollapse_" + this.id, true);
                 updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
             });
 
             $(this).on('hidden.bs.collapse', function () {
-                localStorage.setItem(this.id, false);
+                localStorage.setItem("PanelCollapse_" + this.id, false);
                 updateUserPreferences();
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
             });
 
-            if (localStorage.getItem(this.id) === "false") {
+            if (localStorage.getItem("PanelCollapse_" + this.id) === "false") {
                 $(this).removeClass('in');
                 $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
             } else {

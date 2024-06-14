@@ -36,6 +36,7 @@
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseSimpleExecution.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
     <body>
@@ -44,10 +45,11 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
+            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
+            <%@ include file="include/transversalobject/Application.html"%>
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCaseFromSIDE.html"%>
-            <%@ include file="include/transversalobject/TestCaseSimpleExecution.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

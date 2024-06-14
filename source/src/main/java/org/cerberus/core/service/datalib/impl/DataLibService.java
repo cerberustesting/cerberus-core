@@ -729,7 +729,7 @@ public class DataLibService implements IDataLibService {
                 columnsToHide = getListOfSecrets(lib.getTestDataLibID());
 
                 // CSV Call is made here.
-                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList, columnsToHide, ignoreNonMatchedSubdata, defaultSubdataValue, execution);
+                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), lib.isIgnoreFirstLine(), columnList, columnsToHide, ignoreNonMatchedSubdata, defaultSubdataValue, execution);
                 list = responseList.getDataList();
 
                 //if the query returns sucess then we can get the data

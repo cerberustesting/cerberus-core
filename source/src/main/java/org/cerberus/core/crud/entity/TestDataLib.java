@@ -46,6 +46,7 @@ public class TestDataLib {
     private String databaseCsv;
     private String csvUrl;
     private String separator;
+    private boolean ignoreFirstLine;
     private String description;
     private String creator;
     private Timestamp created;
@@ -71,6 +72,14 @@ public class TestDataLib {
 
     public void setService(String service) {
         this.service = service;
+    }
+
+    public boolean isIgnoreFirstLine() {
+        return ignoreFirstLine;
+    }
+
+    public void setIgnoreFirstLine(boolean ignoreFirstLine) {
+        this.ignoreFirstLine = ignoreFirstLine;
     }
 
     public List<TestDataLibData> getSubDataLib() {

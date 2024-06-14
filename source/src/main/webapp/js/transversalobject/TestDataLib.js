@@ -387,12 +387,6 @@ function confirmDataLibModalHandler(mode, page, aceElementId, dataLibName) {
         table_subdata.push($(table1[i]).data("subdata"));
     }
 
-    if ($("#tabsedit-1 #subdataCheck").is(":checked")) {
-        for (var i = 1; i < table_subdata.length; i++) {
-            table_subdata[i].toDelete = true;
-        }
-    }
-
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formEdit.serialize());
     dataForm = JSON.parse(JSON.stringify(dataForm).split('"types":').join('"type":'));
@@ -408,6 +402,7 @@ function confirmDataLibModalHandler(mode, page, aceElementId, dataLibName) {
     files = file.prop("files")[0]
 
     dataForm.privateData = $('#editTestDataLibModal #privateData').prop("checked");
+    dataForm.ignoreFirstLine = $('#editTestDataLibModal #ignoreFirstLine').prop("checked");
 
     var sa = formEdit.serializeArray();
     var formData = new FormData();
@@ -563,6 +558,7 @@ function feedDataLibModal(datalibId, modalId, mode, dataLibName) {
         DataObj1.name = dataLibName;
         DataObj1.script = "";
         DataObj1.separator = "";
+        DataObj1.ignoreFirstLine = true;
         DataObj1.servicepath = "";
         DataObj1.service = "";
         DataObj1.testdatalibid = "";
@@ -665,6 +661,8 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#editTestDataLibModal #separator').prop("value", obj.separator);
+        $('#editTestDataLibModal #ignoreFirstLine').prop("checked", obj.ignoreFirstLine);
+
         $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #script').text(obj.script);
 

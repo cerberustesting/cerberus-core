@@ -130,7 +130,7 @@ function aoColumnsFunc() {
                                     </a>';
                 var lastExec = '<a id="lastExec" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./TestCaseExecutionList.jsp?Test=' + encodeURIComponent(obj["test"]) + '&TestCase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
-                                    <span class="glyphicon glyphicon-backward"></span>\n\
+                                    <span class="glyphicon glyphicon-filter"></span>\n\
                                     </a>';
                 var tag = '<a id="tagExec' + (obj["id"]) + '" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">\n\

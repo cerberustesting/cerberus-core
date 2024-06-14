@@ -97,31 +97,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-//        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
-//            stopPropagation(event);
-//            $(this).parent().find(".active").removeClass("active");
-//            $(this).addClass("active");
-//            if ($(this).prop("id") === "tab") {
-//                $("#progressEnvCountryBrowser").hide();
-//                $("#summaryTableDiv").show();
-//            } else if ($(this).prop("id") === "graph") {
-//                $("#progressEnvCountryBrowser").show();
-//                $("#summaryTableDiv").hide();
-//            }
-//        });
 
-//        $("#reportByLabel .nav li").on("click", function (event) {
-//            stopPropagation(event);
-//            $(this).parent().find(".active").removeClass("active");
-//            $(this).addClass("active");
-//            if ($(this).prop("id") === "requirements") {
-//                $("#mainTreeExeS").hide();
-//                $("#mainTreeExeR").show();
-//            } else if ($(this).prop("id") === "stickers") {
-//                $("#mainTreeExeS").show();
-//                $("#mainTreeExeR").hide();
-//            }
-//        });
+        displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
+        displayInvariantList("video", "VIDEO", false, undefined, "");
+        displayInvariantList("verbose", "VERBOSE", false, undefined, "");
+        displayInvariantList("pageSource", "PAGESOURCE", false, undefined, "");
+        displayInvariantList("robotLog", "ROBOTLOG", false, undefined, "");
+        displayInvariantList("consoleLog", "CONSOLELOG", false, undefined, "");
+        displayInvariantList("retries", "RETRIES", false, undefined, "");
+        displayInvariantList("manualExecution", "MANUALEXECUTION", false, undefined, "");
+        // Pre load eventconnector invariant.
+        getSelectInvariant("EVENTCONNECTOR", false);
 
         loadTagFilters(urlTag);
         if (urlTag !== null) {
@@ -353,7 +339,7 @@ function loadAllReports(urlTag) {
 
 function loadReportingData(selectTag) {
     //var selectTag = $("#selectTag option:selected").text();
-    showLoader($("#TagDetail"));
+    showLoader($("#TagInfo"));
     showLoader($("#ReportByStatus"));
     showLoader($("#testFolderChart"));
     showLoader($("#BugReportByStatus"));
@@ -415,6 +401,8 @@ function loadReportingData(selectTag) {
                 $("#buttonSeeStatsCampaign").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
+                $("#buttonEditCampaign").attr("onclick", "editEntryClick('" + data.tagObject.campaign + "');");
+
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");
@@ -443,7 +431,7 @@ function loadReportingData(selectTag) {
 
             buildDetailCI(data.tagObject);
 
-            hideLoader($("#TagDetail"));
+            hideLoader($("#TagInfo"));
 
             // Report By Status
             $("#ReportByStatusTable").empty();
@@ -474,7 +462,7 @@ function loadReportingData(selectTag) {
 
         } else {
 
-            hideLoader($("#TagDetail"));
+            hideLoader($("#TagInfo"));
             hideLoader($("#ReportByStatus"));
             hideLoader($("#testFolderChart"));
             hideLoader($("#BugReportByStatus"));
@@ -1619,14 +1607,14 @@ function renderOptionsForExeList(selectTag) {
 
 //        var contentHeaderToAdd = "<div class='marginBottom10' id='refreshButtons'>";
         var contentHeaderToAdd = "<div class='btn-group marginRight10 pull-right' id='refreshButtons'>";
-        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=false;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
-        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-xs marginLeft20' onclick='isRefreshAutoHide=true;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
+        var buttonrefreshAll = "<button id='refreshAll' type='button' title='Refresh (displaying all Executions)' class='btn btn-default btn-sm marginLeft20' onclick='isRefreshAutoHide=false;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (displaying all executions)</button>";
+        var buttonrefresh = "<button id='refresh' type='button' title='Refresh (auto hiding OK testcases)' class='btn btn-default btn-sm marginLeft20' onclick='isRefreshAutoHide=true;isRefreshAutoHideManualDefined=true;loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh (auto hiding OK testcases)</button>";
         if (isRefreshAutoHide) {
             contentHeaderToAdd += buttonrefresh;
         } else {
             contentHeaderToAdd += buttonrefreshAll;
         }
-        contentHeaderToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-xs dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
+        contentHeaderToAdd += "<button id='btnGroupDrop5' type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='caret'></span><span class='sr-only'>Toggle Dropdown</span></button>";
         contentHeaderToAdd += "<div class='dropdown-menu'>";
         if (isRefreshAutoHide) {
             contentHeaderToAdd += buttonrefreshAll;
@@ -1803,7 +1791,15 @@ function aoColumnsFunc(Columns) {
             "data": "application",
             "sName": "app.application",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "Application")
+            "title": doc.getDocOnline("application", "Application"),
+            "mRender": function (data, type, obj, meta) {
+                var result = obj.application;
+                var editEntry = '<button id="editEntry" onclick="openModalApplication(\'' + escapeHtml(obj["application"]) + '\',\'EDIT\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editApplicationEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button>';
+                return editEntry + result;
+            }
         },
         {
             "bSortable": false,

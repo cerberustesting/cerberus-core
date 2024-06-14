@@ -336,7 +336,7 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/Application.jsp</url-pattern>
+            <url-pattern>/ApplicationList.jsp</url-pattern>
             <url-pattern>/AppServiceList.jsp</url-pattern>
             <url-pattern>/ApplicationObjectList.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>

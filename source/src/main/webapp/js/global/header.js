@@ -438,6 +438,21 @@ function updateUserPreferences(objectWaitingLayer) {
     if (objectWaitingLayer !== undefined) {
         showLoader(objectWL);
     }
+    var tempLocalStorage = localStorage;
+    tempLocalStorage.removeItem("historyTestcases");
+    tempLocalStorage.removeItem("historyExecutions");
+    tempLocalStorage.removeItem("historyCampaigns");
+    tempLocalStorage.removeItem("properties");
+    tempLocalStorage.removeItem("secondaryProperties");
+    tempLocalStorage.removeItem("listReport");
+    for (var i = 0; i < tempLocalStorage.length; i++) {
+        if (tempLocalStorage.key(i).startsWith("DataTables_")) {
+            let temp = JSON.parse(tempLocalStorage.getItem(tempLocalStorage.key(i)));
+            temp.start = 0;
+            tempLocalStorage.setItem(tempLocalStorage.key(i), JSON.stringify(temp));
+        }
+    }
+//    console.info(tempLocalStorage);
     var uPref = JSON.stringify(localStorage);
     $.ajax({url: "UpdateMyUser",
         type: "POST",
