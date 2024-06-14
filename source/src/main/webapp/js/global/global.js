@@ -2554,26 +2554,48 @@ function getDateMedium(date) {
     }
 }
 
-function getHumanReadableDuration(durInSec) {
+function getHumanReadableDuration(durInSec, nbUnits = 2) {
     let dur = durInSec;
     let unit = "s";
+    let cnt1 = 0;
+    let cnt2 = 0;
     if (dur > 60) {
         dur = dur / 60
         unit = "min"
     } else {
-        return Math.round(dur * 10) / 10 + " " + unit;
+        return Math.round(dur) + " " + unit;
     }
-    if (dur > 60) {
+    if (dur >= 60) {
         dur = dur / 60
         unit = "h"
     } else {
-        return Math.round(dur * 10) / 10 + " " + unit;
+        cnt1 = Math.floor(dur);
+        cnt2 = durInSec - (cnt1 * 60)
+        if ((cnt2 > 0) && (nbUnits > 1)) {
+            return cnt1 + " " + unit + " " + cnt2 + " s";
+        } else {
+            return cnt1 + " " + unit;
+        }
     }
     if (dur > 24) {
         dur = dur / 24
         unit = "d"
+    } else {
+        cnt1 = Math.floor(dur);
+        cnt2 = durInSec - (cnt1 * 60 * 60)
+        if ((cnt2 > 0) && (nbUnits > 1)) {
+            return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
+        } else {
+            return cnt1 + " " + unit;
+        }
     }
-    return Math.round(dur * 10) / 10 + " " + unit;
+    cnt1 = Math.floor(dur);
+    cnt2 = durInSec - (cnt1 * 60 * 60 * 24)
+    if ((cnt2 > 0) && (nbUnits > 1)) {
+        return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
+    } else {
+        return cnt1 + " " + unit;
+    }
 }
 
 
