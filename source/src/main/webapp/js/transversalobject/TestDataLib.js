@@ -67,7 +67,7 @@ function changeAppServiceFromHere() {
 //        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
 
         var editEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
-            class="buttonObject btn btn-default " \n\
+            class="buttonObject btn btn-sm btn-default " \n\
            title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
             <span class="glyphicon glyphicon-pencil"></span></button></span>';
 //        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
