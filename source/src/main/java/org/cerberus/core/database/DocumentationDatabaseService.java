@@ -4089,8 +4089,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('homepage','btn_addTag','','fr','Ajouter le tag','',NULL)");
         b.append(",('homepage','btn_settings','','en','Customize','',NULL)");
         b.append(",('homepage','btn_settings','','fr','Personnaliser','',NULL)");
-        b.append(",('homepage','lastTagExecution','','en','Last Campaign Executions','Display the statistics of the last campaign executed or the tags set in the settings',NULL)");
-        b.append(",('homepage','lastTagExecution','','fr','Dernières exécutions de campagne','Affiche les statistiques d\\'exécutions des dernieres campagnes exécutées (ou des tags définis dans les options).',NULL)");
+        b.append(",('homepage','lastTagExecution','','en','Last & Upcoming Campaign Executions','Display the statistics of the last and upcoming campaign executions or the ones set in the settings',NULL)");
+        b.append(",('homepage','lastTagExecution','','fr','Dernières et prochaines exécutions de campagne','Affiche les statistiques d\\'exécutions des prochaines et dernieres campagnes exécutées (ou des tags définis dans les options).',NULL)");
         b.append(",('homepage','modal_title','','en','Tag Filter','This modal allows to add tags to the last campaign executions report',NULL)");
         b.append(",('homepage','modal_title','','fr','Filtre des tags','Ce modal vous permet d\\'ajouter des tags au rapport des dernières exécutions de campagne',NULL)");
         b.append(",('homepage','testCaseStatusByApp','','en','Test Case Status by Application','Workflow status of the test case by Application',NULL)");
