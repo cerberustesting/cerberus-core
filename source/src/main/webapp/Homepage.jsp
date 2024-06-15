@@ -72,8 +72,19 @@
             <%@ include file="include/global/messagesArea.html" %>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
 
-            <div class="row marginBottom20 hidden-xs">
-                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
+            <div class="row marginBottom20 ">
+                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
+                    <div class="panel panel-default whiteCard">
+                        <div class="row" style="height: 100px;">
+                            <div class="col-sm-12">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
+                                <a href="./ApplicationList.jsp" class="marginLeft15">See or Create Application</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
@@ -84,18 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
-                    <div class="panel panel-default whiteCard">
-                        <div class="row" style="height: 100px;">
-                            <div class="col-sm-12">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
-                                <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-12" id="sc1">
+                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
@@ -109,15 +109,30 @@
                 <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-12">
-                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-cog"></span>  Application</h5>
-                                <div class="marginLeft15 marginBottom10" id="hp_ApplicationNumber"></div>
-                                <a href="./ApplicationList.jsp" class="marginLeft15">See or Create Application</a>
+                            <div class="col-sm-7 col-xs-7">
+                                <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
+                                <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
+                                <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
                             </div>
+                            <div class="col-sm-4 col-xs-4 panel panelPE" id="exeRunningPanel" 
+                                 style="margin-top: 10px; padding-top: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color); display: none">
+                                <div class="row " style="height: 40px;">
+                                    <div class="col-xs-3 status marginBottom10" style="">
+                                        <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>
+                                    </div>
+                                    <div class="col-xs-8 text-right " style="">
+                                        <div class="total" style="" id="exeRunningPanelCnt">27
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="height: 20px;" id="exeRunningList">
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                <div class="col-lg-3 col-md-6 col-sm-12 hidden-xs" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row">
                             <div class="col-sm-12" style="height: 100px;">
@@ -135,7 +150,7 @@
                         <div class="panel-heading card clearfix" data-target="#tagExecStatus">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTagExec();"><span
+                                        onclick="stopPropagation(event); loadExeRunning();loadTagExec();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                                 <button id="tagSettings" class="btn btn-default btn-xs"><span
                                         class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label>
@@ -154,7 +169,7 @@
                         <div class="panel-heading card" data-target="#histoChart1">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTagHistoBar();"><span
+                                        onclick="stopPropagation(event); loadExeRunning();loadTagHistoBar();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>
@@ -172,7 +187,7 @@
                         <div class="panel-heading card" data-target="#histoChart2">
                             <div class="btn-group pull-right">
                                 <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTcHistoBar();"><span
+                                        onclick="stopPropagation(event); loadExeRunning();loadTcHistoBar();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>
@@ -196,15 +211,15 @@
                                         <div class="col-xs-12" id="EnvByBuildRevisionTable">
                                             <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
                                                 <thead>
-                                                <tr>
-                                                    <th class="text-center" id="systemHeader" name="systemHeader">System</th>
-                                                    <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
-                                                    <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
-                                                    <th class="text-center" id="devHeader" name="devHeader">DEV</th>
-                                                    <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
-                                                    <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
-                                                    <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
-                                                </tr>
+                                                    <tr>
+                                                        <th class="text-center" id="systemHeader" name="systemHeader">System</th>
+                                                        <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                        <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                        <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                                        <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                                        <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                                        <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                                    </tr>
                                                 </thead>
                                                 <tbody id="envTableBody">
                                                 </tbody>

@@ -33,6 +33,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadTagHistoBar();
         loadTcHistoBar();
 
+        loadExeRunning();
+
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });
@@ -200,6 +202,79 @@ function generateTagLink(tagName) {
 
     return link;
 }
+
+
+function loadExeRunning() {
+
+    $.ajax({
+        url: "ReadCerberusDetailInformation?" + getUser().defaultSystemsQuery,
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+
+//  UnComment for test and debug purpose.
+//            let test = {
+//                id: 123456,
+//                application: "website",
+//                test: "Exampe",
+//                testcase: "0001A",
+//                environment: "PROD",
+//                country: "FR"
+//            }
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution_list.push(test);
+//            data.simultaneous_execution = data.simultaneous_execution_list.length;
+
+            if (data.simultaneous_execution > 0) {
+                $("#exeRunningPanel").show();
+                $("#exeRunningPanelCnt").text(data.simultaneous_execution);
+                let contentCel = ""
+                let contentCelNotDisplayed = "";
+                $("#exeRunningList").empty();
+                for (var i = 0; i < data.simultaneous_execution_list.length; i++) {
+                    let exe = data.simultaneous_execution_list[i];
+                    contentCel = "<div class='Exe-tooltip'><strong>Application : </strong>" + exe.application + "</div>"
+                    contentCel += "<div class='Exe-tooltip'><strong>Testcase : </strong>" + exe.test + " - " + exe.testcase + "</div>"
+                    contentCel += "<div class='Exe-tooltip'><strong>Environment / Country : </strong>" + exe.environment + " " + exe.country + "</div>"
+                    contentCel += "<div class='Exe-tooltip'><strong>started </strong>" + getHumanReadableDuration((new Date().getTime() - new Date(exe.start).getTime()) / 1000) + "</div>"
+                    if (i > 3) {
+                        contentCelNotDisplayed += contentCel + "<div>-------------</div>";
+                    } else {
+                        $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-expand\'></span></a>')
+                                .attr("href", "TestCaseExecution.jsp?executionId=" + exe.id)
+                                .attr('style', 'margin-left: 10px; font-size: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color)')
+                                .attr('data-original-title', contentCel)
+                                .attr('data-toggle', 'tooltip')
+                                .attr('data-placement', 'bottom')
+                                .attr('data-html', 'true')
+                                );
+                    }
+                }
+//                console.info(contentCelNotDisplayed);
+                if (contentCelNotDisplayed !== "") {
+                    $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-option-horizontal\'></span></a>')
+                            .attr("href", "TestCaseExecutionList.jsp?executionId=")
+                            .attr('style', 'margin-left: 10px; font-size: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color)')
+                            .attr('data-original-title', contentCelNotDisplayed)
+                            .attr('data-toggle', 'tooltip')
+                            .attr('data-placement', 'bottom')
+                            .attr('data-html', 'true')
+                            );
+                }
+
+            } else {
+                $("#exeRunningPanel").hide();
+            }
+        }
+    });
+}
+
 
 
 function loadTagHistoBar() {

@@ -19,11 +19,14 @@
  */
 package org.cerberus.core.apiprivate;
 
+import java.sql.Timestamp;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
+import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
@@ -31,10 +34,12 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author bcivel
@@ -48,6 +53,9 @@ public class ExecutionPrivateController {
 
     @Autowired
     TestCaseExecutionService executionService;
+
+    @Autowired
+    ExecutionUUID executionUUIDObject;
 
     @GetMapping("/getLastByCriteria")
     public String getLastByCriteria(
@@ -83,6 +91,48 @@ public class ExecutionPrivateController {
             LOG.debug(systems);
 
             return jsonResponse.put("iTotalRecords", executionService.getNbExecutions(systems)).toString();
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+            return "error " + ex.getMessage();
+        }
+    }
+
+    @GetMapping("/running")
+    public String getRunning(
+            //            @RequestParam(name = "system", value = "system", required = false) List<String> systems,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+
+//        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            LOG.debug("TOTO");
+            LOG.debug(executionUUIDObject.getExecutionUUIDList());
+            jsonResponse.put("simultaneous_execution", executionUUIDObject.size());
+            JSONArray executionArray = new JSONArray();
+            for (Object ex : executionUUIDObject.getExecutionUUIDList().values()) {
+                TestCaseExecution execution = (TestCaseExecution) ex;
+                JSONObject object = new JSONObject();
+                object.put("id", execution.getId());
+                object.put("test", execution.getTest());
+                object.put("testcase", execution.getTestCase());
+                object.put("system", execution.getApplicationObj().getSystem());
+                object.put("application", execution.getApplication());
+                object.put("environment", execution.getEnvironmentData());
+                object.put("country", execution.getCountry());
+                object.put("robotIP", execution.getSeleniumIP());
+                object.put("tag", execution.getTag());
+                object.put("start", new Timestamp(execution.getStart()));
+                executionArray.put(object);
+            }
+            jsonResponse.put("simultaneous_execution_list", executionArray);
+
+            return jsonResponse.toString();
+
         } catch (Exception ex) {
             LOG.warn(ex, ex);
             return "error " + ex.getMessage();
