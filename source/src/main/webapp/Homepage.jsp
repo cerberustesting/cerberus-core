@@ -160,7 +160,7 @@
                         <div class="panel-heading card clearfix" data-target="#tagExecStatus">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadExeRunning();loadTagExec();"><span
+                                        onclick="stopPropagation(event); loadTagExec();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                                 <button id="tagSettings" class="btn btn-default btn-xs"><span
                                         class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label>
@@ -179,7 +179,7 @@
                         <div class="panel-heading card" data-target="#histoChart1">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadExeRunning();loadTagHistoBar();"><span
+                                        onclick="stopPropagation(event); loadTagHistoBar();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>
@@ -197,7 +197,7 @@
                         <div class="panel-heading card" data-target="#histoChart2">
                             <div class="btn-group pull-right">
                                 <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadExeRunning();loadTcHistoBar();"><span
+                                        onclick="stopPropagation(event); loadTcHistoBar();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>

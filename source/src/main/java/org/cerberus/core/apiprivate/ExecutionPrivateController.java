@@ -109,6 +109,7 @@ public class ExecutionPrivateController {
 
         try {
 
+            // FIXME The executionUUIDObject unfortunatly does not return the Component Class content.
 //        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             LOG.debug(executionUUIDObject.getExecutionUUIDList());
             JSONArray executionArray = new JSONArray();
