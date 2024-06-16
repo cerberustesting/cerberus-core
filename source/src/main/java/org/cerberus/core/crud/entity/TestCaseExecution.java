@@ -167,6 +167,7 @@ public class TestCaseExecution {
     private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
     private Integer cerberus_action_wait_default;
+    // Websocket management parameters
     private boolean cerberus_featureflipping_activatewebsocketpush;
     private long cerberus_featureflipping_websocketpushperiod;
     private long lastWebsocketPush;

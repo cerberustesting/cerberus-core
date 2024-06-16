@@ -57,6 +57,8 @@ import org.cerberus.core.event.IEventService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.websocket.QueueStatus;
+import org.cerberus.core.websocket.QueueStatusEndPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +89,7 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     private IInvariantService invariantService;
     @Autowired
-    ExecutionUUID executionUUIDObject;
+    private ExecutionUUID executionUUIDObject;
     @Autowired
     private ITagService tagService;
     @Autowired
@@ -564,6 +566,12 @@ public class ExecutionStartService implements IExecutionStartService {
             if (runID != 0) {
                 execution.setId(runID);
                 executionUUIDObject.setExecutionUUID(execution.getExecutionUUID(), execution);
+                QueueStatus queueS = QueueStatus.builder()
+                        .executionHashMap(executionUUIDObject.getExecutionUUIDList())
+                        .globalLimit(executionUUIDObject.getGlobalLimit())
+                        .running(executionUUIDObject.getRunning())
+                        .queueSize(executionUUIDObject.getQueueSize()).build();
+                QueueStatusEndPoint.getInstance().send(queueS, true);
                 // Update Queue Execution here if QueueID =! 0.
                 if (execution.getQueueID() != 0) {
                     inQueueService.updateToExecuting(execution.getQueueID(), "", runID);

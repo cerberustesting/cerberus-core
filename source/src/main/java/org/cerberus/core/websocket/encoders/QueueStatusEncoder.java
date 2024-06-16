@@ -19,25 +19,25 @@
  */
 package org.cerberus.core.websocket.encoders;
 
-import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
+import org.cerberus.core.websocket.QueueStatus;
 
 /**
- * Created by corentin on 31/10/16.
+ * Created by vertigo on 16/06/24.
  */
-public class TestCaseExecutionEncoder implements Encoder.Text<TestCaseExecution> {
+public class QueueStatusEncoder implements Encoder.Text<QueueStatus> {
 
     @Autowired
     ITestCaseStepExecutionService testCaseStepExecutionService;
 
     @Override
-    public String encode(TestCaseExecution testCaseExecution) throws EncodeException {
-        return testCaseExecution.toJson(true).toString();
+    public String encode(QueueStatus queueStatus) throws EncodeException {
+        return queueStatus.toJson(true).toString();
     }
 
     @Override

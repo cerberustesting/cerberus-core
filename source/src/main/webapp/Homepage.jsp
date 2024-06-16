@@ -106,23 +106,33 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12" id="sc1">
+                <div class="col-lg-4 col-md-6 col-sm-12" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-7 col-xs-7">
+                            <div class="col-sm-6 col-xs-6">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
                                 <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
                             </div>
-                            <div class="col-sm-4 col-xs-4 panel panelPE" id="exeRunningPanel" 
-                                 style="margin-top: 10px; padding-top: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color); display: none">
-                                <div class="row " style="height: 40px;">
+                            <div class="col-sm-5 col-xs-5 panel panelPE" id="exeRunningPanel" 
+                                 style="margin-top: 5px; padding-top: 10px; background-color: lightgray; color: black; display: none">
+                                <div class="row " style="height: 30px;">
                                     <div class="col-xs-3 status marginBottom10" style="">
                                         <span class="glyphicon pull-left  glyphicon-refresh spin" onclick="loadExeRunning();" title="click to refresh" style="margin-right: 5px;"></span>
                                     </div>
                                     <div class="col-xs-8 text-right " style="">
                                         <div class="total" style="" id="exeRunningPanelCnt">27
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="height: 20px;" id="queueStats">
+                                    <div class='progress' style='height:12px;margin-left: 10px;margin-right: 10px'>
+                                        <div id='progress-barUsed' class='progress-bar statusOK' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
+                                        <div id='progress-barIdle' class='progress-bar statusWE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
+                                        <div id='progress-barQueue' class='progress-bar statusQU' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+                                             data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
                                     </div>
                                 </div>
                                 <div class="row" style="height: 20px;" id="exeRunningList">
@@ -132,7 +142,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12 hidden-xs" id="sc1">
+                <div class="col-lg-2 col-md-6 col-sm-12 hidden-xs" id="sc1">
                     <div class="panel panel-default whiteCard">
                         <div class="row">
                             <div class="col-sm-12" style="height: 100px;">

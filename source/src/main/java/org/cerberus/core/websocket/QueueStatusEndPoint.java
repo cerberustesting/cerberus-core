@@ -42,8 +42,8 @@ import javax.websocket.server.ServerEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.websocket.decoders.TestCaseExecutionDecoder;
-import org.cerberus.core.websocket.encoders.TestCaseExecutionEncoder;
+import org.cerberus.core.websocket.decoders.QueueStatusDecoder;
+import org.cerberus.core.websocket.encoders.QueueStatusEncoder;
 
 /**
  * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution}
@@ -53,12 +53,12 @@ import org.cerberus.core.websocket.encoders.TestCaseExecutionEncoder;
  * @author abourdon
  */
 @ServerEndpoint(
-        value = "/execution/{execution-id}",
-        configurator = TestCaseExecutionEndPoint.SingletonConfigurator.class,
-        decoders = {TestCaseExecutionDecoder.class},
-        encoders = {TestCaseExecutionEncoder.class}
+        value = "/queuestatus",
+        configurator = QueueStatusEndPoint.SingletonConfigurator.class,
+        decoders = {QueueStatusDecoder.class},
+        encoders = {QueueStatusEncoder.class}
 )
-public class TestCaseExecutionEndPoint {
+public class QueueStatusEndPoint {
 
     /**
      * The {@link javax.websocket.server.ServerEndpointConfig.Configurator} of
@@ -70,10 +70,10 @@ public class TestCaseExecutionEndPoint {
         @SuppressWarnings("unchecked")
         @Override
         public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-            if (!TestCaseExecutionEndPoint.class.equals(endpointClass)) {
+            if (!QueueStatusEndPoint.class.equals(endpointClass)) {
                 throw new InstantiationException("No suitable instance for endpoint class " + endpointClass.getName());
             }
-            return (T) TestCaseExecutionEndPoint.getInstance();
+            return (T) QueueStatusEndPoint.getInstance();
         }
 
     }
@@ -81,19 +81,19 @@ public class TestCaseExecutionEndPoint {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionEndPoint.class);
+    private static final Logger LOG = LogManager.getLogger(QueueStatusEndPoint.class);
 
     /**
      * The unique instance of this {@link TestCaseExecutionEndPoint} class
      */
-    private static final TestCaseExecutionEndPoint INSTANCE = new TestCaseExecutionEndPoint();
+    private static final QueueStatusEndPoint INSTANCE = new QueueStatusEndPoint();
 
     /**
      * Get the unique instance of this {@link TestCaseExecutionEndPoint} class
      *
      * @return the unique instance of this {@link TestCaseExecutionEndPoint}
      */
-    public static TestCaseExecutionEndPoint getInstance() {
+    public static QueueStatusEndPoint getInstance() {
         return INSTANCE;
     }
 
@@ -102,7 +102,8 @@ public class TestCaseExecutionEndPoint {
      */
     private Lock mainLock = new ReentrantLock();
     private Map<String, Session> sessions = new HashMap<>();
-    private Map<Long, Set<String>> executions = new HashMap<>();
+//    private Map<Long, Set<String>> executions = new HashMap<>();
+    private Set<String> queueStatuss;
 
     /**
      * Send the given {@link TestCaseExecution} for all session opened to this
@@ -111,30 +112,30 @@ public class TestCaseExecutionEndPoint {
      * Message is sent only if the current timestamp is out of the
      * {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}
      *
-     * @param execution the {@link TestCaseExecution} to send to opened sessions
+     * @param queueStatus the {@link TestCaseExecution} to send to opened
+     * sessions
      * @param forcePush if send has to be forced, regardless of the
      * {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}}
      * @see TestCaseExecution#getLastWebsocketPush()
      */
-    public void send(TestCaseExecution execution, boolean forcePush) {
+    public void send(QueueStatus queueStatus, boolean forcePush) {
         // Check if sending is enabled
-        if (!execution.isCerberus_featureflipping_activatewebsocketpush()) {
-            LOG.debug("Push is disabled. Ignore sending of execution " + execution.getId());
-            return;
-        }
+//        if (!queueStatus.isCerberus_featureflipping_activatewebsocketpush()) {
+//            LOG.debug("Push is disabled. Ignore sending of execution " + queueStatus.getId());
+//            return;
+//        }
 
         // Check if sending can be done regarding on the last push and allowed period
-        long sinceLastPush = new Date().getTime() - execution.getLastWebsocketPush();
-        if ((sinceLastPush < execution.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
-            LOG.debug("Not enough elapsed time since the last push for execution " + execution.getId() + " (" + sinceLastPush + " < " + execution.getCerberus_featureflipping_websocketpushperiod());
-            return;
-        }
-
+//        long sinceLastPush = new Date().getTime() - queueStatus.getLastWebsocketPush();
+//        if ((sinceLastPush < queueStatus.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
+//            LOG.debug("Not enough elapsed time since the last push for execution " + queueStatus.getId() + " (" + sinceLastPush + " < " + queueStatus.getCerberus_featureflipping_websocketpushperiod());
+//            return;
+//        }
         // Get registered sessions
         Collection<Session> registeredSessions = new ArrayList<>();
         mainLock.lock();
         try {
-            Set<String> registeredSessionIds = executions.get(execution.getId());
+            Set<String> registeredSessionIds = queueStatuss;
             if (registeredSessionIds != null) {
                 registeredSessions = Maps.filterKeys(sessions, Predicates.in(registeredSessionIds)).values();
             }
@@ -143,32 +144,32 @@ public class TestCaseExecutionEndPoint {
         }
 
         // Send the given TestCaseExecution to all registered sessions
-        LOG.debug("Trying to send execution " + execution.getId() + " to sessions");
+        LOG.debug("Trying to send queue status to sessions");
         for (Session registeredSession : registeredSessions) {
             try {
-                registeredSession.getBasicRemote().sendObject(execution);
-                LOG.debug("Execution " + execution.getId() + " sent to session " + registeredSession.getId());
+                registeredSession.getBasicRemote().sendObject(queueStatus);
+                LOG.debug("Queue Status sent to session " + registeredSession.getId());
             } catch (Exception e) {
-                LOG.warn("Unable to send execution " + execution.getId() + " to session " + registeredSession.getId() + " due to " + e.getMessage());
+                LOG.warn("Unable to send queue status to session " + registeredSession.getId() + " due to " + e.getMessage());
             }
         }
 
         // Finally set the last push date to the given TestCaseExecution
-        execution.setLastWebsocketPush(new Date().getTime());
+        queueStatus.setLastWebsocketPush(new Date().getTime());
     }
 
     /**
      * Process to the end of the given {@link TestCaseExecution}, i.e., close
      * all registered session to the given {@link TestCaseExecution}
      *
-     * @param execution the given {@link TestCaseExecution} to end
+     * @param queueStatus the given {@link TestCaseExecution} to end
      */
-    public void end(TestCaseExecution execution) {
+    public void end(QueueStatus queueStatus) {
         // Get the registered sessions to the given TestCaseExecution
         Collection<Session> registeredSessions = new ArrayList<>();
         mainLock.lock();
         try {
-            Set<String> registeredSessionIds = executions.remove(execution.getId());
+            Set<String> registeredSessionIds = queueStatuss;
             if (registeredSessionIds != null) {
                 for (String registeredSessionId : registeredSessionIds) {
                     registeredSessions.add(sessions.remove(registeredSessionId));
@@ -180,13 +181,13 @@ public class TestCaseExecutionEndPoint {
 
         // Close registered sessions
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Clean execution " + execution.getId());
+            LOG.debug("Clean execution ");
         }
         for (Session registeredSession : registeredSessions) {
             try {
                 registeredSession.close();
             } catch (Exception e) {
-                LOG.warn("Unable to close session " + registeredSession.getId() + " for execution " + execution.getId() + " due to " + e.getMessage());
+                LOG.warn("Unable to close session " + registeredSession.getId() + " for queue status due to " + e.getMessage());
             }
         }
     }
@@ -195,12 +196,12 @@ public class TestCaseExecutionEndPoint {
      * Callback when receiving message from client side
      *
      * @param session the client {@link Session}
-     * @param execution the associated {@link TestCaseExecution} sent by client
+     * @param queueStatus
      * @param executionId the execution identifier from the
      * {@link ServerEndpoint} path
      */
     @OnMessage
-    public void message(final Session session, TestCaseExecution execution, @PathParam("execution-id") int executionId) {
+    public void message(final Session session, QueueStatus queueStatus) {
         // Nothing to do
     }
 
@@ -213,19 +214,17 @@ public class TestCaseExecutionEndPoint {
      * {@link ServerEndpoint} path
      */
     @OnOpen
-    public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") long executionId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Session " + session.getId() + " opened connection to execution " + executionId);
-        }
+    public void openConnection(Session session, EndpointConfig config) {
+        LOG.debug("Session " + session.getId() + " opened connection to queue Status");
         mainLock.lock();
         try {
             sessions.put(session.getId(), session);
-            Set<String> registeredSessions = executions.get(executionId);
+            Set<String> registeredSessions = queueStatuss;
             if (registeredSessions == null) {
                 registeredSessions = new HashSet<>();
             }
             registeredSessions.add(session.getId());
-            executions.put(executionId, registeredSessions);
+            queueStatuss = registeredSessions;
         } finally {
             mainLock.unlock();
         }
@@ -246,7 +245,7 @@ public class TestCaseExecutionEndPoint {
         mainLock.lock();
         try {
             sessions.remove(session.getId());
-            Set<String> registeredSessions = executions.get(executionId);
+            Set<String> registeredSessions = queueStatuss;
             if (registeredSessions != null) {
                 registeredSessions.remove(session.getId());
             }

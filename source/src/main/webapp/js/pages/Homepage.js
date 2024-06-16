@@ -144,6 +144,40 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 });
 
+
+function loadQueueStatusWebSocket(sockets) {
+
+    var parser = document.createElement('a');
+    parser.href = window.location.href;
+
+    var protocol = "ws:";
+    if (parser.protocol === "https:") {
+        protocol = "wss:";
+    }
+    var path = parser.pathname.split("Homepage")[0];
+    var new_uri = protocol + parser.host + path + "queuestatus";
+    console.info("Open Socket to : " + new_uri);
+    var socket = new WebSocket(new_uri);
+
+    socket.onopen = function (e) {
+    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+    socket.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+//        console.info("received data from socket");
+//        console.info(data);
+        updatePageQueueStatus(data);
+//        updatePage(data, steps);
+    } //on récupère les messages provenant du serveur websocket
+    socket.onclose = function (e) {
+    } //on est informé lors de la fermeture de la connexion vers le serveur
+    socket.onerror = function (e) {
+    } //on traite les cas d'erreur*/
+
+    // Remain in memory
+    sockets.push(socket);
+
+}
+
 function displayPageLabel() {
     var doc = new Doc();
 
@@ -203,17 +237,9 @@ function generateTagLink(tagName) {
     return link;
 }
 
+function updatePageQueueStatus(data) {
 
-function loadExeRunning() {
-
-    $.ajax({
-        url: "ReadCerberusDetailInformation?" + getUser().defaultSystemsQuery,
-        method: "GET",
-        async: true,
-        dataType: 'json',
-        success: function (data) {
-
-//  UnComment for test and debug purpose.
+//  UnComment bellow for test and debug purpose. \/ \/ \/
 //            let test = {
 //                id: 123456,
 //                application: "website",
@@ -222,55 +248,114 @@ function loadExeRunning() {
 //                environment: "PROD",
 //                country: "FR"
 //            }
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution_list.push(test);
-//            data.simultaneous_execution = data.simultaneous_execution_list.length;
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            data.runningExecutionsList.push(test);
+//            let queueStats = {
+//                globalLimit: 10,
+//                running: data.simultaneous_execution_list.length,
+//                queueSize: 30
+//            }
+//            data.queueStats = queueStats;
+//  UnComment above for test and debug purpose. /\ /\ /\
 
-            if (data.simultaneous_execution > 0) {
-                $("#exeRunningPanel").show();
-                $("#exeRunningPanelCnt").text(data.simultaneous_execution);
-                let contentCel = ""
-                let contentCelNotDisplayed = "";
-                $("#exeRunningList").empty();
-                for (var i = 0; i < data.simultaneous_execution_list.length; i++) {
-                    let exe = data.simultaneous_execution_list[i];
-                    contentCel = "<div class='Exe-tooltip'><strong>Application : </strong>" + exe.application + "</div>"
-                    contentCel += "<div class='Exe-tooltip'><strong>Testcase : </strong>" + exe.test + " - " + exe.testcase + "</div>"
-                    contentCel += "<div class='Exe-tooltip'><strong>Environment / Country : </strong>" + exe.environment + " " + exe.country + "</div>"
-                    contentCel += "<div class='Exe-tooltip'><strong>started </strong>" + getHumanReadableDuration((new Date().getTime() - new Date(exe.start).getTime()) / 1000) + "</div>"
-                    if (i > 3) {
-                        contentCelNotDisplayed += contentCel + "<div>-------------</div>";
-                    } else {
-                        $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-expand\'></span></a>')
-                                .attr("href", "TestCaseExecution.jsp?executionId=" + exe.id)
-                                .attr('style', 'margin-left: 10px; font-size: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color)')
-                                .attr('data-original-title', contentCel)
-                                .attr('data-toggle', 'tooltip')
-                                .attr('data-placement', 'bottom')
-                                .attr('data-html', 'true')
-                                );
-                    }
-                }
-//                console.info(contentCelNotDisplayed);
-                if (contentCelNotDisplayed !== "") {
-                    $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-option-horizontal\'></span></a>')
-                            .attr("href", "TestCaseExecutionList.jsp?executionId=")
-                            .attr('style', 'margin-left: 10px; font-size: 10px;background-color:var(--crb-blue-color);color :var(--crb-blue-light-color)')
-                            .attr('data-original-title', contentCelNotDisplayed)
-                            .attr('data-toggle', 'tooltip')
-                            .attr('data-placement', 'bottom')
-                            .attr('data-html', 'true')
-                            );
-                }
+    if ((data.queueStats.running > 0) || (data.queueStats.queueSize > 0)) {
+        $("#exeRunningPanel").show();
 
-            } else {
-                $("#exeRunningPanel").hide();
+        // Execution Queue progress bar
+        let totalQueue = data.queueStats.globalLimit + data.queueStats.queueSize
+        let perRunning = data.queueStats.running / totalQueue * 100;
+        let perIdle = (data.queueStats.globalLimit - data.queueStats.running) / totalQueue * 100;
+        let perQueue = data.queueStats.queueSize / totalQueue * 100;
+
+        $("#progress-barUsed").attr('data-original-title', data.queueStats.running + " running")
+        $("#progress-barIdle").attr('data-original-title', (data.queueStats.globalLimit - data.queueStats.running) + " available slot")
+        $("#progress-barQueue").attr('data-original-title', (data.queueStats.queueSize) + " still in queue")
+        $("#progress-barUsed").attr('aria-valuenow', perRunning)
+        $("#progress-barIdle").attr('aria-valuenow', perIdle)
+        $("#progress-barQueue").attr('aria-valuenow', perQueue)
+        $("#progress-barUsed").attr('style', "width: " + perRunning + "%;")
+        $("#progress-barIdle").attr('style', "width: " + perIdle + "%;")
+        $("#progress-barQueue").attr('style', "width: " + perQueue + "%;")
+
+        // Execution Counter
+        if (data.queueStats.queueSize > 0) {
+            $("#exeRunningPanelCnt").text(data.queueStats.running + " / " + data.queueStats.queueSize);
+        } else {
+            $("#exeRunningPanelCnt").text(data.queueStats.running);
+        }
+
+        // Execution List
+        $("#exeRunningList").empty();
+        let contentCel = "";
+        let contentCelNotDisplayed = "";
+        // Filter list with only selected systems.
+        let newList = [];
+        for (var i = 0; i < data.runningExecutionsList.length; i++) {
+            let exe = data.runningExecutionsList[i];
+            if (getUser().defaultSystems.includes(exe.system)) {
+                newList.push(exe);
             }
+        }
+//        console.info(data.runningExecutionsList);
+        for (var i = 0; i < newList.length; i++) {
+            let exe = newList[i];
+            contentCel = "<div class='Exe-tooltip'><strong>Exe : </strong>" + exe.id + "</div>"
+            contentCel += "<div class='Exe-tooltip'><strong>Application : </strong>" + exe.application + "</div>"
+            contentCel += "<div class='Exe-tooltip'><strong>Testcase : </strong>" + exe.test + " - " + exe.testcase + "</div>"
+            contentCel += "<div class='Exe-tooltip'><strong>Environment / Country : </strong>" + exe.environment + " " + exe.country + "</div>"
+            contentCel += "<div class='Exe-tooltip'><strong>started </strong>" + getHumanReadableDuration((new Date().getTime() - new Date(exe.start).getTime()) / 1000) + " ago</div>"
+            if (i > 3) {
+                contentCelNotDisplayed += contentCel + "<div>-------------</div>";
+            } else {
+                $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-expand\'></span></a>')
+                        .attr("href", "TestCaseExecution.jsp?executionId=" + exe.id)
+                        .attr('style', 'margin-left: 10px; font-size: 10px; background-color: lightgray; color :black')
+                        .attr('data-original-title', contentCel)
+                        .attr('data-toggle', 'tooltip')
+                        .attr('data-placement', 'bottom')
+                        .attr('data-html', 'true')
+                        );
+            }
+
+        }
+//                console.info(contentCelNotDisplayed);
+        if (contentCelNotDisplayed !== "") {
+            $("#exeRunningList").append($('<a><span class=\'glyphicon glyphicon-option-horizontal\'></span></a>')
+                    .attr("href", "TestCaseExecutionList.jsp")
+                    .attr('style', 'margin-left: 10px; font-size: 10px; background-color: lightgray; color :black')
+                    .attr('data-original-title', contentCelNotDisplayed)
+                    .attr('data-toggle', 'tooltip')
+                    .attr('data-placement', 'bottom')
+                    .attr('data-html', 'true')
+                    );
+        }
+
+    } else {
+        $("#exeRunningPanel").hide();
+    }
+}
+
+
+function loadExeRunning() {
+
+    $.ajax({
+//        url: "ReadCerberusDetailInformation?" + getUser().defaultSystemsQuery,
+        url: "api/executions/running",
+        method: "GET",
+        async: true,
+        dataType: 'json',
+        success: function (data) {
+
+            updatePageQueueStatus(data);
+
+            sockets = [];
+            loadQueueStatusWebSocket(sockets);
+
         }
     });
 }
@@ -697,7 +782,7 @@ function readNextTagScheduled() {
             }
             for (var s = 0; s < nbTagLoadedTargetScheduled; s++) {
                 let item = data.schedulerTriggers[s];
-                tagList.splice(0, 0, "<b>" + item.triggerName + "</b> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + " <b>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
+                tagList.splice(0, 0, "<b>" + item.triggerName + "</b><span class='hidden-xs'> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + "</span> <b>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
             }
         }
     });

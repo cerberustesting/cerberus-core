@@ -32,10 +32,34 @@ import org.springframework.stereotype.Component;
 public class ExecutionUUID {
 
     private HashMap<String, TestCaseExecution> executionHashMap;
+    private int running;
+    private int queueSize;
+    private int globalLimit;
+
+    public int getRunning() {
+        return running;
+    }
+
+    public int getQueueSize() {
+        return queueSize;
+    }
+
+    public int getGlobalLimit() {
+        return globalLimit;
+    }
+
+    public void setQueueCounters(int globalLimit, int running, int queueSize) {
+        this.globalLimit = globalLimit;
+        this.running = running;
+        this.queueSize = queueSize;
+    }
 
     @PostConstruct
     public void init() {
         executionHashMap = new HashMap<>();
+        running = 0;
+        queueSize = 0;
+        globalLimit = 0;
     }
 
     public HashMap<String, TestCaseExecution> getExecutionUUIDList() {

@@ -99,7 +99,6 @@ public class ReadCerberusDetailInformation extends HttpServlet {
         Infos infos = new Infos();
 
         try {
-            jsonResponse.put("simultaneous_execution", euuid.size());
             JSONArray executionArray = new JSONArray();
             for (Object ex : euuid.getExecutionUUIDList().values()) {
                 TestCaseExecution execution = (TestCaseExecution) ex;
@@ -116,14 +115,15 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 object.put("start", new Timestamp(execution.getStart()));
                 executionArray.put(object);
             }
-            jsonResponse.put("simultaneous_execution_list", executionArray);
+            jsonResponse.put("runningExecutionsList", executionArray);
+            
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
 
-            JSONObject object = new JSONObject();
+            JSONObject schedulerObject = new JSONObject();
             if (scInit != null) {
-                object.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
-                object.put("schedulerReloadIsRunning", scInit.isIsRunning());
+                schedulerObject.put("schedulerInstanceVersion", scInit.getInstanceSchedulerVersion());
+                schedulerObject.put("schedulerReloadIsRunning", scInit.isIsRunning());
                 // We get here the list of triggers of Quartz scheduler.
                 List<JSONObject> triggerList = new ArrayList<>();
                 for (Trigger triggerSet : scInit.getMyTriggersSet()) {
@@ -138,12 +138,18 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 }
                 Collections.sort(triggerList, new SortTriggers());
                 JSONArray object1 = new JSONArray(triggerList);
-                object.put("schedulerTriggers", object1);
+                schedulerObject.put("schedulerTriggers", object1);
                 Date now = new Date();
-                object.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
-                object.put("serverTimeZone", TimeZone.getDefault().getDisplayName());
+                schedulerObject.put("serverDate", new SimpleDateFormat(DATE_FORMAT).format(now));
+                schedulerObject.put("serverTimeZone", TimeZone.getDefault().getDisplayName());
             }
-            jsonResponse.put("scheduler", object);
+            jsonResponse.put("scheduler", schedulerObject);
+
+            JSONObject queueObject = new JSONObject();
+            queueObject.put("globalLimit", euuid.getGlobalLimit());
+            queueObject.put("running", euuid.getRunning());
+            queueObject.put("queueSize", euuid.getQueueSize());
+            jsonResponse.put("queueStats", queueObject);
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
 

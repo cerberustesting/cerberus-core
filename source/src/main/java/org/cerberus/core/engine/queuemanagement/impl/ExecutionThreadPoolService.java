@@ -43,6 +43,7 @@ import org.cerberus.core.crud.service.IRobotService;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.core.engine.entity.ExecutionUUID;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.authentification.impl.APIKeyService;
@@ -51,6 +52,8 @@ import org.cerberus.core.session.SessionCounter;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
+import org.cerberus.core.websocket.QueueStatus;
+import org.cerberus.core.websocket.QueueStatusEndPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -81,6 +84,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     private IInvariantService invariantService;
     @Autowired
     private IMyVersionService myVersionService;
+    @Autowired
+    private ExecutionUUID executionUUIDObject;
     @Autowired
     ExecutionQueueThreadPool threadQueuePool;
     @Autowired
@@ -661,6 +666,16 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     const01_current = 0;
                 }
                 LOG.debug("Stats : GlobalContrain=" + poolSizeGeneral + " - nbRunning=" + const01_current + " - NbQueued=" + executionsInQueue.size());
+
+                if (nbqueuedexe == 0) { // Websocket of queue status is sent only if no new execution was submitted. In case a new execution is submitted, the websocket is refreshed only when execution has been created on database.
+                    executionUUIDObject.setQueueCounters(poolSizeGeneral, const01_current, executionsInQueue.size());
+                    QueueStatus queueS = QueueStatus.builder()
+                            .executionHashMap(executionUUIDObject.getExecutionUUIDList())
+                            .globalLimit(poolSizeGeneral)
+                            .running(const01_current)
+                            .queueSize(executionsInQueue.size()).build();
+                    QueueStatusEndPoint.getInstance().send(queueS, true);
+                }
 
                 queueStatService.create(factoryQueueStat.create(0, poolSizeGeneral, const01_current, executionsInQueue.size(), "", null, null, null));
 

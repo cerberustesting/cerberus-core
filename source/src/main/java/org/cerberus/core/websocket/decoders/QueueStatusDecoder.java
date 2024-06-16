@@ -17,27 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.websocket.encoders;
+package org.cerberus.core.websocket.decoders;
 
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.service.ITestCaseStepExecutionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.gson.Gson;
 
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
+import javax.websocket.DecodeException;
+import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
+import org.cerberus.core.websocket.QueueStatus;
 
 /**
  * Created by corentin on 31/10/16.
  */
-public class TestCaseExecutionEncoder implements Encoder.Text<TestCaseExecution> {
-
-    @Autowired
-    ITestCaseStepExecutionService testCaseStepExecutionService;
+public class QueueStatusDecoder implements Decoder.Text<QueueStatus> {
 
     @Override
-    public String encode(TestCaseExecution testCaseExecution) throws EncodeException {
-        return testCaseExecution.toJson(true).toString();
+    public QueueStatus decode(String s) throws DecodeException {
+        Gson gson = new Gson();
+        return gson.fromJson(s, QueueStatus.class);
+    }
+
+    @Override
+    public boolean willDecode(String s) {
+        return false;
     }
 
     @Override

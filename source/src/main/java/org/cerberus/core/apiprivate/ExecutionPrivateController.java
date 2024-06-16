@@ -55,7 +55,7 @@ public class ExecutionPrivateController {
     TestCaseExecutionService executionService;
 
     @Autowired
-    ExecutionUUID executionUUIDObject;
+    private ExecutionUUID executionUUIDObject;
 
     @GetMapping("/getLastByCriteria")
     public String getLastByCriteria(
@@ -110,9 +110,7 @@ public class ExecutionPrivateController {
         try {
 
 //        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            LOG.debug("TOTO");
             LOG.debug(executionUUIDObject.getExecutionUUIDList());
-            jsonResponse.put("simultaneous_execution", executionUUIDObject.size());
             JSONArray executionArray = new JSONArray();
             for (Object ex : executionUUIDObject.getExecutionUUIDList().values()) {
                 TestCaseExecution execution = (TestCaseExecution) ex;
@@ -129,7 +127,13 @@ public class ExecutionPrivateController {
                 object.put("start", new Timestamp(execution.getStart()));
                 executionArray.put(object);
             }
-            jsonResponse.put("simultaneous_execution_list", executionArray);
+            jsonResponse.put("runningExecutionsList", executionArray);
+
+            JSONObject queueStatus = new JSONObject();
+            queueStatus.put("queueSize", executionUUIDObject.getQueueSize());
+            queueStatus.put("globalLimit", executionUUIDObject.getGlobalLimit());
+            queueStatus.put("running", executionUUIDObject.getRunning());
+            jsonResponse.put("queueStats", queueStatus);
 
             return jsonResponse.toString();
 
