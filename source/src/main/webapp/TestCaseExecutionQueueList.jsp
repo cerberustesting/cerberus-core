@@ -59,12 +59,12 @@
 
                 <div class="center tab-pane fade" id="tabDetails">
                     <div class="panel panel-default">
-                        <div class="panel-body" id="executionList">
-                            <form id="massActionForm" name="massActionForm"  title="" role="form">
+                        <form id="massActionForm" name="massActionForm"  title="" role="form">
+                            <div class="panel-body" id="executionList">
                                 <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
-                            </form>
-                            <div class="marginBottom20"></div>
-                        </div>
+                                <div class="marginBottom20"></div>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

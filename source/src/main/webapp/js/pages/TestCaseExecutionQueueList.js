@@ -17,6 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+var tabClicked = false;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -118,16 +122,22 @@ function initPage() {
 
         switch ($(e.target).attr("href")) {
             case "#tabDetails":
-                refreshTable();
+                if (tabClicked) {
+                    refreshTable();
+                    tabClicked = true;
+                }
                 break;
             case "#tabFollowUp":
                 displayAndRefresh_followup();
+                tabClicked = true;
                 break;
             case "#tabJobStatus":
                 displayAndRefresh_jobStatus();
+                tabClicked = true;
                 break;
             case "#tabQueueHistory":
                 loadStatGraph();
+                tabClicked = true;
                 break;
         }
     });
