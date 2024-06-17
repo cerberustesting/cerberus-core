@@ -33,7 +33,7 @@ function openModalApplication(application, mode, page) {
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "APPLITYPE", false);
     displayDeployTypeList("deploytype");
-    
+
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
     $('#editApplicationModalForm input[name="application"]').off("change");
     if (mode === "EDIT") {
@@ -44,11 +44,15 @@ function openModalApplication(application, mode, page) {
     }
 
 
+    var doc = new Doc();
     if (mode === "EDIT") {
         editApplicationClick(application);
+        $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_edit"));
     } else if (mode === "ADD") {
+        $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_create"));
         addApplicationClick(application);
     } else if (mode === "DUPLICATE") {
+        $("#editApplicationModalLabel").html(doc.getDocLabel("page_application", "button_create"));
         duplicateApplicationClick(application);
     }
 }
