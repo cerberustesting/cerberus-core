@@ -22,11 +22,12 @@
 /**
  * Function that allow to reset the filter selected
  * @param {type} oTable datatable object
- * @param {columnNumber} columnNumber. If empty, reset all the column's filter
- * @param {clearGlobalSearch} boolean. true if global search should be cleared.
+ * @param {int} columnNumber If empty, reset all the column's filter
+ * @param {boolean} clearGlobalSearch true if global search should be cleared.
+ * @param {boolean} doRedraw true if draw should be triggeres.
  * @returns {undefined}
  */
-function resetFilters(oTable, columnNumber, clearGlobalSearch) {
+function resetFilters(oTable, columnNumber, clearGlobalSearch = false, doRedraw = true) {
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
         /**
@@ -49,7 +50,9 @@ function resetFilters(oTable, columnNumber, clearGlobalSearch) {
     if (clearGlobalSearch) {
         oSettings.oPreviousSearch.sSearch = '';
     }
-    oTable.fnDraw();
+    if (doRedraw) {
+        oTable.fnDraw();
+    }
 }
 
 function resetTooltip() {
@@ -66,7 +69,7 @@ function resetTooltip() {
  */
 function filterOnColumn(tableId, column, value) {
     var oTable = $('#' + tableId).dataTable();
-    resetFilters(oTable);
+    resetFilters(oTable, undefined, undefined, false);
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
         if (oSettings.aoColumns[iCol].data === column) {
@@ -82,40 +85,40 @@ function filterOnColumn(tableId, column, value) {
  * @param {type} searchColums > Array of columns
  * @returns {undefined}
  */
-function generateFiltersOnMultipleColumns(tableId, searchColumns) {
-    var filterConfiguration = Array();
-    /**
-     * Loop on searchColumns and get Parameter values >> Build an array of object
-     */
-    var searchArray = new Array;
-    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
-        var param = GetURLParameters(searchColumns[searchColumn]);
-        var searchObject = {
-            param: searchColumns[searchColumn],
-            values: param};
-        searchArray.push(searchObject);
-    }
-    /**
-     * Apply the filter to the table
-     */
-    var oTable = $('#' + tableId).dataTable();
-    //resetFilters(oTable);
-    var oSettings = oTable.fnSettings();
-    for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
-        for (sCol = 0; sCol < searchArray.length; sCol++) {
-            if (oSettings.aoColumns[iCol].data === searchArray[sCol].param
-                    && searchArray[sCol].values.length !== 0) {
-                var filter = {
-                    name: "sSearch_" + iCol,
-                    value: searchArray[sCol].values.join(", ")};
-                filterConfiguration.push(filter);
-            }
-        }
-
-    }
-
-    return (filterConfiguration);
-}
+//function generateFiltersOnMultipleColumns(tableId, searchColumns) {
+//    var filterConfiguration = Array();
+//    /**
+//     * Loop on searchColumns and get Parameter values >> Build an array of object
+//     */
+//    var searchArray = new Array;
+//    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
+//        var param = GetURLParameters(searchColumns[searchColumn]);
+//        var searchObject = {
+//            param: searchColumns[searchColumn],
+//            values: param};
+//        searchArray.push(searchObject);
+//    }
+//    /**
+//     * Apply the filter to the table
+//     */
+//    var oTable = $('#' + tableId).dataTable();
+//    //resetFilters(oTable);
+//    var oSettings = oTable.fnSettings();
+//    for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
+//        for (sCol = 0; sCol < searchArray.length; sCol++) {
+//            if (oSettings.aoColumns[iCol].data === searchArray[sCol].param
+//                    && searchArray[sCol].values.length !== 0) {
+//                var filter = {
+//                    name: "sSearch_" + iCol,
+//                    value: searchArray[sCol].values.join(", ")};
+//                filterConfiguration.push(filter);
+//            }
+//        }
+//
+//    }
+//
+//    return (filterConfiguration);
+//}
 
 /**
  * Function that apply filters on given datatable's columns
@@ -142,7 +145,7 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
 
     // Apply filter on table
     var oTable = $('#' + tableId).dataTable();
-    resetFilters(oTable);
+    resetFilters(oTable, undefined, undefined, false);
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
         for (sCol = 0; sCol < searchArray.length; sCol++) {

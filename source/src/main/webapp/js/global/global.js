@@ -1633,7 +1633,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @param {Function} createdRowCallback callback function to be called after each row
  * @return {Object} Return the dataTable object to use the api
  */
-function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback, async) {
+function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback, async = true) {
     /**
      * Define datatable config with tableConfiguration object received
      */
@@ -1711,18 +1711,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }
         } : false;
-        filtrableColumns = undefined;
-        if (filtrableColumns !== undefined) {
-            configs["fnServerParams"] = function (aoData) {
 
-                var filters = generateFiltersOnMultipleColumns(tableConfigurations.divId, filtrableColumns);
-                for (var f = 0; f < filters.length; f++) {
-                    aoData.push(filters[f]);
-                }
-                aoData.push({name: "iSortCol_0", value: configs["aaSorting"][0][0]});
-                aoData.push({name: "sSortDir_0", value: configs["aaSorting"][0][1]});
-            };
-        }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
 
             var like = "";
@@ -2595,7 +2584,7 @@ function getHumanReadableDuration(durInSec, nbUnits = 2) {
         return cnt1 + " " + unit + " " + getHumanReadableDuration(cnt2, (nbUnits - 1));
     } else {
         return cnt1 + " " + unit;
-    }
+}
 }
 
 

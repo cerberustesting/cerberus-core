@@ -57,12 +57,10 @@ function initPage() {
         searchArray.push(searchObject);
     }
 
-    $.when(loadTable()).then(function () {
-        applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);
-    });
+    loadTable(searchArray);
 }
 
-function loadTable() {
+function loadTable(searchArray) {
     //clear the old report content before reloading it
     $("#testCaseExecution").empty();
     $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable">\n\
@@ -72,14 +70,12 @@ function loadTable() {
 
     //configure and create the dataTable
     var lengthMenu = [10, 25, 50, 100, 500, 1000];
-    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [3, 'desc'], lengthMenu);
-    configurations.aaSorting = [2, 'desc'];
+    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [2, 'desc'], lengthMenu);
+    var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", searchArray, true, undefined, undefined);
 
-    var filtrableColumns = new Array("test", "testcase", "application", "country", "environment");
-
-    $.when(createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", filtrableColumns, undefined ,undefined, undefined, false)).then(function () {
-        return true;
-    });
+    if (searchArray.length > 0) {
+        applyFiltersOnMultipleColumns("testCaseExecutionTable", searchArray, false);
+    }
 
 }
 

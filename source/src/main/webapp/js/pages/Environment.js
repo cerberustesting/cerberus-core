@@ -230,7 +230,9 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
         searchObject = {param: "system", values: selectSystem};
         searchArray.push(searchObject);
     }
-    applyFiltersOnMultipleColumns("environmentsTable", searchArray, false);
+    if (searchArray.length > 0) {
+        applyFiltersOnMultipleColumns("environmentsTable", searchArray, false);
+    }
 
     return table;
 }
