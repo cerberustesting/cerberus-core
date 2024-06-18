@@ -31,15 +31,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
-    // handle the click for specific action buttons
-    $("#editTestcampaignButton").click(editEntryModalSaveHandler);
-    $("#addTestcampaignButton").click(addEntryModalSaveHandler);
-
-    //clear the modals fields when closed
-    $('#editTestcampaignModal').on('hidden.bs.modal', editEntryModalCloseHandler);
-    $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
-
     displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
     displayInvariantList("video", "VIDEO", false, undefined, "");
     displayInvariantList("verbose", "VERBOSE", false, undefined, "");

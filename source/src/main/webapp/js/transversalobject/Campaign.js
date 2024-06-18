@@ -316,6 +316,15 @@ function editEntryClick(param) {
     $('#editTestcampaignButton').attr('class', 'btn btn-primary');
     $('#editTestcampaignButton').removeAttr('hidden');
 
+    // handle the click for specific action buttons
+    $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").click(addEntryModalSaveHandler);
+
+    //clear the modals fields when closed
+    $('#editTestcampaignModal').on('hidden.bs.modal', editEntryModalCloseHandler);
+    $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
+
     var formEdit = $('#editTestcampaignModal');
 
     showLoader("#testcampaignList");
@@ -997,9 +1006,9 @@ function aoColumnsFunc_Tag() {
     var aoColumns = [
         {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocOnline("tag", "tag")},
         {
-            "data": "4", 
-            "sName": "DateCreated", 
-            "sWidth": "150px", 
+            "data": "4",
+            "sName": "DateCreated",
+            "sWidth": "150px",
             "title": doc.getDocLabel("page_tag", "datecreated"),
             "mRender": function (data, type, oObj) {
                 return getDate(oObj["4"]);
