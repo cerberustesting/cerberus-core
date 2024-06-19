@@ -22,15 +22,9 @@ package org.cerberus.core.crud.service.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITagDAO;
-import org.cerberus.core.crud.entity.Campaign;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Tag;
-import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryTag;
-import org.cerberus.core.crud.service.ICampaignService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
@@ -81,6 +75,10 @@ public class TagService implements ITagService {
     private IEventService eventService;
     @Autowired
     private ICampaignService campaignService;
+    @Autowired
+    private IParameterService parameterService;
+    @Autowired
+    private ITagStatisticService tagStatisticService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -219,6 +217,17 @@ public class TagService implements ITagService {
                 if (mytag.getCiResult().equalsIgnoreCase("KO")) {
                     eventService.triggerEvent(EventHook.EVENTREFERENCE_CAMPAIGN_END_CIKO, mytag, null, null, null);
                 }
+            }
+
+            //TagStatistics, only if it's a campaign and if parameter is activated
+            if (StringUtil.isNotEmpty(mytag.getCampaign()) && parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_featureflipping_tagstatistics_enable, "", false )) {
+                LOG.info("TagStatistics creation for tag {} started.", tag);
+                tagStatisticService.populateTagStatisticsMap(
+                        tagStatisticService.initTagStatistics(mytag, executions),
+                        executions,
+                        mytag
+                );
+                LOG.info("TagStatistics creation for tag {} finished.", tag);
             }
 
             return tagDAO.updateDateEndQueue(mytag);
