@@ -71,20 +71,16 @@ public class TagStatisticService implements ITagStatisticService {
 
         for (TestCaseExecution execution : executions) {
             String key = String.format("%s_%s", execution.getEnvironment(), execution.getCountry());
-            if (!tagStatistics.containsKey(key)) {
-                tagStatistics.put(
-                        key,
-                        TagStatistic.builder()
-                                .tag(tag.getTag())
-                                .country(execution.getCountry())
-                                .environment(execution.getEnvironment())
-                                .campaign(tag.getCampaign())
-                                .dateStartExe(new Timestamp(0))
-                                .dateEndExe(new Timestamp(0))
-                                .campaignGroup1(campaignGroup1)
-                                .executions(new ArrayList<>())
-                                .build());
-            }
+            tagStatistics.computeIfAbsent(key, k -> TagStatistic.builder()
+                    .tag(tag.getTag())
+                    .country(execution.getCountry())
+                    .environment(execution.getEnvironment())
+                    .campaign(tag.getCampaign())
+                    .dateStartExe(new Timestamp(0))
+                    .dateEndExe(new Timestamp(0))
+                    .campaignGroup1(campaignGroup1)
+                    .executions(new ArrayList<>())
+                    .build());
             tagStatistics.get(key).getExecutions().add(execution);
         }
         return tagStatistics;
