@@ -611,6 +611,15 @@ function addEntryClick() {
     $('#addTestcampaignButton').attr('class', 'btn btn-primary');
     $('#addTestcampaignButton').removeAttr('hidden');
 
+    // handle the click for specific action buttons
+    $("#editTestcampaignButton").click(editEntryModalSaveHandler);
+    $("#addTestcampaignButton").click(addEntryModalSaveHandler);
+
+    //clear the modals fields when closed
+    $('#editTestcampaignModal').on('hidden.bs.modal', editEntryModalCloseHandler);
+    $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
+
     $("#editTestcampaignModal #campaign").empty();
     $("#editTestcampaignModal #originalCampaign").empty();
 
