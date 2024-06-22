@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
+                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc2">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
@@ -95,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc1">
+                <div class="col-lg-2 col-md-4 col-sm-12 hidden-xs" id="sc3">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
                             <div class="col-sm-12">
@@ -106,10 +106,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-12" id="sc1">
+                <div class="col-lg-4 col-md-6 col-sm-12" id="sc4">
                     <div class="panel panel-default whiteCard">
                         <div class="row" style="height: 100px;">
-                            <div class="col-sm-6 col-xs-6">
+                            <div class="col-sm-6 col-xs-6" id="hp_TestExecutionNumberParent">
                                 <h5 class="marginLeft15"><span class="glyphicon glyphicon-play"></span>  Test Execution</h5>
                                 <div class="marginLeft15 marginBottom10" id="hp_TestExecutionNumber"></div>
                                 <a href="./RunTests.jsp" class="marginLeft15">Launch Test Case</a>
@@ -142,7 +142,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-6 col-sm-12 hidden-xs" id="sc1">
+                <div class="col-lg-2 col-md-6 col-sm-12 hidden-xs" id="sc5">
                     <div class="panel panel-default whiteCard">
                         <div class="row">
                             <div class="col-sm-12" style="height: 100px;">
@@ -160,7 +160,7 @@
                         <div class="panel-heading card clearfix" data-target="#tagExecStatus">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTagExec();"><span
+                                        onclick="stopPropagation(event); loadLastTagResultList();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                                 <button id="tagSettings" class="btn btn-default btn-xs"><span
                                         class="glyphicon glyphicon-cog"></span> <label id="tagSettingsLabel">Settings</label>
@@ -179,7 +179,7 @@
                         <div class="panel-heading card" data-target="#histoChart1">
                             <div class="btn-group pull-right">
                                 <button id="refreshTags" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTagHistoBar();"><span
+                                        onclick="stopPropagation(event); loadExecutionsHistoBar();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>
@@ -197,7 +197,7 @@
                         <div class="panel-heading card" data-target="#histoChart2">
                             <div class="btn-group pull-right">
                                 <button id="refreshTcs" class="btn btn-default btn-xs marginRight10"
-                                        onclick="stopPropagation(event); loadTcHistoBar();"><span
+                                        onclick="stopPropagation(event); loadTestcaseHistoGraph();"><span
                                         class="glyphicon glyphicon-refresh"></span> <label id="refresh">Refresh</label></button>
                             </div>
                             <span class="fa fa-bar-chart fa-fw"></span>

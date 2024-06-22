@@ -22,6 +22,9 @@ var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 var configTcBar = {};
 var nbTagLoaded = 0;
 var nbTagLoadedTarget = 0;
+var futureCampaignRunTime = [];
+var futureCampaignRunTimeDurationToTrigger = [];
+var idTimeout;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -29,11 +32,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         bindToggleCollapse();
 
-        initHPGraph();
-        loadTagHistoBar();
-        loadTcHistoBar();
+        initHPGraph_TestCaseAndExecution();
 
-        loadExeRunning();
+        loadExecutionsHistoBar();
+        loadTestcaseHistoGraph();
+
+        loadExeCurrentlyRunning();
 
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
@@ -79,7 +83,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
             $("#tagSettingsModal").modal('hide');
             $('#tagExecStatus').empty();
-            loadTagExec();
+            loadLastTagResultList();
         });
 
         $("#tagSettings").on('click', function (event) {
@@ -126,7 +130,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         }).fail(handleErrorAjaxAfterTimeout);
 
-        loadTagExec();
+        loadLastTagResultList();
 
         loadBuildRevTable();
 
@@ -140,7 +144,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         closeEveryNavbarMenu();
     });
 
-    updateStats();
+    updateHeaderStats();
 
 });
 
@@ -265,6 +269,10 @@ function updatePageQueueStatus(data) {
 
     if ((data.queueStats.running > 0) || (data.queueStats.queueSize > 0)) {
         $("#exeRunningPanel").show();
+        $("#hp_TestExecutionNumberParent").removeAttr("class");
+        $("#hp_TestExecutionNumberParent").attr("class", "col-sm-6 col-xs-6");
+        $("#sc4").attr("class", "col-lg-4 col-md-6 col-sm-12");
+        $("#sc5").attr("class", "col-lg-2 col-md-6 col-sm-12 hidden-xs");
 
         // Execution Queue progress bar
         let totalQueue = data.queueStats.globalLimit + data.queueStats.queueSize
@@ -337,11 +345,17 @@ function updatePageQueueStatus(data) {
 
     } else {
         $("#exeRunningPanel").hide();
+        $("#hp_TestExecutionNumberParent").removeAttr("class");
+        $("#hp_TestExecutionNumberParent").attr("class", "col-sm-12 col-xs-12");
+        $("#sc4").attr("class", "col-lg-3 col-md-6 col-sm-12");
+        $("#sc5").attr("class", "col-lg-3 col-md-6 col-sm-12 hidden-xs");
+
+//        
     }
 }
 
 
-function loadExeRunning() {
+function loadExeCurrentlyRunning() {
 
     $.ajax({
 //        url: "ReadCerberusDetailInformation?" + getUser().defaultSystemsQuery,
@@ -362,7 +376,7 @@ function loadExeRunning() {
 
 
 
-function loadTagHistoBar() {
+function loadExecutionsHistoBar() {
     showLoader($("#panelHistory"));
 
     fromD = new Date();
@@ -433,7 +447,7 @@ function buildExeBar(data) {
     window.myLineExeHistoBar.update();
 }
 
-function loadTcHistoBar() {
+function loadTestcaseHistoGraph() {
     showLoader($("#panelTcHistory"));
 
     fromD = new Date();
@@ -503,7 +517,7 @@ function buildTcBar(data) {
 }
 
 
-function initHPGraph() {
+function initHPGraph_TestCaseAndExecution() {
 
     var exebaroption = getHPOptionsExeBar("Executions", "nb");
     var tcgraphoption = getHPOptionsTcGraph("Testcases", "nb");
@@ -642,7 +656,7 @@ function generateTooltip(data, tag) {
 
 function generateTagReport(data, tag, rowId) {
     var divId = "#tagExecStatusRow" + rowId;
-    var reportArea = $(divId);
+    var reportArea = $(divId).attr("data-tag", tag);
     var buildBar;
     var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
@@ -665,7 +679,12 @@ function generateTagReport(data, tag, rowId) {
     reportArea.append(buildBar);
 }
 
-function loadTagExec() {
+function loadLastTagResultList() {
+
+    // Empty previous saved scheduled campaign timings and stop timer in case it was created.
+    futureCampaignRunTime = [];
+    futureCampaignRunTimeDurationToTrigger = [];
+    clearTimeout(idTimeout);
 
     showLoader($("#LastTagExecPanel"));
 
@@ -716,7 +735,7 @@ function loadTagExec() {
     } else {
         hideLoader($("#LastTagExecPanel"));
     }
-
+    updateNextFireTime();
 }
 
 function hideLoaderTag() {
@@ -782,13 +801,32 @@ function readNextTagScheduled() {
             }
             for (var s = 0; s < nbTagLoadedTargetScheduled; s++) {
                 let item = data.schedulerTriggers[s];
-                tagList.splice(0, 0, "<b>" + item.triggerName + "</b><span class='hidden-xs'> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + "</span> <b>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
+                tagList.splice(0, 0, "<b>" + item.triggerName + "</b><span class='hidden-xs'> - [" + item.triggerUserCreated + "] - " + new Date(item.triggerNextFiretimeTimestamp).toLocaleString() + "</span> <b id='futurTag" + s + "'>will trigger in " + getHumanReadableDuration(Math.round(item.triggerNextFiretimeDurationToTriggerInMs / 1000)) + "</b>");
+                futureCampaignRunTime.push(new Date());
+                futureCampaignRunTimeDurationToTrigger.push(item.triggerNextFiretimeDurationToTriggerInMs);
             }
         }
     });
     return tagList;
 }
 
+function updateNextFireTime() {
+    let nbAlreadyTriggered = 0;
+    for (var s = 0; s < futureCampaignRunTime.length; s++) {
+        if ((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) > 0) {
+            $("#futurTag" + s).text("will trigger in " + getHumanReadableDuration(Math.round((futureCampaignRunTimeDurationToTrigger[s] - (new Date() - new Date(futureCampaignRunTime[s]))) / 1000)));
+        } else {
+            $("#futurTag" + s).text("already triggered");
+            nbAlreadyTriggered++;
+        }
+    }
+    if ((futureCampaignRunTime.length > 0) && (nbAlreadyTriggered < futureCampaignRunTime.length)) {
+        // Refresh the scheduled tag execution every second.
+        idTimeout = setTimeout(() => {
+            updateNextFireTime();
+        }, 1000);
+    }
+}
 
 function getCountryFilter() {
     return $.ajax({
@@ -902,7 +940,7 @@ function appendBuildRevRow(dtb) {
     table.append(row);
 }
 
-function updateStats() {
+function updateHeaderStats() {
 
     $("#hp_TestcaseNumber").text("Calculating existing test cases...");
     $("#hp_TestExecutionNumber").text("Calculating launched test cases...");
@@ -916,7 +954,7 @@ function updateStats() {
 
     var jqxhr = $.getJSON("api/executions/count", getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
-        $("#hp_TestExecutionNumber").text(result["iTotalRecords"] + " launched test cases");
+        $("#hp_TestExecutionNumber").text(formatnumberKM(result["iTotalRecords"]) + " launched test cases");
     }).fail(handleErrorAjaxAfterTimeout);
 
     var jqxhr = $.getJSON("api/applications/count", getUser().defaultSystemsQuery);
