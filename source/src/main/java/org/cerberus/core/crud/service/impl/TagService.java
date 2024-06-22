@@ -22,15 +22,9 @@ package org.cerberus.core.crud.service.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITagDAO;
-import org.cerberus.core.crud.entity.Campaign;
-import org.cerberus.core.crud.entity.EventHook;
-import org.cerberus.core.crud.entity.Tag;
-import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryTag;
-import org.cerberus.core.crud.service.ICampaignService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.crud.service.ITestCaseExecutionService;
+import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
@@ -81,6 +75,10 @@ public class TagService implements ITagService {
     private IEventService eventService;
     @Autowired
     private ICampaignService campaignService;
+    @Autowired
+    private IParameterService parameterService;
+    @Autowired
+    private ITagStatisticService tagStatisticService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -221,6 +219,17 @@ public class TagService implements ITagService {
                 }
             }
 
+            //TagStatistics, only if it's a campaign and if parameter is activated
+            if (StringUtil.isNotEmpty(mytag.getCampaign()) && parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_featureflipping_tagstatistics_enable, "", false )) {
+                LOG.info("TagStatistics creation for tag {} started.", tag);
+                tagStatisticService.populateTagStatisticsMap(
+                        tagStatisticService.initTagStatistics(mytag, executions),
+                        executions,
+                        mytag
+                );
+                LOG.info("TagStatistics creation for tag {} finished.", tag);
+            }
+
             return tagDAO.updateDateEndQueue(mytag);
 
         } catch (CerberusException ex) {
@@ -309,7 +318,7 @@ public class TagService implements ITagService {
 
     @Override
     public String enrichTagWithCloudProviderBuild(String provider, String system, String tagS, String user, String pass) {
-        LOG.debug("Trying to enrish tag '" + tagS + "' with Cloud service provider Build (" + provider + ").");
+        LOG.debug("Trying to enrish tag '{}' with Cloud service provider Build ({}).", tagS, provider);
         if (StringUtil.isEmpty(tagS)) {
             return null;
         }
@@ -320,10 +329,10 @@ public class TagService implements ITagService {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 if ((tag != null) && (StringUtil.isEmpty(tag.getBrowserstackBuildHash()) || "BSHash".equalsIgnoreCase(tag.getBrowserstackBuildHash()))) {
                     String newBuildHash = browserstackService.getBrowserStackBuildHashFromEndpoint(system, tagS, user, pass, "api.browserstack.com/automate/builds.json");
-                    LOG.debug("Result : " + newBuildHash);
+                    LOG.debug("Result : {}", newBuildHash);
                     tag.setBrowserstackBuildHash(newBuildHash);
                     newBuildHash = browserstackService.getBrowserStackBuildHashFromEndpoint(system, tagS, user, pass, "api.browserstack.com/app-automate/builds.json");
-                    LOG.debug("Result : " + newBuildHash);
+                    LOG.debug("Result : {}", newBuildHash);
                     tag.setBrowserstackAppBuildHash(newBuildHash);
                     Answer ans = tagDAO.updateBrowserStackBuild(tagS, tag);
                     return newBuildHash;
@@ -385,13 +394,13 @@ public class TagService implements ITagService {
                         AnswerList answerListQueue = new AnswerList<>();
                         answerListQueue = executionQueueService.readQueueOpen(tag);
                         if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
-                            LOG.debug("No More executions (in queue or running) on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
+                            LOG.debug("No More executions (in queue or running) on tag : {} - {} {}", tag, answerListQueue.getDataList().size(), answerListQueue.getMessageCodeString());
                             this.updateEndOfQueueData(tag);
                         } else {
-                            LOG.debug("Still executions in queue on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
+                            LOG.debug("Still executions in queue on tag : {} - {} {}", tag, answerListQueue.getDataList().size(), answerListQueue.getMessageCodeString());
                         }
                     } else {
-                        LOG.debug("Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
+                        LOG.debug("Tag is already flagged with recent timestamp. {}", currentTag.getDateEndQueue());
                     }
 
                 }
@@ -413,7 +422,7 @@ public class TagService implements ITagService {
                         currentTag.setDateStartExe(startOfExecution);
                         tagDAO.updateDateStartExe(currentTag);
                     } else {
-                        LOG.debug("Tag is already flaged with recent start of exe timestamp. " + currentTag.getDateStartExe());
+                        LOG.debug("Tag is already flaged with recent start of exe timestamp. {}", currentTag.getDateStartExe());
                     }
 
                 }
@@ -474,8 +483,7 @@ public class TagService implements ITagService {
     }
 
     JSONObject getJSONEnriched() {
-        JSONObject result = new JSONObject();
-        return result;
+        return new JSONObject();
     }
 
 }

@@ -6369,3 +6369,35 @@ ALTER TABLE testdatalib ADD IgnoreFirstLine BOOLEAN NOT NULL AFTER `Separator`;
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_homepage_nbdisplayedscheduledtag', '3', 'Number of scheduled not yet executed tag displayed inside homepage.');
 
+-- 1800
+CREATE TABLE `tagstatistic` (
+    `Id` INT NOT NULL AUTO_INCREMENT,
+    `Tag` VARCHAR(255) NOT NULL,
+    `Country` VARCHAR(45) NOT NULL,
+    `Environment` VARCHAR(45) NOT NULL,
+    `Campaign` VARCHAR(200) NOT NULL,
+    `CampaignGroup1` VARCHAR(45),
+    `SystemList` text NOT NULL,
+    `ApplicationList` text NOT NULL,
+    `DateStartExe` TIMESTAMP NOT NULL,
+    `DateEndExe` TIMESTAMP NOT NULL,
+    `NbExe` INT DEFAULT 0,
+    `NbExeUsefull` INT DEFAULT 0,
+    `NbOK` int DEFAULT 0,
+    `NbKO` int DEFAULT 0,
+    `NbFA` int DEFAULT 0,
+    `NbNA` int DEFAULT 0,
+    `NbNE` int DEFAULT 0,
+    `NbWE` int DEFAULT 0,
+    `NbPE` int DEFAULT 0,
+    `NbQU` int DEFAULT 0,
+    `NbQE` int DEFAULT 0,
+    `NbCA` int DEFAULT 0,
+    `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',
+    `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `UsrModif` VARCHAR(45) NOT NULL DEFAULT '',
+    `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',
+    PRIMARY KEY (`Id`),
+    UNIQUE KEY `tag_stat_unique` (`Tag`, `Country`, `Environment`))
+    ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
