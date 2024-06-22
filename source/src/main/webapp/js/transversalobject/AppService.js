@@ -1333,6 +1333,12 @@ function appendApplicationListServiceModal(defaultValue) {
         var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
         $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2
     }
+
+    $("#editSoapLibraryModal #editApplication").off("click");
+    $("#editSoapLibraryModal #editApplication").click(function () {
+        openModalApplication($("#editSoapLibraryModal #application").val(), "EDIT");
+    });
+
 }
 
 function appendAppServiceListServiceModal(defaultValue) {

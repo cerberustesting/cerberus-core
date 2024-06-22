@@ -28,6 +28,7 @@
         <title id="pageTitle">Service Library</title>
         <script type="text/javascript" src="js/pages/AppServiceList.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Application.js"></script>
         <script type="text/javascript" src="js/global/autocomplete.js"></script>
     </head>
     <body>
@@ -37,6 +38,7 @@
             <%@ include file="include/utils/modal-confirmation.html" %>
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
             <%@ include file="include/transversalobject/AppService.html" %>
+            <%@ include file="include/transversalobject/Application.html" %>
 
             <h1 class="page-title-line" id="title">Application Service</h1>
 
