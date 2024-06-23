@@ -127,7 +127,7 @@
                                 </div>
                                 <div class="row" style="height: 20px;" id="queueStats">
                                     <div class='progress' style='height:12px;margin-left: 10px;margin-right: 10px'>
-                                        <div id='progress-barUsed' class='progress-bar statusOK' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
+                                        <div id='progress-barUsed' class='progress-bar statusPE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
                                              data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
                                         <div id='progress-barIdle' class='progress-bar statusWE' role='progressbar' data-toggle='tooltip' data-placement='bottom' data-html='true' 
                                              data-original-title='' style='width: 0%;' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div>
