@@ -113,27 +113,31 @@ public class ExecutionPrivateController {
 //        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             LOG.debug(executionUUIDObject.getExecutionUUIDList());
             JSONArray executionArray = new JSONArray();
-            for (Object ex : executionUUIDObject.getExecutionUUIDList().values()) {
-                TestCaseExecution execution = (TestCaseExecution) ex;
-                JSONObject object = new JSONObject();
-                object.put("id", execution.getId());
-                object.put("test", execution.getTest());
-                object.put("testcase", execution.getTestCase());
-                object.put("system", execution.getApplicationObj().getSystem());
-                object.put("application", execution.getApplication());
-                object.put("environment", execution.getEnvironmentData());
-                object.put("country", execution.getCountry());
-                object.put("robotIP", execution.getSeleniumIP());
-                object.put("tag", execution.getTag());
-                object.put("start", new Timestamp(execution.getStart()));
-                executionArray.put(object);
-            }
+//            for (Object ex : executionUUIDObject.getExecutionUUIDList().values()) {
+//                TestCaseExecution execution = (TestCaseExecution) ex;
+//                JSONObject object = new JSONObject();
+//                object.put("id", execution.getId());
+//                object.put("test", execution.getTest());
+//                object.put("testcase", execution.getTestCase());
+//                object.put("system", execution.getApplicationObj().getSystem());
+//                object.put("application", execution.getApplication());
+//                object.put("environment", execution.getEnvironmentData());
+//                object.put("country", execution.getCountry());
+//                object.put("robotIP", execution.getSeleniumIP());
+//                object.put("tag", execution.getTag());
+//                object.put("start", new Timestamp(execution.getStart()));
+//                executionArray.put(object);
+//            }
             jsonResponse.put("runningExecutionsList", executionArray);
 
             JSONObject queueStatus = new JSONObject();
-            queueStatus.put("queueSize", executionUUIDObject.getQueueSize());
-            queueStatus.put("globalLimit", executionUUIDObject.getGlobalLimit());
-            queueStatus.put("running", executionUUIDObject.getRunning());
+//            queueStatus.put("queueSize", executionUUIDObject.getQueueSize());
+//            queueStatus.put("globalLimit", executionUUIDObject.getGlobalLimit());
+//            queueStatus.put("running", executionUUIDObject.getRunning());
+            // FIXME Force the servlet result to 0.
+            queueStatus.put("queueSize", 0);
+            queueStatus.put("globalLimit", 0);
+            queueStatus.put("running", 0);
             jsonResponse.put("queueStats", queueStatus);
 
             return jsonResponse.toString();
