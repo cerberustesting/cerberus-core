@@ -65,6 +65,11 @@ public class TestDataLib {
     public static final String TYPE_FILE = "FILE";
     public static final String TYPE_SQL = "SQL";
     public static final String TYPE_SERVICE = "SERVICE";
+    
+    public static final String TYPE_DATAFORMAT_XMLJSON = "XMLJSON";
+    public static final String TYPE_DATAFORMAT_CSV = "CSV";
+    public static final String TYPE_DATAFORMAT_SQLCOLUMNNAME = "SQL";
+    
 
     public String getService() {
         return service;

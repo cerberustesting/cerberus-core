@@ -53,15 +53,15 @@ public interface ITestDataLibDataService {
      * Reads a list with basis on the test data library id
      *
      * @param testDataLibID
-     * @param columnEmpty Y will filter with empty string. N will filter not
+     * @param columnNameSQLEmpty Y will filter with empty string. N will filter not
      * empty, null disable the filter.
-     * @param parsingAnswerEmpty Y will filter with empty string. N will filter
+     * @param columnParsingAnswerJSONXMLEmpty Y will filter with empty string. N will filter
      * not empty, null disable the filter.
-     * @param columnPositionEmpty Y will filter with empty string. N will filter
+     * @param columnPositionCSVEmpty Y will filter with empty string. N will filter
      * not empty, null disable the filter.
      * @return
      */
-    AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
+    AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnNameSQLEmpty, String columnParsingAnswerJSONXMLEmpty, String columnPositionCSVEmpty);
 
     /**
      *
