@@ -5,21 +5,23 @@
 
 *Improvements / New features*
 [square]
+* [ENGINE] Submit execution from campaign, only if application environment exist. (that avoid unnecessary Errors in queue).
+* [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%. Allowing managing upload/download file by uploading files on Cerberus with no more limitation on its size.
+* [ENGINE] Added CSV ignoreFirstLine boolean at datalib level.
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
 * [GUI] direct access to Both campaign and execution reporting over time from campaign execution and test case execution screen.
-* [ENGINE] Submit execution from campaign, only if application environment exist avoiding Errors in queue.
 * [GUI] Testcase environment selection combo has been replaced by checkbox.
-* [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%.
 * [GUI] new parameter in order to tune the nb of row above which the report by tag will auto hide the unnecessary lines cerberus_reportbytag_nblinestotriggerautohide_int (default to 50).
 * [GUI] Save datatable layout on pages no longer save the current page position.
+* [GUI] Optimisation of datatable loading time on execution list and queue list.
 * [GUI] new refresh button on pages with datatable on order to refresh the data content without a full reload of the page.
 * [GUI] new reset button on pages with datatable in order to put back the default layout view.
-* [ENGINE] Added ignoreFirstLine boolean at datalib level.
 * [GUI] New 'Application Edit' button from testcase header, execution and campaign execution pages.
 * [GUI] Homepage now display also upcoming campaign execution from scheduler (nb can be tuned by 'cerberus_homepage_nbdisplayedscheduledtag' parameter).
+* [GUI] Homepage display Nb of Execution Running and in queue are displayed with direct access to execution running.
 
 
 *Warning to be considered before applying the version (deprecated features)*
