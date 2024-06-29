@@ -76,6 +76,11 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
+    public AnswerList<CountryEnvironmentParameters> readDependenciesByVarious(String system, String country, String environment) {
+        return countryEnvironmentParametersDao.readDependenciesByVarious(system, country, environment);
+    }
+
+    @Override
     public AnswerList<CountryEnvironmentParameters> readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         return countryEnvironmentParametersDao.readByVariousByCriteria(system, country, environment, application, start, amount, column, dir, searchTerm, individualSearch);
     }

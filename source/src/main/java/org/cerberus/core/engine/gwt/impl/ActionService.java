@@ -365,7 +365,7 @@ public class ActionService implements IActionService {
                     res = this.doActionOpenURL(execution, value1, value2, true);
                     break;
                 case TestCaseStepAction.ACTION_OPENURLLOGIN:
-                    actionExecution.setValue1(actionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
+                    actionExecution.setValue1(actionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvApplicationParam().getUrlLogin());
                     res = this.doActionUrlLogin(execution);
                     break;
                 case TestCaseStepAction.ACTION_OPENURL:
@@ -1742,7 +1742,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionUrlLogin(TestCaseExecution tCExecution) {
         MessageEvent message;
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(), tCExecution.getUrl(), tCExecution.getCountryEnvironmentParameters().getUrlLogin());
+            return webdriverService.doSeleniumActionUrlLogin(tCExecution.getSession(), tCExecution.getUrl(), tCExecution.getCountryEnvApplicationParam().getUrlLogin());
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_OPENURLLOGIN));
@@ -2039,7 +2039,7 @@ public class ActionService implements IActionService {
             boolean doWithResponse = ParameterParserUtil.parseBooleanParam(withResponseContent, false);
             JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
 
-            har = harService.enrichWithStats(har, exe.getCountryEnvironmentParameters().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
+            har = harService.enrichWithStats(har, exe.getCountryEnvApplicationParam().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
             AppService appSrv = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", "", "", null, "", null, null);
             appSrv.setResponseHTTPBody(har.toString());

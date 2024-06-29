@@ -21,6 +21,8 @@ package org.cerberus.core.engine.execution.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
@@ -59,6 +61,8 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.websocket.QueueStatus;
 import org.cerberus.core.websocket.QueueStatusEndPoint;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -277,7 +281,7 @@ public class ExecutionStartService implements IExecutionStartService {
                     cea.setDomain(StringUtil.getDomainFromUrl(appURL));
                 }
                 cea.setUrlLogin(execution.getMyLoginRelativeURL());
-                execution.setCountryEnvironmentParameters(cea);
+                execution.setCountryEnvApplicationParam(cea);
                 LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : {}-{}-{}", cea.getIp(), cea.getUrl(), cea.getUrlLogin());
                 LOG.debug(" Domain : {}", cea.getDomain());
             }
@@ -317,7 +321,19 @@ public class ExecutionStartService implements IExecutionStartService {
                         // If domain is empty we guess it from URL.
                         cea.setDomain(StringUtil.getDomainFromUrl(execution.getUrl()));
                     }
-                    execution.setCountryEnvironmentParameters(cea);
+                    execution.setCountryEnvApplicationParam(cea);
+
+                    // Load all associated application informations (same system, country and env as the execution).
+                    HashMap<String, CountryEnvironmentParameters> countryEnvApplicationParamHash;
+                    List<CountryEnvironmentParameters> ceaList;
+                    ceaList = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByVarious(
+                            execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), null));
+                    execution.addcountryEnvApplicationParams(ceaList);
+                    // Load all linked application informations of the application testcase.
+                    ceaList = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readDependenciesByVarious(
+                            execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment()));
+                    execution.addcountryEnvApplicationParams(ceaList);
+
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));

@@ -19,14 +19,13 @@
  */
 package org.cerberus.core.apiprivate;
 
-import java.sql.Timestamp;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.service.impl.TestCaseExecutionService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
+import org.cerberus.core.engine.execution.IExecutionStartService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
@@ -39,7 +38,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author bcivel
@@ -52,8 +50,7 @@ public class ExecutionPrivateController {
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
     @Autowired
-    TestCaseExecutionService executionService;
-
+    private ITestCaseExecutionService executionService;
     @Autowired
     private ExecutionUUID executionUUIDObject;
 
@@ -105,47 +102,8 @@ public class ExecutionPrivateController {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
-        JSONObject jsonResponse = new JSONObject();
+        return executionUUIDObject.getRunningStatus().toString();
 
-        try {
-
-            // FIXME The executionUUIDObject unfortunatly does not return the Component Class content.
-//        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            LOG.debug(executionUUIDObject.getExecutionUUIDList());
-            JSONArray executionArray = new JSONArray();
-//            for (Object ex : executionUUIDObject.getExecutionUUIDList().values()) {
-//                TestCaseExecution execution = (TestCaseExecution) ex;
-//                JSONObject object = new JSONObject();
-//                object.put("id", execution.getId());
-//                object.put("test", execution.getTest());
-//                object.put("testcase", execution.getTestCase());
-//                object.put("system", execution.getApplicationObj().getSystem());
-//                object.put("application", execution.getApplication());
-//                object.put("environment", execution.getEnvironmentData());
-//                object.put("country", execution.getCountry());
-//                object.put("robotIP", execution.getSeleniumIP());
-//                object.put("tag", execution.getTag());
-//                object.put("start", new Timestamp(execution.getStart()));
-//                executionArray.put(object);
-//            }
-            jsonResponse.put("runningExecutionsList", executionArray);
-
-            JSONObject queueStatus = new JSONObject();
-//            queueStatus.put("queueSize", executionUUIDObject.getQueueSize());
-//            queueStatus.put("globalLimit", executionUUIDObject.getGlobalLimit());
-//            queueStatus.put("running", executionUUIDObject.getRunning());
-            // FIXME Force the servlet result to 0.
-            queueStatus.put("queueSize", 0);
-            queueStatus.put("globalLimit", 0);
-            queueStatus.put("running", 0);
-            jsonResponse.put("queueStats", queueStatus);
-
-            return jsonResponse.toString();
-
-        } catch (Exception ex) {
-            LOG.warn(ex, ex);
-            return "error " + ex.getMessage();
-        }
     }
 
 }

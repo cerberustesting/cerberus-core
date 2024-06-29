@@ -1295,8 +1295,7 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionControlExecution controlExecution
                     = factoryTestCaseStepActionControlExecution.create(actionExecution.getId(), control.getTest(), control.getTestcase(),
                             control.getStepId(), actionExecution.getIndex(), control.getActionId(), control.getControlId(), control.getSort(),
-                            null, null, control.getConditionOperator(), condval1, condval2, condval3, condval1, condval2, condval3
-                            ,
+                            null, null, control.getConditionOperator(), condval1, condval2, condval3, condval1, condval2, condval3,
                             control.getControl(), control.getValue1(), control.getValue2(), control.getValue3(), control.getValue1(), control.getValue2(),
                             control.getValue3(), (control.isFatal() ? "Y" : "N"), startControl, startControl, startLongControl, startLongControl,
                             control.getDescription(), actionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
@@ -1510,6 +1509,11 @@ public class ExecutionRunService implements IExecutionRunService {
             execution.getLastServiceCalled().setRecordTraceFile(true);
         }
 
+        /*
+         * Reset the current application back to null so that the main application will be used.
+         */
+        execution.setCurrentApplication(null);
+
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateExecutionWebSocketOnly(execution, false);
 
@@ -1567,9 +1571,9 @@ public class ExecutionRunService implements IExecutionRunService {
             }
             break;
             case Application.TYPE_FAT:
-                LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvironmentParameters().getIp());
-                if (!StringUtil.isEmpty(execution.getCountryEnvironmentParameters().getIp())) {
-                    this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvironmentParameters().getIp());
+                LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
+                if (!StringUtil.isEmpty(execution.getCountryEnvApplicationParam().getIp())) {
+                    this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
                 }
                 LOG.debug("Ask Sikuli to clean execution {}", execution.getId());
                 this.sikuliService.doSikuliEndExecution(execution.getSession());

@@ -53,7 +53,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             String browser, String version, String platform, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int video, int pageSource, int robotLog, int consoleLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
-            CountryEnvironmentParameters countryEnvironmentParameters, int manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
+            CountryEnvironmentParameters countryEnvApplicationParam, int manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, Robot robotObj, String robotProvider, String robotSessionId,
             String conditionOperator, String conditionVal1Init, String conditionVal2Init, String conditionVal3Init, String conditionVal1, String conditionVal2, String conditionVal3,
@@ -94,7 +94,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setVideo(video);
         newTce.setTestCaseObj(tCase);
         newTce.setCountryEnvParam(countryEnvParam);
-        newTce.setCountryEnvironmentParameters(countryEnvironmentParameters);
+        newTce.setCountryEnvApplicationParam(countryEnvApplicationParam);
         newTce.setManualURL(manualURL);
         newTce.setMyHost(myHost);
         newTce.setMyContextRoot(myContextRoot);
@@ -142,6 +142,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setDateModif(dateModif);
         newTce.setNetworkTrafficIndexList(new ArrayList<>());
         newTce.setSecrets(new HashMap<>());
+        newTce.setCountryEnvApplicationParams(new HashMap<>());
 
         return newTce;
     }

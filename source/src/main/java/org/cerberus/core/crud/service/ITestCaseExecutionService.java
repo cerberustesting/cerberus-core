@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -287,4 +288,14 @@ public interface ITestCaseExecutionService {
      */
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param tag
+     * @param numberOfExecution
+     * @return
+     * @throws CerberusException
+     */
+    public JSONArray getLastByCriteria(String test, String testCase, String tag, Integer numberOfExecution) throws CerberusException;
 }

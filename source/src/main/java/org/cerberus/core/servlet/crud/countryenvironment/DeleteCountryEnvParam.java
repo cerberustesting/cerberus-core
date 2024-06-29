@@ -78,7 +78,7 @@ public class DeleteCountryEnvParam extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -89,19 +89,19 @@ public class DeleteCountryEnvParam extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(system)) {
+        if (system == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "System is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isEmpty(country)) {
+        } else if (country == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
                     .replace("%REASON%", "Country is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isEmpty(environment)) {
+        } else if (environment == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Delete")
@@ -115,7 +115,7 @@ public class DeleteCountryEnvParam extends HttpServlet {
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
 
             AnswerItem resp = countryEnvParamService.readByKey(system, country, environment);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

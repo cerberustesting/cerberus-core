@@ -129,7 +129,9 @@ public class TestCaseExecution {
     private TestCase testCaseObj;
     private Tag tagObj;
     private CountryEnvParam countryEnvParam;
-    private CountryEnvironmentParameters countryEnvironmentParameters;
+    private String currentApplication; // Allow to move the application environment context in case of a call to a service.
+    private CountryEnvironmentParameters countryEnvApplicationParam; // Main value from application of the testcase.
+    private HashMap<String, CountryEnvironmentParameters> countryEnvApplicationParams; // All applications values from all application existing on the same env/system and linked to main environement of the testcase.
     private Invariant environmentObj;
     private Invariant environmentDataObj;
     private Invariant priorityObj;
@@ -298,6 +300,20 @@ public class TestCaseExecution {
     public void addSecrets(List<String> secrets) {
         secrets.forEach(secret -> {
             this.secrets.put(secret, "");
+        });
+    }
+
+    public void addcountryEnvApplicationParam(CountryEnvironmentParameters countryEnvApplication) {
+        if (countryEnvApplication != null) {
+            this.countryEnvApplicationParams.put(countryEnvApplication.getApplication(), countryEnvApplication);
+        }
+    }
+
+    public void addcountryEnvApplicationParams(List<CountryEnvironmentParameters> countryEnvApplications) {
+        LOG.debug(countryEnvApplications);
+        countryEnvApplications.forEach(countryEnvApplication -> {
+            LOG.debug(countryEnvApplication);
+            this.countryEnvApplicationParams.put(countryEnvApplication.getApplication(), countryEnvApplication);
         });
     }
 

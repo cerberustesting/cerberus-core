@@ -1136,7 +1136,7 @@ public class PropertyService implements IPropertyService {
                 JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorExtensionHost(), execution.getRobotExecutorObj().getExecutorExtensionPort(),
                         execution.getRemoteProxyUUID(), execution.getSystem(), indexFrom);
 
-                harRes = harService.enrichWithStats(harRes, execution.getCountryEnvironmentParameters().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());
+                harRes = harService.enrichWithStats(harRes, execution.getCountryEnvApplicationParam().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());
 
                 //Record result in filessytem.
                 testCaseExecutionData.addFileList(recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1), execution.getSecrets()));
@@ -1867,9 +1867,9 @@ public class PropertyService implements IPropertyService {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", executionData.getValue1()).
-                        replace("%COUNTRY%", execution.getCountryEnvironmentParameters().getCountry()).
-                        replace("%ENVIRONMENT%", execution.getCountryEnvironmentParameters().getEnvironment()).
-                        replace("%SYSTEM%", execution.getCountryEnvironmentParameters().getSystem()));
+                        replace("%COUNTRY%", execution.getCountryEnvApplicationParam().getCountry()).
+                        replace("%ENVIRONMENT%", execution.getCountryEnvApplicationParam().getEnvironment()).
+                        replace("%SYSTEM%", execution.getCountryEnvApplicationParam().getSystem()));
             } else {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_EXIST_ERROR);
                 res.setDescription(res.getDescription().replace("%ITEM%", executionData.getValue1()));

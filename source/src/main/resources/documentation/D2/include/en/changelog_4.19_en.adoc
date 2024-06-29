@@ -8,6 +8,7 @@
 * [ENGINE] Submit execution from campaign, only if application environment exist. (that avoid unnecessary Errors in queue).
 * [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%. Allowing managing upload/download file by uploading files on Cerberus with no more limitation on its size.
 * [ENGINE] Added CSV ignoreFirstLine boolean at datalib level.
+* [ENGINE] When callService that is attached to an application, host and contextroot of the corresponding application is used (if country env of the application does not exist on the test case application, search is also made on linked environments).
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
@@ -22,6 +23,7 @@
 * [GUI] New 'Application Edit' button from testcase header, execution and campaign execution pages.
 * [GUI] Homepage now display also upcoming campaign execution from scheduler (nb can be tuned by 'cerberus_homepage_nbdisplayedscheduledtag' parameter).
 * [GUI] Homepage display Nb of Execution Running and in queue are displayed with direct access to execution running.
+* [GUI] Environments with empty system, country or environment can be deleted.
 
 
 *Warning to be considered before applying the version (deprecated features)*

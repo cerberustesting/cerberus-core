@@ -387,8 +387,8 @@ public class RobotServerService implements IRobotServerService {
                         throw new CerberusException(mes);
                     }
                     // If CountryEnvParameter IP is set, open the App
-                    if (!execution.getCountryEnvironmentParameters().getIp().isEmpty()) {
-                        sikuliService.doSikuliActionOpenApp(session, execution.getCountryEnvironmentParameters().getIp());
+                    if (!execution.getCountryEnvApplicationParam().getIp().isEmpty()) {
+                        sikuliService.doSikuliActionOpenApp(session, execution.getCountryEnvApplicationParam().getIp());
                     }
                     break;
             }
@@ -637,14 +637,14 @@ public class RobotServerService implements IRobotServerService {
                     && (isNotAlreadyDefined(caps, "app"))) {
                 caps.setCapability("app", tCExecution.getMyHost());
             } else if (isNotAlreadyDefined(caps, "app")) {
-                caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+                caps.setCapability("app", tCExecution.getCountryEnvApplicationParam().getIp());
             }
 
-            if (!StringUtil.isEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity())
+            if (!StringUtil.isEmpty(tCExecution.getCountryEnvApplicationParam().getMobileActivity())
                     && (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     && isNotAlreadyDefined(caps, "appWaitActivity"))) {
 
-                caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
+                caps.setCapability("appWaitActivity", tCExecution.getCountryEnvApplicationParam().getMobileActivity());
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -1066,9 +1066,9 @@ public class RobotServerService implements IRobotServerService {
             }
 
             //  We remove manually the package if it is defined.
-            if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
-                    && !StringUtil.isEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
-                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage());
+            if (session.getAppiumDriver() != null && tce.getCountryEnvApplicationParam() != null
+                    && !StringUtil.isEmpty(tce.getCountryEnvApplicationParam().getMobilePackage())) {
+                session.getAppiumDriver().removeApp(tce.getCountryEnvApplicationParam().getMobilePackage());
             }
 
             // We lock device if deviceLockUnlock is active.
@@ -1130,7 +1130,7 @@ public class RobotServerService implements IRobotServerService {
                     JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorExtensionHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem(), 0);
 
                     // and enrich it with stat entry.
-                    har = harService.enrichWithStats(har, tce.getCountryEnvironmentParameters().getDomain(), tce.getSystem(), tce.getNetworkTrafficIndexList());
+                    har = harService.enrichWithStats(har, tce.getCountryEnvApplicationParam().getDomain(), tce.getSystem(), tce.getNetworkTrafficIndexList());
 
                     // We convert the har to database record HttpStat and save it to database.
                     try {

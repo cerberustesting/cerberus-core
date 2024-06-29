@@ -79,6 +79,15 @@ public interface ICountryEnvironmentParametersService {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    public AnswerList<CountryEnvironmentParameters> readDependenciesByVarious(String system, String country, String environment);
+
+    /**
+     *
      * @param object
      * @return
      */

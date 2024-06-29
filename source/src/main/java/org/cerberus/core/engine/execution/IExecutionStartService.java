@@ -21,13 +21,14 @@ package org.cerberus.core.engine.execution;
 
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.exception.CerberusException;
+import org.json.JSONObject;
 
 /**
  *
  * @author bcivel
  */
 public interface IExecutionStartService {
-    
+
     /**
      *
      * @param tCExecution
@@ -35,5 +36,5 @@ public interface IExecutionStartService {
      * @throws CerberusException
      */
     TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException;
-    
+
 }

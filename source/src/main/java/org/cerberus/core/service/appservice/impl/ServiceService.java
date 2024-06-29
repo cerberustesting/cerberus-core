@@ -134,7 +134,7 @@ public class ServiceService implements IServiceService {
             // If Service information is not defined, we create it from request, servicePath and operation parameters forcing in SOAP mode.
             if (StringUtil.isEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
-                appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", "", manualRequest, "", "", "", "", "", "", "Automatically created Service from datalib.",
+                appService = factoryAppService.create("null", AppService.TYPE_REST, "", null, "", "", manualRequest, "", "", "", "", "", "", "Automatically created Service from datalib.",
                         manualServicePathParam, true, "", manualOperation, false, "", false, "", false, "", null, null, null, null, null, null);
                 service = "null";
 
@@ -142,7 +142,9 @@ public class ServiceService implements IServiceService {
                 // If Service information is defined, we get it from database.
                 LOG.debug("Getting AppService from service : " + service);
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
+
             }
+            execution.setCurrentApplication(appService.getApplication());
 
             String servicePath;
 
@@ -198,8 +200,20 @@ public class ServiceService implements IServiceService {
                         if (StringUtil.isEmpty(database)) {
 
                             // We reformat servicePath in order to add the context from the application execution.
-                            servicePath = StringUtil.getURLFromString(execution.getUrl(),
-                                    "", appService.getServicePath(), "http://");
+                            String targetHost = "";
+                            CountryEnvironmentParameters envappli;
+                            if (execution.getCurrentApplication() != null) {
+                                envappli = execution.getCountryEnvApplicationParams().getOrDefault(execution.getCurrentApplication(), execution.getCountryEnvApplicationParam());
+                            } else {
+                                envappli = execution.getCountryEnvApplicationParam();
+                            }
+
+                            if (StringUtil.isNotEmpty(envappli.getIp())) {
+                                targetHost = StringUtil.getURLFromString(envappli.getIp(), envappli.getUrl(), "", "");
+                            } else {
+                                targetHost = execution.getUrl();
+                            }
+                            servicePath = StringUtil.getURLFromString(targetHost, "", appService.getServicePath(), "http://");
 
                         } else {
 
@@ -264,7 +278,7 @@ public class ServiceService implements IServiceService {
                 // appService object and target servicePath is now clean. We can start to decode.
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
-                LOG.debug("AppService with correct path is  now OK : " + servicePath);
+                LOG.debug("AppService with correct path is now OK : " + servicePath);
 
                 try {
 
@@ -817,7 +831,7 @@ public class ServiceService implements IServiceService {
                     .domain("")
                     .build();
         }
-        execution.setCountryEnvironmentParameters(env);
+        execution.setCountryEnvApplicationParam(env);
 
         // Simulation Invariant Environment
         Invariant envObj = null;

@@ -87,6 +87,15 @@ public interface ICountryEnvironmentParametersDAO {
 
     /**
      *
+     * @param system
+     * @param country
+     * @param environment
+     * @return
+     */
+    AnswerList<CountryEnvironmentParameters> readDependenciesByVarious(String system, String country, String environment);
+
+    /**
+     *
      * @param object
      * @return
      */
@@ -105,6 +114,5 @@ public interface ICountryEnvironmentParametersDAO {
      * @return
      */
     Answer update(CountryEnvironmentParameters object);
-
 
 }

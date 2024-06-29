@@ -51,6 +51,7 @@ public class CountryEnvironmentParameters {
     private String environment;
     @Id
     private String application;
+    
     private String ip;
     private String domain;
     private String url;

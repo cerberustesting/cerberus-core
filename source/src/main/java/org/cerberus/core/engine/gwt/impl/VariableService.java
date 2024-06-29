@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 
 /**
  * Created by corentin on 20/10/16.
@@ -209,6 +210,12 @@ public class VariableService implements IVariableService {
     public String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution execution) {
 
         try {
+            CountryEnvironmentParameters envappli;
+            if (execution.getCurrentApplication() != null) {
+                envappli = execution.getCountryEnvApplicationParams().getOrDefault(execution.getCurrentApplication(), execution.getCountryEnvApplicationParam());
+            } else {
+                envappli = execution.getCountryEnvApplicationParam();
+            }
             /**
              * Trying to replace by system environment variables from Execution.
              */
@@ -218,13 +225,13 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_ROBOT%", execution.getRobot());
             stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", execution.getRobotDecli());
             stringToDecode = stringToDecode.replace("%SYS_SCREENSIZE%", execution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", execution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
-            stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", execution.getCountryEnvironmentParameters().getIp());
-            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", execution.getCountryEnvironmentParameters().getUrl());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", execution.getCountryEnvironmentParameters().getVar1());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", execution.getCountryEnvironmentParameters().getVar2());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", execution.getCountryEnvironmentParameters().getVar3());
-            stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", execution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", envappli.getDomain().split(",")[0].trim());
+            stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", envappli.getIp());
+            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", envappli.getUrl());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", envappli.getVar1());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", envappli.getVar2());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", envappli.getVar3());
+            stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", envappli.getVar4());
             stringToDecode = stringToDecode.replace("%SYS_EXEURL%", execution.getUrl());
             stringToDecode = stringToDecode.replace("%SYS_ENV%", execution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%SYS_ENVGP%", execution.getEnvironmentDataObj().getGp1());
@@ -262,13 +269,13 @@ public class VariableService implements IVariableService {
             }
 
             stringToDecode = stringToDecode.replace("%system.SCREENSIZE%", execution.getScreenSize());
-            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", execution.getCountryEnvironmentParameters().getDomain().split(",")[0].trim());
-            stringToDecode = stringToDecode.replace("%system.APP_HOST%", execution.getCountryEnvironmentParameters().getIp());
-            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", execution.getCountryEnvironmentParameters().getUrl());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR1%", execution.getCountryEnvironmentParameters().getVar1());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR2%", execution.getCountryEnvironmentParameters().getVar2());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR3%", execution.getCountryEnvironmentParameters().getVar3());
-            stringToDecode = stringToDecode.replace("%system.APP_VAR4%", execution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", envappli.getDomain().split(",")[0].trim());
+            stringToDecode = stringToDecode.replace("%system.APP_HOST%", envappli.getIp());
+            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", envappli.getUrl());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR1%", envappli.getVar1());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR2%", envappli.getVar2());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR3%", envappli.getVar3());
+            stringToDecode = stringToDecode.replace("%system.APP_VAR4%", envappli.getVar4());
             stringToDecode = stringToDecode.replace("%system.EXEURL%", execution.getUrl());
             stringToDecode = stringToDecode.replace("%system.ENV%", execution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%system.ENVGP%", execution.getEnvironmentDataObj().getGp1());

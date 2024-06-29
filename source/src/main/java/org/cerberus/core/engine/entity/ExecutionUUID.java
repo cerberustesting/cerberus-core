@@ -19,9 +19,12 @@
  */
 package org.cerberus.core.engine.entity;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 /**
@@ -85,5 +88,51 @@ public class ExecutionUUID {
 
     public int size() {
         return executionHashMap.size();
+    }
+
+    public JSONObject getRunningStatus() {
+        JSONObject jsonResponse = new JSONObject();
+
+        try {
+
+            /**
+             * FIXME when called from ExecutionPrivateController The method
+             * getRunningStatus unfortunately does not return the correct values.
+             * Until this is fixed, we put 0 values.
+             */
+            JSONArray executionArray = new JSONArray();
+//            for (Object ex : executionHashMap.values()) {
+//                TestCaseExecution execution = (TestCaseExecution) ex;
+//                JSONObject object = new JSONObject();
+//                object.put("id", execution.getId());
+//                object.put("test", execution.getTest());
+//                object.put("testcase", execution.getTestCase());
+//                object.put("system", execution.getApplicationObj().getSystem());
+//                object.put("application", execution.getApplication());
+//                object.put("environment", execution.getEnvironmentData());
+//                object.put("country", execution.getCountry());
+//                object.put("robotIP", execution.getSeleniumIP());
+//                object.put("tag", execution.getTag());
+//                object.put("start", new Timestamp(execution.getStart()));
+//                executionArray.put(object);
+//            }
+            jsonResponse.put("runningExecutionsList", executionArray);
+
+            JSONObject queueStatus = new JSONObject();
+//            queueStatus.put("queueSize", queueSize);
+//            queueStatus.put("globalLimit", globalLimit);
+//            queueStatus.put("running", running);
+//             FIXME Force the servlet result to 0.
+            queueStatus.put("queueSize", 0);
+            queueStatus.put("globalLimit", 0);
+            queueStatus.put("running", 0);
+            jsonResponse.put("queueStats", queueStatus);
+
+            return jsonResponse;
+
+        } catch (Exception ex) {
+//            LOG.warn(ex, ex);
+        }
+        return jsonResponse;
     }
 }
