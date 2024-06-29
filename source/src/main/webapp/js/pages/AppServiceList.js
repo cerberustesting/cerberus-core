@@ -34,9 +34,7 @@ function initPage() {
     displayApplicationList("application", "", "", "");
 
     // configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("soapLibrarysTable",
-            "ReadAppService", "contentTable",
-            aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("soapLibrarysTable", "ReadAppService", "contentTable", aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForAppService, "#soapLibraryList", undefined, true);
 
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);

@@ -1512,6 +1512,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activateP
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
     this.aaSorting = aaSorting;
+    this.bDisplayRefreshButton = false;
 
     if (activatePagination) {
         this.lengthMenu = [10, 25, 50, 100];
@@ -1562,6 +1563,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.ajaxSource = ajaxSource;
     this.ajaxProp = ajaxProp;
 
+    this.bDisplayRefreshButton = true;
     this.processing = true;
     this.serverSide = true;
     if (lengthMenu === undefined) {
@@ -1871,7 +1873,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").find('label').addClass("input-group");
-    $("#" + tableConfigurations.divId + "_filter").find('label').append("<span class='input-group-btn'><button id='dataTableRefresh' class='buttonObject btn btn-default input-sm' title='Refresh' type='button'><span class='glyphicon glyphicon-refresh'></span></button></span>");
+    if (tableConfigurations.bDisplayRefreshButton) {
+        $("#" + tableConfigurations.divId + "_filter").find('label').append("<span class='input-group-btn'><button id='dataTableRefresh' class='buttonObject btn btn-default input-sm' title='Refresh' type='button'><span class='glyphicon glyphicon-refresh'></span></button></span>");
+    }
 
     $("#dataTableRefresh").click(function () {
         $("#" + tableConfigurations.divId).dataTable().fnDraw(false);
