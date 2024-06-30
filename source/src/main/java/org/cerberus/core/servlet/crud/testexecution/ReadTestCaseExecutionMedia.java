@@ -107,7 +107,8 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         TestCaseExecutionFile tceFile = null;
         if (!(fileName.isEmpty())) {
-
+            // Secure that you cannot access unnecessary folders
+            fileName = fileName.replace("..", ".");
             IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile = appContext.getBean(IFactoryTestCaseExecutionFile.class);
             tceFile = factoryTestCaseExecutionFile.create(0, 0, "", fileDesc, fileName, fileType, "", null, "", null);
 
