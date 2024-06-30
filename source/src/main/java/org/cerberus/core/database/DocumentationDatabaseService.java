@@ -3775,6 +3775,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','rerunqueueandsee_testcase','','en','Re Run','ReRun with last execution parameters',NULL)");
         b.append(",('page_testcasescript','rerunqueueandsee_testcase','','fa','جرای مجدد','اجرای مجدد با آخرین پارامترهای اجرا',NULL)");
         b.append(",('page_testcasescript','rerunqueueandsee_testcase','','fr','Relancer','Executer avec les mêmes paramètres de la dernière execution',NULL)");
+        b.append(",('page_testcasescript','savererunqueueandsee_testcase','','en','Save & Re Run','Save and ReRun with last execution parameters',NULL)");
+        b.append(",('page_testcasescript','savererunqueueandsee_testcase','','fr','Sauver & Relancer','Executer avec les mêmes paramètres de la dernière execution',NULL)");
         b.append(",('page_testcasescript','rerun_testcase','','en','Rerun TestCase','',NULL)");
         b.append(",('page_testcasescript','rerun_testcase','','fa','اجرای مجدد موردآزمون','',NULL)");
         b.append(",('page_testcasescript','rerun_testcase','','fr','ReExecuter le TestCase','',NULL)");

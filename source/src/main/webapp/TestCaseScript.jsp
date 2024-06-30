@@ -97,10 +97,10 @@
                                                 <a><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span></button></a>
                                             </div>
                                             <div class="btn-group">
-                                                <a><button class="btn btn-default pull-right" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span></button></a>
+                                                <a><button class="btn btn-default pull-right" id="rerunFromQueueandSee" data-original-title="" data-html="true" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span></button></a>
                                             </div>
                                             <div class="btn-group">
-                                                <a><button class="btn btn-default" id="saveScript" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span></button></a>
+                                                <a><button class="btn btn-default" id="saveScript" disabled style="margin-left: 5px;"><span class="glyphicon glyphicon-save"></span></button></a>
                                             </div>
                                         </div>
 

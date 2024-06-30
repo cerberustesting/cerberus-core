@@ -24,7 +24,7 @@ var canUpdate = false;
 var allDelete = false;
 var Tags = [];
 var exeId = 0;
-
+var lastExecutedQueueId = 0;
 
 $.when($.getScript("js/global/global.js")
         , $.getScript("js/global/autocomplete.js")
@@ -297,7 +297,9 @@ $.when($.getScript("js/global/global.js")
             });
 
             // CONTEXT SAVE MENU
-            $("#saveScript").click(saveScript);
+            $("#saveScript").click(function () {
+                saveScript();
+            });
             $("#saveScriptAs").click(function () {
                 openModalTestCase(test, testcase, "DUPLICATE");
                 $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
@@ -342,16 +344,18 @@ $.when($.getScript("js/global/global.js")
                         } else {
                             $("#rerunFromQueue").attr("disabled", true);
                         }
-                        $("#rerunFromQueueandSee").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end);
+                        $("#rerunFromQueueandSee").attr("data-original-title", "Last Execution was <span class='status" + data.contentTable.controlStatus + "'>" + data.contentTable.controlStatus + "</span> in <b>" + data.contentTable.env + "</b> in <b>" + data.contentTable.country + "</b><br> on " + new Date(data.contentTable.end).toLocaleString());
                         $("#runTestCase").unbind('click');
                         $("#runTestCase").on('click', function () {
                             openModalExecutionSimple(application, test, testcase, description, data.contentTable.country, data.contentTable.env, data.contentTable.robot);
                         });
 
                         if (data.contentTable.queueId > 0) {
+                            $("#rerunFromQueueandSee").off("click");
                             $("#rerunFromQueueandSee").click(function () {
                                 triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId);
                             });
+                            lastExecutedQueueId = data.contentTable.queueId;
                         } else {
                             $("#rerunFromQueueandSee").attr("disabled", true);
                         }
@@ -633,7 +637,8 @@ function setAllSort() {
     return stepArr;
 }
 
-function saveScript(property) {
+function saveScript(queueid = 0) {
+    // If queueid != 0, rerun will be triggered
 
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
@@ -659,14 +664,13 @@ function saveScript(property) {
         propArr.push($(properties[i]).data("property"));
     }
 
-
-    if (property !== undefined) {
-        for (i in propArr) {
-            if (propArr[i].property === property) {
-                propArr[i].toDelete = true;
-            }
-        }
-    }
+//    if (property !== undefined) {
+//        for (i in propArr) {
+//            if (propArr[i].property === property) {
+//                propArr[i].toDelete = true;
+//            }
+//        }
+//    }
 
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
@@ -712,7 +716,16 @@ function saveScript(property) {
                 }
                 setModif(false);
 
-                window.location.href = new_uri;
+                if (queueid !== 0) {
+                    // ReRun the execution
+                    triggerTestCaseExecutionQueueandSeeFromTC(queueid);
+
+                } else {
+                    // Force reload of the page once save has been done
+                    window.location.href = new_uri;
+
+                }
+
 
             },
             error: showUnexpectedError
@@ -736,9 +749,8 @@ function saveScript(property) {
         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_one_empty_prop"), "", "", "", "");
     } else {
         saveProp();
-    }
 }
-
+}
 
 function prevent(e) {
     e.preventDefault();
@@ -1430,7 +1442,6 @@ function addStep(event) {
     });
 }
 
-
 function duplicateStep(event) {
     var steps = event.data.steps;
 
@@ -1444,7 +1455,6 @@ function duplicateStep(event) {
     stepObj.html.trigger("click");
 
 }
-
 
 function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     // If the testcase has no steps, we create an empty one.
@@ -1490,20 +1500,43 @@ function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrar
 var getModif, setModif, initModification;
 (function () {
     var isModif = false;
+    var doc = new Doc();
+
     getModif = function () {
         return isModif;
     };
     setModif = function (val) {
+//        console.info("isModif set to " + val)
         isModif = val;
-        if (isModif === true && $("#saveScript").hasClass("btn-default")) {
-            $("#saveScript").removeClass("btn-default").addClass("btn-primary");
-        } else if (isModif === false && $("#saveScript").hasClass("btn-primary")) {
-            $("#saveScript").removeClass("btn-primary").addClass("btn-default");
+        if (isModif) {
+            if ($("#saveScript").hasClass("btn-default")) {
+                $("#saveScript").removeClass("btn-default").addClass("btn-primary");
+            }
+            if ($("#rerunFromQueueandSee").hasClass("btn-default")) {
+                $("#rerunFromQueueandSee").removeClass("btn-default").addClass("btn-primary");
+                $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "savererunqueueandsee_testcase"));
+                $("#rerunFromQueueandSee").off("click");
+                $("#rerunFromQueueandSee").click(function () {
+                    saveScript(lastExecutedQueueId);
+                });
+
+
+            }
+        } else {
+            if ($("#saveScript").hasClass("btn-primary")) {
+                $("#saveScript").removeClass("btn-primary").addClass("btn-default");
+            }
+            if ($("#rerunFromQueueandSee").hasClass("btn-primary")) {
+                $("#rerunFromQueueandSee").removeClass("btn-primary").addClass("btn-default");
+                $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
+            }
+
         }
 
     };
     initModification = function () {
-        $(".panel-body input, .panel-body select, .panel-body textarea").change(function () {
+        $("#propertiesModal input, #propertiesModal select, #propertiesModal textarea, #propertiesModal pre").change(function () {
+            console.info("chenge detected initModification");
             setModif(true);
         });
     };
@@ -2191,27 +2224,69 @@ function displayStepOptionsModal(step, htmlElement) {
     setPlaceholderCondition($("#stepConditionOperator"));
 //END OF CONDITION
 
+    $("#stepConditionOperator").off("change");
     $("#stepConditionOperator").on("change", function () {
         setModif(true);
         setPlaceholderCondition($(this));
     });
+    $("#stepConditionVal1").off("change");
     $("#stepConditionVal1").on("change", function () {
         setModif(true);
     });
+    $("#stepConditionVal2").off("change");
     $("#stepConditionVal2").on("change", function () {
         setModif(true);
     });
+    $("#stepConditionVal3").off("change");
     $("#stepConditionVal3").on("change", function () {
         setModif(true);
     });
+    $("#stepLoop").off("change");
     $("#stepLoop").on("change", function () {
         setModif(true);
     });
+    $("#stepForceExe").off("change");
     $("#stepForceExe").on("change", function () {
         setModif(true);
     });
 
     setOptionModal(step.conditionOptions, "StepCondition");
+
+
+
+    $("#timeoutStepConditionAct").off("change");
+    $("#timeoutStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutStepConditionVal").off("change");
+    $("#timeoutStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityStepConditionAct").off("change");
+    $("#minSimilarityStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityStepConditionVal").off("change");
+    $("#minSimilarityStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightStepConditionAct").off("change");
+    $("#highlightStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightStepConditionVal").off("change");
+    $("#highlightStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayStepConditionAct").off("change");
+    $("#typeDelayStepConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayStepConditionVal").off("change");
+    $("#typeDelayStepConditionVal").on("change", function () {
+        setModif(true);
+    });
+
 
     //EVENT ON SAVE
     $("#optionStepSave").off("click");
@@ -2249,7 +2324,6 @@ function displayStepOptionsModal(step, htmlElement) {
 
         if (JSON.stringify(step.conditionOptions) !== JSON.stringify(newConditionOpts)) {
             step.conditionOptions = newConditionOpts;
-            setModif(true);
         }
 
         //printLabelForOptions($($(htmlElement)[0]).find(".secondRow"), newOpts,"actionOption");
@@ -2507,34 +2581,112 @@ function displayOverrideOptionsModal(action, htmlElement) {
     $("#actionconditionval3").val(action.conditionValue3);
     setPlaceholderCondition($("#conditionSelect"));
 
+    $("#conditionSelect").off("change");
     $("#conditionSelect").on("change", function () {
         setModif(true);
         setPlaceholderCondition($(this));
     });
+    $("#actionconditionval1").off("change");
     $("#actionconditionval1").on("change", function () {
         setModif(true);
     });
+    $("#actionconditionval2").off("change");
     $("#actionconditionval2").on("change", function () {
         setModif(true);
     });
+    $("#actionconditionval3").off("change");
     $("#actionconditionval3").on("change", function () {
         setModif(true);
     });
+    $("#screenshotBCheckbox").off("change");
     $("#screenshotBCheckbox").on("change", function () {
         setModif(true);
     });
+    $("#screenshotACheckbox").off("change");
     $("#screenshotACheckbox").on("change", function () {
         setModif(true);
     });
+    $("#waitBVal").off("change");
     $("#waitBVal").on("change", function () {
         setModif(true);
     });
+    $("#waitAVal").off("change");
     $("#waitAVal").on("change", function () {
         setModif(true);
     });
+    $("#fatalCheckbox").off("change");
     $("#fatalCheckbox").on("change", function () {
         setModif(true);
     });
+
+
+    $("#timeoutAct").off("change");
+    $("#timeoutAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutVal").off("change");
+    $("#timeoutVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityAct").off("change");
+    $("#minSimilarityAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityVal").off("change");
+    $("#minSimilarityVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightAct").off("change");
+    $("#highlightAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightVal").off("change");
+    $("#highlightVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayAct").off("change");
+    $("#typeDelayAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayVal").off("change");
+    $("#typeDelayVal").on("change", function () {
+        setModif(true);
+    });
+
+
+    $("#timeoutConditionAct").off("change");
+    $("#timeoutConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#timeoutConditionVal").off("change");
+    $("#timeoutConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityConditionAct").off("change");
+    $("#minSimilarityConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#minSimilarityConditionVal").off("change");
+    $("#minSimilarityConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightConditionAct").off("change");
+    $("#highlightConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#highlightConditionVal").off("change");
+    $("#highlightConditionVal").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayConditionAct").off("change");
+    $("#typeDelayConditionAct").on("change", function () {
+        setModif(true);
+    });
+    $("#typeDelayConditionVal").off("change");
+    $("#typeDelayConditionVal").on("change", function () {
+        setModif(true);
+    });
+
 
     //EVENT ON SAVE
     $("#optionsSave").off("click");
@@ -2553,7 +2705,11 @@ function displayOverrideOptionsModal(action, htmlElement) {
         action.conditionValue3 = $("#actionconditionval3").val();
 
         let newOpts = [];
-        newOpts.push({"act": $("#timeoutAct").prop("checked"), "value": $("#timeoutVal").val(), "option": "timeout"});
+        newOpts.push({
+            "act": $("#timeoutAct").prop("checked"),
+            "value": $("#timeoutVal").val(),
+            "option": "timeout"
+        });
         newOpts.push({
             "act": $("#minSimilarityAct").prop("checked"),
             "value": $("#minSimilarityVal").val(),
@@ -2902,7 +3058,6 @@ function printLabelForFatal(isFatal, element) {
     }
 }
 
-
 function printLabel(element, displayBoolean, identifierClass, colorClass, text) {
     $(element).find('.' + identifierClass).remove();
     if (displayBoolean) {
@@ -2910,7 +3065,6 @@ function printLabel(element, displayBoolean, identifierClass, colorClass, text) 
         $(element).append(labelOptions[0]);
     }
 }
-
 
 function getTitleFromOptionsActive(options) {
     let result = "";
@@ -3703,7 +3857,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
     };
 })();
 
-
 function removeTestCaseClick(test, testCase) {
     clearResponseMessageMainPage();
     var doc = new Doc();
@@ -3892,7 +4045,6 @@ function setPlaceholderControl(control) {
     $('[data-toggle="tooltip"]').tooltip();
 }
 
-
 function setPlaceholderProperty(propertyElement, property) {
     /**
      * Todo : GetFromDatabase Translate for FR
@@ -4036,7 +4188,6 @@ function setPlaceholderProperty(propertyElement, property) {
     });
 
 }
-
 
 function CompleterForAllDataLib() {
 

@@ -59,6 +59,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @author cerberus
@@ -84,15 +86,16 @@ public class ReadTestCaseExecution extends HttpServlet {
     private IApplicationService applicationService;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseExecution.class);
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
-     * @throws ServletException                              if a servlet-specific error occurs
-     * @throws IOException                                   if an I/O error occurs
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      * @throws org.cerberus.core.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -143,9 +146,14 @@ public class ReadTestCaseExecution extends HttpServlet {
                         result.put("id", lastExec.getId());
                         result.put("queueId", lastExec.getQueueID());
                         result.put("controlStatus", lastExec.getControlStatus());
+
                         result.put("env", lastExec.getEnvironment());
                         result.put("country", lastExec.getCountry());
-                        result.put("end", new Date(lastExec.getEnd())).toString();
+                        Date d = new Date(lastExec.getEnd());
+                        TimeZone tz = TimeZone.getTimeZone("UTC");
+                        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+                        df.setTimeZone(tz);
+                        result.put("end", df.format(d)).toString();
                     }
                     jsonResponse.put("contentTable", result);
                 } else if (executionId != 0 && !executionWithDependency) {
@@ -182,14 +190,13 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -206,10 +213,10 @@ public class ReadTestCaseExecution extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -660,23 +667,23 @@ public class ReadTestCaseExecution extends HttpServlet {
             case "exe.country":
             case "exe.environment":
                 try {
-                    /**
-                     *
-                     */
-                    List<Invariant> invariantList = invariantService.readByIdName(columnName.replace("exe.", ""));
-                    List<String> stringResult = new ArrayList<>();
-                    for (Invariant inv : invariantList) {
-                        stringResult.add(inv.getValue());
-                    }
-                    values.setDataList(stringResult);
-                    values.setTotalRows(invariantList.size());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC);
-                    values.setResultMessage(msg);
-
-                } catch (CerberusException ex) {
-                    LOG.error(ex);
+                /**
+                 *
+                 */
+                List<Invariant> invariantList = invariantService.readByIdName(columnName.replace("exe.", ""));
+                List<String> stringResult = new ArrayList<>();
+                for (Invariant inv : invariantList) {
+                    stringResult.add(inv.getValue());
                 }
-                break;
+                values.setDataList(stringResult);
+                values.setTotalRows(invariantList.size());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC);
+                values.setResultMessage(msg);
+
+            } catch (CerberusException ex) {
+                LOG.error(ex);
+            }
+            break;
             /**
              * For columns build, revision get values from
              * buildrevisioninvariant

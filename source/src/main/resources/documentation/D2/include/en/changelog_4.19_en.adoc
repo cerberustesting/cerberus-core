@@ -24,6 +24,7 @@
 * [GUI] Homepage now display also upcoming campaign execution from scheduler (nb can be tuned by 'cerberus_homepage_nbdisplayedscheduledtag' parameter).
 * [GUI] Homepage display Nb of Execution Running and in queue are displayed with direct access to execution running.
 * [GUI] Environments with empty system, country or environment can be deleted.
+* [GUI] Improved TestCaseScript page so that in case of change, the rerun button allow to save the change before rerun the testcase. (testcase can be saved and rerun in 1 click)
 
 
 *Warning to be considered before applying the version (deprecated features)*
