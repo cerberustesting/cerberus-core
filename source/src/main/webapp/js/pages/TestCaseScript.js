@@ -2728,7 +2728,6 @@ function displayOverrideOptionsModal(action, htmlElement) {
 
         if (JSON.stringify(action.options) !== JSON.stringify(newOpts)) {
             action.options = newOpts;
-            setModif(true);
         }
 
         let newConditionOpts = [];
