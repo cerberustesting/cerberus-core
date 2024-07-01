@@ -41,9 +41,9 @@
                             <li><a data-toggle="tab" href="#tabsEditApp-3" id="tab3AppText" name="tabsAppEdit3">Object</a></li>
                             <li><a data-toggle="tab" href="#tabsEditApp-5" id="tab5AppText" name="tabsAppEdit5">Deployment</a></li>
                         </ul>
-                        
+
                         <div class="tab-content">
-                            
+
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEditApp-1">                               
                                 <div class="row">
                                     <!--   <div class="form-group col-xs-6">
@@ -62,7 +62,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="form-group col-sm-10">
                                         <label for="subSystem" name="subsystemField">Sub System</label>
@@ -74,8 +74,32 @@
                                     </div>
                                 </div> 
                             </div>
-                            
+
                             <div class="center marginTop25 tab-pane fade" id="tabsEditApp-4">
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="bugtrackerconnector" name="bugtrackerconnectorField">Bug Tracker Connector</label>
+                                        <select class="form-control"  id="bugtrackerconnector" name="bugtrackerconnector">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <img style="height:40px;  border: 0px; padding:0;" class="marginTop25" id="TrackerLogo" src="./images/bt-JIRA.png" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div id="btP1" class="form-group col-sm-4">
+                                        <label for="bugtrackerparam1" name="bugtrackerparam1Field">Parameter1</label>
+                                        <input type="text" class="form-control"  id="bugtrackerparam1" name="bugtrackerparam1">
+                                    </div>
+                                    <div id="btP2" class="form-group col-sm-4">
+                                        <label for="bugtrackerparam2" name="bugtrackerparam2Field">Parameter2</label>
+                                        <input type="text" class="form-control"  id="bugtrackerparam2" name="bugtrackerparam2">
+                                    </div>
+                                    <div id="btP3" class="form-group col-sm-4">
+                                        <label for="bugtrackerparam3" name="bugtrackerparam3Field">Parameter3</label>
+                                        <input type="text" class="form-control"  id="bugtrackerparam3" name="bugtrackerparam3">
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="form-group col-sm-12">
                                         <label for="bugtrackerurl" name="bugtrackerurlField">Bug Tracker URL</label>
@@ -91,14 +115,14 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="center tab-pane fade marginTop25" id="tabsEditApp-3">
                                 <div id="applicationObjectList">
                                     <table id="applicationObjectsTable" class="table table-bordered table-hover display" name="applicationObjectsTable"></table>
                                     <div class="marginBottom20"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="center tab-pane fade marginTop25" id="tabsEditApp-2">
                                 <div id="listPanelEnvironment">
                                     <div class="row">
@@ -112,12 +136,12 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="center marginTop25 tab-pane fade" id="tabsEditApp-5">                                                             
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="svnurl" name="svnurlField">SVN URL</label>
-                                        <input type="text" class="form-control" name="svnurl" id="svnurl" aria-describedby="basic-addon1" maxlength="150">
+                                        <label for="repourl" name="repourlField">Repo URL</label>
+                                        <input type="text" class="form-control" name="repourl" id="repourl" aria-describedby="basic-addon1" maxlength="150">
                                     </div>
                                 </div>
                                 <div class="row">

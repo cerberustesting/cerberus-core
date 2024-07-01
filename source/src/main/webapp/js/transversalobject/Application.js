@@ -30,10 +30,6 @@ function openModalApplication(application, mode, page) {
         $('#editApplicationModal').data("initLabel", true);
     }
 
-    displayInvariantList("system", "SYSTEM", false);
-    displayInvariantList("type", "APPLITYPE", false);
-    displayDeployTypeList("deploytype");
-
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
     $('#editApplicationModalForm input[name="application"]').off("change");
     if (mode === "EDIT") {
@@ -58,7 +54,6 @@ function openModalApplication(application, mode, page) {
 }
 
 function initModalApplication(application, mode, page) {
-
     var doc = new Doc();
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
@@ -71,8 +66,10 @@ function initModalApplication(application, mode, page) {
     $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
 
-    //displayApplicationList('application', undefined, application, undefined);
-//    $('[name="application"]').select2(getComboConfigApplication(false));
+    displayInvariantList("system", "SYSTEM", false);
+    displayInvariantList("type", "APPLITYPE", false);
+    displayDeployTypeList("deploytype");
+    displayInvariantList("bugtrackerconnector", "BUGTRACKERCONNECTOR", false);
 
 
     $("#editApplicationButton").off("click");
@@ -86,6 +83,10 @@ function initModalApplication(application, mode, page) {
     $("#duplicateApplicationButton").off("click");
     $("#duplicateApplicationButton").click(function () {
         confirmApplicationModalHandler("DUPLICATE");
+    });
+    $("#bugtrackerconnector").off("change");
+    $("#bugtrackerconnector").change(function () {
+        updateBugTrackerConnector();
     });
 
     //clear the modals fields when closed
@@ -212,7 +213,11 @@ function confirmApplicationModalHandler(mode) {
             system: data.system,
             poolSize: data.poolSize,
             subsystem: data.subsystem,
-            svnurl: data.svnurl,
+            repourl: data.repourl,
+            bugtrackerconnector: data.bugtrackerconnector,
+            bugtrackerparam1: data.bugtrackerparam1,
+            bugtrackerparam2: data.bugtrackerparam2,
+            bugtrackerparam3: data.bugtrackerparam3,
             bugtrackerurl: data.bugtrackerurl,
             bugtrackernewurl: data.bugtrackernewurl,
             deploytype: data.deploytype,
@@ -266,8 +271,12 @@ function feedApplicationModal(application, mode, system) {
         appObj1.system = getUser().defaultSystem;
         appObj1.subsystem = "";
         appObj1.poolSize = "";
-        appObj1.svnurl = "";
+        appObj1.repourl = "";
         appObj1.bugTrackerUrl = "";
+        appObj1.bugTrackerConnector = "";
+        appObj1.bugTrackerParam1 = "";
+        appObj1.bugTrackerParam2 = "";
+        appObj1.bugTrackerParam3 = "";
         appObj1.bugTrackerNewUrl = "";
         appObj1.deploytype = "NONE";
         appObj1.mavengroupid = "";
@@ -292,8 +301,12 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     formEdit.find("#system").prop("value", application["system"]);
     formEdit.find("#subsystem").prop("value", application["subsystem"]);
     formEdit.find("#poolSize").prop("value", application["poolSize"]);
-    formEdit.find("#svnurl").prop("value", application["svnurl"]);
+    formEdit.find("#repourl").prop("value", application["repourl"]);
     formEdit.find("#bugtrackerurl").prop("value", application["bugTrackerUrl"]);
+    formEdit.find("#bugtrackerconnector").prop("value", application["bugTrackerConnector"]);
+    formEdit.find("#bugtrackerparam1").prop("value", application["bugTrackerParam1"]);
+    formEdit.find("#bugtrackerparam2").prop("value", application["bugTrackerParam2"]);
+    formEdit.find("#bugtrackerparam3").prop("value", application["bugTrackerParam3"]);
     formEdit.find("#bugtrackernewurl").prop("value", application["bugTrackerNewUrl"]);
     formEdit.find("#deploytype").prop("value", application["deploytype"]);
     formEdit.find("#mavengroupid").prop("value", application["mavengroupid"]);
@@ -306,7 +319,7 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
         formEdit.find("#system").prop("disabled", "disabled");
         formEdit.find("#subsystem").prop("readonly", "readonly");
         formEdit.find("#poolSize").prop("readonly", "readonly");
-        formEdit.find("#svnurl").prop("readonly", "readonly");
+        formEdit.find("#repourl").prop("readonly", "readonly");
         formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
         formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");
         formEdit.find("#deploytype").prop("disabled", "disabled");
@@ -333,7 +346,42 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     } else {
         $('#environmentTableBody tr').remove();
     }
+    updateBugTrackerConnector();
 
+}
+
+function updateBugTrackerConnector() {
+    let connector = $('#editApplicationModal #bugtrackerconnector').val();
+    if (connector === 'REDIRECT') {
+        $('#editApplicationModal #TrackerLogo').attr("src","./images/bt-REDIRECT.png")
+        $('#editApplicationModal #btP1').hide();
+        $('#editApplicationModal #btP2').hide();
+        $('#editApplicationModal #btP3').hide();
+        $('#editApplicationModal #btP3').hide();
+
+    } else if (connector === 'JIRA') {
+        $('#editApplicationModal #TrackerLogo').attr("src","./images/bt-JIRA.png")
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').show();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("Project Code");
+        $("[name='bugtrackerparam2Field']").html("Ticket Type");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: ["Bug", "Task", "Story", "Epic"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+
+
+    }
 }
 
 function renderOptionsForApplicationObject(id, data) {

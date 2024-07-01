@@ -65,7 +65,7 @@ function displayPageLabel() {
     $("[name='systemField']").html(doc.getDocOnline("application", "system"));
     $("[name='poolSizeField']").html(doc.getDocOnline("application", "poolSize"));
     $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
-    $("[name='svnurlField']").html(doc.getDocOnline("application", "svnurl"));
+    $("[name='repourlField']").html(doc.getDocOnline("application", "repourl"));
     $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
     $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
     $("[name='deploytypeField']").html(doc.getDocOnline("application", "deploytype"));
@@ -210,17 +210,29 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("application", "subsystem")
         },
         {
-            "data": "subsystem",
-            "visible": false,
-            "sName": "subsystem",
-            "sWidth": "60px",
-            "title": doc.getDocOnline("application", "subsystem")
-        },
-        {
             "data": "poolSize",
             "sName": "poolSize",
-            "sWidth": "80px",
+            "sWidth": "30px",
             "title": doc.getDocOnline("application", "poolSize"),
+        },
+        {
+            "data": "bugTrackerConnector",
+            "visible": false,
+            "like": true,
+            "sName": "bugTrackerConnector",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("application", "bugTrackerConnector")
+        },
+        {
+            "data": "bugTrackerNewUrl",
+            "visible": false,
+            "like": true,
+            "sName": "bugTrackerNewUrl",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("application", "bugtrackernewurl"),
+            "mRender": function (data, type, oObj) {
+                return drawURL(data);
+            }
         },
         {
             "data": "bugTrackerUrl",
@@ -234,12 +246,12 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "bugTrackerNewUrl",
+            "data": "repoUrl",
             "visible": false,
             "like": true,
-            "sName": "bugTrackerNewUrl",
+            "sName": "repoUrl",
             "sWidth": "80px",
-            "title": doc.getDocOnline("application", "bugtrackernewurl"),
+            "title": doc.getDocOnline("application", "repourl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
             }

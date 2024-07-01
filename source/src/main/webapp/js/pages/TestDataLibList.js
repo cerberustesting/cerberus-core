@@ -454,7 +454,18 @@ function aoColumnsFuncTestDataLib(tableId) {
             "sName": "tdl.Type",
             "data": "type",
             "sWidth": "70px",
-            "title": doc.getDocOnline("testdatalib", "type")
+            "title": doc.getDocOnline("testdatalib", "type"),
+            "mRender": function (data, type, obj) {
+                if (obj.type === "SQL") {
+                    return '<i class="fa fa-table"></i> ' + obj.type;
+                } else if (obj.type === "FILE") {
+                    return '<i class="fa fa-file"></i> ' + obj.type;
+                } else if (obj.type === "INTERNAL") {
+                    return '<img src="images/Logo-cerberus_250.png" height="14"></img> ' + obj.type;
+                } else  {
+                    return '<i class="fa fa-cloud-upload"></i> ' + obj.type;
+                }
+            }
         },
         {
             "sName": "tdd.value",

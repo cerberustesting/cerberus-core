@@ -48,7 +48,11 @@ public class Application {
     private String type;
     private String system;
     private String subsystem;
-    private String svnurl;
+    private String repoUrl;
+    private String bugTrackerConnector;
+    private String bugTrackerParam1;
+    private String bugTrackerParam2;
+    private String bugTrackerParam3;
     private String bugTrackerUrl;
     private String bugTrackerNewUrl;
     private int poolSize;

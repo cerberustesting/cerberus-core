@@ -6401,3 +6401,16 @@ CREATE TABLE `tagstatistic` (
     UNIQUE KEY `tag_stat_unique` (`Tag`, `Country`, `Environment`))
     ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+-- 1801
+ALTER TABLE application 
+    CHANGE svnurl RepoUrl varchar(150) NULL,
+    ADD BugTrackerConnector varchar(100) NULL AFTER RepoUrl,
+    ADD BugTrackerParam1 varchar(100) NULL AFTER BugTrackerConnector,
+    ADD BugTrackerParam2 varchar(100) NULL AFTER BugTrackerParam1,
+    ADD BugTrackerParam3 varchar(100) NULL AFTER BugTrackerParam2;
+
+-- 1802
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'REDIRECT', 100, 'Redirection to Bug Tracker..')
+  ,('INVARIANTPRIVATE', 'BUGTRACKERCONNECTOR', '910', 'Type of the Bug tracker.');
+

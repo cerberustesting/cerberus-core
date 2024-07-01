@@ -193,7 +193,7 @@ public class TestcaseController {
                             .type(newTestcase.getType())
                             .system(newTestcase.getSystem())
                             .subsystem("")
-                            .svnurl("")
+                            .repoUrl("")
                             .bugTrackerNewUrl("")
                             .bugTrackerNewUrl("")
                             .usrCreated(login)

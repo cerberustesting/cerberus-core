@@ -106,7 +106,11 @@ public class CreateApplication extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         int poolSize = ParameterParserUtil.parseIntegerParam(request.getParameter("poolSize"), 0);
-        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
+        String repoUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repourl"), "", charset);
+        String bugTrackerConnector = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerconnector"), "", charset);
+        String bugTrackerParam1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam1"), "", charset);
+        String bugTrackerParam2 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam2"), "", charset);
+        String bugTrackerParam3 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam3"), "", charset);
         String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
         String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
         Integer sort = 10;
@@ -173,8 +177,12 @@ public class CreateApplication extends HttpServlet {
                     .type(type)
                     .system(system)
                     .subsystem(subSystem)
-                    .svnurl(svnURL)
+                    .repoUrl(repoUrl)
                     .bugTrackerUrl(bugTrackerURL)
+                    .bugTrackerConnector(bugTrackerConnector)
+                    .bugTrackerParam1(bugTrackerParam1)
+                    .bugTrackerParam2(bugTrackerParam2)
+                    .bugTrackerParam3(bugTrackerParam3)
                     .bugTrackerNewUrl(newBugURL)
                     .poolSize(poolSize)
                     .deploytype(deployType)

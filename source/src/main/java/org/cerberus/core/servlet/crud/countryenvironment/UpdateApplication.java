@@ -106,7 +106,11 @@ public class UpdateApplication extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         int poolSize = ParameterParserUtil.parseIntegerParam(request.getParameter("poolSize"), 0);
-        String svnURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("svnurl"), "", charset);
+        String repoURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repourl"), "", charset);
+        String bugTrackerConnector = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerconnector"), "", charset);
+        String bugTrackerParam1 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam1"), "", charset);
+        String bugTrackerParam2 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam2"), "", charset);
+        String bugTrackerParam3 = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerparam3"), "", charset);
         String bugTrackerURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackerurl"), "", charset);
         String newBugURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugtrackernewurl"), "", charset);
         Integer sort = 10;
@@ -187,9 +191,13 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setType(type);
                 applicationData.setMavengroupid(mavenGpID);
                 applicationData.setDeploytype(deployType);
-                applicationData.setSvnurl(svnURL);
+                applicationData.setRepoUrl(repoURL);
                 applicationData.setPoolSize(poolSize);
                 applicationData.setBugTrackerUrl(bugTrackerURL);
+                applicationData.setBugTrackerConnector(bugTrackerConnector);
+                applicationData.setBugTrackerParam1(bugTrackerParam1);
+                applicationData.setBugTrackerParam2(bugTrackerParam2);
+                applicationData.setBugTrackerParam3(bugTrackerParam3);
                 applicationData.setBugTrackerNewUrl(newBugURL);
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);

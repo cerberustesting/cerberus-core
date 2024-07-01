@@ -2370,7 +2370,8 @@ function drawURL(data) {
 
 function drawHyperlink(href, text) {
     if (text.indexOf("://") > -1) {
-        return "<a target=\"_blank\" href='" + href + "'>" + text + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
+        let host = text.split("://")[1].split("/")[0];
+        return "<a target=\"_blank\" href='" + href + "'>" + host + "</a>";//TODO:FN ver se tem caracters que precisam de ser encapsulados
     }
     return text;
 }

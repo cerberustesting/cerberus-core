@@ -321,12 +321,12 @@ public class ApplicationDAO implements IApplicationDAO {
     public Answer create(Application object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `poolSize`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `repourl`, `poolSize`, `BugTrackerConnector`, `BugTrackerParam1`, `BugTrackerParam2`, `BugTrackerParam3`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
         query.append(", `mavengroupid`, `usrcreated` ) ");
         if (StringUtil.isEmpty(object.getDeploytype())) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,null,?,?)");
         } else {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         }
 
         LOG.debug("SQL : {}", query);
@@ -340,8 +340,12 @@ public class ApplicationDAO implements IApplicationDAO {
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getSubsystem());
-            preStat.setString(i++, object.getSvnurl());
+            preStat.setString(i++, object.getRepoUrl());
             preStat.setInt(i++, object.getPoolSize());
+            preStat.setString(i++, object.getBugTrackerConnector());
+            preStat.setString(i++, object.getBugTrackerParam1());
+            preStat.setString(i++, object.getBugTrackerParam2());
+            preStat.setString(i++, object.getBugTrackerParam3());
             preStat.setString(i++, object.getBugTrackerUrl());
             preStat.setString(i++, object.getBugTrackerNewUrl());
             if (!StringUtil.isEmpty(object.getDeploytype())) {
@@ -395,7 +399,7 @@ public class ApplicationDAO implements IApplicationDAO {
         if (StringUtil.isEmpty(object.getDeploytype())) {
             object.setDeploytype(null);
         }
-        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, poolSize = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
+        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, repourl = ?, poolSize = ?, BugTrackerConnector = ?, BugTrackerParam1 = ?, BugTrackerParam2 = ?, BugTrackerParam3 = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
                 + "deploytype = ?, mavengroupid = ?, dateModif = NOW(), usrModif= ?  WHERE Application = ?";
 
         LOG.debug("SQL : {}", query);
@@ -410,8 +414,12 @@ public class ApplicationDAO implements IApplicationDAO {
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getSubsystem());
-            preStat.setString(i++, object.getSvnurl());
+            preStat.setString(i++, object.getRepoUrl());
             preStat.setInt(i++, object.getPoolSize());
+            preStat.setString(i++, object.getBugTrackerConnector());
+            preStat.setString(i++, object.getBugTrackerParam1());
+            preStat.setString(i++, object.getBugTrackerParam2());
+            preStat.setString(i++, object.getBugTrackerParam3());
             preStat.setString(i++, object.getBugTrackerUrl());
             preStat.setString(i++, object.getBugTrackerNewUrl());
             preStat.setString(i++, object.getDeploytype());
@@ -578,10 +586,14 @@ public class ApplicationDAO implements IApplicationDAO {
         String type = ParameterParserUtil.parseStringParam(rs.getString("app.type"), "");
         String system = ParameterParserUtil.parseStringParam(rs.getString("app.system"), "");
         String subsystem = ParameterParserUtil.parseStringParam(rs.getString("app.subsystem"), "");
-        String svnUrl = ParameterParserUtil.parseStringParam(rs.getString("app.svnurl"), "");
+        String repoUrl = ParameterParserUtil.parseStringParam(rs.getString("app.repourl"), "");
         int poolSize = ParameterParserUtil.parseIntegerParam(rs.getString("app.poolSize"), 0);
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("app.deploytype"), "");
         String mavenGroupId = ParameterParserUtil.parseStringParam(rs.getString("app.mavengroupid"), "");
+        String bugTrackerConnector = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerconnector"), "");
+        String bugTrackerParam1 = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerparam1"), "");
+        String bugTrackerParam2 = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerparam2"), "");
+        String bugTrackerParam3 = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerparam3"), "");
         String bugTrackerUrl = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerurl"), "");
         String bugTrackerNewUrl = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackernewurl"), "");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("app.UsrModif"), "");
@@ -595,7 +607,11 @@ public class ApplicationDAO implements IApplicationDAO {
                 .type(type)
                 .system(system)
                 .subsystem(subsystem)
-                .svnurl(svnUrl)
+                .repoUrl(repoUrl)
+                .bugTrackerConnector(bugTrackerConnector)
+                .bugTrackerParam1(bugTrackerParam1)
+                .bugTrackerParam2(bugTrackerParam2)
+                .bugTrackerParam3(bugTrackerParam3)
                 .bugTrackerUrl(bugTrackerUrl)
                 .bugTrackerNewUrl(bugTrackerNewUrl)
                 .poolSize(poolSize)
