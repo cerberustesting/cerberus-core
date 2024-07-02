@@ -6414,3 +6414,5 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES   ('BUGTRACKERCONNECTOR', 'REDIRECT', 100, 'Redirection to Bug Tracker..')
   ,('INVARIANTPRIVATE', 'BUGTRACKERCONNECTOR', '910', 'Type of the Bug tracker.');
 
+-- 1803
+UPDATE application SET BugTrackerConnector = 'REDIRECT';
