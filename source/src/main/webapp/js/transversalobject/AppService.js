@@ -524,6 +524,7 @@ function performCall(service) {
 
     $('#callStatus').show();
     $('#callStatus').removeClass("spin glyphicon-minus").removeClass("glyphicon-ok").removeClass("glyphicon-remove").addClass("spin glyphicon-refresh");
+    $('#callStatusCode').html("");
 
 
     let callData = getCallParam();
@@ -572,6 +573,29 @@ function performCall(service) {
 
 
                 if (CallContent.call.hasOwnProperty('Response')) {
+
+                    if ((CallContent.call.Response.hasOwnProperty('HTTP-ReturnCode')) && (CallContent.call.Response["HTTP-ReturnCode"] > 0)) {
+                        if ((CallContent.call.Response["HTTP-ReturnCode"] < 300)) {
+                            $('#callStatusCode').attr('style', 'font-size: small; text-align: center; background-color: rgb(0,210,122);');
+                        } else if ((CallContent.call.Response["HTTP-ReturnCode"] < 500)) {
+                            $('#callStatusCode').attr('style', 'font-size: small; text-align: center; background-color: rgb(245,128,62);');
+                        } else {
+                            $('#callStatusCode').attr('style', 'font-size: small; text-align: center; background-color: rgb(230,55,87);');
+                        }
+
+                        $('#callStatusCode').html(CallContent.call.Response["HTTP-ReturnCode"]);
+                        $('#callStatusCode').show();
+                        $('#callStatus').hide();
+
+                    } else {
+                        $('#callStatus').show();
+                    }
+
+                    if ((CallContent.call.Response.timings.hasOwnProperty('durationMs')) && (CallContent.call.Response.timings.durationMs > 0)) {
+                        $('#callTiming').html(CallContent.call.Response.timings.durationMs + " ms");
+                        $('#callTiming').show();
+                    }
+
 
                     // Response detail
                     ace.edit($("#editSoapLibraryModal #srvResponseDet")[0]).destroy();
@@ -710,6 +734,12 @@ function initBeforePerformCall() {
     $('#resmessage').hide();
 
     $('#callStatus').hide();
+
+    $('#callStatusCode').html("");
+    $('#callStatusCode').hide();
+
+    $('#callTiming').hide();
+
 
     document.getElementById("htmlDisplay").innerHTML = " ";
     $('#htmlDisplay').hide();
