@@ -80,7 +80,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.FileBody;
@@ -340,7 +342,9 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpGet.getRequestLine());
+                    serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpGet);
+                    serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
@@ -379,7 +383,9 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPost.getRequestLine());
+                    serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPost);
+                    serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
@@ -425,7 +431,9 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpDelete.getRequestLine());
+                    serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpDelete);
+                    serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
@@ -463,7 +471,9 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPut.getRequestLine());
+                    serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPut);
+                    serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
@@ -509,7 +519,9 @@ public class RestService implements IRestService {
                     result.setItem(serviceREST);
 
                     LOG.info("Executing request " + httpPatch.getRequestLine());
+                    serviceREST.setStart(new Timestamp(new Date().getTime()));
                     responseHttp = executeHTTPCall(httpclient, httpPatch);
+                    serviceREST.setEnd(new Timestamp(new Date().getTime()));
 
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());

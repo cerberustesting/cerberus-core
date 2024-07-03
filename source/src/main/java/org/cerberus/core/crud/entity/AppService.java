@@ -116,6 +116,10 @@ public class AppService {
     private boolean recordTraceFile;
     @EqualsAndHashCode.Exclude
     private int responseNb;
+    @EqualsAndHashCode.Exclude
+    private Timestamp start;
+    @EqualsAndHashCode.Exclude
+    private Timestamp end;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -173,6 +177,7 @@ public class AppService {
     public JSONObject toJSONOnDefaultExecution() {
 
         JSONObject jsonMain = new JSONObject();
+        JSONObject jsonTimings = new JSONObject();
         JSONObject jsonMyRequest = new JSONObject();
         JSONObject jsonMyResponse = new JSONObject();
         try {
@@ -222,6 +227,15 @@ public class AppService {
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", this.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
+            
+            // Timings
+            jsonTimings.put("start", this.getStart());
+            if ((this.getStart() != null) && (this.getEnd() != null) && (this.getEnd().getTime() > this.getStart().getTime())) {
+                jsonTimings.put("end", this.getEnd());
+                jsonTimings.put("durationMs", (this.getEnd().getTime() - this.getStart().getTime()));
+            }
+            jsonMyResponse.put("timings", jsonTimings);
+            
             if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
@@ -251,7 +265,7 @@ public class AppService {
         }
         return jsonMain;
     }
-    
+
     public JSONObject toJSONOnMONGODBExecution() {
 
         JSONObject jsonMain = new JSONObject();
@@ -268,7 +282,7 @@ public class AppService {
                 jsonMyRequest.put("Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
-            
+
             jsonMyRequest.put("FindRequest", this.getServiceRequest());
 
             jsonMain.put("Request", jsonMyRequest);
@@ -290,7 +304,7 @@ public class AppService {
             }
             jsonMyResponse.put("ResponseContentType", this.getResponseHTTPBodyContentType());
             jsonMain.put("Response", jsonMyResponse);
-
+            
         } catch (JSONException ex) {
             Logger LOG = LogManager.getLogger(RecorderService.class);
             LOG.warn(ex);

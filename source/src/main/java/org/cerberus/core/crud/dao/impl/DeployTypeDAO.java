@@ -499,7 +499,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `System` like ?");
             searchSQL.append(" or `Subsystem` like ?");
-            searchSQL.append(" or `svnURL` like ?");
+            searchSQL.append(" or `repoURL` like ?");
             searchSQL.append(" or `bugtrackerurl` like ?");
             searchSQL.append(" or `bugtrackernewurl` like ?");
             searchSQL.append(" or `deploytype` like ?");

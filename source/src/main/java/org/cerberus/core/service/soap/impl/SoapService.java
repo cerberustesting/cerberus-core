@@ -66,7 +66,9 @@ import java.net.SocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -310,7 +312,9 @@ public class SoapService implements ISoapService {
 
                     }
                     // Call with Proxy.
+                    serviceSOAP.setStart(new Timestamp(new Date().getTime()));
                     soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
+                    serviceSOAP.setEnd(new Timestamp(new Date().getTime()));
                 } catch (Exception e) {
                     LOG.error("Exception when trying to callSOAP on URL : '" + servicePath + "' for operation : '" + soapOperation + "'", e);
                     message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
@@ -328,7 +332,9 @@ public class SoapService implements ISoapService {
                 serviceSOAP.setProxyPort(0);
 
                 // Call without proxy.
+                serviceSOAP.setStart(new Timestamp(new Date().getTime()));
                 soapResponse = sendSOAPMessage(input, servicePath, null, timeOutMs);
+                serviceSOAP.setEnd(new Timestamp(new Date().getTime()));
 //                soapResponse = soapConnection.call(input, servicePath);
 
             }

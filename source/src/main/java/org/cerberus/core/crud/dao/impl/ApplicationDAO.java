@@ -117,7 +117,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or app.`type` like ?");
             searchSQL.append(" or app.`System` like ?");
             searchSQL.append(" or app.`Subsystem` like ?");
-            searchSQL.append(" or app.`svnURL` like ?");
+            searchSQL.append(" or app.`repoURL` like ?");
             searchSQL.append(" or app.`bugtrackerurl` like ?");
             searchSQL.append(" or app.`bugtrackernewurl` like ?");
             searchSQL.append(" or app.`deploytype` like ?");
@@ -497,7 +497,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `System` like ?");
             searchSQL.append(" or `Subsystem` like ?");
-            searchSQL.append(" or `svnURL` like ?");
+            searchSQL.append(" or `repoURL` like ?");
             searchSQL.append(" or `bugtrackerurl` like ?");
             searchSQL.append(" or `bugtrackernewurl` like ?");
             searchSQL.append(" or `deploytype` like ?");
