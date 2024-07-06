@@ -1,15 +1,15 @@
-1. Move to latest MariaDb
 1. Add Webperf KPI (SpeedIndex)
 1. Clean the structure of API.
 1. Angular Version of the frontend.
 1. Improve requirements and test folder hierarchy
-1. Queue Dependency improvements. 
-1. Improve Notification system
 1. Integrate more CICD tools
-1. pdf connector
-1. Kafka Avro connector
 
 DONE
+1. Kafka Avro connector
+1. pdf connector
+1. Improve Notification system
+1. Queue Dependency improvements. 
+1. Move to latest MariaDb
 1. Add robotexecutor
 1. Move to Tomcat
 1. Manage better Authentification
