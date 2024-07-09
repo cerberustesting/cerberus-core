@@ -334,8 +334,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = new RemoteWebDriver(url, caps); // #FIXME SELENIUM
-//                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
