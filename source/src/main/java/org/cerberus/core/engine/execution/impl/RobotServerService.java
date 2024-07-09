@@ -350,8 +350,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = new RemoteWebDriver(url, caps); // #FIXME SELENIUM
-//                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -450,7 +449,7 @@ public class RobotServerService implements IRobotServerService {
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
-//                getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
+                getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
 
                 // If screenSize is defined, set the size of the screen.
                 String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
