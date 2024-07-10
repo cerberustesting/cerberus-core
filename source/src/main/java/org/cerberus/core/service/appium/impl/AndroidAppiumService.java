@@ -216,7 +216,7 @@ public class AndroidAppiumService extends AppiumService {
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
-        return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "\n']}");
+        return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "']}");
     }
 
     @Override
