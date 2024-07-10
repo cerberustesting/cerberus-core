@@ -21,6 +21,7 @@ package org.cerberus.core.websocket;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -150,7 +151,12 @@ public class QueueStatusEndPoint {
                 registeredSession.getBasicRemote().sendObject(queueStatus);
                 LOG.debug("Queue Status sent to session " + registeredSession.getId());
             } catch (Exception e) {
-                LOG.warn("Unable to send queue status to session " + registeredSession.getId() + " due to " + e.getMessage());
+                LOG.warn("Unable to send queue status to session " + registeredSession.getId() + " due to " + e.getMessage() + " --> Closing it.");
+                try {
+                    registeredSession.close();
+                } catch (IOException ex) {
+                    LOG.warn("Unable to close session " + registeredSession.getId() + " due to " + e.getMessage());
+                }
             }
         }
 

@@ -307,7 +307,7 @@ public class RestService implements IRestService {
             switch (method) {
                 case AppService.METHOD_HTTPGET:
 
-                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
+                    LOG.info("Start preparing the REST Call (GET). " + servicePath);
 
                     if (AppService.SRVBODYTYPE_FORMDATA.equals(bodyType)) {
                         // Adding query string from requestString

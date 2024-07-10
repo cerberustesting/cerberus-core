@@ -56,7 +56,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         try {
             LOG.debug("Start Execution " + "ID={}", execution.getId());
             execution = executionStartService.startExecution(execution);
-            LOG.info("Execution Started : UUID={} ID= {}", execution.getExecutionUUID(), " ID=" + execution.getId());
+            LOG.info("Execution Started : UUID={} ID= {}", execution.getExecutionUUID(), execution.getId());
 
         } catch (CerberusException ex) {
             execution.setResultMessage(ex.getMessageError());

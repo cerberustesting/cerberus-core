@@ -447,8 +447,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setJsRequests(harStat.getJsRequests() + 1);
                     tempList = harStat.getJsList();
-                    tempList.add(url);
-                    harStat.setJsList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setJsList(tempList);
+                    }
                     break;
                 case "css":
                     if (reqSize > 0) {
@@ -460,8 +462,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setCssRequests(harStat.getCssRequests() + 1);
                     tempList = harStat.getCssList();
-                    tempList.add(url);
-                    harStat.setCssList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setCssList(tempList);
+                    }
                     break;
                 case "html":
                     if (reqSize > 0) {
@@ -473,8 +477,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setHtmlRequests(harStat.getHtmlRequests() + 1);
                     tempList = harStat.getHtmlList();
-                    tempList.add(url);
-                    harStat.setHtmlList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setHtmlList(tempList);
+                    }
                     break;
                 case "img":
                     if (reqSize > 0) {
@@ -486,8 +492,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setImgRequests(harStat.getImgRequests() + 1);
                     tempList = harStat.getImgList();
-                    tempList.add(url);
-                    harStat.setImgList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setImgList(tempList);
+                    }
                     break;
                 case "content":
                     if (reqSize > 0) {
@@ -499,8 +507,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setContentRequests(harStat.getContentRequests() + 1);
                     tempList = harStat.getContentList();
-                    tempList.add(url);
-                    harStat.setContentList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setContentList(tempList);
+                    }
                     break;
                 case "font":
                     if (reqSize > 0) {
@@ -512,8 +522,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setFontRequests(harStat.getFontRequests() + 1);
                     tempList = harStat.getFontList();
-                    tempList.add(url);
-                    harStat.setFontList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setFontList(tempList);
+                    }
                     break;
                 case "media":
                     if (reqSize > 0) {
@@ -525,8 +537,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setMediaRequests(harStat.getMediaRequests() + 1);
                     tempList = harStat.getMediaList();
-                    tempList.add(url);
-                    harStat.setMediaList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setMediaList(tempList);
+                    }
                     break;
                 case "other":
                     if (reqSize > 0) {
@@ -538,8 +552,10 @@ public class HarService implements IHarService {
                     }
                     harStat.setOtherRequests(harStat.getOtherRequests() + 1);
                     tempList = harStat.getOtherList();
-                    tempList.add(url);
-                    harStat.setOtherList(tempList);
+                    if (tempList != null) {
+                        tempList.add(url);
+                        harStat.setOtherList(tempList);
+                    }
                     break;
             }
 

@@ -81,7 +81,7 @@ public class ScheduledTaskRunner {
             b3TickNumber++;
         } else {
             b3TickNumber = 1;
-            // We trigger the Queue Processing job.
+            // We trigger the Scheduler init job.
             performBatch3_SchedulerInit();
         }
 
@@ -114,9 +114,9 @@ public class ScheduledTaskRunner {
 
     private void performBatch3_SchedulerInit() {
         try {
-            LOG.info("SchedulerInit Task triggered.");
+            LOG.debug("SchedulerInit Task triggered.");
             schedulerInit.init();
-            LOG.info("SchedulerInit Task ended.");
+            LOG.debug("SchedulerInit Task ended.");
         } catch (Exception e) {
             LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e);
         }
