@@ -28,6 +28,7 @@ import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.SqlUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Repository
@@ -124,6 +126,95 @@ public class TagStatisticDAO implements ITagStatisticDAO {
     @Override
     public Answer read(TagStatistic object) {
         return null;
+    }
+
+    @Override
+    public AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> groups1, String minDate, String maxDate) {
+        AnswerList<TagStatistic> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TagStatistic> tagStatistics = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT * from tagstatistic tac WHERE `Campaign` IN (SELECT DISTINCT `Campaign` FROM tagstatistic tac");
+
+        String systemRegex = "";
+        String applicationRegex = "";
+
+        if (!systems.isEmpty()) {
+            systemRegex = systems.stream()
+                    .map(sys -> "\"" + sys + "\"")
+                    .collect(Collectors.joining("|"));
+            query.append(" WHERE tac.`SystemList` REGEXP ?");
+        }
+
+        if (!applications.isEmpty()) {
+            query.append(" AND tac.`ApplicationList` REGEXP ?");
+            applicationRegex = applications.stream()
+                    .map(app -> "\"" + app + "\"")
+                    .collect(Collectors.joining("|"));
+        }
+
+        if (!groups1.isEmpty()) {
+            query.append(" AND ").append(SqlUtil.generateInClause("CampaignGroup1", groups1));
+        }
+
+        query.append(") AND tac.`DateStartExe` >= ? AND tac.`DateEndExe` <= ?");
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
+
+            int i = 1;
+
+            preStat.setString(i++, systemRegex);
+            preStat.setString(i++, applicationRegex);
+
+            if (!groups1.isEmpty()) {
+                for (String group1 : groups1) {
+                    preStat.setString(i++, group1);
+                }
+            }
+
+            preStat.setString(i++, minDate);
+            preStat.setString(i++, maxDate);
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                LOG.debug("Execute SQL Statement: {} ", preStat);
+
+                while (resultSet.next()) {
+                    LOG.debug(resultSet);
+                    tagStatistics.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (tagStatistics.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (tagStatistics.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(tagStatistics, nrTotalRows);
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        response.setResultMessage(msg);
+        response.setDataList(tagStatistics);
+        return response;
     }
 
     /**
