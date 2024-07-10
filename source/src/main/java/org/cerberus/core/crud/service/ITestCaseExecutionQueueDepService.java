@@ -118,6 +118,17 @@ public interface ITestCaseExecutionQueueDepService {
 
     /**
      *
+     * @param env
+     * @param Country
+     * @param tag
+     * @param test
+     * @param testCase
+     * @return
+     */
+    AnswerItem<Integer> insertNewTimingDep(String env, String Country, String tag, String test, String testCase, long exeID);
+
+    /**
+     *
      * That method manage the dependency after the end of an execution.
      *
      * @param tCExecution

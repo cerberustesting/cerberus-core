@@ -6416,3 +6416,11 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1803
 UPDATE application SET BugTrackerConnector = 'REDIRECT';
+
+-- 1804-1805
+ALTER TABLE testcaseexecutionqueuedep 
+    ADD DepDate TIMESTAMP NULL AFTER DepEvent,
+    ADD DepTCDelay INT DEFAULT 0 NULL AFTER DepTestCase;
+ALTER TABLE testcasedep 
+    ADD DependencyTCDelay INTEGER DEFAULT 0 NULL AFTER DependencyTestcase;
+

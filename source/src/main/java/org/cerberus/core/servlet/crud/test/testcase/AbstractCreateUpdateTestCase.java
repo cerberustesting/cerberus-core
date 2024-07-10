@@ -29,7 +29,6 @@ import org.cerberus.core.crud.entity.TestCaseStep;
 import org.cerberus.core.crud.entity.TestCaseStepAction;
 import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.crud.factory.IFactoryTestCaseCountry;
-import org.cerberus.core.crud.factory.IFactoryTestCaseDep;
 import org.cerberus.core.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.core.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.core.crud.service.ITestCaseCountryService;
@@ -69,8 +68,6 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
     private IFactoryTestCaseLabel testCaseLabelFactory;
     @Autowired
     private IFactoryTestCaseCountry testCaseCountryFactory;
-    @Autowired
-    private IFactoryTestCaseDep testCaseDepFactory;
     @Autowired
     private ITestCaseLabelService testCaseLabelService;
     @Autowired
@@ -290,12 +287,20 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         jsonArrayFoEach(request, "dependencies", (jsonObj) -> {
             String testcaseId = jsonObj.getString("testcase");
             Long testcaseDependencyId = jsonObj.getLong("id");
+            Integer testcaseDependencyDelay = Integer.parseInt(jsonObj.getString("depDelay"));
             String test = jsonObj.getString("test");
             String description = jsonObj.getString("description");
             boolean isActive = Boolean.valueOf(jsonObj.getString("isActive"));
             Timestamp creationDate = new Timestamp(new Date().getTime());
 
-            testcaseDependencies.add(testCaseDepFactory.create(testcaseDependencyId, testcase.getTest(), testcase.getTestcase(), test, testcaseId, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND, isActive, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+            testcaseDependencies.add(
+                    TestCaseDep.builder()
+                            .id(testcaseDependencyId).test(testcase.getTest()).testcase(testcase.getTestcase())
+                            .dependencyTest(test).dependencyTestcase(testcaseId).dependencyTCDelay(testcaseDependencyDelay)
+                            .type(TestCaseExecutionQueueDep.TYPE_TCEXEEND).isActive(isActive)
+                            .description(description)
+                            .dateCreated(creationDate).dateModif(creationDate).usrCreated(request.getRemoteUser()).usrModif(request.getRemoteUser())
+                            .build());
         });
         return testcaseDependencies;
     }

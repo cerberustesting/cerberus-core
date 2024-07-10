@@ -63,35 +63,35 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
 
     @Override
     public List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException {
-        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd " +
-                "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase " +
-                "where tcd.Test = ? and tcd.Testcase = ?";
-
-            return RequestDbUtils.executeQueryList(databaseSpring, query,
-                    preparedStatement -> {
-                        int i = 1;
-                        preparedStatement.setString(i++, test);
-                        preparedStatement.setString(i++, testcase);
-                    },
-                    resultSet -> {
-                        TestCaseDep testcaseDependency = this.loadResult(resultSet);
-                        testcaseDependency.setTestcaseDescription(resultSet.getString("TestcaseDescription"));
-                        return testcaseDependency;
-                    }
-            );
-    }
-
-    @Override
-    public List<TestCaseDep> readByTestAndTestCase(List<TestCase> testcases) throws CerberusException {
-        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd " +
-                "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase " +
-                "where 1=1" +
-                testcases.stream().map(s -> " and tcd.Test = ? and tcd.Testcase = ?").collect(Collectors.joining());
+        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd "
+                + "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase "
+                + "where tcd.Test = ? and tcd.Testcase = ?";
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 preparedStatement -> {
                     int i = 1;
-                    for(TestCase testcase : testcases) {
+                    preparedStatement.setString(i++, test);
+                    preparedStatement.setString(i++, testcase);
+                },
+                resultSet -> {
+                    TestCaseDep testcaseDependency = this.loadResult(resultSet);
+                    testcaseDependency.setTestcaseDescription(resultSet.getString("TestcaseDescription"));
+                    return testcaseDependency;
+                }
+        );
+    }
+
+    @Override
+    public List<TestCaseDep> readByTestAndTestCase(List<TestCase> testcases) throws CerberusException {
+        String query = "SELECT tcd.*, tc.description as TestcaseDescription FROM `testcasedep` tcd "
+                + "inner join testcase tc on tcd.DependencyTest = tc.Test and tcd.DependencyTestcase = tc.Testcase "
+                + "where 1=1"
+                + testcases.stream().map(s -> " and tcd.Test = ? and tcd.Testcase = ?").collect(Collectors.joining());
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query,
+                preparedStatement -> {
+                    int i = 1;
+                    for (TestCase testcase : testcases) {
                         preparedStatement.setString(i++, testcase.getTest());
                         preparedStatement.setString(i++, testcase.getTestcase());
                     }
@@ -101,36 +101,32 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                     testcaseDependency.setTestcaseDescription(resultSet.getString("TestcaseDescription"));
                     return testcaseDependency;
                 }
-         );
+        );
     }
-
 
     @Override
     public void create(TestCaseDep testcaseDependency) throws CerberusException {
-        String query = "INSERT INTO `testcasedep`" +
-                "(`Test`, `Testcase`, `Type`, `DependencyTest`, `DependencyTestcase`, `DependencyEvent`, `isActive`, `Description`, `UsrCreated`, `DateCreated`, `UsrModif`, `DateModif` )" +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            RequestDbUtils.executeUpdate(databaseSpring, query,
-                    preparedStatement -> this.setRequestData(preparedStatement,testcaseDependency,false)
-            );
-
-
-    }
-
-
-    @Override
-    public void update(TestCaseDep testcaseDependency) throws CerberusException {
-        String query = "UPDATE `testcasedep` " +
-                " SET `Test` = ?, `Testcase` = ?, `Type` = ?, `DependencyTest` = ?, `DependencyTestcase` = ?, `DependencyEvent` = ?, `isActive` = ?, `Description` = ?, " +
-                "`UsrCreated` = ?, `DateCreated` = ?, `UsrModif` = ?, `DateModif` = ? where id=?";
+        String query = "INSERT INTO `testcasedep`"
+                + "(`Test`, `Testcase`, `Type`, `DependencyTest`, `DependencyTestcase`, `DependencyTCDelay`, `DependencyEvent`, `isActive`, `Description`, `UsrCreated`, `DateCreated`, `UsrModif`, `DateModif` )"
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         RequestDbUtils.executeUpdate(databaseSpring, query,
-                preparedStatement -> this.setRequestData(preparedStatement,testcaseDependency,true)
+                preparedStatement -> this.setRequestData(preparedStatement, testcaseDependency, false)
         );
 
     }
 
+    @Override
+    public void update(TestCaseDep testcaseDependency) throws CerberusException {
+        String query = "UPDATE `testcasedep` "
+                + " SET `Test` = ?, `Testcase` = ?, `Type` = ?, `DependencyTest` = ?, `DependencyTestcase` = ?, `DependencyTCDelay` = ?, `DependencyEvent` = ?, `isActive` = ?, `Description` = ?, "
+                + "`UsrCreated` = ?, `DateCreated` = ?, `UsrModif` = ?, `DateModif` = ? where id=?";
+
+        RequestDbUtils.executeUpdate(databaseSpring, query,
+                preparedStatement -> this.setRequestData(preparedStatement, testcaseDependency, true)
+        );
+
+    }
 
     @Override
     public void delete(TestCaseDep testcaseDependency) throws CerberusException {
@@ -151,6 +147,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
         preparedStatement.setString(i++, testcaseDependency.getType());
         preparedStatement.setString(i++, testcaseDependency.getDependencyTest());
         preparedStatement.setString(i++, testcaseDependency.getDependencyTestcase());
+        preparedStatement.setInt(i++, testcaseDependency.getDependencyTCDelay());
         preparedStatement.setString(i++, testcaseDependency.getDependencyEvent());
         preparedStatement.setBoolean(i++, testcaseDependency.isActive());
         preparedStatement.setString(i++, testcaseDependency.getDescription());
@@ -158,28 +155,22 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
         preparedStatement.setTimestamp(i++, testcaseDependency.getDateCreated());
         preparedStatement.setString(i++, testcaseDependency.getUsrModif());
         preparedStatement.setTimestamp(i++, testcaseDependency.getDateModif());
-        if(setId) {
+        if (setId) {
             preparedStatement.setLong(i++, testcaseDependency.getId());
         }
     }
 
     private TestCaseDep loadResult(ResultSet resultSet) throws SQLException {
-        TestCaseDep testcaseDependency = new TestCaseDep();
 
-        testcaseDependency.setId(resultSet.getLong("id"));
-        testcaseDependency.setTest(resultSet.getString("Test"));
-        testcaseDependency.setTestcase(resultSet.getString("Testcase"));
-        testcaseDependency.setType(resultSet.getString("Type"));
-        testcaseDependency.setDependencyTest(resultSet.getString("DependencyTest"));
-        testcaseDependency.setDependencyTestcase(resultSet.getString("DependencyTestCase"));
-        testcaseDependency.setDependencyEvent(resultSet.getString("DependencyEvent"));
-        testcaseDependency.setActive(resultSet.getBoolean("isActive"));
-        testcaseDependency.setDescription(resultSet.getString("Description"));
-        testcaseDependency.setUsrCreated(resultSet.getString("UsrCreated"));
-        testcaseDependency.setDateCreated(resultSet.getTimestamp("DateCreated"));
-        testcaseDependency.setUsrModif(resultSet.getString("UsrModif"));
-        testcaseDependency.setDateModif(resultSet.getTimestamp("DateModif"));
-
-        return testcaseDependency;
+        return TestCaseDep.builder()
+                .id(resultSet.getLong("id"))
+                .test(resultSet.getString("Test")).testcase(resultSet.getString("Testcase"))
+                .type(resultSet.getString("Type"))
+                .dependencyTest(resultSet.getString("DependencyTest")).dependencyTestcase(resultSet.getString("DependencyTestCase"))
+                .dependencyEvent(resultSet.getString("DependencyEvent")).dependencyTCDelay(resultSet.getInt("DependencyTCDelay"))
+                .isActive(resultSet.getBoolean("isActive")).description(resultSet.getString("Description"))
+                .usrCreated(resultSet.getString("UsrCreated"))
+                .usrModif(resultSet.getString("UsrModif")).dateCreated(resultSet.getTimestamp("DateCreated")).dateModif(resultSet.getTimestamp("DateModif"))
+                .build();
     }
 }

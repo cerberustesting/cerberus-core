@@ -1125,6 +1125,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcaseexecutionqueuedep','comment','','en','Comment',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','fr','Commentaire',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','comment','','fa','نظر',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','DepTCDelay','','en','Delay (min)',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','DepTCDelay','','fr','Delay (min)',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','DepDate','','en','Time to release',NULL,NULL)");
+        b.append(",('testcaseexecutionqueuedep','DepDate','','fr','Time to release',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','exeId','','en','Execution Id',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','exeId','','fr','Id d\\'execution',NULL,NULL)");
         b.append(",('testcaseexecutionqueuedep','exeId','','fa','شناسه اجرا',NULL,NULL)");

@@ -20,11 +20,21 @@
 package org.cerberus.core.crud.entity;
 
 import java.sql.Timestamp;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@Builder
 public class TestCaseExecutionQueueDep {
 
     private long id;
@@ -35,7 +45,9 @@ public class TestCaseExecutionQueueDep {
     private String type;
     private String depTest;
     private String depTestCase;
+    private Integer depTCDelay;
     private String depEvent;
+    private Timestamp depDate;
     private String status;
     private Timestamp releaseDate;
     private String comment;
@@ -57,149 +69,6 @@ public class TestCaseExecutionQueueDep {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueDep.class);
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getExeQueueId() {
-        return exeQueueId;
-    }
-
-    public void setExeQueueId(long exeQueueId) {
-        this.exeQueueId = exeQueueId;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDepTest() {
-        return depTest;
-    }
-
-    public void setDepTest(String depTest) {
-        this.depTest = depTest;
-    }
-
-    public String getDepTestCase() {
-        return depTestCase;
-    }
-
-    public void setDepTestCase(String depTestCase) {
-        this.depTestCase = depTestCase;
-    }
-
-    public String getDepEvent() {
-        return depEvent;
-    }
-
-    public void setDepEvent(String depEvent) {
-        this.depEvent = depEvent;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Timestamp getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(Timestamp releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public long getExeId() {
-        return exeId;
-    }
-
-    public void setExeId(long exeId) {
-        this.exeId = exeId;
-    }
-
-    public long getQueueId() {
-        return queueId;
-    }
-
-    public void setQueueId(long queueId) {
-        this.queueId = queueId;
-    }
-
-    public String getUsrCreated() {
-        return usrCreated;
-    }
-
-    public void setUsrCreated(String usrCreated) {
-        this.usrCreated = usrCreated;
-    }
-
-    public Timestamp getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Timestamp dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public String getUsrModif() {
-        return usrModif;
-    }
-
-    public void setUsrModif(String usrModif) {
-        this.usrModif = usrModif;
-    }
-
-    public Timestamp getDateModif() {
-        return dateModif;
-    }
-
-    public void setDateModif(Timestamp dateModif) {
-        this.dateModif = dateModif;
-    }
     /**
      * Convert the current TestCaseExecution into JSON format
      *
@@ -218,6 +87,8 @@ public class TestCaseExecutionQueueDep {
             result.put("depEvent", this.getDepEvent());
             result.put("depTest", this.getDepTest());
             result.put("depTestCase", this.getDepTestCase());
+            result.put("depTCDelay", this.getDepTCDelay());
+            result.put("depDate", this.getDepDate());
             result.put("environment", this.getEnvironment());
             result.put("exeId", this.getExeId());
             result.put("queueId", this.getQueueId());

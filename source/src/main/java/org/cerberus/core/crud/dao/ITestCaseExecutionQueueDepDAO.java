@@ -124,6 +124,18 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param env
      * @param Country
      * @param tag
+     * @param test
+     * @param testCase
+     * @param exeID
+     * @return
+     */
+    public AnswerItem<Integer> insertNewTimingDep(String env, String Country, String tag, String test, String testCase, long exeID);
+    
+    /**
+     *
+     * @param env
+     * @param Country
+     * @param tag
      * @param type
      * @param test
      * @param testCase

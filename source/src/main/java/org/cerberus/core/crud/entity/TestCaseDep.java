@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import lombok.Builder;
 
 /**
  * @author bcivel
@@ -37,6 +38,7 @@ import java.sql.Timestamp;
 @Setter
 @EqualsAndHashCode
 @ToString
+@Builder
 public class TestCaseDep {
 
     private long id;
@@ -46,6 +48,7 @@ public class TestCaseDep {
     private String dependencyTest;
     private String dependencyTestcase;
     private String dependencyEvent;
+    private Integer dependencyTCDelay;
     private boolean isActive;
     private String description;
     @EqualsAndHashCode.Exclude
@@ -81,6 +84,7 @@ public class TestCaseDep {
             testCaseDependencyJson.put("id", this.getId());
             testCaseDependencyJson.put("dependencyTest", this.getDependencyTest());
             testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
+            testCaseDependencyJson.put("dependencyTCDelay", this.getDependencyTCDelay());
             testCaseDependencyJson.put("type", this.getType());
             testCaseDependencyJson.put("isActive", this.isActive());
             testCaseDependencyJson.put("description", this.getDescription());
@@ -99,6 +103,7 @@ public class TestCaseDep {
             testCaseDependencyJson.put("id", this.getId());
             testCaseDependencyJson.put("dependencyTestFolder", this.getDependencyTest());
             testCaseDependencyJson.put("dependencyTestcase", this.getDependencyTestcase());
+            testCaseDependencyJson.put("dependencyTCDelay", this.getDependencyTCDelay());
             testCaseDependencyJson.put("type", this.getType());
             testCaseDependencyJson.put("isActive", this.isActive());
             testCaseDependencyJson.put("description", this.getDescription());

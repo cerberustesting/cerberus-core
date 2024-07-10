@@ -109,12 +109,22 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
+    public AnswerItem<Integer> insertNewTimingDep(String env, String Country, String tag, String test, String testCase, long exeID) {
+        return testCaseExecutionQueueDepDAO.insertNewTimingDep(env, Country, tag, test, testCase, exeID);
+    }
+
+    @Override
     public void manageDependenciesEndOfExecution(TestCaseExecution tCExecution) {
         if (tCExecution != null) {
             LOG.debug("Release dependencies of Execution : " + tCExecution.getId() + ".");
 
+            // Insert new dependency based on TIMING in case the initial dependency has a delay. Type TIMING Status WAITING
+            // TODO
+            AnswerItem ansNbDep = insertNewTimingDep(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
+                    tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getId());
+
             // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
-            AnswerItem ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
+            ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
                     TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), tCExecution.getQueueID());
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.

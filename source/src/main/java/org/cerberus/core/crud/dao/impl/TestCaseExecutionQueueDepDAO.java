@@ -28,7 +28,6 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.core.crud.dao.ITestCaseExecutionQueueDepDAO;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
-import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionQueueDep;
 import org.cerberus.core.crud.utils.RequestDbUtils;
 import org.cerberus.core.database.DatabaseSpring;
 import org.cerberus.core.engine.entity.MessageEvent;
@@ -55,8 +54,6 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
     @Autowired
     private DatabaseSpring databaseSpring;
-    @Autowired
-    private IFactoryTestCaseExecutionQueueDep factoryTestCaseExecutionQueueDep;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueDepDAO.class);
 
@@ -69,8 +66,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerItem<TestCaseExecutionQueueDep> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement("SELECT * FROM `testcaseexecutionqueuedep` WHERE `ID` = ?")) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement("SELECT * FROM `testcaseexecutionqueuedep` WHERE `ID` = ?")) {
             TestCaseExecutionQueueDep ao = null;
             // Prepare and execute query
             preStat.setLong(1, id);
@@ -107,8 +103,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
         MessageEvent msg = null;
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement("SELECT * FROM `testcaseexecutionqueuedep` WHERE `ExeID` = ?")) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement("SELECT * FROM `testcaseexecutionqueuedep` WHERE `ExeID` = ?")) {
             // Prepare and execute query
             preStat.setLong(1, exeId);
             ResultSet rs = preStat.executeQuery();
@@ -153,8 +148,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.exeQueueId : " + exeQueueId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, exeQueueId);
             ResultSet rs = preStat.executeQuery();
@@ -189,7 +183,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and (tce.controlstatus is null or tce.controlstatus != 'OK');";
+        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tcd.Type = 'TCEXEEND'  and (tce.controlstatus is null or tce.controlstatus != 'OK');";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -197,8 +191,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.exeQueueId : " + exeQueueId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, exeQueueId);
             ResultSet rs = preStat.executeQuery();
@@ -241,8 +234,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.exeId : " + exeId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, exeId);
             ResultSet rs = preStat.executeQuery();
@@ -284,8 +276,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.queueId : " + queueId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, queueId);
             ResultSet rs = preStat.executeQuery();
@@ -327,8 +318,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.queueId : " + exeQueueId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, exeQueueId);
             ResultSet rs = preStat.executeQuery();
@@ -410,9 +400,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isEmpty(searchTerm)) {
@@ -429,8 +417,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -477,8 +464,8 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
-        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status) "
-                + "SELECT ?, ?, ?, ?, Type, DependencyTest DepTest, DependencyTestcase DepTestCase, DependencyEvent DepEvent, 'WAITING' FROM testcasedep "
+        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepTCDelay, DepEvent, Status) "
+                + "SELECT ?, ?, ?, ?, Type, DependencyTest DepTest, DependencyTestcase DepTestCase, DependencyTCDelay DepTCDelay, DependencyEvent DepEvent, 'WAITING' FROM testcasedep "
                 + "WHERE Test=? and TestCase=? and IsActive=1;";
 
         // Debug message on SQL.
@@ -488,8 +475,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.testcase : " + testcase);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             TestCaseExecutionQueueDep ao = null;
             // Prepare and execute query
             int i = 1;
@@ -531,8 +517,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL.param.test : " + fromExeQueueId);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             TestCaseExecutionQueueDep ao = null;
             // Prepare and execute query
             int i = 1;
@@ -557,6 +542,44 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
+    public AnswerItem<Integer> insertNewTimingDep(String env, String Country, String tag, String test, String testCase, long exeID) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+
+        String query = "INSERT INTO testcaseexecutionqueuedep (ExeQueueId, Environment, Country, Tag, `Type` , DepDate, Status, Comment) "
+                + " SELECT ExeQueueId, Environment, Country , Tag , 'TIMING', DATE_ADD(NOW(), INTERVAL DepTCDelay MINUTE) , 'RELEASED', concat('Extra ', DepTCDelay, ' min delay following end of execution ', ?, ' of ', DepTest, '-', DepTestCase) "
+                + "  FROM testcaseexecutionqueuedep "
+                + "  WHERE `Status` = 'WAITING' and `Type` = 'TCEXEEND' and `DepTest` = ? and `DepTestCase` = ? "
+                + "   and `Tag` = ? and `Environment` = ? and `Country` = ? and DepTCDelay > 0;";
+
+        // Debug message on SQL.
+        LOG.debug("SQL : " + query);
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            int i = 1;
+            preStat.setLong(i++, exeID);
+            preStat.setString(i++, test);
+            preStat.setString(i++, testCase);
+            preStat.setString(i++, tag);
+            preStat.setString(i++, env);
+            preStat.setString(i++, Country);
+            Integer resnb = preStat.executeUpdate();
+            ans.setItem(resnb);
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.error("Unable to update object: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
     public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
@@ -568,8 +591,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL : " + query);
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             int i = 1;
             preStat.setString(i++, comment);
@@ -641,9 +663,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             LOG.debug("SQL : " + query.toString());
         }
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
 
@@ -661,8 +681,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -754,6 +773,8 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         String depTest = ParameterParserUtil.parseStringParam(rs.getString("DepTest"), "");
         String depEvent = ParameterParserUtil.parseStringParam(rs.getString("DepEvent"), "");
         String depTestCase = ParameterParserUtil.parseStringParam(rs.getString("DepTestCase"), "");
+        Integer depTCDelay = rs.getInt("DepTCDelay");
+        Timestamp depDate = rs.getTimestamp("DepDate");
         String status = ParameterParserUtil.parseStringParam(rs.getString("Status"), "");
         Timestamp releaseDate = rs.getTimestamp("ReleaseDate");
         String comment = ParameterParserUtil.parseStringParam(rs.getString("Comment"), "");
@@ -764,7 +785,11 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
         Timestamp dateModif = rs.getTimestamp("DateModif");
 
-        return factoryTestCaseExecutionQueueDep.create(id, exeQueueID, environment, country, tag, type, depTest, depTestCase, depEvent, status, releaseDate,
-                comment, exeID, queueID, usrCreated, dateCreated, usrModif, dateModif);
+        return TestCaseExecutionQueueDep.builder()
+                .id(id).exeQueueId(exeQueueID).environment(environment).country(country).tag(tag)
+                .type(type).depTest(depTest).depEvent(depEvent).depTestCase(depTestCase).depTCDelay(depTCDelay).depDate(depDate)
+                .status(status).releaseDate(releaseDate).comment(comment).exeId(exeID).queueId(queueID)
+                .usrCreated(usrCreated).dateCreated(dateCreated).usrModif(usrModif).dateModif(dateModif).build();
+
     }
 }

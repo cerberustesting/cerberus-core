@@ -236,9 +236,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 updateToQueuedFromQuWithDep(exeQueueId, "All Dependencies RELEASED.");
             } else {
                 try {
+                    // All dependencies of exeQueueId has been free but some with error that force to move the queue entry in ERROR status
                     String notExecutedMessage = nbReleasedNOK + " RELEASED dependency(ies) not OK.";
                     updateToErrorFromQuWithDep(exeQueueId, notExecutedMessage);
+                    // We now trigger the check that the queue entry that move to ERROR status can release other dependencies
                     testCaseExecutionQueueDepService.manageDependenciesEndOfQueueExecution(exeQueueId);
+                    // Tag execution could end here if that queue entry was the last one.
                     tagService.manageCampaignEndOfExecution(tag);
                 } catch (CerberusException ex) {
                     LOG.error(ex.toString(), ex);
