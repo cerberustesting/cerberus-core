@@ -611,9 +611,11 @@ function appendDepRow(dep, targetTableBody) {
     var typeInput = $("<input readonly>").addClass("form-control input-sm").val(dep.type);
     var depTestInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTest);
     var depTestcaseInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTestCase);
+    var depTCDelayInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depTCDelay);
     var depEventInput = $("<input readonly>").addClass("form-control input-sm").val(dep.depEvent);
+    var depDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDate(dep.depDate));
     var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
-    var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDateShort(dep.releaseDate));
+    var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDate(dep.releaseDate));
     var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
     var exeIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeId);
     var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
@@ -624,11 +626,15 @@ function appendDepRow(dep, targetTableBody) {
     var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
     var drow01 = $("<div class='row'></div>").append(type);
     if (dep.type === "TCEXEEND") {
-        var det1 = $("<div class='form-group col-lg-6 col-sm-7'></div>").append("<label for='name'>" + doc.getDocOnline("test", "Test") + "</label>").append(depTestInput);
-        var det2 = $("<div class='form-group col-lg-3 col-sm-5'></div>").append("<label for='name'>" + doc.getDocOnline("testcase", "TestCase") + "</label>").append(depTestcaseInput);
-        drow01.append(det1).append(det2);
+        var det1 = $("<div class='form-group col-lg-5 col-sm-7'></div>").append("<label for='name'>" + doc.getDocOnline("test", "Test") + "</label>").append(depTestInput);
+        var det2 = $("<div class='form-group col-lg-2 col-sm-5'></div>").append("<label for='name'>" + doc.getDocOnline("testcase", "TestCase") + "</label>").append(depTestcaseInput);
+        var det3 = $("<div class='form-group col-lg-2'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "DepTCDelay") + "</label>").append(depTCDelayInput);
+        drow01.append(det1).append(det2).append(det3);
+    } else if (dep.type === "TIMING") {
+        var det1 = $("<div class='form-group col-lg-6'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "DepDate") + "</label>").append(depDateInput);
+        drow01.append(det1);
     } else if (dep.type === "EVENT") {
-        var det1 = $("<div class='form-group col-lg-10'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "executor") + "</label>").append(depEventInput);
+        var det1 = $("<div class='form-group col-lg-9'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "executor") + "</label>").append(depEventInput);
         drow01.append(det1);
     }
     var td1 = $("<td></td>").append(drow01);
@@ -641,6 +647,8 @@ function appendDepRow(dep, targetTableBody) {
         var det1 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeId") + "</label>").append(exeIdInput);
         var det2 = $("<div class='form-group col-lg-3 col-md-3 col-sm-3'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "exeQueueId") + "</label>").append(queueIdInput);
         drow01.append(det1).append(det2);
+    } else if (dep.type === "TIMING") {
+//        drow01.append(det1);
     }
     var td2 = $("<td></td>").append(drow01);
 

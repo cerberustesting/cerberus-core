@@ -313,29 +313,39 @@
 
                 <div class="modal-footer">
 
-                    <div id="lineStatus" class="row">
-                        <div class="form-group hidden-xs col-sm-2 col-md-1 marginBottom0 marginRight0" style="font-size:2em;text-align:center">
-                            <div id="callStatus" class=" marginTop5 glyphicon text-info glyphicon-minus marginBottom0" style="font-size:1em;text-align:center;align-content: center">
-                            </div>
-                            <div id="callStatusCode" class="label label-primary" style="font-size:small;text-align:center;background-color:#000000;display: none">
-                            </div>
-                            <div id="callTiming" class=" marginTop5 text-info marginBottom0" style="font-size:x-small;text-align:center;align-content: center">
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-10 col-sm-8 col-md-7 marginBottom0">
-                            <b>
-                                <div class="form-group alert marginBottom0" id="resmessage" name="resmessage" style="text-align:center;margin-bottom: 0;">
+                    <table style="width: 100%">
+                        <tr>
+                            <td style="max-width: 10%;">
+                                <div id="lineStatus" class="row">
+                                    <div class="form-group hidden-xs marginBottom0 marginRight0" style="font-size:2em;text-align:center">
+                                        <div id="callStatus" class=" marginTop5 glyphicon text-info glyphicon-minus marginBottom0" style="margin-right:20px;margin-left:10px;font-size:1em;text-align:center;align-content: center">
+                                        </div>
+                                        <div id="callStatusCode" class="label label-primary" style="margin-right:20px;margin-left:10px;font-size:medium;text-align:center;background-color:#000000;display: none">
+                                        </div>
+                                        <div id="callTiming" class=" marginTop5 text-info marginBottom0" style="margin-right:20px;margin-left:10px;font-size:x-small;text-align:center;align-content: center">
+                                        </div>
+                                    </div>
                                 </div>
-                            </b>
-                        </div>
-                        <div class="form-group col-xs-2 col-sm-2 col-md-4">
-                            <button type="button" id="editSoapLibraryButton" class="btn btn-primary pull-right" name="buttonEdit">Save</button>
-                            <button type="button" id="addSoapLibraryButton" class="btn btn-primary pull-right" name="buttonAdd">Add</button>
-                            <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary pull-right" name="buttonDuplicate">Duplicate</button>
-                            <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right" name="buttonCall">Save and Call</button>
-                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal" name="buttonClose">Close</button>
-                        </div>
-                    </div>
+                            </td>
+                            <td style="max-width: 50%;">
+                                <div class="form-group marginBottom0">
+                                    <b>
+                                        <div class="form-group alert marginBottom0" id="resmessage" name="resmessage" style="white-space: normal;text-align:center;margin-bottom: 0;">
+                                        </div>
+                                    </b>
+                                </div>
+                            </td>
+                            <td style="max-width: 10%;">
+                                <div class="form-group ">
+                                    <button type="button" id="editSoapLibraryButton" class="btn btn-primary pull-right" name="buttonEdit">Save</button>
+                                    <button type="button" id="addSoapLibraryButton" class="btn btn-primary pull-right" name="buttonAdd">Add</button>
+                                    <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary pull-right" name="buttonDuplicate">Duplicate</button>
+                                    <button type="button" class="btn btn-default pull-right marginLeft5" data-dismiss="modal" name="buttonClose">Close</button>
+                                    <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right" name="buttonCall">Save and Call</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
 
                 </div>
 

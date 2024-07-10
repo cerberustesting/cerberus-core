@@ -170,7 +170,7 @@ function aoColumnsFunc(tableId) {
                                     name="deleteApplication" title="' + doc.getDocLabel("page_application", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editApplication+ duplicateApplication + deleteApplication + '</div>';
+                    return '<div class="center btn-group width150">' + editApplication + duplicateApplication + deleteApplication + '</div>';
                 }
                 return '<div class="center btn-group width150">' + viewApplication + '</div>';
             }
@@ -179,29 +179,40 @@ function aoColumnsFunc(tableId) {
             "data": "application",
             "sName": "application",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "Application")},
+            "title": doc.getDocOnline("application", "Application")
+        },
         {
             "data": "description",
             "like": true,
             "sName": "description",
             "sWidth": "80px",
-            "title": doc.getDocOnline("application", "Description")},
+            "title": doc.getDocOnline("application", "Description")
+        },
         {
             "data": "sort",
             "visible": false,
             "sName": "sort",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "sort")},
+            "title": doc.getDocOnline("application", "sort")
+        },
         {
             "data": "type",
             "sName": "type",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "type")},
+            "title": doc.getDocOnline("application", "type"),
+            "mRender": function (data, type, obj) {
+                console.info(obj.type)
+                return $("<div></div>")
+                        .append($("<img style='height:30px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></img>").text(obj.type).attr('src', './images/logoapp-' + obj.type + '.png'))
+                        .html() + " " + obj.type;
+            }
+        },
         {
             "data": "system",
             "sName": "system",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "system")},
+            "title": doc.getDocOnline("application", "system")
+        },
         {
             "data": "subsystem",
             "visible": false,

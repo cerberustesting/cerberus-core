@@ -301,7 +301,7 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     formEdit.find("#system").prop("value", application["system"]);
     formEdit.find("#subsystem").prop("value", application["subsystem"]);
     formEdit.find("#poolSize").prop("value", application["poolSize"]);
-    formEdit.find("#repourl").prop("value", application["repourl"]);
+    formEdit.find("#repourl").prop("value", application["repoUrl"]);
     formEdit.find("#bugtrackerurl").prop("value", application["bugTrackerUrl"]);
     formEdit.find("#bugtrackerconnector").prop("value", application["bugTrackerConnector"]);
     formEdit.find("#bugtrackerparam1").prop("value", application["bugTrackerParam1"]);

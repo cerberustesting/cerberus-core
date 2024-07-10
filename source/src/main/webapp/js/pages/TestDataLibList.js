@@ -457,13 +457,13 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "type"),
             "mRender": function (data, type, obj) {
                 if (obj.type === "SQL") {
-                    return '<i class="fa fa-table"></i> ' + obj.type;
+                    return '<i class="fa fa-table" style="font-size:20px"></i> ' + obj.type;
                 } else if (obj.type === "FILE") {
-                    return '<i class="fa fa-file"></i> ' + obj.type;
+                    return '<i class="fa fa-file" style="font-size:20px"></i> ' + obj.type;
                 } else if (obj.type === "INTERNAL") {
-                    return '<img src="images/Logo-cerberus_250.png" height="14"></img> ' + obj.type;
+                    return '<img src="images/Logo-cerberus_250.png" height="20"></img> ' + obj.type;
                 } else  {
-                    return '<i class="fa fa-cloud-upload"></i> ' + obj.type;
+                    return '<i class="fa fa-cloud-upload" style="font-size:20px"></i> ' + obj.type;
                 }
             }
         },
