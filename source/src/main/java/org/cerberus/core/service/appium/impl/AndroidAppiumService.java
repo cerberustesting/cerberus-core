@@ -216,7 +216,25 @@ public class AndroidAppiumService extends AppiumService {
 
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
-        return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "\n']}");
+
+        //return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "']}");
+
+        try {
+
+            if (StringUtil.isEmpty(appPackage)) {
+                session.getAppiumDriver().launchApp();
+            } else {
+                session.getAppiumDriver().activateApp(appPackage);
+            }
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to open app. " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to open app " + e.getMessage());
+        }
+
     }
 
     @Override

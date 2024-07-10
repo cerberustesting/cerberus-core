@@ -23,6 +23,7 @@ import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +54,7 @@ public interface ITagStatisticDAO {
      * @return
      */
     Answer read(TagStatistic object);
+    AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> groups1, String minDate, String maxDate);
 
     /**
      * Get a TagStatistics list by tag from database

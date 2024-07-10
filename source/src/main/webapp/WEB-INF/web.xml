@@ -142,6 +142,7 @@
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ReportingExecutionOverTime.jsp</url-pattern>
             <url-pattern>/ReportingCampaignOverTime.jsp</url-pattern>
+            <url-pattern>/ReportingCampaignStatistics.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionQueueList.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
