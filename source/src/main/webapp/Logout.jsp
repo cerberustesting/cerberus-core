@@ -41,7 +41,9 @@
     <body style="background-color: #fff">
         <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
-            sessionStorage.removeItem("user");
+            sessionStorage.clear();
+            localStorage.clear();
+            // JSESSIONID cookie to remove.
         </script>
         <div align="center" style="padding-top: 12%;">
             <h1>Logout Successfully</h1>

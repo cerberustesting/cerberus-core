@@ -18,7 +18,7 @@
 * [GUI] Testcase environment selection combo has been replaced by checkbox.
 * [GUI] new parameter in order to tune the nb of row above which the report by tag will auto hide the unnecessary lines cerberus_reportbytag_nblinestotriggerautohide_int (default to 50).
 * [GUI] Save datatable layout on pages no longer save the current page position.
-* [GUI] Optimisation of datatable loading time on execution list and queue list.
+* [GUI] Optimization of datatable loading time on execution list and queue list.
 * [GUI] new refresh button on pages with datatable on order to refresh the data content without a full reload of the page.
 * [GUI] new reset button on pages with datatable in order to put back the default layout view.
 * [GUI] New 'Application Edit' button from testcase header, execution and campaign execution pages.
@@ -31,4 +31,4 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * [ENGINE] Datalib no longuer support direct definition of SOAP Calls. You need to replace them by SOAP services.
-* [ENGINE] %SYS_YESTERDAY*, %SYS_TODAY*, %SYS_TOMORROW* are no longuer supported, please change to %system.YESTERDAY*, %system.TODAY*, %system.TOMORROW* 
+* [ENGINE] %SYS_YESTERDAY*, %SYS_TODAY*, %SYS_TOMORROW* are no longer supported, please change to %system.YESTERDAY*, %system.TODAY*, %system.TOMORROW* 
