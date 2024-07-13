@@ -2817,7 +2817,7 @@ Action.prototype.generateContent = function () {
     var doc = new Doc();
     var row = $("<div></div>").addClass("step-action row").addClass("action");
     var content = $("<div></div>").addClass("content col-lg-8");
-    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
+    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-xs-12 col-lg-12");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
@@ -3245,8 +3245,8 @@ Control.prototype.generateContent = function () {
     var doc = new Doc();
     var row = this.html;
     var content = $("<div></div>").addClass("content col-lg-8");
-    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-lg-12");
-    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group col-lg-12");
+    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-xs-12 col-lg-12");
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group col-xs-12 col-lg-12");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")

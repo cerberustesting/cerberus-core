@@ -292,7 +292,7 @@ function initTags(configs, context) {
         datalibPromise = loadDatalib();
     }
 
-    if (configs.object && !configs.property && context instanceof String){
+    if (configs.object && !configs.property && context instanceof String) {
         objectsPromise = loadApplicationObject(context);
         datalibPromise = loadDatalib();
     }
@@ -627,7 +627,7 @@ function initAutocompleteWithTagsNoElement(el, configs, context) {
     initTags(configs, context).then(function (tags) {
         $(el).each(data => {
             // remove array of elements (xpath=, data-cerberus=, etc...) from tags in order not to propose them.
-            tags.splice(5, 1);
+//            tags.splice(5, 1);
             autocompleteWithTags(el[data], tags);
         });
     });

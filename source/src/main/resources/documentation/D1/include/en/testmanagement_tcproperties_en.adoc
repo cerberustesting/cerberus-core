@@ -216,24 +216,32 @@ NOTE: You can also get the nb of rows your variable has by using the `**nbrows**
 | %system.**LASTSERVICE_HTTPCODE**% |	Http return code of the last service called.
 | %system.**LASTSERVICE_CALL**% |	Last JSON Service call.
 | %system.**LASTSERVICE_RESPONSE**% |	Last JSON Service answer.
-| %system.**TODAY-yyyy**% |	Year of today
-| %system.**TODAY-MM**% |	Month of today
-| %system.**TODAY-dd**% |	Day of today
-| %system.**TODAY-doy**% |	Day of today from the beginning of the year
-| %system.**TODAY-HH**% |	Hour of today
-| %system.**TODAY-mm**% |	Minute of today
-| %system.**TODAY-ss**% |	Second of today
-| %system.**YESTERDAY-yyyy**% |	Year of yesterday
-| %system.**YESTERDAY-MM**% |	Month of yesterday
-| %system.**YESTERDAY-dd**% |	Day of yesterday
-| %system.**YESTERDAY-doy**% |	Day of yesterday from the beginning of the year
-| %system.**YESTERDAY-HH**% |	Hour of yesterday
-| %system.**YESTERDAY-mm**% |	Minute of yesterday
-| %system.**YESTERDAY-ss**% |	Second of yesterday
-| %system.**TOMORROW-yyyy**% |	Year of tomorrow
-| %system.**TOMORROW-MM**% |	Month of tomorrw
-| %system.**TOMORROW-dd**% |	Day of tomorrw
-| %system.**TOMORROW-doy**% |	Day of tomorrw from the beginning of the year
+
+|=== 
+
+==== Date System Variables
+
+
+%system.**XXXX-YYYY**%
+
+
+|=== 
+
+| *Date System Variables* | 
+| *XXXX* |	Any of those key word: TODAY, YESTERDAY, TOMORROW, DAY-n, DAY+n, HOUR-n, HOUR+n, MINUTE-n, MINUTE+n
+| *YYYY* |	Any of the https://docs.oracle.com/en%2Fjava%2Fjavase%2F11%2Fdocs%2Fapi%2F%2F/java.base/java/text/SimpleDateFormat.html[JAVA Date Patern] such as: *W* (Week in year), *W* (Week in month), *y* (Year), *M* (Month in year), *d* (Day in month), *E* (Day name in week), *H* (Hour in day (0-23)), *m* (Minute in hour), *s* (Second in minute),....
+
+|=== 
+
+Examples
+
+
+|=== 
+
+| %system.**DAY-13-EEEE**% | dimanche (day of week, 13 days ago)
+| %system.**MINUTE-3-m**% | 40 (minute of hour, 3 minutes ago)
+| %system.**TODAY-dd**% | 11 (day of month, today)
+
 
 |=== 
 

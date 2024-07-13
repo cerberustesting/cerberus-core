@@ -9,6 +9,7 @@
 * [ENGINE] New reserved keyword %datalib.DATALIBNAME.value% and %datalib.DATALIBNAME.base64%. Allowing managing upload/download file by uploading files on Cerberus with no more limitation on its size.
 * [ENGINE] Added CSV ignoreFirstLine boolean at datalib level.
 * [ENGINE] When callService that is attached to an application, host and contextroot of the corresponding application is used (if country env of the application does not exist on the test case application, search is also made on linked environments).
+* [ENGINE] New variable for system.dates. You can now for example do %system.DAY-13-d% that will return day of month (d) of 13 days ago. (locale of country invariant is used)
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
@@ -30,3 +31,4 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * [ENGINE] Datalib no longuer support direct definition of SOAP Calls. You need to replace them by SOAP services.
+* [ENGINE] %SYS_YESTERDAY*, %SYS_TODAY*, %SYS_TOMORROW* are no longuer supported, please change to %system.YESTERDAY*, %system.TODAY*, %system.TOMORROW* 

@@ -37,9 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
@@ -53,6 +56,8 @@ public class VariableService implements IVariableService {
     private static final Logger LOG = LogManager.getLogger(VariableService.class);
 
     private static final String VALUE_WHEN_NULL = "<null>";
+    public static final Pattern SYSTEM_VARIABLE_DATE_PATTERN = Pattern.compile("%system.([a-zA-Z0-9-+]*)-([a-z A-Z0-9]*)%");
+    public static final Pattern SYSTEM_SUBVARIABLE_DATE_PATTERN = Pattern.compile("([a-zA-Z]*)([-+])([0-9]*)");
 
     @Autowired
     private PropertyService propertyService;
@@ -387,43 +392,7 @@ public class VariableService implements IVariableService {
             /**
              * Trying to replace date variables .
              */
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-MM%", DateUtil.getTodayFormat("MM"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-dd%", DateUtil.getTodayFormat("dd"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-doy%", DateUtil.getTodayFormat("D"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-HH%", DateUtil.getTodayFormat("HH"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-mm%", DateUtil.getTodayFormat("mm"));
-            stringToDecode = stringToDecode.replace("%SYS_TODAY-ss%", DateUtil.getTodayFormat("ss"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-doy%", DateUtil.getYesterdayFormat("D"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
-            stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
-            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
-            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
-            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
-            //New syntax
-            stringToDecode = stringToDecode.replace("%system.TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-MM%", DateUtil.getTodayFormat("MM"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-dd%", DateUtil.getTodayFormat("dd"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-doy%", DateUtil.getTodayFormat("D"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-HH%", DateUtil.getTodayFormat("HH"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-mm%", DateUtil.getTodayFormat("mm"));
-            stringToDecode = stringToDecode.replace("%system.TODAY-ss%", DateUtil.getTodayFormat("ss"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-doy%", DateUtil.getYesterdayFormat("D"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
-            stringToDecode = stringToDecode.replace("%system.YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
-            stringToDecode = stringToDecode.replace("%system.TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
-            stringToDecode = stringToDecode.replace("%system.TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
-            stringToDecode = stringToDecode.replace("%system.TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
-            stringToDecode = stringToDecode.replace("%system.TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
+            stringToDecode = decodeStringWithDateVariable(stringToDecode, execution.getCountryObj().getGp2());
 
             return stringToDecode;
 
@@ -431,6 +400,65 @@ public class VariableService implements IVariableService {
             LOG.error("Error when decoding system variable on exe : " + execution.getId(), e);
             LOG.error(e, e);
         }
+        return stringToDecode;
+    }
+
+    public String decodeStringWithDateVariable(String stringToDecode, String locale) {
+
+        Matcher variableMatcher = SYSTEM_VARIABLE_DATE_PATTERN.matcher(stringToDecode);
+        Matcher subVariableMatcher = null;
+
+        if (variableMatcher.find()) {
+            SimpleDateFormat formater = null; // Define the MySQL Format.
+
+            do {
+
+                Date today = new Date(); // Getting now.
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(today);
+
+                switch (variableMatcher.group(1)) {
+                    case "TODAY":
+                        break;
+                    case "TOMORROW":
+                        cal.add(Calendar.HOUR, +24);
+                        break;
+                    case "YESTERDAY":
+                        cal.add(Calendar.HOUR, -24);
+                        break;
+                    default:
+                        subVariableMatcher = SYSTEM_SUBVARIABLE_DATE_PATTERN.matcher(variableMatcher.group(1));
+                        if (subVariableMatcher.matches()) {
+                            switch (subVariableMatcher.group(1)) {
+                                case "DAY":
+                                    cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
+                                case "HOUR":
+                                    cal.add(Calendar.HOUR, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
+                                case "MINUTE":
+                                    cal.add(Calendar.MINUTE, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
+                                default:
+                            }
+                        }
+                }
+
+                try {
+                    if (StringUtil.isNotEmpty(locale)) {
+                        formater = new SimpleDateFormat(variableMatcher.group(2), new Locale(locale.split("-")[0]));
+                    } else {
+                        formater = new SimpleDateFormat(variableMatcher.group(2));
+                    }
+                    stringToDecode = stringToDecode.replace(variableMatcher.group(0), formater.format(cal.getTime()));
+                } catch (Exception e) {
+                    LOG.error(e, e);
+                }
+
+            } while (variableMatcher.find());
+
+        }
+
         return stringToDecode;
     }
 
