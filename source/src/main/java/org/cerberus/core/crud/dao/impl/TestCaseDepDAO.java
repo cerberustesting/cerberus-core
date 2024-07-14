@@ -108,7 +108,7 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
     public void create(TestCaseDep testcaseDependency) throws CerberusException {
         String query = "INSERT INTO `testcasedep`"
                 + "(`Test`, `Testcase`, `Type`, `DependencyTest`, `DependencyTestcase`, `DependencyTCDelay`, `DependencyEvent`, `isActive`, `Description`, `UsrCreated`, `DateCreated`, `UsrModif`, `DateModif` )"
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         RequestDbUtils.executeUpdate(databaseSpring, query,
                 preparedStatement -> this.setRequestData(preparedStatement, testcaseDependency, false)
