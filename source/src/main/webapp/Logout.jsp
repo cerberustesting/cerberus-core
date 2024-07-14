@@ -42,7 +42,6 @@
         <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
             sessionStorage.clear();
-            localStorage.clear();
             // JSESSIONID cookie to remove.
         </script>
         <div align="center" style="padding-top: 12%;">
