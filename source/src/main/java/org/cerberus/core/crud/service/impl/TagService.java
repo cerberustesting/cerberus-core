@@ -180,6 +180,7 @@ public class TagService implements ITagService {
             mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
 
             List<TestCaseExecution> executions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            mytag.setExecutionsNew(executions);
 
             // All the rest of the data are coming from ResultCI Servlet.
             JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign(), executions);
@@ -220,7 +221,7 @@ public class TagService implements ITagService {
             }
 
             //TagStatistics, only if it's a campaign and if parameter is activated
-            if (StringUtil.isNotEmpty(mytag.getCampaign()) && parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_featureflipping_tagstatistics_enable, "", false )) {
+            if (StringUtil.isNotEmpty(mytag.getCampaign()) && parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_featureflipping_tagstatistics_enable, "", false)) {
                 LOG.info("TagStatistics creation for tag {} started.", tag);
                 tagStatisticService.populateTagStatisticsMap(
                         tagStatisticService.initTagStatistics(mytag, executions),
@@ -291,7 +292,7 @@ public class TagService implements ITagService {
             try {
                 cmp = campaignService.convert(campaignService.readByKey(campaign));
             } catch (CerberusException ex) {
-                LOG.error(ex,ex);
+                LOG.error(ex, ex);
             }
             Tag newTag;
             if (cmp == null) {
@@ -432,7 +433,7 @@ public class TagService implements ITagService {
         }
 
     }
-    
+
     @Override
     public String formatResult(Tag tag) {
         StringBuilder result = new StringBuilder();

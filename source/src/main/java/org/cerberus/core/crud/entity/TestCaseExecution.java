@@ -560,4 +560,34 @@ public class TestCaseExecution {
         return result;
     }
 
+    public String getColor(String controlStatus) {
+        String color = null;
+
+        if ("OK".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_OK_COL_EXT;
+        } else if ("KO".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_KO_COL_EXT;
+        } else if ("FA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_FA_COL_EXT;
+        } else if ("CA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_CA_COL_EXT;
+        } else if ("NA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_NA_COL_EXT;
+        } else if ("NE".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_NE_COL_EXT;
+        } else if ("WE".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_WE_COL_EXT;
+        } else if ("PE".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_PE_COL_EXT;
+        } else if ("QU".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_QU_COL_EXT;
+        } else if ("QE".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_QE_COL_EXT;
+        } else {
+            color = "#000000";
+        }
+        return color;
+    }
+    
+    
 }

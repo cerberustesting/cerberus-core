@@ -48,6 +48,14 @@ public interface IChatGenerationService {
 
     /**
      *
+     * @param tag
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyEndTagExecutionV2(Tag tag) throws Exception;
+
+    /**
+     *
      * @param exe
      * @return
      * @throws Exception

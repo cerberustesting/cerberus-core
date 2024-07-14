@@ -45,6 +45,7 @@ public class ChatGenerationService implements IChatGenerationService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ChatGenerationService.class);
     private static final String IMAGES_URL = "https://vm.cerberus-testing.org/notifications/status-%STATUS%.png";
+    private static final int MAX_LINES = 20;
 
     @Autowired
     private IParameterService parameterService;
@@ -131,6 +132,93 @@ public class ChatGenerationService implements IChatGenerationService {
         chatMessage.put("cards", cards);
 
         LOG.debug(chatMessage.toString(1));
+        return chatMessage;
+
+    }
+
+    @Override
+    public JSONObject generateNotifyEndTagExecutionV2(Tag tag) throws UnsupportedEncodingException, Exception {
+
+        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
+        if (StringUtil.isEmpty(cerberusUrl)) {
+            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
+        }
+        cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
+
+        String cerberusTagUrl = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(tag.getTag(), "UTF-8");
+
+        JSONObject chatMessage = new JSONObject();
+
+        JSONArray cards = new JSONArray();
+        JSONArray cardsV2 = new JSONArray();
+        JSONObject card = new JSONObject();
+        JSONObject cardV2 = new JSONObject();
+
+        JSONObject textContent = new JSONObject();
+
+        if ("OK".equalsIgnoreCase(tag.getCiResult())) {
+            textContent.put("text", "<b><font color=\"" + TestCaseExecution.CONTROLSTATUS_OK_COL_EXT + "\">Campaign successfully Executed. CI Score = " + tag.getCiScore() + " < " + tag.getCiScoreThreshold() + "</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusTagUrl + "'>here</a> for details.");
+        } else {
+            textContent.put("text", "<b><font color=\"" + TestCaseExecution.CONTROLSTATUS_KO_COL_EXT + "\">Campaign failed. CI Score = " + tag.getCiScore() + " (>= " + tag.getCiScoreThreshold() + ")</font></b><br>" + tagService.formatResult(tag) + "<br>Click <a href='" + cerberusTagUrl + "'>here</a> for details.");
+        }
+
+        JSONObject textParaContent = new JSONObject();
+        textParaContent.put("textParagraph", textContent);
+
+        JSONArray widgets = new JSONArray();
+        widgets.put(textParaContent);
+
+        String executionText = "";
+        int totaldisplayed = 0;
+        int totaltodisplay = 0;
+        int totallines = 0;
+        String cerberusExeUrl = "";
+        for (TestCaseExecution execution : tag.getExecutionsNew()) {
+            LOG.debug(execution.getControlStatus() + " - " + execution.getControlMessage() + execution.getApplication() + " - " + execution.getDescription());
+            totallines++;
+            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
+                totaltodisplay++;
+                if (MAX_LINES > totaldisplayed) {
+                    totaldisplayed++;
+                    if (execution.getId() == 0) {
+                        executionText += execution.getControlStatus() + " [" + execution.getApplication() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
+                    } else {
+                        cerberusExeUrl = cerberusUrl + "TestCaseExecution.jsp?executionId=" + execution.getId();
+                        executionText += "<a href='" + cerberusExeUrl + "'>" + execution.getControlStatus() + "</a> [" + execution.getApplication() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
+                    }
+                }
+            }
+
+        }
+
+        if (totaldisplayed < totaltodisplay) {
+            executionText += "... Hidden more " + (totaltodisplay - totaldisplayed) + " line(s).";
+        }
+
+        textContent = new JSONObject();
+        textContent.put("text", executionText);
+        textParaContent = new JSONObject();
+        textParaContent.put("textParagraph", textContent);
+        widgets.put(textParaContent);
+
+        JSONArray sections = new JSONArray();
+        JSONObject widget = new JSONObject();
+
+        widget.put("widgets", widgets);
+        widget.put("collapsible", true);
+        widget.put("uncollapsibleWidgetsCount", 1);
+
+        widget.put("header", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.");
+        sections.put(widget);
+        card.put("sections", sections);
+
+        cards.put(card);
+
+        cardV2.put("card", card);
+        cardsV2.put(cardV2);
+        chatMessage.put("cardsV2", cardsV2);
+
+        LOG.debug(chatMessage.toString(3));
         return chatMessage;
 
     }

@@ -157,10 +157,10 @@ public class EventService implements IEventService {
                             if (eval_NoFilter(eventHook.getObjectKey1(), eventHook.getObjectKey2())
                                     || eval_Campaign_Filter(eventHook.getObjectKey1(), eventHook.getObjectKey2(), tag2.getCampaign())) {
                                 // We load the execution list here so that in case of multiple hook, this is done only once.
-                                if (executionList.size() < 1) {
-                                    executionList = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag2.getTag());
-                                    tag2.setExecutionsNew(executionList);
-                                }
+//                                if (executionList.size() < 1) {
+//                                    executionList = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag2.getTag());
+//                                    tag2.setExecutionsNew(executionList);
+//                                }
                                 // We load the invariant lists that will be used when converting execution to JSON. This is also done only once per event triggered.
 //                                prioritiesList = invariantService.readByIdName("PRIORITY");
 //                                countriesList = invariantService.readByIdName("COUNTRY");
@@ -186,7 +186,7 @@ public class EventService implements IEventService {
                 }
             }
 
-        } catch (CerberusException | JSONException | ParseException ex) {
+        } catch (CerberusException | JSONException ex) {
             LOG.error(ex, ex);
         }
 
@@ -360,7 +360,7 @@ public class EventService implements IEventService {
                 if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
-                        JSONObject message = chatGenerationService.generateNotifyEndTagExecution(tag);
+                        JSONObject message = chatGenerationService.generateNotifyEndTagExecutionV2(tag);
                         chatService.sendGoogleChatMessage(message, eventHook.getHookRecipient(), tag.getTag());
                     } catch (Exception ex) {
                         LOG.warn("Exception Google Chat notification for '" + eventHook.getEventReference() + "'", ex);
