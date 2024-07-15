@@ -28,6 +28,7 @@ import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.ICampaignService;
 import org.cerberus.core.crud.service.ITagStatisticService;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,17 @@ public class TagStatisticService implements ITagStatisticService {
     public AnswerList<TagStatistic> readByTag(String tag) {
         return tagStatisticDAO.readByTag(tag);
     }
+
+    @Override
+    public AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> group1List, String minDate, String maxDate) {
+        return tagStatisticDAO.readByCriteria(systems, applications, group1List, minDate, maxDate);
+    }
+
+    @Override
+    public Answer createWithMap(Map<String, TagStatistic> map) {
+        return tagStatisticDAO.createWithMap(map);
+    }
+
 
     /**
      * Initialize TagStatistics objects
@@ -109,7 +121,7 @@ public class TagStatisticService implements ITagStatisticService {
             tagStatistic.setUsrCreated(tag.getUsrCreated());
             tagStatistic.setExecutions(null);
         }
-        tagStatisticDAO.createWithMap(tagStatistics);
+        createWithMap(tagStatistics);
     }
 
     /**

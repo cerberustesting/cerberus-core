@@ -21,11 +21,11 @@ package org.cerberus.core.apiprivate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.dao.ITagStatisticDAO;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.crud.entity.UserSystem;
 import org.cerberus.core.crud.service.IApplicationService;
+import org.cerberus.core.crud.service.ITagStatisticService;
 import org.cerberus.core.crud.service.IUserSystemService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
@@ -58,12 +58,10 @@ public class CampaignExecutionPrivateController {
 
     @Autowired
     private IUserSystemService userSystemService;
-
     @Autowired
     private IApplicationService applicationService;
-
     @Autowired
-    private ITagStatisticDAO tagStatisticDAO;
+    private ITagStatisticService tagStatisticService;
 
     @GetMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTagStatistics(
@@ -78,7 +76,7 @@ public class CampaignExecutionPrivateController {
         toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         List<String> systems = ParameterParserUtil.parseListParamAndDecode(systemsParam, new ArrayList<>(), "UTF8");
         List<String> applications = ParameterParserUtil.parseListParamAndDecode(applicationsParam, new ArrayList<>(), "UTF8");
-        List<String> groups1 = ParameterParserUtil.parseListParamAndDecode(group1Param, new ArrayList<>(), "UTF8");
+        List<String> group1List = ParameterParserUtil.parseListParamAndDecode(group1Param, new ArrayList<>(), "UTF8");
 
         String fromDateFormatted = formatDateForDb(fromParam);
         String toDateFormatted = formatDateForDb(toParam);
@@ -98,7 +96,7 @@ public class CampaignExecutionPrivateController {
         systems.removeIf(param -> !systemsAllowed.contains(param));
         applications.removeIf(param -> !applicationsAllowed.contains(param));
 
-        List<TagStatistic> tagStatistics = tagStatisticDAO.readByCriteria(systems, applications, groups1, fromDateFormatted, toDateFormatted).getDataList();
+        List<TagStatistic> tagStatistics =  tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted).getDataList();
         LOG.debug(tagStatistics);
 
         Map<String, Map<String, JSONObject>> agregateByTag = new HashMap<>();
