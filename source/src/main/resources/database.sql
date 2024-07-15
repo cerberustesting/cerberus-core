@@ -6424,3 +6424,7 @@ ALTER TABLE testcaseexecutionqueuedep
 ALTER TABLE testcasedep 
     ADD DependencyTCDelay INTEGER DEFAULT 0 NULL AFTER DependencyTestcase;
 
+-- 1806
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_notification_tagexecutionend_googlechat_maxexelines', '20', 'Maximum number of lines of execution displayed inside the end of campaign execution googlechat notification (default to 20).');
+

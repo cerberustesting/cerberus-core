@@ -45,7 +45,6 @@ public class ChatGenerationService implements IChatGenerationService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ChatGenerationService.class);
     private static final String IMAGES_URL = "https://vm.cerberus-testing.org/notifications/status-%STATUS%.png";
-    private static final int MAX_LINES = 20;
 
     @Autowired
     private IParameterService parameterService;
@@ -139,6 +138,7 @@ public class ChatGenerationService implements IChatGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecutionV2(Tag tag) throws UnsupportedEncodingException, Exception {
 
+        int maxlines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_googlechat_maxexelines", "", 20);
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
@@ -178,13 +178,13 @@ public class ChatGenerationService implements IChatGenerationService {
             totallines++;
             if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                 totaltodisplay++;
-                if (MAX_LINES > totaldisplayed) {
+                if (maxlines > totaldisplayed) {
                     totaldisplayed++;
                     if (execution.getId() == 0) {
-                        executionText += execution.getControlStatus() + " [" + execution.getApplication() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
+                        executionText += execution.getControlStatus() + " [" + execution.getApplication() + "|" + execution.getCountry() + "|" + execution.getEnvironment() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
                     } else {
                         cerberusExeUrl = cerberusUrl + "TestCaseExecution.jsp?executionId=" + execution.getId();
-                        executionText += "<a href='" + cerberusExeUrl + "'>" + execution.getControlStatus() + "</a> [" + execution.getApplication() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
+                        executionText += "<a href='" + cerberusExeUrl + "'>" + execution.getControlStatus() + "</a> [" + execution.getApplication() + "|" + execution.getCountry() + "|" + execution.getEnvironment() + "] <i><font color=\"" + execution.getColor(execution.getControlStatus()) + "\">" + execution.getDescription() + "</font></i><br>";
                     }
                 }
             }

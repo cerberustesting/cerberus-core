@@ -497,6 +497,9 @@ function updatePage(data, steps) {
 
                 if (data.testCaseObj !== undefined) {
 
+                    var configPanel = $("#testCaseConfig");
+                    configPanel.find("#AppLogo").attr("src", "./images/logoapp-" + dataApp.contentTable.type + ".png");
+
                     // Display already existing bugs.
                     link = getBugIdList(data.testCaseObj.bugs, dataApp.contentTable.bugTrackerUrl);
                     $("#bugs").append(link);
@@ -1412,6 +1415,7 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
+    configPanel.find("#AppName").text("[" + data.application + "]");
 
     var favicon = new Favico({
         animation: 'slide',
