@@ -150,7 +150,7 @@ public abstract class AppiumService implements IAppiumService {
         try {
             if (!StringUtil.isEmptyOrNullValue(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
-                if (elmt instanceof WebElement) { //#FIXME SELENIUM #TEST (changed type to WebElement)
+                if (elmt instanceof WebElement) {
                     (this.getElement(session, identifier, false, false)).sendKeys(valueToType);
                 } else { // FIXME See if we can delete it ??
 //                    TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
@@ -185,12 +185,12 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent click(final Session session, final Identifier identifier) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver()); //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.tap(PointOption.point(coordinates.getX(), coordinates.getY())).perform();//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+                action.tap(PointOption.point(coordinates.getX(), coordinates.getY())).perform();
             } else {
-                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString());
         } catch (NoSuchElementException e) {
@@ -442,7 +442,7 @@ public abstract class AppiumService implements IAppiumService {
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
 
-        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver); //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver);
         touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }
@@ -484,7 +484,7 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent clearField(final Session session, final Identifier identifier) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 click(session, identifier);
