@@ -129,7 +129,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
     }
 
     @Override
-    public AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> groups1, String minDate, String maxDate) {
+    public AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> group1List, String minDate, String maxDate) {
         AnswerList<TagStatistic> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -156,8 +156,8 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                     .collect(Collectors.joining("|"));
         }
 
-        if (!groups1.isEmpty()) {
-            query.append(" AND ").append(SqlUtil.generateInClause("CampaignGroup1", groups1));
+        if (!group1List.isEmpty()) {
+            query.append(" AND ").append(SqlUtil.generateInClause("CampaignGroup1", group1List));
         }
 
         query.append(") AND tac.`DateStartExe` >= ? AND tac.`DateEndExe` <= ?");
@@ -171,8 +171,8 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             preStat.setString(i++, systemRegex);
             preStat.setString(i++, applicationRegex);
 
-            if (!groups1.isEmpty()) {
-                for (String group1 : groups1) {
+            if (!group1List.isEmpty()) {
+                for (String group1 : group1List) {
                     preStat.setString(i++, group1);
                 }
             }
@@ -186,7 +186,6 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                 LOG.debug("Execute SQL Statement: {} ", preStat);
 
                 while (resultSet.next()) {
-                    LOG.debug(resultSet);
                     tagStatistics.add(this.loadFromResultSet(resultSet));
                 }
 

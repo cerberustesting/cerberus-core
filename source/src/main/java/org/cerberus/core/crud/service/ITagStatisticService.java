@@ -22,6 +22,7 @@ package org.cerberus.core.crud.service;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public interface ITagStatisticService {
      * @return AnswerList that contains data from database
      */
     AnswerList<TagStatistic> readByTag(String tag);
+    Answer createWithMap(Map<String, TagStatistic> map);
+    AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> groups1, String minDate, String maxDate);
 
     /**
      * Initialize TagStatistics objects
