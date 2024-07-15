@@ -202,12 +202,7 @@ public abstract class AppiumService implements IAppiumService {
                 foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
                 action.tap(PointOption.point(offset)).perform();
             } else {
-                WebElement element = getElement(session, identifier, false, false);
-                Integer numberOfElement = this.getNumberOfElements(session, identifier);
-                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
-                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
-                action.tap(ElementOption.element(element, hOffset, vOffset)).perform();
+                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
         } catch (NoSuchElementException e) {
@@ -478,7 +473,7 @@ public abstract class AppiumService implements IAppiumService {
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
 
-        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver); //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver);
         touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }
@@ -520,7 +515,7 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent clearField(final Session session, final Identifier identifier) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 click(session, identifier,0, 0);
