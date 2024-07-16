@@ -615,7 +615,7 @@ function loadIndexSelect() {
 
 function drawTable_Requests(data, targetTable, targetPanel) {
     var configurations = new TableConfigurationsClientSide(targetTable, data.requests, aoColumnsFunc(), true, [0, 'asc']);
-    configurations.lengthMenu = [10, 25, 50, 100, 10000];
+    configurations.lengthMenu = [10, 15, 20, 30, 50, 100, 10000];
 
     if ($('#' + targetTable).hasClass('dataTable') === false) {
         createDataTableWithPermissions(configurations, undefined, targetPanel);

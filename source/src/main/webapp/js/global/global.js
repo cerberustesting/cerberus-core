@@ -1515,7 +1515,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activateP
     this.bDisplayRefreshButton = false;
 
     if (activatePagination) {
-        this.lengthMenu = [10, 25, 50, 100];
+        this.lengthMenu = [10, 15, 20, 30, 50, 100];
         this.lengthChange = true;
         this.bPaginate = true;
         this.displayLength = 10;
@@ -1567,7 +1567,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.processing = true;
     this.serverSide = true;
     if (lengthMenu === undefined) {
-        this.lengthMenu = [10, 25, 50, 100];
+        this.lengthMenu = [10, 15, 20, 30, 50, 100];
     } else {
         this.lengthMenu = lengthMenu;
     }
