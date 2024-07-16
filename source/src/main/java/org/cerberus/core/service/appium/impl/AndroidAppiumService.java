@@ -223,9 +223,9 @@ public class AndroidAppiumService extends AppiumService {
         try {
 
             if (StringUtil.isEmpty(appPackage)) {
-                session.getAppiumDriver().launchApp();
+                ((AndroidDriver) session.getAppiumDriver()).launchApp();
             } else {
-                session.getAppiumDriver().activateApp(appPackage);
+                ((AndroidDriver) session.getAppiumDriver()).activateApp(appPackage);
             }
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
