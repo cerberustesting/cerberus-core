@@ -64,16 +64,23 @@
                     <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px;background-color:#f5f6fa">
                         <div class="panel-heading" style="border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;" id="testCaseTitle">
                             <div class="" style="width:100%">
-                                <div class="col-lg-4" style="padding: 0px;">
-                                    <div class="testTestCase" style="margin-top:4px; margin-bottom: 4px;">
-                                        <select id="test"></select>
+                                <div class="col-lg-5" style="padding: 0px;">
+                                    <div class="row">
+                                        <div class="testTestCase col-lg-8 col-xs-6" style="margin-top:4px; margin-bottom: 4px;">
+                                            <select id="test"></select>
+                                        </div>
+                                        <div class="testTestCase col-lg-4 col-xs-6 pull-right" style="margin-top:4px; margin-bottom: 4px;">
+                                            <img id="AppLogo"  class="pull-right" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0; margin-left: 10px"></img>
+                                            <span id="AppName" class="pull-right"> </span>
+                                        </div>
                                     </div>
+
                                     <select id="testCaseSelect" style="display:none;"></select>
                                 </div>
-                                <div class="col-lg-8" style="padding: 0px;">
+                                <div class="col-lg-7" style="padding: 0px;">
                                     <div id="TestCaseButton" style="display:none;">
 
-                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
+                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-left:10px; margin-top: 10px;">
 
                                             <div class="btn-group marginRight5">
                                                 <button id="btnGroupDrop1" style="border-radius:4px" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -131,7 +138,7 @@
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
                                         <button class="btn btn-block addStep-btn marginTop25" id="addStep" disabled>Add Step</button>
-<!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
+                                        <!--                                        <button class="btn btn-info btn-block marginTop25" id="duplicateStep" disabled>Duplicate Step</button>-->
                                     </div>
                                 </div>
                             </nav>

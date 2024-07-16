@@ -154,6 +154,20 @@ $.when($.getScript("js/global/global.js")
                     loadLibraryStep(undefined, data.contentTable[0].system);
 
                     application = data.contentTable[0].application;
+
+                    $.ajax({
+                        url: "ReadApplication",
+                        data: {application: application},
+                        async: true,
+                        success: function (dataApp) {
+
+                            var configPanel = $("#testCaseTitle");
+                            configPanel.find("#AppLogo").attr("src", "./images/logoapp-" + dataApp.contentTable.type + ".png");
+                            configPanel.find("#AppName").text("[" + application + "]");
+
+                        }
+                    });
+
                     description = data.contentTable[0].description;
                     testcaseObject = data.contentTable[0];
                     loadTestCaseInfo(testcaseObject);

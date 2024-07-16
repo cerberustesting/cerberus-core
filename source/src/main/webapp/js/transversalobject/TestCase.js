@@ -798,7 +798,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
 
                 $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description + "</option>")
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description+ " [" + data.contentTable[i].application + "]</option>")
                 }
                 if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);

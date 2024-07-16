@@ -84,7 +84,7 @@
                                     </div>
                                     <div class="text-wrap">
                                         <span id="AppName"> </span>
-                                        <img id="AppLogo" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0" src="./images/logoapp-NONE.png"></img>
+                                        <img id="AppLogo" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0"></img>
                                         <span id="tcDescription"
                                               style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                     </div>
