@@ -91,7 +91,10 @@
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="position: relative;">
+                <div id="loading" style="display: none; text-align: center; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+                    <img src="images/loading.gif" alt="Loading...">
+                </div>
                 <div class="panel-body" id="tagStatisticList">
                     <table id="tagStatisticTable" class="table table-bordered table-hover display" name="tagStatisticTable"></table>
                     <div class="marginBottom20"></div>

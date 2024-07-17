@@ -22,8 +22,11 @@ package org.cerberus.core.crud.service;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerList;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -52,5 +55,11 @@ public interface ITagStatisticService {
      * @param tag
      */
     void populateTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag);
+
+    Map<String, Map<String, JSONObject>> createMapAggregateByTag(List<TagStatistic> tagStatistics) throws JSONException;
+    Map<String, JSONObject> createMapAggregateByCampaign(Map<String, Map<String, JSONObject>> aggregateByTag) throws JSONException;
+    List<String> getSystemsAllowedForUser(String user) throws CerberusException;
+    List<String> getApplicationsSystems(List<String> systems);
+    String formatDateForDb(String date);
 
 }

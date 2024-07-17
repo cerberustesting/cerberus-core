@@ -137,7 +137,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT * from tagstatistic tac WHERE `Campaign` IN (SELECT DISTINCT `Campaign` FROM tagstatistic tac");
+        query.append("SELECT `Id`, `Tag`, `Country`, `Environment`, `Campaign`, `CampaignGroup1`, `SystemList`, `ApplicationList`, `DateStartExe`, `DateEndExe`, `NbExe`, `NbExeUsefull`, `NbOK`, `NbKO`, `NbFA`, `NbNA`, `NbNE`, `NbPE`, `NbWE`, `NbPE`, `NbQU`, `NbQE`, `NbCA` from tagstatistic WHERE `Campaign` IN (SELECT DISTINCT `Campaign` FROM tagstatistic");
 
         String systemRegex = "";
         String applicationRegex = "";
@@ -146,11 +146,15 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             systemRegex = systems.stream()
                     .map(sys -> "\"" + sys + "\"")
                     .collect(Collectors.joining("|"));
-            query.append(" WHERE tac.`SystemList` REGEXP ?");
+            query.append(" WHERE `SystemList` REGEXP ?");
         }
 
         if (!applications.isEmpty()) {
-            query.append(" AND tac.`ApplicationList` REGEXP ?");
+            if (systems.isEmpty()) {
+                query.append(" WHERE `ApplicationList` REGEXP ?");
+            } else {
+                query.append(" AND `ApplicationList` REGEXP ?");
+            }
             applicationRegex = applications.stream()
                     .map(app -> "\"" + app + "\"")
                     .collect(Collectors.joining("|"));
@@ -160,7 +164,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             query.append(" AND ").append(SqlUtil.generateInClause("CampaignGroup1", group1List));
         }
 
-        query.append(") AND tac.`DateStartExe` >= ? AND tac.`DateEndExe` <= ?");
+        query.append(") AND `DateStartExe` >= ? AND `DateEndExe` <= ?");
 
         try (Connection connection = this.databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -168,8 +172,8 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
             int i = 1;
 
-            preStat.setString(i++, systemRegex);
-            preStat.setString(i++, applicationRegex);
+            if (!systems.isEmpty()) preStat.setString(i++, systemRegex);
+            if (!applications.isEmpty()) preStat.setString(i++, applicationRegex);
 
             if (!group1List.isEmpty()) {
                 for (String group1 : group1List) {
@@ -183,7 +187,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
             try (ResultSet resultSet = preStat.executeQuery();
                  ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
-                LOG.debug("Execute SQL Statement: {} ", preStat);
+                LOG.info("Execute SQL Statement: {} ", preStat);
 
                 while (resultSet.next()) {
                     tagStatistics.add(this.loadFromResultSet(resultSet));
@@ -320,10 +324,6 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         int nbQU = resultSet.getInt("nbQU");
         int nbQE = resultSet.getInt("nbQE");
         int nbCA = resultSet.getInt("nbCA");
-        String usrModif = ParameterParserUtil.parseStringParam(resultSet.getString("UsrModif"), "");
-        String usrCreated = ParameterParserUtil.parseStringParam(resultSet.getString("UsrCreated"), "");
-        Timestamp dateModif = resultSet.getTimestamp("DateModif");
-        Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
 
         return TagStatistic.builder()
                 .id(id)
@@ -348,10 +348,6 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                 .nbQU(nbQU)
                 .nbQE(nbQE)
                 .nbCA(nbCA)
-                .usrCreated(usrCreated)
-                .usrModif(usrModif)
-                .dateCreated(dateCreated)
-                .dateModif(dateModif)
                 .build();
     }
 }

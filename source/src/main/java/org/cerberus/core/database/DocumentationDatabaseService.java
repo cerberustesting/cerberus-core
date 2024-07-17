@@ -2823,9 +2823,9 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_campaignstatistics','applications_col','','en','Applications','',NULL)");
         b.append(",('page_campaignstatistics','group1_col','','fr','Groupe 1','',NULL)");
         b.append(",('page_campaignstatistics','group1_col','','en','Group 1','',NULL)");
-        b.append(",('page_campaignstatistics','minDateStart_col','','fr','Date de début minimale de la première exécution','',NULL)");
+        b.append(",('page_campaignstatistics','minDateStart_col','','fr','Date de début minimale','',NULL)");
         b.append(",('page_campaignstatistics','minDateStart_col','','en','Minimum start date','',NULL)");
-        b.append(",('page_campaignstatistics','maxDateEnd_col','','fr','Date de fin maximale de la dernière exécution','',NULL)");
+        b.append(",('page_campaignstatistics','maxDateEnd_col','','fr','Date de fin maximale','',NULL)");
         b.append(",('page_campaignstatistics','maxDateEnd_col','','en','Maximum end date','',NULL)");
         b.append(",('page_campaignstatistics','avgOK_col','','fr','Pourcentage moyen de OK','',NULL)");
         b.append(",('page_campaignstatistics','avgOK_col','','en','Average percentage of OK','',NULL)");
