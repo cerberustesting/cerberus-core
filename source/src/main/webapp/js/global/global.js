@@ -3191,8 +3191,10 @@ function comboConfigApplication_format(application) {
     if (!isEmpty(application.type)) {
         color = "labelBlue";
         appType = doc.getDocLabel("comboApplicationType", application.type);
+        return $('<span name="appNameLabel">' + application.id + ' <img id="AppLogo"  class="" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0; margin-left: 10px" src="./images/logoapp-' + application.type + '.png"></img></span>');
+    } else {
+        return $('<span name="appNameLabel">' + application.id + ' <span name="appTypeLabel" class="label ' + color + '" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">' + appType + '</span></span>');
     }
-    return $('<span name="appNameLabel">' + application.id + ' <span name="appTypeLabel" class="label ' + color + '" style="margin-left:10px;margin-bottom:0px;height:30px;border-radius:30px;padding:8px">' + appType + '</span></span>');
 }
 
 
