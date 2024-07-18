@@ -26,72 +26,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        $('#application-select option').prop('selected', true);
-
-        $('#system-select').multiselect({
-            maxHeight: 450,
-            checkboxName: name,
-            buttonWidth: "100%",
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            includeSelectAllOption: true,
-            includeSelectAllIfMoreThan: 1
-        });
-
-        $('#application-select').multiselect({
-            maxHeight: 450,
-            checkboxName: name,
-            buttonWidth: "100%",
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            includeSelectAllOption: true,
-            includeSelectAllIfMoreThan: 1
-        });
-
-        $('#group1-select').multiselect({
-            maxHeight: 450,
-            checkboxName: name,
-            buttonWidth: "100%",
-            enableFiltering: true,
-            enableCaseInsensitiveFiltering: true,
-            includeSelectAllOption: true,
-            includeSelectAllIfMoreThan: 1
-        });
-
-        $('#system-select').multiselect('selectAll', false);
-        $('#system-select').multiselect('updateButtonText');
-
         $('#loadbutton').click(function()
         {
-            let systems = $('#system-select').val();
-            if (systems === null) {
-                $('#system-select').multiselect('selectAll', false);
-                $('#system-select').multiselect('updateButtonText');
-                systems = $('#system-select').val();
-            }
-            for (let i = 0; i < systems.length; i++) {
-                systems[i] = encodeURIComponent(systems[i]);
-            }
-
-            let applications = $('#application-select').val();
-            if (applications === null) {
-                $('#application-select').multiselect('selectAll', false);
-                $('#application-select').multiselect('updateButtonText');
-                applications = $('#application-select').val();
-            }
-            for (let i = 0; i < applications.length; i++) {
-                applications[i] = encodeURIComponent(applications[i]);
-            }
-
-            let group1 = $('#group1-select').val();
-            if (group1 !== null) {
-                for (let i = 0; i < group1.length; i++) {
-                    group1[i] = encodeURIComponent(group1[i]);
-                }
-            } else {
-                group1 = "";
-            }
-
+            let systems = prepareFilterList($('#system-select').val());
+            let applications = prepareFilterList($('#application-select').val());
+            let group1 = prepareFilterList($('#group1-select').val());
 
             $.ajax
             ({
@@ -106,26 +45,73 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     to: encodeURIComponent(new Date($('#topicker').data("DateTimePicker").date()).toISOString())
                 },
                 beforeSend: function() {
-                    $("#tagStatisticList").css("filter", "blur(5px)");
+                    setLoadingStatus($("#tagStatisticList"));
+                },
+                error: function(error) {
+                    removeLoadingStatus($("#tagStatisticList"));
                 },
                 success: function(data) {
-                    $("#tagStatisticTable").DataTable().clear();
-                    $("#tagStatisticTable").DataTable().rows.add(data.contentTable);
-                    $("#tagStatisticTable").DataTable().columns.adjust().draw();
-                    $("#tagStatisticList").css("filter", "");
-                    setGroup1SelectOptions(data.allCampaignGroup1);
+                    updateDatatable($("#tagStatisticTable"), data);
+                    removeLoadingStatus($("#tagStatisticList"));
+                    setGroup1SelectOptions(data.globalGroup1List);
                 }
             });
         });
     });
 });
 
+function createMultiSelect(select) {
+    select.multiselect({
+        maxHeight: 450,
+        checkboxName: name,
+        buttonWidth: "100%",
+        enableFiltering: true,
+        enableCaseInsensitiveFiltering: true,
+        includeSelectAllOption: true,
+        includeSelectAllIfMoreThan: 1
+    });
+}
+
+function prepareFilterList(filter) {
+    if (filter !== null) {
+        for (let i = 0; i < filter.length; i++) {
+            filter[i] = encodeURIComponent(filter[i]);
+        }
+    } else {
+        filter = "";
+    }
+    return filter;
+}
+function updateDatatable(datatable, data) {
+    datatable.DataTable().clear();
+    datatable.DataTable().rows.add(data.campaignStatistics);
+    datatable.DataTable().columns.adjust().draw();
+}
+
+function setLoadingStatus(datatable) {
+    $("#loading").show();
+    datatable.css("filter", "blur(5px)");
+    datatable.css("pointer-events", "none");
+    datatable.css("user-select", "none");
+}
+
+function removeLoadingStatus(datatable) {
+    $("#loading").hide();
+    datatable.css("filter", "");
+    datatable.css("pointer-events", "");
+    datatable.css("user-select", "");
+}
+
+function prepareUriParams() {
+
+}
 function setSystemSelectOptions() {
     let user = JSON.parse(sessionStorage.getItem('user'));
     let systems = user.system;
     $.each(systems, function(index, value) {
         let option = $('<option></option>').attr('value', value).text(value);
         $("#system-select").append(option);
+        $("#system-select").multiselect('rebuild');
     })
 }
 
@@ -150,37 +136,46 @@ function setApplicationSelectOptions() {
                     let option = $('<option></option>').attr('value', result[index].application).text(result[index].application);
                     $("#application-select").append(option);
                     $("#application-select").multiselect('rebuild');
-                    $('#application-select').multiselect('selectAll', false);
-                    $('#application-select').multiselect('updateButtonText');
                 })
             }
         });
 }
 
-function setGroup1SelectOptions(allCampaignGroup1) {
-    $.each(allCampaignGroup1, function(index, value) {
-        if ($("#group1-select option[value='" + allCampaignGroup1[index] + "']").length === 0) {
-            let option = $('<option></option>').attr('value', allCampaignGroup1[index]).text(allCampaignGroup1[index]);
-            $("#group1-select").append(option);
-            $("#group1-select").multiselect('rebuild');
-            $('#group1-select').multiselect('updateButtonText');
-        }
-    });
+function setGroup1SelectOptions(globalGroup1List) {
+    let group1Select = $('#group1-select');
+    if (group1Select.val() === null) {
+        group1Select.empty();
+        group1Select.multiselect('rebuild');
+        $.each(globalGroup1List, function(index, value) {
+            if ($("#group1-select option[value='" + globalGroup1List[index] + "']").length === 0) {
+                let option = $('<option></option>').attr('value', globalGroup1List[index]).text(globalGroup1List[index]);
+                group1Select.append(option);
+            }
+        });
+        group1Select.multiselect('rebuild');
+        $('#group1-select').multiselect('updateButtonText');
+    }
+
+}
+
+function createDateTimePicker(select) {
+    select.datetimepicker();
+    select.data("DateTimePicker").date(new Date());
 }
 
 
 
 function initPage() {
-    $('#frompicker').datetimepicker();
-    $('#frompicker').data("DateTimePicker").date(new Date());
-    $('#topicker').datetimepicker();
-    $('#topicker').data("DateTimePicker").date(new Date());
+    createMultiSelect($('#system-select'));
+    createMultiSelect($('#application-select'));
+    createMultiSelect($('#group1-select'));
+    createDateTimePicker($('#frompicker'));
+    createDateTimePicker($('#topicker'));
     let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [0, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
     displayPageLabel();
     setSystemSelectOptions();
     setApplicationSelectOptions();
-    setGroup1SelectOptions();
 }
 
 function displayPageLabel() {
