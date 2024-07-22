@@ -6428,7 +6428,11 @@ ALTER TABLE testcasedep
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_notification_tagexecutionend_googlechat_maxexelines', '20', 'Maximum number of lines of execution displayed inside the end of campaign execution googlechat notification (default to 20).');
 
--- 1807-1809
+-- 1807
 ALTER TABLE `tagstatistic` MODIFY `Campaign` VARCHAR(200);
-ALTER TABLE `tagstatistic` ADD CONSTRAINT `fk_campaign_01` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`Campaign`) ON UPDATE CASCADE ON DELETE SET NULL;
-ALTER TABLE `tagstatistic` ADD CONSTRAINT `fk_tag_01` FOREIGN KEY (`Tag`) REFERENCES `tag` (`Tag`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- 1808-1811
+ALTER TABLE `tagstatistic` DROP INDEX `tag_stat_unique`;
+ALTER TABLE `tagstatistic` ADD CONSTRAINT `IX_tagstatistic_01` UNIQUE (`Tag`, `Country`, `Environment`);
+ALTER TABLE `tagstatistic` ADD CONSTRAINT `FK_campaign_01` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`Campaign`) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE `tagstatistic` ADD CONSTRAINT `FK_tag_01` FOREIGN KEY (`Tag`) REFERENCES `tag` (`Tag`) ON UPDATE CASCADE ON DELETE CASCADE;
