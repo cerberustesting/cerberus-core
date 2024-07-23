@@ -164,6 +164,9 @@ public class ReadExecutionStat extends HttpServlet {
         List<String> robotDeclis = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("robotDeclis"), new ArrayList<>(), "UTF8");
         Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
 
+        List<String> controlStatuss = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("controlStatuss"), new ArrayList<>(), "UTF8");
+        Boolean controlStatussDefined = (request.getParameterValues("controlStatuss") != null);
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);
 
@@ -171,6 +174,7 @@ public class ReadExecutionStat extends HttpServlet {
         HashMap<String, Boolean> countryMap = new HashMap<>();
         HashMap<String, Boolean> environmentMap = new HashMap<>();
         HashMap<String, Boolean> robotDecliMap = new HashMap<>();
+        HashMap<String, Boolean> controlStatusMap = new HashMap<>();
         HashMap<String, Boolean> systemMap = new HashMap<>();
         HashMap<String, TestCase> testCaseMap = new HashMap<>();
         HashMap<String, Boolean> applicationMap = new HashMap<>();
@@ -181,6 +185,7 @@ public class ReadExecutionStat extends HttpServlet {
             countryMap.put(exe.getCountry(), countries.contains(exe.getCountry()));
             environmentMap.put(exe.getEnvironment(), environments.contains(exe.getEnvironment()));
             robotDecliMap.put(exe.getRobotDecli(), robotDeclis.contains(exe.getRobotDecli()));
+            controlStatusMap.put(exe.getControlStatus(), controlStatuss.contains(exe.getControlStatus()));
 
             testCaseMap.put(exe.getTest() + "/\\" + exe.getTestCase(), factoryTestCase.create(exe.getTest(), exe.getTestCase()));
             systemMap.put(exe.getSystem(), true);
@@ -190,6 +195,7 @@ public class ReadExecutionStat extends HttpServlet {
         LOG.debug(countryMap);
         LOG.debug(environmentMap);
         LOG.debug(robotDecliMap);
+        LOG.debug(controlStatusMap);
 
         try {
 
@@ -203,14 +209,14 @@ public class ReadExecutionStat extends HttpServlet {
             jsonResponse.put("sEcho", echo);
 
             JSONObject jsonResponse1 = new JSONObject();
-            answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis);
+            answer = findExeStatList(appContext, request, exeL, countries, environments, robotDeclis, controlStatuss);
             jsonResponse1 = answer.getItem();
 
             jsonResponse.put("datasetExeTime", jsonResponse1.getJSONArray("curvesTime"));
             jsonResponse.put("datasetExeStatusNb", jsonResponse1.getJSONArray("curvesNb"));
             jsonResponse.put("datasetExeStatusNbDates", jsonResponse1.getJSONArray("curvesDatesNb"));
 
-            JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, countriesDefined, environmentsDefined, robotDeclisDefined);
+            JSONObject objectdist = getAllDistinct(countryMap, systemMap, testCaseMap, applicationMap, environmentMap, robotDecliMap, controlStatusMap, countriesDefined, environmentsDefined, robotDeclisDefined, controlStatussDefined);
             objectdist.put("units", jsonResponse.getJSONArray("distinctUnits"));
             objectdist.put("types", jsonResponse.getJSONArray("distinctTypes"));
             objectdist.put("parties", jsonResponse.getJSONArray("distinctParties"));
@@ -230,7 +236,7 @@ public class ReadExecutionStat extends HttpServlet {
 
     private AnswerItem<JSONObject> findExeStatList(ApplicationContext appContext, HttpServletRequest request,
             List<TestCaseExecution> exeList,
-            List<String> countries, List<String> environments, List<String> robotDeclis) throws JSONException {
+            List<String> countries, List<String> environments, List<String> robotDeclis, List<String> controlStatuss) throws JSONException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -258,7 +264,8 @@ public class ReadExecutionStat extends HttpServlet {
 
             if ((countries.isEmpty() || countries.contains(exeCur.getCountry()))
                     && (environments.isEmpty() || environments.contains(exeCur.getEnvironment()))
-                    && (robotDeclis.isEmpty() || robotDeclis.contains(exeCur.getRobotDecli()))) {
+                    && (robotDeclis.isEmpty() || robotDeclis.contains(exeCur.getRobotDecli()))
+                    && (controlStatuss.isEmpty() || controlStatuss.contains(exeCur.getControlStatus()))) {
 
                 /**
                  * Curves of testcase response time.
@@ -279,6 +286,7 @@ public class ReadExecutionStat extends HttpServlet {
                     pointObj.put("y", y);
                     pointObj.put("exe", exeCur.getId());
                     pointObj.put("exeControlStatus", exeCur.getControlStatus());
+                    pointObj.put("falseNegative", exeCur.isFalseNegative());
 
                     if (curveMap.containsKey(curveKey)) {
                         curArray = curveMap.get(curveKey);
@@ -398,9 +406,10 @@ public class ReadExecutionStat extends HttpServlet {
             HashMap<String, Boolean> applicationMap,
             HashMap<String, Boolean> environmentMap,
             HashMap<String, Boolean> robotDecliMap,
+            HashMap<String, Boolean> controlStatusMap,
             Boolean countriesDefined,
             Boolean environmentsDefined,
-            Boolean robotDeclisDefined) throws JSONException {
+            Boolean robotDeclisDefined,Boolean controlStatussDefined) throws JSONException {
 
         JSONObject objectdist = new JSONObject();
 
@@ -483,6 +492,21 @@ public class ReadExecutionStat extends HttpServlet {
             objectdinst.put(objectcount);
         }
         objectdist.put("robotDeclis", objectdinst);
+
+        objectdinst = new JSONArray();
+        for (Map.Entry<String, Boolean> env : controlStatusMap.entrySet()) {
+            String key = env.getKey();
+            JSONObject objectcount = new JSONObject();
+            objectcount.put("name", key);
+            objectcount.put("hasData", controlStatusMap.containsKey(key));
+            if (controlStatussDefined) {
+                objectcount.put("isRequested", controlStatusMap.get(key));
+            } else {
+                objectcount.put("isRequested", true);
+            }
+            objectdinst.put(objectcount);
+        }
+        objectdist.put("controlStatuss", objectdinst);
 
         return objectdist;
     }

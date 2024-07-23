@@ -70,6 +70,7 @@ public class TestCaseExecution {
     private long start;
     private long end;
     private String controlStatus;
+    private boolean falseNegative;
     private String controlMessage;
     private String application;
     private String url;
@@ -342,6 +343,7 @@ public class TestCaseExecution {
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("controlStatus", this.getControlStatus());
+            result.put("falseNegative", this.isFalseNegative());
             result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
             result.put("application", this.getApplication());
             result.put("robot", this.getRobot());
@@ -523,6 +525,7 @@ public class TestCaseExecution {
             result.put("durationInMs", this.getEnd() - this.getStart());
             result.put("controlStatus", this.getControlStatus());
             result.put("controlMessage", StringUtil.secureFromSecrets(this.getControlMessage(), this.getSecrets()));
+            result.put("falseNegative", this.isFalseNegative());
             result.put("application", this.getApplication());
             JSONObject robotLocal = new JSONObject();
 

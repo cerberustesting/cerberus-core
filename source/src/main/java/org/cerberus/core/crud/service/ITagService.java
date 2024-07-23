@@ -203,6 +203,15 @@ public interface ITagService {
     Answer updateXRayTestExecution(String tag, Tag object);
 
     /**
+     * Set Tag to an Execution
+     *
+     * @param tag :
+     * @param falseNegative : value of falseNegative.
+     * @throws CerberusException when exception occur during the update.
+     */
+    void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException;
+
+    /**
      * That method update the XRay reference to PENDING.
      *
      * @param tag

@@ -137,19 +137,25 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class='col-md-4'>
+                                    <div class='col-md-3'>
                                         <div class="form-group">
                                             <label for="countrySelect">Country</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-md-4'>
+                                    <div class='col-md-3'>
                                         <div class="form-group">
                                             <label for="robotSelect">Robot Decli</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="robotSelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-sm-2 col-md-4'>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <label for="ciResultSelect">CI Result</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="ciResultSelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-2 col-md-3'>
                                         <div class="input-group-btn ">
                                             <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
                                         </div>

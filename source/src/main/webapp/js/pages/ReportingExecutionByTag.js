@@ -27,6 +27,7 @@ var isRefreshAutoHideManualDefined = false;
 var displayFolder = 'false';
 var displayByEnv = false;
 var displayByLabel = false;
+var falseNegative = false;
 
 tinyMCE.init({
     selector: ".wysiwyg",
@@ -66,6 +67,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('#displayByLabel').click(function () {
             displayByLabel = (displayByLabel === 'true') ? 'false' : 'true';
             refreshToggleButtons('#displayByLabel', '#reportByLabel', displayByLabel);
+        });
+
+        $("#falseNegative").click(function () {
+            toggleFalseNegative();
         });
 
         $("#splitFilter input").click(function () {
@@ -457,6 +462,21 @@ function loadReportingData(selectTag) {
             $("#progressLabel").empty();
             loadLabelReport(data.labelStat);
 
+            falseNegative = data.tagObject.falseNegative;
+            if (data.tagObject.ciResult === "OK") {
+                $("#falseNegative").hide();
+                $("#false-negative-bar").hide();
+            } else {
+                $("#falseNegative").show();
+                if (data.tagObject.falseNegative) {
+                    $("#false-negative-bar").show();
+                    $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+                } else {
+                    $("#false-negative-bar").hide();
+                    $("#falseNegative .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
+                }
+            }
+
             // Detailed Test Case List Report
             loadReportList(data.table, selectTag);
 
@@ -507,6 +527,37 @@ function loadReportingData(selectTag) {
         addClickEventOnColCheckboxes();
     });
 }
+
+function toggleFalseNegative() {
+    if (falseNegative) {
+
+        $.ajax({
+            url: "api/campaignexecutions/" + encodeURIComponent($('#selectTag').val()) + "/undeclareFalseNegative",
+            method: "POST",
+            data: {falseNegative: false},
+            success: function (data) {
+                falseNegative = false;
+                $("#false-negative-bar").hide();
+                $("#falseNegative .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
+            }
+        });
+
+    } else {
+
+        $.ajax({
+            url: "api/campaignexecutions/" + encodeURIComponent($('#selectTag').val()) + "/declareFalseNegative",
+            method: "POST",
+            data: {falseNegative: true},
+            success: function (data) {
+                falseNegative = true;
+                $("#false-negative-bar").show();
+                $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+            }
+        });
+
+    }
+}
+
 
 //Create the checkboxes at each header column of execution. Need to execute this function at each event of datatable
 function createHeaderCheckboxes() {

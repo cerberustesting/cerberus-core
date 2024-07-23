@@ -29,6 +29,7 @@ var configAvailability2 = {};
 var nbCountries = 0;
 var nbEnv = 0;
 var nbRobot = 0;
+var nbCIResult = 0;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -61,6 +62,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var environments = GetURLParameters("environments");
         var countries = GetURLParameters("countries");
         var robotDeclis = GetURLParameters("robotDeclis");
+        var ciResults = GetURLParameters("ciResults");
         var gp1s = GetURLParameters("group1s");
         var gp2s = GetURLParameters("group2s");
         var gp3s = GetURLParameters("group3s");
@@ -83,7 +85,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $("#campaignSelect").empty();
         $("#campaignSelect").select2({width: "100%"});
-        feedPerfCampaign("#campaignSelect", campaigns, countries, environments, robotDeclis, gp1s, gp2s, gp3s);
+        feedPerfCampaign("#campaignSelect", campaigns, countries, environments, robotDeclis, ciResults, gp1s, gp2s, gp3s);
 
     });
 });
@@ -106,7 +108,7 @@ function multiSelectConfPerf(name) {
  * @param {String} defaultCampaigns - id of testcase to select.
  * @returns {null}
  */
-function feedPerfCampaign(selectElement, defaultCampaigns, countries, environments, robotDeclis, gp1s, gp2s, gp3s) {
+function feedPerfCampaign(selectElement, defaultCampaigns, countries, environments, robotDeclis, ciResults, gp1s, gp2s, gp3s) {
     showLoader($("#otFilterPanel"));
 
     var campaignList = $(selectElement);
@@ -123,7 +125,7 @@ function feedPerfCampaign(selectElement, defaultCampaigns, countries, environmen
         feedCampaignGp("#gp1Select", data.distinct.group1);
         feedCampaignGp("#gp2Select", data.distinct.group2);
         feedCampaignGp("#gp3Select", data.distinct.group3);
-        loadPerfGraph(false, countries, environments, robotDeclis, gp1s, gp2s, gp3s)
+        loadPerfGraph(false, countries, environments, robotDeclis, ciResults, gp1s, gp2s, gp3s)
         hideLoader($("#otFilterPanel"));
 
     });
@@ -169,7 +171,7 @@ function displayPageLabel(doc) {
     $("#filters").html(doc.getDocOnline("page_global", "filters"));
 }
 
-function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, gp1s, gp2s, gp3s) {
+function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, ciResults, gp1s, gp2s, gp3s) {
     showLoader($("#otFilterPanel"));
 
     if (countries === null || countries === undefined) {
@@ -180,6 +182,9 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, g
     }
     if (robotDeclis === null || robotDeclis === undefined) {
         robotDeclis = [];
+    }
+    if (ciResults === null || ciResults === undefined) {
+        ciResults = [];
     }
 
     let from = new Date($('#frompicker').data("DateTimePicker").date());
@@ -213,6 +218,15 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, g
     var robotDeclisQ = "";
     for (var i = 0; i < len; i++) {
         robotDeclisQ += "&robotDeclis=" + encodeURI(robotDeclis[i]);
+    }
+
+    if ($("#ciResultSelect").val() !== null) {
+        ciResults = $("#ciResultSelect").val();
+    }
+    len = ciResults.length;
+    var ciResultsQ = "";
+    for (var i = 0; i < len; i++) {
+        ciResultsQ += "&ciResults=" + encodeURI(ciResults[i]);
     }
 
     var campaignString = "";
@@ -255,7 +269,7 @@ function loadPerfGraph(saveURLtoHistory, countries, environments, robotDeclis, g
         }
     }
 
-    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + campaignString + countriesQ + environmentsQ + robotDeclisQ + gp1sQ + gp2sQ + gp3sQ;
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + campaignString + countriesQ + environmentsQ + robotDeclisQ + ciResultsQ + gp1sQ + gp2sQ + gp3sQ;
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingCampaignOverTime.jsp?" + qS);
     }
@@ -296,6 +310,12 @@ function updateNbDistinct(data) {
     for (var i = 0; i < data.robotDeclis.length; i++) {
         if (data.robotDeclis[i].isRequested) {
             nbRobot++;
+        }
+    }
+    nbCIResult = 0;
+    for (var i = 0; i < data.ciResults.length; i++) {
+        if (data.ciResults[i].isRequested) {
+            nbCIResult++;
         }
     }
 }
@@ -356,6 +376,24 @@ function loadCombos(data) {
     }
     select.multiselect(new multiSelectConfPerf("robotSelect"));
 
+    var select = $("#ciResultSelect");
+    select.multiselect('destroy');
+    var array = data.distinct.ciResults;
+    $("#ciResultSelect option").remove();
+    for (var i = 0; i < array.length; i++) {
+        let n = array[i].name;
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $("#ciResultSelect").append($('<option></option>').text(n).val(array[i].name));
+    }
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].isRequested) {
+            $("#ciResultSelect option[value='" + array[i].name + "']").attr("selected", "selected");
+        }
+    }
+    select.multiselect(new multiSelectConfPerf("ciResultSelect"));
+
 }
 
 function getOptions(title, unit, axisType) {
@@ -369,29 +407,48 @@ function getOptions(title, unit, axisType) {
         tooltips: {
             callbacks: {
                 label: function (t, d) {
+                    newlabel = [];
                     var xLabel = d.datasets[t.datasetIndex].label;
-                    let com = "";
+                    let xlab = "";
+                    let com1 = "";
+                    let desc = "";
                     if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].tag)) {
-                        com += " - ";
-                        com += d.datasets[t.datasetIndex].data[t.index].tag;
+                        xlab += " - ";
+                        xlab += d.datasets[t.datasetIndex].data[t.index].tag;
                     }
                     if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].comment)) {
-                        com += " - ";
-                        com += d.datasets[t.datasetIndex].data[t.index].comment;
+//                        com1 += " - ";
+                        com1 = "   " + d.datasets[t.datasetIndex].data[t.index].comment;
                     }
                     if (!isEmpty(d.datasets[t.datasetIndex].data[t.index].desc)) {
-                        com += " - ";
-                        com += d.datasets[t.datasetIndex].data[t.index].desc.replace(/<[^>]*>/g, "");
+//                        com += " - ";
+                        desc = "   " + d.datasets[t.datasetIndex].data[t.index].desc.replace(/<[^>]*>/g, "");
                     }
+//                    newlabel.push(xLabel + ': ' + t.yLabel);
+//                    newlabel.push(com);
                     if (unit === "size") {
-                        return xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb" + com;
+                        newlabel.push(xLabel + ': ' + formatNumber(Math.round(t.yLabel / 1024)) + " kb" + xlab);
+                        if (desc !== "")
+                            newlabel.push(desc);
+                        if (com1 !== "")
+                            newlabel.push(com1);
+//                        return  + com;
                     } else if (unit === "time") {
-                        return xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min" + com;
+                        newlabel.push(xLabel + ': ' + t.yLabel.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ") + " min" + xlab);
+                        if (desc !== "")
+                            newlabel.push(desc);
+                        if (com1 !== "")
+                            newlabel.push(com1);
                     } else {
-                        return xLabel + ': ' + t.yLabel + com;
+                        newlabel.push(xLabel + ': ' + t.yLabel + xlab);
+                        if (desc !== "")
+                            newlabel.push(desc);
+                        if (com1 !== "")
+                            newlabel.push(com1);
                     }
+                    return newlabel;
                 }
-            },
+            }
         },
         title: {
             text: title
@@ -496,23 +553,23 @@ function buildTagGraphs(data) {
         let d3b = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
+            let p = {x: c.points[j].x, y: c.points[j].y, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d1.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].ciSc, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
+            let p = {x: c.points[j].x, y: c.points[j].ciSc, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d2a.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].ciScT, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment};
+            let p = {x: c.points[j].x, y: c.points[j].ciScT, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d2b.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment};
+            let p = {x: c.points[j].x, y: c.points[j].nbExeU, tag: c.points[j].tag, ciResult: c.points[j].ciRes, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d3a.push(p);
         }
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment};
+            let p = {x: c.points[j].x, y: c.points[j].nbExe, tag: c.points[j].tag, desc: c.points[j].description, comment: c.points[j].comment, falseNegative: c.points[j].falseNegative};
             d3b.push(p);
         }
         let lab = getLabel("c.key.testcase.description", c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.campaign);
@@ -523,12 +580,30 @@ function buildTagGraphs(data) {
             label: lab,
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 4,
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+                return value.comment === '' ? 4 : 8;
+            },
             pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
@@ -538,12 +613,33 @@ function buildTagGraphs(data) {
             label: lab,
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 4,
+            pointRadius: function (context) {
+//                                console.info(context);
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+//                console.info(value.comment);
+
+                return value.comment === '' ? 4 : 8;
+            },
             pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
@@ -553,12 +649,30 @@ function buildTagGraphs(data) {
             label: lab + " Threshold",
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 4,
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+                return value.comment === '' ? 4 : 8;
+            },
             pointHoverRadius: 6,
             hitRadius: 10,
             pointStyle: 'line',
@@ -569,12 +683,30 @@ function buildTagGraphs(data) {
             label: lab + " Useful",
             backgroundColor: "white",
             borderColor: get_Color_fromindex(i),
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 4,
+            pointRadius: function (context) {
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+                return value.comment === '' ? 4 : 8;
+            },
             pointHoverRadius: 6,
             hitRadius: 10,
             fill: false,
@@ -589,7 +721,14 @@ function buildTagGraphs(data) {
                 var value = d.dataset.data[index];
                 return getExeStatusRowColor(value.ciResult);
             },
-            pointRadius: 4,
+            pointRadius: function (context) {
+//                                console.info(context);
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+//                console.info(value.comment);
+
+                return value.comment === '' ? 4 : 8;
+            },
             pointHoverRadius: 6,
             hitRadius: 10,
             pointStyle: 'line',
@@ -706,7 +845,7 @@ function buildAvailabilityGraphs(data) {
             } else {
                 dur = (new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000;
             }
-            if (newCurve.points[j].ciRes === "OK") {
+            if ((newCurve.points[j].ciRes === "OK") || (newCurve.points[j].falseNegative)) {
                 nbOK++;
                 durOK = durOK + dur;
             } else {

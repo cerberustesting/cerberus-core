@@ -339,9 +339,9 @@ function initTags(configs, context) {
             "EXESTORAGEURL",
             "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
             "LASTSERVICE_HTTPCODE", "LASTSERVICE_CALL", "LASTSERVICE_RESPONSE",
-            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
-            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
+            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-D", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-D", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
+            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-D"
         ];
         var availableIdentifiers = [
             "id",

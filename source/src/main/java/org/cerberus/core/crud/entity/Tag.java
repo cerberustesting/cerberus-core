@@ -69,6 +69,7 @@ public class Tag {
     private int ciScore;
     private int ciScoreThreshold;
     private String ciResult;
+    private boolean falseNegative;
     private String environmentList;
     private String countryList;
     private String robotDecliList;
@@ -146,6 +147,7 @@ public class Tag {
             result.put("ciScore", this.ciScore);
             result.put("ciScoreThreshold", this.ciScoreThreshold);
             result.put("ciResult", this.ciResult);
+            result.put("falseNegative", this.falseNegative);
             result.put("environmentList", this.environmentList);
             result.put("countryList", this.countryList);
             result.put("robotDecliList", this.robotDecliList);
@@ -191,6 +193,7 @@ public class Tag {
                 result.put("tagDurationInMs", (this.dateEndQueue.getTime() - this.dateStartExe.getTime()));
             }
             result.put("CI", this.ciResult);
+            result.put("falseNegative", this.falseNegative);
             result.put("start", this.dateCreated);
             result.put("startExe", this.dateStartExe);
             result.put("end", this.dateEndQueue);

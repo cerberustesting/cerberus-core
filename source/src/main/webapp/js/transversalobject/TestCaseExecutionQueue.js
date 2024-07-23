@@ -617,11 +617,17 @@ function appendDepRow(dep, targetTableBody) {
     var statusInput = $("<input readonly>").addClass("form-control input-sm").val(dep.status);
     var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDate(dep.releaseDate));
     var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
-    var exeIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.exeId);
+    var exeButton = $("<a>").append($("<button>").addClass("btn btn-sm").append($("<span>").addClass("glyphicon glyphicon-new-window")));
+    exeButton.attr("href", "TestCaseExecution.jsp?executionId=" + dep.exeId);
+    var exeIdInput = $("<div>").addClass("input-group")
+            .append($("<input readonly>").addClass("form-control input-sm").val(dep.exeId))
+            .append($("<span>").addClass("input-group-btn").append(exeButton));
     var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
     var table = $("#" + targetTableBody);
 
     var row = $("<tr></tr>");
+    if (dep.status === "RELEASED")
+        row.addClass("success");
 
     var type = $("<div class='form-group col-lg-3 col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("testcaseexecutionqueuedep", "type") + "</label>").append(typeInput);
     var drow01 = $("<div class='row'></div>").append(type);

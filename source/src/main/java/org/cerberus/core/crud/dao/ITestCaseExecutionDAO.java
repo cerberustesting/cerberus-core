@@ -42,7 +42,7 @@ public interface ITestCaseExecutionDAO {
 
     /**
      * @param tCExecution TestCaseExecution Object to insert in
-     *                    TestcaseExecution table
+     * TestcaseExecution table
      * @return execution id (long)
      * @throws org.cerberus.core.exception.CerberusException
      */
@@ -71,10 +71,10 @@ public interface ITestCaseExecutionDAO {
     AnswerItem<TestCaseExecution> readLastByCriteria(String application);
 
     /**
-     * @param test        Test Criteria
-     * @param testcase    TestCase Criteria
+     * @param test Test Criteria
+     * @param testcase TestCase Criteria
      * @param environment Environment Criteria
-     * @param country     Country Criteria
+     * @param country Country Criteria
      * @param build
      * @param revision
      * @return TestCaseExecution Object created only with attributes from
@@ -82,7 +82,7 @@ public interface ITestCaseExecutionDAO {
      * @throws org.cerberus.core.exception.CerberusException
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-                                                    String build, String revision) throws CerberusException;
+            String build, String revision) throws CerberusException;
 
     /**
      * @param test
@@ -99,26 +99,26 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                    String build, String revision, String browser, String browserVersion,
-                                                    String ip, String port, String tag);
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag);
 
     /**
      * @param dateLimitFrom The limit start date of the executions from which
-     *                      the selection is done. Mandatory parameter.
-     * @param test          filter on the test
-     * @param testCase      filter on the testCase
-     * @param application   filter on the application.
-     * @param country       filter on the country
-     * @param environment   filter on the environment
+     * the selection is done. Mandatory parameter.
+     * @param test filter on the test
+     * @param testCase filter on the testCase
+     * @param application filter on the application.
+     * @param country filter on the country
+     * @param environment filter on the environment
      * @param controlStatus filter on the control status (RC of the execution)
-     * @param status        filter on the status (Status of the testCase when execution
-     *                      was made)
+     * @param status filter on the status (Status of the testCase when execution
+     * was made)
      * @return a list of testCaseExecution done after the dateLimitFrom
      * parameter and following the other criteria.
      * @throws CerberusException when no executions can be found.
      */
     List<TestCaseExecution> findExecutionByCriteria1(String dateLimitFrom, String test, String testCase,
-                                                     String application, String country, String environment, String controlStatus, String status);
+            String application, String country, String environment, String controlStatus, String status);
 
     /**
      * @param id of the test case execution
@@ -157,17 +157,27 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag);
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag);
 
     /**
      * Set Tag to an execution
      *
-     * @param id  : ID of the execution
+     * @param id : ID of the execution
      * @param tag : Tag to set to the execution
      * @throws org.cerberus.core.exception.CerberusException
      */
     public void setTagToExecution(long id, String tag) throws CerberusException;
+
+    /**
+     * Set Tag to an execution
+     *
+     * @param id : ID of the execution
+     * @param falseNegative : falseNegative value
+     * @param usrModif
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    public void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException;
 
     /**
      * @param tag
@@ -248,10 +258,10 @@ public interface ITestCaseExecutionDAO {
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
      * @param resultSet ResultSet relative to select from table
-     *                  TestCaseExecution
+     * TestCaseExecution
      * @return object {@link TestCaseExecution}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see org.cerberus.core.crud.factory.impl.FactoryTestCaseExecution
      */
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
@@ -263,7 +273,7 @@ public interface ITestCaseExecutionDAO {
      * @param test
      * @param searchParameter
      * @param individualSearch
-     * @param columnName       Name of the column
+     * @param columnName Name of the column
      * @return object {@link TestCaseExecution}
      */
     public AnswerList<String> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);

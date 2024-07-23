@@ -133,7 +133,7 @@ This is the list of fields in Cerberus where you can use those variables.
 When a variable is detected in one of those field, Cerberus will replace it by the value during the execution.
 
 - If the variable is an object, the value (that never change) is just replaced.
-- If the variable is a system variable, the value is calculated and replaced at the same time (for ex : time defined by %system.TODAY-doy% will be the day and time of the replacement).
+- If the variable is a system variable, the value is calculated and replaced at the same time (for ex : time defined by %system.TODAY-D% will be the day and time of the replacement).
 - If the variable is a property, it gets automatically calculated at the time of the replacement. If it was already calculated before, the same value (already calculated) is replaced.
 NOTE: In order to force the calculation of a property at a certain timing, _calculateProperty_ Action can be inserted just before the action is used in a field.
 

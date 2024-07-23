@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.core.crud.entity.Tag;
+import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -152,6 +153,15 @@ public interface ITagDAO {
      * @return
      */
     Answer updateXRayTestExecution(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param falseNegative
+     * @param usrModif
+     * @throws CerberusException
+     */
+    void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException;
 
     /**
      *

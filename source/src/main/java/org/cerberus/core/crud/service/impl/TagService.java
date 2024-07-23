@@ -278,6 +278,11 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException {
+        tagDAO.updateFalseNegative(tag, falseNegative, usrModif);
+    }
+
+    @Override
     public int lockXRayTestExecution(String tag, Tag object) {
         return tagDAO.lockXRayTestExecution(tag, object);
     }

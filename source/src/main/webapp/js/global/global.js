@@ -390,7 +390,7 @@ function displayApplicationList(selectName, system, defaultValue, extraValue) {
 
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($("<option></option>").text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+            $("[name='" + selectName + "']").append($("<option></option>").text(data.contentTable[option].application + " [" + data.contentTable[option].type + "] " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
 
         if (defaultValue !== undefined && defaultValue !== null) {
@@ -930,7 +930,7 @@ function getSelectApplication(system, forceReload) {
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].application;
 
-                    select.append($("<option></option>").text(item).val(item));
+                    select.append($("<option></option>").text(item + "[" + list[index].type + "]").val(item));
                 }
             },
             error: showUnexpectedError
@@ -959,7 +959,7 @@ function getSelectApplicationWithoutSystem() {
             list = data.contentTable;
             for (var index = 0; index < list.length; index++) {
                 var item = list[index].application;
-                select.append($("<option></option>").text(item).val(item));
+                select.append($("<option></option>").text(item + " [" + list[index].type + "]").val(item));
             }
         },
         error: showUnexpectedError

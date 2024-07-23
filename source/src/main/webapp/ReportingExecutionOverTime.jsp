@@ -124,19 +124,25 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class='col-md-4'>
+                                    <div class='col-md-3'>
                                         <div class="form-group">
                                             <label for="countrySelect">Country</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="countrySelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-md-4'>
+                                    <div class='col-md-3'>
                                         <div class="form-group">
                                             <label for="robotSelect">Robot Decli</label>
                                             <select class="multiselectelement form-control" multiple="multiple" id="robotSelect"></select>
                                         </div>
                                     </div>
-                                    <div class='col-sm-4 col-md-4'>
+                                    <div class='col-md-3'>
+                                        <div class="form-group">
+                                            <label for="controlStatusSelect">Result Code</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="controlStatusSelect"></select>
+                                        </div>
+                                    </div>
+                                    <div class='col-sm-3 col-md-3'>
                                         <div class="input-group-btn ">
                                             <button type="button" class="btn btn-primary btn-block marginTop20" style="margin-left: 10px;min-height: " id="loadbutton" onclick="loadPerfGraph(true);">Load</button>
                                         </div>

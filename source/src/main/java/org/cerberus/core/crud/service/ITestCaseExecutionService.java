@@ -182,6 +182,16 @@ public interface ITestCaseExecutionService {
     void setTagToExecution(long id, String tag) throws CerberusException;
 
     /**
+     * Set Tag to an Execution
+     *
+     * @param id : ID of the execution to update
+     * @param falseNegative : value of falseNegative.
+     * @param usrModif
+     * @throws CerberusException when exception occur during the update.
+     */
+    void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException;
+
+    /**
      * @param tag
      * @param start
      * @param amount

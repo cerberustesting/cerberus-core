@@ -26,6 +26,7 @@ var configSize = {};
 var configGantt = {};
 var sortCol = 1;
 var stepFocus = -1;
+var falseNegative = false;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -84,6 +85,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         } else {
             $("#TestCaseButton").show();
             $("#RefreshQueueButton").hide();
+
+            $("#falseNegative").click(function () {
+                toggleFalseNegative(executionId);
+            });
+
             /* global */
             sockets = [];
             initPage(executionId);
@@ -299,7 +305,7 @@ function initPage(id) {
                 $("#saveTag").hide();
                 $("#editTags").show();
             }
-        })
+        });
     });
 
     $("#editRobot").click(function () {
@@ -448,9 +454,24 @@ function updatePage(data, steps) {
     $("#lastExecutionoT").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase);
     $("#lastExecutionoTwithEnvCountry").attr("disabled", false);
     $("#lastExecutionoTwithEnvCountry").parent().attr("href", "ReportingExecutionOverTime.jsp?tests=" + data.test + "&testcases=" + data.testcase + "&countrys=" + data.country + "&environments=" + data.environment);
+    falseNegative = data.falseNegative;
+    if (data.controlStatus === "OK") {
+        $("#falseNegative").hide();
+        $("#false-negative-bar").hide();
+    } else {
+        $("#falseNegative").show();
+        if (data.falseNegative) {
+            $("#false-negative-bar").show();
+            $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+        } else {
+            $("#false-negative-bar").hide();
+            $("#falseNegative .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
+        }
+    }
     if (!isEmpty(data.tag)) {
-        $("#ExecutionByTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
-        $("#ExecutionQueueByTag").parent().attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
+        $("#ExecutionByTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + encodeURI(data.tag));
+        $("#openTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + encodeURI(data.tag));
+        $("#ExecutionQueueByTag").parent().attr("href", "TestCaseExecutionQueueList.jsp?tag=" + encodeURI(data.tag));
     } else {
         $("#ExecutionByTag").attr("disabled", true);
         $("#ExecutionQueueByTag").attr("disabled", true);
@@ -990,6 +1011,34 @@ function drawChart_PerThirdParty(data, target) {
     window.graph1 = new Chart(ctx, configDo);
 
     update_thirdParty_Chart(1);
+}
+
+function toggleFalseNegative(executionId) {
+    if (falseNegative) {
+
+        $.ajax({
+            url: "api/executions/" + executionId + "/undeclareFalseNegative",
+            method: "POST",
+            data: {falseNegative: false},
+            success: function (data) {
+                falseNegative = false;
+                $("#false-negative-bar").hide();
+                $("#falseNegative .glyphicon").removeClass("glyphicon-remove").addClass("glyphicon-ok");
+            }
+        });
+
+    } else {
+        $.ajax({
+            url: "api/executions/" + executionId + "/declareFalseNegative",
+            method: "POST",
+            data: {falseNegative: true},
+            success: function (data) {
+                falseNegative = true;
+                $("#false-negative-bar").show();
+                $("#falseNegative .glyphicon").removeClass("glyphicon-ok").addClass("glyphicon-remove");
+            }
+        });
+    }
 }
 
 function update_thirdParty_Chart() {

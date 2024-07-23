@@ -47,6 +47,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.enums.MessageGeneralEnum;
+import org.cerberus.core.exception.CerberusException;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -76,8 +79,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", tag);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
@@ -110,8 +112,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", id);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             preStat.setLong(1, id);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -186,9 +187,7 @@ public class TagDAO implements ITagDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (systems != null && !systems.isEmpty()) {
@@ -210,8 +209,7 @@ public class TagDAO implements ITagDAO {
                 preStat.setString(i, campaign);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -271,9 +269,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.to : {}", to);
         LOG.debug("SQL.system {}: ", systems);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(systems)) {
@@ -286,8 +282,7 @@ public class TagDAO implements ITagDAO {
             t1 = new Timestamp(to.getTime());
             preStat.setTimestamp(i++, t1);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -365,9 +360,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL.to : {}", to);
         LOG.debug("SQL.campaigns : {}", campaigns);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(campaigns)) {
@@ -410,8 +403,7 @@ public class TagDAO implements ITagDAO {
             t1 = new Timestamp(to.getTime());
             preStat.setTimestamp(i, t1);
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -474,8 +466,7 @@ public class TagDAO implements ITagDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getTag());
@@ -517,8 +508,7 @@ public class TagDAO implements ITagDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, object.getTag());
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -543,8 +533,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getTag());
@@ -574,8 +563,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, object.getBrowserstackBuildHash());
             preStat.setString(i++, object.getBrowserstackAppBuildHash());
@@ -601,8 +589,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getLambdaTestBuild());
@@ -628,8 +615,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getUsrModif());
@@ -654,8 +640,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getComment());
@@ -681,8 +666,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setString(i++, object.getXRayTestExecution());
@@ -702,6 +686,22 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException {
+        final String query = "UPDATE tag SET FalseNegative = ?, dateModif = NOW(), usrModif= ? WHERE tag = ?";
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setBoolean(1, falseNegative);
+            preStat.setString(2, usrModif);
+            preStat.setString(3, tag);
+            preStat.executeUpdate();
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
     public int lockXRayTestExecution(String tag, Tag object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder("UPDATE tag SET XRayTestExecution = 'PENDING', dateModif = NOW(), usrModif= ?");
@@ -710,8 +710,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", object.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             int i = 1;
             preStat.setString(i++, "lockXRayTestExecution");
             preStat.setString(i, tag);
@@ -737,8 +736,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", tag.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setTimestamp(i++, tag.getDateEndQueue());
@@ -786,8 +784,7 @@ public class TagDAO implements ITagDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", tag.getTag());
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             preStat.setTimestamp(i++, tag.getDateStartExe());
@@ -842,9 +839,7 @@ public class TagDAO implements ITagDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement()) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(campaign)) {
@@ -860,8 +855,7 @@ public class TagDAO implements ITagDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -921,6 +915,7 @@ public class TagDAO implements ITagDAO {
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
         String ciResult = rs.getString("tag.ciResult");
+        boolean falseNegative = rs.getBoolean("tag.FalseNegative");
         String environmentList = rs.getString("tag.EnvironmentList");
         String countryList = rs.getString("tag.CountryList");
         String robotDecliList = rs.getString("tag.RobotDecliList");
@@ -941,7 +936,7 @@ public class TagDAO implements ITagDAO {
                 .nbExeUsefull(nbExeUsefull).nbOK(nbOK).nbKO(nbKO).nbFA(nbFA)
                 .nbNA(nbNA).nbNE(nbNE).nbWE(nbWE).nbPE(nbPE).nbQU(nbQU).nbQE(nbQE)
                 .nbCA(nbCA).ciScore(ciScore).ciScoreThreshold(ciScoreThreshold)
-                .ciResult(ciResult).environmentList(environmentList)
+                .ciResult(ciResult).falseNegative(falseNegative).environmentList(environmentList)
                 .countryList(countryList).robotDecliList(robotDecliList)
                 .systemList(systemList).applicationList(applicationList)
                 .reqEnvironmentList(reqEnvironmentList).reqCountryList(reqCountryList)

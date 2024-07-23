@@ -60,9 +60,13 @@
                     <div id="divPanelDefault" class="panel no-border" style="z-index:10; top: 0;background-color:#f5f6fa">
                         <div class="panel-heading" id="executionHeader"
                              style="z-index:2; top: 0;border-radius: 10px;margin-bottom: 0px;background-color: white;border: 1px solid #eee;">
+                            <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
+                                <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    <span class="sr-only"></span>FALSE NEGATIVE
+                                </div>
+                            </div>
                             <div class="progress">
-                                <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0"
-                                     aria-valuemin="0" aria-valuemax="100">
+                                <div id="progress-bar" style="margin-bottom: 0px;" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                     <span class="sr-only"></span>
                                 </div>
                             </div>
@@ -398,8 +402,12 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="controlstatus2">Control Status</label>
-                                        <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status"
-                                               readonly>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status" readonly>
+                                            <span class="input-group-btn">
+                                                <button id="falseNegative" class="btn btn-default" title="Declare/Undeclare this execution as a False Negative"><span class="glyphicon glyphicon-ok"></span></button>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-8">
@@ -425,6 +433,7 @@
                                             <span class="input-group-btn">
                                                 <button id="editTags" class="btn btn-default">Edit</button>
                                                 <button id="saveTag" class="btn btn-primary" style="display : none;">Save</button>
+                                                <a href=""><button id="openTag" class="btn btn-default"><span class="glyphicon glyphicon-new-window"></span> Open</button></a>
                                             </span>
                                         </div>
                                     </div>
@@ -554,7 +563,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="robot" placeholder="Robot" readonly>
                                             <span class="input-group-btn">
-                                                <button id="editRobot" class="btn btn-default">Edit</button>
+                                                <button id="editRobot" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -656,7 +665,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="application" placeholder="Application" readonly>
                                             <span class="input-group-btn">
-                                                <button id="editApplication" class="btn btn-default">Edit</button>
+                                                <button id="editApplication" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -667,7 +676,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="country" placeholder="Country" readonly>
                                             <span class="input-group-btn">
-                                                <button id="editCountry" class="btn btn-default">Edit</button>
+                                                <button id="editCountry" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -678,7 +687,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="environment" placeholder="Environment" readonly>
                                             <span class="input-group-btn">
-                                                <button id="editEnvironment" class="btn btn-default">Edit</button>
+                                                <button id="editEnvironment" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </span>
                                         </div>
                                     </div>

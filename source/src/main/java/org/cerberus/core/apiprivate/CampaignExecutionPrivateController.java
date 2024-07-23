@@ -40,6 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.util.servlet.ServletUtil;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/campaignexecutions/")
@@ -48,6 +52,8 @@ public class CampaignExecutionPrivateController {
     private static final Logger LOG = LogManager.getLogger(CampaignExecutionPrivateController.class);
     @Autowired
     private ITagStatisticService tagStatisticService;
+    @Autowired
+    private ITagService tagService;
 
     @GetMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTagStatistics(
@@ -58,7 +64,6 @@ public class CampaignExecutionPrivateController {
             @RequestParam(name = "from", required = false) String fromParam,
             @RequestParam(name = "to", required = false) String toParam
     ) {
-
         //Retrieve and format URL parameter
         fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
@@ -106,6 +111,38 @@ public class CampaignExecutionPrivateController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Internal server error: " + ex.getMessage());
         }
+    }
+
+    @PostMapping("{executionId}/declareFalseNegative")
+    public String updateDeclareFalseNegative(
+            @PathVariable("executionId") String tag,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            tagService.updateFalseNegative(tag, true, request.getUserPrincipal().getName());
+        } catch (CerberusException ex) {
+            return ex.toString();
+        }
+        return "";
 
     }
+
+    @PostMapping("{executionId}/undeclareFalseNegative")
+    public String updateUndeclareFalseNegative(
+            @PathVariable("executionId") String tag,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            tagService.updateFalseNegative(tag, false, request.getUserPrincipal().getName());
+        } catch (CerberusException ex) {
+            return ex.toString();
+        }
+        return "";
+
+    }
+
 }

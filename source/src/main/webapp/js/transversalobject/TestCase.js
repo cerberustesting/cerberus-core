@@ -1346,9 +1346,9 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 
         for (var index = 0; index < data.contentTable.length; index++) {
             if (data.contentTable[index].system === targetSystem) {
-                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application).val(data.contentTable[index].application));
+                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application + " ["+data.contentTable[index].type+"]").val(data.contentTable[index].application));
             } else {
-                applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+                applicationList.append($('<option></option>').text(data.contentTable[index].application+ " ["+data.contentTable[index].type+"]").val(data.contentTable[index].application));
             }
         }
         $("#editTestCaseModalForm #application").val(defautValue);

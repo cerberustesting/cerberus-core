@@ -6432,3 +6432,7 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 ALTER TABLE `tagstatistic` MODIFY `Campaign` VARCHAR(200);
 ALTER TABLE `tagstatistic` ADD CONSTRAINT `fk_campaign_01` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`Campaign`) ON UPDATE CASCADE ON DELETE SET NULL;
 ALTER TABLE `tagstatistic` ADD CONSTRAINT `fk_tag_01` FOREIGN KEY (`Tag`) REFERENCES `tag` (`Tag`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+-- 1810-1811
+ALTER TABLE tag ADD FalseNegative BOOLEAN DEFAULT false NULL AFTER CIResult;
+ALTER TABLE testcaseexecution ADD FalseNegative BOOLEAN DEFAULT false NULL AFTER ControlStatus;

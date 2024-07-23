@@ -119,20 +119,20 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision) throws CerberusException {
+            String build, String revision) throws CerberusException {
         return testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision);
     }
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionByCriteria(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
 
     @Override
     public List<TestCaseExecution> findTCExecutionByCriteria1(String dateLimitFrom, String test, String testCase,
-                                                              String application, String country, String environment, String controlStatus, String status) {
+            String application, String country, String environment, String controlStatus, String status) {
         // Transform empty parameter in % in order to remove from SQL filter (thanks to the like operator).
         test = ParameterParserUtil.wildcardIfEmpty(test);
         testCase = ParameterParserUtil.wildcardIfEmpty(testCase);
@@ -146,7 +146,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public List<TestCaseExecution> readByCriteria(List<String> system, List<String> countries, List<String> environments,
-                                                  List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException {
+            List<String> robotDecli, List<TestCase> testcases, Date from, Date to) throws CerberusException {
         return this.convert(testCaseExecutionDao.readByCriteria(system, countries, environments, robotDecli, testcases, from, to));
     }
 
@@ -176,8 +176,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         return this.testCaseExecutionDao.findLastTCExecutionInGroup(test, testCase, environment, country, build, revision, browser, browserVersion, ip, port, tag);
     }
 
@@ -194,6 +194,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         testCaseExecutionDao.setTagToExecution(id, tag);
+    }
+
+    @Override
+    public void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException {
+        testCaseExecutionDao.updateFalseNegative(id, falseNegative, usrModif);
     }
 
     @Override

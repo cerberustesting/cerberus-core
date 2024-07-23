@@ -60,7 +60,6 @@ import java.util.Map;
 @Repository
 public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
-
     private final DatabaseSpring databaseSpring;
     private final IFactoryTestCaseExecution factoryTCExecution;
     private final IApplicationDAO applicationDAO;
@@ -86,8 +85,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         LOG.debug("SQL.param.id : {}", tCExecution.getId());
         LOG.debug("SQL.param.robotexecutor : {}", tCExecution.getRobotExecutor());
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
 
             int i = 1;
             preStat.setString(i++, tCExecution.getTest());
@@ -163,9 +161,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.id : {}", tCExecution.getId());
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             int i = 1;
             preStat.setString(i++, tCExecution.getTest());
@@ -227,11 +224,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public List<String> getIDListOfLastExecutions(String test, String testcase, String country) {
         List<String> list = null;
-        final String query = "SELECT ID FROM testcaseexecution WHERE test = ? AND testcase = ? " +
-                "AND country = ? AND controlStatus='OK' ORDER BY id DESC LIMIT 200";
+        final String query = "SELECT ID FROM testcaseexecution WHERE test = ? AND testcase = ? "
+                + "AND country = ? AND controlStatus='OK' ORDER BY id DESC LIMIT 200";
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setString(3, country);
@@ -267,9 +263,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
             if (StringUtil.isNotEmpty(application)) {
                 preStat.setString(1, application);
@@ -295,7 +290,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
-                                                           String build, String revision) throws CerberusException {
+            String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
         final StringBuilder query = new StringBuilder()
                 .append("SELECT exe.* FROM testcaseexecution exe ")
@@ -303,9 +298,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.country = ? AND exe.build = ? AND exe.revision = ? ")
                 .append("ORDER BY exe.id DESC");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             preStat.setString(i++, test);
             preStat.setString(i++, testcase);
@@ -328,8 +322,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testCase, String environment, String country,
-                                                           String build, String revision, String browser, String browserVersion,
-                                                           String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
         TestCaseExecution result = null;
         final StringBuilder query = new StringBuilder()
                 .append("SELECT exe.* FROM testcaseexecution exe ")
@@ -339,9 +333,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.ip LIKE ? AND exe.port LIKE ? AND exe.tag LIKE ? ")
                 .append("ORDER BY exe.id DESC");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             preStat.setString(i++, test);
             preStat.setString(i++, testCase);
@@ -367,8 +360,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public List<TestCaseExecution> findExecutionByCriteria1(String dateLimit, String test, String testCase,
-                                                            String application, String country, String environment,
-                                                            String controlStatus, String status) {
+            String application, String country, String environment,
+            String controlStatus, String status) {
         List<TestCaseExecution> myTestCaseExecutions = null;
         TestCaseExecution execution;
         final StringBuilder query = new StringBuilder()
@@ -379,9 +372,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.country LIKE ? AND exe.application LIKE ? AND exe.controlstatus LIKE ? ")
                 .append("AND exe.status LIKE ?");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             preStat.setString(i++, dateLimit);
             preStat.setString(i++, test);
@@ -413,14 +405,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public TestCaseExecution findTCExecutionByKey(long id) {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution exe, application app " +
-                "WHERE exe.application = app.application AND ID = ?";
+        final String query = "SELECT * FROM testcaseexecution exe, application app "
+                + "WHERE exe.application = app.application AND ID = ?";
 
         LOG.debug("SQL : {}", query);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setLong(1, id);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
@@ -442,9 +433,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append(" (SELECT MAX(ID) from `testcaseexecution` ")
                 .append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             preStat.setString(i++, test);
             preStat.setString(i++, testCase);
@@ -463,8 +453,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution findLastTCExecutionInGroup(String test, String testCase, String environment, String country,
-                                                        String build, String revision, String browser, String browserVersion,
-                                                        String ip, String port, String tag) {
+            String build, String revision, String browser, String browserVersion,
+            String ip, String port, String tag) {
 
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
@@ -499,9 +489,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         query.append("ORDER BY exe.id DESC");
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             preStat.setString(i++, test);
             preStat.setString(i++, testCase);
@@ -540,9 +529,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" and length(tag) != length('c3888898-c65a-11e3-9b3e-0000004047e0')");
         }
         query.append(" UNION select distinct tag from testcaseexecutionqueue where tag !='' ");
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             ResultSet resultSet = preStat.executeQuery()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); ResultSet resultSet = preStat.executeQuery()) {
             list = new ArrayList<>();
             while (resultSet.next()) {
                 list.add(resultSet.getString("tag"));
@@ -556,8 +543,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         final String query = "UPDATE testcaseexecution exe SET exe.tag = ? WHERE exe.id = ?";
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query)) {
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             preStat.setString(1, tag);
             preStat.setLong(2, id);
             preStat.executeUpdate();
@@ -569,8 +556,24 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
+    public void updateFalseNegative(long id, boolean falseNegative, String usrModif) throws CerberusException {
+        final String query = "UPDATE testcaseexecution exe SET exe.FalseNegative = ?, dateModif = NOW(), usrModif= ? WHERE exe.id = ?";
+        LOG.debug("SQL : {}", query);
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            preStat.setBoolean(1, falseNegative);
+            preStat.setString(2, usrModif);
+            preStat.setLong(3, id);
+            preStat.executeUpdate();
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
+        }
+    }
+
+    @Override
     public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort,
-                                                       String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+            String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         List<String> individualColumnSearchValues = new ArrayList<>();
 
         final StringBuilder query = new StringBuilder()
@@ -635,7 +638,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList<TestCaseExecution> readByCriteria(List<String> systems, List<String> countries, List<String> environments,
-                                                        List<String> robotDeclis, List<TestCase> testcases, Date from, Date to) {
+            List<String> robotDeclis, List<TestCase> testcases, Date from, Date to) {
         AnswerList<TestCaseExecution> response = new AnswerList<>();
         List<TestCaseExecution> objectList = new ArrayList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -673,9 +676,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(" limit ").append(MAX_ROW_SELECTED);
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(systems)) {
@@ -707,8 +708,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, testcase.getTestcase());
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -740,14 +740,14 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         response.setDataList(objectList);
         return response;
     }
-    
+
     @Override
     public Integer getNbExecutions(List<String> systems) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         StringBuilder query = new StringBuilder();
-        
+
         query.append("SELECT SQL_CALC_FOUND_ROWS count(*)  FROM testcaseexecution exe ");
         query.append(" where 1=1 ");
 
@@ -757,9 +757,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         LOG.debug("SQL : {}", query);
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (CollectionUtils.isNotEmpty(systems)) {
@@ -768,8 +766,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 }
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     return resultSet.getInt(1);
@@ -799,8 +796,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         LOG.debug("SQL.param.tag : {}", tag);
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setString(1, tag);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -832,8 +828,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         LOG.debug("SQL : {}", query);
         LOG.debug("SQL.param.tag : {}", tag);
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setString(1, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
@@ -851,8 +846,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm,
-                                                        Map<String, List<String>> individualSearch, List<String> individualLike,
-                                                        List<String> systems) throws CerberusException {
+            Map<String, List<String>> individualSearch, List<String> individualLike,
+            List<String> systems) throws CerberusException {
         MessageEvent msg;
         AnswerList<TestCaseExecution> response = new AnswerList<>();
         List<String> individualColumnSearchValues = new ArrayList<>();
@@ -915,10 +910,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         LOG.debug("SQL : {}", query);
 
-
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchTerm)) {
@@ -960,8 +952,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 }
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
 
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -1006,8 +997,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setString(1, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
@@ -1033,9 +1023,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        try (Connection connection = this.databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(
-                     query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setLong(1, executionId);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
@@ -1110,9 +1099,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         query.append(" order by ").append(columnName).append(" asc");
         LOG.debug("SQL : {}", query);
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString());
-             Statement stm = connection.createStatement()) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
             if (StringUtil.isNotEmpty(searchParameter)) {
@@ -1148,8 +1135,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            try (ResultSet resultSet = preStat.executeQuery();
-                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -1204,6 +1190,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
         long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
         String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
+        boolean falseNegative = resultSet.getBoolean("exe.FalseNegative");
         String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
         String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
         String url = ParameterParserUtil.parseStringParam(resultSet.getString("exe.url"), "");
@@ -1240,6 +1227,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 usrCreated, dateCreated, usrModif, dateModif);
         result.setQueueID(queueId);
         result.setRobotProviderSessionID(robotProviderSessionId);
+        result.setFalseNegative(falseNegative);
         return result;
     }
 

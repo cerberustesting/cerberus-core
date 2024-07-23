@@ -31,6 +31,7 @@ var configAvailability2 = {};
 var nbCountries = 0;
 var nbEnv = 0;
 var nbRobot = 0;
+var nbcontrolStatus = 0;
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -69,6 +70,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var environments = GetURLParameters("environments");
         var countries = GetURLParameters("countries");
         var robotDeclis = GetURLParameters("robotDeclis");
+        var controlStatuss = GetURLParameters("controlStatuss");
 
         let fromD;
         let toD;
@@ -109,7 +111,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
             $("#testSelect").select2({width: "100%"});
 
-            feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis);
+            feedPerfTestCase(tests[0], "#testCaseSelect", testcases, parties, types, units, countries, environments, robotDeclis, controlStatuss);
 
         }).fail(handleErrorAjaxAfterTimeout);
 
@@ -152,7 +154,7 @@ function multiSelectConfPerf(name) {
  * @param {String} parties 
  * @returns {null}
  */
-function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis) {
+function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types, units, countries, environments, robotDeclis, controlStatuss) {
     showLoader($("#otFilterPanel"));
 
     var testCList = $(selectElement);
@@ -166,7 +168,7 @@ function feedPerfTestCase(test, selectElement, defaultTestCases, parties, types,
         }
         $('#testCaseSelect').val(defaultTestCases);
         $('#testCaseSelect').trigger('change');
-        loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis);
+        loadPerfGraph(false, parties, types, units, countries, environments, robotDeclis, controlStatuss);
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -195,7 +197,7 @@ function displayPageLabel(doc) {
     $("#lblTestStatBar").html(doc.getDocLabel("page_reportovertime", "lblTestStatBar"));
 }
 
-function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, environments, robotDeclis) {
+function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, environments, robotDeclis, controlStatuss) {
     showLoader($("#otFilterPanel"));
 
     if (parties === null || parties === undefined) {
@@ -215,6 +217,9 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
     }
     if (robotDeclis === null || robotDeclis === undefined) {
         robotDeclis = [];
+    }
+    if (controlStatuss === null || controlStatuss === undefined) {
+        controlStatuss = [];
     }
 
     let from = new Date($('#frompicker').data("DateTimePicker").date());
@@ -260,6 +265,15 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
         robotDeclisQ += "&robotDeclis=" + encodeURI(robotDeclis[i]);
     }
 
+    if ($("#controlStatusSelect").val() !== null) {
+        controlStatuss = $("#controlStatusSelect").val();
+    }
+    len = controlStatuss.length;
+    var controlStatussQ = "";
+    for (var i = 0; i < len; i++) {
+        controlStatussQ += "&controlStatuss=" + encodeURI(controlStatuss[i]);
+    }
+
     len = parties.length;
     var partiQ = "";
     for (var i = 0; i < len; i++) {
@@ -287,7 +301,7 @@ function loadPerfGraph(saveURLtoHistory, parties, types, units, countries, envir
         }
     }
 
-    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + countriesQ + environmentsQ + robotDeclisQ + partiQ + typeQ + unitQ + tcString;
+    let qS = "from=" + from.toISOString() + "&to=" + to.toISOString() + countriesQ + environmentsQ + robotDeclisQ + controlStatussQ + partiQ + typeQ + unitQ + tcString;
     if (saveURLtoHistory) {
         InsertURLInHistory("./ReportingExecutionOverTime.jsp?" + qS);
     }
@@ -334,6 +348,12 @@ function updateNbDistinct(data) {
     for (var i = 0; i < data.robotDeclis.length; i++) {
         if (data.robotDeclis[i].isRequested) {
             nbRobot++;
+        }
+    }
+    nbcontrolStatus = 0;
+    for (var i = 0; i < data.controlStatuss.length; i++) {
+        if (data.controlStatuss[i].isRequested) {
+            nbcontrolStatus++;
         }
     }
 }
@@ -434,6 +454,24 @@ function loadCombos(data) {
         }
     }
     select.multiselect(new multiSelectConfPerf("robotSelect"));
+
+    var select = $("#controlStatusSelect");
+    select.multiselect('destroy');
+    var array = data.distinct.controlStatuss;
+    $("#controlStatusSelect option").remove();
+    for (var i = 0; i < array.length; i++) {
+        let n = array[i].name;
+        if (isEmpty(n)) {
+            n = "[Empty]";
+        }
+        $("#controlStatusSelect").append($('<option></option>').text(n).val(array[i].name));
+    }
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].isRequested) {
+            $("#controlStatusSelect option[value='" + array[i].name + "']").attr("selected", "selected");
+        }
+    }
+    select.multiselect(new multiSelectConfPerf("controlStatusSelect"));
 
 }
 
@@ -558,13 +596,27 @@ function buildGraphs(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
             d.push(p);
         }
         let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, c.key.unit, c.key.party, c.key.type, c.key.testcase.testcase);
         var dataset = {
             label: lab,
             backgroundColor: get_Color_fromindex(i),
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+//                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+//                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
@@ -640,13 +692,27 @@ function buildExeGraphs(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
             d.push(p);
         }
         let lab = getLabel(c.key.testcase.description, c.key.country, c.key.environment, c.key.robotdecli, undefined, undefined, undefined, c.key.testcase.testcase);
         var dataset = {
             label: lab,
             backgroundColor: "white",
+            pointBorderWidth: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+//                console.info(value);
+                return value.falseNegative === true ? 3
+                        : 1;
+            },
+            pointBorderColor: function (d) {
+                var index = d.dataIndex;
+                var value = d.dataset.data[index];
+//                console.info(value);
+                return value.falseNegative === true ? '#00d27a'
+                        : get_Color_fromindex(i);
+            },
             borderColor: get_Color_fromindex(i),
             pointBackgroundColor: function (d) {
                 var index = d.dataIndex;
@@ -694,7 +760,7 @@ function buildExeBarGraphs(data) {
         let d = [];
         lend = c.points.length;
         for (var j = 0; j < lend; j++) {
-            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus};
+            let p = {x: c.points[j].x, y: c.points[j].y, id: c.points[j].exe, controlStatus: c.points[j].exeControlStatus, falseNegative: c.points[j].falseNegative};
             d.push(p);
         }
         let lab = c.key.key;
@@ -722,10 +788,8 @@ function buildExeBarGraphs(data) {
 }
 
 function buildAvailabilityGraphs(data) {
-    console.info(data);
-
     let curves = data.datasetExeTime;
-    console.info(curves);
+
     var len = curves.length;
 
     let nbOK = 0;
@@ -736,20 +800,21 @@ function buildAvailabilityGraphs(data) {
 
     for (var i = 0; i < len; i++) {
         let newCurve = curves[i];
-        console.info(newCurve);
+//        console.info(newCurve);
         let lend = newCurve.points.length;
         for (var j = 0; j < lend; j++) {
             let dur = 0;
-            console.info(j + " / " + lend)
+//            console.info(j + " / " + lend)
             if (j === (lend - 1)) {
                 dur = 0;
             } else {
-                console.info(newCurve.points[j].x)
-                console.info(newCurve.points[j + 1].x)
+//                console.info(newCurve.points[j].x)
+//                console.info(newCurve.points[j + 1].x)
                 dur = (new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000;
-                console.info((new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000)
+//                console.info((new Date(newCurve.points[j + 1].x) - new Date(newCurve.points[j].x)) / 1000)
             }
-            if (newCurve.points[j].exeControlStatus === "OK") {
+
+            if ((newCurve.points[j].exeControlStatus === "OK") || (newCurve.points[j].falseNegative)) {
                 nbOK++;
                 durOK = durOK + dur;
             } else {
@@ -780,7 +845,7 @@ function buildAvailabilityGraphs(data) {
 
     document.getElementById('ChartAvailabilty2Counter').innerHTML = Math.round(durOK / (durOK + durKO) * 100) + " %";
     document.getElementById('ChartAvailabilty2CounterDet').innerHTML = "<b style='color:lightgrey'>" + getHumanReadableDuration(durKO) + "</b> / " + getHumanReadableDuration((durOK + durKO));
-    
+
 
 //    console.info(configTagBar);
     window.myAvailability1.update();

@@ -20,6 +20,7 @@
 package org.cerberus.core.apiprivate;
 
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,8 @@ import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -103,6 +106,38 @@ public class ExecutionPrivateController {
         ServletUtil.servletStart(request);
 
         return executionUUIDObject.getRunningStatus().toString();
+
+    }
+
+    @PostMapping("{executionId}/declareFalseNegative")
+    public String updateDeclareFalseNegative(
+            @PathVariable("executionId") int executionId,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
+        } catch (CerberusException ex) {
+            return ex.toString();
+        }
+        return "";
+
+    }
+
+    @PostMapping("{executionId}/undeclareFalseNegative")
+    public String updateUndeclareFalseNegative(
+            @PathVariable("executionId") int executionId,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
+        } catch (CerberusException ex) {
+            return ex.toString();
+        }
+        return "";
 
     }
 
