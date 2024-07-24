@@ -228,7 +228,7 @@ NOTE: You can also get the nb of rows your variable has by using the `**nbrows**
 |=== 
 
 | *Date System Variables* | 
-| *XXXX* |	Any of those key word: TODAY, YESTERDAY, TOMORROW, DAY-n, DAY+n, HOUR-n, HOUR+n, MINUTE-n, MINUTE+n
+| *XXXX* |	Any of those key word: TODAY, YESTERDAY, TOMORROW, YEAR-n, YEAR+n, MONTH-n, MONTH+n, WEEK-n, WEEK+n, DAY-n, DAY+n, HOUR-n, HOUR+n, MINUTE-n, MINUTE+n
 | *YYYY* |	Any of the https://docs.oracle.com/en%2Fjava%2Fjavase%2F11%2Fdocs%2Fapi%2F%2F/java.base/java/text/SimpleDateFormat.html[JAVA Date Patern] such as: *W* (Week in year), *W* (Week in month), *y* (Year), *M* (Month in year), *d* (Day in month), *E* (Day name in week), *H* (Hour in day (0-23)), *m* (Minute in hour), *s* (Second in minute),....
 
 |=== 

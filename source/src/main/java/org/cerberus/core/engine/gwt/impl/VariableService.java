@@ -56,7 +56,8 @@ public class VariableService implements IVariableService {
     private static final Logger LOG = LogManager.getLogger(VariableService.class);
 
     private static final String VALUE_WHEN_NULL = "<null>";
-    public static final Pattern SYSTEM_VARIABLE_DATE_PATTERN = Pattern.compile("%system.([a-zA-Z0-9-+]*)-([a-z A-Z0-9]*)%");
+    // TIPS : Test online your java regex using : https://www.regexplanet.com/advanced/java/index.html
+    public static final Pattern SYSTEM_VARIABLE_DATE_PATTERN = Pattern.compile("%system.([a-zA-Z0-9-+]*)-([a-z A-Z0-9.,:;'\"$]*)%");
     public static final Pattern SYSTEM_SUBVARIABLE_DATE_PATTERN = Pattern.compile("([a-zA-Z]*)([-+])([0-9]*)");
 
     @Autowired
@@ -427,9 +428,21 @@ public class VariableService implements IVariableService {
                         cal.add(Calendar.HOUR, -24);
                         break;
                     default:
+                        try {
+
                         subVariableMatcher = SYSTEM_SUBVARIABLE_DATE_PATTERN.matcher(variableMatcher.group(1));
                         if (subVariableMatcher.matches()) {
+                            LOG.debug("Time Unit " + subVariableMatcher.group(1) + " Offset " + subVariableMatcher.group(2) + subVariableMatcher.group(3));
                             switch (subVariableMatcher.group(1)) {
+                                case "YEAR":
+                                    cal.add(Calendar.YEAR, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
+                                case "MONTH":
+                                    cal.add(Calendar.MONTH, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
+                                case "WEEK":
+                                    cal.add(Calendar.WEEK_OF_YEAR, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
+                                    break;
                                 case "DAY":
                                     cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
                                     break;
@@ -440,19 +453,31 @@ public class VariableService implements IVariableService {
                                     cal.add(Calendar.MINUTE, Integer.parseInt(subVariableMatcher.group(2) + subVariableMatcher.group(3)));
                                     break;
                                 default:
+                                    return stringToDecode.replace(variableMatcher.group(0), "[!!System Date decode error - Unknown Time Unit in '" + subVariableMatcher.group(1) + "' adding '" + subVariableMatcher.group(2) + subVariableMatcher.group(3) + "'!!]");
                             }
                         }
+
+                    } catch (Exception e) {
+                        LOG.warn("Warning when trying to decode a date system variable.", e);
+                        return stringToDecode.replace(variableMatcher.group(0), "[!!System Date decode error - " + e.getMessage() + " in '" + subVariableMatcher.group(1) + "' adding '" + subVariableMatcher.group(2) + subVariableMatcher.group(3) + "'!!]");
+                    }
                 }
 
+                String errorMess = "";
                 try {
                     if (StringUtil.isNotEmpty(locale)) {
+                        errorMess = " in '" + variableMatcher.group(2) + "' with locale " + locale.split("-")[0];
+                        LOG.debug("Decode Date Format : " + variableMatcher.group(2) + " with locale " + locale.split("-")[0]);
                         formater = new SimpleDateFormat(variableMatcher.group(2), new Locale(locale.split("-")[0]));
                     } else {
+                        errorMess = " in '" + variableMatcher.group(2) + "'";
+                        LOG.debug("Decode Date Format : " + variableMatcher.group(2));
                         formater = new SimpleDateFormat(variableMatcher.group(2));
                     }
                     stringToDecode = stringToDecode.replace(variableMatcher.group(0), formater.format(cal.getTime()));
                 } catch (Exception e) {
-                    LOG.error(e, e);
+                    stringToDecode = stringToDecode.replace(variableMatcher.group(0), "[!!System Date decode error - " + e.getMessage() + errorMess + "!!]");
+                    LOG.warn("Warning when trying to decode a date system variable.", e);
                 }
 
             } while (variableMatcher.find());
