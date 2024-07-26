@@ -87,12 +87,17 @@ function getSubDataLabel(type) {
  * @param {String} addValue1 [optional] Adds a value on top of the normal List.
  * @param {String} asyn [optional] Do a async ajax request. Default: true
  * @param {String} funcAfterLoad [optional] Function to call after load.
+ * @param {String} extra modal id in order to filter name selcted with .selectName parameter
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn, funcAfterLoad) {
+function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn, funcAfterLoad, modalID) {
+    let selector = "[name='" + selectName + "']";
+    if (modalID !== undefined) {
+        selector = "#" + modalID + " [name='" + selectName + "']";
+    }
     // Adding the specific value when defined.
     if (addValue1 !== undefined) {
-        $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
+        $(selector).append($('<option></option>').text(addValue1).val(addValue1));
     }
 
     if (forceReload === undefined) {
@@ -124,10 +129,10 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                     if (!isEmpty(element.description))
                         desc += " - " + element.description;
 
-                    $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(element.value));
+                    $(selector).append($('<option></option>').text(desc).val(element.value));
                 }
                 if (defaultValue !== undefined) {
-                    $("[name='" + selectName + "']").val(defaultValue);
+                    $(selector).val(defaultValue);
                 }
                 if (funcAfterLoad !== undefined) {
                     funcAfterLoad();
@@ -137,10 +142,10 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
     } else {
         for (const element of list) {
             const desc = element.value + " - " + element.description;
-            $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(element.value));
+            $(selector).append($('<option></option>').text(desc).val(element.value));
         }
         if (defaultValue !== undefined) {
-            $("[name='" + selectName + "']").val(defaultValue);
+            $(selector).val(defaultValue);
         }
         if (funcAfterLoad !== undefined) {
             funcAfterLoad();

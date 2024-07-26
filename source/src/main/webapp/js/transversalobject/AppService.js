@@ -53,11 +53,11 @@ function openModalAppService(service, mode, page = undefined) {
 function initModalAppService() {
     var doc = new Doc();
 
-    displayInvariantList("type", "SRVTYPE", false, "REST");
-    displayInvariantList("method", "SRVMETHOD", false, "GET");
-    displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw");
+    displayInvariantList("type", "SRVTYPE", false, "REST", undefined, undefined, undefined, "editServiceModal");
+    displayInvariantList("method", "SRVMETHOD", false, "GET", undefined, undefined, undefined, "editServiceModal");
+    displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw", undefined, undefined, undefined, "editServiceModal");
     displayAppServiceList("parentContentService", "", "");
-    displayInvariantList("callSystem", "SYSTEM", false);
+    displayInvariantList("callSystem", "SYSTEM", false, undefined, undefined, undefined, undefined, "editServiceModal");
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='buttonCall']").html(doc.getDocLabel("page_global", "buttonCall"));

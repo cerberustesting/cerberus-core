@@ -145,9 +145,9 @@ function initModalTestCase() {
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
     $("[name='versionField']").html(doc.getDocOnline("testcase", "version"));
 
-    displayInvariantList("type", "TESTCASE_TYPE", false);
-    displayInvariantList("status", "TCSTATUS", false);
-    displayInvariantList("priority", "PRIORITY", false);
+    displayInvariantList("type", "TESTCASE_TYPE", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    displayInvariantList("status", "TCSTATUS", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
+    displayInvariantList("priority", "PRIORITY", false, undefined, undefined, undefined, undefined, "editTestCaseModal");
     displayInvariantList("conditionOperator", "TESTCASECONDITIONOPERATOR", false);
 
     $('[data-toggle="popover"]').popover({
@@ -568,10 +568,10 @@ function confirmTestCaseModalHandler(mode) {
                 testcaseDependencies.push(
                         {
                             id: $(v).attr("testcaseid"),
-                            test: $(v).attr("test"), 
-                            testcase: $(v).attr("testcase"), 
-                            description: $(v).find("[name='depDescription']").val(), 
-                            depDelay: $(v).find("[name='depDelay']").val(), 
+                            test: $(v).attr("test"),
+                            testcase: $(v).attr("testcase"),
+                            description: $(v).find("[name='depDescription']").val(),
+                            depDelay: $(v).find("[name='depDelay']").val(),
                             isActive: $(v).find("[name='activate']").is(":checked")
                         }
                 )
@@ -798,7 +798,7 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase, allTestCases
 
                 $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description+ " [" + data.contentTable[i].application + "]</option>")
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testcase + "'>" + data.contentTable[i].testcase + " - " + data.contentTable[i].description + " [" + data.contentTable[i].application + "]</option>")
                 }
                 if (testcase !== null) {
                     $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
@@ -1346,9 +1346,9 @@ function appendApplicationList(defautValue, mySystem, modalId) {
 
         for (var index = 0; index < data.contentTable.length; index++) {
             if (data.contentTable[index].system === targetSystem) {
-                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application + " ["+data.contentTable[index].type+"]").val(data.contentTable[index].application));
+                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application + " [" + data.contentTable[index].type + "]").val(data.contentTable[index].application));
             } else {
-                applicationList.append($('<option></option>').text(data.contentTable[index].application+ " ["+data.contentTable[index].type+"]").val(data.contentTable[index].application));
+                applicationList.append($('<option></option>').text(data.contentTable[index].application + " [" + data.contentTable[index].type + "]").val(data.contentTable[index].application));
             }
         }
         $("#editTestCaseModalForm #application").val(defautValue);

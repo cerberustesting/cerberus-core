@@ -84,7 +84,7 @@ function initModalRobot() {
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
     displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
-    displayInvariantList("type", "APPLITYPE", false, undefined, "");
+    displayInvariantList("type", "APPLITYPE", false, undefined, "", undefined, undefined, "editRobotModal");
     displayInvariantList("lbexemethod", "ROBOTLBMETHOD", false);
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);

@@ -138,7 +138,7 @@ function displayPageLabel() {
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
 
     displayInvariantList("system", "SYSTEM", false, '', '');
-    displayInvariantList("type", "LABELTYPE", false);
+    displayInvariantList("type", "LABELTYPE", false, undefined, undefined, undefined, undefined, "editLabelModal");
     displayInvariantList("reqtype", "REQUIREMENTTYPE", false);
     displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
     displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);

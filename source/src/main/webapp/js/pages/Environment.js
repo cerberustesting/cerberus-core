@@ -45,7 +45,7 @@ function initPage() {
     displayInvariantList("country", "COUNTRY", false);
     displayInvariantList("environment", "ENVIRONMENT", false);
     displayInvariantList("active", "ENVACTIVE", false);
-    displayInvariantList("type", "ENVTYPE", false);
+    displayInvariantList("type", "ENVTYPE", false, undefined, undefined, undefined, undefined, "editEnvModal");
     displayInvariantList("maintenanceAct", "MNTACTIVE", false, "N");
     displayInvariantList("chain", "CHAIN", false, "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);

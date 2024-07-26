@@ -66,10 +66,10 @@ function initModalApplication(application, mode, page) {
     $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
 
-    displayInvariantList("system", "SYSTEM", false);
-    displayInvariantList("type", "APPLITYPE", false);
+    displayInvariantList("system", "SYSTEM", false, undefined, undefined, undefined, undefined, "editApplicationModal");
+    displayInvariantList("type", "APPLITYPE", false, undefined, undefined, undefined, undefined, "editApplicationModal");
     displayDeployTypeList("deploytype");
-    displayInvariantList("bugtrackerconnector", "BUGTRACKERCONNECTOR", false);
+    displayInvariantList("bugtrackerconnector", "BUGTRACKERCONNECTOR", false, undefined, undefined, undefined, undefined, "editApplicationModal");
 
 
     $("#editApplicationButton").off("click");
@@ -353,14 +353,14 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
 function updateBugTrackerConnector() {
     let connector = $('#editApplicationModal #bugtrackerconnector').val();
     if (connector === 'REDIRECT') {
-        $('#editApplicationModal #TrackerLogo').attr("src","./images/bt-REDIRECT.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-REDIRECT.png")
         $('#editApplicationModal #btP1').hide();
         $('#editApplicationModal #btP2').hide();
         $('#editApplicationModal #btP3').hide();
         $('#editApplicationModal #btP3').hide();
 
     } else if (connector === 'JIRA') {
-        $('#editApplicationModal #TrackerLogo').attr("src","./images/bt-JIRA.png")
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png")
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
         $('#editApplicationModal #btP3').hide();
