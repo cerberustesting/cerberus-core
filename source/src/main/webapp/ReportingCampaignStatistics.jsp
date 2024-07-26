@@ -37,56 +37,78 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-
-            <h1 class="page-title-line" id="title">Campaign Statistics</h1>
+            <h1 class="page-title-line" id="title">Campaign Statistics </h1>
             <div class="panel panel-default">
                 <div class="panel-body" id="filters">
-                    <div class='col-md-4'>
-                        <div class="form-group">
-                            <label for="system-select" id="labelSystemSelect">Système</label>
-                            <select id="system-select" class="form-control" multiple="multiple">
-                            </select>
+                    <div class="row" id="envCountryFilters" style="display: none;">
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="environment-select" id="labelEnvironmentSelect">Environnement</label>
+                                <select id="environment-select" class="form-control" multiple="multiple">
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class='col-md-4'>
-                        <div class="form-group">
-                            <label for="application-select" id="labelApplicationSelect">Application</label>
-                            <select id="application-select" class="form-control" multiple="multiple">
-                            </select>
-                        </div>
-                    </div>
-                    <div class='col-md-4'>
-                        <div class="form-group">
-                            <label for="group1-select" id="labelGroup1Select">Group 1</label>
-                            <select id="group1-select" class="form-control" multiple="multiple">
-                            </select>
-                        </div>
-                    </div>
-                    <div class='col-md-4'>
-                        <div class="form-group">
-                            <label for="frompicker" id="labelFromPicker">From</label>
-                            <div class='input-group date' id='frompicker'>
-                                <input type='text' class="form-control" />
-                                <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="country-select" id="labelCountrySelect">Pays</label>
+                                <select id="country-select" class="form-control" multiple="multiple">
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class='col-md-4'>
-                        <div class="form-group">
-                            <label for="topicker" id="labelToPicker">To</label>
-                            <div class='input-group date' id='topicker'>
-                                <input type='text' class="form-control" />
-                                <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
+                    <div class="row" id="systemAppGroup1Filters">
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="system-select" id="labelSystemSelect">Système</label>
+                                <select id="system-select" class="form-control" multiple="multiple">
+                                </select>
+                            </div>
+                        </div>
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="application-select" id="labelApplicationSelect">Application</label>
+                                <select id="application-select" class="form-control" multiple="multiple">
+                                </select>
+                            </div>
+                        </div>
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="group1-select" id="labelGroup1Select">Group 1</label>
+                                <select id="group1-select" class="form-control" multiple="multiple">
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-2 col-md-2">
-                        <div class="input-group-btn ">
-                            <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton">Load</button>
+                    <div class="row">
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="frompicker" id="labelFromPicker">From</label>
+                                <div class='input-group date' id='frompicker'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-4'>
+                            <div class="form-group">
+                                <label for="topicker" id="labelToPicker">To</label>
+                                <div class='input-group date' id='topicker'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div class="input-group-btn ">
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton">Load</button>
+                            </div>
+                            <div class="input-group-btn " style="display: none;">
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton">Load</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,6 +119,10 @@
                 </div>
                 <div class="panel-body" id="tagStatisticList">
                     <table id="tagStatisticTable" class="table table-bordered table-hover display" name="tagStatisticTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
+                <div class="panel-body" id="tagStatisticDetailList"  style="display: none;">
+                    <table id="tagStatisticDetailTable" class="table table-bordered table-hover display" name="tagStatisticDetailTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>
