@@ -20,6 +20,7 @@
 package org.cerberus.core.engine.scheduledtasks;
 
 import org.cerberus.core.crud.service.IParameterService;
+import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.engine.scheduler.SchedulerInit;
@@ -44,6 +45,8 @@ public class ScheduledTaskRunner {
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private SchedulerInit schedulerInit;
+    @Autowired
+    private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
 
     private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
@@ -56,8 +59,8 @@ public class ScheduledTaskRunner {
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {
-        LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
-        
+        LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget + " - " + b3TickNumber + "/" + b3TickNumberTarget);
+
         // We get the new period from parameter and trigger the Queue automatic cancellation job.
         b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 60);
         b2TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueueprocessingjob_period", "", 30);
@@ -85,7 +88,9 @@ public class ScheduledTaskRunner {
             performBatch3_SchedulerInit();
         }
 
-        LOG.debug("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
+        performBatch3_ProcessTimingBasedQueueDependencies();
+
+        LOG.debug("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget + " - " + b3TickNumber + "/" + b3TickNumberTarget);
     }
 
     private void performBatch1_CancelOldQueueEntries() {
@@ -119,6 +124,21 @@ public class ScheduledTaskRunner {
             LOG.debug("SchedulerInit Task ended.");
         } catch (Exception e) {
             LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e);
+        }
+
+    }
+
+    private void performBatch3_ProcessTimingBasedQueueDependencies() {
+        try {
+            LOG.debug("Queue dep timing Task triggered.");
+            int nbReleased = testCaseExecutionQueueDepService.manageDependenciesCheckTimingWaiting();
+            if (nbReleased > 0) {
+                LOG.info(nbReleased + " Queue entry(ies) has(have) been released due to TIMING dependencies. We trigger now the processing of the queue entry.");
+                executionThreadPoolService.executeNextInQueue(false);
+            }
+            LOG.debug("Queue dep timing Task ended.");
+        } catch (Exception e) {
+            LOG.error("Queue dep timing Task from scheduletaskrunner failed : " + e);
         }
 
     }

@@ -262,7 +262,7 @@
                                             <label for="tagDetailCI">CI Result :</label>
                                             <div class="marginTop10" id="tagDetailCI">
                                             </div>
-                                    <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: block;">
+                                    <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
                                         <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                             <span class="sr-only"></span>FALSE NEGATIVE
                                         </div>

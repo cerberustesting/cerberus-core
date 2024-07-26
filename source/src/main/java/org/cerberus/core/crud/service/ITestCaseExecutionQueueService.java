@@ -188,8 +188,9 @@ public interface ITestCaseExecutionQueueService {
     /**
      * @param exeQueueId
      * @param tag
+     * @return 
      */
-    void checkAndReleaseQueuedEntry(long exeQueueId, String tag);
+    boolean checkAndReleaseQueuedEntry(long exeQueueId, String tag);
 
     /**
      * @param object the {@link org.cerberus.core.crud.entity.AppService} to Update

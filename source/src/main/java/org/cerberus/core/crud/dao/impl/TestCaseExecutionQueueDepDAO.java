@@ -183,7 +183,9 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tcd.Type = 'TCEXEEND'  and (tce.controlstatus is null or tce.controlstatus != 'OK');";
+        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd "
+                + "LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id "
+                + "WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tcd.Type = 'TCEXEEND'  and (tce.controlstatus is null or tce.controlstatus != 'OK');";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -219,6 +221,50 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             ans.setResultMessage(msg);
         }
         return ans;
+    }
+
+    @Override
+    public AnswerList<TestCaseExecutionQueueDep> getWaitingDepReadytoRelease() {
+        AnswerList<TestCaseExecutionQueueDep> ans = new AnswerList<>();
+        MessageEvent msg = null;
+        final String query = "SELECT * from testcaseexecutionqueuedep where Type = 'TIMING' and Status ='WAITING' and DepDate is not NULL and NOW()>=DepDate ;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            ResultSet rs = preStat.executeQuery();
+            try {
+                List<TestCaseExecutionQueueDep> al = new ArrayList<>();
+                while (rs.next()) {
+                    al.add(loadFromResultSet(rs));
+                }
+                ans.setDataList(al);
+                ans.setTotalRows(al.size());
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                        .resolveDescription("OPERATION", "READ_BY_APP");
+            } catch (Exception e) {
+                LOG.warn("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                        e.toString());
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to read by app: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+
     }
 
     @Override
@@ -547,7 +593,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         MessageEvent msg = null;
 
         String query = "INSERT INTO testcaseexecutionqueuedep (ExeQueueId, Environment, Country, Tag, `Type` , DepDate, Status, Comment) "
-                + " SELECT ExeQueueId, Environment, Country , Tag , 'TIMING', DATE_ADD(NOW(), INTERVAL DepTCDelay MINUTE) , 'RELEASED', concat('Extra ', DepTCDelay, ' min delay following end of execution ', ?, ' of ', DepTest, '-', DepTestCase) "
+                + " SELECT ExeQueueId, Environment, Country , Tag , 'TIMING', DATE_ADD(NOW(), INTERVAL DepTCDelay MINUTE) , 'WAITING', concat('Extra ', DepTCDelay, ' min delay following end of execution ', ?, ' of ', DepTest, '-', DepTestCase) "
                 + "  FROM testcaseexecutionqueuedep "
                 + "  WHERE `Status` = 'WAITING' and `Type` = 'TCEXEEND' and `DepTest` = ? and `DepTestCase` = ? "
                 + "   and `Tag` = ? and `Environment` = ? and `Country` = ? and DepTCDelay > 0;";
@@ -603,6 +649,38 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             preStat.setString(i++, tag);
             preStat.setString(i++, env);
             preStat.setString(i++, Country);
+            Integer resnb = preStat.executeUpdate();
+            ans.setItem(resnb);
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.error("Unable to update object: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public AnswerItem<Integer> updateStatusToRelease(long id) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+        String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , ReleaseDate = NOW(), DateModif = NOW() "
+                + " WHERE `Status` = 'WAITING' and id = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            int i = 1;
+            preStat.setString(i++, "Timing was reached.");
+            preStat.setLong(i++, id);
             Integer resnb = preStat.executeUpdate();
             ans.setItem(resnb);
 

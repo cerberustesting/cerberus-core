@@ -74,6 +74,11 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
+    public AnswerItem<Integer> updateStatusToRelease(long id) {
+        return testCaseExecutionQueueDepDAO.updateStatusToRelease(id);
+    }
+
+    @Override
     public AnswerList<Long> readExeQueueIdByExeId(long exeId) {
         return testCaseExecutionQueueDepDAO.readExeQueueIdByExeId(exeId);
     }
@@ -106,6 +111,11 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     @Override
     public AnswerItem<Integer> readNbReleasedWithNOKByExeQueueId(long exeQueueId) {
         return testCaseExecutionQueueDepDAO.readNbReleasedWithNOKByExeQueueId(exeQueueId);
+    }
+
+    @Override
+    public AnswerList<TestCaseExecutionQueueDep> getWaitingDepReadytoRelease() {
+        return testCaseExecutionQueueDepDAO.getWaitingDepReadytoRelease();
     }
 
     @Override
@@ -167,6 +177,42 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
         } catch (CerberusException ex) {
             LOG.error("Exception when release dep from Queue Error.", ex);
         }
+    }
+
+    @Override
+    public int manageDependenciesCheckTimingWaiting() {
+        LOG.debug("Release dependencies based on TIMING");
+        int nbReleased = 0;
+
+        try {
+            //, String environment, String country, String tag, String test, String testCase
+            // Get list of queuedep to release.
+            AnswerList<TestCaseExecutionQueueDep> depList = getWaitingDepReadytoRelease();
+            if (depList.getTotalRows() > 0) {
+                LOG.info(depList.getTotalRows() + " WAITING dependency(ies) is(are) now ready to be released.");
+
+                List<TestCaseExecutionQueueDep> listToProcess = new ArrayList<>();
+                listToProcess = depList.getDataList();
+
+                // Release them by update the WAITING queuedep to RELEASED
+                for (TestCaseExecutionQueueDep itemToProces : listToProcess) {
+                    LOG.debug("Process Queue Entry dep id : " + itemToProces.getId());
+                    updateStatusToRelease(itemToProces.getId());
+                }
+
+                // Loop on queue id and checkAndReleaseQueuedEntry on the tag
+                for (TestCaseExecutionQueueDep itemToProces : listToProcess) {
+                    if (executionQueueService.checkAndReleaseQueuedEntry(itemToProces.getExeQueueId(), itemToProces.getTag())) {
+                        nbReleased++;
+                    }
+                }
+
+            }
+
+        } catch (Exception ex) {
+            LOG.error("Exception when release TIMING dependencies.", ex);
+        }
+        return nbReleased;
     }
 
     @Override

@@ -82,10 +82,24 @@ To modify only this use step, you have to click on the padlock icon but it will 
 
 image:testcaseusestep.png[testcaseusestep]
 
-NOTE: You have the possibility to switch the position of your steps by drag and drop the 3 dots.
+
+[TIP]
+====
+You have the possibility to switch the position of your steps by drag and drop the 3 dots.
 
 image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcaseusestep]
+====
 
-NOTE: It is possible to loop over a step using the following configuration.
+
+
+[TIP]
+====
+It is possible to *loop* over a step using the following configuration.
+
+%system.CURRENTSTEP_INDEX% will contain the current index position.
+Condition will become false after the 4th iteration.
+
 image:testlooptep.png[TestCaseLoopStep]
+====
+
 

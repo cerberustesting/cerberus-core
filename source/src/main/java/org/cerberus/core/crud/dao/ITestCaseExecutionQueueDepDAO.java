@@ -68,6 +68,12 @@ public interface ITestCaseExecutionQueueDepDAO {
 
     /**
      *
+     * @return
+     */
+    AnswerList<TestCaseExecutionQueueDep> getWaitingDepReadytoRelease();
+
+    /**
+     *
      * @param exeId
      * @return
      */
@@ -130,7 +136,7 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      */
     public AnswerItem<Integer> insertNewTimingDep(String env, String Country, String tag, String test, String testCase, long exeID);
-    
+
     /**
      *
      * @param env
@@ -145,6 +151,13 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      */
     AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    AnswerItem<Integer> updateStatusToRelease(long id);
 
     /**
      *

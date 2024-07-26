@@ -222,7 +222,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public void checkAndReleaseQueuedEntry(long exeQueueId, String tag) {
+    public boolean checkAndReleaseQueuedEntry(long exeQueueId, String tag) {
+        boolean result = false;
         LOG.debug("Checking if we can move QUWITHDEP Queue entry to QUEUED : " + exeQueueId);
         AnswerItem ansNbWaiting = testCaseExecutionQueueDepService.readNbWaitingByExeQueueId(exeQueueId);
         int nbwaiting = (int) ansNbWaiting.getItem();
@@ -234,6 +235,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
             if (nbReleasedNOK <= 0) {
                 // If all execution of RELEASED dep are OK, we update ExeQueue status from QUWITHDEP to QUEUED in order to allow queue entry to be executed.
                 updateToQueuedFromQuWithDep(exeQueueId, "All Dependencies RELEASED.");
+                result = true;
             } else {
                 try {
                     // All dependencies of exeQueueId has been free but some with error that force to move the queue entry in ERROR status
@@ -248,6 +250,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 }
             }
         }
+        return result;
     }
 
     @Override

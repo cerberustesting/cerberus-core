@@ -618,7 +618,13 @@ function appendDepRow(dep, targetTableBody) {
     var releaseDateInput = $("<input readonly>").addClass("form-control input-sm").val(getDate(dep.releaseDate));
     var commentInput = $("<input readonly>").addClass("form-control input-sm").val(dep.comment);
     var exeButton = $("<a>").append($("<button>").addClass("btn btn-sm").append($("<span>").addClass("glyphicon glyphicon-new-window")));
-    exeButton.attr("href", "TestCaseExecution.jsp?executionId=" + dep.exeId);
+    if (dep.exeId > 0) {
+        exeButton.attr("href", "./TestCaseExecution.jsp?executionId=" + dep.exeId);
+    } else {
+        exeButton.attr("disable", true);
+    }
+//    exeButton.attr("onclick", "window.location = \'./TestCaseExecution.jsp?executionId=" + dep.exeId + "\';");
+    //onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\"
     var exeIdInput = $("<div>").addClass("input-group")
             .append($("<input readonly>").addClass("form-control input-sm").val(dep.exeId))
             .append($("<span>").addClass("input-group-btn").append(exeButton));

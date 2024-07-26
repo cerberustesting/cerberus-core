@@ -49,3 +49,8 @@
 | verifyUrl | *[green]#OK#* if the *[red]#URL#* of the current page equal to the *[red]#URL#* indicated . |
 | verifyXmlTreeStructure | TBD |
 |===
+
+[TIP]
+====
+In order to define your regex, you can use the following online tester:  https://www.regexplanet.com/advanced/java/index.html
+====

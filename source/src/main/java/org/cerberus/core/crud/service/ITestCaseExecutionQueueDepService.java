@@ -75,6 +75,13 @@ public interface ITestCaseExecutionQueueDepService {
 
     /**
      *
+     * @param id
+     * @return
+     */
+    AnswerItem<Integer> updateStatusToRelease(long id);
+
+    /**
+     *
      * @param exeId
      * @return
      */
@@ -118,6 +125,12 @@ public interface ITestCaseExecutionQueueDepService {
 
     /**
      *
+     * @return
+     */
+    AnswerList<TestCaseExecutionQueueDep> getWaitingDepReadytoRelease();
+
+    /**
+     *
      * @param env
      * @param Country
      * @param tag
@@ -129,7 +142,9 @@ public interface ITestCaseExecutionQueueDepService {
 
     /**
      *
-     * That method manage the dependency after the end of an execution.
+     * That method manage the dependency after the end of an execution. It will
+     * release all associated dependencies and check the associated queue
+     * execution if they can also be released to QUEUED status
      *
      * @param tCExecution
      */
@@ -142,6 +157,17 @@ public interface ITestCaseExecutionQueueDepService {
      * @param idQueue
      */
     void manageDependenciesEndOfQueueExecution(long idQueue);
+
+    /**
+     * That method manage the dependency that are based on TIMINGS. It will
+     * release all associated dependencies and check the associated queue
+     * execution if they can also be released to QUEUED status. It should be
+     * triggered periodically
+     *
+     * @return the number of queue execution that has been released and ready to
+     * be triggered.
+     */
+    int manageDependenciesCheckTimingWaiting();
 
     /**
      *
