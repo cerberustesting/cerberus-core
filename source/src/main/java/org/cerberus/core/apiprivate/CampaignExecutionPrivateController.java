@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.cerberus.core.crud.service.ITagService;
@@ -58,11 +57,11 @@ public class CampaignExecutionPrivateController {
     @GetMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTagStatistics(
             HttpServletRequest request,
-            @RequestParam(name = "systemsFilter", required = false) String[] systemsParam,
-            @RequestParam(name = "applicationsFilter", required = false) String[] applicationsParam,
-            @RequestParam(name = "group1Filter", required = false) String[] group1Param,
-            @RequestParam(name = "from", required = false) String fromParam,
-            @RequestParam(name = "to", required = false) String toParam
+            @RequestParam(name = "systems") String[] systemsParam,
+            @RequestParam(name = "applications") String[] applicationsParam,
+            @RequestParam(name = "group1") String[] group1Param,
+            @RequestParam(name = "from") String fromParam,
+            @RequestParam(name = "to") String toParam
     ) {
         //Retrieve and format URL parameter
         fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
@@ -79,10 +78,14 @@ public class CampaignExecutionPrivateController {
 
         try {
             systemsAllowed = tagStatisticService.getSystemsAllowedForUser(request.getUserPrincipal().getName());
-            applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
-        } catch (CerberusException e) {
-            throw new BadRequestException();
+        } catch (CerberusException exception) {
+            LOG.error("Unable to get allowed systems: ", exception);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unable to get allowed systems: " + exception.getMessage());
         }
+
+        applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
 
         if (systems.isEmpty() && applications.isEmpty()) {
             tagStatistics = new ArrayList<>();
@@ -94,8 +97,8 @@ public class CampaignExecutionPrivateController {
         }
 
         try {
-            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapAggregateByTag(tagStatistics);
-            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregateByCampaign(aggregateByTag);
+            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
+            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN");
             List<JSONObject> aggregateListByCampaign = new ArrayList<>();
             aggregateByCampaign.forEach((key, value) -> {
                 if (!Objects.equals(key, "globalGroup1List")) {
@@ -106,11 +109,58 @@ public class CampaignExecutionPrivateController {
             response.put("campaignStatistics", aggregateListByCampaign);
             return ResponseEntity.ok(response.toString());
         } catch (JSONException ex) {
-            LOG.error("Internal server error: ", ex);
+            LOG.error("Error when JSON processing: ", ex);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Internal server error: " + ex.getMessage());
+                    .body("Error when JSON processing: " + ex.getMessage());
         }
+    }
+
+    @GetMapping(path = "/statistics/{campaign}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getCampaignStatisticsByCountryEnv(
+            HttpServletRequest request,
+            @PathVariable("campaign") String campaign,
+            @RequestParam(name = "countries", required = false) String[] countriesParam,
+            @RequestParam(name = "environments", required = false) String[] environmentsParam,
+            @RequestParam(name = "from") String fromParam,
+            @RequestParam(name = "to") String toParam
+    ) throws JSONException {
+        fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
+        toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
+        List<String> countries = ParameterParserUtil.parseListParamAndDecode(countriesParam, new ArrayList<>(), "UTF8");
+        List<String> environments = ParameterParserUtil.parseListParamAndDecode(environmentsParam, new ArrayList<>(), "UTF8");
+        String fromDateFormatted = tagStatisticService.formatDateForDb(fromParam);
+        String toDateFormatted = tagStatisticService.formatDateForDb(toParam);
+        List<TagStatistic> tagStatistics;
+        JSONObject response = new JSONObject();
+
+        tagStatistics = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted).getDataList();
+
+        boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
+        if (!userHasRightSystems) {
+            response.put("message", "User has no access to required systems.");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(response.toString());
+        }
+
+        Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
+        Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
+        List<JSONObject> aggregateListByCampaign = new ArrayList<>();
+        countries.clear();
+        environments.clear();
+        aggregateByCampaign.forEach((key, value) -> {
+            aggregateListByCampaign.add(value);
+            String environment = key.split("_")[0];
+            String country = key.split("_")[1];
+            if (!environments.contains(environment)) environments.add(environment);
+            if (!countries.contains(country)) countries.add(country);
+        });
+
+        response.put("campaignStatistics", aggregateListByCampaign);
+        response.put("environments", environments);
+        response.put("countries", countries);
+        return ResponseEntity.ok(response.toString());
     }
 
     @PostMapping("{executionId}/declareFalseNegative")

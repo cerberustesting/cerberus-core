@@ -56,10 +56,11 @@ public interface ITagStatisticService {
      */
     void populateTagStatisticsMap(Map<String, TagStatistic> tagStatistics, List<TestCaseExecution> executions, Tag tag);
 
-    Map<String, Map<String, JSONObject>> createMapAggregateByTag(List<TagStatistic> tagStatistics) throws JSONException;
-    Map<String, JSONObject> createMapAggregateByCampaign(Map<String, Map<String, JSONObject>> aggregateByTag) throws JSONException;
+    AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environment, String minDate, String maxDate);
+    Map<String, Map<String, JSONObject>> createMapGroupedByTag(List<TagStatistic> tagStatistics, String aggregateType) throws JSONException;
+    Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType) throws JSONException;
     List<String> getSystemsAllowedForUser(String user) throws CerberusException;
     List<String> getApplicationsSystems(List<String> systems);
     String formatDateForDb(String date);
-
+    boolean userHasRightSystems(String user, List<TagStatistic> tagStatistics);
 }

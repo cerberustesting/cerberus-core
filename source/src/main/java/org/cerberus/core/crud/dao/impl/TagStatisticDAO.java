@@ -220,6 +220,83 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         return response;
     }
 
+    @Override
+    public AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environments, String minDate, String maxDate) {
+        AnswerList<TagStatistic> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TagStatistic> tagStatistics = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT `Id`, `Tag`, `Country`, `Environment`, `Campaign`, `CampaignGroup1`, `SystemList`, `ApplicationList`, `DateStartExe`, `DateEndExe`, `NbExe`, `NbExeUsefull`, `NbOK`, `NbKO`, `NbFA`, `NbNA`, `NbNE`, `NbPE`, `NbWE`, `NbPE`, `NbQU`, `NbQE`, `NbCA` from tagstatistic WHERE `Campaign` = ? AND `DateStartExe` >= ? AND `DateEndExe` <= ?");
+
+        if (!countries.isEmpty()) {
+            query.append(" AND ").append(SqlUtil.generateInClause("`Country`", countries));
+        }
+
+        if (!environments.isEmpty()) {
+            query.append(" AND ").append(SqlUtil.generateInClause("`Environment`", environments));
+        }
+
+        try (Connection connection = this.databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString());
+             Statement stm = connection.createStatement()) {
+
+            int i = 1;
+
+            preStat.setString(i++, campaign);
+            preStat.setString(i++, minDate);
+            preStat.setString(i++, maxDate);
+
+            if (!countries.isEmpty()) {
+                for (String country : countries) {
+                    preStat.setString(i++, country);
+                }
+            }
+
+            if (!environments.isEmpty()) {
+                for (String environment : environments) {
+                    preStat.setString(i++, environment);
+                }
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                 ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()")) {
+
+                LOG.info("Execute SQL Statement: {} ", preStat);
+
+                while (resultSet.next()) {
+                    tagStatistics.add(this.loadFromResultSet(resultSet));
+                }
+
+                int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (tagStatistics.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                } else if (tagStatistics.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                }
+                response = new AnswerList<>(tagStatistics, nrTotalRows);
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        response.setResultMessage(msg);
+        response.setDataList(tagStatistics);
+        return response;
+    }
+
     /**
      * Get a TagStatistics list by tag from database
      * @param tag

@@ -21,6 +21,7 @@ package org.cerberus.core.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tika.sax.Link;
 import org.cerberus.core.crud.dao.ITagStatisticDAO;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.service.IApplicationService;
@@ -36,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -232,63 +235,64 @@ public class TagStatisticService implements ITagStatisticService {
         return tagStatisticDAO.readByCriteria(systems, applications, group1List, minDate, maxDate);
     }
 
-    public Map<String, Map<String, JSONObject>> createMapAggregateByTag(List<TagStatistic> tagStatistics) throws JSONException {
+    @Override
+    public AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environment, String minDate, String maxDate) {
+        return tagStatisticDAO.readByCriteria(campaign, countries, environment, minDate, maxDate);
+    }
+
+    public Map<String, Map<String, JSONObject>> createMapGroupedByTag(List<TagStatistic> tagStatistics, String aggregateType) throws JSONException {
         Map<String, Map<String, JSONObject>> aggregateByTag = new HashMap<>();
         for (TagStatistic tagStatistic : tagStatistics) {
             int nbExeUsefull = 0;
             int nbExe = 0;
             int nbOK = 0;
             long duration = 0;
-            String campaign = tagStatistic.getCampaign();
-            String tag = tagStatistic.getTag();
-            Timestamp minTagDateStartExe = new Timestamp(0);
-            Timestamp maxTagDateEndExe = new Timestamp(0);
             long msMinTagDateStart = 0;
             long msMaxTagDateEnd = 0;
-            JSONArray systemsInTagMap;
-            JSONArray applicationsInTagMap;
 
-            if (!aggregateByTag.containsKey(campaign)) {
-                aggregateByTag.put(campaign, new HashMap<>());
+            String key = setKeyAccordingToAggregateType(aggregateType, tagStatistic);
+            String campaign = tagStatistic.getCampaign();
+            String tag = tagStatistic.getTag();
+            String group1 = tagStatistic.getCampaignGroup1();
+
+            Timestamp minTagDateStartExe = new Timestamp(0);
+            Timestamp maxTagDateEndExe = new Timestamp(0);
+
+            JSONArray systemsInTagMap = new JSONArray();
+            JSONArray applicationsInTagMap = new JSONArray();
+
+            JSONObject statistics;
+
+            key = setKeyAccordingToAggregateType(aggregateType, tagStatistic);
+
+            if (!aggregateByTag.containsKey(key)) {
+                aggregateByTag.put(key, new HashMap<>());
             }
 
-            if (!aggregateByTag.get(campaign).containsKey(tag)) {
-                aggregateByTag.get(campaign).put(tag, new JSONObject());
-                aggregateByTag.get(campaign).get(tag)
-                        .put("campaign", tagStatistic.getCampaign())
-                        .put("campaignGroup1", tagStatistic.getCampaignGroup1())
-                        .put("systemList", new JSONArray().toString())
-                        .put("applicationList", new JSONArray().toString())
-                        .put("maxTagDateEnd", minTagDateStartExe)
-                        .put("minTagDateStart", maxTagDateEndExe)
-                        .put("nbExeUsefull", 0)
-                        .put("nbExe", 0)
-                        .put("nbOK", 0)
-                        .put("duration", 0);
+            if (!aggregateByTag.get(key).containsKey(tag)) {
+                statistics = createJsonTagStat(systemsInTagMap, applicationsInTagMap, group1, minTagDateStartExe, maxTagDateEndExe, duration, nbExeUsefull, nbExe, nbOK);
+                aggregateByTag.get(key).put(tag, statistics);
             }
 
-            JSONObject mapTag = aggregateByTag.get(campaign).get(tag);
-
-            systemsInTagMap = JSONUtil.jsonArrayAddUniqueElement(
+            JSONUtil.jsonArrayAddUniqueElement(
                     new JSONArray(tagStatistic.getSystemList()),
-                    new JSONArray(mapTag.getString("systemList"))
+                    systemsInTagMap
             );
 
-            applicationsInTagMap = JSONUtil.jsonArrayAddUniqueElement(
+            JSONUtil.jsonArrayAddUniqueElement(
                     new JSONArray(tagStatistic.getApplicationList()),
-                    new JSONArray(mapTag.getString("applicationList"))
+                    applicationsInTagMap
             );
 
-            minTagDateStartExe = Timestamp.valueOf(mapTag.getString("minTagDateStart"));
             if (minTagDateStartExe.equals(new Timestamp(0)) || tagStatistic.getDateStartExe().getTime() < minTagDateStartExe.getTime()) {
                 minTagDateStartExe = tagStatistic.getDateStartExe();
             }
 
-            maxTagDateEndExe = Timestamp.valueOf(mapTag.getString("maxTagDateEnd"));
             if (maxTagDateEndExe.equals(new Timestamp(0)) || tagStatistic.getDateEndExe().getTime() > maxTagDateEndExe.getTime()) {
                 maxTagDateEndExe = tagStatistic.getDateEndExe();
             }
 
+            JSONObject mapTag = aggregateByTag.get(key).get(tag);
             msMinTagDateStart = minTagDateStartExe.getTime();
             msMaxTagDateEnd = maxTagDateEndExe.getTime();
             duration = (msMaxTagDateEnd - msMinTagDateStart) / 1000;
@@ -296,23 +300,17 @@ public class TagStatisticService implements ITagStatisticService {
             nbExe += tagStatistic.getNbExe() + mapTag.getInt("nbExe");
             nbOK += tagStatistic.getNbOK() + mapTag.getInt("nbOK");
 
-            mapTag.put("systemList", systemsInTagMap.toString())
-                    .put("applicationList", applicationsInTagMap.toString())
-                    .put("minTagDateStart", minTagDateStartExe)
-                    .put("maxTagDateEnd", maxTagDateEndExe)
-                    .put("duration", duration)
-                    .put("nbExeUsefull", nbExeUsefull)
-                    .put("nbExe", nbExe)
-                    .put("nbOK", nbOK);
+            statistics = createJsonTagStat(systemsInTagMap, applicationsInTagMap, group1, minTagDateStartExe, maxTagDateEndExe, duration, nbExeUsefull, nbExe, nbOK);
+            aggregateByTag.get(key).put(tag, statistics);
         }
         return aggregateByTag;
     }
 
-    public Map<String, JSONObject> createMapAggregateByCampaign(Map<String, Map<String, JSONObject>> aggregateByTag) throws JSONException {
+    public Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType) throws JSONException {
         Map<String, JSONObject> aggregateByCampaign = new HashMap<>();
         JSONArray globalGroup1List = new JSONArray();
         for (Map.Entry<String, Map<String, JSONObject>> aggregateByTagEntry : aggregateByTag.entrySet()) {
-            String campaign = aggregateByTagEntry.getKey();
+            String key = aggregateByTagEntry.getKey();
             double totalDuration = 0;
             String minDateStart = "";
             String maxDateEnd = "";
@@ -323,38 +321,16 @@ public class TagStatisticService implements ITagStatisticService {
             JSONArray systemsByCampaign = new JSONArray();
             JSONArray applicationsByCampaign = new JSONArray();
 
-            //If campaign is not present in the map we create a new entry
-            aggregateByCampaign.computeIfAbsent(campaign, key -> {
-                JSONObject entry = new JSONObject(new LinkedHashMap<>());
-                try {
-                    entry.put("campaign", campaign)
-                            .put("systemList", new JSONArray().toString())
-                            .put("applicationList", new JSONArray().toString());
-                } catch (JSONException exception) {
-                    LOG.error(exception);
-                }
-                return entry;
-            });
-
-            JSONObject campaignStatistic = aggregateByCampaign.get(campaign);
-
             for (JSONObject mapTagEntry : aggregateByTagEntry.getValue().values()) {
 
-                campaignGroup1 = mapTagEntry.getString("campaignGroup1");
-
-                systemsByCampaign = JSONUtil.jsonArrayAddUniqueElement(
+                JSONUtil.jsonArrayAddUniqueElement(
                         new JSONArray(mapTagEntry.getString("systemList")),
-                        new JSONArray(campaignStatistic.getString("systemList"))
+                        systemsByCampaign
                 );
-
-                applicationsByCampaign = JSONUtil.jsonArrayAddUniqueElement(
+                JSONUtil.jsonArrayAddUniqueElement(
                         new JSONArray(mapTagEntry.getString("applicationList")),
-                        new JSONArray(campaignStatistic.getString("applicationList"))
+                        applicationsByCampaign
                 );
-
-                if (StringUtil.isNotEmpty(campaignGroup1)) {
-                    updateGlobalGroup1List(globalGroup1List, campaignGroup1);
-                }
 
                 minDateStart = updateMinCampaignDateStart(minDateStart, mapTagEntry);
                 maxDateEnd = updateMaxCampaignDateEnd(maxDateEnd, mapTagEntry);
@@ -362,21 +338,36 @@ public class TagStatisticService implements ITagStatisticService {
                 sumPercReliability += ((double) mapTagEntry.getInt("nbExeUsefull") / mapTagEntry.getInt("nbExe"));
                 sumNumberExeUsefull += mapTagEntry.getInt("nbExeUsefull");
                 totalDuration += mapTagEntry.getLong("duration");
+
+                if (aggregateType.equals("CAMPAIGN")) {
+                    campaignGroup1 = mapTagEntry.getString("campaignGroup1");
+                    if (StringUtil.isNotEmpty(campaignGroup1)) {
+                        updateGlobalGroup1List(globalGroup1List, campaignGroup1);
+                    }
+                }
             }
 
-            campaignStatistic
-                    .put("systemList", systemsByCampaign)
-                    .put("systemList", systemsByCampaign)
-                    .put("applicationList", applicationsByCampaign)
-                    .put("campaignGroup1", campaignGroup1)
-                    .put("avgDuration", totalDuration / aggregateByTagEntry.getValue().size())
-                    .put("minDateStart", minDateStart)
-                    .put("maxDateEnd", maxDateEnd)
-                    .put("avgOK", (sumPercOK * 100.0) / aggregateByTagEntry.getValue().size())
-                    .put("avgReliability", (sumPercReliability * 100) / aggregateByTagEntry.getValue().size())
-                    .put("avgNbExeUsefull", sumNumberExeUsefull / aggregateByTagEntry.getValue().size());
+            JSONObject statistics;
+            double avgDuration = totalDuration / aggregateByTagEntry.getValue().size();
+            double avgOK = (sumPercOK * 100.0) / aggregateByTagEntry.getValue().size();
+            double avgReliability = (sumPercReliability * 100) / aggregateByTagEntry.getValue().size();
+            int avgNbExeUsefull = sumNumberExeUsefull / aggregateByTagEntry.getValue().size();
+
+            if (aggregateType.equals("ENV_COUNTRY")) {
+                String environment = key.split("_")[0];
+                String country = key.split("_")[1];
+                statistics = createJsonCampaignStatByEnvCountry(systemsByCampaign, applicationsByCampaign, environment, country, avgDuration, minDateStart, maxDateEnd, avgOK, avgReliability, avgNbExeUsefull);
+            } else {
+                statistics = createJsonCampaignStat(key, systemsByCampaign, applicationsByCampaign, campaignGroup1, avgDuration, minDateStart, maxDateEnd, avgOK, avgReliability, avgNbExeUsefull);
+            }
+
+            aggregateByCampaign.put(key, statistics);
         }
-        aggregateByCampaign.put("globalGroup1List", new JSONObject().put("array", globalGroup1List));
+
+        if (aggregateType.equals("CAMPAIGN")) {
+            aggregateByCampaign.put("globalGroup1List", new JSONObject().put("array", globalGroup1List));
+        }
+
         return aggregateByCampaign;
     }
 
@@ -418,11 +409,87 @@ public class TagStatisticService implements ITagStatisticService {
         return maxDateEnd;
     }
 
+    public boolean userHasRightSystems(String user, List<TagStatistic> tagStatistics) {
+        List<String> systemsAllowedforUser = null;
+        try {
+            systemsAllowedforUser = getSystemsAllowedForUser(user);
+        } catch (CerberusException exception) {
+            LOG.error("Unable to get systems allowed for user: ", exception);
+        }
+        for (TagStatistic tagStatistic : tagStatistics) {
+            List<String> systemList =Arrays.stream(
+                            tagStatistic.getSystemList()
+                                    .replaceAll("\"", "")
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .split(","))
+                    .collect(Collectors.toList());
+            if (!new HashSet<>(systemsAllowedforUser).containsAll(systemList)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String updateMinCampaignDateStart(String minDateStart, JSONObject mapTagEntry) throws JSONException {
         String currentStartDate = mapTagEntry.getString("minTagDateStart");
         if (StringUtil.isEmpty(minDateStart) || Timestamp.valueOf(currentStartDate).getTime() < Timestamp.valueOf(minDateStart).getTime()) {
             return currentStartDate;
         }
         return minDateStart;
+    }
+
+    private JSONObject createJsonTagStat(JSONArray systems, JSONArray applications, String group1, Timestamp minDateStart, Timestamp maxDateEnd, long duration, int nbExeUsefull, int nbExe, int nbOK) throws JSONException {
+        return new JSONObject(new LinkedHashMap<>())
+                .put("systemList", systems)
+                .put("applicationList", applications)
+                .put("campaignGroup1", group1)
+                .put("minTagDateStart", minDateStart)
+                .put("maxTagDateEnd", maxDateEnd)
+                .put("duration", duration)
+                .put("nbExeUsefull", nbExeUsefull)
+                .put("nbExe", nbExe)
+                .put("nbOK",nbOK);
+    }
+
+    private JSONObject createJsonCampaignStatByEnvCountry(JSONArray systems, JSONArray applications, String environment, String country, double avgDuration, String minDateStart, String maxDateEnd, double avgOK, double avgReliability, int avgNbExeUsefull) throws JSONException {
+        return new JSONObject(new LinkedHashMap<>())
+                .put("systemList", systems)
+                .put("applicationList", applications)
+                .put("environment", environment)
+                .put("country", country)
+                .put("avgDuration", avgDuration)
+                .put("minDateStart", minDateStart)
+                .put("maxDateEnd", maxDateEnd)
+                .put("avgOK", avgOK)
+                .put("avgReliability",avgReliability)
+                .put("avgNbExeUsefull", avgNbExeUsefull);
+    }
+
+    private JSONObject createJsonCampaignStat(String campaign, JSONArray systems, JSONArray applications, String group1, double avgDuration, String minDateStart, String maxDateEnd, double avgOK, double avgReliability, int avgNbExeUsefull) throws JSONException {
+        return new JSONObject(new LinkedHashMap<>())
+                .put("campaign", campaign)
+                .put("systemList", systems)
+                .put("applicationList", applications)
+                .put("campaignGroup1", group1)
+                .put("avgDuration", avgDuration)
+                .put("minDateStart", minDateStart)
+                .put("maxDateEnd", maxDateEnd)
+                .put("avgOK", avgOK)
+                .put("avgReliability",avgReliability)
+                .put("avgNbExeUsefull", avgNbExeUsefull);
+    }
+
+    private String setKeyAccordingToAggregateType(String aggregateType, TagStatistic tagStatistic) {
+        String key = "";
+        switch (aggregateType) {
+            case "CAMPAIGN":
+                key = tagStatistic.getCampaign();
+                break;
+            case "ENV_COUNTRY":
+                key = String.format("%s_%s", tagStatistic.getEnvironment(), tagStatistic.getCountry());
+                break;
+        }
+        return key;
     }
 }

@@ -54,7 +54,10 @@ public interface ITagStatisticDAO {
      * @return
      */
     Answer read(TagStatistic object);
+
     AnswerList<TagStatistic> readByCriteria(List<String> systems, List<String> applications, List<String> groups1, String minDate, String maxDate);
+
+    AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environments, String minDate, String maxDate);
 
     /**
      * Get a TagStatistics list by tag from database
