@@ -11,6 +11,7 @@
 * [ENGINE] Added CSV ignoreFirstLine boolean at datalib level.
 * [ENGINE] When callService that is attached to an application, host and contextroot of the corresponding application is used (if country env of the application does not exist on the test case application, search is also made on linked environments).
 * [ENGINE] New variable for system.dates. You can now for example do %system.DAY-13-d% that will return the day of month (d) of 13 days ago (DAY-13). (locale of country invariant is used)
+* [ENGINE] test case dependency engine now alow to define a delay between the end of an execution and the start of the next one. That allow to execute a campaign with some testcases on day 1 and release the rest of the testcases on day 2 (after some end of day treatments has been executed)
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
