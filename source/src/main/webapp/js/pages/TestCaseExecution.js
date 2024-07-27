@@ -3499,7 +3499,7 @@ function changeClickIfManual(isTheExecutionManual, container, idStep, file, even
         event.preventDefault()
         event.stopPropagation()
     } else {
-        openModalFile(null, null, "EDIT", null, file, !isTheExecutionManual)
+        openModalFile(null, null, "VIEW", null, file, !isTheExecutionManual)
     }
 }
 

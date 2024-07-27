@@ -71,6 +71,10 @@ function initModalApplication(application, mode, page) {
     displayDeployTypeList("deploytype");
     displayInvariantList("bugtrackerconnector", "BUGTRACKERCONNECTOR", false, undefined, undefined, undefined, undefined, "editApplicationModal");
 
+    $("#editApplicationModalForm #type").off("change");
+    $("#editApplicationModalForm #type").change(function () {
+        $("#editApplicationModalForm #AppLogo").attr("src", "./images/logoapp-" + $(this).val() + ".png");
+    });
 
     $("#editApplicationButton").off("click");
     $("#editApplicationButton").click(function () {
@@ -298,6 +302,7 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     formEdit.find("#description").prop("value", application["description"]);
     //formEdit.find("#sort").prop("value", obj["sort"]);
     formEdit.find("#type").prop("value", application["type"]);
+    formEdit.find("#AppLogo").attr("src", "./images/logoapp-" + application["type"] + ".png");
     formEdit.find("#system").prop("value", application["system"]);
     formEdit.find("#subsystem").prop("value", application["subsystem"]);
     formEdit.find("#poolSize").prop("value", application["poolSize"]);
