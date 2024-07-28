@@ -99,7 +99,7 @@ public class UpdateRobot extends HttpServlet {
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), null, charset);
         String version = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("version"), "", charset);
-        String active = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "Y", charset);
+        boolean isActive = ParameterParserUtil.parseBooleanParam(request.getParameter("isActive"), true);
         String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
@@ -212,7 +212,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setPlatform(platform);
                 robotData.setBrowser(browser);
                 robotData.setVersion(version);
-                robotData.setActive(active);
+                robotData.setIsActive(isActive);
                 robotData.setDescription(description);
                 robotData.setUserAgent(userAgent);
                 robotData.setScreenSize(screenSize);
@@ -260,14 +260,14 @@ public class UpdateRobot extends HttpServlet {
             boolean delete = reJson.getBoolean("toDelete");
             Integer id = reJson.getInt("ID");
             String executor = reJson.getString("executor");
-            String active = reJson.getString("active");
+            boolean isActive = reJson.getBoolean("isActive");
             Integer rank = reJson.getInt("rank");
             String host = reJson.getString("host");
             String port = reJson.getString("port");
             String host_user = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
-            String deviceLockUnlock = reJson.getBoolean("deviceLockUnlock") ? "Y" : "N";
+            boolean isDeviceLockUnlock = reJson.getBoolean("isDeviceLockUnlock");
             String executorProxyHost = "";
             if (reJson.has("executorProxyHost") && !StringUtil.isEmpty(reJson.getString("executorProxyHost"))) {
                 executorProxyHost = reJson.getString("executorProxyHost");
@@ -305,7 +305,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, deviceLockUnlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }

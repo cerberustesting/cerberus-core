@@ -6441,3 +6441,22 @@ ALTER TABLE `tagstatistic` ADD CONSTRAINT `FK_tagstatistic_02` FOREIGN KEY (`Tag
 ALTER TABLE tag ADD FalseNegative BOOLEAN DEFAULT false NULL AFTER CIResult;
 ALTER TABLE testcaseexecution ADD FalseNegative BOOLEAN DEFAULT false NULL AFTER ControlStatus;
 
+-- 1814-1817
+ALTER TABLE robot CHANGE COLUMN `active` `IsActive` VARCHAR(45);
+UPDATE robot SET `IsActive` = 1 WHERE `IsActive` = 'Y';
+UPDATE robot SET `IsActive` = 0 WHERE `IsActive` != '1';
+ALTER TABLE robot MODIFY `IsActive` BOOLEAN DEFAULT 1;
+
+-- 1818-1821
+ALTER TABLE robotexecutor CHANGE COLUMN `active` `IsActive` VARCHAR(45);
+UPDATE robotexecutor SET `IsActive` = 1 WHERE `IsActive` = 'Y';
+UPDATE robotexecutor SET `IsActive` = 0 WHERE `IsActive` != '1';
+ALTER TABLE robotexecutor MODIFY `IsActive` BOOLEAN DEFAULT 1;
+
+-- 1822-1825
+ALTER TABLE robotexecutor CHANGE COLUMN `deviceLockUnlock` `IsDeviceLockUnlock` VARCHAR(45);
+UPDATE robotexecutor SET `IsDeviceLockUnlock` = 1 WHERE `IsDeviceLockUnlock` = 'Y';
+UPDATE robotexecutor SET `IsDeviceLockUnlock` = 0 WHERE `IsDeviceLockUnlock` != '1';
+ALTER TABLE robotexecutor MODIFY `IsDeviceLockUnlock` BOOLEAN DEFAULT 0;
+
+

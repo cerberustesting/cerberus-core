@@ -142,7 +142,7 @@ public class RunTestCase extends HttpServlet {
             String version = "";
             String platform = "";
             String robot = "";
-            String active = "";
+            boolean isActive = true;
             String timeout = "";
             String userAgent = "";
             String screenSize = "";
@@ -268,7 +268,7 @@ public class RunTestCase extends HttpServlet {
                     }
                     version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
                     platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-                    active = robObj.getActive();
+                    isActive = robObj.isActive();
                     userAgent = robObj.getUserAgent();
                     screenSize = robObj.getScreenSize();
                 } catch (CerberusException ex) {
@@ -279,7 +279,7 @@ public class RunTestCase extends HttpServlet {
                 robotDecli = browser;
             }
             // We cannot execute a testcase on a desactivated Robot.
-            if (active.equals("N")) {
+            if (!isActive) {
                 errorMessage += "Error - Robot is not Active. ";
                 error = true;
             }

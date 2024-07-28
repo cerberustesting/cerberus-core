@@ -42,7 +42,7 @@ public class Robot {
     private String platform;
     private String browser;
     private String version;
-    private String active;
+    private boolean isActive;
     private String userAgent;
     private String screenSize;
     private String profileFolder;
@@ -186,12 +186,12 @@ public class Robot {
         this.robot = robot;
     }
 
-    public String getActive() {
-        return active;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setActive(String active) {
-        this.active = active;
+    public void setIsActive(boolean active) {
+        this.isActive = active;
     }
 
     public String getDescription() {
@@ -252,7 +252,7 @@ public class Robot {
     public JSONObject toJson(boolean withChilds, boolean secured) {
         JSONObject result = new JSONObject();
         try {
-            result.put("active", this.getActive());
+            result.put("isActive", this.isActive());
             result.put("description", this.getDescription());
             result.put("userAgent", this.getUserAgent());
             result.put("robotID", this.getRobotID());

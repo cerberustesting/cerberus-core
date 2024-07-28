@@ -143,7 +143,6 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (rbe.`robot` like ?");
             searchSQL.append(" or rbe.`executor` like ?");
-            searchSQL.append(" or rbe.`active` like ?");
             searchSQL.append(" or rbe.`rank` like ?");
             searchSQL.append(" or rbe.`host` like ?");
             searchSQL.append(" or rbe.`port` like ?");
@@ -197,7 +196,6 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
             int i = 1;
             if (!StringUtil.isEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -270,7 +268,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     public Answer create(RobotExecutor object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `devicelockunlock`, `executorextensionhost`, `executorextensionport`, `executorproxyhost`, `executorproxyport`, `executorproxytype`, `description`, `usrcreated`) ");
+        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `isactive`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `isdevicelockunlock`, `executorextensionhost`, `executorextensionport`, `executorproxyhost`, `executorproxyport`, `executorproxytype`, `description`, `usrcreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
@@ -284,7 +282,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 int i = 1;
                 preStat.setString(i++, object.getRobot());
                 preStat.setString(i++, object.getExecutor());
-                preStat.setString(i++, object.getActive());
+                preStat.setBoolean(i++, object.isActive());
                 preStat.setInt(i++, object.getRank());
                 preStat.setString(i++, object.getHost());
                 preStat.setString(i++, object.getPort());
@@ -297,7 +295,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 } else {
                     preStat.setNull(i++, Types.INTEGER);
                 }
-                preStat.setString(i++, object.getDeviceLockUnlock());
+                preStat.setBoolean(i++, object.isDeviceLockUnlock());
                 preStat.setString(i++, object.getExecutorExtensionHost());
                 if (object.getExecutorExtensionPort() != null) {
                     preStat.setInt(i++, object.getExecutorExtensionPort());
@@ -368,7 +366,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     @Override
     public Answer update(String robot, String executor, RobotExecutor object) {
         MessageEvent msg = null;
-        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, active = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `devicelockunlock` = ?,  `executorextensionhost` = ?,  `executorextensionport` = ?, `executorproxyhost` = ?,  `executorproxyport` = ?, `executorproxytype` = ?, "
+        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, isactive = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `isdevicelockunlock` = ?,  `executorextensionhost` = ?,  `executorextensionport` = ?, `executorproxyhost` = ?,  `executorproxyport` = ?, `executorproxytype` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `robot` = ? and `executor` = ?";
 
         // Debug message on SQL.
@@ -384,7 +382,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             preStat.setString(i++, object.getRobot());
             preStat.setString(i++, object.getExecutor());
             preStat.setString(i++, object.getDescription());
-            preStat.setString(i++, object.getActive());
+            preStat.setBoolean(i++, object.isActive());
             preStat.setInt(i++, object.getRank());
             preStat.setString(i++, object.getHost());
             preStat.setString(i++, object.getPort());
@@ -397,7 +395,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             } else {
                 preStat.setNull(i++, Types.INTEGER);
             }
-            preStat.setString(i++, object.getDeviceLockUnlock());
+            preStat.setBoolean(i++, object.isDeviceLockUnlock());
             preStat.setString(i++, object.getExecutorExtensionHost());
             if (object.getExecutorExtensionPort() != null) {
                 preStat.setInt(i++, object.getExecutorExtensionPort());
@@ -462,7 +460,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         int id = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.id"), 0);
         String robot = ParameterParserUtil.parseStringParam(rs.getString("rbe.robot"), "");
         String executor = ParameterParserUtil.parseStringParam(rs.getString("rbe.executor"), "");
-        String active = ParameterParserUtil.parseStringParam(rs.getString("rbe.active"), "");
+        boolean isActive = rs.getBoolean("rbe.isActive");
         int rank = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.rank"), 0);
         String host = ParameterParserUtil.parseStringParam(rs.getString("rbe.host"), "");
         String port = ParameterParserUtil.parseStringParam(rs.getString("rbe.port"), "");
@@ -472,7 +470,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         String deviceudid = ParameterParserUtil.parseStringParam(rs.getString("rbe.deviceudid"), "");
         String devicename = ParameterParserUtil.parseStringParam(rs.getString("rbe.devicename"), "");
         Integer deviceport = rs.getInt("rbe.deviceport");
-        String devicelockunlock = rs.getString("rbe.devicelockunlock");
+        boolean isDevicelockunlock = rs.getBoolean("rbe.isdevicelockunlock");
         String executorExtensionHost = rs.getString("rbe.executorextensionhost");
         Integer executorExtensionPort = rs.getInt("rbe.executorextensionport");
         String executorProxyHost = rs.getString("rbe.executorproxyhost");
@@ -490,7 +488,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, active, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, devicelockunlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorExtensionHost, executorExtensionPort, executorProxyHost, executorProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -516,7 +514,6 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         if (!StringUtil.isEmpty(searchTerm)) {
             searchSQL.append(" and (src.`robot` like ?");
             searchSQL.append(" or src.`executor` like ?");
-            searchSQL.append(" or src.`active` like ?");
             searchSQL.append(" or src.`rank` like ?");
             searchSQL.append(" or src.`host` like ?");
             searchSQL.append(" or src.`usrCreated` like ?");
@@ -550,7 +547,6 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setString(i++, robot);
             }
             if (!StringUtil.isEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

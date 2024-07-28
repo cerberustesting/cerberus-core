@@ -468,7 +468,7 @@ public class ExecutionStartService implements IExecutionStartService {
             execution.setRobotObj(robObj);
 
             // We cannot execute a testcase on a desactivated Robot.
-            if ("N".equalsIgnoreCase(robObj.getActive())) {
+            if (!robObj.isActive()) {
                 LOG.debug("Robot " + execution.getRobot() + " is not active.");
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTACTIVE)
                         .resolveDescription("ROBOT", execution.getRobot()));
@@ -498,7 +498,7 @@ public class ExecutionStartService implements IExecutionStartService {
                             .resolveDescription("EXECUTOR", execution.getRobotExecutor()));
                 } else {
                     // We cannot execute a testcase on a desactivated Robot.
-                    if ("N".equalsIgnoreCase(robExeObj.getActive())) {
+                    if (!robExeObj.isActive()) {
                         LOG.debug("Robot Executor {} / {} is not active", execution.getRobot(), execution.getRobotExecutor());
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTACTIVE)
                                 .resolveDescription("ROBOT", execution.getRobot())

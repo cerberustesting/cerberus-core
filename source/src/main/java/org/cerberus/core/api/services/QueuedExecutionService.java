@@ -197,7 +197,7 @@ public class QueuedExecutionService {
         LOG.debug("MANUALEXEC {}", manualExecution);
         if (CollectionUtils.isEmpty(robots)) {
             if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
-                robotsMap.put("", robotFactory.create(0, "", "", "", "", "Y", "", "", "", "", "", "", true, "", ""));
+                robotsMap.put("", robotFactory.create(0, "", "", "", "", true, "", "", "", "", "", "", true, "", ""));
             } else {
                 throw new InvalidRequestException("No robots found for this campaign");
             }

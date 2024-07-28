@@ -31,13 +31,14 @@ import org.springframework.stereotype.Service;
 public class FactoryRobotExecutor implements IFactoryRobotExecutor {
 
     @Override
-    public RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, Integer nodeProxyPort, String deviceUdid, String deviceName, Integer devicePort, String deviceLockUnlock,String executorExtensionHost, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyType, String description,
+    public RobotExecutor create(Integer ID, String robot, String executor, boolean isActive, Integer rank, String host, String port, String hostUser, String hostPassword,
+            Integer nodeProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorExtensionHost, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyType, String description,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         RobotExecutor newRobot = new RobotExecutor();
         newRobot.setID(ID);
         newRobot.setRobot(robot);
         newRobot.setExecutor(executor);
-        newRobot.setActive(active);
+        newRobot.setIsActive(isActive);
         newRobot.setRank(rank);
         newRobot.setHost(host);
         newRobot.setPort(port);
@@ -46,7 +47,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
         newRobot.setNodeProxyPort(nodeProxyPort);
         newRobot.setDeviceUuid(deviceUdid);
         newRobot.setDeviceName(deviceName);
-        newRobot.setDeviceLockUnlock(deviceLockUnlock);
+        newRobot.setIsDeviceLockUnlock(isDeviceLockUnlock);
         newRobot.setExecutorExtensionHost(executorExtensionHost);
         newRobot.setExecutorExtensionPort(executorExtensionPort);
         newRobot.setExecutorProxyHost(executorProxyHost);

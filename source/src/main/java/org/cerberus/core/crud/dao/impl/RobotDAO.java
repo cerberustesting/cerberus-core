@@ -381,7 +381,7 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `ProfileFolder`, `ExtraParam`, `IsAcceptInsecureCerts`, `robotdecli`, `lbexemethod`, `type`) ");
+        query.append("INSERT INTO robot (`robot`, `platform`,`browser`, `version`,`isactive` , `description`, `useragent`, `screensize`, `ProfileFolder`, `ExtraParam`, `IsAcceptInsecureCerts`, `robotdecli`, `lbexemethod`, `type`) ");
 
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
@@ -398,7 +398,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(i++, robot.getPlatform());
                 preStat.setString(i++, robot.getBrowser());
                 preStat.setString(i++, robot.getVersion());
-                preStat.setString(i++, robot.getActive());
+                preStat.setBoolean(i++, robot.isActive());
                 preStat.setString(i++, robot.getDescription());
                 preStat.setString(i++, robot.getUserAgent());
                 preStat.setString(i++, robot.getScreenSize());
@@ -488,7 +488,7 @@ public class RobotDAO implements IRobotDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, ProfileFolder = ?, ExtraParam = ?, IsAcceptInsecureCerts = ?, robotdecli = ?, lbexemethod = ?, type = ?, dateModif = NOW() ");
+        query.append("platform = ?, browser = ? , version = ?, isactive=?, description = ?, useragent = ?, screensize = ?, ProfileFolder = ?, ExtraParam = ?, IsAcceptInsecureCerts = ?, robotdecli = ?, lbexemethod = ?, type = ?, dateModif = NOW() ");
         query.append("WHERE robotID = ?");
 
         // Debug message on SQL.
@@ -504,7 +504,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(cpt++, robot.getPlatform());
                 preStat.setString(cpt++, robot.getBrowser());
                 preStat.setString(cpt++, robot.getVersion());
-                preStat.setString(cpt++, robot.getActive());
+                preStat.setBoolean(cpt++, robot.isActive());
                 preStat.setString(cpt++, robot.getDescription());
                 preStat.setString(cpt++, robot.getUserAgent());
                 preStat.setString(cpt++, robot.getScreenSize());
@@ -549,7 +549,7 @@ public class RobotDAO implements IRobotDAO {
         String platform = ParameterParserUtil.parseStringParam(rs.getString("platform"), "");
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
-        String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
+        boolean isActive = ParameterParserUtil.parseBooleanParam(rs.getString("isActive"), true);
         String lbexemethod = ParameterParserUtil.parseStringParam(rs.getString("lbexemethod"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
         String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
@@ -562,7 +562,7 @@ public class RobotDAO implements IRobotDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts, robotDecli, type);
+        return factoryRobot.create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts, robotDecli, type);
     }
 
     @Override

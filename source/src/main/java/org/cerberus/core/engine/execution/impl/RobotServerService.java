@@ -464,7 +464,7 @@ public class RobotServerService implements IRobotServerService {
 
             // unlock device if deviceLockUnlock is active
             if (execution.getRobotExecutorObj() != null && appiumDriver instanceof LocksDevice
-                    && "Y".equals(execution.getRobotExecutorObj().getDeviceLockUnlock())) {
+                    && "Y".equals(execution.getRobotExecutorObj().isDeviceLockUnlock())) {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
 
@@ -1073,7 +1073,7 @@ public class RobotServerService implements IRobotServerService {
 
             // We lock device if deviceLockUnlock is active.
             if (tce.getRobotExecutorObj() != null && session.getAppiumDriver() != null && session.getAppiumDriver() instanceof LocksDevice
-                    && "Y".equals(tce.getRobotExecutorObj().getDeviceLockUnlock())) {
+                    && "Y".equals(tce.getRobotExecutorObj().isDeviceLockUnlock())) {
                 ((LocksDevice) session.getAppiumDriver()).lockDevice();
             }
 
