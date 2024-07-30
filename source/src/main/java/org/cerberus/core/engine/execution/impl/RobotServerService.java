@@ -191,8 +191,12 @@ public class RobotServerService implements IRobotServerService {
 
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
+
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
+            session.setCerberus_selenium_pageLoadTimeout_default(cerberus_selenium_pageLoadTimeout);
+
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
+            session.setCerberus_selenium_setScriptTimeout_default(cerberus_selenium_setScriptTimeout);
 
             // _wait_element parameters
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
@@ -464,7 +468,7 @@ public class RobotServerService implements IRobotServerService {
 
             // unlock device if deviceLockUnlock is active
             if (execution.getRobotExecutorObj() != null && appiumDriver instanceof LocksDevice
-                    && "Y".equals(execution.getRobotExecutorObj().isDeviceLockUnlock())) {
+                    && execution.getRobotExecutorObj().isDeviceLockUnlock()) {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
 
@@ -1282,6 +1286,18 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_selenium_wait_element(timeout);
             session.setCerberus_sikuli_wait_element(timeout);
 
+            LOG.debug(session.getDriver());
+            LOG.debug(session.getCerberus_selenium_pageLoadTimeout());
+            LOG.debug(timeout);
+            if ((session.getDriver() != null) && (session.getCerberus_selenium_pageLoadTimeout() != timeout)) {
+                LOG.debug("Setting Selenium Robot Options (pageLoadTimeout & setScriptTimeout) timeout to : {}", timeout);
+                WebDriver driver = session.getDriver();
+                driver.manage().timeouts().pageLoadTimeout(timeout, TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.MILLISECONDS);
+                session.setCerberus_selenium_pageLoadTimeout(timeout);
+                session.setCerberus_selenium_setScriptTimeout(timeout);
+            }
+
             if ((session.getAppiumDriver() != null) && (session.getCerberus_appium_wait_element() != timeout)) {
                 LOG.debug("Setting Appium Robot Options timeout to : {}", timeout);
                 AppiumDriver appiumDriver = session.getAppiumDriver();
@@ -1326,6 +1342,18 @@ public class RobotServerService implements IRobotServerService {
                     session.getCerberus_sikuli_wait_element_default());
             session.setCerberus_selenium_wait_element(session.getCerberus_selenium_wait_element_default());
             session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
+
+            WebDriver driver = session.getDriver();
+            if ((driver != null) && (session.getCerberus_selenium_pageLoadTimeout() != session.getCerberus_selenium_pageLoadTimeout_default())) {
+                LOG.debug("Setting Selenium Robot Options (pageLoadTimeout) timeout to : {}", session.getCerberus_selenium_pageLoadTimeout_default());
+                driver.manage().timeouts().pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default(), TimeUnit.MILLISECONDS);
+                session.setCerberus_selenium_pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default());
+            }
+            if ((driver != null) && (session.getCerberus_selenium_setScriptTimeout() != session.getCerberus_selenium_setScriptTimeout_default())) {
+                LOG.debug("Setting Selenium Robot Options (setScriptTimeout) timeout to : {}", session.getCerberus_selenium_setScriptTimeout_default());
+                driver.manage().timeouts().setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default(), TimeUnit.MILLISECONDS);
+                session.setCerberus_selenium_setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default());
+            }
             LOG.debug("Setting Robot highlightElement back to default values : Selenium {} Sikuli {}",
                     session.getCerberus_selenium_highlightElement_default(),
                     session.getCerberus_sikuli_highlightElement_default());

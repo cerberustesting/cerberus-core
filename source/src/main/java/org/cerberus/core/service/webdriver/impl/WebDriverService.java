@@ -1544,7 +1544,11 @@ public class WebDriverService implements IWebDriverService {
                 return message;
             } else {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
-                message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+                if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", drop.getIdentifier() + "=" + drop.getLocator()));
+                } else {
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+                }
                 return message;
             }
         } catch (NoSuchElementException exception) {

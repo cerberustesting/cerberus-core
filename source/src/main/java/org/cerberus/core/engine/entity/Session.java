@@ -47,9 +47,12 @@ public class Session {
     private WebDriver driver;
     private AppiumDriver appiumDriver;
 
-    private Integer cerberus_selenium_pageLoadTimeout;
     private Integer cerberus_selenium_implicitlyWait;
+    
+    private Integer cerberus_selenium_pageLoadTimeout;
+    private Integer cerberus_selenium_pageLoadTimeout_default; // Default value
     private Integer cerberus_selenium_setScriptTimeout;
+    private Integer cerberus_selenium_setScriptTimeout_default; // Default value
 
     private Integer cerberus_selenium_wait_element; // Current Value. This one is the one used by the engine.
     private Integer cerberus_selenium_wait_element_default; // Default value
@@ -229,6 +232,22 @@ public class Session {
 
     public void setCerberus_sikuli_wait_element(Integer cerberus_sikuli_wait_element) {
         this.cerberus_sikuli_wait_element = cerberus_sikuli_wait_element;
+    }
+
+    public Integer getCerberus_selenium_pageLoadTimeout_default() {
+        return cerberus_selenium_pageLoadTimeout_default;
+    }
+
+    public void setCerberus_selenium_pageLoadTimeout_default(Integer cerberus_selenium_pageLoadTimeout_default) {
+        this.cerberus_selenium_pageLoadTimeout_default = cerberus_selenium_pageLoadTimeout_default;
+    }
+
+    public Integer getCerberus_selenium_setScriptTimeout_default() {
+        return cerberus_selenium_setScriptTimeout_default;
+    }
+
+    public void setCerberus_selenium_setScriptTimeout_default(Integer cerberus_selenium_setScriptTimeout_default) {
+        this.cerberus_selenium_setScriptTimeout_default = cerberus_selenium_setScriptTimeout_default;
     }
 
     public Integer getCerberus_selenium_wait_element_default() {
