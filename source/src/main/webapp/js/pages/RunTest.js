@@ -884,7 +884,7 @@ function loadRobotInfo(robot) {
                 var nbExe = 0;
                 for (var i = 0; i < data.contentTable.executors.length; i++) {
                     var curExecutor = data.contentTable.executors[i];
-                    if (curExecutor.active === "Y") {
+                    if (curExecutor.isActive) {
                         nbExe++;
                         if (nbExe < 2) {
                             ExeHost = curExecutor.host;
