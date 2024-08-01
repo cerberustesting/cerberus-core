@@ -282,6 +282,8 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.APP_VAR2%", envappli.getVar2());
             stringToDecode = stringToDecode.replace("%system.APP_VAR3%", envappli.getVar3());
             stringToDecode = stringToDecode.replace("%system.APP_VAR4%", envappli.getVar4());
+            stringToDecode = stringToDecode.replace("%system.APP_SECRET1%", envappli.getSecret1());
+            stringToDecode = stringToDecode.replace("%system.APP_SECRET2%", envappli.getSecret2());
             stringToDecode = stringToDecode.replace("%system.EXEURL%", execution.getUrl());
             stringToDecode = stringToDecode.replace("%system.ENV%", execution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%system.ENVGP%", execution.getEnvironmentDataObj().getGp1());

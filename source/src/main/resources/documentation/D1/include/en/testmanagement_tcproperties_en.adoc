@@ -186,6 +186,8 @@ NOTE: You can also get the nb of rows your variable has by using the `**nbrows**
 | %system.**APP_VAR2**% |	VAR2 of the application on the environment.
 | %system.**APP_VAR3**% |	VAR3 of the application on the environment.
 | %system.**APP_VAR4**% |	VAR4 of the application on the environment.
+| %system.**APP_SECRET1**% |	Secret 1 of the application on the environment (Secrets will be protected by not displaying anywhere in the Cerberus GUI and API).
+| %system.**APP_SECRET2**% |	Secret 2 of the application on the environment (Secrets will be protected by not displaying anywhere in the Cerberus GUI and API).
 | %system.**ENV**% |	Environment value
 | %system.**ENVGP**% |	Environment group code
 | %system.**COUNTRY**% |	Country code

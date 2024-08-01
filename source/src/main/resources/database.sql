@@ -6459,4 +6459,8 @@ UPDATE robotexecutor SET `IsDeviceLockUnlock` = 1 WHERE `IsDeviceLockUnlock` = '
 UPDATE robotexecutor SET `IsDeviceLockUnlock` = 0 WHERE `IsDeviceLockUnlock` != '1';
 ALTER TABLE robotexecutor MODIFY `IsDeviceLockUnlock` BOOLEAN DEFAULT 0;
 
-
+-- 1826
+ALTER TABLE countryenvironmentparameters 
+    ADD Secret1 varchar(200) DEFAULT '' NOT NULL AFTER Var4,
+    ADD Secret2 varchar(200) DEFAULT '' NOT NULL AFTER Secret1,
+    ADD `IsActive` BOOLEAN DEFAULT 1 AFTER Application;

@@ -245,6 +245,7 @@ public class UpdateApplication extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String country = policy.sanitize(tcsaJson.getString("country"));
             String environment = policy.sanitize(tcsaJson.getString("environment"));
+            boolean isActive = tcsaJson.getBoolean("isActive");
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // Parameter that we cannot secure as we need the html --> We DECODE them
             String ip = tcsaJson.getString("ip");
@@ -255,6 +256,8 @@ public class UpdateApplication extends HttpServlet {
             String var2 = tcsaJson.getString("var2");
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
+            String secret1 = tcsaJson.getString("secret1");
+            String secret2 = tcsaJson.getString("secret2");
             String strPoolSize = tcsaJson.getString("poolSize");
             String mobileActivity = tcsaJson.getString("mobileActivity");
             String mobilePackage = tcsaJson.getString("mobilePackage");
@@ -272,7 +275,7 @@ public class UpdateApplication extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, isActive, ip, domain, url, urlLogin, var1, var2, var3, var4, secret1, secret2, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
                 cedList.add(ced);
             }
         }

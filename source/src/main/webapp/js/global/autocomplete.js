@@ -327,7 +327,7 @@ function initTags(configs, context) {
             "SYSTEM",
             "APPLI",
             "BROWSER", "ROBOT", "ROBOTDECLI", "SCREENSIZE",
-            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4", "APP_SECRET1", "APP_SECRET2",
             "ENV", "ENVGP",
             "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
             "TEST",

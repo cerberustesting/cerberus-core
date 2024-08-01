@@ -293,7 +293,7 @@ public class TestCaseExecution {
     }
 
     public void addSecret(String secret) {
-        if (secret != null) {
+        if (secret != null && (!"".equals(secret))) {
             this.secrets.put(secret, "");
         }
     }

@@ -516,7 +516,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     HashMap<String, CountryEnvironmentParameters> envAppMap = new HashMap<>();
                     LOG.debug("Loading all environments.");
                     for (CountryEnvironmentParameters envAppParam : countryEnvironmentParametersService.convert(countryEnvironmentParametersService.readByVarious(null, null, null, null))) {
-                        envAppMap.put(envAppParam.getSystem() + LOCAL_SEPARATOR + envAppParam.getCountry() + LOCAL_SEPARATOR + envAppParam.getEnvironment() + LOCAL_SEPARATOR + envAppParam.getApplication(), envAppParam);
+                        if (envAppParam.isActive()) {
+                            envAppMap.put(envAppParam.getSystem() + LOCAL_SEPARATOR + envAppParam.getCountry() + LOCAL_SEPARATOR + envAppParam.getEnvironment() + LOCAL_SEPARATOR + envAppParam.getApplication(), envAppParam);
+                        }
                     }
 
                     if (!StringUtil.isEmpty(campaign)) {
@@ -625,7 +627,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                             }
                                                         }
                                                     } else {
-                                                        LOG.debug("Env Application does not exist.");
+                                                        LOG.debug("Env Application does not exist or is not active.");
 //                                                messages.add(String.format("Environment '%s' and Country %s doesn't exist for application '%s'", environment, country.getCountry(), tc.getApplication()));
                                                         nbenvnotexist += nbrobot;
                                                     }

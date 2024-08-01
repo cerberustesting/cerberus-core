@@ -446,6 +446,15 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('countryenvironmentparameters','Var4','','en','Variable 4','Variable can be used inside testcases with %SYS_APP_VAR4% variable.','_environment')");
         b.append(",('countryenvironmentparameters','Var4','','fr','Variable 4','Variable qui peut être utilisée dans les test avec : %SYS_APP_VAR4%','_environnement')");
         b.append(",('countryenvironmentparameters','Var4','','fa','متغیر ۴','متغیر را می توان با استفاد از متغیر %SYS_APP_VAR4% مورد استفاده قرار داد..','_environment')");
+        b.append(",('countryenvironmentparameters','isActive','','en','Active','',NULL)");
+        b.append(",('countryenvironmentparameters','isActive','','fr','Actif','',NULL)");
+        b.append(",('countryenvironmentparameters','isActive','','fa','فعال','',NULL)");
+        b.append(",('countryenvironmentparameters','secret1','','en','Secret 1','Secret Variable that can be used inside testcases with %system.APP_SECRET1% variable.','_environment')");
+        b.append(",('countryenvironmentparameters','secret1','','fr','Secret 1','Variable securisée qui peut être utilisée dans les test avec : %system.APP_SECRET1%','_environnement')");
+        b.append(",('countryenvironmentparameters','secret1','','fa','متغیر 1','متغیر را می توان با استفاده از متغیر %system.APP_SECRET1% در موارد آزمون استفاده کرد','_environment')");
+        b.append(",('countryenvironmentparameters','secret2','','en','Secret 2','Secret Variable that can be used inside testcases with %system.APP_SECRET2% variable.','_environment')");
+        b.append(",('countryenvironmentparameters','secret2','','fr','Secret 2','Variable qui peut être utilisée dans les test avec : %system.APP_SECRET2%','_environnement')");
+        b.append(",('countryenvironmentparameters','secret2','','fa','متغیر 2','متغیر را می توان با استفاده از متغیر %system.APP_SECRET2% در موارد آزمون مورد استفاده قرار بگیرد.','_environment')");
         b.append(",('countryenvironmentparameters','mobileActivity','','en','Mobile Activity','When defined, it feed the \\'appWaitActivity\\' capability.','_environment')");
         b.append(",('countryenvironmentparameters','mobileActivity','','fr','Mobile Activity','Lorsque défini, renseigne automatiquement la capability \\'appWaitActivity\\'.','_environnement')");
         b.append(",('countryenvironmentparameters','mobileActivity','','fa','فعالیت موبایل','زمانیکه تعریف می شود, برای قابلیت \\'appWaitActivity\\' مورد استفاده قرار می گیرد.','_environment')");
@@ -2357,8 +2366,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','tooltip_savetableconfig','','ru','Сохранить конфигурацию таблицы','Фильтры и показываемые колонки сохранены в ',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur',NULL)");
         b.append(",('page_global','tooltip_savetableconfig','','fa','ذخیره سازی پیکربندی جول','پیکربندی جدول را ذخیره کنید.فیلترها و نمایش ستون ها در تنظیمات برگزیده کاربر ذخیره می شوند.',NULL)");
-        b.append(",('page_global','tooltip_resettableconfig','','en','Reset the table configuration to its default value','Reset the table configuration. Filters and column display will go back to its default value',NULL)");
-        b.append(",('page_global','tooltip_resettableconfig','','fr','Restaurer la configuration par defaut de la table','Restaurer la configuration de la table par defaut. Les filtres et l\\'affichage des colonnes seront restauré à leur valeur d\\'origine',NULL)");
+        b.append(",('page_global','tooltip_resettableconfig','','en','Reset the table configuration to its default value','Reset the table configuration. Filters and column display will go back to its default values',NULL)");
+        b.append(",('page_global','tooltip_resettableconfig','','fr','Restaurer la configuration par defaut de la table','Restaurer la configuration de la table par defaut. Les filtres et l\\'affichage des colonnes seront restaurés à leur valeures d\\'origines',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','en','Show/hide columns','',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','ru','Показать/Скрыть колонки','',NULL)");
         b.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','',NULL)");

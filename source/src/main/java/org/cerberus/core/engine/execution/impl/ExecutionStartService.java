@@ -270,7 +270,7 @@ public class ExecutionStartService implements IExecutionStartService {
             } else {
                 CountryEnvironmentParameters cea;
                 cea = this.factorycountryEnvironmentParameters.create(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication(),
-                        execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "", null, null, null, null);
+                        true, execution.getMyHost(), "", execution.getMyContextRoot(), execution.getMyLoginRelativeURL(), "", "", "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "", null, null, null, null);
                 cea.setIp(execution.getMyHost());
                 cea.setUrl(execution.getMyContextRoot());
                 appURL = StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", "");
@@ -300,7 +300,7 @@ public class ExecutionStartService implements IExecutionStartService {
             try {
                 cea = this.countryEnvironmentParametersService.convert(this.countryEnvironmentParametersService.readByKey(
                         execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment(), execution.getApplicationObj().getApplication()));
-                if (cea != null) {
+                if (cea != null && (cea.isActive())) {
                     if (execution.getManualURL() == 2) {
                         // add possibility to override URL with MyHost if MyHost is available
                         if (!StringUtil.isEmpty(execution.getMyHost())) {
@@ -321,6 +321,9 @@ public class ExecutionStartService implements IExecutionStartService {
                         // If domain is empty we guess it from URL.
                         cea.setDomain(StringUtil.getDomainFromUrl(execution.getUrl()));
                     }
+                    // Protect Secret data coming from application-environment.
+                    execution.addSecret(cea.getSecret1());
+                    execution.addSecret(cea.getSecret2());
                     execution.setCountryEnvApplicationParam(cea);
 
                     // Load all associated application informations (same system, country and env as the execution).

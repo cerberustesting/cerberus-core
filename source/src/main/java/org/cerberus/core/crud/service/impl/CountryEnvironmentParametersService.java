@@ -218,6 +218,12 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
                     if (objectDifference.getIp().contains(StringUtil.SECRET_STRING)) {
                         objectDifference.setIp(objectDifference.getIp().replace(StringUtil.SECRET_STRING, StringUtil.getPasswordFromAnyUrl(objectInDatabase.getIp())));
                     }
+                    if (StringUtil.SECRET_STRING.equals(objectDifference.getSecret1())) {
+                        objectDifference.setSecret1(objectInDatabase.getSecret1());
+                    }
+                    if (StringUtil.SECRET_STRING.equals(objectDifference.getSecret2())) {
+                        objectDifference.setSecret2(objectInDatabase.getSecret2());
+                    }
                     ans = this.update(objectDifference);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     listToUpdateOrInsert.remove(objectDifference);

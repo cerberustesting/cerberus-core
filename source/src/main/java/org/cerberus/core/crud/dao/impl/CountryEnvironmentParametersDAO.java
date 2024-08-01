@@ -326,7 +326,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS cea.* FROM countryenvironmentparameters cea");
         query.append(" JOIN application app on app.Application = cea.Application and app.`System` = cea.`System` ");
-        
+
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isEmpty(searchTerm)) {
@@ -490,7 +490,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         query.append(" JOIN application app on app.Application = cea.Application and app.`System` = cea.`System` ");
         query.append(" JOIN (SELECT systemLink , CountryLink , EnvironmentLink  from countryenvlink where `system` = ? and Country = ? and Environment = ? ) as lnk ");
         query.append("   where cea.`system` = lnk.systemLink and cea.`Country` = lnk.CountryLink and cea.`Environment` = lnk.EnvironmentLink ;  ");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -588,8 +588,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public Answer create(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage`, `UsrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `isActive`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `Secret1`, `Secret2`, `poolSize`, `mobileActivity`, `mobilePackage`, `UsrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -600,22 +600,26 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, object.getSystem());
-                preStat.setString(2, object.getCountry());
-                preStat.setString(3, object.getEnvironment());
-                preStat.setString(4, object.getApplication());
-                preStat.setString(5, object.getIp());
-                preStat.setString(6, object.getDomain());
-                preStat.setString(7, object.getUrl());
-                preStat.setString(8, object.getUrlLogin());
-                preStat.setString(9, object.getVar1());
-                preStat.setString(10, object.getVar2());
-                preStat.setString(11, object.getVar3());
-                preStat.setString(12, object.getVar4());
-                preStat.setInt(13, object.getPoolSize());
-                preStat.setString(14, object.getMobileActivity());
-                preStat.setString(15, object.getMobilePackage());
-                preStat.setString(16, object.getUsrCreated());
+                int i=1;
+                preStat.setString(i++, object.getSystem());
+                preStat.setString(i++, object.getCountry());
+                preStat.setString(i++, object.getEnvironment());
+                preStat.setString(i++, object.getApplication());
+                preStat.setBoolean(i++, object.isActive());
+                preStat.setString(i++, object.getIp());
+                preStat.setString(i++, object.getDomain());
+                preStat.setString(i++, object.getUrl());
+                preStat.setString(i++, object.getUrlLogin());
+                preStat.setString(i++, object.getVar1());
+                preStat.setString(i++, object.getVar2());
+                preStat.setString(i++, object.getVar3());
+                preStat.setString(i++, object.getVar4());
+                preStat.setString(i++, object.getSecret1());
+                preStat.setString(i++, object.getSecret2());
+                preStat.setInt(i++, object.getPoolSize());
+                preStat.setString(i++, object.getMobileActivity());
+                preStat.setString(i++, object.getMobilePackage());
+                preStat.setString(i++, object.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -697,7 +701,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public Answer update(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, poolSize=?, mobileActivity=?, mobilePackage=?, `UsrModif`= ?, `DateModif` = NOW()"
+        final String query = "UPDATE `countryenvironmentparameters` SET `IsActive`=?, `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, Secret1=?, Secret2=?, poolSize=?, mobileActivity=?, mobilePackage=?, `UsrModif`= ?, `DateModif` = NOW()"
                 + " where `system`=? and `country`=? and `environment`=? and `application`=? ";
 
         // Debug message on SQL.
@@ -709,6 +713,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setBoolean(i++, object.isActive());
                 preStat.setString(i++, object.getIp());
                 preStat.setString(i++, object.getUrl());
                 preStat.setString(i++, object.getUrlLogin());
@@ -717,6 +722,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(i++, object.getVar2());
                 preStat.setString(i++, object.getVar3());
                 preStat.setString(i++, object.getVar4());
+                preStat.setString(i++, object.getSecret1());
+                preStat.setString(i++, object.getSecret2());
                 preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getMobileActivity());
                 preStat.setString(i++, object.getMobilePackage());
@@ -757,6 +764,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String count = resultSet.getString("cea.Country");
         String env = resultSet.getString("cea.Environment");
         String application = resultSet.getString("cea.application");
+        boolean isActive = resultSet.getBoolean("cea.isActive");
         String ip = resultSet.getString("cea.ip");
         String domain = resultSet.getString("cea.domain");
         String url = resultSet.getString("cea.url");
@@ -765,6 +773,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String var2 = resultSet.getString("cea.Var2");
         String var3 = resultSet.getString("cea.Var3");
         String var4 = resultSet.getString("cea.Var4");
+        String secret1 = resultSet.getString("cea.Secret1");
+        String secret2 = resultSet.getString("cea.Secret2");
         String mobileActivity = resultSet.getString("cea.mobileActivity");
         if (mobileActivity == null) {
             mobileActivity = "";
@@ -779,7 +789,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         Timestamp dateCreated = resultSet.getTimestamp("cea.DateCreated");
         Timestamp dateModif = resultSet.getTimestamp("cea.DateModif");
 
-        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryCountryEnvironmentParameters.create(system, count, env, application, isActive, ip, domain, url, urllogin, var1, var2, var3, var4, secret1, secret2,
+                poolSize, mobileActivity, mobilePackage, usrCreated, dateCreated, usrModif, dateModif);
     }
 
 }

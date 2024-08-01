@@ -208,6 +208,12 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
         if (StringUtil.isNotEmptyOrNullValue(StringUtil.getPasswordFromAnyUrl(cepl.getIp()))) {
             result.put("ip", cepl.getIp().replace(StringUtil.getPasswordFromAnyUrl(cepl.getIp()), StringUtil.SECRET_STRING));
         }
+        if (StringUtil.isNotEmptyOrNullValue(cepl.getSecret1())) {
+            result.put("secret1", StringUtil.SECRET_STRING);
+        }
+        if (StringUtil.isNotEmptyOrNullValue(cepl.getSecret2())) {
+            result.put("secret2", StringUtil.SECRET_STRING);
+        }
 
         return result;
     }

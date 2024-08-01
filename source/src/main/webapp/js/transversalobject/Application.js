@@ -200,7 +200,10 @@ function confirmApplicationModalHandler(mode) {
     for (var i = 0; i < table1.length; i++) {
         table_environment.push($(table1[i]).data("environment"));
     }
-
+    console.info(table_environment);
+    console.info($(table1[i]));
+    console.info($(table1[i]).data("environment"));
+    
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
 
@@ -427,7 +430,10 @@ function appendEnvironmentRow(env) {
     var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(env.var2);
     var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(env.var3);
     var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(env.var4);
+    var secret1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret1") + " --\">").addClass("form-control input-sm").val(env.secret1);
+    var secret2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "secret2") + " --\">").addClass("form-control input-sm").val(env.secret2);
     var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(env.poolSize);
+    var activeInput = $("<input  type=\"checkbox\">").addClass("form-control input-sm").prop("checked", env.isActive);
     var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(env.mobileActivity);
     var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(env.mobilePackage);
 
@@ -443,29 +449,34 @@ function appendEnvironmentRow(env) {
     var drow02 = $("<div class='row'></div>").append(country);
     var td2 = $("<td></td>").append(drow01).append(drow02);
 
-    var ipName = $("<div class='form-group col-sm-5'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var ipName = $("<div class='form-group col-sm-6'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
     var urlName = $("<div class='form-group col-sm-3'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
-    var poolSizeName = $("<div class='form-group col-sm-2'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
-    var expandName = $("<div class='form-group col-sm-2'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
-    var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
+    var poolSizeName = $("<div class='form-group col-sm-1'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var activeName = $("<div class='form-group col-sm-1'></div>").append("<label for='isActive'>" + doc.getDocOnline("countryenvironmentparameters", "isActive") + "</label>").append(activeInput);
+    var expandName = $("<div class='form-group col-sm-1'></div>").append("<button class='btn btn-primary pull-right marginTop20' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
 
     var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
     var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
-    var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
 
-    var var1Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(var1Input);
+    var var1Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(var1Input);
     var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(var2Input);
-    var var3Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(var3Input);
-    var var4Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(var4Input);
-    var drow3 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(var3Name).append(var4Name);
+    var var3Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(var3Input);
+    var var4Name = $("<div class='form-group col-sm-4'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(var4Input);
 
-    var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
-    var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
-    var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+    var secret1Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret1'>" + doc.getDocOnline("countryenvironmentparameters", "secret1") + "</label>").append(secret1Input);
+    var secret2Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret2'>" + doc.getDocOnline("countryenvironmentparameters", "secret2") + "</label>").append(secret2Input);
+    var mobileActivityName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
+    var mobilePackageName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    
+    var drow1 = $("<div class='row'></div>").append(activeName).append(ipName).append(urlName).append(poolSizeName);
+    var drow2 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(secret1Name).append(expandName);
+    var drow3 = $("<div class='row'></div>").append(loginName).append(domainName);
+    var drow4 = $("<div class='row'></div>").append(var3Name).append(var4Name).append(secret2Name);
+    var drow5 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
 
-    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow3).append(drow4).append(drow5);
 
-    var td3 = $("<td></td>").append(drow1).append(panelExtra);
+    var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
 
     deleteBtn.click(function () {
         env.toDelete = (env.toDelete) ? false : true;
@@ -480,6 +491,9 @@ function appendEnvironmentRow(env) {
     });
     selectCountry.change(function () {
         env.country = $(this).val();
+    });
+    activeInput.change(function () {
+        env.isActive = $(this).prop("checked");
     });
     ipInput.change(function () {
         env.ip = $(this).val();
@@ -505,6 +519,12 @@ function appendEnvironmentRow(env) {
     var4Input.change(function () {
         env.var4 = $(this).val();
     });
+    secret1Input.change(function () {
+        env.secret1 = $(this).val();
+    });
+    secret2Input.change(function () {
+        env.secret2 = $(this).val();
+    });
     poolSizeInput.change(function () {
         env.poolSize = $(this).val();
     });
@@ -528,6 +548,7 @@ function addNewEnvironmentRow() {
     var newEnvironment = {
         environment: "",
         country: "",
+        isActive: true,
         ip: "",
         domain: "",
         url: "",
@@ -536,6 +557,8 @@ function addNewEnvironmentRow() {
         var2: "",
         var3: "",
         var4: "",
+        secret1: "",
+        secret2: "",
         poolSize: "",
         mobileActivity: "",
         mobilePackage: "",

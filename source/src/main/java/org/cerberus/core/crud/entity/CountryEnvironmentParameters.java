@@ -52,6 +52,7 @@ public class CountryEnvironmentParameters {
     @Id
     private String application;
     
+    private boolean isActive;
     private String ip;
     private String domain;
     private String url;
@@ -60,6 +61,8 @@ public class CountryEnvironmentParameters {
     private String var2;
     private String var3;
     private String var4;
+    private String secret1;
+    private String secret2;
     private String mobileActivity;
     private String mobilePackage;
     private int poolSize;
