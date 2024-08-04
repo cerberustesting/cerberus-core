@@ -37,6 +37,7 @@ import org.cerberus.core.service.appium.SwipeAction;
 import org.cerberus.core.util.JSONUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
+import org.openqa.selenium.ScreenOrientation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -244,6 +245,51 @@ public class AndroidAppiumService extends AppiumService {
             session.getAppiumDriver().closeApp();
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent lockDevice(Session session) {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+            driver.lockDevice();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LOCKDEVICE_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent unlockDevice(Session session) {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+            driver.unlockDevice();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_UNLOCKDEVICE_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent rotateDevice(Session session) {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+            driver.rotate(ScreenOrientation.LANDSCAPE == driver.getOrientation() ? ScreenOrientation.PORTRAIT : ScreenOrientation.LANDSCAPE);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_UNLOCKDEVICE_GENERIC);
 
         } catch (Exception e) {
             LOG.warn("Unable to close app " + e.getMessage(), e);

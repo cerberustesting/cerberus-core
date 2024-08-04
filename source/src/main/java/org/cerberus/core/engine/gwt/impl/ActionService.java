@@ -464,6 +464,15 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_GETROBOTFILE:
                     res = this.doActionGetRobotFile(execution, actionExecution, value1, value2, value3);
                     break;
+                case TestCaseStepAction.ACTION_LOCKDEVICE:
+                    res = this.doActionLockDevice(execution);
+                    break;
+                case TestCaseStepAction.ACTION_UNLOCKDEVICE:
+                    res = this.doActionUnlockDevice(execution);
+                    break;
+                case TestCaseStepAction.ACTION_ROTATEDEVICE:
+                    res = this.doActionRotateDevice(execution);
+                    break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
@@ -2285,6 +2294,70 @@ public class ActionService implements IActionService {
                 .resolveDescription("ACTION", "Hide keyboard")
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
     }
+
+    private MessageEvent doActionLockDevice(TestCaseExecution tCExecution) {
+        // Check argument
+        if (tCExecution == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // Hide keyboard according to application type
+        String applicationType = tCExecution.getApplicationObj().getType();
+        if (Application.TYPE_APK.equals(applicationType)) {
+            return androidAppiumService.lockDevice(tCExecution.getSession());
+        }
+        if (Application.TYPE_IPA.equals(applicationType)) {
+            return iosAppiumService.lockDevice(tCExecution.getSession());
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "lockDevice")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+    }
+
+    private MessageEvent doActionUnlockDevice(TestCaseExecution tCExecution) {
+        // Check argument
+        if (tCExecution == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // Hide keyboard according to application type
+        String applicationType = tCExecution.getApplicationObj().getType();
+        if (Application.TYPE_APK.equals(applicationType)) {
+            return androidAppiumService.unlockDevice(tCExecution.getSession());
+        }
+        if (Application.TYPE_IPA.equals(applicationType)) {
+            return iosAppiumService.unlockDevice(tCExecution.getSession());
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "unlockDevice")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+    }
+
+    private MessageEvent doActionRotateDevice(TestCaseExecution tCExecution) {
+        // Check argument
+        if (tCExecution == null) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+        }
+
+        // Hide keyboard according to application type
+        String applicationType = tCExecution.getApplicationObj().getType();
+        if (Application.TYPE_APK.equals(applicationType)) {
+            return androidAppiumService.rotateDevice(tCExecution.getSession());
+        }
+        if (Application.TYPE_IPA.equals(applicationType)) {
+            return iosAppiumService.rotateDevice(tCExecution.getSession());
+        }
+
+        // Else we are faced with a non supported application
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                .resolveDescription("ACTION", "rotateDevice")
+                .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+    }
+
 
     private MessageEvent doActionSwipe(TestCaseExecution tCExecution, String object, String property) {
         // Check arguments

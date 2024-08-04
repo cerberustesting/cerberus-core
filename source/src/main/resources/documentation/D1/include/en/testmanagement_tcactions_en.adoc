@@ -856,6 +856,30 @@ Force current content of the test case to the console logs in a JSON format. Tha
 |=== 
 Force current content of the test case to the data provided in value1 parameter. It can be any format you need (JSON, XML). All controls attached to that action will point to that data. Once all controls of that action are finished, current content are set back to normal value (could be an html or app page or another service).
 
+==== lockDevice
+|===
+
+| *[green]#APK#* | *[green]#IPA#*
+
+|===
+Lock the device during the execution
+
+==== unlockDevice
+|===
+
+| *[green]#APK#* | *[green]#IPA#*
+
+|===
+Unlock the locked device during the execution. For APK, capabilities unlockType et unlockKey can be used to unlock devices protected by a key.
+
+==== rotateDevice
+|===
+
+| *[green]#APK#* | *[green]#IPA#*
+
+|===
+Rotate the screen 90 degrees.
+
 ==== doNothing
 |=== 
 

@@ -166,4 +166,22 @@ public interface IAppiumService {
      * @return
      */
     MessageEvent clearField(Session session, Identifier identifier);
+
+    /**
+     * @param session
+     * @return
+     */
+    MessageEvent lockDevice(Session session);
+
+    /**
+     * @param session
+     * @return
+     */
+    MessageEvent unlockDevice(Session session);
+
+    /**
+     * @param session
+     * @return
+     */
+    MessageEvent rotateDevice(Session session);
 }
