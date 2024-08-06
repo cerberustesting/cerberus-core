@@ -86,7 +86,7 @@ public class TestDataLibPrivateController {
 
             AnswerItem<TestDataLib> answerTest = testDataLibService.readByKey(testdatalibid);
             TestDataLib res = answerTest.getItem();
-            if ((res == null) || !(TestDataLib.TYPE_FILE.equals(res.getType())) || (StringUtil.isEmpty(res.getCsvUrl()))) {
+            if ((res == null) || !(TestDataLib.TYPE_FILE.equals(res.getType())) || (StringUtil.isEmptyOrNull(res.getCsvUrl()))) {
                 throw new EntityNotFoundException(TestDataLib.class, "Data Library", testdatalibid);
             }
 

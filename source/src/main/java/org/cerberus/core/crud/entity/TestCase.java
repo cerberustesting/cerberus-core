@@ -66,6 +66,7 @@ public class TestCase {
     private String type;
     private String origine;
     private String refOrigine;
+    private String refOrigineUrl;
     private String comment;
     private String fromMajor;
     private String fromMinor;
@@ -118,6 +119,8 @@ public class TestCase {
     public static final String TESTCASE_ORIGIN_SIDE = "SeleniumIDE";
     public static final String TESTCASE_ORIGIN_JIRAXRAYCLOUD = "JiraXray-Cloud";
     public static final String TESTCASE_ORIGIN_JIRAXRAYDC = "JiraXray-DC";
+    public static final String TESTCASE_ORIGIN_JIRACLOUD = "Jira-Cloud";
+    public static final String TESTCASE_ORIGIN_JIRADC = "Jira-DC";
 
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
@@ -224,6 +227,7 @@ public class TestCase {
             testCaseJson.put("usrModif", this.getUsrModif());
             testCaseJson.put("origine", this.getOrigine());
             testCaseJson.put("refOrigine", this.getRefOrigine());
+            testCaseJson.put("refOrigineUrl", this.getRefOrigineUrl());
 
             JSONArray stepsJson = new JSONArray();
             if (this.getSteps() != null) {

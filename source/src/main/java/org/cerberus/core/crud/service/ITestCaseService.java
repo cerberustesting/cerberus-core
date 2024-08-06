@@ -110,9 +110,9 @@ public interface ITestCaseService {
      * @param testFilter
      * @param applicationFilter
      * @param country
-     * @param system            system of the main test case.
-     * @param build             current build
-     * @param revision          current revision
+     * @param system system of the main test case.
+     * @param build current build
+     * @param revision current revision
      * @return
      */
     List<TestCase> getTestCaseForPrePostTesting(String testFilter, String applicationFilter, String country, String system, String build, String revision);
@@ -167,7 +167,7 @@ public interface ITestCaseService {
     AnswerList<TestCase> findTestCaseByCampaign(String campaign);
 
     /**
-     * @param campaign  the campaign name
+     * @param campaign the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign and activated for the
      * countries
@@ -219,13 +219,12 @@ public interface ITestCaseService {
      * Method that get all the testcases that use a determined testdatalib entry
      *
      * @param testDataLibId testdatalib unique identifier
-     * @param name          testdatalib name
-     * @param country       country for which testdatalib is defined
+     * @param name testdatalib name
+     * @param country country for which testdatalib is defined
      * @return an answer with the test cases and a message indicating the status
      * of the operation
      */
     AnswerList<TestListDTO> findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country);
-
 
     /**
      * @param system
@@ -268,7 +267,7 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
      * @param system
@@ -356,6 +355,17 @@ public interface ITestCaseService {
     boolean hasPermissionsUpdate(TestCase testCase, HttpServletRequest request);
 
     /**
+     * This method returns a boolean that define if the object can be updated by
+     * user authenticated by request. in case object is null it return if the
+     * user defined by request can globally update any object
+     *
+     * @param status
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsUpdateFromStatus(String status, HttpServletRequest request);
+
+    /**
      * This method returns a boolean that define if the object can be deleted by
      * user authenticated by request. in case object is null it return if the
      * user defined by request can globally delete any object
@@ -406,4 +416,12 @@ public interface ITestCaseService {
      */
     public TestCase updateTestcaseAPI(String testFolderId, String testcaseId, TestCase newTestcase) throws CerberusException;
 
+    /**
+     *
+     * @param origin
+     * @param refOrigin
+     * @param system
+     * @return
+     */
+    public String getRefOriginUrl(String origin, String refOrigin, String system);
 }

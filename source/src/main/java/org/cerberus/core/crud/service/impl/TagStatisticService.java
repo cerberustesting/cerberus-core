@@ -341,7 +341,7 @@ public class TagStatisticService implements ITagStatisticService {
 
                 if (aggregateType.equals("CAMPAIGN")) {
                     campaignGroup1 = mapTagEntry.getString("campaignGroup1");
-                    if (StringUtil.isNotEmpty(campaignGroup1)) {
+                    if (StringUtil.isNotEmptyOrNull(campaignGroup1)) {
                         updateGlobalGroup1List(globalGroup1List, campaignGroup1);
                     }
                 }
@@ -403,7 +403,7 @@ public class TagStatisticService implements ITagStatisticService {
 
     private String updateMaxCampaignDateEnd(String maxDateEnd, JSONObject mapTagEntry) throws JSONException {
         String currentEndDate = mapTagEntry.getString("maxTagDateEnd");
-        if (StringUtil.isEmpty(maxDateEnd) || Timestamp.valueOf(currentEndDate).getTime() > Timestamp.valueOf(maxDateEnd).getTime()) {
+        if (StringUtil.isEmptyOrNull(maxDateEnd) || Timestamp.valueOf(currentEndDate).getTime() > Timestamp.valueOf(maxDateEnd).getTime()) {
             return currentEndDate;
         }
         return maxDateEnd;
@@ -433,7 +433,7 @@ public class TagStatisticService implements ITagStatisticService {
 
     private String updateMinCampaignDateStart(String minDateStart, JSONObject mapTagEntry) throws JSONException {
         String currentStartDate = mapTagEntry.getString("minTagDateStart");
-        if (StringUtil.isEmpty(minDateStart) || Timestamp.valueOf(currentStartDate).getTime() < Timestamp.valueOf(minDateStart).getTime()) {
+        if (StringUtil.isEmptyOrNull(minDateStart) || Timestamp.valueOf(currentStartDate).getTime() < Timestamp.valueOf(minDateStart).getTime()) {
             return currentStartDate;
         }
         return minDateStart;

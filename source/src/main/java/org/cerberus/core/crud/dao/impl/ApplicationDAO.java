@@ -110,7 +110,7 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM application app ");
         searchSQL.append(" where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (app.`application` like ?");
             searchSQL.append(" or app.`description` like ?");
             searchSQL.append(" or app.`sort` like ?");
@@ -139,7 +139,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -153,7 +153,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -323,7 +323,7 @@ public class ApplicationDAO implements IApplicationDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `repourl`, `poolSize`, `BugTrackerConnector`, `BugTrackerParam1`, `BugTrackerParam2`, `BugTrackerParam3`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
         query.append(", `mavengroupid`, `usrcreated` ) ");
-        if (StringUtil.isEmpty(object.getDeploytype())) {
+        if (StringUtil.isEmptyOrNull(object.getDeploytype())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,null,?,?)");
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -348,7 +348,7 @@ public class ApplicationDAO implements IApplicationDAO {
             preStat.setString(i++, object.getBugTrackerParam3());
             preStat.setString(i++, object.getBugTrackerUrl());
             preStat.setString(i++, object.getBugTrackerNewUrl());
-            if (!StringUtil.isEmpty(object.getDeploytype())) {
+            if (!StringUtil.isEmptyOrNull(object.getDeploytype())) {
                 preStat.setString(i++, object.getDeploytype());
             }
             preStat.setString(i++, object.getMavengroupid());
@@ -396,7 +396,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public Answer update(String application, Application object) {
         MessageEvent msg;
-        if (StringUtil.isEmpty(object.getDeploytype())) {
+        if (StringUtil.isEmptyOrNull(object.getDeploytype())) {
             object.setDeploytype(null);
         }
         final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, repourl = ?, poolSize = ?, BugTrackerConnector = ?, BugTrackerParam1 = ?, BugTrackerParam2 = ?, BugTrackerParam3 = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
@@ -490,7 +490,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(SqlUtil.generateInClause("`System`", systems));
         }
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`application` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `sort` like ?");
@@ -525,7 +525,7 @@ public class ApplicationDAO implements IApplicationDAO {
                     preStat.setString(i++, system);
                 }
             }
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

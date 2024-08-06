@@ -72,10 +72,10 @@ public class XRayGenerationService implements IXRayGenerationService {
             // Adding Environments 
             if (parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_xray_sendenvironments_enable, execution.getSystem(), false)) {
                 JSONArray environments = new JSONArray();
-                if (StringUtil.isNotEmpty(execution.getEnvironment())) {
+                if (StringUtil.isNotEmptyOrNull(execution.getEnvironment())) {
                     environments.put(execution.getEnvironment());
                 }
-                if (StringUtil.isNotEmpty(execution.getCountry())) {
+                if (StringUtil.isNotEmptyOrNull(execution.getCountry())) {
                     environments.put(execution.getCountry());
                 }
                 if (execution.getRobotObj() != null) {
@@ -115,7 +115,7 @@ public class XRayGenerationService implements IXRayGenerationService {
             xRayMessage.put("tests", testsMessage);
 
             // Adding Test Execution in case it aalready exist.
-            if (!StringUtil.isEmpty(tag.getXRayTestExecution()) && !"PENDING".equals(tag.getXRayTestExecution())) {
+            if (!StringUtil.isEmptyOrNull(tag.getXRayTestExecution()) && !"PENDING".equals(tag.getXRayTestExecution())) {
                 xRayMessage.put("testExecutionKey", tag.getXRayTestExecution());
             }
 
@@ -131,7 +131,7 @@ public class XRayGenerationService implements IXRayGenerationService {
     public JSONObject generateUpdateTestExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -158,7 +158,7 @@ public class XRayGenerationService implements IXRayGenerationService {
 
         slackMessage.append("attachments", attachementObj);
 
-        if (!StringUtil.isEmpty(channel)) {
+        if (!StringUtil.isEmptyOrNull(channel)) {
             slackMessage.put("channel", channel);
         }
         slackMessage.put("username", "Cerberus");

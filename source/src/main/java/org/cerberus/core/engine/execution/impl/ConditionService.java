@@ -342,7 +342,7 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if (StringUtil.isEmpty(conditionValue1)) {
+        if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFPROPERTYEXIST_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
@@ -372,7 +372,7 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if (StringUtil.isEmpty(conditionValue1)) {
+        if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFPROPERTYNOTEXIST_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
@@ -405,7 +405,7 @@ public class ConditionService implements IConditionService {
         if (tCExecution.getManualExecution().equals("Y")) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTPRESENT);
             mes.resolveDescription("ELEMENT", conditionValue1);
-        } else if (StringUtil.isEmpty(conditionValue1)) {
+        } else if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
@@ -566,7 +566,7 @@ public class ConditionService implements IConditionService {
         if (tCExecution.getManualExecution().equals("Y")) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTNOTPRESENT);
             mes.resolveDescription("ELEMENT", conditionValue1);
-        } else if (StringUtil.isEmpty(conditionValue1)) {
+        } else if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else {
@@ -719,7 +719,7 @@ public class ConditionService implements IConditionService {
         if (tCExecution.getManualExecution().equals("Y")) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTVISIBLE);
             mes.resolveDescription("ELEMENT", conditionValue1);
-        } else if (StringUtil.isEmpty(conditionValue1)) {
+        } else if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
@@ -761,7 +761,7 @@ public class ConditionService implements IConditionService {
         if (tCExecution.getManualExecution().equals("Y")) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUEMANUAL_IFELEMENTNOTVISIBLE);
             mes.resolveDescription("ELEMENT", conditionValue1);
-        } else if (StringUtil.isEmpty(conditionValue1)) {
+        } else if (StringUtil.isEmptyOrNull(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTVISIBLE_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOperator));
         } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
@@ -1082,7 +1082,7 @@ public class ConditionService implements IConditionService {
     }
 
     private String defaultIsSensitiveValue(String isCaseSensitive) {
-        if (StringUtil.isEmpty(isCaseSensitive)) {
+        if (StringUtil.isEmptyOrNull(isCaseSensitive)) {
             isCaseSensitive = "N";
         }
         return isCaseSensitive;

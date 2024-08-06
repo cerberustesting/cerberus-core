@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITestCaseDAO;
@@ -197,7 +196,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS tec.*, app.* FROM testcase tec ");
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
-        if (!Strings.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
+        if (!StringUtil.isEmptyOrNull(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
             // We don't join the label table if we don't need to.
             query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
@@ -214,11 +213,11 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(SqlUtil.generateInClause("app.`system`", system));
         }
 
-        if (!StringUtil.isEmpty(test)) {
+        if (!StringUtil.isEmptyOrNull(test)) {
             searchSQL.append(" AND tec.`test` = ?");
         }
 
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
@@ -251,7 +250,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         query.append(" group by tec.test, tec.testcase ");
 
-        if (!StringUtil.isEmpty(sortInformation)) {
+        if (!StringUtil.isEmptyOrNull(sortInformation)) {
             query.append(" order by ").append(sortInformation);
         }
 
@@ -274,10 +273,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, string);
                 }
             }
-            if (!StringUtil.isEmpty(test)) {
+            if (!StringUtil.isEmptyOrNull(test)) {
                 preStat.setString(i++, test);
             }
-            if (!Strings.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1465,11 +1464,11 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" AND ");
             searchSQL.append(SqlUtil.generateInClause("app.`system`", system));
         }
-        if (!StringUtil.isEmpty(test)) {
+        if (!StringUtil.isEmptyOrNull(test)) {
             searchSQL.append(" AND tec.`test` = ?");
         }
 
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (tec.`testcase` like ?");
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
@@ -1512,10 +1511,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, string);
                 }
             }
-            if (!StringUtil.isEmpty(test)) {
+            if (!StringUtil.isEmptyOrNull(test)) {
                 preStat.setString(i++, test);
             }
-            if (!Strings.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

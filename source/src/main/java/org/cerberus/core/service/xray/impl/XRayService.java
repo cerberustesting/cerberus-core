@@ -160,7 +160,7 @@ public class XRayService implements IXRayService {
 
                 LOG.debug("Checking call JIRA XRay TestExecution creation. {}", execution.getId());
 
-                if (!StringUtil.isEmpty(execution.getTag())) {
+                if (!StringUtil.isEmptyOrNull(execution.getTag())) {
                     currentTag = tagService.convert(tagService.readByKey(execution.getTag()));
 
                     if ((currentTag != null)) {
@@ -168,7 +168,7 @@ public class XRayService implements IXRayService {
                         int lock = 0;
 
                         // We lock the tag updating it to PENDING when empty.
-                        if (StringUtil.isEmpty(currentTag.getXRayTestExecution())) {
+                        if (StringUtil.isEmptyOrNull(currentTag.getXRayTestExecution())) {
                             lock = tagService.lockXRayTestExecution(currentTag.getTag(), currentTag);
                             LOG.debug("Lock attempt : {} on {}", lock, execution.getId());
                         }
@@ -336,7 +336,7 @@ public class XRayService implements IXRayService {
                 String clientID = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_xraycloud_clientid, system, "");
                 String clientSecret = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_xraycloud_clientsecret, system, "");
 
-                if (StringUtil.isEmpty(clientID) || StringUtil.isEmpty(clientSecret)) {
+                if (StringUtil.isEmptyOrNull(clientID) || StringUtil.isEmptyOrNull(clientSecret)) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
 

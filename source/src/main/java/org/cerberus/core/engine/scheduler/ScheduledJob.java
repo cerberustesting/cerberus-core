@@ -129,11 +129,11 @@ public class ScheduledJob implements Job {
                                             JSONObject temp1 = new JSONObject(json_string);
                                             StringBuilder message = new StringBuilder();
                                             message.append(temp1.getString("message"));
-                                            if (!StringUtil.isEmpty(temp1.getString("tag"))) {
+                                            if (!StringUtil.isEmptyOrNull(temp1.getString("tag"))) {
                                                 message.append(" Tag Execution : ");
                                                 message.append(temp1.getString("tag"));
                                             }
-                                            if (!StringUtil.isEmpty(message.toString())) {
+                                            if (!StringUtil.isEmptyOrNull(message.toString())) {
                                                 scheduledExecutionObject.setComment(message.toString());
                                             } else {
                                                 scheduledExecutionObject.setComment("Campaign triggered but result got no message output");

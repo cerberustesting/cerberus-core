@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -123,7 +123,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         try {
             JSONObject jsonResponse;
 
-            if (!Strings.isNullOrEmpty(request.getParameter("columnName"))) {
+            if (!StringUtil.isEmptyOrNull(request.getParameter("columnName"))) {
                 answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (queueid != 0) {

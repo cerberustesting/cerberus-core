@@ -155,21 +155,21 @@ public class UpdateCountryEnvParam extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(system)) {
+        if (StringUtil.isEmptyOrNull(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "System is missing"));
             ans.setResultMessage(msg);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
-        } else if (StringUtil.isEmpty(country)) {
+        } else if (StringUtil.isEmptyOrNull(country)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Country is missing"));
             ans.setResultMessage(msg);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
-        } else if (StringUtil.isEmpty(environment)) {
+        } else if (StringUtil.isEmptyOrNull(environment)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                     .replace("%OPERATION%", "Update")

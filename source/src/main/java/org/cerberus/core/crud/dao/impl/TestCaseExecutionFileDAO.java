@@ -197,7 +197,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (exf.`level` like ?");
             searchSQL.append(" or exf.`filename` like ?");
             searchSQL.append(" or exf.`filedesc` like ?");
@@ -221,7 +221,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -242,7 +242,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");

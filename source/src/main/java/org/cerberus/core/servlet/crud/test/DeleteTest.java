@@ -87,7 +87,7 @@ public class DeleteTest extends HttpServlet {
         String key = policy.sanitize(request.getParameter("test"));
 
         // Checking all constrains before calling the services.
-        if (StringUtil.isEmptyOrNullValue(key)) {
+        if (StringUtil.isEmptyOrNULLString(key)) {
             ans.setResultMessage(
                     new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
                             .resolveDescription("ITEM", "Test")
@@ -119,7 +119,7 @@ public class DeleteTest extends HttpServlet {
                     final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
                     if (!externallyUsedTestCaseSteps.isEmpty()) {
                         String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-                        if (StringUtil.isEmpty(cerberusUrlTemp)) {
+                        if (StringUtil.isEmptyOrNull(cerberusUrlTemp)) {
                             cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
                         }
                         final String cerberusUrl = cerberusUrlTemp;

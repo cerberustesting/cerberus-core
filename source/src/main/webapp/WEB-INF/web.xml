@@ -542,6 +542,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Homepage.jsp</url-pattern>
+            <url-pattern>/ImpactAnalysis.jsp</url-pattern>
             <url-pattern>/RobotList.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>

@@ -114,7 +114,7 @@ public class UpdateInvariant extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(id)) {
+        if (StringUtil.isEmptyOrNull(id)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Update")
@@ -127,7 +127,7 @@ public class UpdateInvariant extends HttpServlet {
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
             finalAnswer.setResultMessage(msg);
         } else if ((id.equals(Invariant.IDNAME_COUNTRY) || id.equals(Invariant.IDNAME_ENVIRONMENT) || id.equals(Invariant.IDNAME_SYSTEM))
-                && StringUtil.isEmpty(value)) {
+                && StringUtil.isEmptyOrNull(value)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Create")

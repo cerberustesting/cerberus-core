@@ -169,7 +169,7 @@ public final class ParameterParserUtil {
      */
     public static JSONArray parseJSONArrayParamAndDecode(String inParam, JSONArray defaultVal, String charset) {
 
-        if (StringUtil.isEmpty(inParam)) {
+        if (StringUtil.isEmptyOrNull(inParam)) {
             return defaultVal;
         }
 

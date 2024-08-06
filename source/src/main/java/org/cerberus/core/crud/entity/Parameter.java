@@ -89,6 +89,8 @@ public class Parameter {
     public static final String VALUE_cerberus_pdfcampaignreportdisplayciresult_boolean = "cerberus_pdfcampaignreportdisplayciresult_boolean";
     public static final String VALUE_cerberus_reportbytag_nblinestotriggerautohide_int = "cerberus_reportbytag_nblinestotriggerautohide_int";
     public static final String VALUE_cerberus_featureflipping_tagstatistics_enable = "cerberus_featureflipping_tagstatistics_enable";
+    public static final String VALUE_cerberus_jiracloud_url = "cerberus_jiracloud_url";
+    public static final String VALUE_cerberus_jiradc_url = "cerberus_jiradc_url";
 
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\","
             + "\"cerberus_smtp_password\",\"cerberus_executeCerberusCommand_password\",\"cerberus_xraycloud_clientsecret\",\"cerberus_xraycloud_clientid\",\"cerberus_xraydc_token\")";

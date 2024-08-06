@@ -120,19 +120,19 @@ public class UpdateMyUserReporting1 extends HttpServlet {
                     preferences.put("prj", projectList);
                 }
 
-                if (!StringUtil.isEmpty(ip)) {
+                if (!StringUtil.isEmptyOrNull(ip)) {
                     preferences.put("ip", ip);
                 }
-                if (!StringUtil.isEmpty(port)) {
+                if (!StringUtil.isEmptyOrNull(port)) {
                     preferences.put("p", port);
                 }
-                if (!StringUtil.isEmpty(tag)) {
+                if (!StringUtil.isEmptyOrNull(tag)) {
                     preferences.put("t", tag);
                 }
-                if (!StringUtil.isEmpty(browserversion)) {
+                if (!StringUtil.isEmptyOrNull(browserversion)) {
                     preferences.put("br", browserversion);
                 }
-                if (!StringUtil.isEmpty(comment)) {
+                if (!StringUtil.isEmptyOrNull(comment)) {
                     preferences.put("cm", comment);
                 }
 

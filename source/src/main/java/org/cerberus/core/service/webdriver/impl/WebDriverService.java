@@ -209,7 +209,7 @@ public class WebDriverService implements IWebDriverService {
         WebElement webElement = null;
         try {
             LOG.debug("Start scrollTo Webdriver with : " + identifier + " and text " + text + " and " + offsets);
-            if (StringUtil.isEmpty(text)) {
+            if (StringUtil.isEmptyOrNull(text)) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     webElement = (WebElement) answer.getItem();
@@ -235,7 +235,7 @@ public class WebDriverService implements IWebDriverService {
                     }
                 }
 
-                if (StringUtil.isEmpty(text)) {
+                if (StringUtil.isEmptyOrNull(text)) {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO).resolveDescription("VALUE", identifier.toString());
                     scrollElement(session, webElement, false, finalH, finalV);
                 } else {
@@ -248,7 +248,7 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SCROLL_NO_SUCH_ELEMENT);
-            if (StringUtil.isEmpty(text)) {
+            if (StringUtil.isEmptyOrNull(text)) {
                 message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             } else {
                 message.setDescription(message.getDescription().replace("%ELEMENT%", "'" + text + "' (by text)"));
@@ -314,7 +314,7 @@ public class WebDriverService implements IWebDriverService {
             }
             String newXpath = getNewXPathFromErratum(session, identifier);
             LOG.debug("NEW XPATH = " + newXpath);
-            if (!StringUtil.isEmpty(newXpath)) {
+            if (!StringUtil.isEmptyOrNull(newXpath)) {
                 locator = By.xpath(newXpath);
                 identifier.setIdentifier(Identifier.IDENTIFIER_XPATH);
                 identifier.setLocator(newXpath);
@@ -506,7 +506,7 @@ public class WebDriverService implements IWebDriverService {
                 /**
                  * If return is empty, we search for hidden tags
                  */
-                if (StringUtil.isEmpty(result)) {
+                if (StringUtil.isEmptyOrNull(result)) {
                     String script = "return arguments[0].innerHTML";
                     try {
                         result = (String) ((JavascriptExecutor) session.getDriver()).executeScript(script, webElement);
@@ -703,7 +703,7 @@ public class WebDriverService implements IWebDriverService {
             try {
                 WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
                 File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
-                if (!StringUtil.isEmpty(cropValues)) {
+                if (!StringUtil.isEmptyOrNull(cropValues)) {
                     BufferedImage fullImg = ImageIO.read(image);
                     // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
                     //Left, Top, largeur-Top, largeur-Left-Right, hauteur-Top-Bottom
@@ -1158,12 +1158,12 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     webElement.clear();
-                    if (!StringUtil.isEmptyOrNullValue(valueToType)) {
+                    if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                         webElement.sendKeys(valueToType);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                    if (!StringUtil.isEmptyOrNullValue(valueToType)) {
+                    if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                         message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
                     } else {
                         message.setDescription(message.getDescription().replace("%DATA%", "No property"));
@@ -1360,7 +1360,7 @@ public class WebDriverService implements IWebDriverService {
 
         MessageEvent message;
         try {
-            if (!StringUtil.isEmpty(identifier.getLocator())) {
+            if (!StringUtil.isEmptyOrNull(identifier.getLocator())) {
                 AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
                 if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                     WebElement webElement = (WebElement) answer.getItem();
@@ -1452,7 +1452,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         String url = "";
         try {
-            if (!StringUtil.isEmptyOrNullValue(identifier.getLocator())) {
+            if (!StringUtil.isEmptyOrNULLString(identifier.getLocator())) {
                 if (withBase) {
                     host = StringUtil.cleanHostURL(host);
                     url = StringUtil.getURLFromString(host, "", identifier.getLocator(), "");

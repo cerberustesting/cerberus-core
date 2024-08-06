@@ -56,7 +56,7 @@ public class CampaignExecutionService {
             List<Invariant> priorities = invariantService.readByIdName("PRIORITY");
             List<Invariant> countries = invariantService.readByIdName("COUNTRY");
             List<Invariant> environments = invariantService.readByIdName("ENVIRONMENT");
-            if (StringUtil.isNotEmpty(campaignId)) {
+            if (StringUtil.isNotEmptyOrNull(campaignId)) {
                 campaignExecutionId = findLastCampaignExecution(campaignId);
             }
             campaignExecution = Optional.ofNullable(tagService.convert(tagService.readByKey(campaignExecutionId)));

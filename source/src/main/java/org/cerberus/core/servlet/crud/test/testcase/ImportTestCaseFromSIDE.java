@@ -289,13 +289,13 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 default:
                     action = TestCaseStepAction.ACTION_DONOTHING;
                     description = "Unknow Selenium IDE command '" + commandS + "'";
-                    if (!StringUtil.isEmpty(command.getString("target"))) {
+                    if (!StringUtil.isEmptyOrNull(command.getString("target"))) {
                         description += " on target '" + convertElement(command) + "'";
                     }
-                    if (!StringUtil.isEmpty(command.getString("value"))) {
+                    if (!StringUtil.isEmptyOrNull(command.getString("value"))) {
                         description += " with value '" + command.getString("value") + "'";
                     }
-                    if (!StringUtil.isEmpty(command.getString("comment"))) {
+                    if (!StringUtil.isEmptyOrNull(command.getString("comment"))) {
                         description += " - " + command.getString("comment");
                     }
             }

@@ -89,7 +89,7 @@ public class CreateSqlLibrary extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(name)) {
+        if (StringUtil.isEmptyOrNull(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
                     .replace("%OPERATION%", "Create")

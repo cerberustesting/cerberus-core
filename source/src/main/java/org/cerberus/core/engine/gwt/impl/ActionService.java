@@ -293,12 +293,12 @@ public class ActionService implements IActionService {
 
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
-        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
             LOG.debug("Saving Image 1 on Action : " + identifier.getLocator());
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "value1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
-        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
             LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
             actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "value2"));
         }
@@ -967,7 +967,7 @@ public class ActionService implements IActionService {
                 return iosAppiumService.click(tCExecution.getSession(), identifier);
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                if (StringUtil.isEmpty(identifier.getLocator())) {
+                if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", "");
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
@@ -1021,7 +1021,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmpty(value1)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
 
@@ -1073,7 +1073,7 @@ public class ActionService implements IActionService {
                     return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                if (StringUtil.isEmpty(identifier.getLocator())) {
+                if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", "");
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
@@ -1097,7 +1097,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         String element;
         try {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmpty(value1)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
@@ -1275,7 +1275,7 @@ public class ActionService implements IActionService {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                if (StringUtil.isEmpty(identifier.getLocator())) {
+                if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");
                 }
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
@@ -1339,7 +1339,7 @@ public class ActionService implements IActionService {
                 return iosAppiumService.type(tCExecution.getSession(), identifier, value2, propertyName);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 String locator = "";
-                if (!StringUtil.isEmpty(value1)) {
+                if (!StringUtil.isEmptyOrNull(value1)) {
                     identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                     locator = identifier.getLocator();
                 }
@@ -1461,7 +1461,7 @@ public class ActionService implements IActionService {
                  * if element is integer, set time to that value else Get
                  * Identifier (identifier, locator)
                  */
-                if (StringUtil.isEmpty(element)) {
+                if (StringUtil.isEmptyOrNull(element)) {
                     timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
                 } else if (StringUtil.isInteger(element)) {
                     timeToWaitInMs = Long.valueOf(element);
@@ -1486,7 +1486,7 @@ public class ActionService implements IActionService {
                     return this.waitTime(timeToWaitInMs);
                 }
             } else { // For any other application we wait for the integer value.
-                if (StringUtil.isEmpty(element)) {
+                if (StringUtil.isEmptyOrNull(element)) {
                     // Get default wait from parameter
                     timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
                 } else if (StringUtil.isInteger(element)) {
@@ -1509,13 +1509,13 @@ public class ActionService implements IActionService {
              * (key to press) is mandatory For GUI and FAT, both parameters are
              * mandatory
              */
-            if (StringUtil.isEmpty(valueToKey)) {
+            if (StringUtil.isEmptyOrNull(valueToKey)) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
             }
             /**
              * Get Identifier (identifier, locator)
              */
-            if (StringUtil.isEmpty(element) && appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+            if (StringUtil.isEmptyOrNull(element) && appType.equalsIgnoreCase(Application.TYPE_GUI)) {
                 element = "xpath=//body";
             }
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(element);
@@ -1569,7 +1569,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            if (withBase && StringUtil.isEmpty(value1)) {
+            if (withBase && StringUtil.isEmptyOrNull(value1)) {
                 value1 = "/";
             }
             element = getElementToUse(value1, value2, "openUrl[WithBase]", execution);
@@ -1708,7 +1708,7 @@ public class ActionService implements IActionService {
             /**
              * Check object and property are not null
              */
-            if (StringUtil.isEmpty(value1) || StringUtil.isEmpty(value2)) {
+            if (StringUtil.isEmptyOrNull(value1) || StringUtil.isEmptyOrNull(value2)) {
                 return new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT);
             }
             /**
@@ -1796,11 +1796,11 @@ public class ActionService implements IActionService {
             /**
              * Check source and target are not null
              */
-            if (StringUtil.isEmpty(value1)) {
+            if (StringUtil.isEmptyOrNull(value1)) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
                 message.setDescription(message.getDescription().replace("%ELEMENT%", value1));
                 return message;
-            } else if (StringUtil.isEmpty(value2)) {
+            } else if (StringUtil.isEmptyOrNull(value2)) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
                 message.setDescription(message.getDescription().replace("%ELEMENT%", value2));
                 return message;
@@ -1892,7 +1892,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
         MessageEvent message;
         AnswerItem<String> answerDecode = new AnswerItem<>();
-        if (StringUtil.isEmpty(value1)) {
+        if (StringUtil.isEmptyOrNull(value1)) {
 
             // Value1 is a mandatory parameter.
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY);
@@ -1929,7 +1929,7 @@ public class ActionService implements IActionService {
                     }
 
                 } else {
-                    if (!(StringUtil.isEmpty(value2))) {
+                    if (!(StringUtil.isEmptyOrNull(value2))) {
                         // If value2 is fed with something, we control here that value is a valid property name and gets its defintion.
                         tccp = null;
                         propertyExistOnAnyCountry = false;
@@ -1985,7 +1985,7 @@ public class ActionService implements IActionService {
                         }
                     }
 
-                    if (!(StringUtil.isEmpty(value2))) {
+                    if (!(StringUtil.isEmptyOrNull(value2))) {
                         // If value2 is fed we force the result to value1.
                         tcExeData.setProperty(value1);
                     }
@@ -2021,7 +2021,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SETNETWORKTRAFFICCONTENT_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -2075,7 +2075,7 @@ public class ActionService implements IActionService {
         MessageEvent message;
         try {
             // Check that robot has executor activated
-            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmpty(exe.getRobotExecutorObj().getExecutorProxyHost())) {
+            if (!RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(exe.getRobotExecutorObj().getExecutorProxyType()) || StringUtil.isEmptyOrNull(exe.getRobotExecutorObj().getExecutorProxyHost())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_INDEXNETWORKTRAFFIC_ROBOTEXECUTORPROXYNOTACTIVATED);
                 message.setDescription(message.getDescription().replace("%ROBOT%", exe.getRobotExecutorObj().getRobot()).replace("%EXECUTOR%", exe.getRobotExecutorObj().getExecutor()));
                 return message;
@@ -2088,7 +2088,7 @@ public class ActionService implements IActionService {
             Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorExtensionHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
 
             NetworkTrafficIndex nti = new NetworkTrafficIndex();
-            if (StringUtil.isEmpty(value1)) {
+            if (StringUtil.isEmptyOrNull(value1)) {
                 value1 = "INDEX" + (exe.getNetworkTrafficIndexList().size() + 1);
             }
             nti.setName(value1);
@@ -2215,9 +2215,9 @@ public class ActionService implements IActionService {
     }
 
     private String getElementToUse(String value1, String value2, String action, TestCaseExecution execution) throws CerberusEventException {
-        if (!StringUtil.isEmpty(value1)) {
+        if (!StringUtil.isEmptyOrNull(value1)) {
             return value1;
-        } else if (!StringUtil.isEmpty(value2)) {
+        } else if (!StringUtil.isEmptyOrNull(value2)) {
             logEventService.createForPrivateCalls("ENGINE", action, LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
             LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + execution.getTest() + "'|'" + execution.getTestCase() + "'] Property : " + value2);
             return value2;

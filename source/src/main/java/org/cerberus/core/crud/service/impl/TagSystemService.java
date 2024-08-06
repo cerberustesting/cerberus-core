@@ -100,7 +100,7 @@ public class TagSystemService implements ITagSystemService {
 
     @Override
     public Answer createIfNotExist(String tag, String system, String user) {
-        if (!StringUtil.isEmpty(tag) && !StringUtil.isEmpty(system)) {
+        if (!StringUtil.isEmptyOrNull(tag) && !StringUtil.isEmptyOrNull(system)) {
             String keyCacheEntry = tag + "//!//" + system;
             if (!tagSystemCache.contains(keyCacheEntry) && !exist(tag, system)) {
                 tagSystemCache.add(keyCacheEntry);

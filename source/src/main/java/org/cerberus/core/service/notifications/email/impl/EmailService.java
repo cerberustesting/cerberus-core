@@ -43,7 +43,7 @@ public class EmailService implements IEmailService {
 
     @Override
     public void sendHtmlMail(Email cerberusEmail) throws Exception {
-        if (!StringUtil.isEmpty(cerberusEmail.getHost())
+        if (!StringUtil.isEmptyOrNull(cerberusEmail.getHost())
                 && !"mail.com".equals(cerberusEmail.getHost())) {
             // Smtp host is defined and not equal to default value.
 
@@ -60,7 +60,7 @@ public class EmailService implements IEmailService {
 //        email.setTLS(cerberusEmail.isSetTls());
             email.setDebug(true);
 
-            if (!StringUtil.isEmpty(cerberusEmail.getUserName()) || !StringUtil.isEmpty(cerberusEmail.getPassword())) {
+            if (!StringUtil.isEmptyOrNull(cerberusEmail.getUserName()) || !StringUtil.isEmptyOrNull(cerberusEmail.getPassword())) {
                 email.setAuthentication(cerberusEmail.getUserName(), cerberusEmail.getPassword());
             }
 
@@ -79,7 +79,7 @@ public class EmailService implements IEmailService {
                 email.addTo(emailaddress, name);
             }
 
-            if (!StringUtil.isEmpty(cerberusEmail.getCc())) {
+            if (!StringUtil.isEmptyOrNull(cerberusEmail.getCc())) {
                 String[] copy = cerberusEmail.getCc().split(";");
 
                 for (int i = 0; i < copy.length; i++) {

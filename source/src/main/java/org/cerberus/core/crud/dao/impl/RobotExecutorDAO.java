@@ -140,7 +140,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (rbe.`robot` like ?");
             searchSQL.append(" or rbe.`executor` like ?");
             searchSQL.append(" or rbe.`rank` like ?");
@@ -169,12 +169,12 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         if ((robot != null) && (!robot.isEmpty())) {
             searchSQL.append(" and (").append(SqlUtil.generateInClause("rbe.`robot`", robot)).append(")");
         }
-        if (!StringUtil.isEmpty(active)) {
+        if (!StringUtil.isEmptyOrNull(active)) {
             searchSQL.append(" and (`active` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -195,7 +195,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -219,7 +219,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                     preStat.setString(i++, myrobot);
                 }
             }
-            if (!StringUtil.isEmpty(active)) {
+            if (!StringUtil.isEmptyOrNull(active)) {
                 preStat.setString(i++, active);
             }
 
@@ -507,11 +507,11 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         query.append(" as distinctValues FROM robotexecutor ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isEmpty(robot)) {
+        if (!StringUtil.isEmptyOrNull(robot)) {
             searchSQL.append(" and (`robot` = ? )");
         }
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (src.`robot` like ?");
             searchSQL.append(" or src.`executor` like ?");
             searchSQL.append(" or src.`rank` like ?");
@@ -543,10 +543,10 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(robot)) {
+            if (!StringUtil.isEmptyOrNull(robot)) {
                 preStat.setString(i++, robot);
             }
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

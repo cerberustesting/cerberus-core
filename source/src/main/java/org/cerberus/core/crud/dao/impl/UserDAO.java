@@ -850,7 +850,7 @@ public class UserDAO implements IUserDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (usr.`login` like ?");
             searchSQL.append(" or usr.`name` like ?");
             searchSQL.append(" or usr.`team` like ?");
@@ -865,12 +865,12 @@ public class UserDAO implements IUserDAO {
             searchSQL.append(" or usr.`DefaultSystem` like ?");
             searchSQL.append(" or usr.`Email` like ?)");
         }
-        if (!StringUtil.isEmpty(individualSearch)) {
+        if (!StringUtil.isEmptyOrNull(individualSearch)) {
             searchSQL.append(" and (`").append(individualSearch).append("`)");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -888,7 +888,7 @@ public class UserDAO implements IUserDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -985,13 +985,13 @@ public class UserDAO implements IUserDAO {
         //were applied -- used for pagination p
         query.append("SELECT DISTINCT SQL_CALC_FOUND_ROWS usr.* FROM user usr ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             query.append("LEFT JOIN userrole usg ON usg.`Login` = usr.`Login`");
         }
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (usr.`login` like ?");
             searchSQL.append(" or usr.`name` like ?");
             searchSQL.append(" or usr.`team` like ?");
@@ -1018,7 +1018,7 @@ public class UserDAO implements IUserDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -1036,7 +1036,7 @@ public class UserDAO implements IUserDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -1264,7 +1264,7 @@ public class UserDAO implements IUserDAO {
                 preStat.setString(19, user.getAttribute03());
                 preStat.setString(20, user.getAttribute04());
                 preStat.setString(21, user.getAttribute05());
-                preStat.setString(22, StringUtil.isEmpty(user.getApiKey()) ? null : user.getApiKey());
+                preStat.setString(22, StringUtil.isEmptyOrNull(user.getApiKey()) ? null : user.getApiKey());
                 preStat.setString(23, user.getComment());
                 preStat.setString(24, user.getUsrModif());
                 preStat.setInt(25, user.getUserID());

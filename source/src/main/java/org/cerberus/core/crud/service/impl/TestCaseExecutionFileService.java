@@ -155,7 +155,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
                 extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
                 extension = extension.trim().toUpperCase();
             } else {
-                if (StringUtil.isEmptyOrNullValue(extension)) {
+                if (StringUtil.isEmptyOrNULLString(extension)) {
 
                     extension = "BIN";
 

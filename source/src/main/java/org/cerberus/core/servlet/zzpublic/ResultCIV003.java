@@ -108,9 +108,9 @@ public class ResultCIV003 extends HttpServlet {
                 String error_message = "";
 
                 // Checking the parameter validity. Tag is a mandatory parameter
-                if (StringUtil.isEmpty(tag)) {
+                if (StringUtil.isEmptyOrNull(tag)) {
 
-                    if (!StringUtil.isEmpty(campaign)) {
+                    if (!StringUtil.isEmptyOrNull(campaign)) {
                         ITagService tagService = appContext.getBean(ITagService.class);
 
                         List<Tag> myList;
@@ -123,7 +123,7 @@ public class ResultCIV003 extends HttpServlet {
                     }
 
                 }
-                if (StringUtil.isEmpty(tag)) {
+                if (StringUtil.isEmptyOrNull(tag)) {
                     error_message += "Error - Either specify a tag or specify a campaign to get the latest tag from that campaign.";
                     error = true;
 

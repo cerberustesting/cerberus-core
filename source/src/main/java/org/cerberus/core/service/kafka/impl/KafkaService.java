@@ -204,7 +204,7 @@ public class KafkaService implements IKafkaService {
                 "", null, "", null, null);
 
         // If token is defined, we add 'cerberus-token' on the http header.
-        if (!StringUtil.isEmpty(token)) {
+        if (!StringUtil.isEmptyOrNull(token)) {
             serviceHeader.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
@@ -828,7 +828,7 @@ public class KafkaService implements IKafkaService {
     private boolean isRecordMatch(String jsomEventMessage, String filterPath, String filterValue, String jsomMessage, String filterHeaderPath, String filterHeaderValue) {
         boolean match = true;
 
-        if (!StringUtil.isEmpty(filterPath)) {
+        if (!StringUtil.isEmptyOrNull(filterPath)) {
             String recordJSONfiltered = "";
             try {
                 recordJSONfiltered = jsonService.getStringFromJson(jsomEventMessage, filterPath);
@@ -847,7 +847,7 @@ public class KafkaService implements IKafkaService {
             }
         }
 
-        if (!StringUtil.isEmpty(filterHeaderPath)) {
+        if (!StringUtil.isEmptyOrNull(filterHeaderPath)) {
             String recordJSONfiltered = "";
             try {
                 recordJSONfiltered = jsonService.getStringFromJson(jsomMessage, filterHeaderPath);

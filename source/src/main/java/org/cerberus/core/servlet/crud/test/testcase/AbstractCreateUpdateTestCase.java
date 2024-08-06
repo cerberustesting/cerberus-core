@@ -122,7 +122,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(test) && StringUtil.isEmpty(testcase)) {
+        if (StringUtil.isEmptyOrNull(test) && StringUtil.isEmptyOrNull(testcase)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", this.getTypeOperation())
@@ -134,7 +134,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                 TestCase tc = getTestCaseFromRequest(request, getTestCaseBeforeTraitment(originalTest, originalTestCase));
                 updateTestCase(originalTest, originalTestCase, tc);
 
-                if (StringUtil.isEmpty(originalTest)) {
+                if (StringUtil.isEmptyOrNull(originalTest)) {
                     fireLogEvent(test, testcase, tc, request, response);
                 } else {
                     fireLogEvent(originalTest, originalTestCase, tc, request, response);

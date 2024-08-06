@@ -84,7 +84,7 @@ public class DeleteAppService extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(service)) {
+        if (StringUtil.isEmptyOrNull(service)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                     .replace("%OPERATION%", "Delete")

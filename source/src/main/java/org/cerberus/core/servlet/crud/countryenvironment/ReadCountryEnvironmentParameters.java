@@ -205,13 +205,13 @@ public class ReadCountryEnvironmentParameters extends HttpServlet {
     private JSONObject convertCountryEnvParamtoJSONObject(CountryEnvironmentParameters cepl) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(cepl));
-        if (StringUtil.isNotEmptyOrNullValue(StringUtil.getPasswordFromAnyUrl(cepl.getIp()))) {
+        if (StringUtil.isNotEmptyOrNULLString(StringUtil.getPasswordFromAnyUrl(cepl.getIp()))) {
             result.put("ip", cepl.getIp().replace(StringUtil.getPasswordFromAnyUrl(cepl.getIp()), StringUtil.SECRET_STRING));
         }
-        if (StringUtil.isNotEmptyOrNullValue(cepl.getSecret1())) {
+        if (StringUtil.isNotEmptyOrNULLString(cepl.getSecret1())) {
             result.put("secret1", StringUtil.SECRET_STRING);
         }
-        if (StringUtil.isNotEmptyOrNullValue(cepl.getSecret2())) {
+        if (StringUtil.isNotEmptyOrNULLString(cepl.getSecret2())) {
             result.put("secret2", StringUtil.SECRET_STRING);
         }
 

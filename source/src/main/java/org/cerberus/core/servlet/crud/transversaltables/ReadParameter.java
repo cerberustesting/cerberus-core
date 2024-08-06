@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +38,7 @@ import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -111,10 +111,10 @@ public class ReadParameter extends HttpServlet {
                 system1 = policy.sanitize(request.getParameter("system1"));
             }
 
-            if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)) {
+            if (request.getParameter("param") == null && StringUtil.isEmptyOrNull(columnName)) {
                 answer = findParameterList(system1, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            } else if (!StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(system1, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {

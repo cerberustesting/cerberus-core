@@ -215,12 +215,12 @@ public class SoapService implements ISoapService {
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
-        if (StringUtil.isEmpty(servicePath)) {
+        if (StringUtil.isEmptyOrNull(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
             result.setResultMessage(message);
             return result;
         }
-        if (StringUtil.isEmpty(envelope)) {
+        if (StringUtil.isEmptyOrNull(envelope)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_ENVELOPEMISSING);
             result.setResultMessage(message);
             return result;
@@ -234,7 +234,7 @@ public class SoapService implements ISoapService {
         if (token != null) {
             header.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
-        if (StringUtil.isEmpty(soapOperation)) {
+        if (StringUtil.isEmptyOrNull(soapOperation)) {
             header.add(factoryAppServiceHeader.create(null, "SOAPAction", "", true, 0, "", "", null, "", null));
         } else {
             header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + soapOperation + "\"", true, 0, "", "", null, "", null));
@@ -256,7 +256,7 @@ public class SoapService implements ISoapService {
             SOAPMessage input = createSoapRequest(envelope, soapOperation, header, token);
 
             //Add attachment File if specified
-            if (!StringUtil.isEmpty(attachmentUrl)) {
+            if (!StringUtil.isEmptyOrNull(attachmentUrl)) {
                 this.addAttachmentPart(input, attachmentUrl);
                 // Store the SOAP Call
                 out = new ByteArrayOutputStream();

@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,10 +119,10 @@ public class ReadAppService extends HttpServlet {
             String system;
             JSONObject jsonResponse = new JSONObject();
 
-            if (service == null && Strings.isNullOrEmpty(columnName)) {
+            if (service == null && StringUtil.isEmptyOrNull(columnName)) {
                 answer = findAppServiceList(appContext, userHasPermissions, request);
                 jsonResponse = answer.getItem();
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            } else if (!StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = answer.getItem();
             } else if (service != null && request.getParameter("limit") != null) {
@@ -219,7 +218,7 @@ public class ReadAppService extends HttpServlet {
             item.put("hasPermissions", userHasPermissions);
         }
         String system = "";
-        if (StringUtil.isNotEmpty(p.getApplication())) {
+        if (StringUtil.isNotEmptyOrNull(p.getApplication())) {
             try {
                 
                 Application app = applicationService.convert(applicationService.readByKey(p.getApplication()));

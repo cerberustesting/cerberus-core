@@ -99,8 +99,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         // We create the link between the tag and the system if it does not exist yet.
-        if (!StringUtil.isEmpty(tCExecution.getTag())
-                && !StringUtil.isEmpty(tCExecution.getSystem())
+        if (!StringUtil.isEmptyOrNull(tCExecution.getTag())
+                && !StringUtil.isEmptyOrNull(tCExecution.getSystem())
                 && !tagSystemService.exist(tCExecution.getTag(), tCExecution.getSystem())) {
             tagSystemService.create(factoryTagSystem.create(tCExecution.getTag(), tCExecution.getSystem(), tCExecution.getUsrCreated(), null, "", null));
         }
@@ -259,7 +259,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         TestCaseExecution testCaseExecution = tce.getItem();
 
         // Get Execution Tag.
-        if (!StringUtil.isEmpty(testCaseExecution.getTag())) {
+        if (!StringUtil.isEmptyOrNull(testCaseExecution.getTag())) {
             AnswerItem<Tag> ai = tagService.readByKey(testCaseExecution.getTag());
             testCaseExecution.setTagObj(ai.getItem());
         }

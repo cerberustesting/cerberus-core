@@ -91,6 +91,7 @@
                                         <img id="AppLogo" style="height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0"></img>
                                         <span id="tcDescription"
                                               style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
+                                        <span id="externalRef" style="display: none;cursor:pointer" class="label label-default">New</span>
                                     </div>
                                     <div class="text-wrap" id="returnMessage">
                                         <span id="exReturnMessage"

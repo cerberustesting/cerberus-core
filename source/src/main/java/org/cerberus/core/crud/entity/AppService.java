@@ -186,7 +186,7 @@ public class AppService {
                 jsonMyRequest.put("HTTP-TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("CalledURL", this.getServicePath());
-            if (!StringUtil.isEmpty(this.getMethod())) {
+            if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("HTTP-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
@@ -236,7 +236,7 @@ public class AppService {
             }
             jsonMyResponse.put("timings", jsonTimings);
             
-            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
+            if (!StringUtil.isEmptyOrNull(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
                     jsonMyResponse.put("HTTP-ResponseBody", respBody);
@@ -278,7 +278,7 @@ public class AppService {
             }
             jsonMyRequest.put("ConnectionString", this.getServicePath());
             jsonMyRequest.put("DatabaseCollection", this.getOperation());
-            if (!StringUtil.isEmpty(this.getMethod())) {
+            if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
@@ -289,7 +289,7 @@ public class AppService {
 
             // Response Information.
             jsonMyResponse.put("ResultNb", this.getResponseNb());
-            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
+            if (!StringUtil.isEmptyOrNull(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
                     jsonMyResponse.put("ResponseArray", respBody);
@@ -322,7 +322,7 @@ public class AppService {
                 jsonMyRequest.put("TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("Servers", this.getServicePath());
-            if (!StringUtil.isEmpty(this.getMethod())) {
+            if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("KAFKA-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());
@@ -348,7 +348,7 @@ public class AppService {
                 }
                 jsonMyRequest.put("KAFKA-Header", jsonHeaders);
             }
-            if (!StringUtil.isEmpty(this.getServiceRequest())) {
+            if (!StringUtil.isEmptyOrNull(this.getServiceRequest())) {
                 try {
                     JSONObject reqBody = new JSONObject(this.getServiceRequest());
                     jsonMyRequest.put("KAFKA-Value", reqBody);
@@ -356,7 +356,7 @@ public class AppService {
                     jsonMyRequest.put("KAFKA-Value", this.getServiceRequest());
                 }
             }
-            if (!StringUtil.isEmpty(this.getKafkaKey())) {
+            if (!StringUtil.isEmptyOrNull(this.getKafkaKey())) {
                 try {
                     JSONObject keyBody = new JSONObject(this.getKafkaKey());
                     jsonMyRequest.put("KAFKA-Key", keyBody);
@@ -390,7 +390,7 @@ public class AppService {
             if (this.getKafkaResponsePartition() >= 0) {
                 jsonMyResponse.put("Partition", this.getKafkaResponsePartition());
             }
-            if (!StringUtil.isEmpty(this.getResponseHTTPBody())) {
+            if (!StringUtil.isEmptyOrNull(this.getResponseHTTPBody())) {
                 try {
                     JSONArray respBody = new JSONArray(this.getResponseHTTPBody());
                     jsonMyResponse.put("Messages", respBody);
@@ -417,7 +417,7 @@ public class AppService {
                 jsonMyRequest.put("FTP-TimeOutMs", this.getTimeoutms());
             }
             jsonMyRequest.put("CalledURL", this.getServicePath());
-            if (!StringUtil.isEmpty(this.getMethod())) {
+            if (!StringUtil.isEmptyOrNull(this.getMethod())) {
                 jsonMyRequest.put("FTP-Method", this.getMethod());
             }
             jsonMyRequest.put("ServiceType", this.getType());

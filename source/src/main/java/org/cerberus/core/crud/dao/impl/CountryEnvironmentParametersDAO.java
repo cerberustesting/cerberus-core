@@ -329,7 +329,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (cea.`system` like ?");
             searchSQL.append(" or cea.`country` like ?");
             searchSQL.append(" or cea.`environment` like ?");
@@ -339,24 +339,24 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             searchSQL.append(" or cea.`URL` like ?");
             searchSQL.append(" or cea.`URLLOGIN` like ?)");
         }
-        if (!StringUtil.isEmpty(individualSearch)) {
+        if (!StringUtil.isEmptyOrNull(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (!StringUtil.isEmpty(system)) {
+        if (!StringUtil.isEmptyOrNull(system)) {
             searchSQL.append(" and (cea.`System` = ? )");
         }
-        if (!StringUtil.isEmpty(country)) {
+        if (!StringUtil.isEmptyOrNull(country)) {
             searchSQL.append(" and (cea.`country` = ? )");
         }
-        if (!StringUtil.isEmpty(environment)) {
+        if (!StringUtil.isEmptyOrNull(environment)) {
             searchSQL.append(" and (cea.`environment` = ? )");
         }
-        if (!StringUtil.isEmpty(application)) {
+        if (!StringUtil.isEmptyOrNull(application)) {
             searchSQL.append(" and (cea.`application` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -380,7 +380,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -390,19 +390,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                 }
-                if (!StringUtil.isEmpty(individualSearch)) {
+                if (!StringUtil.isEmptyOrNull(individualSearch)) {
                     preStat.setString(i++, individualSearch);
                 }
-                if (!StringUtil.isEmpty(system)) {
+                if (!StringUtil.isEmptyOrNull(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isEmpty(country)) {
+                if (!StringUtil.isEmptyOrNull(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isEmpty(environment)) {
+                if (!StringUtil.isEmptyOrNull(environment)) {
                     preStat.setString(i++, environment);
                 }
-                if (!StringUtil.isEmpty(application)) {
+                if (!StringUtil.isEmptyOrNull(application)) {
                     preStat.setString(i++, application);
                 }
                 ResultSet resultSet = preStat.executeQuery();
@@ -504,13 +504,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(system)) {
+                if (!StringUtil.isEmptyOrNull(system)) {
                     preStat.setString(i++, system);
                 }
-                if (!StringUtil.isEmpty(country)) {
+                if (!StringUtil.isEmptyOrNull(country)) {
                     preStat.setString(i++, country);
                 }
-                if (!StringUtil.isEmpty(environment)) {
+                if (!StringUtil.isEmptyOrNull(environment)) {
                     preStat.setString(i++, environment);
                 }
                 ResultSet resultSet = preStat.executeQuery();

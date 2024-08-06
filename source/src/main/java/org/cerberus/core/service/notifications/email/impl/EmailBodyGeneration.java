@@ -79,7 +79,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     .append(" left outer join application a on a.application=b.application ")
                     .append(" join buildrevisioninvariant bri on bri.versionname = b.revision and bri.`system` = '").append(system).append("'  and bri.`level` = 2 ")
                     .append(" where build = '").append(build).append("' and a.system = '").append(system).append("' ");
-            if (!StringUtil.isEmpty(lastRevision)) { // If lasRevision not defined, we take everything.
+            if (!StringUtil.isEmptyOrNull(lastRevision)) { // If lasRevision not defined, we take everything.
                 contentSQLSB.append(" and bri.seq > (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(lastRevision).append("' )  ");
             }
             contentSQLSB.append(" and bri.seq <= (select seq from buildrevisioninvariant where `system` = '").append(system).append("' and `level` = 2 and `versionname` = '").append(revision).append("' )  ")
@@ -138,7 +138,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                         } else {
                             releaseOwner = rsBC.getString("ReleaseOwner");
                         }
-                        if (!StringUtil.isEmpty(rsBC.getString("Link"))) {
+                        if (!StringUtil.isEmptyOrNull(rsBC.getString("Link"))) {
                             release = "<a target=\"_blank\" href=\"" + rsBC.getString("Link") + "\">" + release + "</a>";
                         }
                         if (rsBC.getString("BugIDFixed") != null) {
@@ -155,7 +155,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                                 + "<td  rowspan=\"2\">" + contentBuild + "/" + contentRev + "</td>"
                                 + "<td>" + contentAppli + "</td>"
                                 + "<td>" + Project + "</td>";
-                        if (StringUtil.isEmpty(contentBugURL)) {
+                        if (StringUtil.isEmptyOrNull(contentBugURL)) {
                             buildContentTable = buildContentTable + "<td>" + BugIDFixed + "</td>";
                         } else {
                             buildContentTable = buildContentTable + "<td><a target=\"_blank\" href=\"" + contentBugURL.replace("%BUGID%", BugIDFixed) + "\">" + BugIDFixed + "</a></td>";

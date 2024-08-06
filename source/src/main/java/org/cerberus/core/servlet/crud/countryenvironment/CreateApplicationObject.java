@@ -137,13 +137,13 @@ public class CreateApplicationObject extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(application)) {
+        if (StringUtil.isEmptyOrNull(application)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Application name is missing!"));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isEmpty(object)) {
+        } else if (StringUtil.isEmptyOrNull(object)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
                     .replace("%OPERATION%", "Create")

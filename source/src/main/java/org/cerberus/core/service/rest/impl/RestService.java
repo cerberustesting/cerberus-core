@@ -192,18 +192,18 @@ public class RestService implements IRestService {
         serviceREST.setTimeoutms(timeOutMs);
         MessageEvent message = null;
 
-        if (StringUtil.isEmpty(servicePath)) {
+        if (StringUtil.isEmptyOrNull(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SERVICEPATHMISSING);
             result.setResultMessage(message);
             return result;
         }
-        if (StringUtil.isEmpty(method)) {
+        if (StringUtil.isEmptyOrNull(method)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_METHODMISSING);
             result.setResultMessage(message);
             return result;
         }
         // If token is defined, we add 'cerberus-token' on the http header.
-        if (!StringUtil.isEmpty(token)) {
+        if (!StringUtil.isEmptyOrNull(token)) {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, true, 0, "", "", null, "", null));
         }
 
@@ -605,7 +605,7 @@ public class RestService implements IRestService {
                 for (AppServiceContent contentVal : contentList) {
                     if (contentVal.getValue().length() > 0 && contentVal.getValue().charAt(0) == '@') {
                         String filePath = contentVal.getValue().substring(1);
-                        if (StringUtil.isEmptyOrNullValue(filePath)) {
+                        if (StringUtil.isEmptyOrNULLString(filePath)) {
                             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                             message.resolveDescription("DESCRIPTION", "file path '" + filePath + "' is empty for key '" + contentVal.getKey() + "' in request details");
                             throw new CerberusEventException(message);
@@ -639,7 +639,7 @@ public class RestService implements IRestService {
                 break;
 
             default:
-                if (!(StringUtil.isEmpty(requestString))) {
+                if (!(StringUtil.isEmptyOrNull(requestString))) {
                     // If requestString is defined, we POST it.
                     serviceREST.setServiceRequest(requestString);
                     entity = new StringEntity(requestString, StandardCharsets.UTF_8);

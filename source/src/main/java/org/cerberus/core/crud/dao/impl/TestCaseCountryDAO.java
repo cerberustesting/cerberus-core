@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +37,7 @@ import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.SqlUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
@@ -181,7 +181,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             query.append(" AND ");
             query.append(SqlUtil.generateInClause("app.`system`", system));
         }
-        if (!Strings.isNullOrEmpty(test)) {
+        if (!StringUtil.isEmptyOrNull(test)) {
             query.append(" AND tcc.test = ?");
         }
         if (testcase != null) {
@@ -211,7 +211,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                     preStat.setString(i++, string);
                 }
             }
-            if (!Strings.isNullOrEmpty(test)) {
+            if (!StringUtil.isEmptyOrNull(test)) {
                 preStat.setString(i++, test);
             }
             if (testcase != null) {

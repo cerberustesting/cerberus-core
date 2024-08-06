@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.transversaltables;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,7 +114,7 @@ public class ReadLabel extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("id") == null) && (request.getParameter("system") == null) && Strings.isNullOrEmpty(columnName)) {
+            if ((request.getParameter("id") == null) && (request.getParameter("system") == null) && StringUtil.isEmptyOrNull(columnName)) {
                 answer = findLabelList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -123,7 +122,7 @@ public class ReadLabel extends HttpServlet {
                     Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                     answer = findLabelByKey(id, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (request.getParameter("system") != null && !Strings.isNullOrEmpty(columnName)) {
+                } else if (request.getParameter("system") != null && !StringUtil.isEmptyOrNull(columnName)) {
                     answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
@@ -340,13 +339,13 @@ public class ReadLabel extends HttpServlet {
                 // Standard pills
                 List<String> attributList = new ArrayList<>();
                 if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
-                    if (!StringUtil.isEmpty(label.getRequirementType()) && !"unknown".equalsIgnoreCase(label.getRequirementType())) {
+                    if (!StringUtil.isEmptyOrNull(label.getRequirementType()) && !"unknown".equalsIgnoreCase(label.getRequirementType())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementType() + "</span>");
                     }
-                    if (!StringUtil.isEmpty(label.getRequirementStatus()) && !"unknown".equalsIgnoreCase(label.getRequirementStatus())) {
+                    if (!StringUtil.isEmptyOrNull(label.getRequirementStatus()) && !"unknown".equalsIgnoreCase(label.getRequirementStatus())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementStatus() + "</span>");
                     }
-                    if (!StringUtil.isEmpty(label.getRequirementCriticity()) && !"unknown".equalsIgnoreCase(label.getRequirementCriticity())) {
+                    if (!StringUtil.isEmptyOrNull(label.getRequirementCriticity()) && !"unknown".equalsIgnoreCase(label.getRequirementCriticity())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getRequirementCriticity() + "</span>");
                     }
                 }

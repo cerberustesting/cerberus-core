@@ -96,7 +96,7 @@ public class CreateBatchInvariant extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(batch)) {
+        if (StringUtil.isEmptyOrNull(batch)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Batch")
                     .replace("%OPERATION%", "Create")

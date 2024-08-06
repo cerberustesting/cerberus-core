@@ -132,7 +132,7 @@ public class ServiceService implements IServiceService {
         try {
 
             // If Service information is not defined, we create it from request, servicePath and operation parameters forcing in SOAP mode.
-            if (StringUtil.isEmpty(service)) {
+            if (StringUtil.isEmptyOrNull(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_REST, "", null, "", "", manualRequest, "", "", "", "", "", "", "Automatically created Service from datalib.",
                         manualServicePathParam, true, "", manualOperation, false, "", false, "", false, "", null, null, null, null, null, null);
@@ -154,7 +154,7 @@ public class ServiceService implements IServiceService {
                         .resolveDescription("SERVICENAME", service)
                         .resolveDescription("DESCRIPTION", "Service does not exist !!");
 
-            } else if (StringUtil.isEmpty(appService.getServicePath())) {
+            } else if (StringUtil.isEmptyOrNull(appService.getServicePath())) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE)
                         .resolveDescription("SERVICENAME", service)
                         .resolveDescription("DESCRIPTION", "Service path is not defined");
@@ -197,7 +197,7 @@ public class ServiceService implements IServiceService {
                         // The URL defined inside the Service or directly from parameter is not complete and we need to add the first part taken either 
                         // the data from tCExecution of related database.
 
-                        if (StringUtil.isEmpty(database)) {
+                        if (StringUtil.isEmptyOrNull(database)) {
 
                             // We reformat servicePath in order to add the context from the application execution.
                             String targetHost = "";
@@ -208,7 +208,7 @@ public class ServiceService implements IServiceService {
                                 envappli = execution.getCountryEnvApplicationParam();
                             }
 
-                            if (StringUtil.isNotEmpty(envappli.getIp())) {
+                            if (StringUtil.isNotEmptyOrNull(envappli.getIp())) {
                                 targetHost = StringUtil.getURLFromString(envappli.getIp(), envappli.getUrl(), "", "");
                             } else {
                                 targetHost = execution.getUrl();
@@ -234,7 +234,7 @@ public class ServiceService implements IServiceService {
 
                                 } else {
                                     String soapURL = countryEnvironmentDatabase.getSoapUrl();
-                                    if (StringUtil.isEmpty(soapURL)) {
+                                    if (StringUtil.isEmptyOrNull(soapURL)) {
                                         message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLEMPTY)
                                                 .resolveDescription("SERVICEURL", appService.getServicePath())
                                                 .resolveDescription("SYSTEM", system)
@@ -816,7 +816,7 @@ public class ServiceService implements IServiceService {
         CountryEnvironmentParameters env = null;
         try {
             env = cepService.convert(cepService.readByKey(system, country, environment, application));
-            if ((env != null) && StringUtil.isNotEmpty(env.getIp())) {
+            if ((env != null) && StringUtil.isNotEmptyOrNull(env.getIp())) {
                 execution.setUrl(env.getIp());
             }
         } catch (CerberusException e) {

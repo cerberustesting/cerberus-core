@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.buildrevisionchange;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -137,7 +136,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getNonSVNRelease") != null)) { // getNonSVNRelease parameter trigger the list of Manual Release with corresponding links.
                 answer = findManualBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if ((request.getParameter("system") != null) && !Strings.isNullOrEmpty(columnName)) {
+            } else if ((request.getParameter("system") != null) && !StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
@@ -309,7 +308,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         appService = appContext.getBean(IApplicationService.class);
         cedtService = appContext.getBean(ICountryEnvDeployTypeService.class);
 
-        if (StringUtil.isEmpty(lastbuild)) {
+        if (StringUtil.isEmptyOrNull(lastbuild)) {
             lastbuild = build;
         }
 
@@ -355,7 +354,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
-        if (StringUtil.isEmpty(lastbuild)) {
+        if (StringUtil.isEmptyOrNull(lastbuild)) {
             lastbuild = build;
         }
 

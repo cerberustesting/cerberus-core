@@ -106,7 +106,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
         Table tableTitle = new Table(new float[]{600});
         Cell descCell = new Cell();
         descCell.add(new Paragraph(desc1).setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
-        if (StringUtil.isNotEmptyOrNullValue(desc2)) {
+        if (StringUtil.isNotEmptyOrNULLString(desc2)) {
             descCell.add(new Paragraph(desc2).setBold().setItalic().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
         }
         descCell.setMarginBottom(30).setBorder(Border.NO_BORDER).setVerticalAlignment(VerticalAlignment.MIDDLE);
@@ -149,7 +149,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
             document.add(new Paragraph().add(getTextFromString("", 10, false)));
             document.add(new Paragraph().add(getTextFromString("", 10, false)));
 
-            if (!StringUtil.isEmptyOrNullValue(tag.getDescription())) {
+            if (!StringUtil.isEmptyOrNULLString(tag.getDescription())) {
                 List<IElement> eleList = HtmlConverter.convertToElements(tag.getDescription());
                 Table tableDesc = new Table(new float[]{1000});
 
@@ -285,7 +285,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
 
             // Build Cerberus URL to execution.
             String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-            if (StringUtil.isEmpty(cerberusUrl)) {
+            if (StringUtil.isEmptyOrNull(cerberusUrl)) {
                 cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
             }
             cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -327,15 +327,15 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
 
             document.add(getTitleTable("Other technical details", "").setMarginLeft(0));
 
-            if (StringUtil.isEmptyOrNullValue(tag.getCampaign())) {
-                if (!StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+            if (StringUtil.isEmptyOrNULLString(tag.getCampaign())) {
+                if (!StringUtil.isEmptyOrNULLString(tag.getUsrCreated())) {
                     document.add(new Paragraph()
                             .add(getTextFromString("Triggered by ", 10, false))
                             .add(getTextFromString(tag.getUsrCreated(), 12, true))
                     );
                 }
             } else {
-                if (StringUtil.isEmptyOrNullValue(tag.getUsrCreated())) {
+                if (StringUtil.isEmptyOrNULLString(tag.getUsrCreated())) {
                     document.add(new Paragraph()
                             .add(getTextFromString("Triggered from campaign: ", 10, false))
                             .add(getTextFromString(tag.getCampaign(), 12, true))
@@ -650,7 +650,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
             String logoURL = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_instancelogo_url, "", "https://vm.cerberus-testing.org/img/logo.png");
             // Tittle
             ImageData imageDataLogo;
-            if (StringUtil.isNotEmptyOrNullValue(logoURL)) {
+            if (StringUtil.isNotEmptyOrNULLString(logoURL)) {
                 imageDataLogo = ImageDataFactory.create(logoURL);
             } else {
                 imageDataLogo = ImageDataFactory.create("https://vm.cerberus-testing.org/img/logo.png");

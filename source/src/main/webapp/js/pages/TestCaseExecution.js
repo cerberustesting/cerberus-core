@@ -429,6 +429,19 @@ function updatePage(data, steps) {
         $("#rerunTestCase").attr("disabled", true);
         $("#rerunTestCase").parent().attr("href", "#");
     } else {
+        if ((data.testCaseObj.origine === "Jira-Cloud" || data.testCaseObj.origine === "Jira-DC") && (data.testCaseObj.refOrigine !== "")) {
+            $("#externalRef").show();
+            $("#externalRef").text(data.testCaseObj.refOrigine);
+            if (data.testCaseObj.refOrigineUrl !== "") {
+                $("#externalRef").attr("onclick", "window.open('" + data.testCaseObj.refOrigineUrl + "')");
+                $("#externalRef").attr("style", "cursor:pointer");
+            } else {
+                $("#externalRef").removeAttr("onclick");
+                $("#externalRef").attr("style", "cursor:auto')");
+            }
+        } else {
+            $("#externalRef").hide();
+        }
         $("#editTcInfo").attr("disabled", false);
         $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);

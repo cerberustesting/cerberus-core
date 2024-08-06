@@ -151,7 +151,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         query.append(" WHERE 1=1");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (srv.Service like ?");
             searchSQL.append(" or srv.Application like ?");
             searchSQL.append(" or srv.Type like ?");
@@ -201,7 +201,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(UserSecurity.getSystemAllowForSQL("app.system"));
         query.append(" ) ");
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -216,7 +216,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -380,7 +380,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(" as distinctValues FROM appservice srv");
         query.append(" where 1=1");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (srv.Service like ?");
             searchSQL.append(" or srv.Collection like ?");
             searchSQL.append(" or srv.ServicePath like ?");
@@ -412,7 +412,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -481,7 +481,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             int i = 1;
             preStat.setString(i++, object.getService());
             preStat.setString(i++, object.getCollection());
-            if (StringUtil.isNotEmpty(object.getApplication())) {
+            if (StringUtil.isNotEmptyOrNull(object.getApplication())) {
                 preStat.setString(i++, object.getApplication());
             } else {
                 preStat.setString(i++, null);
@@ -499,7 +499,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getAvroSchemaKey());
             preStat.setBoolean(i++, object.isAvroEnableValue());
             preStat.setString(i++, object.getAvroSchemaValue());
-            if (StringUtil.isNotEmpty(object.getParentContentService())) {
+            if (StringUtil.isNotEmptyOrNull(object.getParentContentService())) {
                 preStat.setString(i++, object.getParentContentService());
             } else {
                 preStat.setString(i++, null);
@@ -569,7 +569,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getAvroSchemaKey());
             preStat.setBoolean(i++, object.isAvroEnableValue());
             preStat.setString(i++, object.getAvroSchemaValue());
-            if (StringUtil.isEmpty(object.getParentContentService())) {
+            if (StringUtil.isEmptyOrNull(object.getParentContentService())) {
                 preStat.setString(i++, null);
             } else {
                 preStat.setString(i++, object.getParentContentService());
@@ -587,7 +587,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getMethod());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, object.getFileName());
-            if (StringUtil.isNotEmpty(object.getApplication())) {
+            if (StringUtil.isNotEmptyOrNull(object.getApplication())) {
                 preStat.setString(i++, object.getApplication());
             }
             preStat.setString(i, service);

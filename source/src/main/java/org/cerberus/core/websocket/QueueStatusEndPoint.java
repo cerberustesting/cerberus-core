@@ -216,8 +216,6 @@ public class QueueStatusEndPoint {
      *
      * @param session the client {@link Session}
      * @param config the associated {@link EndpointConfig} to the new connection
-     * @param executionId the execution identifier from the
-     * {@link ServerEndpoint} path
      */
     @OnOpen
     public void openConnection(Session session, EndpointConfig config) {
@@ -244,9 +242,9 @@ public class QueueStatusEndPoint {
      * {@link ServerEndpoint} path
      */
     @OnClose
-    public void closedConnection(Session session, @PathParam("execution-id") long executionId) {
+    public void closedConnection(Session session) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Session " + session.getId() + " closed connection to execution " + executionId);
+            LOG.debug("Session " + session.getId() + " closed connection of queue status");
         }
         mainLock.lock();
         try {

@@ -256,14 +256,14 @@ public class RunTestCase extends HttpServlet {
 
             // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
             Robot robObj = null;
-            if (!StringUtil.isEmpty(robot)) {
+            if (!StringUtil.isEmptyOrNull(robot)) {
                 IRobotService robotService = appContext.getBean(IRobotService.class);
                 try {
                     robObj = robotService.readByKey(robot);
                     // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
                     browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
                     robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-                    if (StringUtil.isEmpty(robotDecli)) {
+                    if (StringUtil.isEmptyOrNull(robotDecli)) {
                         robotDecli = robObj.getRobot();
                     }
                     version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
@@ -303,7 +303,7 @@ public class RunTestCase extends HttpServlet {
             }
 
             // Create Tag when exist.
-            if (!StringUtil.isEmpty(tag)) {
+            if (!StringUtil.isEmptyOrNull(tag)) {
 
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);

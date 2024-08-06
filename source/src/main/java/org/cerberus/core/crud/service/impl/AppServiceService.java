@@ -95,7 +95,7 @@ public class AppServiceService implements IAppServiceService {
             if (appService != null) {
                 AnswerList<AppServiceContent> content;
                 // Add first the inherited values.
-                if (!StringUtil.isEmpty(appService.getParentContentService())) {
+                if (!StringUtil.isEmptyOrNull(appService.getParentContentService())) {
                     content = appServiceContentService.readByVarious(appService.getParentContentService());
                     if (content != null) {
                         List<AppServiceContent> contentList = content.getDataList();
@@ -132,7 +132,7 @@ public class AppServiceService implements IAppServiceService {
             if (appService != null) {
                 AnswerList<AppServiceContent> content;
                 // Add first the inherited values.
-                if (StringUtil.isNotEmpty(appService.getParentContentService())) {
+                if (StringUtil.isNotEmptyOrNull(appService.getParentContentService())) {
                     content = appServiceContentService.readByVarious(appService.getParentContentService(), activeDetail);
                     if (content != null) {
                         List<AppServiceContent> contentList = content.getDataList();
@@ -195,7 +195,7 @@ public class AppServiceService implements IAppServiceService {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             if (CollectionUtils.isNotEmpty(newAppService.getContentList())) {
                 newAppService.getContentList().forEach(appServiceContent -> {
-                    if (StringUtil.isEmpty(appServiceContent.getKey())) {
+                    if (StringUtil.isEmptyOrNull(appServiceContent.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceContent");
                     }
                     appServiceContent.setUsrCreated(newAppService.getUsrCreated() == null ? "" : newAppService.getUsrCreated());
@@ -210,7 +210,7 @@ public class AppServiceService implements IAppServiceService {
 
             if (CollectionUtils.isNotEmpty(newAppService.getHeaderList())) {
                 newAppService.getHeaderList().forEach(appServiceHeader -> {
-                    if (StringUtil.isEmpty(appServiceHeader.getKey())) {
+                    if (StringUtil.isEmptyOrNull(appServiceHeader.getKey())) {
                         throw new InvalidRequestException("A key is required for each ServiceHeader");
                     }
                     appServiceHeader.setUsrCreated(newAppService.getUsrCreated() == null ? "" : newAppService.getUsrCreated());
@@ -318,7 +318,7 @@ public class AppServiceService implements IAppServiceService {
     public String guessContentType(AppService service, String defaultValue) {
 
         // If service is null, Type is not defined.
-        if (service == null || StringUtil.isEmpty(service.getResponseHTTPBody())) {
+        if (service == null || StringUtil.isEmptyOrNull(service.getResponseHTTPBody())) {
             // Service is null so we don't know the format.
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
@@ -352,7 +352,7 @@ public class AppServiceService implements IAppServiceService {
         }
 
         // Header did not define the format and could not guess from file content.
-        if (StringUtil.isEmpty(defaultValue)) {
+        if (StringUtil.isEmptyOrNull(defaultValue)) {
             LOG.debug("Format guessed to value : " + AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT + " (No default value defined)");
             return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
@@ -363,7 +363,7 @@ public class AppServiceService implements IAppServiceService {
 
     @Override
     public String guessContentType(String content) {
-        if (StringUtil.isEmpty(content)) {
+        if (StringUtil.isEmptyOrNull(content)) {
             // Service is null so we don't know the format.
             return null;
         }

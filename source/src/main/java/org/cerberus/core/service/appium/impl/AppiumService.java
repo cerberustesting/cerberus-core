@@ -147,7 +147,7 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName) {
         MessageEvent message;
         try {
-            if (!StringUtil.isEmptyOrNullValue(valueToType)) {
+            if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
                 if (elmt instanceof MobileElement) {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(valueToType);
@@ -164,7 +164,7 @@ public abstract class AppiumService implements IAppiumService {
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            if (!StringUtil.isEmptyOrNullValue(valueToType)) {
+            if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
             } else {
                 message.setDescription(message.getDescription().replace("%DATA%", "No property"));

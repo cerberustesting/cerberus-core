@@ -91,7 +91,7 @@ public class DeleteTestCase extends AbstractCrudTestCase {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(test) || testCase == null) {
+        if (StringUtil.isEmptyOrNull(test) || testCase == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                     .replace("%OPERATION%", "Delete")

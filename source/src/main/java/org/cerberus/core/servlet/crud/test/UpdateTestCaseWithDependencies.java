@@ -121,7 +121,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(testId) || StringUtil.isEmpty(testCaseId)) {
+        if (StringUtil.isEmptyOrNull(testId) || StringUtil.isEmptyOrNull(testCaseId)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")

@@ -1090,12 +1090,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 // Record picture= files at Condition action level.
                 Identifier identifier = identifierService.convertStringToIdentifier(actionExecution.getConditionVal1());
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
                     actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "Condition1"));
                 }
                 identifier = identifierService.convertStringToIdentifier(actionExecution.getConditionVal2());
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
                     actionExecution.addFileList(recorderService.recordPicture(actionExecution, -1, identifier.getLocator(), "Condition2"));
                 }
@@ -1372,12 +1372,12 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 // Record picture= files at Condition control level.
                 Identifier identifier = identifierService.convertStringToIdentifier(controlExecution.getConditionVal1());
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
                     controlExecution.addFileList(recorderService.recordPicture(actionExecution, controlExecution.getControlId(), identifier.getLocator(), "Condition1"));
                 }
                 identifier = identifierService.convertStringToIdentifier(controlExecution.getConditionVal2());
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     LOG.debug("Saving Image 2 on Action : " + identifier.getLocator());
                     controlExecution.addFileList(recorderService.recordPicture(actionExecution, controlExecution.getControlId(), identifier.getLocator(), "Condition2"));
                 }
@@ -1572,7 +1572,7 @@ public class ExecutionRunService implements IExecutionRunService {
             break;
             case Application.TYPE_FAT:
                 LOG.debug("Stop Sikuli server for execution {} closing application {}", execution.getId(), execution.getCountryEnvApplicationParam().getIp());
-                if (!StringUtil.isEmpty(execution.getCountryEnvApplicationParam().getIp())) {
+                if (!StringUtil.isEmptyOrNull(execution.getCountryEnvApplicationParam().getIp())) {
                     this.sikuliService.doSikuliActionCloseApp(execution.getSession(), execution.getCountryEnvApplicationParam().getIp());
                 }
                 LOG.debug("Ask Sikuli to clean execution {}", execution.getId());

@@ -269,7 +269,7 @@ public class RobotExecutor {
 
     public String getHostWithCredential() {
         String credential = "";
-        if (!StringUtil.isEmpty(this.getHostUser())) {
+        if (!StringUtil.isEmptyOrNull(this.getHostUser())) {
             credential = this.getHostUser() + ":" + this.getHostPassword() + "@";
         }
 

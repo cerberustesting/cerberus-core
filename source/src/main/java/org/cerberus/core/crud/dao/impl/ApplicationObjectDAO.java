@@ -269,7 +269,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -291,7 +291,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -308,7 +308,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -373,7 +373,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (obj.`Application` like ?");
             searchSQL.append(" or obj.`Object` like ?");
             searchSQL.append(" or obj.`Value` like ?");
@@ -393,7 +393,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             searchSQL.append(" )");
         }
 
-        if (StringUtil.isNotEmpty(application)) {
+        if (StringUtil.isNotEmptyOrNull(application)) {
             searchSQL.append(" and (obj.`Application` = ? )");
         }
 
@@ -406,7 +406,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
 
@@ -423,7 +423,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -436,7 +436,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (StringUtil.isNotEmpty(application)) {
+            if (StringUtil.isNotEmptyOrNull(application)) {
                 preStat.setString(i++, application);
             }
 
@@ -588,7 +588,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         searchSQL.append("WHERE 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -617,7 +617,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -682,11 +682,11 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 .append(" as distinctValues FROM applicationobject obj ");
 
         searchSQL.append("WHERE 1=1");
-        if (StringUtil.isNotEmpty(application)) {
+        if (StringUtil.isNotEmptyOrNull(application)) {
             searchSQL.append(" and (`Application` = ? )");
         }
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -715,10 +715,10 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(application)) {
+            if (StringUtil.isNotEmptyOrNull(application)) {
                 preStat.setString(i++, application);
             }
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

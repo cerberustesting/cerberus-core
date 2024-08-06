@@ -84,7 +84,7 @@ public class VariableService implements IVariableService {
         /**
          * Nothing to decode if null or empty string.
          */
-        if (StringUtil.isEmpty(stringToDecode)) {
+        if (StringUtil.isEmptyOrNull(stringToDecode)) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Decoding : Nothing to decode on : " + stringToDecode);
             }
@@ -467,7 +467,7 @@ public class VariableService implements IVariableService {
 
                 String errorMess = "";
                 try {
-                    if (StringUtil.isNotEmpty(locale)) {
+                    if (StringUtil.isNotEmptyOrNull(locale)) {
                         errorMess = " in '" + variableMatcher.group(2) + "' with locale " + locale.split("-")[0];
                         LOG.debug("Decode Date Format : " + variableMatcher.group(2) + " with locale " + locale.split("-")[0]);
                         formater = new SimpleDateFormat(variableMatcher.group(2), new Locale(locale.split("-")[0]));

@@ -75,7 +75,7 @@ public class CampaignDAO implements ICampaignDAO {
                 .append("SELECT SQL_CALC_FOUND_ROWS * FROM campaign cpg ")
                 .append(" WHERE 1=1");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (cpg.campaign like ?");
             searchSQL.append(" or cpg.description like ?)");
         }
@@ -95,7 +95,7 @@ public class CampaignDAO implements ICampaignDAO {
 
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -111,7 +111,7 @@ public class CampaignDAO implements ICampaignDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
@@ -222,7 +222,7 @@ public class CampaignDAO implements ICampaignDAO {
                 .append(" as distinctValues FROM campaign cpg")
                 .append(" WHERE 1=1");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (campaign like ?");
             searchSQL.append(" or description like ?)");
         }
@@ -245,7 +245,7 @@ public class CampaignDAO implements ICampaignDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }

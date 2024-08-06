@@ -104,7 +104,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM batchinvariant a ");
         searchSQL.append(" where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`system` like ?");
             searchSQL.append(" or `batch` like ?");
             searchSQL.append(" or `description` like ?)");
@@ -125,7 +125,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
 
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -142,7 +142,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -292,7 +292,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
             searchSQL.append(SqlUtil.generateInClause("`System`", systems));
         }
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`system` like ?");
             searchSQL.append(" or `batch` like ?");
             searchSQL.append(" or `description` like ?)");
@@ -321,7 +321,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
                     preStat.setString(i++, system);
                 }
             }
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

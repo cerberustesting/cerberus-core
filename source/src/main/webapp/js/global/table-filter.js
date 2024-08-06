@@ -52,7 +52,7 @@ function resetFilters(oTable, columnNumber, clearGlobalSearch = false, doRedraw 
     }
     if (doRedraw) {
         oTable.fnDraw();
-    }
+}
 }
 
 function resetTooltip() {
@@ -394,11 +394,15 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                                         if (responseObject.distinctValues !== undefined) {
                                             result = responseObject.distinctValues;
                                         } else {
-                                            //TODO : To remove when all servlet have method to find distinct values
-                                            //if undefined, display the distinct value displayed in the table
-                                            result = data;
+                                            let newResult = JSON.parse(responseObject);
+                                            if (newResult.distinctValues !== undefined) {
+                                                result = newResult.distinctValues;
+                                            } else {
+                                                //TODO : To remove when all servlet have method to find distinct values
+                                                //if undefined, display the distinct value displayed in the table
+                                                result = data;
+                                            }
                                         }
-
                                     },
                                     error: function () {
                                         //TODO : To remove when all servlet have method to find distinct values

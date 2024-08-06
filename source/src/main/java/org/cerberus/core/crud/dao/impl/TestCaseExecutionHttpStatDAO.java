@@ -289,7 +289,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         for (TestCase testcase : testcases) {
             testcaseSQL.append(" (test = ? and testcase = ?) or ");
         }
-        if (!StringUtil.isEmpty(testcaseSQL.toString())) {
+        if (!StringUtil.isEmptyOrNull(testcaseSQL.toString())) {
             searchSQL.append("and (").append(testcaseSQL).append(" (0=1) ").append(")");
         }
         // controlStatus
@@ -469,7 +469,7 @@ public class TestCaseExecutionHttpStatDAO implements ITestCaseExecutionHttpStatD
         for (TestCase testcase : testcases) {
             testcaseSQL.append(" (test = ? and testcase = ?) or ");
         }
-        if (!StringUtil.isEmpty(testcaseSQL.toString())) {
+        if (!StringUtil.isEmptyOrNull(testcaseSQL.toString())) {
             searchSQL.append("and (").append(testcaseSQL).append(" (0=1) ").append(")");
         }
         // controlStatus

@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ILabelDAO;
@@ -182,7 +181,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (tel.`id` like ?");
             searchSQL.append(" or tel.`test` like ?");
             searchSQL.append(" or tel.`testcase` like ?");
@@ -204,7 +203,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -223,7 +222,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -436,7 +435,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             }
         }
 
-        if (!Strings.isNullOrEmpty(test)) {
+        if (!StringUtil.isEmptyOrNull(test)) {
             query.append(" AND tel.test = ?");
         }
         if (testcase != null) {
@@ -466,7 +465,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                     }
                 }
             }
-            if (!Strings.isNullOrEmpty(test)) {
+            if (!StringUtil.isEmptyOrNull(test)) {
                 preStat.setString(i++, test);
             }
             if (testcase != null) {
@@ -533,7 +532,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(" WHERE 1=1");
 
-        if (!Strings.isNullOrEmpty(type)) {
+        if (!StringUtil.isEmptyOrNull(type)) {
             query.append(" AND lab.type = ?");
         }
         if (system != null) {
@@ -550,7 +549,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
              PreparedStatement preStat = connection.prepareStatement(query.toString());
              Statement stm = connection.createStatement();) {
             int i = 1;
-            if (!Strings.isNullOrEmpty(type)) {
+            if (!StringUtil.isEmptyOrNull(type)) {
                 preStat.setString(i++, type);
             }
             if (system != null) {

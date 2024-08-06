@@ -111,7 +111,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         List<String> robotList = new ArrayList<>();
         for (Map.Entry<String, List<RobotExecutor>> entry : robot_executors.entrySet()) {
             String key = entry.getKey();
-            if (!StringUtil.isEmpty(key)) {
+            if (!StringUtil.isEmptyOrNull(key)) {
                 robotList.add(key);
             }
         }

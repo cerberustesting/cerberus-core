@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -200,12 +199,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append("(select MAX(exq.ID) from testcaseexecutionqueue exq ");
 
         query.append("where 1=1 ");
-        if (!StringUtil.isEmpty(tag)) {
+        if (!StringUtil.isEmptyOrNull(tag)) {
             query.append("and exq.tag = ? ");
         }
 
         query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country) ");
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             query.append("and (exq.`test` like ? ");
             query.append(" or exq.`testCase` like ? ");
             query.append(" or tec.`application` like ? ");
@@ -223,7 +222,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             query.append(" ) ");
         }
 
-        if (!StringUtil.isEmpty(sort)) {
+        if (!StringUtil.isEmptyOrNull(sort)) {
             query.append(" order by ").append(sort);
         }
 
@@ -244,10 +243,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             int i = 1;
-            if (!StringUtil.isEmpty(tag)) {
+            if (!StringUtil.isEmptyOrNull(tag)) {
                 preStat.setString(i++, tag);
             }
-            if (!Strings.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -477,7 +476,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         query.append(" WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (exq.ID like ?");
             searchSQL.append(" or exq.Test like ?");
             searchSQL.append(" or exq.TestCase like ?");
@@ -503,7 +502,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by exq.").append(column).append(" ").append(dir);
         }
 
@@ -523,7 +522,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             try {
                 int i = 1;
 
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -758,7 +757,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append(" as distinctValues FROM testcaseexecutionqueue exq");
         query.append(" where 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (exq.ID like ?");
             searchSQL.append(" or exq.Test like ?");
             searchSQL.append(" or exq.TestCase like ?");
@@ -790,7 +789,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -928,115 +927,115 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append(" inner join application app on tec.application = app.application ");
 
         String testClause = SqlUtil.generateInClause("exq.test", testList);
-        if (!StringUtil.isEmpty(testClause)) {
+        if (!StringUtil.isEmptyOrNull(testClause)) {
             whereClauses.add(testClause);
         }
 
         String applicationClause = SqlUtil.generateInClause("tec.application", applicationList);
-        if (!StringUtil.isEmpty(applicationClause)) {
+        if (!StringUtil.isEmptyOrNull(applicationClause)) {
             whereClauses.add(applicationClause);
         }
 
         //test case status: working, fully_implemented, ...
         String tcsClause = SqlUtil.generateInClause("exq.status", tcstatusList);
-        if (!StringUtil.isEmpty(tcsClause)) {
+        if (!StringUtil.isEmptyOrNull(tcsClause)) {
             whereClauses.add(tcsClause);
         }
 
         //type
         String typeClause = SqlUtil.generateInClause("tec.type", typeList);
-        if (!StringUtil.isEmpty(typeClause)) {
+        if (!StringUtil.isEmptyOrNull(typeClause)) {
             whereClauses.add(typeClause);
         }
         //test case active
         String isActiveClause = SqlUtil.generateInClause("tec.isActive", isActiveList);
-        if (!StringUtil.isEmpty(isActiveClause)) {
+        if (!StringUtil.isEmptyOrNull(isActiveClause)) {
             whereClauses.add(isActiveClause);
         }
 
         //test case active
         String priorityClause = SqlUtil.generateInClause("tec.Priority", priorityList);
-        if (!StringUtil.isEmpty(priorityClause)) {
+        if (!StringUtil.isEmptyOrNull(priorityClause)) {
             whereClauses.add(priorityClause);
         }
 
         //target sprint
         String targetMajorClause = SqlUtil.generateInClause("tec.TargetMajor", targetMajorList);
-        if (!StringUtil.isEmpty(targetMajorClause)) {
+        if (!StringUtil.isEmptyOrNull(targetMajorClause)) {
             whereClauses.add(targetMajorClause);
         }
 
         //target revision
         String targetMinorClause = SqlUtil.generateInClause("tec.TargetMinor", targetMinorList);
-        if (!StringUtil.isEmpty(targetMinorClause)) {
+        if (!StringUtil.isEmptyOrNull(targetMinorClause)) {
             whereClauses.add(targetMinorClause);
         }
 
         //creator
         String creatorClause = SqlUtil.generateInClause("tec.UsrCreated", creatorList);
-        if (!StringUtil.isEmpty(creatorClause)) {
+        if (!StringUtil.isEmptyOrNull(creatorClause)) {
             whereClauses.add(creatorClause);
         }
 
         //implementer
         String implementerClause = SqlUtil.generateInClause("tec.Implementer", implementerList);
-        if (!StringUtil.isEmpty(implementerClause)) {
+        if (!StringUtil.isEmptyOrNull(implementerClause)) {
             whereClauses.add(implementerClause);
         }
 
         //build
         String buildClause = SqlUtil.generateInClause("exq.Build", buildList);
-        if (!StringUtil.isEmpty(buildClause)) {
+        if (!StringUtil.isEmptyOrNull(buildClause)) {
             whereClauses.add(buildClause);
         }
         //revision
         String revisionClause = SqlUtil.generateInClause("exq.Revision", revisionList);
-        if (!StringUtil.isEmpty(revisionClause)) {
+        if (!StringUtil.isEmptyOrNull(revisionClause)) {
             whereClauses.add(revisionClause);
         }
         //environment
         String environmentClause = SqlUtil.generateInClause("exq.Environment", environmentList);
-        if (!StringUtil.isEmpty(environmentClause)) {
+        if (!StringUtil.isEmptyOrNull(environmentClause)) {
             whereClauses.add(environmentClause);
         }
         //country
         String countryClause = SqlUtil.generateInClause("exq.Country", countryList);
-        if (!StringUtil.isEmpty(countryClause)) {
+        if (!StringUtil.isEmptyOrNull(countryClause)) {
             whereClauses.add(countryClause);
         }
         //browser
         String browserClause = SqlUtil.generateInClause("exq.Browser", browserList);
-        if (!StringUtil.isEmpty(browserClause)) {
+        if (!StringUtil.isEmptyOrNull(browserClause)) {
             whereClauses.add(browserClause);
         }
         //test case execution
         String tcestatusClause = SqlUtil.generateInClause("exq.ControlStatus", tcestatusList);
-        if (!StringUtil.isEmpty(tcestatusClause)) {
+        if (!StringUtil.isEmptyOrNull(tcestatusClause)) {
             whereClauses.add(tcestatusClause);
         }
 
-        if (!StringUtil.isEmpty(system)) {
+        if (!StringUtil.isEmptyOrNull(system)) {
             whereClauses.add(" app.system like ? ");
         }
-        if (!StringUtil.isEmpty(ip)) {
+        if (!StringUtil.isEmptyOrNull(ip)) {
             whereClauses.add(" exq.IP like ? ");
         }
-        if (!StringUtil.isEmpty(port)) {
+        if (!StringUtil.isEmptyOrNull(port)) {
             whereClauses.add(" exq.port like ? ");
         }
-        if (!StringUtil.isEmpty(tag)) {
+        if (!StringUtil.isEmptyOrNull(tag)) {
             whereClauses.add(" exq.tag like ? ");
         }
-        if (!StringUtil.isEmpty(browserversion)) {
+        if (!StringUtil.isEmptyOrNull(browserversion)) {
             whereClauses.add(" exq.browserfullversion like ? ");
         }
-        if (!StringUtil.isEmpty(comment)) {
+        if (!StringUtil.isEmptyOrNull(comment)) {
             whereClauses.add(" exq.comment like ? ");
         }
-        if (!StringUtil.isEmpty(bugs)) {
+        if (!StringUtil.isEmptyOrNull(bugs)) {
             whereClauses.add(" tec.bugs like ? ");
         }
-        if (!StringUtil.isEmpty(ticket)) {
+        if (!StringUtil.isEmptyOrNull(ticket)) {
             whereClauses.add(" tec.Ticket like ? ");
         }
 
@@ -1138,29 +1137,29 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 }
             }
 
-            if (!StringUtil.isEmpty(system)) {
+            if (!StringUtil.isEmptyOrNull(system)) {
                 preStat.setString(++paramNumber, system);
             }
 
-            if (!StringUtil.isEmpty(ip)) {
+            if (!StringUtil.isEmptyOrNull(ip)) {
                 preStat.setString(++paramNumber, "%" + ip + "%");
             }
-            if (!StringUtil.isEmpty(port)) {
+            if (!StringUtil.isEmptyOrNull(port)) {
                 preStat.setString(++paramNumber, "%" + port + "%");
             }
-            if (!StringUtil.isEmpty(tag)) {
+            if (!StringUtil.isEmptyOrNull(tag)) {
                 preStat.setString(++paramNumber, "%" + tag + "%");
             }
-            if (!StringUtil.isEmpty(browserversion)) {
+            if (!StringUtil.isEmptyOrNull(browserversion)) {
                 preStat.setString(++paramNumber, "%" + browserversion + "%");
             }
-            if (!StringUtil.isEmpty(comment)) {
+            if (!StringUtil.isEmptyOrNull(comment)) {
                 preStat.setString(++paramNumber, "%" + comment + "%");
             }
-            if (!StringUtil.isEmpty(bugs)) {
+            if (!StringUtil.isEmptyOrNull(bugs)) {
                 preStat.setString(++paramNumber, "%" + bugs + "%");
             }
-            if (!StringUtil.isEmpty(ticket)) {
+            if (!StringUtil.isEmptyOrNull(ticket)) {
                 preStat.setString(++paramNumber, "%" + ticket + "%");
             }
 
@@ -2339,7 +2338,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
 //                robotHost = resultSet.getString("rbt.host");
                 queueRobot = resultSet.getString("exq.robot");
-                if (StringUtil.isEmpty(queueRobotHost)) {
+                if (StringUtil.isEmptyOrNull(queueRobotHost)) {
                     queueRobotHost = resultSet.getString("exq.robotIP");
                     queueRobotPort = resultSet.getString("exq.robotPort");
                 }

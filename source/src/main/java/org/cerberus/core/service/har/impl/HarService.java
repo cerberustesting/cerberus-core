@@ -231,7 +231,7 @@ public class HarService implements IHarService {
         try {
 
             String configFile = parameterService.getParameterStringByKey("cerberus_webperf_thirdpartyfilepath", "", "");
-            if (StringUtil.isEmpty(configFile)) {
+            if (StringUtil.isEmptyOrNull(configFile)) {
                 LOG.warn("Could not load config file of Web Third Party. Please define a valid parameter for cerberus_webperf_thirdpartyfilepath.");
                 return rules;
             }
@@ -312,7 +312,7 @@ public class HarService implements IHarService {
 
             // We ignore some requests.
             for (String string : ingoreRules) {
-                if ((!StringUtil.isEmpty(string)) && (myURL.getHost().toLowerCase().endsWith(string.toLowerCase()))) {
+                if ((!StringUtil.isEmptyOrNull(string)) && (myURL.getHost().toLowerCase().endsWith(string.toLowerCase()))) {
                     return PROVIDER_IGNORE;
                 }
             }
@@ -411,7 +411,7 @@ public class HarService implements IHarService {
                         JSONObject pA = new JSONObject();
                         for (int i = 0; i < pData.length(); i++) {
                             pA = pData.getJSONObject(i);
-                            if ((pA.has("name")) && (!StringUtil.isEmpty(pA.getString("name").trim()))) {
+                            if ((pA.has("name")) && (!StringUtil.isEmptyOrNull(pA.getString("name").trim()))) {
                                 pD.put(pA.getString("name").trim(), pA.getString("value"));
                             }
                         }
@@ -426,7 +426,7 @@ public class HarService implements IHarService {
                     JSONObject pA = new JSONObject();
                     for (int i = 0; i < pData.length(); i++) {
                         pA = pData.getJSONObject(i);
-                        if ((pA.has("name")) && (!StringUtil.isEmpty(pA.getString("name").trim()))) {
+                        if ((pA.has("name")) && (!StringUtil.isEmptyOrNull(pA.getString("name").trim()))) {
                             pD.put(pA.getString("name").trim(), pA.getString("value"));
                         }
                     }
@@ -990,7 +990,7 @@ public class HarService implements IHarService {
     @Override
     public JSONObject removeFirstHitsandFilterURL(JSONObject har, Integer indexStart, String urlFilter) {
         LOG.debug("Remove First entries from HAR file from index " + indexStart + " and Filter using : " + urlFilter);
-        if ((indexStart < 1) && StringUtil.isEmpty(urlFilter)) {
+        if ((indexStart < 1) && StringUtil.isEmptyOrNull(urlFilter)) {
             return har;
         }
         try {
@@ -1001,8 +1001,8 @@ public class HarService implements IHarService {
             for (int i = 0; i < harEntries.length(); i++) {
                 if (i >= indexStart) {
                     // Only add the entries if index is reached
-                    if ((!StringUtil.isEmpty(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter))
-                            || StringUtil.isEmpty(urlFilter)) {
+                    if ((!StringUtil.isEmptyOrNull(urlFilter) && harEntries.getJSONObject(i).getJSONObject("request").getString("url").contains(urlFilter))
+                            || StringUtil.isEmptyOrNull(urlFilter)) {
                         // Only add the entries if the url to filter is defined and url contains it.
                         newLogEntries.put(harEntries.getJSONObject(i));
                     }

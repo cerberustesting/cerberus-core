@@ -38,9 +38,9 @@ public class FactoryDocumentation implements IFactoryDocumentation {
         documentation.setDocValue(docValue);
         documentation.setDocLabel(docLabel);
         documentation.setDocDesc(docDesc);
-        documentation.setHavedocDesc(!(StringUtil.isEmpty(docDesc)));
+        documentation.setHavedocDesc(!(StringUtil.isEmptyOrNull(docDesc)));
         documentation.setDocAnchor(docAnchor);
-        documentation.setHaveDocAnchor(!(StringUtil.isEmpty(docAnchor)));
+        documentation.setHaveDocAnchor(!(StringUtil.isEmptyOrNull(docAnchor)));
         return documentation;
     }
 

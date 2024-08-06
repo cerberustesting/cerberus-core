@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testcampaign;
 
-import com.google.common.base.*;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,10 +97,10 @@ public class ReadCampaign extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            if (request.getParameter("campaign") == null && Strings.isNullOrEmpty(columnName)) {
+            if (request.getParameter("campaign") == null && StringUtil.isEmptyOrNull(columnName)) {
                 answer = findCampaignList(userHasPermissions, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            } else if (!StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -201,13 +200,13 @@ public class ReadCampaign extends HttpServlet {
 
             for (Campaign campaign : answer.getDataList()) {
                 jsonArray.put(convertToJSONObject(campaign));
-                if (!StringUtil.isEmpty(campaign.getGroup1())) {
+                if (!StringUtil.isEmptyOrNull(campaign.getGroup1())) {
                     gp1.put(campaign.getGroup1(), true);
                 }
-                if (!StringUtil.isEmpty(campaign.getGroup2())) {
+                if (!StringUtil.isEmptyOrNull(campaign.getGroup2())) {
                     gp2.put(campaign.getGroup2(), true);
                 }
-                if (!StringUtil.isEmpty(campaign.getGroup3())) {
+                if (!StringUtil.isEmptyOrNull(campaign.getGroup3())) {
                     gp3.put(campaign.getGroup3(), true);
                 }
             }

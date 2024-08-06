@@ -96,7 +96,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(test) || StringUtil.isEmpty(testCase)) {
+        if (StringUtil.isEmptyOrNull(test) || StringUtil.isEmptyOrNull(testCase)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")

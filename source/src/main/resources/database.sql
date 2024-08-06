@@ -6464,3 +6464,12 @@ ALTER TABLE countryenvironmentparameters
     ADD Secret1 varchar(200) DEFAULT '' NOT NULL AFTER Var4,
     ADD Secret2 varchar(200) DEFAULT '' NOT NULL AFTER Secret1,
     ADD `IsActive` BOOLEAN DEFAULT 1 AFTER Application;
+
+-- 1827
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_jiracloud_url', '', 'JIRA Cloud Site URL. Ex : http://yourcompany.atlassian.net/'),
+    ('', 'cerberus_jiradc_url', '', 'JIRA DC Site URL. Ex : http://yourcompany.atlassian.net/');
+
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES 
+    ('EXTERNALPROVIDER', 'Jira-Cloud', '150', 'JIRA Cloud', ''),
+    ('EXTERNALPROVIDER', 'Jira-DC', '160', 'JIRA DC', '');

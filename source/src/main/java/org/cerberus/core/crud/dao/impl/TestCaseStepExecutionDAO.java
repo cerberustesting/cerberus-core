@@ -249,10 +249,10 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepexecution a ");
         query.append("where 1=1 and id = ? ");
-        if (!(StringUtil.isEmpty(test))) {
+        if (!(StringUtil.isEmptyOrNull(test))) {
             query.append("and test = ? ");
         }
-        if (!(StringUtil.isEmpty(testcase))) {
+        if (!(StringUtil.isEmptyOrNull(testcase))) {
             query.append("and testcase = ? ");
         }
         query.append(" order by start ");
@@ -270,10 +270,10 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
             try {
                 int i = 1;
                 preStat.setLong(i++, executionId);
-                if (!(StringUtil.isEmpty(test))) {
+                if (!(StringUtil.isEmptyOrNull(test))) {
                     preStat.setString(i++, test);
                 }
-                if (!(StringUtil.isEmpty(testcase))) {
+                if (!(StringUtil.isEmptyOrNull(testcase))) {
                     preStat.setString(i++, testcase);
                 }
                 ResultSet resultSet = preStat.executeQuery();

@@ -93,7 +93,7 @@ public class UpdateParameter extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(id) || StringUtil.isEmpty(system1)) {
+        if (StringUtil.isEmptyOrNull(id) || StringUtil.isEmptyOrNull(system1)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Parameter")
                     .replace("%OPERATION%", "Update")

@@ -130,7 +130,7 @@ public class CreateApplication extends HttpServlet {
 
         boolean emptycountryenv_error = false;
         for (CountryEnvironmentParameters cea : ceaList) {
-            if ((StringUtil.isEmpty(cea.getCountry())) || (StringUtil.isEmpty(cea.getEnvironment()))) {
+            if ((StringUtil.isEmptyOrNull(cea.getCountry())) || (StringUtil.isEmptyOrNull(cea.getEnvironment()))) {
                 emptycountryenv_error = true;
             }
         }
@@ -142,13 +142,13 @@ public class CreateApplication extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(application)) {
+        if (StringUtil.isEmptyOrNull(application)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Application name is missing!"));
             finalAnswer.setResultMessage(msg);
-        } else if (StringUtil.isEmpty(system)) {
+        } else if (StringUtil.isEmptyOrNull(system)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
                     .replace("%OPERATION%", "Create")

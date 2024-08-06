@@ -103,7 +103,7 @@ public class GetEnvironmentsLastChangePerCountry extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (StringUtil.isEmpty(system)) {
+            if (StringUtil.isEmptyOrNull(system)) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Environment Last Change per Country")
                         .replace("%OPERATION%", "Read")

@@ -119,7 +119,7 @@ public class ChatService implements IChatService {
 
         httpclient = httpclientBuilder.build();
 
-        if (!StringUtil.isEmpty(threadKey)) {
+        if (!StringUtil.isEmptyOrNull(threadKey)) {
             webHook += "&threadKey=" + threadKey;
         }
         HttpPost post = new HttpPost(webHook);

@@ -255,7 +255,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder query = new StringBuilder();
         query.append("select * from testcaseexecution exe ");
         searchSQL.append(" where 1=1 ");
-        if (StringUtil.isNotEmpty(application)) {
+        if (StringUtil.isNotEmptyOrNull(application)) {
             searchSQL.append(" and (`application` = ? )");
         }
         query.append(searchSQL);
@@ -266,7 +266,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
                 query.toString(), ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
-            if (StringUtil.isNotEmpty(application)) {
+            if (StringUtil.isNotEmptyOrNull(application)) {
                 preStat.setString(1, application);
             }
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -460,31 +460,31 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder query = new StringBuilder();
         query.append("SELECT exe.* FROM testcaseexecution exe ")
                 .append("WHERE exe.test = ? AND exe.testcase = ? AND exe.country = ? AND exe.browser = ? ");
-        if (StringUtil.isNotEmptyOrNullValue(environment)) {
+        if (StringUtil.isNotEmptyOrNULLString(environment)) {
             query.append("AND exe.environment IN (");
             query.append(environment);
             query.append(") ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(build)) {
+        if (StringUtil.isNotEmptyOrNULLString(build)) {
             query.append("AND exe.build IN (");
             query.append(build);
             query.append(") ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(revision)) {
+        if (StringUtil.isNotEmptyOrNULLString(revision)) {
             query.append("AND exe.revision IN (");
             query.append(revision);
             query.append(") ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(browserVersion)) {
+        if (StringUtil.isNotEmptyOrNULLString(browserVersion)) {
             query.append("AND exe.browserfullversion LIKE ? ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(ip)) {
+        if (StringUtil.isNotEmptyOrNULLString(ip)) {
             query.append("AND exe.ip LIKE ? ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(port)) {
+        if (StringUtil.isNotEmptyOrNULLString(port)) {
             query.append("AND exe.port LIKE ? ");
         }
-        if (StringUtil.isNotEmptyOrNullValue(tag)) {
+        if (StringUtil.isNotEmptyOrNULLString(tag)) {
             query.append("AND exe.tag LIKE ? ");
         }
         query.append("ORDER BY exe.id DESC");
@@ -496,16 +496,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(i++, testCase);
             preStat.setString(i++, country);
             preStat.setString(i++, browser);
-            if (StringUtil.isNotEmptyOrNullValue(browserVersion)) {
+            if (StringUtil.isNotEmptyOrNULLString(browserVersion)) {
                 preStat.setString(i++, browserVersion);
             }
-            if (StringUtil.isNotEmptyOrNullValue(ip)) {
+            if (StringUtil.isNotEmptyOrNULLString(ip)) {
                 preStat.setString(i++, ip);
             }
-            if (StringUtil.isNotEmptyOrNullValue(port)) {
+            if (StringUtil.isNotEmptyOrNULLString(port)) {
                 preStat.setString(i++, port);
             }
-            if (StringUtil.isNotEmptyOrNullValue(tag)) {
+            if (StringUtil.isNotEmptyOrNULLString(tag)) {
                 preStat.setString(i, tag);
             }
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -583,11 +583,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("where exe.ID IN ")
                 .append("(select MAX(exe.ID) from testcaseexecution exe ")
                 .append("where 1=1 ");
-        if (StringUtil.isNotEmpty(tag)) {
+        if (StringUtil.isNotEmptyOrNull(tag)) {
             query.append("and exe.tag = ? ");
         }
         query.append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country) ");
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             query.append("and (exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
             query.append(" or exe.`application` like ? ");
@@ -604,7 +604,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
             query.append(" ) ");
         }
-        if (StringUtil.isNotEmpty(sort)) {
+        if (StringUtil.isNotEmptyOrNull(sort)) {
             query.append(" order by ").append(sort);
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -616,11 +616,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 preStat -> {
                     int i = 1;
-                    if (StringUtil.isNotEmpty(tag)) {
+                    if (StringUtil.isNotEmptyOrNull(tag)) {
                         preStat.setString(i++, tag);
                     }
 
-                    if (StringUtil.isNotEmpty(searchTerm)) {
+                    if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                         preStat.setString(i++, "%" + searchTerm + "%");
                         preStat.setString(i++, "%" + searchTerm + "%");
                         preStat.setString(i++, "%" + searchTerm + "%");
@@ -669,7 +669,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         searchSQL.append(" and start >= ? and start <= ? ");
         StringBuilder testcaseSQL = new StringBuilder();
         testcases.forEach(testCase -> testcaseSQL.append(" (test = ? and testcase = ?) or "));
-        if (StringUtil.isNotEmpty(testcaseSQL.toString())) {
+        if (StringUtil.isNotEmptyOrNull(testcaseSQL.toString())) {
             searchSQL.append("and (").append(testcaseSQL).append(" (0=1) ").append(")");
         }
         query.append(searchSQL);
@@ -857,7 +857,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecution exe ")
                 .append("where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             query.append("and (exe.`id` like ? ");
             query.append(" or exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
@@ -900,7 +900,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" and ").append(SqlUtil.generateInClause("exe.`system`", systems)).append(" ");
         }
         query.append(" AND ").append(UserSecurity.getSystemAllowForSQL("exe.`system`"));
-        if (StringUtil.isNotEmpty(sort)) {
+        if (StringUtil.isNotEmptyOrNull(sort)) {
             query.append(" order by ").append(sort);
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -913,7 +913,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1059,7 +1059,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append(" as distinctValues FROM testcaseexecution exe ")
                 .append("where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchParameter)) {
+        if (StringUtil.isNotEmptyOrNull(searchParameter)) {
             query.append("and (exe.`id` like ? ");
             query.append(" or exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
@@ -1102,7 +1102,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchParameter)) {
+            if (StringUtil.isNotEmptyOrNull(searchParameter)) {
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");

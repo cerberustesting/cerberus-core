@@ -258,13 +258,13 @@ public class ControlService implements IControlService {
 
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
-        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
             LOG.warn("Saving Image 1 on Control : {}", identifier.getLocator());
 
             controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
-        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmpty(identifier.getLocator())) {
+        if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
             LOG.warn("Saving Image 2 on Control : {}", identifier.getLocator());
             controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "2"));
         }
@@ -731,7 +731,7 @@ public class ControlService implements IControlService {
         LOG.debug("Control: verifyElementPresent on: {}", elementPath);
         MessageEvent mes;
 
-        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
+        if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
@@ -835,7 +835,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotPresent(TestCaseExecution execution, String elementPath) {
         LOG.debug("Control: verifyElementNotPresent on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
+        if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
             if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
@@ -943,7 +943,7 @@ public class ControlService implements IControlService {
         if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
 
-            if (!StringUtil.isEmptyOrNullValue(element) && !StringUtil.isEmptyOrNullValue(childElement)) {
+            if (!StringUtil.isEmptyOrNULLString(element) && !StringUtil.isEmptyOrNULLString(childElement)) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
                     Identifier childIdentifier = identifierService.convertStringToIdentifier(childElement);
@@ -979,7 +979,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String elementPath) {
         LOG.debug("Control: verifyElementVisible on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
+        if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -1038,7 +1038,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotVisible(TestCaseExecution execution, String elementPath) {
         LOG.debug("Control: verifyElementNotVisible on: {}", elementPath);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(elementPath)) {
+        if (!StringUtil.isEmptyOrNULLString(elementPath)) {
             if (execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || execution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -1100,7 +1100,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementChecked(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementChecked on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
+        if (!StringUtil.isEmptyOrNULLString(html)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -1130,7 +1130,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotChecked(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementNotChecked on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
+        if (!StringUtil.isEmptyOrNULLString(html)) {
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -1848,7 +1848,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementClickable(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementClickable: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
+        if (!StringUtil.isEmptyOrNULLString(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {
@@ -1876,7 +1876,7 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementNotClickable(TestCaseExecution tCExecution, String html) {
         LOG.debug("Control: verifyElementNotClickable on: {}", html);
         MessageEvent mes;
-        if (!StringUtil.isEmptyOrNullValue(html)) {
+        if (!StringUtil.isEmptyOrNULLString(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             if (tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getAppTypeEngine().equalsIgnoreCase(Application.TYPE_APK)) {

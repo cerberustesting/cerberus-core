@@ -154,7 +154,7 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(" where 1=1 ");
         }
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (tag.`id` like ?");
             searchSQL.append(" or tag.`tag` like ?");
             searchSQL.append(" or tag.`description` like ?");
@@ -170,12 +170,12 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(" )");
         }
 
-        if (StringUtil.isNotEmpty(campaign)) {
+        if (StringUtil.isNotEmptyOrNull(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -196,7 +196,7 @@ public class TagDAO implements ITagDAO {
                 }
             }
 
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -205,7 +205,7 @@ public class TagDAO implements ITagDAO {
             for (String individualColumnSearchValue : individualColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (!StringUtil.isEmpty(campaign)) {
+            if (!StringUtil.isEmptyOrNull(campaign)) {
                 preStat.setString(i, campaign);
             }
 
@@ -444,19 +444,19 @@ public class TagDAO implements ITagDAO {
         StringBuilder valuesQuery = new StringBuilder();
         query.append("INSERT INTO tag (`tag`, `description`");
         valuesQuery.append("VALUES (?,?");
-        if (StringUtil.isNotEmpty(object.getCampaign())) {
+        if (StringUtil.isNotEmptyOrNull(object.getCampaign())) {
             query.append(", `campaign`");
             valuesQuery.append(",?");
         }
-        if (StringUtil.isNotEmpty(object.getUsrCreated())) {
+        if (StringUtil.isNotEmptyOrNull(object.getUsrCreated())) {
             query.append(", `usrcreated`");
             valuesQuery.append(",?");
         }
-        if (StringUtil.isNotEmpty(object.getReqCountryList())) {
+        if (StringUtil.isNotEmptyOrNull(object.getReqCountryList())) {
             query.append(", `ReqCountryList`");
             valuesQuery.append(",?");
         }
-        if (StringUtil.isNotEmpty(object.getReqEnvironmentList())) {
+        if (StringUtil.isNotEmptyOrNull(object.getReqEnvironmentList())) {
             query.append(", `ReqEnvironmentList`");
             valuesQuery.append(",?");
         }
@@ -471,16 +471,16 @@ public class TagDAO implements ITagDAO {
             int i = 1;
             preStat.setString(i++, object.getTag());
             preStat.setString(i++, object.getDescription());
-            if (StringUtil.isNotEmpty(object.getCampaign())) {
+            if (StringUtil.isNotEmptyOrNull(object.getCampaign())) {
                 preStat.setString(i++, object.getCampaign());
             }
-            if (StringUtil.isNotEmpty(object.getUsrCreated())) {
+            if (StringUtil.isNotEmptyOrNull(object.getUsrCreated())) {
                 preStat.setString(i++, object.getUsrCreated());
             }
-            if (StringUtil.isNotEmpty(object.getReqCountryList())) {
+            if (StringUtil.isNotEmptyOrNull(object.getReqCountryList())) {
                 preStat.setString(i++, object.getReqCountryList());
             }
-            if (StringUtil.isNotEmpty(object.getReqEnvironmentList())) {
+            if (StringUtil.isNotEmptyOrNull(object.getReqEnvironmentList())) {
                 preStat.setString(i, object.getReqEnvironmentList());
             }
 
@@ -525,7 +525,7 @@ public class TagDAO implements ITagDAO {
     public Answer update(String tag, Tag object) {
         MessageEvent msg;
         StringBuilder query = new StringBuilder("UPDATE tag SET tag = ?, description = ?, dateModif = NOW(), usrModif= ?");
-        if (StringUtil.isNotEmpty(object.getCampaign())) {
+        if (StringUtil.isNotEmptyOrNull(object.getCampaign())) {
             query.append(", campaign = ?");
         }
         query.append("  WHERE Tag = ?");
@@ -538,7 +538,7 @@ public class TagDAO implements ITagDAO {
             int i = 1;
             preStat.setString(i++, object.getTag());
             preStat.setString(i++, object.getDescription());
-            if (StringUtil.isNotEmpty(object.getCampaign())) {
+            if (StringUtil.isNotEmptyOrNull(object.getCampaign())) {
                 preStat.setString(i++, object.getCampaign());
             }
             preStat.setString(i++, object.getUsrModif());
@@ -816,10 +816,10 @@ public class TagDAO implements ITagDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM tag ");
         searchSQL.append("WHERE 1=1");
-        if (StringUtil.isNotEmpty(campaign)) {
+        if (StringUtil.isNotEmptyOrNull(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`tag` like ?");
             searchSQL.append(" or `id` like ?");
             searchSQL.append(" or `description` like ?");
@@ -842,10 +842,10 @@ public class TagDAO implements ITagDAO {
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(campaign)) {
+            if (StringUtil.isNotEmptyOrNull(campaign)) {
                 preStat.setString(i++, campaign);
             }
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

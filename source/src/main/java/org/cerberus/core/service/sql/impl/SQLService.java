@@ -100,7 +100,7 @@ public class SQLService implements ISQLService {
 
                 connectionName = countryEnvironmentDatabase.getConnectionPoolName();
 
-                if (!(StringUtil.isEmpty(connectionName))) {
+                if (!(StringUtil.isEmptyOrNull(connectionName))) {
                     try {
                         Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
                         List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit(), sqlTimeout);
@@ -270,7 +270,7 @@ public class SQLService implements ISQLService {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
-                if (!(StringUtil.isEmpty(connectionName))) {
+                if (!(StringUtil.isEmptyOrNull(connectionName))) {
                     if (connectionName.equals("cerberus" + System.getProperty(Property.ENVIRONMENT))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
@@ -343,7 +343,7 @@ public class SQLService implements ISQLService {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_GENERIC);
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
-                if (!(StringUtil.isEmpty(connectionName))) {
+                if (!(StringUtil.isEmptyOrNull(connectionName))) {
                     if (connectionName.contains("cerberus")) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {

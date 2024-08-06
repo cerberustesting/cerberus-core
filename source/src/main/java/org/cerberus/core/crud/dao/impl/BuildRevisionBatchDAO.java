@@ -108,7 +108,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM buildrevisionbatch ");
         searchSQL.append(" where 1=1 ");
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -118,21 +118,21 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
             searchSQL.append(" or `Batch` like ?");
             searchSQL.append(" or `DateBatch` like ?)");
         }
-        if (StringUtil.isNotEmpty(individualSearch)) {
+        if (StringUtil.isNotEmptyOrNull(individualSearch)) {
             searchSQL.append(" and ( ? )");
         }
-        if (StringUtil.isNotEmpty(system)) {
+        if (StringUtil.isNotEmptyOrNull(system)) {
             searchSQL.append(" and (`system` = ?)");
         }
-        if (StringUtil.isNotEmpty(country)) {
+        if (StringUtil.isNotEmptyOrNull(country)) {
             searchSQL.append(" and (`country` = ?)");
         }
-        if (StringUtil.isNotEmpty(environment)) {
+        if (StringUtil.isNotEmptyOrNull(environment)) {
             searchSQL.append(" and (`environment` = ?)");
         }
         query.append(searchSQL);
 
-        if (StringUtil.isNotEmpty(column)) {
+        if (StringUtil.isNotEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -149,7 +149,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -159,16 +159,16 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            if (StringUtil.isNotEmpty(individualSearch)) {
+            if (StringUtil.isNotEmptyOrNull(individualSearch)) {
                 preStat.setString(i++, individualSearch);
             }
-            if (StringUtil.isNotEmpty(system)) {
+            if (StringUtil.isNotEmptyOrNull(system)) {
                 preStat.setString(i++, system);
             }
-            if (StringUtil.isNotEmpty(country)) {
+            if (StringUtil.isNotEmptyOrNull(country)) {
                 preStat.setString(i++, country);
             }
-            if (StringUtil.isNotEmpty(environment)) {
+            if (StringUtil.isNotEmptyOrNull(environment)) {
                 preStat.setString(i, environment);
             }
             try (ResultSet resultSet = preStat.executeQuery();
@@ -321,11 +321,11 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
                 .append(" as distinctValues FROM buildrevisionbatch ");
 
         searchSQL.append("WHERE 1=1");
-        if (StringUtil.isNotEmpty(system)) {
+        if (StringUtil.isNotEmptyOrNull(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (StringUtil.isNotEmpty(searchTerm)) {
+        if (StringUtil.isNotEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `Country` like ?");
@@ -353,10 +353,10 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
              Statement stm = connection.createStatement()) {
 
             int i = 1;
-            if (StringUtil.isNotEmpty(system)) {
+            if (StringUtil.isNotEmptyOrNull(system)) {
                 preStat.setString(i++, system);
             }
-            if (StringUtil.isNotEmpty(searchTerm)) {
+            if (StringUtil.isNotEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

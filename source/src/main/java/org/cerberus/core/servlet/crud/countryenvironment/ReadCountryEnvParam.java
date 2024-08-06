@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.countryenvironment;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.cerberus.core.crud.service.ICountryEnvParamService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -122,7 +122,7 @@ public class ReadCountryEnvParam extends HttpServlet {
             } else if (uniqueCountry) {
                 answer = findUniqueCountryList(systems, active, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
+            } else if (!StringUtil.isEmptyOrNull(columnName) && request.getParameter("system") != null) {
                 answer = findDistinctValuesOfColumn(systems.get(0), appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.

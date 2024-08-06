@@ -108,7 +108,7 @@ public class CreateLabel extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isEmpty(label)) {
+        if (StringUtil.isEmptyOrNull(label)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Label")
                     .replace("%OPERATION%", "Create")

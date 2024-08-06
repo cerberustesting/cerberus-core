@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IRobotDAO;
@@ -143,7 +142,7 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(typeRobot)) {
+        if (!StringUtil.isEmptyOrNull(typeRobot)) {
             query.append(" and type=? ");
         }
 
@@ -162,7 +161,7 @@ public class RobotDAO implements IRobotDAO {
                     }
                 }
 
-                if (!StringUtil.isEmpty(typeRobot)) {
+                if (!StringUtil.isEmptyOrNull(typeRobot)) {
                     preStat.setString(i++, typeRobot);
                 }
 
@@ -253,7 +252,7 @@ public class RobotDAO implements IRobotDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");
@@ -274,7 +273,7 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -293,7 +292,7 @@ public class RobotDAO implements IRobotDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!Strings.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -587,7 +586,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" and 1=0 ");
         }
 
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`platform` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `robot` like ?");
@@ -619,7 +618,7 @@ public class RobotDAO implements IRobotDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!Strings.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

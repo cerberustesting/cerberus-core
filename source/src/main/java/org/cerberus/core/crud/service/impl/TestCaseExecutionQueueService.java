@@ -178,7 +178,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         tagSystemService.createIfNotExist(object.getTag(), object.getSystem(), object.getUsrCreated());
 
         AnswerItem<TestCaseExecutionQueue> ret;
-        if (StringUtil.isEmpty(object.getTag())) {
+        if (StringUtil.isEmptyOrNull(object.getTag())) {
             // If tag is not defined, we do not insert any dependencies.
             ret = testCaseExecutionInQueueDAO.create(object);
         } else {
@@ -388,8 +388,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String country = testCaseExecutionInQueue.getCountry();
         String browser = testCaseExecutionInQueue.getBrowser();
         String robotDecli = testCaseExecutionInQueue.getRobotDecli();
-        if (StringUtil.isEmpty(robotDecli)) {
-            if (!StringUtil.isEmpty(browser)) {
+        if (StringUtil.isEmptyOrNull(robotDecli)) {
+            if (!StringUtil.isEmptyOrNull(browser)) {
                 robotDecli = browser;
             } else {
                 robotDecli = "";

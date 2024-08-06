@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.common.base.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Invariant;
@@ -70,6 +69,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.cerberus.core.util.StringUtil;
 
 /**
  * @author cerberus
@@ -106,6 +106,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         response.setCharacterEncoding("utf8");
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -127,7 +128,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
                 boolean byColumns = ParameterParserUtil.parseBooleanParam(request.getParameter("byColumns"), false);
 
-                if (!Strings.isNullOrEmpty(columnName)) {
+                if (!StringUtil.isEmptyOrNull(columnName)) {
                     //If columnName is present, then return the distinct value of this column.
                     answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
@@ -159,6 +160,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 } else if (executionId != 0 && !executionWithDependency) {
                     answer = testCaseExecutionService.readByKeyWithDependency(executionId);
                     TestCaseExecution tce = (TestCaseExecution) answer.getItem();
+                    tce.getTestCaseObj().setRefOrigineUrl(testCaseService.getRefOriginUrl(tce.getTestCaseObj().getOrigine(), tce.getTestCaseObj().getRefOrigine(), tce.getTestCaseObj().getSystem()));
                     jsonResponse.put("testCaseExecution", tce.toJson(true));
                 } else if (executionId != 0 && executionWithDependency) {
 

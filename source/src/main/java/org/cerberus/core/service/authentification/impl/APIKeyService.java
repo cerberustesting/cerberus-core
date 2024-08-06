@@ -61,7 +61,7 @@ public class APIKeyService implements IAPIKeyService {
 
                 // If already aauthorised, we don't need to check the api key.
                 LOG.debug(request.getUserPrincipal());
-                if ((request.getUserPrincipal() != null) && (!StringUtil.isEmpty(request.getUserPrincipal().getName()))) {
+                if ((request.getUserPrincipal() != null) && (!StringUtil.isEmptyOrNull(request.getUserPrincipal().getName()))) {
                     LOG.debug("User connected with : '" + request.getUserPrincipal().getName() + "'");
                     return true;
                 }
@@ -97,12 +97,12 @@ public class APIKeyService implements IAPIKeyService {
 
     @Override
     public boolean authenticate(Principal principal, String apiKey) {
-        return (principal != null && !StringUtil.isEmpty(principal.getName())) || this.authenticate(apiKey);
+        return (principal != null && !StringUtil.isEmptyOrNull(principal.getName())) || this.authenticate(apiKey);
     }
 
     @Override
     public String authenticateLogin(Principal principal, String apiKey) {
-        if (principal != null && !StringUtil.isEmpty(principal.getName())) {
+        if (principal != null && !StringUtil.isEmptyOrNull(principal.getName())) {
             return principal.getName();
         }
         if  (isApiKeyAuthEnabled()) {
@@ -127,7 +127,7 @@ public class APIKeyService implements IAPIKeyService {
 
     private String apiKeyValidLogin(String apiKey) {
         String login = null;
-        if (!StringUtil.isEmpty(apiKey)) {
+        if (!StringUtil.isEmptyOrNull(apiKey)) {
             login = userService.verifyAPIKey(apiKey);
         }
         return login;

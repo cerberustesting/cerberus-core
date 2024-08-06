@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -370,7 +369,7 @@ public class TestDAO implements ITestDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!Strings.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `datecreated` like ?) ");
@@ -386,7 +385,7 @@ public class TestDAO implements ITestDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(colName)) {
+        if (!StringUtil.isEmptyOrNull(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         }
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -405,7 +404,7 @@ public class TestDAO implements ITestDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!Strings.isNullOrEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -501,7 +500,7 @@ public class TestDAO implements ITestDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (tes.`test` like ?");
             searchSQL.append(" or tes.`description` like ?");
             searchSQL.append(" or tes.`isActive` like ?");
@@ -528,7 +527,7 @@ public class TestDAO implements ITestDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!Strings.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

@@ -198,7 +198,7 @@ public class IOSAppiumService extends AppiumService {
 
         Object value;
         String valueString = "";
-        if (StringUtil.isEmpty(args)) {
+        if (StringUtil.isEmptyOrNull(args)) {
             value = session.getAppiumDriver().executeScript(cmd, new HashMap<>());
         } else {
             value = session.getAppiumDriver().executeScript(cmd, JSONUtil.convertFromJSONObjectString(args));
@@ -208,7 +208,7 @@ public class IOSAppiumService extends AppiumService {
             valueString = value.toString();
         }
         // execute Script return an \n or \r\n sometimes, so we delete the last occurence of it
-        if (!StringUtil.isEmpty(valueString)) {
+        if (!StringUtil.isEmptyOrNull(valueString)) {
             if (valueString.endsWith("\r\n")) {
                 valueString = valueString.substring(0, valueString.lastIndexOf("\r\n"));
             }
@@ -234,7 +234,7 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
         try {
 
-            if (StringUtil.isEmpty(appPackage)) {
+            if (StringUtil.isEmptyOrNull(appPackage)) {
                 session.getAppiumDriver().launchApp();
             } else {
                 session.getAppiumDriver().activateApp(appPackage);

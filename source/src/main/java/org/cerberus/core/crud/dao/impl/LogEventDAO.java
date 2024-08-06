@@ -139,7 +139,7 @@ public class LogEventDAO implements ILogEventDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`time` like ?");
             searchSQL.append(" or `login` like ?");
             searchSQL.append(" or `page` like ?");
@@ -158,7 +158,7 @@ public class LogEventDAO implements ILogEventDAO {
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(colName)) {
+        if (!StringUtil.isEmptyOrNull(colName)) {
             query.append("order by `").append(colName).append("` ").append(dir);
         } else {
             query.append("order by `logEventID` desc");
@@ -178,7 +178,7 @@ public class LogEventDAO implements ILogEventDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                if (!StringUtil.isEmpty(searchTerm)) {
+                if (!StringUtil.isEmptyOrNull(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -350,7 +350,7 @@ public class LogEventDAO implements ILogEventDAO {
 
         searchSQL.append("WHERE 1=1");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`time` like ?");
             searchSQL.append(" or `login` like ?");
             searchSQL.append(" or `page` like ?");
@@ -379,7 +379,7 @@ public class LogEventDAO implements ILogEventDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

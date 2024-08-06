@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.test.testcase;
 
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +38,7 @@ import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -102,17 +102,17 @@ public class ReadTestCase extends AbstractCrudTestCase {
         JSONObject jsonResponse = new JSONObject();
 
         try {
-            if (!Strings.isNullOrEmpty(test) && testCase != null) {
+            if (!StringUtil.isEmptyOrNull(test) && testCase != null) {
                 answer = findTestCaseByTestTestCase(test, testCase, request, withSteps);
-            } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
+            } else if (!StringUtil.isEmptyOrNull(test) && getMaxTC) {
                 String max = testCaseService.getNextAvailableTestcaseId(test);
                 jsonResponse.put("nextAvailableTestcaseId", max);
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (filter) {
                 answer = findTestCaseByVarious(request);
-            } else if (!Strings.isNullOrEmpty(campaign)) {
+            } else if (!StringUtil.isEmptyOrNull(campaign)) {
                 answer = findTestCaseByCampaign(campaign);
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            } else if (!StringUtil.isEmptyOrNull(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
             } else {

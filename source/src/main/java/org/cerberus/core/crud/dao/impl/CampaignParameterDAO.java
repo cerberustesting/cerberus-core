@@ -296,21 +296,21 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
         searchSQL.append(" where 1=1 ");
 
-        if (!StringUtil.isEmpty(searchTerm)) {
+        if (!StringUtil.isEmptyOrNull(searchTerm)) {
             searchSQL.append(" and (`campaignparameterid` like ?");
             searchSQL.append(" or `campaign` like ?");
             searchSQL.append(" or `parameter` like ?");
             searchSQL.append(" or `value` like ?)");
         }
-        if (!StringUtil.isEmpty(individualSearch)) {
+        if (!StringUtil.isEmptyOrNull(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
-        if (!StringUtil.isEmpty(campaign)) {
+        if (!StringUtil.isEmptyOrNull(campaign)) {
             searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
 
-        if (!StringUtil.isEmpty(column)) {
+        if (!StringUtil.isEmptyOrNull(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
 
@@ -330,15 +330,15 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmpty(searchTerm)) {
+            if (!StringUtil.isEmptyOrNull(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
-            if (!StringUtil.isEmpty(individualSearch)) {
+            if (!StringUtil.isEmptyOrNull(individualSearch)) {
                 preStat.setString(i++, individualSearch);
             }
-            if (!StringUtil.isEmpty(campaign)) {
+            if (!StringUtil.isEmptyOrNull(campaign)) {
                 preStat.setString(i++, campaign);
             }
 

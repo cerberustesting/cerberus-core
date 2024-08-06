@@ -34,9 +34,14 @@
 * [GUI] Campaign execution and testcase execution can now be declared as false Negative. That can be used when the non OK resul should be considered as OK because the used was on the testcase. That declaration will force the execution to be considered as OK on Availability KPI.
 * [GUI] Reports over time can now be filtered by result status (in order to focus and isolate non OK result for example)
 * [GUI] Report over time display spot with bigger radius when comment or description has been entered. False Negative are surrounded with green.
+* [GUI] New Impact analysis tool. You can search any text (ex: xpath or variable) across all testcases.
+* [GUI] Testcase can be Linked to JIRA Issue. That will display the associated label with URL on both execution and test script page.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * [ENGINE] Datalib no longuer support direct definition of SOAP Calls. You need to replace them by SOAP services.
 * [ENGINE] %SYS_YESTERDAY*, %SYS_TODAY*, %SYS_TOMORROW* are no longer supported, please change to %system.YESTERDAY*, %system.TODAY*, %system.TOMORROW* 
 * [ENGINE] %system.TODAY.doy*, %system.TOMORROW.doy*, %system.YESTERDAY.doy* should be replaced by %system.*.D*.
+* [GUI] Test Folder screen has been removed from menu (Folder creation are possible directly at testcase level and activation flag at Folder level can be replace by activation at testcase level).
+* [GUI] SQL Library screen has been removed from menu (SQL Can be triggered either from Datalib screen or stored inside datalib and used from properties if necessary).
+* [GUI] Deploy Type screen has been removed from menu.

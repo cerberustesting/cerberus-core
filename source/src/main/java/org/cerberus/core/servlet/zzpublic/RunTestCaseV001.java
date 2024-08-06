@@ -220,30 +220,30 @@ public class RunTestCaseV001 extends HttpServlet {
 
                 // -- Checking the parameter validity. --
                 // test, testcase and country parameters are mandatory
-                if (StringUtil.isEmpty(test)) {
+                if (StringUtil.isEmptyOrNull(test)) {
                     errorMessage += "Error - Parameter Test is mandatory. ";
                     error = true;
                 }
-                if (StringUtil.isEmpty(testCase)) {
+                if (StringUtil.isEmptyOrNull(testCase)) {
                     errorMessage += "Error - Parameter TestCase is mandatory. ";
                     error = true;
                 }
-                if (!StringUtil.isEmpty(tag) && tag.length() > 255) {
+                if (!StringUtil.isEmptyOrNull(tag) && tag.length() > 255) {
                     errorMessage += "Error - Parameter Tag value is too big. Tag cannot be larger than 255 Characters. Currently has : " + tag.length();
                     error = true;
                 }
-                if (StringUtil.isEmpty(country)) {
+                if (StringUtil.isEmptyOrNull(country)) {
                     errorMessage += "Error - Parameter Country is mandatory. ";
                     error = true;
                 }
                 // environment is mandatory when manualURL is not activated.
-                if (StringUtil.isEmpty(environment) && !manualURL) {
+                if (StringUtil.isEmptyOrNull(environment) && !manualURL) {
                     errorMessage += "Error - Parameter Environment is mandatory (or activate the manualURL parameter). ";
                     error = true;
                 }
                 // myenv is mandatory when manualURL is activated.
-                if (StringUtil.isEmpty(myEnvData) && manualURL) {
-                    if (StringUtil.isEmpty(environment)) {
+                if (StringUtil.isEmptyOrNull(myEnvData) && manualURL) {
+                    if (StringUtil.isEmptyOrNull(environment)) {
                         errorMessage += "Error - Parameter myenvdata is mandatory (when manualURL parameter is activated). ";
                         error = true;
                     } else {
@@ -278,7 +278,7 @@ public class RunTestCaseV001 extends HttpServlet {
                 }
 
                 // Create Tag when exist.
-                if (!StringUtil.isEmpty(tag)) {
+                if (!StringUtil.isEmptyOrNull(tag)) {
                     // We create or update it.
                     ITagService tagService = appContext.getBean(ITagService.class);
                     List<String> envList = new ArrayList<>();

@@ -194,24 +194,24 @@ public class EventService implements IEventService {
     }
 
     private boolean eval_NoFilter(String obj1, String obj2) {
-        if (StringUtil.isEmpty(obj2) && StringUtil.isEmpty(obj1)) {
+        if (StringUtil.isEmptyOrNull(obj2) && StringUtil.isEmptyOrNull(obj1)) {
             return true;
         }
         return false;
     }
 
     private boolean eval_TestFolder_Filter(String obj1, String obj2, String testFolder) {
-        if (!StringUtil.isEmpty(obj2)) {
+        if (!StringUtil.isEmptyOrNull(obj2)) {
             return false;
         }
-        if (!StringUtil.isEmpty(obj1) && obj1.equals(testFolder)) {
+        if (!StringUtil.isEmptyOrNull(obj1) && obj1.equals(testFolder)) {
             return true;
         }
         return false;
     }
 
     private boolean eval_Testcase_Filter(String obj1, String obj2, String testFolder, String testcase) {
-        if (StringUtil.isEmpty(obj1) || StringUtil.isEmpty(obj2)) {
+        if (StringUtil.isEmptyOrNull(obj1) || StringUtil.isEmptyOrNull(obj2)) {
             return false;
         }
         if (obj1.equals(testFolder) && obj2.equals(testcase)) {
@@ -221,10 +221,10 @@ public class EventService implements IEventService {
     }
 
     private boolean eval_Campaign_Filter(String obj1, String obj2, String campaign) {
-        if (!StringUtil.isEmpty(obj2)) {
+        if (!StringUtil.isEmptyOrNull(obj2)) {
             return false;
         }
-        if (!StringUtil.isEmpty(obj1) && obj1.equals(campaign)) {
+        if (!StringUtil.isEmptyOrNull(obj1) && obj1.equals(campaign)) {
             return true;
         }
         return false;
@@ -235,7 +235,7 @@ public class EventService implements IEventService {
         switch (eventHook.getHookConnector()) {
 
             case EventHook.HOOKCONNECTOR_EMAIL:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
                     Email email = null;
                     try {
@@ -248,7 +248,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_SLACK:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject slackMessage = slackGenerationService.generateNotifyStartTagExecution(tag, eventHook.getHookChannel());
@@ -260,7 +260,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GENERIC:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = webCallGenerationService.generateNotifyStartTagExecution(tag, ceberusEventMessage);
@@ -272,7 +272,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_TEAMS:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = teamsGenerationService.generateNotifyStartTagExecution(tag);
@@ -284,7 +284,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GOOGLECHAT:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = chatGenerationService.generateNotifyStartTagExecution(tag);
@@ -308,7 +308,7 @@ public class EventService implements IEventService {
         switch (eventHook.getHookConnector()) {
 
             case EventHook.HOOKCONNECTOR_EMAIL:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
                     Email email = null;
                     try {
@@ -321,7 +321,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_SLACK:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject slackMessage = slackGenerationService.generateNotifyEndTagExecution(tag, eventHook.getHookChannel());
@@ -333,7 +333,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GENERIC:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = webCallGenerationService.generateNotifyEndTagExecution(tag, ceberusEventMessage, prioritiesList, countriesList, environmentsList);
@@ -345,7 +345,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_TEAMS:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = teamsGenerationService.generateNotifyEndTagExecution(tag);
@@ -357,7 +357,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GOOGLECHAT:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = chatGenerationService.generateNotifyEndTagExecutionV2(tag);
@@ -380,7 +380,7 @@ public class EventService implements IEventService {
         switch (eventHook.getHookConnector()) {
 
             case EventHook.HOOKCONNECTOR_EMAIL:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
                     Email email = null;
                     try {
@@ -393,7 +393,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_SLACK:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject slackMessage = slackGenerationService.generateNotifyStartExecution(exe, eventHook.getHookChannel());
@@ -405,7 +405,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GENERIC:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = webCallGenerationService.generateNotifyStartExecution(exe, ceberusEventMessage);
@@ -417,7 +417,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_TEAMS:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = teamsGenerationService.generateNotifyStartExecution(exe);
@@ -429,7 +429,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GOOGLECHAT:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = chatGenerationService.generateNotifyStartExecution(exe);
@@ -453,7 +453,7 @@ public class EventService implements IEventService {
         switch (eventHook.getHookConnector()) {
 
             case EventHook.HOOKCONNECTOR_EMAIL:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
                     Email email = null;
                     try {
@@ -466,7 +466,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_SLACK:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject slackMessage = slackGenerationService.generateNotifyEndExecution(exe, eventHook.getHookChannel());
@@ -478,7 +478,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GENERIC:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = webCallGenerationService.generateNotifyEndExecution(exe, ceberusEventMessage);
@@ -490,7 +490,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_TEAMS:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = teamsGenerationService.generateNotifyEndExecution(exe);
@@ -502,7 +502,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GOOGLECHAT:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = chatGenerationService.generateNotifyEndExecution(exe);
@@ -525,7 +525,7 @@ public class EventService implements IEventService {
         switch (eventHook.getHookConnector()) {
 
             case EventHook.HOOKCONNECTOR_EMAIL:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending an EMail Notification to : " + eventHook.getHookRecipient());
                     Email email = null;
                     try {
@@ -538,7 +538,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_SLACK:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Slack Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject slackMessage = slackGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getHookChannel(), eventHook.getEventReference());
@@ -550,7 +550,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GENERIC:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Generic Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = webCallGenerationService.generateNotifyTestCaseChange(testCase, originalTest, originalTestcase, eventHook.getEventReference(), ceberusEventMessage);
@@ -562,7 +562,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_TEAMS:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Teams Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = teamsGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getEventReference());
@@ -574,7 +574,7 @@ public class EventService implements IEventService {
                 break;
 
             case EventHook.HOOKCONNECTOR_GOOGLECHAT:
-                if (!StringUtil.isEmpty(eventHook.getHookRecipient())) {
+                if (!StringUtil.isEmptyOrNull(eventHook.getHookRecipient())) {
                     LOG.debug("Generating and Sending a Google Chat Notification to : '" + eventHook.getHookRecipient() + "'");
                     try {
                         JSONObject message = chatGenerationService.generateNotifyTestCaseChange(testCase, eventHook.getEventReference());

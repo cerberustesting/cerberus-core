@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.transversaltables;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.*;
@@ -37,6 +36,7 @@ import org.cerberus.core.crud.service.impl.InvariantService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -93,7 +93,7 @@ public class ReadInvariant extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             String access = request.getParameter("access");
             if (request.getParameter("idName") == null && access != null) {
-                if (!Strings.isNullOrEmpty(request.getParameter("columnName"))) {
+                if (!StringUtil.isEmptyOrNull(request.getParameter("columnName"))) {
                     answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"), access);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else {

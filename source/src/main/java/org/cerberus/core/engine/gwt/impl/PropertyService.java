@@ -501,7 +501,7 @@ public class PropertyService implements IPropertyService {
                 String[] ramProp1 = rawProperty.split("\\(");
                 // Removes the variable part of the property eg : .subdata
                 String[] ramProp2 = ramProp1[0].split("\\.");
-                if (!(StringUtil.isEmpty(ramProp2[0].trim())) // Avoid getting empty Property names.
+                if (!(StringUtil.isEmptyOrNull(ramProp2[0].trim())) // Avoid getting empty Property names.
                         && ramProp2[0].trim().length() <= TestCaseCountryProperties.MAX_PROPERTY_LENGTH // Properties cannot be bigger than n caracters.
                         && !ramProp2[0].trim().contains("\n")) { // Properties cannot contain \n.
                     properties.add(ramProp2[0].trim());
@@ -620,7 +620,7 @@ public class PropertyService implements IPropertyService {
                 if ("value".equals(valueA[2])) {
                     val = dataExecution.getValue();
                 } else if ("base64".equals(valueA[2])) {
-                    if ((dataExecution.getDataLibObj() != null) && StringUtil.isNotEmpty(dataExecution.getDataLibObj().getCsvUrl())) {
+                    if ((dataExecution.getDataLibObj() != null) && StringUtil.isNotEmptyOrNull(dataExecution.getDataLibObj().getCsvUrl())) {
 
                         if (!StringUtil.isURL(dataExecution.getDataLibObj().getCsvUrl())) {
                             String filePath = StringUtil.addSuffixIfNotAlready(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", ""), File.separator) + dataExecution.getDataLibObj().getCsvUrl();
@@ -945,7 +945,7 @@ public class PropertyService implements IPropertyService {
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_FROMCACHE).resolveDescription("ID", String.valueOf(testCaseExecutionDataFromCache.getId())).resolveDescription("DATE", df.format(testCaseExecutionDataFromCache.getStart()));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
-                if (!StringUtil.isEmpty(testCaseExecutionDataFromCache.getJsonResult())) {
+                if (!StringUtil.isEmptyOrNull(testCaseExecutionDataFromCache.getJsonResult())) {
 
                     // Convert json to HashMap.
                     List<HashMap<String, String>> result = null;
@@ -1019,7 +1019,7 @@ public class PropertyService implements IPropertyService {
                 String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
-                if (!StringUtil.isEmpty(message)) {
+                if (!StringUtil.isEmptyOrNull(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -1029,7 +1029,7 @@ public class PropertyService implements IPropertyService {
                 String message = iosAppiumService.executeCommandString(tCExecution.getSession(), script, testCaseExecutionData.getValue2());
 
                 String value = "";
-                if (!StringUtil.isEmpty(message)) {
+                if (!StringUtil.isEmptyOrNull(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -1067,7 +1067,7 @@ public class PropertyService implements IPropertyService {
                 String message = androidAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
-                if (!StringUtil.isEmpty(message)) {
+                if (!StringUtil.isEmptyOrNull(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -1076,7 +1076,7 @@ public class PropertyService implements IPropertyService {
                 String message = iosAppiumService.getElementPosition(tCExecution.getSession(), identifier);
 
                 String value = "";
-                if (!StringUtil.isEmpty(message)) {
+                if (!StringUtil.isEmptyOrNull(message)) {
                     value = message;
                 }
                 testCaseExecutionData.setValue(value);
@@ -1117,7 +1117,7 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData property_getFromNetworkTraffic(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution execution, boolean forceCalculation) {
         if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(execution.getRobotExecutorObj().getExecutorProxyType())) {
             String jsonPath = testCaseExecutionData.getValue2();
-            if (StringUtil.isEmpty(jsonPath)) {
+            if (StringUtil.isEmptyOrNull(jsonPath)) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMNETWORKTRAFFIC_MISSINGJSONPATH);
                 testCaseExecutionData.setPropertyResultMessage(res);
                 return testCaseExecutionData;
@@ -1182,7 +1182,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getOTP(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
 
-        if (StringUtil.isEmpty(testCaseExecutionData.getValue1())) {
+        if (StringUtil.isEmptyOrNull(testCaseExecutionData.getValue1())) {
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETOTP_MISSINGPARAMETER);
             testCaseExecutionData.setPropertyResultMessage(res);
             testCaseExecutionData.setEnd(new Date().getTime());
@@ -1497,7 +1497,7 @@ public class PropertyService implements IPropertyService {
         // 1. Get XML value to parse
         String xmlToParse = null;
         // If value2 is defined, then take it as XML value to parse
-        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmptyOrNull(testCaseExecutionData.getValue2()))) {
             xmlToParse = testCaseExecutionData.getValue2();
         } // Else try to get the last known response from service call
         else if (tCExecution.getLastServiceCalled() != null) {
@@ -1542,7 +1542,7 @@ public class PropertyService implements IPropertyService {
         // 1. Get XML value to parse
         String xmlToParse = null;
         // If value2 is defined, then take it as XML value to parse
-        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmptyOrNull(testCaseExecutionData.getValue2()))) {
             xmlToParse = testCaseExecutionData.getValue2();
         } // Else try to get the last known response from service call
         else if (tCExecution.getLastServiceCalled() != null) {
@@ -1654,7 +1654,7 @@ public class PropertyService implements IPropertyService {
             jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
         }
 
-        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmptyOrNull(testCaseExecutionData.getValue2()))) {
             try {
                 jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
 
@@ -1700,7 +1700,7 @@ public class PropertyService implements IPropertyService {
             jsonResponse = execution.getLastServiceCalled().getResponseHTTPBody();
         }
 
-        if (!(StringUtil.isEmpty(testCaseExecutionData.getValue2()))) {
+        if (!(StringUtil.isEmptyOrNull(testCaseExecutionData.getValue2()))) {
             try {
                 jsonResponse = this.jsonService.callUrlAndGetJsonResponse(testCaseExecutionData.getValue2());
 
@@ -1797,7 +1797,7 @@ public class PropertyService implements IPropertyService {
             // if we can, we set the value of testCaseExecutionData field `length` to the casted value
             if (decodedLength != null) {
                 try {
-                    if (StringUtil.isEmpty(decodedLength)) {
+                    if (StringUtil.isEmptyOrNull(decodedLength)) {
                         decodedLength = "0";
                     }
                     Integer.parseInt(decodedLength);

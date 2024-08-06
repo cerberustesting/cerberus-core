@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testdata;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ import org.cerberus.core.dto.TestCaseListDTO;
 import org.cerberus.core.dto.TestListDTO;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -149,7 +149,7 @@ public class ReadTestDataLib extends HttpServlet {
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups
                 answer = findDistinctGroups(appContext);
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            } else if (!StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {

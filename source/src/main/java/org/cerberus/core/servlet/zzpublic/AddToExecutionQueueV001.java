@@ -345,7 +345,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             if (!error) {
 
                 // Create Tag when exist.
-                if (!StringUtil.isEmpty(tag)) {
+                if (!StringUtil.isEmptyOrNull(tag)) {
                     // We create or update it.
                     ITagService tagService = appContext.getBean(ITagService.class);
                     tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);

@@ -81,6 +81,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.cerberus.core.crud.entity.Parameter;
 
 /**
  * @author bcivel
@@ -282,7 +283,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length) {
         return testCaseDao.readByVarious(test, app, creator, implementer, system, campaign, labelid, priority, type, status, length);
     }
 
@@ -624,6 +625,16 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
+    public boolean hasPermissionsUpdateFromStatus(String status, HttpServletRequest request) {
+        // Access right calculation.
+        if (status.equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+            return request.isUserInRole("TestAdmin");
+        } else {
+            return request.isUserInRole("Test");
+        }
+    }
+
+    @Override
     public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request) {
         // Access right calculation.
         return request.isUserInRole("Test");
@@ -715,15 +726,15 @@ public class TestCaseService implements ITestCaseService {
 
         final String FAILED_TO_INSERT = "Failed to insert the testcase in the database";
 
-        if (StringUtil.isEmpty(newTestcase.getTest())) {
+        if (StringUtil.isEmptyOrNull(newTestcase.getTest())) {
             throw new InvalidRequestException("testFolderId required to create Testcase");
         }
 
-        if (StringUtil.isEmpty(newTestcase.getApplication())) {
+        if (StringUtil.isEmptyOrNull(newTestcase.getApplication())) {
             throw new InvalidRequestException("application is required to create a Testcase");
         }
 
-        if (StringUtil.isEmpty(newTestcase.getTestcase())) {
+        if (StringUtil.isEmptyOrNull(newTestcase.getTestcase())) {
             newTestcase.setTestcase(this.getNextAvailableTestcaseId(newTestcase.getTest()));
         }
         Answer testcaseCreationAnswer = this.create(newTestcase);
@@ -916,6 +927,29 @@ public class TestCaseService implements ITestCaseService {
         return this.findTestCaseByKeyWithDependencies(newTestcaseVersion.getTest(), newTestcaseVersion.getTestcase(), true).getItem();
     }
 
+    @Override
+    public String getRefOriginUrl(String origin, String refOrigin, String system) {
+        String url = "";
+        switch (origin) {
+            case TestCase.TESTCASE_ORIGIN_JIRACLOUD:
+                url = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_url, system, "");
+                if (StringUtil.isNotEmptyOrNull(url)) {
+                    return StringUtil.addSuffixIfNotAlready(url, "/") + "browse/" + refOrigin;
+                } else {
+                    return "";
+                }
+            case TestCase.TESTCASE_ORIGIN_JIRADC:
+                url = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiradc_url, system, "");
+                if (StringUtil.isNotEmptyOrNull(url)) {
+                    return StringUtil.addSuffixIfNotAlready(url, "/") + "browse/" + refOrigin;
+                } else {
+                    return "";
+                }
+            default:
+                return null;
+        }
+    }
+
     private void fillTestcaseCountriesFromInvariantsCountry(TestCase testcase) {
         if (testcase.getInvariantCountries() == null || testcase.getInvariantCountries().isEmpty()) {
             try {
@@ -927,24 +961,24 @@ public class TestCaseService implements ITestCaseService {
 
         testcase.getInvariantCountries()
                 .forEach(invariantCountry -> testcase.appendTestCaseCountries(
-                        TestCaseCountry.builder()
-                                .test(testcase.getTest())
-                                .testcase(testcase.getTestcase())
-                                .country(invariantCountry.getValue())
-                                .build()
-                ));
+                TestCaseCountry.builder()
+                        .test(testcase.getTest())
+                        .testcase(testcase.getTestcase())
+                        .country(invariantCountry.getValue())
+                        .build()
+        ));
     }
 
     private List<TestCaseLabel> getTestcaseLabelsFromLabels(List<Label> labels, String testFolderId, String testcaseId, String userCreated) {
         return labels
                 .stream()
                 .map(label -> TestCaseLabel.builder()
-                        .test(testFolderId)
-                        .testcase(testcaseId)
-                        .labelId(label.getId())
-                        .usrCreated(userCreated)
-                        .label(label)
-                        .build())
+                .test(testFolderId)
+                .testcase(testcaseId)
+                .labelId(label.getId())
+                .usrCreated(userCreated)
+                .label(label)
+                .build())
                 .collect(Collectors.toList());
     }
 
@@ -961,8 +995,8 @@ public class TestCaseService implements ITestCaseService {
                 .stream()
                 .filter(step -> !step.isUsingLibraryStep())
                 .flatMap(testCaseStep -> testCaseStep.getActions()
-                        .stream()
-                        .flatMap(testCaseStepAction -> testCaseStepAction.getControls().stream())
+                .stream()
+                .flatMap(testCaseStepAction -> testCaseStepAction.getControls().stream())
                 )
                 .collect(Collectors.toList());
     }

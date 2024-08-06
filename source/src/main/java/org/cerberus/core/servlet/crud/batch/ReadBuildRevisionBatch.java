@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.batch;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import org.cerberus.core.crud.service.IBuildRevisionBatchService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -105,7 +105,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (!Strings.isNullOrEmpty(columnName)) {
+            if (!StringUtil.isEmptyOrNull(columnName)) {
                 answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {

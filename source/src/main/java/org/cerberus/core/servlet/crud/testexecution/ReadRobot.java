@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.testexecution;
 
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +39,7 @@ import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
@@ -127,7 +127,7 @@ public class ReadRobot extends HttpServlet {
                 } else if (!(request.getParameter("robot") == null)) {
                     answer = findRobotByKey(robot, appContext, request);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Strings.isNullOrEmpty(columnName)) {
+                } else if (!StringUtil.isEmptyOrNull(columnName)) {
                     //If columnName is present, then return the distinct value of this column.
                     answer = findDistinctValuesOfColumn(appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();

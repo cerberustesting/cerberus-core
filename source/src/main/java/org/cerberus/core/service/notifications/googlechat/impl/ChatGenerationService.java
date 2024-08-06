@@ -55,7 +55,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyStartTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -94,7 +94,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyEndTagExecution(Tag tag) throws UnsupportedEncodingException, Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -140,7 +140,7 @@ public class ChatGenerationService implements IChatGenerationService {
 
         int maxlines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_googlechat_maxexelines", "", 20);
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -227,7 +227,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyStartExecution(TestCaseExecution exe) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -241,7 +241,7 @@ public class ChatGenerationService implements IChatGenerationService {
         JSONObject textContent = new JSONObject();
 
         String summary = "Testcase '" + exe.getTest() + " - " + exe.getTestCase() + "' on " + exe.getEnvironment() + " - " + exe.getCountry();
-        if (StringUtil.isEmpty(exe.getRobotDecli())) {
+        if (StringUtil.isEmptyOrNull(exe.getRobotDecli())) {
             summary += exe.getRobotDecli();
         }
         textContent.put("text", "Execution <b>" + exe.getId() + "</b> Started.<br>" + summary + "<br>Click <a href='" + cerberusUrl + "'>here</a> for details.");
@@ -271,7 +271,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyEndExecution(TestCaseExecution exe) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");
@@ -298,7 +298,7 @@ public class ChatGenerationService implements IChatGenerationService {
         JSONObject textContent = new JSONObject();
 
         String summary = "Testcase '" + exe.getTest() + " - " + exe.getTestCase() + "' on " + exe.getEnvironment() + " - " + exe.getCountry();
-        if (StringUtil.isEmpty(exe.getRobotDecli())) {
+        if (StringUtil.isEmptyOrNull(exe.getRobotDecli())) {
             summary += exe.getRobotDecli();
         }
 
@@ -333,7 +333,7 @@ public class ChatGenerationService implements IChatGenerationService {
     public JSONObject generateNotifyTestCaseChange(TestCase testCase, String eventReference) throws Exception {
 
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
-        if (StringUtil.isEmpty(cerberusUrl)) {
+        if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
         }
         cerberusUrl = StringUtil.addSuffixIfNotAlready(cerberusUrl, "/");

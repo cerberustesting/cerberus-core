@@ -158,8 +158,8 @@ public final class StringUtil {
      * @return null safe method that returns true if the parameter is a "null"
      * string or an empty string
      */
-    public static boolean isEmptyOrNullValue(String str) {
-        return (isEmpty(str) || NULL.equalsIgnoreCase(str.trim()));
+    public static boolean isEmptyOrNULLString(String str) {
+        return (isEmptyOrNull(str) || NULL.equalsIgnoreCase(str.trim()));
     }
 
     /**
@@ -168,8 +168,8 @@ public final class StringUtil {
      * @return null safe method that returns true if the parameter is NOT a
      * "null" string or empty string.
      */
-    public static boolean isNotEmptyOrNullValue(String str) {
-        return isNotEmpty(str) && !NULL.equalsIgnoreCase(str.trim());
+    public static boolean isNotEmptyOrNULLString(String str) {
+        return isNotEmptyOrNull(str) && !NULL.equalsIgnoreCase(str.trim());
     }
 
     /**
@@ -178,7 +178,7 @@ public final class StringUtil {
      * @return Null safe method that returns true if the parameter is null or an
      * empty string.
      */
-    public static boolean isEmpty(String str) {
+    public static boolean isEmptyOrNull(String str) {
         return (str == null) || (str.trim().isEmpty());
     }
 
@@ -188,7 +188,7 @@ public final class StringUtil {
      * @return Null safe method that returns true if the parameter is NOT null
      * or an empty string.
      */
-    public static boolean isNotEmpty(String str) {
+    public static boolean isNotEmptyOrNull(String str) {
         return (str != null) && !str.trim().isEmpty();
     }
 
@@ -272,7 +272,7 @@ public final class StringUtil {
         if (secrets == null) {
             return text;
         }
-        if (isEmpty(text)) {
+        if (isEmptyOrNull(text)) {
             return text;
         }
         for (Map.Entry<String, String> entry : secrets.entrySet()) {
@@ -387,16 +387,16 @@ public final class StringUtil {
      */
     public static String getURLFromString(String host, String contextRoot, String uri, String protocol) {
         String result = "";
-        if (!isEmpty(host)) {
+        if (!isEmptyOrNull(host)) {
             result += StringUtil.addSuffixIfNotAlready(host, "/");
         }
-        if (!isEmpty(contextRoot)) {
+        if (!isEmptyOrNull(contextRoot)) {
             if (contextRoot.startsWith("/")) {
                 contextRoot = contextRoot.substring(1);
             }
             result += StringUtil.addSuffixIfNotAlready(contextRoot, "/");
         }
-        if (!isEmpty(uri)) {
+        if (!isEmptyOrNull(uri)) {
             if (uri.startsWith("/")) {
                 uri = uri.substring(1);
             }
@@ -410,7 +410,7 @@ public final class StringUtil {
 
     public static String addQueryString(String url, String queryString) {
         String result;
-        if (isEmpty(queryString)) {
+        if (isEmptyOrNull(queryString)) {
             return url;
         }
         url = url.trim();
@@ -426,8 +426,8 @@ public final class StringUtil {
 
     public static String formatURLCredential(String user, String pass, String url) {
         String credential = "";
-        if (!StringUtil.isEmpty(user)) {
-            if (!StringUtil.isEmpty(pass)) {
+        if (!StringUtil.isEmptyOrNull(user)) {
+            if (!StringUtil.isEmptyOrNull(pass)) {
                 credential = user + ":" + pass + "@";
             } else {
                 credential = user + "@";

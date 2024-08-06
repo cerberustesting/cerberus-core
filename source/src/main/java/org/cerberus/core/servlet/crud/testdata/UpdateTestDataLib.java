@@ -173,7 +173,7 @@ public class UpdateTestDataLib extends HttpServlet {
             /**
              * Checking all constrains before calling the services.
              */
-            if (StringUtil.isEmpty(name)) {
+            if (StringUtil.isEmptyOrNull(name)) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
                         .replace("%OPERATION%", "Update")
@@ -277,13 +277,13 @@ public class UpdateTestDataLib extends HttpServlet {
                             int y = 1;
                             TestDataLibData firstLineLibData = tdldList.get(0);
                             tdldList = new ArrayList<>();
-                            if (StringUtil.isEmpty(firstLineLibData.getColumnPosition())) {
+                            if (StringUtil.isEmptyOrNull(firstLineLibData.getColumnPosition())) {
                                 firstLineLibData.setColumnPosition("1");
                             }
-                            if (StringUtil.isEmpty(firstLineLibData.getValue())) {
+                            if (StringUtil.isEmptyOrNull(firstLineLibData.getValue())) {
                                 firstLineLibData.setValue(secondLineSubData[0]);
                             }
-                            if (StringUtil.isEmpty(firstLineLibData.getColumn())) {
+                            if (StringUtil.isEmptyOrNull(firstLineLibData.getColumn())) {
                                 firstLineLibData.setColumn(firstLineSubData[0]);
                             }
                             tdldList.add(firstLineLibData);

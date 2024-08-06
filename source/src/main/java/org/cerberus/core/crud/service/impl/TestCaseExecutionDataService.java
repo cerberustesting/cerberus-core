@@ -173,7 +173,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
         for (TestCaseExecutionData data : testCaseExecutionData) {
             data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY).resolveDescription("EXEID", String.valueOf(data.getId())));
             data.setId(execution.getId());
-            if (!StringUtil.isEmpty(data.getJsonResult())) {
+            if (!StringUtil.isEmptyOrNull(data.getJsonResult())) {
                 try {
                     JSONArray array = new JSONArray(data.getJsonResult());
                     List<HashMap<String, String>> libRawData = new ArrayList<>();
