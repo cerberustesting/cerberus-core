@@ -135,6 +135,9 @@ public class TestCaseStepAction {
     public static final String ACTION_SETCONTENT = "setContent";
     public static final String ACTION_SETSERVICECALLCONTENT = "setServiceCallContent";
     public static final String ACTION_SWITCHTOCONTEXT = "switchToContext";
+    public static final String ACTION_LOCKDEVICE = "lockDevice";
+    public static final String ACTION_UNLOCKDEVICE = "unlockDevice";
+    public static final String ACTION_ROTATEDEVICE = "rotateDevice";
     public static final String ACTION_DONOTHING = "doNothing";
 
     // ??? TODO. Clean this unused action.

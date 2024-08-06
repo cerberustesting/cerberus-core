@@ -26,6 +26,7 @@ var actionOptGroupList = [
         {"name":"command", "label":{"en":"Execute Command","fr":"Execution de Commande"}, "picto":"<img width='20px' height='20px' src='images/action-command-line.png'/>"},
         {"name":"wait", "label":{"en":"Wait","fr":"Attendre"}, "picto":"<img width='20px' height='20px' src='images/action-time-left.png'/>"},
         {"name":"file", "label":{"en":"File","fr":"Fichier"}, "picto":"<img width='20px' height='20px' src='images/action-file.png'/>"},
+        {"name":"device", "label":{"en":"Mobile Device","fr":"Appareil Mobile"}, "picto":"<img width='20px' height='20px' src='images/action-mobile-application.png'/>"},
         {"name":"context_control", "label":{"en":"Context Controls","fr":"Contexte des Contrôles"}, "picto":"<img width='20px' height='20px' src='images/action-share.png'/>"}
 
 ];
@@ -142,5 +143,8 @@ var actionOptList = {
             "field1":{"label":{"en": "Path/Pattern to retrieved. ex : /home/seluser/Downloads/", "fr": "Nom du fichier à récupérer. ex : /home/seluser/Downloads/"},"picto":"images/action-file.png", "class": "col-lg-12 crb-autocomplete-variable"}, 
             "field2":{"label":{"en":"Nb of files","fr":"Nb de fichiers"},"picto":"images/action-numeric.png", "class": "col-lg-6 crb-autocomplete-variable"}, 
             "field3":{"label":{"en":"Sorting Option. (LASTMODIFIED/IGNORECASEDESC/IGNORECASEASC/DESC/ASC)","fr":"Option de tri. (LASTMODIFIED/IGNORECASEDESC/IGNORECASEASC/DESC/ASC)"},"picto":"images/action-settings.png", "class": "col-lg-6 crb-autocomplete-filesortflag"},"documentation":{"en":"...","fr":"..."}},
+        "lockDevice":{"group":"device","value": "lockDevice","label":{"en":"Lock Device","fr":"Verrouiller l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
+        "unlockDevice":{"group":"device","value": "unlockDevice","label":{"en":"Unlock Device","fr":"Déverrouiller l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
+        "rotateDevice":{"group":"device","value": "rotateDevice","label":{"en":"Rotate Device","fr":"Tourner l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
         "doNothing":{"group":"none","value": "doNothing","label":{"en":"No action","fr":"Pas d'action"},"application_types":["GUI","SRV","IPA","APK","FAT"],"documentation":{"en":"...","fr":"..."}}
 };

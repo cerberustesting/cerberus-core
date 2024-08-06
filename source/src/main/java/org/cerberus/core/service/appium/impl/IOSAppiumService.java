@@ -20,6 +20,8 @@
 package org.cerberus.core.service.appium.impl;
 
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +36,7 @@ import org.cerberus.core.util.JSONUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.ScreenOrientation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -256,6 +259,52 @@ public class IOSAppiumService extends AppiumService {
             session.getAppiumDriver().closeApp();
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent lockDevice(Session session) {
+        try {
+            IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
+            driver.lockDevice();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LOCKDEVICE_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent unlockDevice(Session session) {
+        try {
+            IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
+            driver.unlockDevice();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_UNLOCKDEVICE_GENERIC);
+
+        } catch (Exception e) {
+            LOG.warn("Unable to close app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to close app : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent rotateDevice(Session session) {
+        try {
+            IOSDriver driver = ((IOSDriver) session.getAppiumDriver());
+            LOG.warn("orientation : " + driver.getOrientation().value());
+            driver.rotate(ScreenOrientation.LANDSCAPE == driver.getOrientation() ? ScreenOrientation.PORTRAIT : ScreenOrientation.LANDSCAPE);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_UNLOCKDEVICE_GENERIC);
 
         } catch (Exception e) {
             LOG.warn("Unable to close app " + e.getMessage(), e);
