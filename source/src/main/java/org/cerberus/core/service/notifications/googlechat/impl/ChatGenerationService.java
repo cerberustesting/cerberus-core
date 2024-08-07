@@ -176,7 +176,7 @@ public class ChatGenerationService implements IChatGenerationService {
         for (TestCaseExecution execution : tag.getExecutionsNew()) {
             LOG.debug(execution.getControlStatus() + " - " + execution.getControlMessage() + execution.getApplication() + " - " + execution.getDescription());
             totallines++;
-            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
+            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus()) && execution.getTestCasePriority() > 0) {
                 totaltodisplay++;
                 if (maxlines > totaldisplayed) {
                     totaldisplayed++;
