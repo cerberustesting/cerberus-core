@@ -65,6 +65,10 @@ public class AppService {
     private String avroSchemaValue;
     private String parentContentService;
     private String collection; // Information in order to group the services in order to organise them
+    private String authType;
+    private String authUser;
+    private String authPassword;
+    private String authAddTo;
     private JSONObject simulationParameters;
     private String description;
     private String UsrCreated;
@@ -148,6 +152,12 @@ public class AppService {
     public static final String SRVBODYTYPE_RAW = "raw";
     public static final String SRVBODYTYPE_FORMDATA = "form-data";
     public static final String SRVBODYTYPE_FORMURLENCODED = "form-urlencoded";
+    public static final String AUTHTYPE_NONE = "none";
+    public static final String AUTHTYPE_APIKEY = "API Key";
+    public static final String AUTHTYPE_BEARERTOKEN = "Bearer Token";
+    public static final String AUTHTYPE_BASICAUTH = "Basic Auth";
+    public static final String AUTHADDTO_QUERYSTRING = "Query String";
+    public static final String AUTHADDTO_HEADERS = "Header";
 
     public void addResponseHeaderList(AppServiceHeader object) {
         this.responseHeaderList.add(object);

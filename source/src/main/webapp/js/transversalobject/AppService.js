@@ -58,6 +58,8 @@ function initModalAppService() {
     displayInvariantList("bodyType", "SRVBODYTYPE", false, "raw", undefined, undefined, undefined, "editServiceModal");
     displayAppServiceList("parentContentService", "", "");
     displayInvariantList("callSystem", "SYSTEM", false, undefined, undefined, undefined, undefined, "editServiceModal");
+    displayInvariantList("authType", "AUTHTYPE", false, undefined, undefined, undefined, undefined, "editServiceModal");
+    displayInvariantList("authAddTo", "AUTHADDTO", false, undefined, undefined, undefined, undefined, "editServiceModal");
 
     $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "buttonEdit"));
     $("[name='buttonCall']").html(doc.getDocLabel("page_global", "buttonCall"));
@@ -306,6 +308,10 @@ function prepareAppServiceModal() {
 
     });
 
+    $("#editSoapLibraryModal #authType").off("change");
+    $("#editSoapLibraryModal #authType").change(function () {
+        refreshAuthorDisplayOnAnyChange();
+    });
 
     // Adding rows in edit Modal.
     $('#addContent').off("click");
@@ -318,6 +324,35 @@ function prepareAppServiceModal() {
 
 }
 
+function refreshAuthorDisplayOnAnyChange() {
+    $('#editSoapLibraryModalForm #authUserSection').show();
+    $('#editSoapLibraryModalForm #authKeyField').text("User");
+    $('#editSoapLibraryModalForm #authValField').text("Password");
+    switch ($('#editSoapLibraryModalForm #authType').val()) {
+        case "none":
+            $('#editSoapLibraryModalForm #authInfoSection').hide();
+            $('#editSoapLibraryModalForm #authAddToSection').hide();
+            break;
+        case "API Key":
+            $('#editSoapLibraryModalForm #authInfoSection').show();
+            $('#editSoapLibraryModalForm #authKeyField').text("Key");
+            $('#editSoapLibraryModalForm #authValField').text("Value");
+            $('#editSoapLibraryModalForm #authAddToSection').show();
+            break;
+        case "Bearer Token":
+            $('#editSoapLibraryModalForm #authInfoSection').show();
+            $('#editSoapLibraryModalForm #authUserSection').hide();
+            $('#editSoapLibraryModalForm #authValField').text("Token");
+            $('#editSoapLibraryModalForm #authAddToSection').hide();
+            break;
+        case "Basic Auth":
+            $('#editSoapLibraryModalForm #authInfoSection').show();
+            $('#editSoapLibraryModalForm #authAddToSection').hide();
+            break;
+        default:
+            break;
+    }
+}
 
 /***
  * Function that support the modal confirmation. Will call servlet to comit the transaction.
@@ -760,6 +795,7 @@ function refreshDisplayOnTypeChange() {
     $("#editSoapLibraryModal #tabHeader").show();
     $("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
     $("label[name='operationField']").html("Operation");
+    $("#editSoapLibraryModal #tabAuthor").hide();
 
     if (newValueType === "SOAP") {
         // If SOAP service, no need to feed the method.
@@ -927,6 +963,7 @@ function refreshDisplayOnTypeChange() {
         $('#editSoapLibraryModal #tabRequestDetail').text("Request Detail");
 
     } else { // REST
+        $("#editSoapLibraryModal #tabAuthor").show();
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "block");
@@ -1034,6 +1071,9 @@ function feedAppServiceModal(serviceName, modalId, mode) {
                     // Force a change event on method field.
                     refreshDisplayOnTypeChange();
 
+                    // Force a change event on author field.
+                    refreshAuthorDisplayOnAnyChange();
+
                     //initialize the select2
                     $('#editSoapLibraryModal #application').select2();
                     // set it with the service value
@@ -1083,6 +1123,10 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         serviceObj1.isAvroEnableValue = true;
         serviceObj1.avroSchemaValue = "";
         serviceObj1.parentContentService = "";
+        serviceObj1.authType = "none";
+        serviceObj1.authKey = "";
+        serviceObj1.authVal = "";
+        serviceObj1.authAddTo = "Header";
         serviceObj1.simulationParameters = {
             "country": "",
             "environment": "",
@@ -1094,7 +1138,12 @@ function feedAppServiceModal(serviceName, modalId, mode) {
             "props": []
         };
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
+
+        // Force a change event on method field.
         refreshDisplayOnTypeChange();
+        // Force a change event on author field.
+        refreshAuthorDisplayOnAnyChange();
+
         formEdit.modal('show');
 
     }
@@ -1181,6 +1230,10 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#callCountry").prop("value", "");
         formEdit.find("#callEnv").prop("value", "");
         formEdit.find("#callSystem").prop("value", "");
+        formEdit.find("#authType").prop("value", "none");
+        formEdit.find("#authKey").prop("value", "");
+        formEdit.find("#authVal").prop("value", "");
+        formEdit.find("#authAddTo").prop("value", "Header");
     } else {
         formEdit.find("#application").val(service.application);
         formEdit.find("#type").val(service.type);
@@ -1206,6 +1259,10 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#kafkaFilterValue").prop("value", service.kafkaFilterValue);
         formEdit.find("#kafkaFilterHeaderPath").prop("value", service.kafkaFilterHeaderPath);
         formEdit.find("#kafkaFilterHeaderValue").prop("value", service.kafkaFilterHeaderValue);
+        formEdit.find("#authType").prop("value", service.authType);
+        formEdit.find("#authKey").prop("value", service.authUser);
+        formEdit.find("#authVal").prop("value", service.authPassword);
+        formEdit.find("#authAddTo").prop("value", service.authAddTo);
         if (service.fileName === "") {
             srv_updateDropzone("Drag and drop Files", "#" + modalId);
         } else {

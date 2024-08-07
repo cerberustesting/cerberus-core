@@ -6470,6 +6470,27 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_jiracloud_url', '', 'JIRA Cloud Site URL. Ex : http://yourcompany.atlassian.net/'),
     ('', 'cerberus_jiradc_url', '', 'JIRA DC Site URL. Ex : http://yourcompany.atlassian.net/');
 
+-- 1828
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES 
     ('EXTERNALPROVIDER', 'Jira-Cloud', '150', 'JIRA Cloud', ''),
     ('EXTERNALPROVIDER', 'Jira-DC', '160', 'JIRA DC', '');
+
+-- 1829
+ALTER TABLE appservice 
+    ADD AuthType varchar(200) DEFAULT 'none' NOT NULL AFTER SimulationParameters,
+    ADD AuthUser varchar(500) DEFAULT '' NOT NULL AFTER AuthType,
+    ADD AuthPassword varchar(500) DEFAULT '' NOT NULL AFTER AuthUser,
+    ADD `AuthAddTo` varchar(500) DEFAULT '' NOT NULL AFTER AuthPassword;
+
+-- 1830
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   
+   ('AUTHTYPE', 'none', 100, 'No Authorization')
+  ,('AUTHTYPE', 'API Key', 150, 'API Key Authorization')
+  ,('AUTHTYPE', 'Bearer Token', 200, 'Bearer Token Authorization')
+  ,('AUTHTYPE', 'Basic Auth', 250, 'Basic Authorization')
+  ,('INVARIANTPRIVATE', 'AUTHTYPE', '1000', 'Authorization Type')
+  ,('AUTHADDTO', 'Query String', 100, 'Authorization Parameters in Query String')
+  ,('AUTHADDTO', 'Header', 150, 'Authorization Parameters in http headers')
+  ,('INVARIANTPRIVATE', 'AUTHADDTO', '1050', 'Authorization API Key Parameter Method');
+

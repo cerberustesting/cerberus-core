@@ -220,7 +220,7 @@ public class ReadAppService extends HttpServlet {
         String system = "";
         if (StringUtil.isNotEmptyOrNull(p.getApplication())) {
             try {
-                
+
                 Application app = applicationService.convert(applicationService.readByKey(p.getApplication()));
                 system = app.getSystem();
                 List<CountryEnvironmentParameters> cepValue = cepService.convert(cepService.readByVarious(system, null, null, p.getApplication()));
@@ -246,7 +246,7 @@ public class ReadAppService extends HttpServlet {
                 extraInfo.put("countries", countries);
                 extraInfo.put("environments", environments);
                 response.put("extraInformation", extraInfo);
-                
+
             } catch (CerberusException e) {
                 LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
             } catch (Exception e) {
@@ -378,6 +378,9 @@ public class ReadAppService extends HttpServlet {
             String pass = StringUtil.getPasswordFromAnyUrl(result.getString("servicePath"));
             if (pass != null) {
                 result.put("servicePath", result.getString("servicePath").replace(pass, StringUtil.SECRET_STRING));
+            }
+            if (StringUtil.isNotEmptyOrNull(appservice.getAuthPassword())) {
+                result.put("authPassword", StringUtil.SECRET_STRING);
             }
         }
         return result;

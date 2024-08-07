@@ -152,6 +152,10 @@ public class CreateAppService extends HttpServlet {
         String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
         String kafkaFilterHeaderPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderPath"), "", charset);
         String kafkaFilterHeaderValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderValue"), "", charset);
+        String authType = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authType"), "", charset);
+        String authUser = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authKey"), "", charset);
+        String authPass = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authVal"), "", charset);
+        String authAddTo = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authAddTo"), "", charset);
         String fileName = null;
         if (file != null) {
             fileName = file.getName();
@@ -189,6 +193,10 @@ public class CreateAppService extends HttpServlet {
                 JSONObject objCall = new JSONObject(fileData.get("callInfo"));
                 appService.setSimulationParameters(objCall);
             }
+            appService.setAuthType(authType);
+            appService.setAuthUser(authUser);
+            appService.setAuthPassword(authPass);
+            appService.setAuthAddTo(authAddTo);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 

@@ -205,4 +205,17 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         return appServiceHeaderDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
     }
 
+    @Override
+    public List<AppServiceHeader> addIfNotExist(List<AppServiceHeader> headerList, AppServiceHeader newHeader) {
+        boolean exist = false;
+        for (AppServiceHeader contentHeader : headerList) {
+            if (newHeader.getKey() != null && newHeader.getKey().equalsIgnoreCase(contentHeader.getKey())) {
+                exist = true;
+            }
+        }
+        if (!exist) {
+            headerList.add(newHeader);
+        }
+        return headerList;
+    }
 }

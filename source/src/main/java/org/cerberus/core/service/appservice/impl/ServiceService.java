@@ -144,6 +144,7 @@ public class ServiceService implements IServiceService {
                 appService = appServiceService.convert(appServiceService.readByKeyWithDependency(service, true));
 
             }
+            execution.addSecret(appService.getAuthPassword());
             execution.setCurrentApplication(appService.getApplication());
 
             String servicePath;
@@ -468,7 +469,8 @@ public class ServiceService implements IServiceService {
                                  * Call REST and store it into the execution.
                                  */
                                 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), appService.getBodyType(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution, appService.getDescription());
+                                        appService.getHeaderList(), appService.getContentList(), token, timeoutMs, system, appService.isFollowRedir(), execution, appService.getDescription(),
+                                        appService.getAuthType(), appService.getAuthUser(), appService.getAuthPassword(), appService.getAuthAddTo());
                                 message = result.getResultMessage()
                                         .resolveDescription("SERVICENAME", service);
                                 result.setResultMessage(message);

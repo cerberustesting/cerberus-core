@@ -82,12 +82,14 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
+import org.cerberus.core.crud.service.IAppServiceHeaderService;
 import org.cerberus.core.exception.CerberusEventException;
 
 /**
@@ -106,6 +108,8 @@ public class RestService implements IRestService {
     IFactoryAppService factoryAppService;
     @Autowired
     IAppServiceService AppServiceService;
+    @Autowired
+    IAppServiceHeaderService AppServiceHeaderService;
     @Autowired
     IProxyService proxyService;
 
@@ -179,7 +183,8 @@ public class RestService implements IRestService {
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, String bodyType,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description) {
+            String system, boolean isFollowRedir, TestCaseExecution tcexecution, String description,
+            String authType, String authUser, String authPassword, String authAddTo) {
 
         AnswerItem<AppService> result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", "", "", "", "", true, "", "", false, "", false, "", false, "", null,
@@ -303,6 +308,34 @@ public class RestService implements IRestService {
 
             AppService responseHttp = null;
             HttpEntity entity = null;
+
+            // Enrich Query String with auth parameters when necessary
+            if (AppService.AUTHTYPE_APIKEY.equals(authType) && AppService.AUTHADDTO_QUERYSTRING.equals(authAddTo)) {
+                servicePath = StringUtil.addQueryString(servicePath, authUser + "=" + authPassword);
+            }
+            // Enrich Headers with auth parameters when necessary
+            switch (authType) {
+                case AppService.AUTHTYPE_APIKEY:
+                    if (!StringUtil.isEmptyOrNull(authPassword) && !StringUtil.isEmptyOrNull(authUser) && AppService.AUTHADDTO_HEADERS.equals(authAddTo)) {
+                        headerList.add(factoryAppServiceHeader.create(null, authUser, authPassword, true, 0, "", "", null, "", null));
+                    }
+                    break;
+                case AppService.AUTHTYPE_BASICAUTH:
+                    if (!StringUtil.isEmptyOrNull(authPassword) && !StringUtil.isEmptyOrNull(authUser)) {
+                        String authHeader = authUser + ":" + authPassword;
+                        headerList.add(factoryAppServiceHeader.create(null, "authorization", "Basic " + Base64.getEncoder().encodeToString(authHeader.getBytes()), true, 0, "", "", null, "", null));
+                    }
+                    break;
+                case AppService.AUTHTYPE_BEARERTOKEN:
+                    if (!StringUtil.isEmptyOrNull(authPassword)) {
+                        headerList.add(factoryAppServiceHeader.create(null, "authorization", "Bearer " + authPassword, true, 0, "", "", null, "", null));
+                    }
+                    break;
+                default:
+            }
+
+            // Adding Accept */* automaticaly if no Accept header has been defined already.
+            headerList = AppServiceHeaderService.addIfNotExist(headerList, factoryAppServiceHeader.create(null, "Accept", "*/*", true, 0, "Added by engine", "", null, "", null));
 
             switch (method) {
                 case AppService.METHOD_HTTPGET:

@@ -158,4 +158,13 @@ public interface IAppServiceHeaderService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param headerList
+     * @param newHeader
+     * @return
+     */
+    List<AppServiceHeader> addIfNotExist(List<AppServiceHeader> headerList, AppServiceHeader newHeader);
+
 }

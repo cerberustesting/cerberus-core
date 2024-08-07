@@ -96,7 +96,7 @@ public class UpdateAppService extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        
+
         ServletUtil.servletStart(request);
 
         response.setContentType("text/html;charset=UTF-8");
@@ -155,6 +155,10 @@ public class UpdateAppService extends HttpServlet {
         String kafkaFilterValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterValue"), "", charset);
         String kafkaFilterHeaderPath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderPath"), "", charset);
         String kafkaFilterHeaderValue = ParameterParserUtil.parseStringParamAndDecode(fileData.get("kafkaFilterHeaderValue"), "", charset);
+        String authType = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authType"), "", charset);
+        String authUser = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authKey"), "", charset);
+        String authPass = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authVal"), "", charset);
+        String authAddTo = ParameterParserUtil.parseStringParamAndDecode(fileData.get("authAddTo"), "", charset);
         String fileName = null;
         if (file != null) {
             fileName = file.getName();
@@ -209,7 +213,7 @@ public class UpdateAppService extends HttpServlet {
                     LOG.debug(objCall.toString(1));
                     appService.setSimulationParameters(objCall);
                 }
-                
+
                 appService.setService(service);
                 appService.setCollection(collection);
                 appService.setAttachementURL(attachementurl);
@@ -240,6 +244,12 @@ public class UpdateAppService extends HttpServlet {
                 appService.setAvroSchemaKey(avrSchemaKey);
                 appService.setAvroSchemaValue(avrSchemaValue);
                 appService.setParentContentService(parentContentService);
+                appService.setAuthType(authType);
+                appService.setAuthUser(authUser);
+                if (!authPass.equals(StringUtil.SECRET_STRING)) {
+                    appService.setAuthPassword(authPass);
+                }
+                appService.setAuthAddTo(authAddTo);
 
                 ans = appServiceService.update(originalService, appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);

@@ -330,7 +330,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         return 0;
     }
-    
+
     @Override
     public AnswerItem<AppService> readByKey(String key) {
         AnswerItem<AppService> ans = new AnswerItem<>();
@@ -471,8 +471,9 @@ public class AppServiceDAO implements IAppServiceDAO {
         StringBuilder query = new StringBuilder()
                 .append("INSERT INTO appservice (`Service`, `Collection`, `Application`, `Type`, `Method`, `ServicePath`, `isFollowRedir`, `Operation`, `BodyType`, `ServiceRequest`, ")
                 .append("   `isAvroEnable`, `SchemaRegistryUrl`,  `isAvroEnableKey`, `AvroSchemaKey`,  `isAvroEnableValue`, `AvroSchemaValue`, `ParentContentService`, `KafkaTopic`, `KafkaKey`, ")
-                .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `SimulationParameters`, `UsrCreated`) ")
-                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("   `KafkaFilterPath`, `KafkaFilterValue`, `KafkaFilterHeaderPath`, `KafkaFilterHeaderValue`, `AttachementURL`, `Description`, `FileName`, `SimulationParameters`, ")
+                .append("   `AuthType`, `AuthUser`, `AuthPassword`, `AuthAddTo`, `UsrCreated`) ")
+                .append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug(SQL_MESSAGE, query);
 
@@ -514,6 +515,10 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getFileName());
             preStat.setString(i++, object.getSimulationParameters().toString());
+            preStat.setString(i++, object.getAuthType());
+            preStat.setString(i++, object.getAuthUser());
+            preStat.setString(i++, object.getAuthPassword());
+            preStat.setString(i++, object.getAuthAddTo());
             preStat.setString(i, object.getUsrCreated());
 
             preStat.executeUpdate();
@@ -540,7 +545,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 .append("UPDATE appservice srv SET `Service` = ?, `Collection` = ?, `ServicePath` = ?, `isFollowRedir` = ?, `Operation` = ?, BodyType = ?, ServiceRequest = ?, ")
                 .append("`isAvroEnable` = ?, `SchemaRegistryUrl` = ?, `isAvroEnableKey` = ?, `AvroSchemaKey` = ?, `isAvroEnableValue` = ?, `AvroSchemaValue` = ?, ParentContentService = ?, KafkaTopic = ?, KafkaKey = ?, ")
                 .append("KafkaFilterPath = ?, KafkaFilterValue = ?, KafkaFilterHeaderPath = ?, KafkaFilterHeaderValue = ?, AttachementURL = ?, SimulationParameters = ?, ")
-                .append("`Description` = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
+                .append("`Description` = ?, `Type` = ?, Method = ?, AuthType = ?, AuthUser = ?, AuthPassword = ?, AuthAddTo = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?");
         if ((object.getApplication() != null) && (!object.getApplication().isEmpty())) {
             query.append(" ,Application = ?");
         } else {
@@ -585,6 +590,10 @@ public class AppServiceDAO implements IAppServiceDAO {
             preStat.setString(i++, object.getDescription());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getMethod());
+            preStat.setString(i++, object.getAuthType());
+            preStat.setString(i++, object.getAuthUser());
+            preStat.setString(i++, object.getAuthPassword());
+            preStat.setString(i++, object.getAuthAddTo());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, object.getFileName());
             if (StringUtil.isNotEmptyOrNull(object.getApplication())) {
@@ -698,9 +707,18 @@ public class AppServiceDAO implements IAppServiceDAO {
         String avroSchemaValue = ParameterParserUtil.parseStringParam(rs.getString("srv.AvroSchemaValue"), "");
         String parentContentService = ParameterParserUtil.parseStringParam(rs.getString("srv.ParentContentService"), "");
         JSONObject simulationParameters = SqlUtil.getJSONObjectFromColumn(rs, "srv.SimulationParameters");
+        String authType = ParameterParserUtil.parseStringParam(rs.getString("srv.AuthType"), "");
+        String authUser = ParameterParserUtil.parseStringParam(rs.getString("srv.AuthUser"), "");
+        String authPassword = ParameterParserUtil.parseStringParam(rs.getString("srv.AuthPassword"), "");
+        String authAddTo = ParameterParserUtil.parseStringParam(rs.getString("srv.AuthAddTo"), "");
+
         AppService result = factoryAppService.create(service, type, method, application, collection, bodyType, serviceRequest, kafkaTopic, kafkaKey, kafkaFilterPath, kafkaFilterValue, kafkaFilterHeaderPath, kafkaFilterHeaderValue,
                 description, servicePath, isFollowRedir, attachementURL, operation, isAvroEnable, schemaRegistryURL, isAvroEnableKey, avroSchemaKey, isAvroEnableValue, avroSchemaValue, parentContentService, usrCreated, dateCreated, usrModif, dateModif, fileName);
         result.setSimulationParameters(simulationParameters);
+        result.setAuthType(authType);
+        result.setAuthUser(authUser);
+        result.setAuthPassword(authPassword);
+        result.setAuthAddTo(authAddTo);
         return result;
     }
 
