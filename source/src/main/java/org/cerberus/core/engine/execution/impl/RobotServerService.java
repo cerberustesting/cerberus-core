@@ -1289,7 +1289,7 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug(session.getDriver());
             LOG.debug(session.getCerberus_selenium_pageLoadTimeout());
             LOG.debug(timeout);
-            if ((session.getDriver() != null) && (session.getCerberus_selenium_pageLoadTimeout() != timeout)) {
+            if ((session.getDriver() != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_pageLoadTimeout() != timeout)) {
                 LOG.debug("Setting Selenium Robot Options (pageLoadTimeout & setScriptTimeout) timeout to : {}", timeout);
                 WebDriver driver = session.getDriver();
                 driver.manage().timeouts().pageLoadTimeout(timeout, TimeUnit.MILLISECONDS);
@@ -1344,12 +1344,12 @@ public class RobotServerService implements IRobotServerService {
             session.setCerberus_sikuli_wait_element(session.getCerberus_sikuli_wait_element_default());
 
             WebDriver driver = session.getDriver();
-            if ((driver != null) && (session.getCerberus_selenium_pageLoadTimeout() != session.getCerberus_selenium_pageLoadTimeout_default())) {
+            if ((driver != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_pageLoadTimeout() != session.getCerberus_selenium_pageLoadTimeout_default())) {
                 LOG.debug("Setting Selenium Robot Options (pageLoadTimeout) timeout to : {}", session.getCerberus_selenium_pageLoadTimeout_default());
                 driver.manage().timeouts().pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default(), TimeUnit.MILLISECONDS);
                 session.setCerberus_selenium_pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default());
             }
-            if ((driver != null) && (session.getCerberus_selenium_setScriptTimeout() != session.getCerberus_selenium_setScriptTimeout_default())) {
+            if ((driver != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_setScriptTimeout() != session.getCerberus_selenium_setScriptTimeout_default())) {
                 LOG.debug("Setting Selenium Robot Options (setScriptTimeout) timeout to : {}", session.getCerberus_selenium_setScriptTimeout_default());
                 driver.manage().timeouts().setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default(), TimeUnit.MILLISECONDS);
                 session.setCerberus_selenium_setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default());
