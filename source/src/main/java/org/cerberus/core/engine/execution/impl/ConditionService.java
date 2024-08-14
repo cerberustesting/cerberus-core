@@ -200,6 +200,34 @@ public class ConditionService implements IConditionService {
                 mes = ans.getResultMessage();
                 break;
 
+            case CONDITIONOPERATOR_IFSTEPSTATUSOK:
+                ans = evaluateCondition_ifStepStatusOK(conditionValue1, execution);
+                mes = ans.getResultMessage();
+                break;
+
+            case CONDITIONOPERATOR_IFSTEPSTATUSNE:
+                ans = evaluateCondition_ifStepStatusNE(conditionValue1, execution);
+                mes = ans.getResultMessage();
+                break;
+            case CONDITIONOPERATOR_IFACTIONSTATUSOK:
+                ans = evaluateCondition_ifActionStatusOK(conditionValue1, conditionValue2, execution);
+                mes = ans.getResultMessage();
+                break;
+
+            case CONDITIONOPERATOR_IFACTIONSTATUSNE:
+                ans = evaluateCondition_ifActionStatusNE(conditionValue1, conditionValue2, execution);
+                mes = ans.getResultMessage();
+                break;
+            case CONDITIONOPERATOR_IFCONTROLSTATUSOK:
+                ans = evaluateCondition_ifControlStatusOK(conditionValue1, conditionValue2, conditionValue3, execution);
+                mes = ans.getResultMessage();
+                break;
+
+            case CONDITIONOPERATOR_IFCONTROLSTATUSNE:
+                ans = evaluateCondition_ifControlStatusNE(conditionValue1, conditionValue2, conditionValue3, execution);
+                mes = ans.getResultMessage();
+                break;
+
             default:
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionToEvaluate.getCondition()));
@@ -1055,6 +1083,174 @@ public class ConditionService implements IConditionService {
         );
 
         ans.setItem(doExecuteAction);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStepStatusOK(String conditionValue1, TestCaseExecution execution) {
+        LOG.debug("Checking if Step Status OK");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        try {
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
+
+
+        if (status.equals("OK")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+            );
+        }
+
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_STEPEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+            );
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStepStatusNE(String conditionValue1, TestCaseExecution execution) {
+        LOG.debug("Checking if Step Status NE");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
+
+
+        if (status.equals("NE")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+            );
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifActionStatusOK(String conditionValue1, String conditionValue2, TestCaseExecution execution) {
+        LOG.debug("Checking if Action Status OK");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                                .getReturnCode();
+
+
+        if (status.equals("OK")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+            );
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifActionStatusNE(String conditionValue1, String conditionValue2, TestCaseExecution execution) {
+        LOG.debug("Checking if Action Status NE");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                .getReturnCode();
+
+
+        if (status.equals("NE")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+            );
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifControlStatusOK(String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution execution) {
+        LOG.debug("Checking if Control Status OK");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
+                .getReturnCode();
+
+        if (status.equals("OK")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STR3%", conditionValue3)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONOK);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STR3%", conditionValue3)
+            );
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifControlStatusNE(String conditionValue1, String conditionValue2, String conditionValue3, TestCaseExecution execution) {
+        LOG.debug("Checking if Control Status NE");
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent mes;
+
+        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
+                .getReturnCode();
+
+
+        if (status.equals("NE")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STR3%", conditionValue3)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONNE);
+            mes.setDescription(mes.getDescription()
+                    .replace("%STR1%", conditionValue1)
+                    .replace("%STR2%", conditionValue2)
+                    .replace("%STR3%", conditionValue3)
+            );
+        }
         ans.setResultMessage(mes);
         return ans;
     }

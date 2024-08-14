@@ -449,6 +449,23 @@ public class TestCaseStepActionExecution {
         }
     }
 
+    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionBySortId(int sortID){
+        for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
+            if (sortID == tcsace.getSort()){
+                return tcsace;
+            }
+        }
+        return null;
+    }
+
+    public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionByControlId(int sortID){
+        for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
+            if (sortID == tcsace.getControlId()){
+                return tcsace;
+            }
+        }
+        return null;
+    }
     public String getDescription() {
         return description;
     }

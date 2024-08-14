@@ -318,6 +318,33 @@ public class TestCaseExecution {
         });
     }
 
+    public TestCaseStepExecution getTestCaseStepExecutionBySortId(int sortID){
+        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
+            if (sortID == tcse.getTestCaseStep().getSort()){
+                return tcse;
+            }
+        }
+        return null;
+    }
+
+    public TestCaseStepExecution getTestCaseStepExecutionByStepId(int stepId){
+        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
+            if (stepId == tcse.getTestCaseStep().getStepId()){
+                return tcse;
+            }
+        }
+        return null;
+    }
+
+    public TestCaseStepExecution getTestCaseStepExecutionExecuting(){
+        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
+            if ("PE".equals(tcse.getReturnCode())){
+                return tcse;
+            }
+        }
+        return null;
+    }
+
     /**
      * Convert the current TestCaseExecution into JSON format
      *

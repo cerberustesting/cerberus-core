@@ -47,6 +47,12 @@ public enum ConditionOperatorEnum {
     CONDITIONOPERATOR_IFSTRINGNOTCONTAINS("ifStringNotContains", false),
     CONDITIONOPERATOR_IFTEXTINELEMENT("ifTextInElement", true),
     CONDITIONOPERATOR_IFTEXTNOTINELEMENT("ifTextNotInElement", true),
+    CONDITIONOPERATOR_IFSTEPSTATUSOK("ifStepStatusOK", false),
+    CONDITIONOPERATOR_IFSTEPSTATUSNE("ifStepStatusNE", false),
+    CONDITIONOPERATOR_IFACTIONSTATUSOK("ifActionStatusOK", false),
+    CONDITIONOPERATOR_IFACTIONSTATUSNE("ifActionStatusNE", false),
+    CONDITIONOPERATOR_IFCONTROLSTATUSOK("ifControlStatusOK", false),
+    CONDITIONOPERATOR_IFCONTROLSTATUSNE("ifControlStatusNE", false),
     CONDITIONOPERATOR_NEVER("never", false);
     
     private final String condition;

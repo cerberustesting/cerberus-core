@@ -399,6 +399,33 @@ public class TestCaseStepExecution {
         }
     }
 
+    public TestCaseStepActionExecution getTestCaseStepActionExecutionBySortId(int sortID){
+        for(TestCaseStepActionExecution tcsae : this.testCaseStepActionExecutionList){
+            if (sortID == tcsae.getTestCaseStepAction().getSort()){
+                return tcsae;
+            }
+        }
+        return null;
+    }
+
+    public TestCaseStepActionExecution getTestCaseStepActionExecutionByActionId(int sortID){
+        for(TestCaseStepActionExecution tcsae : this.testCaseStepActionExecutionList){
+            if (sortID == tcsae.getTestCaseStepAction().getActionId()){
+                return tcsae;
+            }
+        }
+        return null;
+    }
+
+    public TestCaseStepActionExecution getTestCaseStepActionExecutionExecuting(){
+        for(TestCaseStepActionExecution tcsae : this.testCaseStepActionExecutionList){
+            if ("PE".equals(tcsae.getReturnCode())){
+                return tcsae;
+            }
+        }
+        return null;
+    }
+
     public String getDescription() {
         return description;
     }
