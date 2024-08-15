@@ -1472,7 +1472,6 @@ function duplicateStep(event) {
 
 function appendActionsForConditionCombobox(combo, operator){
 
-    console.log(combo);
     combo.empty();
     var steps = $("#steps li").data("item").steps;
     for (s in steps) {
@@ -2278,12 +2277,26 @@ function displayStepOptionsModal(step, htmlElement) {
     $("#stepConditionVal2").val(step.conditionValue2);
     $("#stepConditionVal3").val(step.conditionValue3);
     setPlaceholderCondition($("#stepConditionOperator"));
+    if (conditionNewUIList[step.conditionOperator].type ==="combo") {
+        appendActionsForConditionCombobox($("#stepconditionval4"), step.conditionOperator);
+        if (conditionNewUIList[step.conditionOperator].level ==="step"){
+            $("#stepconditionval4").val(step.conditionValue1);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="action"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="control"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2+"-"+step.conditionValue3);
+        }
+    }
+
 //END OF CONDITION
 
     $("#stepConditionOperator").off("change");
     $("#stepConditionOperator").on("change", function () {
         setModif(true);
         setPlaceholderCondition($(this));
+        appendActionsForConditionCombobox($("#stepconditionval4"), $(this).val());
     });
     $("#stepConditionVal1").off("change");
     $("#stepConditionVal1").on("change", function () {
@@ -2353,6 +2366,11 @@ function displayStepOptionsModal(step, htmlElement) {
         step.conditionValue1 = $("#stepConditionVal1").val();
         step.conditionValue2 = $("#stepConditionVal2").val();
         step.conditionValue3 = $("#stepConditionVal3").val();
+        if (conditionNewUIList[step.conditionOperator].type === "combo") {
+            step.conditionValue1 = $("#stepconditionval4 option:selected").attr("stepId");
+            step.conditionValue2 = $("#stepconditionval4 option:selected").attr("actionId") === undefined ? "":$("#stepconditionval4 option:selected").attr("actionId");
+            step.conditionValue3 = $("#stepconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#stepconditionval4 option:selected").attr("controlId");
+        }
         step.loop = $("#stepLoop").val();
 
 
