@@ -88,6 +88,7 @@ public class TestCaseStepActionControlExecution {
      *
      */
     private TestCaseStepActionExecution testCaseStepActionExecution;
+    private TestCaseStepActionControl testCaseStepActionControl;
     private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at control level
     private MessageEvent controlResultMessage;
     private MessageGeneral executionResultMessage;
@@ -413,6 +414,14 @@ public class TestCaseStepActionControlExecution {
 
     public void setValue3Init(String value3Init) {
         this.value3Init = value3Init;
+    }
+
+    public TestCaseStepActionControl getTestCaseStepActionControl() {
+        return testCaseStepActionControl;
+    }
+
+    public void setTestCaseStepActionControl(TestCaseStepActionControl testCaseStepActionControl) {
+        this.testCaseStepActionControl = testCaseStepActionControl;
     }
 
     /**

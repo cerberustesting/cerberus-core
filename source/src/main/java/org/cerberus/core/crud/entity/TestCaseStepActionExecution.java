@@ -451,7 +451,7 @@ public class TestCaseStepActionExecution {
 
     public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionBySortId(int sortID){
         for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
-            if (sortID == tcsace.getSort()){
+            if (sortID == tcsace.getTestCaseStepActionControl().getSort()){
                 return tcsace;
             }
         }
@@ -460,7 +460,7 @@ public class TestCaseStepActionExecution {
 
     public TestCaseStepActionControlExecution getTestCaseStepActionControlExecutionByControlId(int sortID){
         for(TestCaseStepActionControlExecution tcsace : this.testCaseStepActionControlExecutionList){
-            if (sortID == tcsace.getControlId()){
+            if (sortID == tcsace.getTestCaseStepActionControl().getControlId()){
                 return tcsace;
             }
         }

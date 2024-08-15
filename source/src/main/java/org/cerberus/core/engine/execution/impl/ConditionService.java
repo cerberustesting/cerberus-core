@@ -292,6 +292,8 @@ public class ConditionService implements IConditionService {
             case CONDITIONOPERATOR_IFSTRINGNOTCONTAINS:
             case CONDITIONOPERATOR_IFTEXTINELEMENT:
             case CONDITIONOPERATOR_IFTEXTNOTINELEMENT:
+            case CONDITIONOPERATOR_IFCONTROLSTATUSOK:
+            case CONDITIONOPERATOR_IFCONTROLSTATUSNE:
                 return value3;
             default:
                 return "";
@@ -1094,20 +1096,20 @@ public class ConditionService implements IConditionService {
 
         try {
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
 
 
-        if (status.equals("OK")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONOK);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONOK);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-            );
-        }
+            if (status.equals("OK")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                );
+            }
 
         } catch (Exception ex){
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_STEPEXECUTIONOK);
@@ -1124,16 +1126,23 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
+        try {
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1)).getReturnCode();
 
 
-        if (status.equals("NE")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONNE);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONNE);
+            if (status.equals("NE")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STEPEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STEPEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                );
+            }
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_STEPEXECUTIONNE);
             mes.setDescription(mes.getDescription()
                     .replace("%STR1%", conditionValue1)
             );
@@ -1147,19 +1156,27 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
-                                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
-                                .getReturnCode();
+        try {
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                    .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                    .getReturnCode();
 
 
-        if (status.equals("OK")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONOK);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-                    .replace("%STR2%", conditionValue2)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONOK);
+            if (status.equals("OK")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                );
+            }
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_ACTIONEXECUTIONOK);
             mes.setDescription(mes.getDescription()
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
@@ -1174,19 +1191,27 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
-                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
-                .getReturnCode();
+        try {
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                    .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                    .getReturnCode();
 
 
-        if (status.equals("NE")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONNE);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-                    .replace("%STR2%", conditionValue2)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONNE);
+            if (status.equals("NE")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ACTIONEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_ACTIONEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                );
+            }
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_ACTIONEXECUTIONNE);
             mes.setDescription(mes.getDescription()
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
@@ -1201,20 +1226,29 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
-                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
-                .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
-                .getReturnCode();
+        try {
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                    .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                    .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
+                    .getReturnCode();
 
-        if (status.equals("OK")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONOK);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-                    .replace("%STR2%", conditionValue2)
-                    .replace("%STR3%", conditionValue3)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONOK);
+            if (status.equals("OK")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                        .replace("%STR3%", conditionValue3)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONOK);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                        .replace("%STR3%", conditionValue3)
+                );
+            }
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_CONTROLEXECUTIONOK);
             mes.setDescription(mes.getDescription()
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
@@ -1230,21 +1264,30 @@ public class ConditionService implements IConditionService {
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
 
-        String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
-                .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
-                .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
-                .getReturnCode();
+        try {
+            String status = execution.getTestCaseStepExecutionByStepId(Integer.valueOf(conditionValue1))
+                    .getTestCaseStepActionExecutionByActionId(Integer.valueOf(conditionValue2))
+                    .getTestCaseStepActionControlExecutionByControlId(Integer.valueOf(conditionValue3))
+                    .getReturnCode();
 
 
-        if (status.equals("NE")) {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONNE);
-            mes.setDescription(mes.getDescription()
-                    .replace("%STR1%", conditionValue1)
-                    .replace("%STR2%", conditionValue2)
-                    .replace("%STR3%", conditionValue3)
-            );
-        } else {
-            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONNE);
+            if (status.equals("NE")) {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_CONTROLEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                        .replace("%STR3%", conditionValue3)
+                );
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_CONTROLEXECUTIONNE);
+                mes.setDescription(mes.getDescription()
+                        .replace("%STR1%", conditionValue1)
+                        .replace("%STR2%", conditionValue2)
+                        .replace("%STR3%", conditionValue3)
+                );
+            }
+        } catch (Exception ex){
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_CONTROLEXECUTIONNE);
             mes.setDescription(mes.getDescription()
                     .replace("%STR1%", conditionValue1)
                     .replace("%STR2%", conditionValue2)
