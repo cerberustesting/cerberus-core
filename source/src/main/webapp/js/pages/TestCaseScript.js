@@ -1501,7 +1501,7 @@ function appendActionsForConditionCombobox(combo, operator){
                                 .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - Control " + controls[c].sort + " - " + controls[c].description)
                                 .attr("actionId", actions[a].actionId)
                                 .attr("stepId", steps[s].stepId)
-                                .attr("controlId", controls[c].stepId)
+                                .attr("controlId", controls[c].controlId)
                                 .val(steps[s].stepId + "-" + actions[a].actionId+ "-" + controls[c].controlId));
                         }
                     }
