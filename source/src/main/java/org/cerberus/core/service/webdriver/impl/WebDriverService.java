@@ -1564,6 +1564,53 @@ public class WebDriverService implements IWebDriverService {
         }
     }
 
+    @Override
+    public MessageEvent doSeleniumActionDragAndDropByOffset(Session session, Identifier drag, Identifier offset, boolean waitForVisibility, boolean waitForClickability) throws IOException {
+        MessageEvent message;
+        try {
+            AnswerItem answerDrag = this.getSeleniumElement(session, drag, waitForVisibility, waitForClickability);
+            String[] offsetCoords = offset.getLocator().split(";");
+
+            int xOff = Integer.parseInt(offsetCoords[0]);
+            int yOff = Integer.parseInt(offsetCoords[1]);
+
+            if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement source = (WebElement) answerDrag.getItem();
+
+                Actions builder = new Actions(session.getDriver());
+                Action dragAndDrop = builder.clickAndHold(source)
+                        .moveToElement(source, xOff, yOff)
+                        .release()
+                        .build();
+                dragAndDrop.perform();
+
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
+                message.setDescription(message.getDescription().replace("%SOURCE%", drag.getIdentifier() + "=" + drag.getLocator()));
+                message.setDescription(message.getDescription().replace("%TARGET%", offset.getIdentifier() + "=" + offset.getLocator()));
+                return message;
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
+                message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+                return message;
+            }
+        } catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
+            LOG.warn(exception.toString());
+            return message;
+        } catch (NumberFormatException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_INVALID_FORMAT);
+            message.setDescription(message.getDescription().replace("%OFFSET%", offset.getIdentifier() + "=" + offset.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
+        }
+    }
+
     private void selectRequestedOption(Select select, Identifier property, String element) throws CerberusEventException {
         MessageEvent message;
         try {

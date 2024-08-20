@@ -349,6 +349,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_CLEARFIELD(257, "FA", "Value1 is ‘null’. Parameter is mandatory in order to perform the action clearField.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT(299, "FA", "Failed to dragAndDrop because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_DRAGANDDROP_INVALID_FORMAT(299, "FA", "Failed to dragAndDrop because of the value of the offset '%OFFSET%'! It must be offset=integer;integer", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DRAGANDDROPSIKULI_NO_SUCH_ELEMENT(299, "FA", "Failed to dragAndDrop because could not find an element!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),

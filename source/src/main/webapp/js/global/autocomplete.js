@@ -355,7 +355,8 @@ function initTags(configs, context) {
             "erratum",
             "picture",
             "text",
-            "coord"
+            "coord",
+            "offset"
         ];
         var availableIdentifiersSwitch = [
             "title",
