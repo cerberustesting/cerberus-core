@@ -609,6 +609,7 @@ function performCall(service) {
 
                 if (CallContent.call.hasOwnProperty('Response')) {
 
+                    // Response code and duration
                     if ((CallContent.call.Response.hasOwnProperty('HTTP-ReturnCode')) && (CallContent.call.Response["HTTP-ReturnCode"] > 0)) {
                         if ((CallContent.call.Response["HTTP-ReturnCode"] < 300)) {
                             $('#callStatusCode').attr('style', 'font-size: small; text-align: center; background-color: rgb(0,210,122);');
@@ -617,15 +618,12 @@ function performCall(service) {
                         } else {
                             $('#callStatusCode').attr('style', 'font-size: small; text-align: center; background-color: rgb(230,55,87);');
                         }
-
                         $('#callStatusCode').html(CallContent.call.Response["HTTP-ReturnCode"]);
                         $('#callStatusCode').show();
                         $('#callStatus').hide();
-
                     } else {
                         $('#callStatus').show();
                     }
-
                     if ((CallContent.call.Response.timings.hasOwnProperty('durationMs')) && (CallContent.call.Response.timings.durationMs > 0)) {
                         $('#callTiming').html(CallContent.call.Response.timings.durationMs + " ms");
                         $('#callTiming').show();
