@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.rest.impl;
 
+import java.io.EOFException;
 import java.io.File;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -166,8 +167,12 @@ public class RestService implements IRestService {
                     myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(),
                             header.getValue(), true, 0, "", "", null, "", null));
                 }
-                HttpEntity entity = response.getEntity();
-                myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                try {
+                    HttpEntity entity = response.getEntity();
+                    myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                } catch (EOFException ex) {
+                    myResponse.setResponseHTTPBody(null);
+                }
                 return myResponse;
             };
             return httpclient.execute(httpget, responseHandler);
