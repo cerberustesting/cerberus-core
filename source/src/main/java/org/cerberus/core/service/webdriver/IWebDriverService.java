@@ -139,5 +139,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) throws IOException;
 
+    MessageEvent doSeleniumActionDragAndDropByOffset(Session session, Identifier object, Identifier offset, boolean waitForVisibility, boolean waitForClickability) throws IOException;
+
     MessageEvent doSeleniumActionRefreshCurrentPage(Session session);
 }

@@ -1313,6 +1313,7 @@ public class ExecutionRunService implements IExecutionRunService {
             controlExecution.setDoScreenshotAfter(control.isDoScreenshotAfter());
             controlExecution.setWaitBefore(control.getWaitBefore());
             controlExecution.setWaitAfter(control.getWaitAfter());
+            controlExecution.setTestCaseStepActionControl(control);
 
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
 

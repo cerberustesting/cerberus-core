@@ -77,6 +77,18 @@ var conditionNewUIList = {
     "ifStringNotContains":{"value":"ifStringNotContains","label":{"en":"If String not Contains","fr":"Si le texte ne contient pas"},
         "field1":{"label":{"en": "String 1", "fr": "Texte 1"},"class": "crb-autocomplete-variable"},
         "field2":{"label":{"en": "String 2", "fr": "Texte 2"},"class": "crb-autocomplete-variable"}},
+    "ifStepStatusOK":{"value":"ifStepStatusOK","label":{"en":"If step returned OK","fr":"Si le step est OK'"},
+        "field4":{"label":{"en": "Step", "fr": "Step"}},"type":"combo","level":"step"},
+    "ifStepStatusNE":{"value":"ifStepStatusNE","label":{"en":"If defined step not executed","fr":"Si le step n'a pas été executé'"},
+        "field4":{"label":{"en": "Step", "fr": "Step"}},"type":"combo","level":"step"},
+    "ifActionStatusOK":{"value":"ifActionStatusOK","label":{"en":"If action returned OK","fr":"Si l'action est OK'"},
+        "field4":{"label":{"en": "Action", "fr": "Action"}},"type":"combo","level":"action"},
+    "ifActionStatusNE":{"value":"ifActionStatusNE","label":{"en":"If defined Action not executed","fr":"Si l'action n'a pas été executée'"},
+        "field4":{"label":{"en": "Action", "fr": "Action"}},"type":"combo","level":"action"},
+    "ifControlStatusOK":{"value":"ifControlStatusOK","label":{"en":"If control returned OK","fr":"Si le contrôle est OK'"},
+        "field4":{"label":{"en": "Control", "fr": "Control"}},"type":"combo","level":"control"},
+    "ifControlStatusNE":{"value":"ifControlStatusNE","label":{"en":"If Control not executed","fr":"Si le contrôle n'a pas été executé'"},
+        "field4":{"label":{"en": "Control", "fr": "Control"}},"type":"combo","level":"control"},
     "never":{"value":"never","label":{"en":"Never","fr":"Jamais"}},
 
 }

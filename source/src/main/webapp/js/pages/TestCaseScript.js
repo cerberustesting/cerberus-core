@@ -1470,6 +1470,47 @@ function duplicateStep(event) {
 
 }
 
+function appendActionsForConditionCombobox(combo, operator){
+
+    combo.empty();
+    var steps = $("#steps li").data("item").steps;
+    for (s in steps) {
+        if (operator.startsWith("ifStepStatus")) {
+            if (steps[s].sort != undefined) {
+                combo.append($("<option></option>")
+                    .text("Step " + steps[s].sort + " - " + steps[s].description)
+                    .attr("stepId", steps[s].stepId)
+                    .val(steps[s].stepId));
+            }
+        } else {
+            var actions = $("#steps li").data("item").steps[s].actions;
+            for (a in actions) {
+                if (operator.startsWith("ifActionStatus")) {
+                    if (actions[a].sort != undefined) {
+                        combo.append($("<option></option>")
+                            .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - " + actions[a].description)
+                            .attr("actionId", actions[a].actionId)
+                            .attr("stepId", steps[s].stepId)
+                            .val(steps[s].stepId + "-" + actions[a].actionId));
+                    }
+                } else {
+                    var controls = $("#steps li").data("item").steps[s].actions[a].controls;
+                    for (c in controls) {
+                        if (controls[c].sort != undefined) {
+                            combo.append($("<option></option>")
+                                .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - Control " + controls[c].sort + " - " + controls[c].description)
+                                .attr("actionId", actions[a].actionId)
+                                .attr("stepId", steps[s].stepId)
+                                .attr("controlId", controls[c].controlId)
+                                .val(steps[s].stepId + "-" + actions[a].actionId+ "-" + controls[c].controlId));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 function createSteps(data, steps, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     // If the testcase has no steps, we create an empty one.
     if (data.length === 0) {
@@ -2236,12 +2277,26 @@ function displayStepOptionsModal(step, htmlElement) {
     $("#stepConditionVal2").val(step.conditionValue2);
     $("#stepConditionVal3").val(step.conditionValue3);
     setPlaceholderCondition($("#stepConditionOperator"));
+    if (conditionNewUIList[step.conditionOperator].type ==="combo") {
+        appendActionsForConditionCombobox($("#stepconditionval4"), step.conditionOperator);
+        if (conditionNewUIList[step.conditionOperator].level ==="step"){
+            $("#stepconditionval4").val(step.conditionValue1);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="action"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2);
+        }
+        if (conditionNewUIList[step.conditionOperator].level ==="control"){
+            $("#stepconditionval4").val(step.conditionValue1+"-"+step.conditionValue2+"-"+step.conditionValue3);
+        }
+    }
+
 //END OF CONDITION
 
     $("#stepConditionOperator").off("change");
     $("#stepConditionOperator").on("change", function () {
         setModif(true);
         setPlaceholderCondition($(this));
+        appendActionsForConditionCombobox($("#stepconditionval4"), $(this).val());
     });
     $("#stepConditionVal1").off("change");
     $("#stepConditionVal1").on("change", function () {
@@ -2311,6 +2366,11 @@ function displayStepOptionsModal(step, htmlElement) {
         step.conditionValue1 = $("#stepConditionVal1").val();
         step.conditionValue2 = $("#stepConditionVal2").val();
         step.conditionValue3 = $("#stepConditionVal3").val();
+        if (conditionNewUIList[step.conditionOperator].type === "combo") {
+            step.conditionValue1 = $("#stepconditionval4 option:selected").attr("stepId");
+            step.conditionValue2 = $("#stepconditionval4 option:selected").attr("actionId") === undefined ? "":$("#stepconditionval4 option:selected").attr("actionId");
+            step.conditionValue3 = $("#stepconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#stepconditionval4 option:selected").attr("controlId");
+        }
         step.loop = $("#stepLoop").val();
 
 
@@ -2595,10 +2655,25 @@ function displayOverrideOptionsModal(action, htmlElement) {
     $("#actionconditionval3").val(action.conditionValue3);
     setPlaceholderCondition($("#conditionSelect"));
 
+    if (conditionNewUIList[action.conditionOperator].type ==="combo") {
+        appendActionsForConditionCombobox($("#actionconditionval4"), action.conditionOperator);
+        if (conditionNewUIList[action.conditionOperator].level ==="step"){
+            $("#actionconditionval4").val(action.conditionValue1);
+        }
+        if (conditionNewUIList[action.conditionOperator].level ==="action"){
+            $("#actionconditionval4").val(action.conditionValue1+"-"+action.conditionValue2);
+        }
+        if (conditionNewUIList[action.conditionOperator].level ==="control"){
+            $("#actionconditionval4").val(action.conditionValue1+"-"+action.conditionValue2+"-"+action.conditionValue3);
+        }
+    }
+
+
     $("#conditionSelect").off("change");
     $("#conditionSelect").on("change", function () {
         setModif(true);
         setPlaceholderCondition($(this));
+        appendActionsForConditionCombobox($("#actionconditionval4"), $(this).val());
     });
     $("#actionconditionval1").off("change");
     $("#actionconditionval1").on("change", function () {
@@ -2610,6 +2685,10 @@ function displayOverrideOptionsModal(action, htmlElement) {
     });
     $("#actionconditionval3").off("change");
     $("#actionconditionval3").on("change", function () {
+        setModif(true);
+    });
+    $("#actionconditionval4").off("change");
+    $("#actionconditionval4").on("change", function () {
         setModif(true);
     });
     $("#screenshotBCheckbox").off("change");
@@ -2717,6 +2796,12 @@ function displayOverrideOptionsModal(action, htmlElement) {
         action.conditionValue1 = $("#actionconditionval1").val();
         action.conditionValue2 = $("#actionconditionval2").val();
         action.conditionValue3 = $("#actionconditionval3").val();
+
+        if (conditionNewUIList[action.conditionOperator].type === "combo") {
+            action.conditionValue1 = $("#actionconditionval4 option:selected").attr("stepId");
+            action.conditionValue2 = $("#actionconditionval4 option:selected").attr("actionId") === undefined ? "":$("#actionconditionval4 option:selected").attr("actionId");
+            action.conditionValue3 = $("#actionconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#actionconditionval4 option:selected").attr("controlId");
+        }
 
         let newOpts = [];
         newOpts.push({
@@ -3994,6 +4079,14 @@ function setPlaceholderCondition(conditionElement) {
 
     } else {
         $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal3Label']").parent().hide();
+    }
+
+    if (typeof placeHolders.field4 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal4Label']").parent().show();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal4Label']").text(placeHolders.field4.label[user.language]);
+
+    } else {
+        $(conditionElement).parents("div[class*='conditions']").find(".v4").hide();
     }
 
 }

@@ -1826,7 +1826,11 @@ public class ActionService implements IActionService {
                         && identifierDrop.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
                 } else {
-                    return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                    if (Identifier.IDENTIFIER_OFFSET.equals(identifierDrop.getIdentifier())) {
+                        return webdriverService.doSeleniumActionDragAndDropByOffset(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                    } else {
+                        return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop, true, true);
+                    }
                 }
             }
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {

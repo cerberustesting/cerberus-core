@@ -81,7 +81,7 @@ var actionOptList = {
             "field1":{"label":{"en": "Application name or path", "fr": "Nom ou chemin de l'application"},"picto":"images/action-mobile-application.png", "class": "col-lg-12 crb-autocomplete-variable"}},
         "dragAndDrop":{"group":"mouse_action","value": "dragAndDrop","label":{"en":"Drag And Drop","fr":"Glisser Déposer"},"application_types":["GUI","FAT"],
             "field1":{"label":{"en": "Element path", "fr": "Chemin de l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"Destination Element Path","fr":"Destination de l'élément"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
+            "field2":{"label":{"en":"Destination Element Path or offset (offset=xx;yy)","fr":"Destination de l'élément ou offset (offset=xx;yy)"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
         "select":{"group":"mouse_action","value": "select","label":{"en":"Choose option in select box","fr":"Choisir une option dans un Select"},"application_types":["GUI"],
             "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
             "field2":{"label":{"en":"Option value","fr":"Chemin vers l'option"},"picto":"images/action-command-line.png", "class": "col-lg-12 crb-autocomplete-select"},"documentation":{"en":"...","fr":"..."}},

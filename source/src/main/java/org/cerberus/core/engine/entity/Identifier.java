@@ -71,6 +71,7 @@ public class Identifier {
     public static final String IDENTIFIER_TEXT = "text";
 
     public static final String IDENTIFIER_COORD = "coord";
+    public static final String IDENTIFIER_OFFSET = "offset";
 
     public static final String IDENTIFIER_TITLE = "title";
     public static final String IDENTIFIER_REGEXTITLE = "regexTitle";
