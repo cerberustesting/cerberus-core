@@ -654,14 +654,21 @@ function generateTooltip(data, tag) {
     return htmlRes;
 }
 
-function generateTagReport(data, tag, rowId) {
+function generateTagReport(data, tag, rowId, tagObj) {
     var divId = "#tagExecStatusRow" + rowId;
     var reportArea = $(divId).attr("data-tag", tag);
     var buildBar;
     var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;"><div class="hidden-xs" style="display: inline;align-text:right;">Total executions : ' + data.total + '</td></tr></table></div></div>\n\
+    let ciRes = '';
+    if (!isEmpty(tagObj.ciResult)) {
+        ciRes = '<div class="' + tagObj.ciResult + '" style="display: inline;align-text:right; background-color:red">';
+        ciRes += tagObj.ciResult;
+        ciRes += '</div>';
+    }
+
+    buildBar = '<div><table style="width: 100%"><tr><td><div>' + generateTagLink(tag) + '</div></td><td style="text-align:right;">' + ciRes + '<div class="hidden-xs" style="display: inline;align-text:right;"> Total executions : ' + data.total + '</div></td></tr></table></div></div>\n\
                                                         <div class="progress" style="height:8px" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
@@ -727,7 +734,7 @@ function loadLastTagResultList() {
             var jqxhr = $.get(requestToServlet, null, "json");
 
             $.when(jqxhr).then(function (data) {
-                generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
+                generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho, data.tagObject);
                 nbTagLoaded++;
                 hideLoaderTag();
             });
