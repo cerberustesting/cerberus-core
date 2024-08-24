@@ -273,6 +273,13 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
+            "data": "robot",
+            "sName": "exe.robot",
+            "title": doc.getDocOnline("page_executiondetail", "robot"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "browser",
             "visible": false,
             "sName": "exe.browser",
@@ -445,7 +452,7 @@ function generateTooltip(data) {
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>'
     htmlRes += '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>'
     if (data.robotDecli !== "") {
-        htmlRes += '<div><span class=\'bold\'>Browser : </span>' + data.robotDecli + ' (' + data.browser + ')</div>'
+        htmlRes += '<div><span class=\'bold\'>Robot : </span>' + data.robotDecli + ' (' + data.browser + ')</div>'
     }
     htmlRes += '<div><span class=\'bold\'>Start : </span>' + getDateMedium(data.start) + '</div>';
     if (getDateShort(data.end) !== "") {
