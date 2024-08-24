@@ -63,7 +63,7 @@ public class Application {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
-    
+
     /**
      * From here are data outside database model.
      */
@@ -84,6 +84,9 @@ public class Application {
     public static final String TYPE_IPA = "IPA";
     public static final String TYPE_FAT = "FAT";
     public static final String TYPE_NONE = "NONE";
+
+    public static final String BUGTRACKER_REDIRECT = "REDIRECT";
+    public static final String BUGTRACKER_JIRA = "JIRA";
 
     public boolean hasSameKey(Application obj) {
         if (obj == null) {

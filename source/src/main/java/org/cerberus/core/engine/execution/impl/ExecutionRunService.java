@@ -104,6 +104,7 @@ import java.util.Date;
 import java.util.List;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.execution.IIdentifierService;
+import org.cerberus.core.service.jira.IJiraService;
 import org.cerberus.core.service.robotextension.impl.SikuliService;
 import org.cerberus.core.service.xray.IXRayService;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
@@ -156,6 +157,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRobotProxyService executorService;
     private IEventService eventService;
     private IXRayService xRayService;
+    private IJiraService jiraService;
     private IIdentifierService identifierService;
 
     @Override
@@ -904,6 +906,12 @@ public class ExecutionRunService implements IExecutionRunService {
             // JIRA XRay Connector is triggered at the end of every execution..
             if (!willBeRetried) {
                 xRayService.createXRayTestExecution(execution);
+            }
+
+            // JIRA Issue creation Connector is triggered at the end of every execution..
+            // TODO Add conditions in order to create it only when testcase is stable enought.
+            if (!willBeRetried) {
+                jiraService.createIssue(execution);
             }
 
             /*

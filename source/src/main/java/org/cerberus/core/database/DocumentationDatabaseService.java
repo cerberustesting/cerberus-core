@@ -1994,6 +1994,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','environment','','en','Environment','',NULL)");
         b.append(",('page_executiondetail','environment','','fa','محیط','',NULL)");
         b.append(",('page_executiondetail','environment','','fr','Environnement','',NULL)");
+        b.append(",('page_executiondetail','robot','','en','Robot','',NULL)");
+        b.append(",('page_executiondetail','robot','','fr','Robot','',NULL)");
         b.append(",('page_executiondetail','executor','','en','Executor','',NULL)");
         b.append(",('page_executiondetail','executor','','fa','مجری','',NULL)");
         b.append(",('page_executiondetail','executor','','fr','Executeur','',NULL)");

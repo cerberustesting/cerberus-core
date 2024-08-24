@@ -552,12 +552,12 @@ function updatePage(data, steps) {
                         newBugURL = newBugURL.replace(/%REV%/g, data.revision);
                         newBugURL = newBugURL.replace(/%BROWSER%/g, data.browser);
                         newBugURL = newBugURL.replace(/%BROWSERFULLVERSION%/g, data.browser + ' ' + data.version + ' ' + data.platform);
-                        link = $('<a target="_blank" id="bugs">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug"));
+                        link = $('<a target="_blank" id="bugs">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block marginTop5'>").text("Open a new bug From Applcation Bug Tracker"));
                     } else {
                         link = $('<a id="bugs">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL on application '" + data.application + "'."));
                     }
                     $("#bugs").append(link);
-                    link = $('<a id="bugs">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Assign to Test Case"));
+                    link = $('<a id="bugs">').append($("<button class='btn btn-default btn-block marginTop5' id='editTcHeaderBug'>").text("Manually Assign a bug to Test Case"));
                     $("#bugs").append(link);
                     $("#editTcHeaderBug").unbind("click").click(function () {
                         openModalTestCase(data.test, data.testcase, "EDIT", "tabTCBugReport")

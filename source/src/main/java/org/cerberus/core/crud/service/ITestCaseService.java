@@ -124,11 +124,25 @@ public interface ITestCaseService {
     boolean updateTestCaseInformation(TestCase testCase);
 
     /**
+     * This method update all testcases where an application could be defined
+     * when it is renamed.
+     *
      * @param application
      * @param oldObject
      * @param newObject
      */
     public void updateApplicationObject(String application, String oldObject, String newObject);
+
+    /**
+     * Add the corresponding bug key to the list of bugs only if no other active
+     * bug already exist.
+     *
+     * @param test
+     * @param testFolder
+     * @param bugKey
+     * @param description
+     */
+    public void addBugIfNotAlreadyOpen(String test, String testFolder, String bugKey, String description);
 
     /**
      * @param tCase

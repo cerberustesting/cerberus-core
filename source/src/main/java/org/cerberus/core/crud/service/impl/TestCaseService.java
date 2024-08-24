@@ -550,6 +550,11 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
+    public void addBugIfNotAlreadyOpen(String test, String testFolder, String bugKey, String description) {
+        LOG.debug("TO BE IMPLEMENTED");
+    }
+
+    @Override
     public Answer create(TestCase testCase) {
         // We first create the corresponding test if it doesn,'t exist.
         if (testCase.getTest() != null && !testService.exist(testCase.getTest())) {

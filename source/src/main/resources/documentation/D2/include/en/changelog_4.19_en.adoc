@@ -17,6 +17,8 @@
 * [ENGINE] Every application environment now can have 2 secrets data that can be used for password of apikey (with %system.APP_SECRET1% and %system.APP_SECRET2%). Once application is updated with its secret data, you can't access it and data is protected during execution.
 * [ENGINE] You can now disable an environment at the application level thanks to the new active checkbox available.
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
+* [ENGINE] Added Service REST Authorization support (Basic, API Key and Bearer).
+* [ENGINE] Added actions lockDevice, unlockDevice and rotateDevice for iOS and Android application
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
