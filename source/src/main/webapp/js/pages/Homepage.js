@@ -663,7 +663,7 @@ function generateTagReport(data, tag, rowId, tagObj) {
 
     let ciRes = '';
     if (!isEmpty(tagObj.ciResult)) {
-        ciRes = '<div class="' + tagObj.ciResult + '" style="display: inline;align-text:right; background-color:red">';
+        ciRes = '<div class="' + tagObj.ciResult + '" style="display: inline;align-text:right;">';
         ciRes += tagObj.ciResult;
         ciRes += '</div>';
     }
