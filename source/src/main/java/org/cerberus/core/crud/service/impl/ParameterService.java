@@ -440,7 +440,8 @@ public class ParameterService implements IParameterService {
                 || parameter.getParam().equals("cerberus_smtp_password")
                 || parameter.getParam().equals("cerberus_executeCerberusCommand_password")
                 || parameter.getParam().equals(Parameter.VALUE_cerberus_xraycloud_clientsecret)
-                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraydc_token)) {
+                || parameter.getParam().equals(Parameter.VALUE_cerberus_xraydc_token)
+                || parameter.getParam().equals(Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken)) {
             return true;
         }
         return false;

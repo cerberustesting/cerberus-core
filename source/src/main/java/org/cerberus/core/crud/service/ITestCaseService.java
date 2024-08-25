@@ -134,15 +134,23 @@ public interface ITestCaseService {
     public void updateApplicationObject(String application, String oldObject, String newObject);
 
     /**
+     *
+     * @param testcase
+     * @return
+     */
+    boolean isBugAlreadyOpen(TestCase testcase);
+
+    /**
      * Add the corresponding bug key to the list of bugs only if no other active
      * bug already exist.
      *
      * @param test
      * @param testFolder
      * @param bugKey
+     * @param bugURL
      * @param description
      */
-    public void addBugIfNotAlreadyOpen(String test, String testFolder, String bugKey, String description);
+    public void addNewBugEntry(String test, String testFolder, String bugKey, String bugURL, String description);
 
     /**
      * @param tCase

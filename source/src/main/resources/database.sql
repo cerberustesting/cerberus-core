@@ -6494,3 +6494,16 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
   ,('AUTHADDTO', 'Header', 150, 'Authorization Parameters in http headers')
   ,('INVARIANTPRIVATE', 'AUTHADDTO', '1050', 'Authorization API Key Parameter Method');
 
+-- 1831
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_jiracloud_apiuser', '', 'JIRA Cloud User that will be used to create JIRA issues. Ex : myuser@gmail.com'),
+    ('', 'cerberus_jiracloud_apiuser_apitoken', '', 'JIRA Cloud User API Token that will be used to create JIRA issues.');
+
+-- 1832
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_autobugcreation_enable', 'false', 'Activate the automatic creation of a bug following an execution.');
+
+-- 1833
+INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES 
+    ('PRIORITY', '0', 0, 'No Priority defined', '');
+

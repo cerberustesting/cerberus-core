@@ -550,7 +550,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void addBugIfNotAlreadyOpen(String test, String testFolder, String bugKey, String description) {
+    public boolean isBugAlreadyOpen(TestCase testcase) {
+        LOG.debug("TO BE IMPLEMENTED");
+        return false;
+    }
+
+    @Override
+    public void addNewBugEntry(String test, String testFolder, String bugKey, String bugURL, String description) {
         LOG.debug("TO BE IMPLEMENTED");
     }
 

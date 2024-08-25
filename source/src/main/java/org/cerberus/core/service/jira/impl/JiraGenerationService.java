@@ -63,6 +63,7 @@ public class JiraGenerationService implements IJiraGenerationService {
 
             String cerberusUrlExe = cerberusUrl + "TestCaseExecution.jsp?executionId=" + String.valueOf(execution.getId());
             String cerberusUrlTag = cerberusUrl + "ReportingExecutionByTag.jsp?Tag=" + URLEncoder.encode(execution.getTag(), "UTF-8");
+            String cerberusUrlExeHisto = cerberusUrl + "ReportingExecutionOverTime.jsp?tests=" + URLEncoder.encode(execution.getTest(), "UTF-8") + "&testcases=" + URLEncoder.encode(execution.getTestCase(), "UTF-8");
 
             JSONObject fields = new JSONObject();
 
@@ -99,6 +100,10 @@ public class JiraGenerationService implements IJiraGenerationService {
             contentA1A.put(generateBreak());
             contentA1A.put(generateContent("Please check the detailed execution "));
             contentA1A.put(generateContentLink(String.valueOf(execution.getId()), cerberusUrlExe));
+            contentA1A.put(generateBreak());
+            contentA1A.put(generateContent("You can also access "));
+            contentA1A.put(generateContentLink("latest executions", cerberusUrlExeHisto));
+            contentA1A.put(generateContent(" perfomed on that testcase."));
             contentA1A.put(generateBreak());
             contentA1A.put(generateBreak());
             contentA1A.put(generateContent("Execution was triggered from campaign execution "));

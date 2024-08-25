@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.HashMap;
 import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
@@ -45,6 +46,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.LogEvent;
+import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -91,7 +94,7 @@ public class JiraService implements IJiraService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    private static final String JIRACLOUD_ISSUECREATION_URL = "";
+    private static final String JIRACLOUD_ISSUECREATION_URL_DEFAULT = "https://missing-jira-url/";
     private static final String JIRACLOUD_ISSUECREATION_URLPATH = "/rest/api/3/issue";
 
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
@@ -100,15 +103,27 @@ public class JiraService implements IJiraService {
     @Async
     public void createIssue(TestCaseExecution execution) {
 
-        Application currentAppli = new Application();
-        try {
-            currentAppli = applicationService.convert(applicationService.readByKey(execution.getApplication()));
-        } catch (CerberusException ex) {
-            LOG.warn(ex, ex);
+        if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
+            return;
         }
 
-        if (currentAppli != null && Application.BUGTRACKER_JIRA.equalsIgnoreCase(currentAppli.getBugTrackerConnector())) {
-            createJiraIssue(execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+        // Testcase should have a priority defined and in WORKING status
+        if ((execution.getTestCasePriority() >= 1) && ("WORKING".equals(execution.getStatus()))) {
+            // There should not be any already existing bug.
+            if (!testCaseService.isBugAlreadyOpen(execution.getTestCaseObj())) {
+
+                // All is fine to open a new bug
+                Application currentAppli = new Application();
+                try {
+                    currentAppli = applicationService.convert(applicationService.readByKey(execution.getApplication()));
+                } catch (CerberusException ex) {
+                    LOG.warn(ex, ex);
+                }
+
+                if (currentAppli != null && Application.BUGTRACKER_JIRA.equalsIgnoreCase(currentAppli.getBugTrackerConnector())) {
+                    createJiraIssue(execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+                }
+            }
         }
     }
 
@@ -124,7 +139,7 @@ public class JiraService implements IJiraService {
             jiraRequest = jiraGenerationService.generateJiraIssue(execution, projectKey, issueType);
 
             // TODO Make url to JIRA instance a parameter.
-            String jiraUrl = JIRACLOUD_ISSUECREATION_URL + JIRACLOUD_ISSUECREATION_URLPATH;
+            String jiraUrl = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_url, "", JIRACLOUD_ISSUECREATION_URL_DEFAULT) + JIRACLOUD_ISSUECREATION_URLPATH;
 
             CloseableHttpClient httpclient = null;
             HttpClientBuilder httpclientBuilder;
@@ -182,11 +197,14 @@ public class JiraService implements IJiraService {
             post.setHeader("Accept", "application/json");
             post.setHeader("Content-type", "application/json");
             // TODO Make auth based on parameters
-            post.setHeader("Authorization", "Basic ");
+
+            String basicAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser, "", "") + ":" + parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken, "", "");
+            String basicAuth64 = Base64.getEncoder().encodeToString(basicAuth.getBytes());
+            post.setHeader("Authorization", "Basic " + basicAuth64);
 
             try {
 
-//                            LOG.debug("Calling {} with Bearer {}", xRayUrl, getToken(execution.getSystem(), execution.getTestCaseObj().getOrigine()));
+                LOG.debug("Calling {} with Authent {}", jiraUrl, basicAuth64);
                 HttpResponse response = httpclient.execute(post);
 
                 int rc = response.getStatusLine().getStatusCode();
@@ -195,16 +213,16 @@ public class JiraService implements IJiraService {
                     String responseString = EntityUtils.toString(response.getEntity());
                     LOG.debug("Response : {}", responseString);
                     JSONObject jiraResponse = new JSONObject(responseString);
-                    String xrayURL = "";
+                    String newJiraBugURL = "";
                     String jiraIssueKey = "";
                     if (jiraResponse.has("key")) {
                         jiraIssueKey = jiraResponse.getString("key");
                         if (jiraResponse.has("self")) {
                             URL jiURL = new URL(jiraResponse.getString("self"));
-                            xrayURL = jiURL.getProtocol() + "://" + jiURL.getHost();
+                            newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost();
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addBugIfNotAlreadyOpen(execution.getTest(), execution.getTestCase(), jiraIssueKey, "Created from Cerberus Engine.");
+                        testCaseService.addNewBugEntry(execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Cerberus Engine.");
                         LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
                     } else {
                         LOG.warn("JIRA Issue creation request http return code : {} is missing 'key' entry.", rc);
@@ -229,8 +247,6 @@ public class JiraService implements IJiraService {
                 logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, "JIRA Issue creation request to '" + jiraUrl + "' failed : " + e.toString() + ".");
             }
 
-//                    }
-//                }
         } catch (Exception ex) {
             LOG.error(ex, ex);
         }
