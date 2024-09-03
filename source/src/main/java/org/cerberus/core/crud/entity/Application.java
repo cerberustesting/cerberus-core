@@ -85,8 +85,9 @@ public class Application {
     public static final String TYPE_FAT = "FAT";
     public static final String TYPE_NONE = "NONE";
 
-    public static final String BUGTRACKER_REDIRECT = "REDIRECT";
+    public static final String BUGTRACKER_NONE = "NONE";
     public static final String BUGTRACKER_JIRA = "JIRA";
+    public static final String BUGTRACKER_GITHUB = "GITHUB";
 
     public boolean hasSameKey(Application obj) {
         if (obj == null) {

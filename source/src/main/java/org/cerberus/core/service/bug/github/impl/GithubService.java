@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.jira.impl;
+package org.cerberus.core.service.bug.github.impl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import java.util.HashMap;
 import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -44,37 +43,34 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Parameter;
-import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseService;
-import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.service.jira.IJiraGenerationService;
-import org.cerberus.core.service.jira.IJiraService;
 import org.cerberus.core.service.proxy.IProxyService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.scheduling.annotation.Async;
+import org.cerberus.core.service.bug.github.IGithubService;
+import org.cerberus.core.service.bug.github.IGithubGenerationService;
+import org.cerberus.core.util.StringUtil;
 
 /**
  *
  * @author vertigo17
  */
 @Service
-public class JiraService implements IJiraService {
+public class GithubService implements IGithubService {
 
     @Autowired
     private IParameterService parameterService;
     @Autowired
     private IProxyService proxyService;
     @Autowired
-    private IJiraGenerationService jiraGenerationService;
+    private IGithubGenerationService githubGenerationService;
     @Autowired
     private IApplicationService applicationService;
     @Autowired
@@ -82,10 +78,7 @@ public class JiraService implements IJiraService {
     @Autowired
     private ITestCaseService testCaseService;
 
-    // Area to store JIRA XRay token in cache.
-    private HashMap<String, JSONObject> cacheEntry = new HashMap<>();
-
-    private static final Logger LOG = LogManager.getLogger(JiraService.class);
+    private static final Logger LOG = LogManager.getLogger(GithubService.class);
 
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
     private static final String DEFAULT_PROXY_HOST = "proxy";
@@ -94,57 +87,30 @@ public class JiraService implements IJiraService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    private static final String JIRACLOUD_ISSUECREATION_URL_DEFAULT = "https://missing-jira-url/";
-    private static final String JIRACLOUD_ISSUECREATION_URLPATH = "/rest/api/3/issue";
+    private static final String GITHUB_ISSUECREATION_URL_DEFAULT = "https://api.github.com/repos/";
+    private static final String GITHUB_ISSUECREATION_URLPATH = "/issues";
+    private static final String GITHUB_API_VERSION = "2022-11-28";
 
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
 
     @Override
-    @Async
-    public void createIssue(TestCaseExecution execution) {
-
-        if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
-            return;
-        }
-
-        // Testcase should have a priority defined and in WORKING status
-        if ((execution.getTestCasePriority() >= 1) && ("WORKING".equals(execution.getStatus()))) {
-            // There should not be any already existing bug.
-            if (!testCaseService.isBugAlreadyOpen(execution.getTestCaseObj())) {
-
-                // All is fine to open a new bug
-                Application currentAppli = new Application();
-                try {
-                    currentAppli = applicationService.convert(applicationService.readByKey(execution.getApplication()));
-                } catch (CerberusException ex) {
-                    LOG.warn(ex, ex);
-                }
-
-                if (currentAppli != null && Application.BUGTRACKER_JIRA.equalsIgnoreCase(currentAppli.getBugTrackerConnector())) {
-                    createJiraIssue(execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void createJiraIssue(TestCaseExecution execution, String projectKey, String issueType) {
+    public void createGithubIssue(TestCaseExecution execution, String repoName, String issueType) {
 
         try {
 
-            JSONObject jiraRequest = new JSONObject();
+            JSONObject githubRequest = new JSONObject();
 
-            LOG.debug("call JIRA Issue creation following execution {}", execution.getId());
+            LOG.debug("call GITHUB Issue creation following execution {}", execution.getId());
 
-            jiraRequest = jiraGenerationService.generateJiraIssue(execution, projectKey, issueType);
+            githubRequest = githubGenerationService.generateGithubIssue(execution, issueType);
 
-            // TODO Make url to JIRA instance a parameter.
-            String jiraUrl = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_url, "", JIRACLOUD_ISSUECREATION_URL_DEFAULT) + JIRACLOUD_ISSUECREATION_URLPATH;
+            // Builf Github URL.
+            String githubUrl = GITHUB_ISSUECREATION_URL_DEFAULT + StringUtil.addPrefixIfNotAlready(StringUtil.addSuffixIfNotAlready(repoName, "/"), "/") + GITHUB_ISSUECREATION_URLPATH;
 
             CloseableHttpClient httpclient = null;
             HttpClientBuilder httpclientBuilder;
 
-            if (proxyService.useProxy(jiraUrl, "")) {
+            if (proxyService.useProxy(githubUrl, "")) {
 
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "", DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "", DEFAULT_PROXY_PORT);
@@ -191,60 +157,61 @@ public class JiraService implements IJiraService {
 
             httpclient = httpclientBuilder.build();
 
-            HttpPost post = new HttpPost(jiraUrl);
-            StringEntity entity = new StringEntity(jiraRequest.toString(), StandardCharsets.UTF_8);
+            HttpPost post = new HttpPost(githubUrl);
+            StringEntity entity = new StringEntity(githubRequest.toString(), StandardCharsets.UTF_8);
             post.setEntity(entity);
-            post.setHeader("Accept", "application/json");
+            post.setHeader("Accept", "application/vnd.github+json");
             post.setHeader("Content-type", "application/json");
+            post.setHeader("X-GitHub-Api-Version", GITHUB_API_VERSION);
+            //
             // TODO Make auth based on parameters
 
-            String basicAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser, "", "") + ":" + parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken, "", "");
-            String basicAuth64 = Base64.getEncoder().encodeToString(basicAuth.getBytes());
-            post.setHeader("Authorization", "Basic " + basicAuth64);
+            String bearerAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_github_apitoken, "", "");
+            post.setHeader("Authorization", "Bearer " + bearerAuth);
 
             try {
 
-                LOG.debug("Calling {} with Authent {}", jiraUrl, basicAuth64);
+                LOG.debug("Calling {} with Authent {}", githubUrl, bearerAuth);
                 HttpResponse response = httpclient.execute(post);
 
                 int rc = response.getStatusLine().getStatusCode();
                 if (rc >= 200 && rc < 300) {
-                    LOG.debug("Jira Issue Creation request http return code : " + rc);
+                    LOG.debug("Github Issue Creation request http return code : " + rc);
                     String responseString = EntityUtils.toString(response.getEntity());
                     LOG.debug("Response : {}", responseString);
-                    JSONObject jiraResponse = new JSONObject(responseString);
-                    String newJiraBugURL = "";
-                    String jiraIssueKey = "";
-                    if (jiraResponse.has("key")) {
-                        jiraIssueKey = jiraResponse.getString("key");
-                        if (jiraResponse.has("self")) {
-                            URL jiURL = new URL(jiraResponse.getString("self"));
-                            newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost();
+                    JSONObject githubResponse = new JSONObject(responseString);
+                    String newGithubBugURL = "";
+                    int githubIssueKey = 0;
+                    if (githubResponse.has("number")) {
+                        githubIssueKey = githubResponse.getInt("number");
+                        if (githubResponse.has("html_url")) {
+                            URL ghURL = new URL(githubResponse.getString("html_url"));
+                            newGithubBugURL = ghURL.toString();
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addNewBugEntry(execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Cerberus Engine.");
-                        LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
+                        testCaseService.addNewBugEntry(execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Cerberus Engine.");
+                        LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
                     } else {
-                        LOG.warn("JIRA Issue creation request http return code : {} is missing 'key' entry.", rc);
-                        String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString;
-                        logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
-                        LOG.warn("Message sent to " + jiraUrl + " :");
-                        LOG.warn(jiraRequest.toString(1));
+                        LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);
+                        String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". and no 'number' entry. " + responseString;
+                        logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
+                        LOG.warn("Message sent to " + githubUrl + " :");
+                        LOG.warn(githubRequest.toString(1));
                         LOG.warn("Response : {}", responseString);
                     }
                 } else {
-                    LOG.warn("JIRA Issue creation request http return code : " + rc);
+                    LOG.warn("Github Issue creation request http return code : " + rc);
                     String responseString = EntityUtils.toString(response.getEntity());
-                    String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". " + responseString;
-                    logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
-                    LOG.warn("Message sent to " + jiraUrl + " :");
-                    LOG.warn(jiraRequest.toString(1));
+                    String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". " + responseString;
+                    logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
+                    LOG.warn("Message sent to " + githubUrl + " :");
+                    LOG.warn(githubRequest.toString(1));
                     LOG.warn("Response : {}", responseString);
                 }
 
             } catch (IOException e) {
-                LOG.warn("JIRA Issue creation request Exception : " + e, e);
-                logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, "JIRA Issue creation request to '" + jiraUrl + "' failed : " + e.toString() + ".");
+                LOG.warn("Github Issue creation request Exception : " + e, e);
+                logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, "GITHUB Issue creation request to '" + githubUrl + "' failed : " + e.toString() + ".");
             }
 
         } catch (Exception ex) {

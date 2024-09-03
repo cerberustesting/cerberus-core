@@ -6507,3 +6507,18 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES 
     ('PRIORITY', '0', 0, 'No Priority defined', '');
 
+-- 1834
+UPDATE application set BugTrackerConnector = '' WHERE BugTrackerConnector ="REDIRECT";
+
+-- 1835
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('BUGTRACKERCONNECTOR', 'GITHUB', 200, 'Github Bug Tracker connector')
+        ,('BUGTRACKERCONNECTOR', 'NONE', 50, 'No Server to Server connector')
+        ,('BUGTRACKERCONNECTOR', 'JIRA', 100, 'JIRA Bug Tracker connector') ;
+
+-- 1836
+DELETE FROM invariant WHERE idname ='BUGTRACKERCONNECTOR' and value='REDIRECT';
+
+-- 1837
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_github_apitoken', '', 'Github Personal Access Token that will be used to create issues from API.');

@@ -17,29 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.jira;
+package org.cerberus.core.service.bug.jira;
 
 import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
  * @author vertigo17
  */
-public interface IJiraService {
+public interface IJiraGenerationService {
 
     /**
      *
-     * @param execution
-     */
-    public void createIssue(TestCaseExecution execution);
-
-    /**
-     *
-     * @param execution
      * @param projectKey
-     * @param issueType
+     * @param issueTypeName
+     * @param execution
+     * @return
+     * @throws Exception
      */
-    public void createJiraIssue(TestCaseExecution execution, String projectKey, String issueType);
+    public JSONObject generateJiraIssue(TestCaseExecution execution, String projectKey, String issueTypeName) throws Exception;
 
 }

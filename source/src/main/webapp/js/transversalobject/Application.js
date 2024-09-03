@@ -387,7 +387,46 @@ function updateBugTrackerConnector() {
         }).on("focus", function () {
             $(this).autocomplete("search", "");
         });
-
+        
+    } else if (connector === 'GITHUB') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png")
+        $('#editApplicationModal #btP1').show();
+        $('#editApplicationModal #btP2').show();
+        $('#editApplicationModal #btP3').hide();
+        $("[name='bugtrackerparam1Field']").html("organisation/repo");
+        $("[name='bugtrackerparam2Field']").html("Label");
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: ["bug"],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
+        
+    } else if (connector === 'NONE') {
+        $('#editApplicationModal #TrackerLogo').attr("src", "")
+        $('#editApplicationModal #btP1').hide();
+        $('#editApplicationModal #btP2').hide();
+        $('#editApplicationModal #btP3').hide();
+        //<i class="fa fa-external-link" aria-hidden="true"></i>
+        $('#editApplicationModal #bugtrackerparam2').autocomplete({
+            source: [""],
+            minLength: 0,
+            messages: {
+                noResults: '',
+                results: function (amount) {
+                    return '';
+                }
+            }
+        }).on("focus", function () {
+            $(this).autocomplete("search", "");
+        });
 
     }
 }

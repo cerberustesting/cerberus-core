@@ -17,25 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.jira;
+package org.cerberus.core.service.bug.github;
 
 import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.json.JSONObject;
 
 /**
  *
  * @author vertigo17
  */
-public interface IJiraGenerationService {
+public interface IGithubService {
 
     /**
      *
-     * @param projectKey
-     * @param issueTypeName
      * @param execution
-     * @return
-     * @throws Exception
+     * @param repoName
+     * @param labelType
      */
-    public JSONObject generateJiraIssue(TestCaseExecution execution, String projectKey, String issueTypeName) throws Exception;
+    public void createGithubIssue(TestCaseExecution execution, String repoName, String labelType);
 
 }

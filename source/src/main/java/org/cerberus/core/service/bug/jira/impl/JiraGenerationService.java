@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.core.service.jira.impl;
+package org.cerberus.core.service.bug.jira.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -28,13 +28,13 @@ import java.util.logging.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.service.jira.IJiraGenerationService;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.cerberus.core.service.bug.jira.IJiraGenerationService;
 
 /**
  *
@@ -67,7 +67,7 @@ public class JiraGenerationService implements IJiraGenerationService {
 
             JSONObject fields = new JSONObject();
 
-            fields.put("summary", "NRT Execution " + execution.getId() + " failed - " + execution.getTest() + " " + execution.getTestCase());
+            fields.put("summary", "TestCase Execution " + execution.getId() + " failed - " + execution.getTest() + " " + execution.getTestCase());
 
             JSONObject description = new JSONObject();
             description.put("type", "doc");
