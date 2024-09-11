@@ -354,10 +354,10 @@ var newPropertyPlaceholder = {
             "class": "col-sm-3",
             "picto": "images/property-length.png",
             "insertAfter": "nature",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "nature",
                 "values" : ["RANDOM", "RANDOMNEW"]
-            }
+            }]
         },
         "nature": {
             "label": {
@@ -659,10 +659,10 @@ var newPropertyPlaceholder = {
             "class": "col-sm-3",
             "picto": "images/property-value3.png",
             "insertAfter": "value3",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "value3",
                 "values" : ["attribute"]
-            }
+            }]
         },
         "nature": {
             "label": {
@@ -688,10 +688,10 @@ var newPropertyPlaceholder = {
                 }
             ],
             "insertAfter": "value3",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "value3",
                 "values" : ["value", "raw", "coordinate", "attribute"]
-            }
+            }]
         },
         "rank": {
             "label": {
@@ -701,10 +701,13 @@ var newPropertyPlaceholder = {
             "class": "col-sm-3",
             "picto": "images/property-rank.png",
             "insertAfter": "nature",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "nature",
                 "values" : ["STATIC"]
-            }
+            },{
+                "key" : "value3",
+                "values" : ["value", "raw", "coordinate", "attribute"]
+            }]
         },
         "helperInformation": ["value3", "nature","rank"],
         "helperMessages": {
@@ -989,10 +992,10 @@ var newPropertyPlaceholder = {
                 }
             ],
             "insertAfter": "value3",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "value3",
                 "values" : ["value"]
-            }
+            }]
         },
         "rank": {
             "label": {
@@ -1002,10 +1005,10 @@ var newPropertyPlaceholder = {
             "class": "col-sm-3",
             "picto": "images/property-rank.png",
             "insertAfter": "nature",
-            "displayCondition": {
+            "displayConditions": [{
                 "key" : "nature",
                 "values" : ["STATIC"]
-            }
+            }]
         },
         "helperInformation": [],
         "helperMessages": {"helper" : "Get value from Network Traffic of current execution"}

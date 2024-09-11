@@ -67,12 +67,7 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     if (typeof placeHolders.value2 !== 'undefined') {
-        var display = true;
-        if(typeof placeHolders.value2.displayCondition !== 'undefined'){
-            if (placeHolders.value2.displayCondition.values.indexOf(propertyObject[placeHolders.value2.displayCondition.key])===-1){
-                display = false;
-            }
-        }
+        var display = displayField(placeHolders.value2.displayConditions,propertyObject);
         if (display) {
         property.find("div[class*='value2']")
             .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
@@ -108,12 +103,7 @@ function setPlaceholderProperty(property, propertyObject) {
 
 
     if (typeof placeHolders.length !== 'undefined') {
-        var display = true;
-        if(typeof placeHolders.length.displayCondition !== 'undefined'){
-            if (placeHolders.length.displayCondition.values.indexOf(propertyObject[placeHolders.length.displayCondition.key])===-1){
-                display = false;
-            }
-        }
+        var display = displayField(placeHolders.length.displayConditions,propertyObject);
         if (display) {
         property.find("div[class*='length']")
             .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
@@ -148,12 +138,7 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     if (typeof placeHolders.nature !== 'undefined') {
-        var display = true;
-        if(typeof placeHolders.nature.displayCondition !== 'undefined'){
-            if (placeHolders.nature.displayCondition.values.indexOf(propertyObject[placeHolders.nature.displayCondition.key])===-1){
-                display = false;
-            }
-        }
+        var display = displayField(placeHolders.nature.displayConditions,propertyObject);
         if (display) {
             property.find("div[class*='nature']")
                 .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
@@ -219,12 +204,7 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     if (typeof placeHolders.rank !== 'undefined') {
-        var display = true;
-        if(typeof placeHolders.rank.displayCondition !== 'undefined'){
-            if (placeHolders.rank.displayCondition.values.indexOf(propertyObject[placeHolders.rank.displayCondition.key])===-1){
-                display = false;
-            }
-        }
+        var display = displayField(placeHolders.rank.displayConditions,propertyObject);
         if (display) {
         property.find("div[class*='rank']")
             .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
@@ -248,6 +228,18 @@ function setPlaceholderProperty(property, propertyObject) {
     editor.removeAllListeners('change');
 
     configureAceEditor(editor, newPropertyPlaceholder[propertyObject.type].value1.editorMode, propertyObject);
+}
+
+function displayField(conditions,propertyObject){
+    var display = true;
+    if(typeof conditions !== 'undefined'){
+        conditions.forEach(function (condition) {
+            if (condition.values.indexOf(propertyObject[condition.key]) === -1) {
+                display = false;
+            }
+        });
+    }
+    return display;
 }
 
 function loadGuiProperties() {
