@@ -705,8 +705,6 @@ function displayPropertyHelper(elementLine, property){
     $(elementLine).find(".helper").append(helper);
 };
 
-
-
 function feedOption(propertyType, propertyField, element, selectedValue){
     if(typeof newPropertyPlaceholder[propertyType][propertyField] !== "undefined") {
         element.empty();

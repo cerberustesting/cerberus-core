@@ -223,14 +223,14 @@ $.when($.getScript("js/global/global.js")
                                 database: "",
                                 value1: "",
                                 value2: "",
-                                value3: "",
+                                value3: "value",
                                 length: 0,
                                 rowLimit: 0,
                                 cacheExpire: 0,
                                 nature: "STATIC",
                                 retryNb: "",
                                 retryPeriod: "",
-                                rank: 1,
+                                rank: 0,
                                 toDelete: false
                             };
 
@@ -642,7 +642,7 @@ function saveScript(queueid = 0) {
             propertyWithoutName = true;
         }
         if (!$.isNumeric($(properties[i]).data("property").rank)) {
-            $(properties[i]).data("property").rank = 1;
+            $(properties[i]).data("property").rank = 0;
         }
         propArr.push($(properties[i]).data("property"));
     }
