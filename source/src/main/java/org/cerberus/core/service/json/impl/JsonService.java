@@ -25,9 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONStyle;
+import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.service.json.IJsonService;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -82,7 +85,7 @@ public class JsonService implements IJsonService {
      * not found.
      */
     @Override
-    public String getFromJson(String jsonMessage, String url, String attributeToFind) throws InvalidPathException {
+    public String getFromJson(String jsonMessage, String url, String attributeToFind, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException {
         if (attributeToFind == null) {
             LOG.warn("Null argument");
             return DEFAULT_GET_FROM_JSON_VALUE;
@@ -104,9 +107,31 @@ public class JsonService implements IJsonService {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
         String jsonPath = checkJsonPathFormat(attributeToFind);
 
-        return castObjectAccordingToJson(JsonPath.read(document, jsonPath));
-    }
+        String valueFromJSON = "";
 
+        switch (output) {
+            case (TestCaseCountryProperties.VALUE3_COUNT):
+                valueFromJSON = String.valueOf(((JSONArray) JsonPath.read(document, jsonPath)).size());
+                break;
+            case (TestCaseCountryProperties.VALUE3_VALUELIST):
+                valueFromJSON = castObjectAccordingToJson(JsonPath.read(document, jsonPath));
+                break;
+            case (TestCaseCountryProperties.VALUE3_VALUE):
+                if (random) {
+                    Random r = new Random();
+                    rank = r.nextInt(((JSONArray) JsonPath.read(document, jsonPath)).size());
+                }
+                valueFromJSON = ((JSONArray) JsonPath.read(document, jsonPath)).get(rank).toString();
+                break;
+            case (TestCaseCountryProperties.VALUE3_RAWLIST):
+                valueFromJSON = this.getRawFromJson(jsonMessage, attributeToFind);
+                break;
+            default:
+                valueFromJSON = castObjectAccordingToJson(JsonPath.read(document, jsonPath));
+                break;
+        }
+        return valueFromJSON;
+    }
     /**
      * Get element from a JSON content
      *

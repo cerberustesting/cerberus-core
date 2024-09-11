@@ -102,7 +102,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         // Now building the distinct values based on distinct information.
         Map<String, TestCaseCountryProperties> testCasePropHash = new HashMap<>();
         for (TestCaseCountryProperties property : allProperties) {
-            String key = getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature());
+            String key = getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getValue3(), property.getLength(), property.getRowLimit(), property.getNature());
             testCasePropHash.put(key, property);
         }
 
@@ -114,7 +114,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             TestCaseCountryProperties val = entry.getValue();
             List<String> countries = new ArrayList<>();
             for (TestCaseCountryProperties property : allProperties) {
-                if (key.equals(getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getLength(), property.getRowLimit(), property.getNature()))) {
+                if (key.equals(getPropertyDistinctKey(property.getProperty(), property.getType(), property.getDatabase(), property.getValue1(), property.getValue2(), property.getValue3(), property.getLength(), property.getRowLimit(), property.getNature()))) {
                     countries.add(property.getCountry());
                 }
             }
@@ -125,12 +125,13 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         return properties;
     }
 
-    private String getPropertyDistinctKey(String property, String type, String database, String value1, String value2, String length, int rowLimit, String nature) {
+    private String getPropertyDistinctKey(String property, String type, String database, String value1, String value2, String value3, String length, int rowLimit, String nature) {
         return property + SEPARATOR
                 + type + SEPARATOR
                 + database + SEPARATOR
                 + value1 + SEPARATOR
                 + value2 + SEPARATOR
+                + value3 + SEPARATOR
                 + length + SEPARATOR
                 + String.valueOf(rowLimit) + SEPARATOR
                 + nature + SEPARATOR;
@@ -458,6 +459,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
                                 .database(prop.getDatabase())
                                 .value1(prop.getValue1())
                                 .value2(prop.getValue2())
+                                .value3(prop.getValue3())
                                 .length(prop.getLength())
                                 .rowLimit(prop.getRowLimit())
                                 .nature(prop.getNature())

@@ -43,7 +43,7 @@ public interface IJsonService {
      * @return
      * @throws java.lang.Exception
      */
-    String getFromJson(String jsonMessage, String url, String attribute) throws InvalidPathException;
+    String getFromJson(String jsonMessage, String url, String attribute, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException;
 
     /**
      * @param jsonMessage

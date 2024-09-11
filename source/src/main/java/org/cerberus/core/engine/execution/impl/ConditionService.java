@@ -550,7 +550,7 @@ public class ConditionService implements IConditionService {
                                     LOG.debug("Checking if Element Present - JSON");
                                 }
                                 try {
-                                    if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
+                                    if (jsonService.getFromJson(responseBody, null, conditionValue1, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST) != null) {
                                         conditionResult = true;
                                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
                                         mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
@@ -703,7 +703,7 @@ public class ConditionService implements IConditionService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                                 try {
-                                if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
+                                if (jsonService.getFromJson(responseBody, null, conditionValue1, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST) == null) {
                                     conditionResult = true;
                                     mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTPRESENT);
                                     mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));

@@ -24,13 +24,7 @@ import com.google.common.primitives.Ints;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.core.crud.entity.AppService;
-import org.cerberus.core.crud.entity.Application;
-import org.cerberus.core.crud.entity.TestCaseExecution;
-import org.cerberus.core.crud.entity.TestCaseExecutionFile;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
-import org.cerberus.core.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.core.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
@@ -776,7 +770,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
+                                if (!jsonService.getFromJson(responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -895,7 +889,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath).equals("[]")) {
+                                if (!jsonService.getFromJson(responseBody, null, elementPath,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -1228,7 +1222,7 @@ public class ControlService implements IControlService {
                 case Application.TYPE_APK:
                 case Application.TYPE_IPA:
 
-                    actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                    actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
                     // In case of null actual value then we alert user
                     if (actual == null) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NULL);
@@ -1266,7 +1260,7 @@ public class ControlService implements IControlService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                                 try {
-                                    actual = jsonService.getFromJson(responseBody, null, path);
+                                    actual = jsonService.getFromJson(responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                                 } catch (Exception ex) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                                     mes.resolveDescription("ERROR", ex.toString());
@@ -1463,7 +1457,7 @@ public class ControlService implements IControlService {
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)
                     || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
 
-                pathContent = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                pathContent = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
                 if (tCExecution.getLastServiceCalled() != null) {
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
@@ -1480,7 +1474,7 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path);
+                            pathContent = jsonService.getFromJson(responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                         } catch (Exception ex) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                             mes.resolveDescription("ERROR", ex.toString());

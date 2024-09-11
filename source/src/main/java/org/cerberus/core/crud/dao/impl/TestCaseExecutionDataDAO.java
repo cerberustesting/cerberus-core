@@ -105,6 +105,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             searchSQL.append(" or `Type` like ?");
             searchSQL.append(" or `Value1` like ?");
             searchSQL.append(" or `Value2` like ?");
+            searchSQL.append(" or `Value3` like ?");
             searchSQL.append(" or `RC` like ?");
             searchSQL.append(" or `RMessage` like ?)");
         }
@@ -137,6 +138,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 ps -> {
                     int i = 1;
                     if (!StringUtil.isEmptyOrNull(searchTerm)) {
+                        ps.setString(i++, "%" + searchTerm + "%");
                         ps.setString(i++, "%" + searchTerm + "%");
                         ps.setString(i++, "%" + searchTerm + "%");
                         ps.setString(i++, "%" + searchTerm + "%");
@@ -243,10 +245,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public void create(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `rank`, `value1`, `value2`, `rc`, ");
-        query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`,`value2Init`,`lengthInit`,`length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`, ");
+        query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `rank`, `value1`, `value2`,`value3`, `rc`, ");
+        query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`,`value2Init`,`value3Init`,`lengthInit`,`length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`, ");
         query.append("`system`, `environment`, `country`, `dataLib`, `jsonResult`, `FromCache`) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -256,6 +258,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.value : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue(), 65000), secrets));
             LOG.debug("SQL.param.value1 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1(), 65000), secrets));
             LOG.debug("SQL.param.value2 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2(), 65000), secrets));
+            LOG.debug("SQL.param.value3 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3(), 65000), secrets));
         }
 
         RequestDbUtils.executeUpdate(databaseSpring, query.toString(),
@@ -271,6 +274,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     ps.setInt(i++, object.getRank());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2(), 65000), secrets));
+                    ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3(), 65000), secrets));
                     ps.setString(i++, object.getRC());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getrMessage(), 65000), secrets));
                     ps.setTimestamp(i++, new Timestamp(object.getStart()));
@@ -280,6 +284,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     ps.setString(i++, object.getDatabase());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1Init(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2Init(), 65000), secrets));
+                    ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3Init(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(object.getLengthInit(), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(object.getLength(), secrets));
                     ps.setInt(i++, object.getRowLimit());
@@ -323,8 +328,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public void update(TestCaseExecutionData object, HashMap<String, String> secrets) throws CerberusException {
         StringBuilder query = new StringBuilder();
 
-        query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, `Rank` = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
-        query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?, ");
+        query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, `Rank` = ?, VALUE1 = ?, VALUE2 = ?, VALUE3 = ?, rc = ?, rmessage = ?, start = ?, ");
+        query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?,`value3Init` = ?, ");
         query.append("`lengthInit` = ?, `length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ?, ");
         query.append("`system` = ?, `environment` = ?, `country` = ?, `dataLib` = ?, `jsonResult` = ? , `FromCache` = ? ");
         query.append("WHERE id = ? AND property = ? AND `index` = ?");
@@ -341,6 +346,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.value : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue(), 65000), secrets));
             LOG.debug("SQL.param.value1 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1(), 65000), secrets));
             LOG.debug("SQL.param.value2 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2(), 65000), secrets));
+            LOG.debug("SQL.param.value3 : " + StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3(), 65000), secrets));
         }
 
         RequestDbUtils.executeUpdate(databaseSpring, query.toString(),
@@ -353,6 +359,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     ps.setInt(i++, object.getRank());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2(), 65000), secrets));
+                    ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3(), 65000), secrets));
                     ps.setString(i++, object.getRC());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getrMessage(), 65000), secrets));
                     ps.setTimestamp(i++, new Timestamp(object.getStart()));
@@ -362,6 +369,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     ps.setString(i++, object.getDatabase());
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue1Init(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue2Init(), 65000), secrets));
+                    ps.setString(i++, StringUtil.secureFromSecrets(StringUtil.getLeftString(object.getValue3Init(), 65000), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(object.getLengthInit(), secrets));
                     ps.setString(i++, StringUtil.secureFromSecrets(object.getLength(), secrets));
                     ps.setInt(i++, object.getRowLimit());
@@ -411,8 +419,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         int rank = resultSet.getInt("exd.rank");
         String value1 = resultSet.getString("exd.value1");
         String value2 = resultSet.getString("exd.value2");
+        String value3 = resultSet.getString("exd.value3");
         String value1Init = resultSet.getString("exd.value1Init");
         String value2Init = resultSet.getString("exd.value2Init");
+        String value3Init = resultSet.getString("exd.value3Init");
         String returnCode = resultSet.getString("exd.rc");
         String returnMessage = resultSet.getString("exd.rmessage");
         long start = resultSet.getTimestamp("exd.start").getTime();
@@ -434,8 +444,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         String fromCache = resultSet.getString("exd.FromCache");
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
-        return factoryTestCaseExecutionData.create(id, property, index, description, value, type, rank, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit, length, rowLimit, nature,
+        return factoryTestCaseExecutionData.create(id, property, index, description, value, type, rank, value1, value2, value3, returnCode, returnMessage,
+                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, value3Init, lengthInit, length, rowLimit, nature,
                 system, environment, country, dataLib, jsonResult, fromCache);
     }
 

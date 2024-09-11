@@ -1978,8 +1978,8 @@ public class ActionService implements IActionService {
                     TestCaseExecutionData tcExeData;
 
                     tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
-                            tccp.getRank(), tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(), tccp.getLength(),
+                            tccp.getRank(), tccp.getValue1(), tccp.getValue2(), tccp.getValue3(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
+                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(),tccp.getValue3(), tccp.getLength(), tccp.getLength(),
                             tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "", "N");
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
@@ -2011,8 +2011,8 @@ public class ActionService implements IActionService {
                             for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                                 now = new Date().getTime();
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
-                                        tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
-                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", "", "N");
+                                        tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "", "",
+                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", "", 0, "", "", "", "", "", "", "N");
                                 testCaseExecutionDataService.save(tcedS, tCExecution.getSecrets());
                             }
                         }

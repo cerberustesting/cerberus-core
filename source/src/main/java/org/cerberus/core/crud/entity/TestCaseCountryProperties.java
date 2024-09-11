@@ -59,6 +59,7 @@ public class TestCaseCountryProperties {
     private String database;
     private String value1;
     private String value2;
+    private String value3;
     private String length;
     private int rowLimit;
     private String nature;
@@ -110,6 +111,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETELEMENTPOSITION = "getElementPosition";
     public static final String TYPE_GETFROMNETWORKTRAFFIC = "getFromNetworkTraffic";
     public static final String TYPE_GETOTP = "getOTP";
+    public static final String TYPE_GETFROMEXECUTIONOBJECT = "getFromExecutionObject";
 
     // DEPRECATED
     /**
@@ -130,6 +132,17 @@ public class TestCaseCountryProperties {
     public static final String NATURE_RANDOM = "RANDOM";
     public static final String NATURE_RANDOMNEW = "RANDOMNEW";
     public static final String NATURE_NOTINUSE = "NOTINUSE";
+
+    /**
+     * Invariant Value3  String.
+     */
+    public static final String VALUE3_VALUE = "value";
+    public static final String VALUE3_RAW = "raw";
+    public static final String VALUE3_COORDINATE = "coordinate";
+    public static final String VALUE3_COUNT = "count";
+    public static final String VALUE3_ATTRIBUTE = "attribute";
+    public static final String VALUE3_VALUELIST = "valueList";
+    public static final String VALUE3_RAWLIST = "rawList";
     // Others
     public static final int MAX_PROPERTY_LENGTH = 160;
 
@@ -144,6 +157,7 @@ public class TestCaseCountryProperties {
     public static final String DB_DATABASE = "Database";
     public static final String DB_VALUE1 = "Value1";
     public static final String DB_VALUE2 = "Value2";
+    public static final String DB_VALUE3 = "Value3";
     public static final String DB_LENGTH = "Length";
     public static final String DB_ROWLIMIT = "RowLimit";
     public static final String DB_NATURE = "Nature";
@@ -212,6 +226,7 @@ public class TestCaseCountryProperties {
             testCaseCountryPropertiesJson.put("database", this.getDatabase());
             testCaseCountryPropertiesJson.put("value1", this.getValue1());
             testCaseCountryPropertiesJson.put("value2", this.getValue2());
+            testCaseCountryPropertiesJson.put("value3", this.getValue3());
             testCaseCountryPropertiesJson.put("length", this.getLength());
             testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
             testCaseCountryPropertiesJson.put("retryNb", this.getRetryNb());
@@ -252,6 +267,7 @@ public class TestCaseCountryProperties {
             testCaseCountryPropertiesJson.put("database", this.getDatabase());
             testCaseCountryPropertiesJson.put("value1", this.getValue1());
             testCaseCountryPropertiesJson.put("value2", this.getValue2());
+            testCaseCountryPropertiesJson.put("value3", this.getValue3());
             testCaseCountryPropertiesJson.put("length", this.getLength());
             testCaseCountryPropertiesJson.put("rowLimit", this.getRowLimit());
             testCaseCountryPropertiesJson.put("nature", this.getNature());

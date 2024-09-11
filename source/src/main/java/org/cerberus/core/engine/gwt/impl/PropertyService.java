@@ -210,8 +210,8 @@ public class PropertyService implements IPropertyService {
              */
             now = new Date().getTime();
             tcExeData = factoryTestCaseExecutionData.create(execution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(), eachTccp.getRank(),
-                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
+                    eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getValue3(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
+                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getValue3(), eachTccp.getLength(),
                     eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), execution.getApplicationObj().getSystem(), execution.getEnvironment(), execution.getCountry(), "", null, "N");
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(execution);
@@ -250,8 +250,8 @@ public class PropertyService implements IPropertyService {
                         for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
-                                    tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
-                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
+                                    tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "", "",
+                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "","", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
                             testCaseExecutionDataService.save(tcedS, execution.getSecrets());
                         }
                     }
@@ -612,8 +612,8 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("datalib varaible requested : " + valueA[2]);
 
                 String propName = "ENGINE-" + value;
-                TestCaseExecutionData dataExecution = factoryTestCaseExecutionData.create(0, propName, 0, "Engine Data", valueA[1], TestCaseCountryProperties.TYPE_GETFROMDATALIB, 0, valueA[1], "", "",
-                        null, 0, 0, 0, 0, null, 0, 0, "", "", "", "1", "1", 1, "STATIC", system, environment, country, valueA[1], "{}", "N");
+                TestCaseExecutionData dataExecution = factoryTestCaseExecutionData.create(0, propName, 0, "Engine Data", valueA[1], TestCaseCountryProperties.TYPE_GETFROMDATALIB, 0, valueA[1], "", "","",
+                        null, 0, 0, 0, 0, null, 0, 0, "", "", "","", "1", "1", 1, "STATIC", system, environment, country, valueA[1], "{}", "N");
                 TestCaseCountryProperties property = TestCaseCountryProperties.builder().nature(TestCaseCountryProperties.NATURE_STATIC).cacheExpire(0).length("1").property(propName).build();
                 dataExecution = property_getFromDataLib(dataExecution, execution, null, property, false);
                 String val = null;
@@ -866,7 +866,7 @@ public class PropertyService implements IPropertyService {
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMJSON:
-                            testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, execution, forceRecalculation);
+                            testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, execution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETRAWFROMJSON:
@@ -891,6 +891,10 @@ public class PropertyService implements IPropertyService {
 
                         case TestCaseCountryProperties.TYPE_GETOTP:
                             testCaseExecutionData = this.property_getOTP(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
+                            break;
+
+                        case TestCaseCountryProperties.TYPE_GETFROMEXECUTIONOBJECT:
+                            testCaseExecutionData = this.property_getFromExecutionObject(testCaseExecutionData, testCaseCountryProperty, execution, forceRecalculation);
                             break;
 
                         // DEPRECATED Property types.
@@ -1141,7 +1145,7 @@ public class PropertyService implements IPropertyService {
                 //Record result in filessytem.
                 testCaseExecutionData.addFileList(recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1), execution.getSecrets()));
 
-                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath);
+                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath, testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
                 if (valueFromJson != null) {
                     testCaseExecutionData.setValue(valueFromJson);
@@ -1207,6 +1211,45 @@ public class PropertyService implements IPropertyService {
 
             testCaseExecutionData.setEnd(new Date().getTime());
             return testCaseExecutionData;
+        }
+
+        return testCaseExecutionData;
+    }
+
+    private TestCaseExecutionData property_getFromExecutionObject(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
+
+        if (StringUtil.isEmptyOrNull(testCaseExecutionData.getValue1())) {
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETOTP_MISSINGPARAMETER);
+            testCaseExecutionData.setPropertyResultMessage(res);
+            testCaseExecutionData.setEnd(new Date().getTime());
+            return testCaseExecutionData;
+        }
+
+        try {
+            String executionObject = tCExecution.toJson(true).toString();
+
+            //Record result in filesystem.
+            recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, executionObject, tCExecution.getSecrets());
+
+            String valueFromJson = this.jsonService
+                    .getFromJson(executionObject, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
+
+            if (valueFromJson == null) {
+                throw new InvalidPathException();
+            }
+
+            testCaseExecutionData.setValue(valueFromJson);
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+            testCaseExecutionData.setPropertyResultMessage(res);
+        } catch (JsonProcessingException | InvalidPathException exception) { //Path not found, invalid path syntax or empty path
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ERROR%", ""));
+            testCaseExecutionData.setPropertyResultMessage(res);
         }
 
         return testCaseExecutionData;
@@ -1286,7 +1329,34 @@ public class PropertyService implements IPropertyService {
 
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
-                String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                String valueFromHTML = null;
+
+                switch(testCaseCountryProperty.getValue3()){
+                    case (TestCaseCountryProperties.VALUE3_VALUE):
+                        valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_COUNT):
+                        valueFromHTML = String.valueOf(this.webdriverService.getNumberOfElements(tCExecution.getSession(), identifier));
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_RAW):
+                        valueFromHTML = this.webdriverService.getWebElement(tCExecution.getSession(), identifier, TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank()).getItem().getAttribute("innerHTML").toString();
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_COORDINATE):
+                        valueFromHTML = this.webdriverService.getElementPosition(tCExecution.getSession(), identifier, TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_RAWLIST):
+                        valueFromHTML = this.webdriverService.getElements(tCExecution.getSession(), identifier);
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_VALUELIST):
+                        valueFromHTML = this.webdriverService.getElements(tCExecution.getSession(), identifier);
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_ATTRIBUTE):
+                        valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank() );
+                        break;
+                    default :
+                        valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
+                }
+
                 if (valueFromHTML != null) {
                     testCaseExecutionData.setValue(valueFromHTML);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
@@ -1377,7 +1447,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent res;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
-            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2());
+            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank() );
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
@@ -1647,7 +1717,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, boolean forceRecalculation) {
+    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution execution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         String jsonResponse = "";
 
         if (null != execution.getLastServiceCalled()) {
@@ -1668,20 +1738,20 @@ public class PropertyService implements IPropertyService {
             //Record result in filessytem.
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
-            String valueFromJson = this.jsonService
-                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
+            String valueFromJSON = this.jsonService
+                            .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
-            if (valueFromJson == null) {
+            if (valueFromJSON == null) {
                 throw new InvalidPathException();
             }
 
-            testCaseExecutionData.setValue(valueFromJson);
+            testCaseExecutionData.setValue(valueFromJSON);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
             res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
+            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJSON));
             testCaseExecutionData.setPropertyResultMessage(res);
-        } catch (InvalidPathException exception) { //Path not found, invalid path syntax or empty path
+        } catch (JsonProcessingException | InvalidPathException exception) { //Path not found, invalid path syntax or empty path
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
             res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));

@@ -27,7 +27,9 @@ import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
 import org.cerberus.core.exception.CerberusEventException;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONArray;
+import org.openqa.selenium.WebElement;
 
 /**
  *
@@ -37,7 +39,15 @@ public interface IWebDriverService {
 
     String getValueFromHTMLVisible(Session session, Identifier identifier);
 
-    String getValueFromHTML(Session session, Identifier identifier);
+    String getValueFromHTML(Session session, Identifier identifier, boolean random, Integer rank);
+
+    AnswerItem<WebElement> getWebElement(Session session, Identifier identifier, boolean random, int rank);
+
+    String getElementPosition(Session session, Identifier identifier, boolean random, Integer rank);
+
+    String getElements(Session session, Identifier identifier);
+
+    String getElementsValues(Session session, Identifier identifier);
 
     String getAlertText(Session session);
 
@@ -83,7 +93,7 @@ public interface IWebDriverService {
      */
     String getCurrentUrl(Session session, String url) throws CerberusEventException;
 
-    String getAttributeFromHtml(Session session, Identifier identifier, String attribute);
+    String getAttributeFromHtml(Session session, Identifier identifier, String attribute, boolean random, Integer rank);
 
     String getFromCookie(Session session, String cookieName, String cookieParameter);
 

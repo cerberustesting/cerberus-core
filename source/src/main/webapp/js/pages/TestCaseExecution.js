@@ -1911,6 +1911,8 @@ function getPropertyContent(property) {
     var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var value3Field = $("<textarea type='text' rows='1' class='form-control' id='value3'>").prop("readonly", true);
+    var value3InitField = $("<textarea type='text' rows='1' class='form-control' id='value3init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var valueField = $("<textarea type='text' rows='1' class='form-control' id='value'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
@@ -1938,6 +1940,8 @@ function getPropertyContent(property) {
     var valueGroup = $("<div class='form-group'></div>").append($("<label for='value'>" + doc.getDocLabel("testcaseexecutiondata", "Value") + "</label>")).append(valueField);
     var value2Group = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
     var value2InitGroup = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var value3Group = $("<div class='form-group'></div>").append($("<label for='value3'>" + doc.getDocLabel("page_executiondetail", "value3") + "</label>")).append(value3Field);
+    var value3InitGroup = $("<div class='form-group'></div>").append($("<label for='value3init'>" + doc.getDocLabel("page_executiondetail", "value3init") + "</label>")).append(value3InitField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var indexGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("testcaseexecutiondata", "index") + "</label>")).append(indexField);
@@ -1956,6 +1960,8 @@ function getPropertyContent(property) {
     value1InitField.val(property.value1Init);
     value2Field.val(property.value2);
     value2InitField.val(property.value2Init);
+    value3Field.val(property.value3);
+    value3InitField.val(property.value3Init);
     if (property.endLong !== 19700101010000000 && property.endLong !== 0) {
         timeField.val((convToDate(property.endLong) - convToDate(property.startLong)) + " ms");
     } else {
@@ -1976,10 +1982,12 @@ function getPropertyContent(property) {
     row2.append($("<div></div>").addClass("col-sm-2"));
     row2.append($("<div></div>").addClass("col-sm-5").append(value1InitGroup));
     row2.append($("<div></div>").addClass("col-sm-5").append(value2InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-5").append(value3InitGroup));
     row3.append($("<div></div>").addClass("col-sm-1").append(typeGroup));
     row3.append($("<div></div>").addClass("col-sm-1").append(rankGroup));
     row3.append($("<div></div>").addClass("col-sm-5").append(value1Group));
     row3.append($("<div></div>").addClass("col-sm-5").append(value2Group));
+    row3.append($("<div></div>").addClass("col-sm-5").append(value3Group));
     row4.append($("<div></div>").addClass("col-sm-2").append(indexGroup));
     row4.append($("<div></div>").addClass("col-sm-8").append(valueGroup));
     row4.append($("<div></div>").addClass("col-sm-2").append(timeGroup));
@@ -2043,6 +2051,8 @@ function createPropertiesOld(propList) {
         var value1InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value1init_field") + "' readonly></textarea>").addClass("form-control input-sm").val(property.value1Init);
         var value2Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value2_field") + "' readonly></textarea>").addClass("form-control input-sm").val(property.value2);
         var value2InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value2init_field") + "' readonly></textarea>").addClass("form-control input-sm").val(property.value2Init);
+        var value3Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value3_field") + "' readonly></textarea>").addClass("form-control input-sm").val(property.value3);
+        var value3InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value3init_field") + "' readonly></textarea>").addClass("form-control input-sm").val(property.value3Init);
         var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length_field") + "' readonly>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "rowlimit_field") + "' readonly>").addClass("form-control input-sm").val(property.rowLimit);
         var rcInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "rc") + "' readonly>").addClass("form-control input-sm").val(property.RC);
@@ -2077,6 +2087,8 @@ function createPropertiesOld(propList) {
         var value1Init = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1init_field"))).append(value1InitInput);
         var value2 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
         var value2Init = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2init_field"))).append(value2InitInput);
+        var value3 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3_field"))).append(value3Input);
+        var value3Init = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value3init_field"))).append(value3InitInput);
         var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
@@ -2099,10 +2111,12 @@ function createPropertiesOld(propList) {
 
         row3.append(value1Init);
         row3.append(value2Init);
+        row3.append(value3Init);
         props.append(row3);
 
         row4.append(value1);
         row4.append(value2);
+        row4.append(value3);
         props.append(row4);
 
         row6.append(index);

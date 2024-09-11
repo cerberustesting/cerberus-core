@@ -35,9 +35,9 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
 
     @Override
-    public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, int rank, String value1, String value2,
+    public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, int rank, String value1, String value2, String value3,
             String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
-            String database, String value1Init, String value2Init, String lengthInit, String length, int rowLimit, String nature,
+            String database, String value1Init, String value2Init,  String value3Init, String lengthInit, String length, int rowLimit, String nature,
             String system, String environment, String country, String dataLib, String jsonResult, String fromCache) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
@@ -49,8 +49,10 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setDatabase(database);
         testCaseExecutionData.setValue1Init(value1Init);
         testCaseExecutionData.setValue2Init(value2Init);
+        testCaseExecutionData.setValue3Init(value3Init);
         testCaseExecutionData.setValue1(value1);
         testCaseExecutionData.setValue2(value2);
+        testCaseExecutionData.setValue3(value3);
         testCaseExecutionData.setLength(length);
         testCaseExecutionData.setLengthInit(lengthInit);
         testCaseExecutionData.setRowLimit(rowLimit);

@@ -22,6 +22,8 @@ package org.cerberus.core.service.webdriver.impl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.W32APIOptions;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileElement;
 import mantu.lab.treematching.TreeMatcher;
 import mantu.lab.treematching.TreeMatcherResponse;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +51,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -74,11 +77,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -132,6 +134,49 @@ public class WebDriverService implements IWebDriverService {
                 throw new NoSuchElementException(identifier.getIdentifier());
         }
         return by;
+    }
+
+    public AnswerItem<WebElement> getWebElement(Session session, Identifier identifier, boolean random, int rank){
+
+        AnswerItem<WebElement> answer = new AnswerItem<>();
+        MessageEvent msg;
+        LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+
+        WebElement element = null;
+
+        Instant now = Instant.now();
+        Instant stop = now.plus(session.getCerberus_selenium_wait_element(), ChronoUnit.MILLIS);
+
+        while(stop.isAfter(Instant.now()) && element==null) {
+
+            try {
+                    //Find all elements retrieved
+                    List<WebElement> elements = session.getDriver().findElements(this.getBy(identifier));
+
+                    // If random, overide rank with one random int from 1 to the size of the result
+                    if (random) {
+                        Random r = new Random();
+                        rank = r.nextInt(elements.size());
+                    }
+                    // -1 because default value is 1
+                    element = (WebElement) elements.get(rank);
+
+            } catch (Exception ex) {
+                LOG.debug("ELEMENT NOT FOUND : ", identifier.getIdentifier() + "=" + identifier.getLocator() + " : TRYING AGAIN");
+            }
+        }
+
+        if (element == null){
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
+        } else {
+            answer.setItem(element);
+            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() );
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
     }
 
     private WebElement getWebElementUsingQuerySelector(Session session, String querySelector) {
@@ -479,13 +524,56 @@ public class WebDriverService implements IWebDriverService {
                 }
             }
         }
-
         return result;
     }
 
     @Override
-    public String getValueFromHTML(Session session, Identifier identifier) {
-        AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
+    public String getElementPosition(Session session, Identifier identifier, boolean random, Integer rank) {
+
+        WebElement element = getWebElement(session, identifier, random, rank).getItem();
+        Point location = element.getLocation();
+
+        return location.getX() + ";" + location.getY();
+    }
+
+    @Override
+    public String getElements(Session session, Identifier identifier) {
+        WebDriver driver = session.getDriver();
+        List<String> result = new ArrayList();
+
+        List<WebElement> elements = driver.findElements(this.getBy(identifier));
+        for(WebElement element : elements){
+            result.add(element.getAttribute("innerHTML").toString());
+        }
+
+        return result.toString();
+    }
+
+    @Override
+    public String getElementsValues(Session session, Identifier identifier) {
+        WebDriver driver = session.getDriver();
+        List<String> result = new ArrayList();
+
+        List<WebElement> elements = driver.findElements(this.getBy(identifier));
+        for(WebElement webElement : elements){
+            if (webElement != null) {
+                if (webElement.getTagName().equalsIgnoreCase("select")) {
+                    Select select = (Select) webElement;
+                    result.add(select.getFirstSelectedOption().getText());
+                } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
+                    result.add(webElement.getAttribute("value"));
+                } else {
+                    result.add(webElement.getText());
+                }
+            }
+        }
+
+        return result.toString();
+    }
+
+    @Override
+    public String getValueFromHTML(Session session, Identifier identifier, boolean random, Integer rank) {
+        AnswerItem answer = this.getWebElement(session, identifier, random, rank);
         String result = null;
         if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
             WebElement webElement = (WebElement) answer.getItem();
@@ -527,7 +615,6 @@ public class WebDriverService implements IWebDriverService {
         if (alert != null) {
             return alert.getText();
         }
-
         return null;
     }
 
@@ -548,10 +635,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public String getAttributeFromHtml(Session session, Identifier identifier, String attribute) {
+    public String getAttributeFromHtml(Session session, Identifier identifier, String attribute,  boolean random, Integer rank) {
         String result = null;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            AnswerItem answer = this.getWebElement(session, identifier, random, rank);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {

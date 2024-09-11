@@ -257,6 +257,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String type = propJson.getString("type");
             String value = propJson.getString("value1");
             String value2 = propJson.getString("value2");
+            String value3 = propJson.getString("value3");
             String length = propJson.getString("length");
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
@@ -278,6 +279,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             .database(database)
                             .value1(value)
                             .value2(value2)
+                            .value3(value3)
                             .length(length)
                             .rowLimit(rowLimit)
                             .cacheExpire(cacheExpire)

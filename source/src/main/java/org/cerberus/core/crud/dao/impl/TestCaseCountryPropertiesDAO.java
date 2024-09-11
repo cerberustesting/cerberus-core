@@ -166,7 +166,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         List<String> countries = null;
         final StringBuilder query = new StringBuilder();
         query.append("SELECT country FROM testcasecountryproperties WHERE test = ? AND testcase = ?");
-        query.append(" AND HEX(`property`) = hex(?) AND `type` =? AND `database` =? AND hex(`value1`) like hex( ? ) AND hex(`value2`) like hex( ? ) AND `length` = ? ");
+        query.append(" AND HEX(`property`) = hex(?) AND `type` =? AND `database` =? AND hex(`value1`) like hex( ? ) AND hex(`value2`) like hex( ? ) AND hex(`value3`) like hex( ? ) AND `length` = ? ");
         query.append(" AND `rowlimit` = ? AND `nature` = ?");
 
         loggingQuery(query.toString());
@@ -182,6 +182,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getDatabase());
             preStat.setBytes(i++, testCaseCountryProperties.getValue1().getBytes("UTF-8"));
             preStat.setBytes(i++, testCaseCountryProperties.getValue2().getBytes("UTF-8"));
+            preStat.setBytes(i++, testCaseCountryProperties.getValue3().getBytes("UTF-8"));
             preStat.setString(i++, String.valueOf(testCaseCountryProperties.getLength()));
             preStat.setString(i++, String.valueOf(testCaseCountryProperties.getRowLimit()));
             preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -280,9 +281,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     public void insertTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) throws CerberusException {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` ,`Description`,`Type`");
-        query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`,`Rank`,");
+        query.append(",`Database`,`Value1`,`Value2`,`Value3`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`,`Rank`,");
         query.append("`UsrCreated`)");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         loggingQuery(query.toString());
 
@@ -299,6 +300,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getDatabase());
             preStat.setBytes(i++, testCaseCountryProperties.getValue1().getBytes("UTF-8"));
             preStat.setBytes(i++, testCaseCountryProperties.getValue2().getBytes("UTF-8"));
+            preStat.setBytes(i++, testCaseCountryProperties.getValue3().getBytes("UTF-8"));
             preStat.setString(i++, testCaseCountryProperties.getLength());
             preStat.setInt(i++, testCaseCountryProperties.getRowLimit());
             preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -325,6 +327,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("`Database` = ?, ");
         query.append("`Value1` = ?, ");
         query.append("`Value2` = ?, ");
+        query.append("`Value3` = ?, ");
         query.append("`Length` = ?, ");
         query.append("`RowLimit` = ?, ");
         query.append("`Nature` = ?, ");
@@ -346,6 +349,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getDatabase());
             preStat.setBytes(i++, testCaseCountryProperties.getValue1().getBytes("UTF-8"));
             preStat.setBytes(i++, testCaseCountryProperties.getValue2().getBytes("UTF-8"));
+            preStat.setBytes(i++, testCaseCountryProperties.getValue3().getBytes("UTF-8"));
             preStat.setString(i++, testCaseCountryProperties.getLength());
             preStat.setInt(i++, testCaseCountryProperties.getRowLimit());
             preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -583,8 +587,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` , `Description`, `Type`");
-        query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`, `Rank`, `UsrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append(",`Database`,`Value1`,`Value2`,`Value3`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`, `Rank`, `UsrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         loggingQuery(query.toString());
 
@@ -603,6 +607,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(i++, testCaseCountryProperties.getDatabase());
                 preStat.setString(i++, testCaseCountryProperties.getValue1());
                 preStat.setString(i++, testCaseCountryProperties.getValue2());
+                preStat.setString(i++, testCaseCountryProperties.getValue3());
                 preStat.setString(i++, testCaseCountryProperties.getLength());
                 preStat.setInt(i++, testCaseCountryProperties.getRowLimit());
                 preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -642,8 +647,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property`,`Description`,`Type`");
-        query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`,`CacheExpire`,`Rank`, `UsrCreated`)");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append(",`Database`,`Value1`,`Value2`,`Value3`,`Length`,`RowLimit`,`Nature`,`RetryNb`,`RetryPeriod`,`CacheExpire`,`Rank`, `UsrCreated`)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         loggingQuery(query.toString());
 
@@ -660,6 +665,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getDatabase());
             preStat.setString(i++, testCaseCountryProperties.getValue1());
             preStat.setString(i++, testCaseCountryProperties.getValue2());
+            preStat.setString(i++, testCaseCountryProperties.getValue3());
             preStat.setString(i++, testCaseCountryProperties.getLength());
             preStat.setInt(i++, testCaseCountryProperties.getRowLimit());
             preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -723,6 +729,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         query.append("`Database` = ?, ");
         query.append("`Value1` = ?, ");
         query.append("`Value2` = ?, ");
+        query.append("`Value3` = ?, ");
         query.append("`Length` = ?, ");
         query.append("`RowLimit` = ?, ");
         query.append("`Nature` = ?, ");
@@ -745,6 +752,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             preStat.setString(i++, testCaseCountryProperties.getDatabase());
             preStat.setString(i++, testCaseCountryProperties.getValue1());
             preStat.setString(i++, testCaseCountryProperties.getValue2());
+            preStat.setString(i++, testCaseCountryProperties.getValue3());
             preStat.setString(i++, testCaseCountryProperties.getLength());
             preStat.setInt(i++, testCaseCountryProperties.getRowLimit());
             preStat.setString(i++, testCaseCountryProperties.getNature());
@@ -810,6 +818,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 .database(resultSet.getString(TestCaseCountryProperties.DB_DATABASE))
                 .value1(resultSet.getString(TestCaseCountryProperties.DB_VALUE1))
                 .value2(resultSet.getString(TestCaseCountryProperties.DB_VALUE2))
+                .value3(resultSet.getString(TestCaseCountryProperties.DB_VALUE3))
                 .length(resultSet.getString(TestCaseCountryProperties.DB_LENGTH))
                 .rowLimit(resultSet.getInt(TestCaseCountryProperties.DB_ROWLIMIT))
                 .nature(resultSet.getString(TestCaseCountryProperties.DB_NATURE))

@@ -17,134 +17,440 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-var actionOptGroupList = [
-        {"name":"access_application", "label":{"en":"Application Access","fr":"Accès à l'Application"}, "picto":"<img width='20px' height='20px' src='images/action-website.png'/>"},
-        {"name":"mouse_action", "label":{"en":"Mouse Action","fr":"Action à la souris"}, "picto":"<img width='20px' height='20px' src='images/action-mouse.png'/>"},
-        {"name":"finger_action", "label":{"en":"Finger Action","fr":"Action au doigt"}, "picto":"<img width='20px' height='20px' src='images/action-tap.png'/>"},
-        {"name":"context_action", "label":{"en":"Context Action","fr":"Action de Contexte"}, "picto":"<img width='20px' height='20px' src='images/action-settings.png'/>"},
-        {"name":"keyboard_action", "label":{"en":"Keyboard Action","fr":"Action au Clavier"}, "picto":"<img width='20px' height='20px' src='images/action-keyboard.png'/>"},
-        {"name":"command", "label":{"en":"Execute Command","fr":"Execution de Commande"}, "picto":"<img width='20px' height='20px' src='images/action-command-line.png'/>"},
-        {"name":"wait", "label":{"en":"Wait","fr":"Attendre"}, "picto":"<img width='20px' height='20px' src='images/action-time-left.png'/>"},
-        {"name":"file", "label":{"en":"File","fr":"Fichier"}, "picto":"<img width='20px' height='20px' src='images/action-file.png'/>"},
-        {"name":"device", "label":{"en":"Mobile Device","fr":"Appareil Mobile"}, "picto":"<img width='20px' height='20px' src='images/action-mobile-application.png'/>"},
-        {"name":"context_control", "label":{"en":"Context Controls","fr":"Contexte des Contrôles"}, "picto":"<img width='20px' height='20px' src='images/action-share.png'/>"}
 
-];
+///// ACTION JSON OBJECT
+Action.prototype.getJsonData = function () {
+    var json = {};
 
-var actionOptList = {
-        "unknown":{"group":"none","value":"Unknown","label_en": "None","label":{"en":"Define an action","fr":"Choisir une action"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"]},
-        "click":{"group":"mouse_action","value":"click","label":{"en":"Click","fr":"Cliquer"},"application_types":["GUI","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement à cliquer"},"picto":"images/action-html.png","class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
-        "longPress":{"group":"mouse_action","value":"longPress","label":{"en":"longPress","fr":"Cliquer x secondes"},"application_types":["GUI","IPA","APK","FAT"], 
-            "field1":{"label": {"en":"Element path","fr":"Chemin vers l'élement à cliquer"},"picto":"images/action-html.png", "class": "col-lg-9 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"[opt] Duration (ms) : 8000 by default","fr":"[opt] Valeur (ms) : 8000 par défaut"},"picto":"images/action-time-left.png", "class": "col-lg-3 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "mouseLeftButtonPress":{"group":"mouse_action","value": "mouseLeftButtonPress","label":{"en":"Press and keep left button","fr":"Presser et maintenir le bouton gauche"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement à cibler"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "mouseLeftButtonRelease":{"group":"mouse_action","value": "mouseLeftButtonRelease","label":{"en":"Release left button","fr":"Relacher le bouton gauche"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "doubleClick":{"group":"mouse_action", "value": "doubleClick","label":{"en":"Double Click","fr":"Double Clic"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement à double-cliquer"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "rightClick":{"group":"mouse_action", "value": "rightClick", "label":{"en":"Right Click","fr":"Clic droit"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement à clicker avec le bouton droit"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "mouseOver":{"group":"mouse_action", "value": "mouseOver", "label":{"en":"Mouse Over","fr":"Souris sur l'élément"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "mouseMove":{"group":"mouse_action", "value": "mouseMove", "label":{"en":"Move Mouse","fr":"Déplacer la souris"}, "application_types":["GUI","FAT"], 
-            "field1":{"label":{"en": "Relative coord. (ex : 50,100 ; 200,50)", "fr": "Coordonnées relatives (ex : 50,100 ; 200,50)"}, "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
-        "openUrlWithBase":{"group":"access_application","value": "openUrlWithBase","label":{"en":"openUrlWithBase","fr":"Appeler l'URI"},"application_types":["GUI","IPA","APK"],
-            "field1":{"label":{"en": "URI to call  (ex : /index.html)", "fr": "URI à appeler (ex : /index.html)"},"picto":"images/action-link.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "openUrlLogin":{"group":"access_application","value": "openUrlLogin","label":{"en":"openUrlLogin","fr":"Appeler l'URL de Login"},"application_types":["GUI","IPA","APK"]},
-        "openUrl":{"group":"access_application","value": "openUrl","label":{"en":"Open Url","fr":"Appeler l'URL"},"application_types":["GUI","IPA","APK"],
-            "field1":{"label":{"en": "URL to call (ex : http://www.domain.com)", "fr": "URL à appeler (ex : http://www.domain.com)"},"picto":"images/action-link.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "focusToIframe":{"group":"context_action","value": "focusToIframe","label":{"en":"Focus to Iframe","fr":"Switcher sur l'Iframe"},"application_types":["GUI"],
-            "field1":{"label":{"en": "Element path of the target iFrame", "fr": "Chemin vers l'élement de l'iFrame à cibler"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "focusDefaultIframe":{"group":"context_action","value": "focusDefaultIframe","label":{"en":"Focus to main context","fr":"Switcher sur le context principal"},"application_types":["GUI"]},
-        "switchToWindow":{"group":"context_action","value": "switchToWindow","label":{"en":"Switch to Window","fr":"Switcher sur l'onglet"},"application_types":["GUI"],
-            "field1":{"label":{"en": "Window title or url (incl. regexTitle and regexUrl)", "fr": "Titre ou url de la fenêtre  (incl. regexTitle and regexUrl)"},"picto":"images/action-website.png", "class": "col-lg-12 crb-autocomplete-switch"}},
-        "switchToContext": {"group": "context_action","value": "switchToContext","label": {"en":"Switch to context","fr":"Switcher sur le contexte"},"application_types":["IPA", "APK"],
-            "field1": {"label":{"en":"[opt] Context name","fr":"[opt] Nom du contexte"},"picto":"images/action-font.png","class":"col-lg-12 crb-autocomplete-variable"}},
-        "manageDialog":{"group":"context_action","value": "manageDialog","label":{"en":"Manage Dialog","fr":"Gérer la popup"},"application_types":["GUI"],
-            "field1":{"label":{"en": "ok or cancel", "fr": "ok ou cancel"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "manageDialogKeypress":{"group":"context_action","value": "manageDialogKeypress","label":{"en":"Manage Dialog pressing key","fr":"Switcher sur l'Iframe"},"application_types":["GUI"],
-            "field1":{"label":{"en": "keys to press", "fr": "Touches à appuyer"},"picto":"images/action-keyboard.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "refreshCurrentPage":{"group":"context_action","value": "refreshCurrentPage","label":{"en":"Refresh Page","fr":"Recharger la page"},"application_types":["GUI"]},
-        "executeJS":{"group":"command","value": "executeJS","label":{"en":"Execute Javascript Command","fr":"Executer une commande Javascript"},"application_types":["GUI"],
-            "field1":{"label":{"en": "JavaScript to execute", "fr": "JavaScript à executer"},"picto":"images/action-command-line.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "executeCommand":{"group":"command","value":"executeCommand","label":{"en":"Execute Appium Command","fr":"Executer une commande Appium"},"application_types":["GUI","IPA","APK"], 
-            "field1":{"label": {"en":"Appium Command (ex : \"mobile:deepLink\")","fr":"Commande Appium (ex : \"mobile:deepLink\")"},"picto":"images/action-command-line.png", "class": "col-lg-6 crb-autocomplete-variable"}, 
-            "field2":{"label":{"en":"Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})","fr":"Arguments (ex : {url: \"www.site.com\", package: \"com.Package\"})"}, "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "executeCerberusCommand":{"group":"command","value": "executeCerberusCommand","label":{"en":"Execute Cerberus Command","fr":"Executer une commande Cerberus"},"application_types":["GUI"],
-            "field1":{"label":{"en": "Command (ex : \"grep\")", "fr": "Commande (ex : \"grep\")"},"picto":"images/action-command-line.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "openApp":{"group":"access_application","value":"openApp","label":{"en":"Open Application","fr":"Lancer l'application"},"application_types":["GUI","IPA","APK","FAT"], 
-            "field1":{"label": {"en":"Application name or path or package for Android","fr":"Nom ou chemin de l'application, package pour android"},"picto":"images/action-mobile-application.png", "class": "col-lg-8 crb-autocomplete-variable"}, 
-            "field2":{"label":{"en":"[Optional, required for Android] Activity","fr":"[Optionnel, obligatoire pour Android] Activity"}, "class": "col-lg-4 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "closeApp":{"group":"command","value": "closeApp","label":{"en":"Close Application","fr":"Fermer l'application"},"application_types":["GUI","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Application name or path", "fr": "Nom ou chemin de l'application"},"picto":"images/action-mobile-application.png", "class": "col-lg-12 crb-autocomplete-variable"}},
-        "dragAndDrop":{"group":"mouse_action","value": "dragAndDrop","label":{"en":"Drag And Drop","fr":"Glisser Déposer"},"application_types":["GUI","FAT"],
-            "field1":{"label":{"en": "Element path", "fr": "Chemin de l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"Destination Element Path or offset (offset=xx;yy)","fr":"Destination de l'élément ou offset (offset=xx;yy)"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
-        "select":{"group":"mouse_action","value": "select","label":{"en":"Choose option in select box","fr":"Choisir une option dans un Select"},"application_types":["GUI"],
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"Option value","fr":"Chemin vers l'option"},"picto":"images/action-command-line.png", "class": "col-lg-12 crb-autocomplete-select"},"documentation":{"en":"...","fr":"..."}},
-        "keypress":{"group":"keyboard_action","value": "keypress","label":{"en":"Press Key","fr":"Appuyer sur une touche"},"application_types":["GUI"],
-            "field1":{"label":{"en": "[opt] Target element path", "fr": "[opt] Chemin vers l'élement à cibler"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"Key to Press","fr":"Touche à appuyer"},"picto":"images/action-keyboard.png", "class": "col-lg-6 crb-autocomplete-variable"}, 
-            "field3":{"label":{"en":"[opt] Modifier to press","fr":"[opt] Touche modificatrice"},"picto":"images/action-keyboard.png", "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "type":{"group":"keyboard_action","value": "type","label":{"en":"Feed field","fr":"Remplir le champs"},"application_types":["GUI","APK","IPA","FAT"],
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}, 
-            "field2":{"label":{"en":"Text to Type","fr":"Texte à entrer"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "hideKeyboard":{"group":"keyboard_action","value": "hideKeyboard","label":{"en":"Hide Keyboard","fr":"Cacher le Clavier"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
-        "clearField":{"group":"keyboard_action","value": "clearField","label":{"en":"Clear Field","fr":"Vider l'élément"},"application_types":["GUI","APK","IPA","FAT"],
-            "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement à effacer"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
-        "swipe":{"group":"finger_action","value": "swipe","label":{"en":"Swipe","fr":"Swiper"},"application_types":["APK","IPA"],
-            "field1":{"label":{"en": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "fr": "Action (UP DOWN LEFT RIGHT CUSTOM...)"},"picto":"images/action-font.png ", "class": "col-lg-6"}, 
-            "field2":{"label":{"en":"Direction x;y;z;y","fr":"Direction x;y;z;y"},"picto":"images/action-settings.png", "class": "col-lg-6"},"documentation":{"en":"...","fr":"..."}},
-        "wait":{"group":"wait","value": "wait","label":{"en":"Wait","fr":"Attendre"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],
-            "field1":{"label":{"en": "Duration(ms) or Element", "fr": "Valeur (ms) ou élement"},"picto":"images/action-time-left.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
-        "waitVanish":{"group":"wait","value": "waitVanish","label":{"en":"Wait Element Vanish","fr":"Attendre la disparition de l'élément"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Element path", "fr": "Element"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},"documentation":{"en":"...","fr":"..."}},
-        "waitNetworkTrafficIdle":{"group":"wait","value": "waitNetworkTrafficIdle","label":{"en":"Wait Network traffic Idle","fr":"Attendre la fin du chargement réseau"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"documentation":{"en":"...","fr":"..."}},
-        "callService":{"group":"access_application","value": "callService","label":{"en":"Call Service","fr":"Appeler le Service"},"application_types":["GUI","APK","IPA","FAT","SRV"],
-            "field1":{"label":{"en": "Service Name", "fr": "Nom du Service"},"picto":"images/action-api.png", "class": "col-lg-12 crb-autocomplete-service crb-contextual-button"}, 
-            "field2":{"label":{"en":"Nb Evt (Kafka)","fr":"Nb Evt à attendre (Kafka)"},"picto":"images/action-settings.png", "class": "col-lg-6 crb-autocomplete-variable"}, 
-            "field3":{"label":{"en":"Evt Wait sec (Kafka)","fr":"Tps d'attente en sec (Kafka)"},"picto":"images/action-time-left.png", "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "executeSqlUpdate":{"group":"command","value": "executeSqlUpdate","label":{"en":"Execute SQL script (insert/update)","fr":"Executer un script SQL (insert/update)"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Database Name", "fr": "Nom de Base de donnée"},"picto":"images/action-font.png", "class": "col-lg-8 crb-autocomplete-variable"},
-            "field2":{"label":{"en": "Script", "fr": "Script à executer"},"picto":"images/action-script.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "executeSqlStoredProcedure":{"group":"command","value": "executeSqlStoredProcedure","label":{"en":"Execute SQL Stored Procedure","fr":"Executer une procedure stoquée SQL"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Database Name", "fr": "Nom de Base de donnée"},"picto":"images/action-font.png", "class": "col-lg-8 crb-autocomplete-variable"},
-            "field2":{"label":{"en": "Stored Procedure", "fr": "Procedure Stoquée à executer"},"picto":"images/action-script.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "calculateProperty":{"group":"command","value": "calculateProperty","label":{"en":"Calculate Property","fr":"Calculer la propriété"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Property Name", "fr": "Nom d'une Proprieté"},"picto":"images/action-font.png", "class": "col-lg-6 crb-autocomplete-property crb-contextual-button"},
-            "field2":{"label":{"en": "[opt] Name of an other property", "fr": "[opt] Nom d'une autre propriété"},"picto":"images/action-font.png", "class": "col-lg-6 crb-autocomplete-property"},"documentation":{"en":"...","fr":"..."}},
-        "setNetworkTrafficContent":{"group":"context_control","value": "setNetworkTrafficContent","label":{"en":"Switch context to network traffic content","fr":"Passer au contenu du traffic réseau"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "url to filter", "fr": "URL à filtrer"},"picto":"images/action-link.png", "class": "col-lg-8 crb-autocomplete-variable"},
-            "field2":{"label":{"en": "Activate http response content (Y/N)", "fr": "Activation du contenu des reponses http (Y/N)"},"picto":"images/action-settings.png", "class": "col-lg-4 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "indexNetworkTraffic":{"group":"command","value": "indexNetworkTraffic","label":{"en":"Index Network Traffic","fr":"Indexer le contenu du traffic réseau"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "[opt] Index name", "fr": "[opt] Nom de l'index"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "setServiceCallContent":{"group":"context_control","value": "setServiceCallContent","label":{"en":"Switch context to service call content","fr":"Passer au contenu du dernier service appelé"},"application_types":["GUI","SRV","IPA","APK","FAT"],"documentation":{"en":"...","fr":"..."}},
-        "setConsoleContent":{"group":"context_control","value": "setConsoleContent","label":{"en":"Switch context to web console content","fr":"Passer au contenu de la console"},"application_types":["GUI","SRV","IPA","APK","FAT"],"documentation":{"en":"...","fr":"..."}},
-        "setContent":{"group":"context_control","value": "setContent","label":{"en":"Switch context to specific content","fr":"Passer au contenu spécifique"},"application_types":["GUI","SRV","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Value to Set", "fr": "Valeur"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "scrollTo":{"group":"mouse_action","value": "scrollTo","label":{"en":"Scroll to element","fr":"Scroller jusqu'à l'élément"},"application_types":["GUI","IPA","APK","FAT"],
-            "field1":{"label":{"en": "Element path or Text to scroll to", "fr": "Chemin vers l'élement ou Texte à scroller"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},
-            "field2":{"label":{"en": "Max scroll iteration [APK,IPA only]", "fr": "Nombre maximum de scroll vers le bas (8 par defaut) [seulement APK,IPA]"}, "class": "col-lg-12 crb-autocomplete-variable"},
-            "field3":{"label":{"en": "offsets (h,v) [GUI only]", "fr": "offsets (h,v) [seulement GUI]"}, "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "installApp":{"group":"access_application","value": "installApp","label":{"en":"Install Application","fr":"Installer l'Application"},"application_types":["IPA","APK"],
-            "field1":{"label":{"en": "Application path (ex : /root/toto.apk)", "fr": "Chemin vers l'application (ex : /root/toto.apk)"},"picto":"images/action-mobile-application.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "removeApp":{"group":"access_application","value": "removeApp","label":{"en":"Uninstall Application","fr":"Désinstaller l'Application"},"application_types":["IPA","APK"],
-            "field1":{"label":{"en": "Application package (ex : com.cerberus.appmobile)", "fr": "Package de l'application (ex : com.cerberus.appmobile)"},"picto":"images/action-mobile-application.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "cleanRobotFile":{"group":"file","value": "cleanRobotFile","label":{"en":"Clean Robot File Folder","fr":"Vider le dossier fichier du robot"},"application_types":["GUI","FAT"],
-            "field1":{"label":{"en": "Path/Pattern to empty. ex : /home/seluser/Downloads/", "fr": "Chemin du dossier à vider. ex : /home/seluser/Downloads/"},"picto":"images/action-file.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
-        "uploadRobotFile":{"group":"file","value": "uploadRobotFile","label":{"en":"Upload File to Robot","fr":"Upload un fichier vers le Robot"},"application_types":["GUI","APK","IPA","FAT","SRV"],
-            "field1":{"label":{"en": "Filename to create. ex : /home/seluser/Downloads/test.json", "fr": "Nom du fichier à créer. ex : /home/seluser/Downloads/test.json"},"picto":"images/action-file.png", "class": "col-lg-12 crb-autocomplete-variable"}, 
-            "field2":{"label":{"en":"Content to upload (base64)","fr":"Contenu à charger (base64)"},"picto":"images/action-font.png", "class": "col-lg-12 crb-autocomplete-variable  crb-contextual-button"}, 
-            "field3":{"label":{"en":"Option (EMPTYFOLDER)","fr":"Option (EMPTYFOLDER)"},"picto":"images/action-settings.png", "class": "col-lg-12 crb-autocomplete-fileuploadflag"},"documentation":{"en":"...","fr":"..."}},
-        "getRobotFile":{"group":"file","value": "getRobotFile","label":{"en":"Download File from Robot","fr":"Télécharger un fichier depuis le Robot"},"application_types":["GUI","APK","IPA","FAT","SRV"],
-            "field1":{"label":{"en": "Path/Pattern to retrieved. ex : /home/seluser/Downloads/", "fr": "Nom du fichier à récupérer. ex : /home/seluser/Downloads/"},"picto":"images/action-file.png", "class": "col-lg-12 crb-autocomplete-variable"}, 
-            "field2":{"label":{"en":"Nb of files","fr":"Nb de fichiers"},"picto":"images/action-numeric.png", "class": "col-lg-6 crb-autocomplete-variable"}, 
-            "field3":{"label":{"en":"Sorting Option. (LASTMODIFIED/IGNORECASEDESC/IGNORECASEASC/DESC/ASC)","fr":"Option de tri. (LASTMODIFIED/IGNORECASEDESC/IGNORECASEASC/DESC/ASC)"},"picto":"images/action-settings.png", "class": "col-lg-6 crb-autocomplete-filesortflag"},"documentation":{"en":"...","fr":"..."}},
-        "lockDevice":{"group":"device","value": "lockDevice","label":{"en":"Lock Device","fr":"Verrouiller l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
-        "unlockDevice":{"group":"device","value": "unlockDevice","label":{"en":"Unlock Device","fr":"Déverrouiller l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
-        "rotateDevice":{"group":"device","value": "rotateDevice","label":{"en":"Rotate Device","fr":"Tourner l'appareil"},"application_types":["APK","IPA"],"documentation":{"en":"...","fr":"..."}},
-        "doNothing":{"group":"none","value": "doNothing","label":{"en":"No action","fr":"Pas d'action"},"application_types":["GUI","SRV","IPA","APK","FAT"],"documentation":{"en":"...","fr":"..."}}
+    json.toDelete = this.toDelete;
+    json.test = this.test;
+    json.testcase = this.testcase;
+    json.stepId = this.stepId;
+    json.actionId = this.actionId;
+    json.sort = this.sort;
+    json.description = this.description;
+    json.action = this.action;
+    json.object = this.value1;
+    json.property = this.value2;
+    json.value3 = this.value3;
+    json.options = this.options;
+    json.isFatal = this.isFatal;
+    json.conditionOperator = this.conditionOperator;
+    json.conditionValue1 = this.conditionValue1;
+    json.conditionValue2 = this.conditionValue2;
+    json.conditionValue3 = this.conditionValue3;
+    json.conditionOptions = this.conditionOptions;
+    json.screenshotFileName = "";
+    json.waitBefore = this.waitBefore;
+    json.waitAfter = this.waitAfter;
+    json.doScreenshotBefore = this.doScreenshotBefore;
+    json.doScreenshotAfter = this.doScreenshotAfter;
+
+    return json;
 };
+
+///// GETTERS && SETTERS
+Action.prototype.setControls = function (controls, canUpdate) {
+    for (var i = 0; i < controls.length; i++) {
+        this.setControl(controls[i], undefined, canUpdate);
+    }
+};
+
+Action.prototype.setControl = function (control, afterControl, canUpdate) {
+    if (control instanceof Control) {
+        control.draw(afterControl);
+        this.controls.push(control);
+    } else {
+        var controlObj = new Control(control, this, canUpdate);
+
+        controlObj.draw(afterControl);
+        this.controls.push(controlObj);
+    }
+};
+
+Action.prototype.setStepId = function (stepId) {
+    this.stepId = stepId;
+};
+
+Action.prototype.setActionId = function (actionId) {
+    this.actionId = actionId;
+};
+
+Action.prototype.getActionId = function () {
+    return this.actionId;
+};
+
+Action.prototype.setSort = function (sort) {
+    this.sort = sort;
+    this.refreshSort();
+};
+
+Action.prototype.refreshSort = function () {
+    this.html.find(".action #labelDiv").text(this.sort);
+};
+
+/**
+ * Call generateContent Function to generate the HTML Element
+ * Set Placeholder
+ * Set Select2 for action type
+ * Append Element to Action List
+ * Refresh Sort
+ */
+Action.prototype.draw = function (afterAction) {
+    var htmlElement = this.html;
+    var action = this;
+
+    var row = this.generateContent();
+
+    htmlElement.prepend(row);
+
+    setPlaceholderAction(htmlElement);
+
+    $("[name='actionSelect']").select2({
+        minimumResultsForSearch: 20,
+        templateSelection: formatActionSelect2Result,
+        templateResult: formatActionSelect2Result
+    });
+
+    listenEnterKeypressWhenFocusingOnDescription(htmlElement);
+
+    if (afterAction === undefined) {
+        this.parentStep.stepActionContainer.append(htmlElement);
+    } else {
+        afterAction.html.after(htmlElement);
+    }
+    this.refreshSort();
+};
+
+/**
+ * Generate HTML Element
+ */
+Action.prototype.generateContent = function () {
+    var action = this;
+    var doc = new Doc();
+    var row = $("<div></div>").addClass("step-action row").addClass("action");
+    var content = $("<div></div>").addClass("content col-lg-8");
+    var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-xs-12 col-lg-12");
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
+    var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
+
+    var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+
+
+    //FIRST ROW
+    var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
+    var addBtn = $("<button></button>").addClass("btn add-btn btnLightGreen").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn add-btn btnLightBlue").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn add-btn deleteItem-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-2").css("padding", "0px").append($("<div>").addClass("boutonGroup pull-right").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
+
+    addBtn.click(function () {
+        addControlAndFocus(action);
+        displayControlCombo(action.parentStep.html.data('item'));
+    });
+    addABtn.click(function () {
+        addActionAndFocus(action);
+        displayActionCombo(action.parentStep.html.data('item'));
+    });
+
+    supprBtn.click(function () {
+        setModif(true);
+        action.toDelete = (action.toDelete) ? false : true;
+
+        if (action.toDelete) {
+            action.html.find(".step-action").addClass("danger");
+        } else {
+            action.html.find(".step-action").removeClass("danger");
+        }
+    });
+
+    plusBtn.click(function () {
+        displayOverrideOptionsModal(action, action.html);
+    });
+
+
+// DESCRIPTION
+    var descContainer = $("<div class='input-group'></div>");
+    var descriptionField = $("<input class='description form-control crb-autocomplete-variable' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>").attr("style", "border:0px");
+    var drag = $("<span></span>").addClass("input-group-addon").addClass("drag-step-action").attr("style", "font-weight: 700;border-radius:4px;border:1px solid #ccc").attr("id", "labelDiv").prop("draggable", true);
+    drag.on("dragstart", handleDragStart);
+    drag.on("dragenter", handleDragEnter);
+    drag.on("dragover", handleDragOver);
+    drag.on("dragleave", handleDragLeave);
+    drag.on("drop", handleDrop);
+    drag.on("dragend", handleDragEnd);
+    descContainer.append(drag);
+    descContainer.append(descriptionField);
+
+    descriptionField.val(this.description);
+    descriptionField.css("width", "100%");
+    descriptionField.on("change", function () {
+        setModif(true);
+        action.description = descriptionField.val();
+    });
+// END OF DESCRIPTION
+
+//ACTION FIELD
+    var user = getUser();
+    var actionDivContainer = $("<div></div>").addClass("col-lg-8 form-group marginBottom10 actionSelectContainer");
+// END OF ACTION FIELD
+
+//VALUE1 FIELD
+    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v1");
+    value1Field.val(cleanErratum(this.value1));
+    value1Field.on("change", function () {
+        action.value1 = convertValueWithErratum(action.value1, value1Field.val());
+    });
+
+    var field1Container = $("<div class='input-group'></div>");
+    var field1Addon = $("<span></span>").attr("id", "field1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    field1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    value1Field.attr("aria-describedby", "field1Addon");
+    field1Container.append(field1Addon).append(value1Field);
+//END OF VALUE1 FIELD
+
+//VALUE2 FIELD
+    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v2");
+    value2Field.val(cleanErratum(this.value2));
+    value2Field.on("change", function () {
+        action.value2 = convertValueWithErratum(action.value2, value2Field.val());
+    });
+
+    var field2Container = $("<div class='input-group'></div>");
+    var field2Addon = $("<span></span>").attr("id", "field2Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    field2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    value2Field.attr("aria-describedby", "field2Addon");
+    field2Container.append(field2Addon).append(value2Field);
+//END OF VALUE2 FIELD
+
+//VALUE3 FIELD
+    var value3Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm v3");
+    value3Field.val(cleanErratum(this.value3));
+    value3Field.on("change", function () {
+        action.value3 = convertValueWithErratum(action.value3, value3Field.val());
+    });
+
+    var field3Container = $("<div class='input-group'></div>");
+    var field3Addon = $("<span></span>").attr("id", "field3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
+    field3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
+    value3Field.attr("aria-describedby", "field3Addon");
+    field3Container.append(field3Addon).append(value3Field);
+//END OF VALUE3 FIELD
+
+
+//STRUCTURE
+    firstRow.append(descContainer);
+    secondRow.append(actionDivContainer);
+    secondRow.append($("<div></div>").addClass("v1 col-lg-5 form-group marginBottom10").append(field1Container));
+    secondRow.append($("<div></div>").addClass("v2 col-lg-2 form-group marginBottom10").append(field2Container));
+    secondRow.append($("<div></div>").addClass("v3 col-lg-2 form-group marginBottom10").append(field3Container));
+
+
+    if ((this.parentStep.isUsingLibraryStep) || (!action.hasPermissionsUpdate)) {
+        descriptionField.prop("readonly", true);
+        value1Field.prop("readonly", true);
+        value2Field.prop("readonly", true);
+        value3Field.prop("readonly", true);
+        btnGrp.find('.boutonGroup').hide();
+    }
+
+    content.append(firstRow);
+    content.append(secondRow);
+    content.append(thirdRow);
+
+
+    row.append(content);
+    row.append(picture);
+    row.append(btnGrp);
+    row.data("item", this);
+
+    printLabelForOptions(btnGrp, action.options, action.conditionOptions, "optionLabel");
+    printLabelForCondition(btnGrp, action.conditionOperator, action.conditionValue1, action.conditionValue2, action.conditionValue3);
+    printLabel(btnGrp, action.isFatal, "actionFatalLabel", "labelOrange", "Stop Execution on Failure")
+
+    return row;
+};
+
+
+/**
+ *
+ * @param json
+ * @param parentStep
+ * @param canUpdate
+ * @constructor
+ */
+function Action(json, parentStep, canUpdate) {
+    this.html = $("<div></div>").addClass("action-group");
+    this.parentStep = parentStep;
+
+    if (json !== null) {
+        this.test = json.test;
+        this.testcase = json.testcase;
+        this.stepId = json.stepId;
+        this.actionId = json.actionId;
+        this.sort = json.sort;
+        this.description = json.description;
+        this.action = json.action;
+        this.isFatal = json.isFatal;
+        this.conditionOperator = json.conditionOperator;
+        this.conditionValue1 = json.conditionValue1;
+        this.conditionValue2 = json.conditionValue2;
+        this.conditionValue3 = json.conditionValue3;
+        this.conditionOptions = json.conditionOptions;
+        this.screenshotFileName = json.screenshotFileName;
+        this.value1 = json.value1;
+        this.value2 = json.value2;
+        this.value3 = json.value3;
+        this.options = json.options;
+        this.waitBefore = json.waitBefore;
+        this.waitAfter = json.waitAfter;
+        this.doScreenshotBefore = json.doScreenshotBefore;
+        this.doScreenshotAfter = json.doScreenshotAfter;
+        this.controls = [];
+        this.setControls(json.controls, canUpdate);
+    } else {
+        this.test = "";
+        this.testcase = "";
+        this.stepId = parentStep.stepId;
+        this.description = "";
+        this.action = "doNothing";
+        this.isFatal = true;
+        this.conditionOperator = "always";
+        this.conditionValue1 = "";
+        this.conditionValue2 = "";
+        this.conditionValue3 = "";
+        this.conditionOptions = [];
+        this.screenshotFileName = "";
+        this.value1 = "";
+        this.value2 = "";
+        this.value3 = "";
+        this.options = [];
+        this.waitBefore = 0;
+        this.waitAfter = 0;
+        this.doScreenshotBefore = false;
+        this.doScreenshotAfter = false;
+        this.controls = [];
+    }
+
+    this.toDelete = false;
+    this.hasPermissionsUpdate = canUpdate;
+}
+
+/**
+ * Set Placeholder for Specified Action
+ * @param action
+ */
+function setPlaceholderAction(action) {
+    var user = getUser();
+    var actionElement = $(action).find("[name='actionSelect'] option:selected");
+    var placeHolders = actionOptList[actionElement.val()];
+
+    if (typeof placeHolders === 'undefined') {
+        placeHolders = actionOptList["unknown"];
+    }
+
+    if (typeof placeHolders.field1 !== 'undefined') {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']")
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field1.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").show();
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('#field1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
+        if (typeof placeHolders.field1.picto !== 'undefined') {
+            $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").find('img').attr("src", placeHolders.field1.picto);
+        }
+    } else {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v1']").hide();
+    }
+    if (typeof placeHolders.field2 !== 'undefined') {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']")
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field2.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").show();
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('#field2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
+        if (typeof placeHolders.field2.picto !== 'undefined') {
+            $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").find('img').attr("src", placeHolders.field2.picto);
+        }
+    } else {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v2']").hide();
+    }
+    if (typeof placeHolders.field3 !== 'undefined') {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']")
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field3.class);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").show();
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('#field3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
+        if (typeof placeHolders.field3.picto !== 'undefined') {
+            $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").find('img').attr("src", placeHolders.field3.picto);
+        }
+    } else {
+        $(actionElement).parents("div[class*='secondRow']").children("div[class*='v3']").hide();
+    }
+    $('[data-toggle="tooltip"]').tooltip();
+}
+
+/**
+ * Display all Action combo of Current Step
+ * @param object
+ */
+function displayActionCombo(object) {
+    $(object.stepActionContainer).find(".action").each(function () {
+        var actions = $(getActionCombo());
+        var actionItem = $(this).data("item");
+        actions.val(actionItem.action);
+        actions.off("change").on("change", function () {
+            setModif(true);
+            actionItem.action = actions.val();
+            setPlaceholderAction($(this).parents(".action"));
+        });
+        $(this).find(".actionSelectContainer").empty();
+        $(this).find(".actionSelectContainer").append(actions);
+        setPlaceholderAction($(this));
+
+        if ((object.isUsingLibraryStep) || (!object.hasPermissionsUpdate)) {
+            actions.prop("disabled", "disabled");
+        }
+
+        actions.select2({
+            minimumResultsForSearch: 20,
+            templateSelection: formatActionSelect2Result,
+            templateResult: formatActionSelect2Result
+        });
+    });
+
+}
+
+/**
+ * Create Action JSON Object
+ * Attach it to step
+ * Sort
+ */
+function addAction(action) {
+    setModif(true);
+    var step = $("#steps li.active").data("item");
+    var act = new Action(null, step, true);
+    step.setAction(act, action);
+    setAllSort();
+    return act;
+}
+
+/**
+ * Add action and focus on Description field
+ */
+function addActionAndFocus(action) {
+    $.when(addAction(action)).then(function (action) {
+        listenEnterKeypressWhenFocusingOnDescription();
+        $($(action.html[0]).find(".description")[0]).focus();
+    });
+}
+
+function addActionFromBottomButton() {
+    addActionAndFocus();
+    displayActionCombo($("#steps li.active").data("item"));
+}
