@@ -6522,3 +6522,33 @@ DELETE FROM invariant WHERE idname ='BUGTRACKERCONNECTOR' and value='REDIRECT';
 -- 1837
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_github_apitoken', '', 'Github Personal Access Token that will be used to create issues from API.');
+
+-- 1838 - 1839 ADD VALUE3
+ALTER TABLE `testcasecountryproperties`
+  ADD COLUMN `Value3` TEXT NULL DEFAULT NULL AFTER `Value2`;
+ALTER TABLE `testcaseexecutiondata`
+  ADD COLUMN `Value3Init` TEXT NULL DEFAULT NULL AFTER `Value2Init`,
+  ADD COLUMN `Value3` TEXT NULL DEFAULT NULL AFTER `Value2`;
+
+-- 1840 - 1846 UPDATE PROPERTIES ACCORDINGLY WITH NEW PROPERTY FEATURE
+UPDATE `testcasecountryproperties` SET `Value3` = 'value' , `nature` = 'STATIC'  WHERE `type` = 'getFromHTML';
+UPDATE `testcasecountryproperties` SET  `Type` = 'getFromHTML' , `Value3` = 'value' , `nature` = 'STATIC'  WHERE `type` = 'getFromHTMLVisible';
+UPDATE `testcasecountryproperties` SET  `Type` = 'getFromHTML' , `Value3` = 'coordinate' , `nature` = 'STATIC'  WHERE `type` = 'getElementPosition';
+UPDATE `testcasecountryproperties` SET  `Type` = 'getFromHTML' , `Value3` = 'attribute' , `nature` = 'STATIC'  WHERE `type` = 'getAttributeFromHTML';
+UPDATE `testcasecountryproperties` SET  `Type` = 'getFromXml' , `Value3` = 'raw' , `nature` = 'STATIC'  WHERE `type` = 'getRawFromXml';
+UPDATE `testcasecountryproperties` SET  `Value3` = 'valueList' , `nature` = 'STATIC'  WHERE `type` = 'getFromJson';
+UPDATE `testcasecountryproperties` SET  `Type` = 'getFromJson' , `Value3` = 'rawList' , `nature` = 'STATIC'  WHERE `type` = 'getRawFromJson';
+
+-- 1847 - 1848 RANK VALUE DEFAULT TO 0 INSTEAD OF 1
+ALTER TABLE `testcasecountryproperties` CHANGE COLUMN `Rank` `Rank` INT NOT NULL DEFAULT '0' ;
+UPDATE `testcasecountryproperties` SET  `Rank` = 0  WHERE `Rank` = 1;
+
+-- 1849 1856 REMOVE  DEPRECATED PROPERTIES
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'executeSoapFromLib');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'executeSqlFromLib');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getDifferencesFromXml');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getAttributeFromHtml');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getElementPosition');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getFromHtmlVisible');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getRawFromJson');
+DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getRawFromXml');
