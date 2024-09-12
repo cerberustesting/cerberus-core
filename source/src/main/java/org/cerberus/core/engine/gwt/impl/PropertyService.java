@@ -1583,7 +1583,20 @@ public class PropertyService implements IPropertyService {
         // Else we can try to parse it thanks to the dedicated service
 
         try {
-            String valueFromXml = xmlUnitService.getFromXml(xmlToParse, testCaseExecutionData.getValue1());
+
+            String valueFromXml = "";
+            switch (testCaseExecutionData.getValue3()) {
+                case TestCaseCountryProperties.VALUE3_VALUE:
+                    valueFromXml = xmlUnitService.getFromXml(xmlToParse, testCaseExecutionData.getValue1());
+                    break;
+                case TestCaseCountryProperties.VALUE3_RAW:
+                    valueFromXml = xmlUnitService.getRawFromXml(xmlToParse, testCaseExecutionData.getValue1());
+                    break;
+                default:
+                    valueFromXml = xmlUnitService.getFromXml(xmlToParse, testCaseExecutionData.getValue1());
+                    break;
+            }
+
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
