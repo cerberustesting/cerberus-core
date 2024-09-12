@@ -1222,7 +1222,7 @@ public class ControlService implements IControlService {
                 case Application.TYPE_APK:
                 case Application.TYPE_IPA:
 
-                    actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
+                    actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 0);
                     // In case of null actual value then we alert user
                     if (actual == null) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENT_NULL);
@@ -1457,7 +1457,7 @@ public class ControlService implements IControlService {
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)
                     || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
 
-                pathContent = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
+                pathContent = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 0);
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
                 if (tCExecution.getLastServiceCalled() != null) {
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();

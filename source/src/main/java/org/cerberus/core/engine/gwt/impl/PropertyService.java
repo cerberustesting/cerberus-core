@@ -1354,7 +1354,7 @@ public class PropertyService implements IPropertyService {
                         valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank() );
                         break;
                     default :
-                        valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 1);
+                        valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 0);
                 }
 
                 if (valueFromHTML != null) {
