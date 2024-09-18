@@ -42,6 +42,7 @@ public interface IFactoryRobot {
      * @param userAgent
      * @param type
      * @param profileFolder
+     * @param acceptNotifications
      * @param extraParam
      * @param screenSize
      * @param isAcceptInsecureCerts
@@ -49,7 +50,7 @@ public interface IFactoryRobot {
      * @return
      */
     Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type);
+            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type);
 
     /**
      *
@@ -64,6 +65,7 @@ public interface IFactoryRobot {
      * @param userAgent userAgent to Use
      * @param screenSize
      * @param profileFolder
+     * @param acceptNotifications
      * @param extraParam
      * @param isAcceptInsecureCerts
      * @param capabilities
@@ -73,7 +75,7 @@ public interface IFactoryRobot {
      * @return
      */
     Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, String extraParam, boolean isAcceptInsecureCerts,
+            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts,
             List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type);
 
 }

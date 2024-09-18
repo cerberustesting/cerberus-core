@@ -47,6 +47,7 @@ public class Robot {
     private String screenSize;
     private String profileFolder;
     private String extraParam;
+    private Integer acceptNotifications;
     private boolean isAcceptInsecureCerts;
     private String robotDecli;
     private String lbexemethod; // Contain the method used in order to spread the load against all executors of the robot.
@@ -242,6 +243,10 @@ public class Robot {
         this.type = type;
     }
 
+    public Integer getAcceptNotifications(){return acceptNotifications;}
+
+    public void setAcceptNotifications(Integer acceptNotifications){this.acceptNotifications = acceptNotifications;}
+
     /**
      * Convert the current TestCaseExecution into JSON format
      *
@@ -265,6 +270,7 @@ public class Robot {
             result.put("lbexemethod", this.getLbexemethod());
             result.put("type", this.getType());
             result.put("isAcceptInsecureCerts", this.isAcceptInsecureCerts());
+            result.put("acceptNotifications", this.getAcceptNotifications());
             result.put("extraParam", this.getExtraParam());
 
             if (withChilds) {

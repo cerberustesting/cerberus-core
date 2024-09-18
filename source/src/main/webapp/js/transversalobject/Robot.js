@@ -71,6 +71,7 @@ function initModalRobot() {
     $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
     $("#editRobotModal [name='isAcceptInsecureCertsField']").html(doc.getDocOnline("robot", "IsAcceptInsecureCerts"));
     $("#editRobotModal [name='extraParamField']").html(doc.getDocOnline("robot", "ExtraParam"));
+    $("#editRobotModal [name='acceptNotificationsField']").html(doc.getDocOnline("robot", "AcceptNotifications"));
     $("#editRobotModal [name='profileFolderField']").html(doc.getDocOnline("robot", "ProfileFolder"));
     $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
     $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
@@ -286,6 +287,7 @@ function confirmRobotModalHandler(mode) {
         tcElement.parents("div.form-group").removeClass("has-error");
     }
 
+    data.acceptNotifications = formEdit.find("#acceptNotifications").find("label[class*='active'] > input").attr('data-accnotif');
     data.isAcceptInsecureCerts = formEdit.find("#isAcceptInsecureCerts").prop("checked");
     data.robotIsActive = formEdit.find("#robotIsActive").prop("checked");
     // we send to the server
@@ -329,6 +331,7 @@ function confirmRobotModalHandler(mode) {
             description: data.description,
             isAcceptInsecureCerts: data.isAcceptInsecureCerts,
             extraParam: data.extraParam,
+            acceptNotifications: data.acceptNotifications,
             lbexemethod: data.lbexemethod,
             capabilities: data.capabilities,
             executors: data.executors
@@ -406,6 +409,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.lbexemethod = "BYRANKING";
         robotObj1.type = "";
         robotObj1.extraParam = "";
+        robotObj1.acceptNotifications = "";
         robotObj1.isAcceptInsecureCerts = true;
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
@@ -454,6 +458,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val("");
         formEdit.find("#lbexemethod").val("ROUNDROBIN");
         formEdit.find("#extraParam").val("");
+        formEdit.find("#acceptNotifications").val("");
         formEdit.find("#isAcceptInsecureCerts").prop("checked", true);
     } else {
         if (mode === "EDIT") {
@@ -484,6 +489,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val(robot.type);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
         formEdit.find("#extraParam").val(robot.extraParam);
+        formEdit.find("#acceptNotifications").find("input[data-accnotif="+robot.acceptNotifications+"]").click();
         formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);
@@ -514,6 +520,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#hostUsername").prop("readonly", false);
         formEdit.find("#type").prop("readonly", false);
         formEdit.find("#extraParam").prop("readonly", false);
+        formEdit.find("#acceptNotifications").prop("readonly", false);
         formEdit.find("#isAcceptInsecureCerts").prop("readonly", false);
     } else {
         formEdit.find("#robotName").prop("readonly", "readonly");
@@ -533,6 +540,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#hostUsername").prop("readonly", "readonly");
         formEdit.find("#type").prop("readonly", "readonly");
         formEdit.find("#extraParam").prop("readonly", "readonly");
+        formEdit.find("#acceptNotifications").prop("readonly", "readonly");
         formEdit.find("#isAcceptInsecureCerts").prop("readonly", "readonly");
     }
 }

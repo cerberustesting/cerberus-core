@@ -61,6 +61,18 @@ function setPlaceholderProperty(property, propertyObject) {
         }
 
         property.find("div[class*='"+className+"']").insertAfter(property.find("div[class*='"+placeHolders.value1.insertAfter+"']"));
+
+        if(propertyObject.type === 'getFromDataLib'){
+
+            var editor = ace.edit($(property.find("pre[name='propertyValue']"))[0]);
+            var escaped = propertyObject.value1;
+
+            property.find("div[class*='editDataLib']").show();
+            setDatalibButtonOnClick(property.find("div[class*='editDataLib']"), escaped, editor.container.id);
+
+        } else {
+            property.find("div[class*='editDataLib']").hide();
+        }
     } else {
         property.find("div[class*='value1']").hide();
         property.find("div[class*='valueInput1']").hide();
@@ -228,6 +240,8 @@ function setPlaceholderProperty(property, propertyObject) {
     editor.removeAllListeners('change');
 
     configureAceEditor(editor, newPropertyPlaceholder[propertyObject.type].value1.editorMode, propertyObject);
+
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 function displayField(conditions,propertyObject){
@@ -294,7 +308,6 @@ function loadPropertiesAndDraw(test, testcase, testcaseObject, propertyToFocus, 
 
         property.toDelete = false;
         let prop = drawProperty(property, testcaseObject, canUpdate, i);
-        initEditor(prop[0]);
         setPlaceholderProperty($(prop[0]), prop[1]);
 
         propertyList.push(property.property);
@@ -380,8 +393,12 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     var propertyValue1Addon = $("<span></span>").attr("id", "propertyValue1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     propertyValue1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     propertyValue1Field.attr("aria-describedby", "propertyValue1Addon");
-    propertyValue1Container.append(propertyValue1Addon).append(propertyValue1Field);
+    var editDatalibButton = $('<div data-toggle="tooltip" class="editDataLib input-group-addon" style="text-align:center"><span class="glyphicon glyphicon-pencil"></span></div>');
+    propertyValue1Container.append(propertyValue1Addon).append(propertyValue1Field).append(editDatalibButton);
     propertyValue1Container = $("<div class='value1'></div>").addClass("col-lg-5 form-group marginBottom15").append(propertyValue1Container);
+
+    //propertyValue1Container.append(editDatalibButton);
+
 
     var propertyValue1InputField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     propertyValue1InputField.val(property.value1);
@@ -568,7 +585,6 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        initEditor($(this).parents(".property"));
         setPlaceholderProperty($(this).parents(".property"), property);
         displayPropertyHelper($(this).parents(".property"), property);
     });
@@ -579,6 +595,7 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
 
     propertyValue1Field.change(function () {
         property.value1 = $(this).val();
+        setPlaceholderProperty($(this).parents(".property"), property);
     });
 
     propertyValue1InputField.change(function () {
@@ -956,7 +973,6 @@ function addPropertyWithAce(keywordValue) {
             };
 
             var prop = drawProperty(newProperty, testCaseObject, true, $("div[name='propertyLine']").length);
-            initEditor(prop[0]);
             setPlaceholderProperty($(prop[0]), prop[1]);
 
             // Restore the saveScript button status
@@ -1063,20 +1079,13 @@ function configureAceEditor(editor, mode, property) {
     editor.gotoLine(count, editor.getSession().getLine(count - 1).length);
 }
 
-function initEditor(propertyElement){
-    $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
+function setDatalibButtonOnClick(element, datalib, editorId){
 
-
-        function initChange() {
-
-            if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
-                $("#" + editor.container.id).parent().find('.input-group').remove();
-                var escaped = encodeURIComponent(editor.getValue());
-                if (!isEmpty(escaped)) {
+   if (!isEmpty(datalib)) {
                     $.ajax({
                         url: "ReadTestDataLib",
                         data: {
-                            name: escaped,
+                            name: datalib,
                             limit: 15,
                             like: "N"
                         },
@@ -1084,31 +1093,19 @@ function initEditor(propertyElement){
                         method: "GET",
                         success: function (data) {
                             if (data.messageType === "OK") {
-                                // Feed the data to the screen and manage
-                                // authorities.
                                 var service = data.contentTable;
-                                $("#" + editor.container.id).parent().find('.input-group').remove();
-                                $("#" + editor.container.id).parent().parent().find('.col-btn').remove();
                                 if (service.length >= 1) {
-                                    var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
-                                    $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
-                                    $("#" + editor.container.id).parent().parent().append(editEntry);
-                                    $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(null, \'' + escaped + "\', 'EDIT', \'TestCaseScript_Props\', \'" + editor.container.id + "\')");
+                                    element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'EDIT\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                                    element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-pencil");
+                                    element.attr("data-original-title", "Edit DataLib");
                                 } else {
-                                    var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
-                                    addEntry.find("button").attr("disabled", !canUpdate);
-                                    $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8");
-                                    $("#" + editor.container.id).parent().parent().append(addEntry);
-                                    $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(null, \'' + escaped + "\', 'ADD', \'TestCaseScript_Props\', \'" + editor.container.id + "\')");
+                                    element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'ADD\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                                    element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-plus");
+                                    element.attr("data-original-title", "Add DataLib");
                                 }
                             }
                         },
                         error: showUnexpectedError
                     });
                 }
-            }
-        }
-
-
-    });
 }

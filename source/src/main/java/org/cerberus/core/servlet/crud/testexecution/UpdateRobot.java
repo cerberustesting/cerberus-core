@@ -107,6 +107,7 @@ public class UpdateRobot extends HttpServlet {
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), null, charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
+        Integer acceptNotifications = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("acceptNotifications"), 0, charset);
         String extraParam = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("extraParam"), null, charset);
         boolean isAcceptCerts = ParameterParserUtil.parseBooleanParam(request.getParameter("isAcceptInsecureCerts"), true);
 
@@ -219,6 +220,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setProfileFolder(profileFolder);
                 robotData.setRobotDecli(robotDecli);
                 robotData.setLbexemethod(lbexemethod);
+                robotData.setAcceptNotifications(acceptNotifications);
                 robotData.setExtraParam(extraParam);
                 robotData.setIsAcceptInsecureCerts(isAcceptCerts);
                 robotData.setCapabilities(capabilities);

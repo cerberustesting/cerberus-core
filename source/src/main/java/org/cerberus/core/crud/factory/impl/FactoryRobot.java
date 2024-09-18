@@ -35,14 +35,14 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer robotID, String robot, String platform,
-            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type) {
-        Robot r = create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, extraParam, isAcceptInsecureCerts, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
+            String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent, String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, String robotDecli, String type) {
+        Robot r = create(robotID, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder,acceptNotifications, extraParam, isAcceptInsecureCerts, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
         return r;
     }
 
     @Override
     public Robot create(Integer robotID, String robot, String platform, String browser, String version, boolean isActive, String lbexemethod, String description, String userAgent,
-            String screenSize, String profileFolder, String extraParam, boolean isAcceptInsecureCerts, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
+            String screenSize, String profileFolder, Integer acceptNotifications, String extraParam, boolean isAcceptInsecureCerts, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
@@ -60,6 +60,7 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setRobotDecli(robotDecli);
         newRobot.setType(type);
         newRobot.setIsAcceptInsecureCerts(isAcceptInsecureCerts);
+        newRobot.setAcceptNotifications(acceptNotifications);
         newRobot.setExtraParam(extraParam);
         return newRobot;
     }

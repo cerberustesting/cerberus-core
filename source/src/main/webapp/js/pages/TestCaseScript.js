@@ -235,7 +235,7 @@ $.when($.getScript("js/global/global.js")
                             };
 
                             var prop = drawProperty(newProperty, testcaseObject, true, document.getElementsByClassName("property").length);
-                            initEditor(prop[0]);
+
                             setPlaceholderProperty($(prop[0]), prop[1]);
 
                             $(prop[0]).find("#propName").focus();

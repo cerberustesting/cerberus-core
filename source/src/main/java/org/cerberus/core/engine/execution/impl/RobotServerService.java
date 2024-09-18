@@ -913,6 +913,21 @@ public class RobotServerService implements IRobotServerService {
                         }
                     }
 
+
+                    // Options
+                    if (tCExecution.getRobotObj() != null) {
+                        Map<String, Object> prefs = new HashMap<String, Object>();
+                        Map<String, Object> profileCH = new HashMap<String, Object>();
+                        Map<String, Object> contentSettings = new HashMap<String, Object>();
+
+                        // SET CHROME OPTIONS
+                        // 0 - Default, 1 - Allow, 2 - Block
+                        contentSettings.put("notifications", tCExecution.getRobotObj().getAcceptNotifications());
+                        profileCH.put("managed_default_content_settings", contentSettings);
+                        prefs.put("profile", profileCH);
+                        optionsCH.setExperimentalOption("prefs", prefs);
+                    }
+
                     // Collect Logs on Selenium side.
                     optionsCH.setCapability("goog:loggingPrefs", logPrefs);
 
