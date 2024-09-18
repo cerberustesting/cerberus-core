@@ -6552,3 +6552,6 @@ DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getEle
 DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getFromHtmlVisible');
 DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getRawFromJson');
 DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getRawFromXml');
+
+-- 1857 ADD COLUMN ACCEPTNOTIFICATIONS ON ROBOT
+ALTER TABLE `robot` ADD COLUMN `AcceptNotifications` TINYINT(1) NULL DEFAULT 0 AFTER `ProfileFolder`;
