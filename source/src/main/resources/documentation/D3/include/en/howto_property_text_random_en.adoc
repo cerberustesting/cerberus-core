@@ -1,0 +1,31 @@
+In case you need to generate a random String
+
+=== Generate random String with any alpha numeric characters
+
+*  1 - Define a Random property
+
+***   Type : Choose *text* option
+***   Nature : Choose *Random* option
+***   Length : Define the number of character you want to retrieve
+***   Value : Keep empty
+
+image:property_text_random.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_random_action.png[Logo]
+
+=== Generate random String with specific alpha numeric characters
+
+*  1 - Define a Random property
+
+***   Type : Choose *text* option
+***   Nature : Choose *Random* option
+***   Length : Define the number of character you want to retrieve
+***   Value : Put the characters that will be used to generate random string (case sensitive)
+
+image:property_text_random2.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_random_action.png[Logo]

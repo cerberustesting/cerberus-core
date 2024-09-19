@@ -1,0 +1,15 @@
+You may have to use same step implementation with different data on different context (country for exemple). Or re-use the same step on other testcase (See how to add a Step in Library)
+
+=== Generate static String
+
+*  1 - Define a Static property
+
+***   Type : Choose *text* option
+***   Nature : Choose *Static* option
+***   Value : Put the String you want to retreive
+
+image:property_text_static.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]

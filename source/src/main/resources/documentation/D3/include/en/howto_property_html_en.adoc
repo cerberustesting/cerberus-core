@@ -1,0 +1,269 @@
+
+=== Get value from HTML Element
+
+==== Get value from first HTML Element
+
+This property type retrieves the value from the first HTML element that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns its value. If no element is found, it returns NA, could not find . This function is useful for quickly accessing form inputs or text content from the first occurrence of a specific HTML element in the document.
+
+*  1 - Define a property
+
+***   Type : Choose *getFromHtml* option
+***   Element Type : Choose *Value* option
+***   Nature : Choose *Static* option
+***   Rank : Keep *0*
+***   Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_value_static_0.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get value from specific HTML Element
+
+This property type retrieves the value from a specific HTML element (defined in rank field)  that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns its value. If no element is found, it returns NA, could not find . This function is useful for quickly accessing form inputs or text content from a specific HTML element in the document.
+
+*  1 - Define a property
+
+***   Type : Choose *getFromHtml* option
+***   Element Type : Choose *Value* option
+***   Nature : Choose *Static* option
+***   Rank : Put an Integer, which is the element number that is retrieved
+***   Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_value_static_n.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get value from random HTML Element
+
+This property type retrieves the value from a random HTML element (defined in rank field)  that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns its value. If no element is found, it returns NA, could not find . This function is useful for quickly accessing form inputs or text content from a random HTML element matching criteria in the document.
+
+*  1 - Define a property
+
+***   Type : Choose *getFromHtml* option
+***   Element Type : Choose *Value* option
+***   Nature : Choose *Random* option
+***   Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_value_random.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get raw element from HTML
+
+==== Get raw element from first HTML Element
+
+This property type retrieves the raw HTML element from the first HTML element that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the HTML code of the element as a string. If no element is found, it returns NA, could not find . This function is useful for inspecting the structure of an HTML element and extracting the HTML code for further processing.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Raw* option
+*** Nature : Choose *Static* option
+*** Rank : Keep 0
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_raw_static_0.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get raw element from specific HTML Element
+
+This property type retrieves the raw HTML element from a specific HTML element (defined in rank field) that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the HTML code of the element as a string. If no element is found, it returns NA, could not find . This function is useful for inspecting the structure of a specific HTML element and extracting the HTML code for further processing.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Raw* option
+*** Nature : Choose *Static* option
+*** Rank : Put an Integer, which is the element number that is retrieved
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_raw_static_n.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get raw element from random HTML Element
+
+This property type retrieves the raw HTML element from a random HTML element (defined in rank field) that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the HTML code of the element as a string. If no element is found, it returns NA, could not find . This function is useful for inspecting the structure of a random HTML element matching criteria and extracting the HTML code for further processing.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Raw* option
+*** Nature : Choose *Random* option
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_raw_random.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get position of HTML element
+
+==== Get position of first HTML Element
+
+This property type retrieves the position (x,y) in pixel of the first HTML element that matches a specified selector, relative to the top left corner of the browser window. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns a tuple containing the x and y coordinates of the top-left corner of the element. If no element is found, it returns NA, could not find . This function is useful for determining the location of an element on the page and for interacting with it programmatically.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Coordinate* option
+*** Nature : Choose *Static* option
+*** Rank : Keep 0
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_coord_static_0.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get position of specific HTML Element
+
+This property type retrieves the position (x,y) in pixel of a specific HTML element (defined in rank field) that matches a specified selector, relative to the top left corner of the browser window. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns a tuple containing the x and y coordinates of the top-left corner of the element. If no element is found, it returns NA, could not find . This function is useful for determining the location of a specific element on the page and for interacting with it programmatically.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Coordinate* option
+*** Nature : Choose *Static* option
+*** Rank : Put an Integer, which is the element number that is retrieved
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_coord_static_n.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get position of random HTML Element
+
+This property type retrieves the position (x,y) in pixel of a random HTML element (defined in rank field) that matches a specified selector, relative to the top left corner of the browser window. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns a tuple containing the x and y coordinates of the top-left corner of the element. If no element is found, it returns NA, could not find . This function is useful for determining the location of a random element matching criteria on the page and for interacting with it programmatically.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Coordinate* option
+*** Nature : Choose *Random* option
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_coord_random.png[Logo]
+
+2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get attribute of HTML element
+
+==== Get attribute of first HTML Element
+
+This property type retrieves the value of a specific attribute from the first HTML element that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the value of the specified attribute. If no element is found or the attribute is not found, it returns NA, could not find . This function is useful for accessing specific attributes of HTML elements, such as the 'href' attribute of a link or the 'src' attribute of an image.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Attribute* option
+*** Nature : Choose Static option
+*** Rank : Keep 0
+*** Attribute Name : Put the attibute name
+*** Value : Put the xpath (or any identifier) to retrieve the element *** Attribute : Put the attribute name to retrieve
+
+image:property_html_attribute_static_0.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get attribute of specific HTML Element
+
+This property type retrieves the value of a specific attribute from a specific HTML element (defined in rank field) that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the value of the specified attribute. If no element is found or the attribute is not found, it returns NA, could not find . This function is useful for accessing specific attributes of a specific HTML element, such as the 'href' attribute of a link or the 'src' attribute of an image.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Attribute* option
+*** Nature : Choose *Static* option
+*** Rank : Put an Integer, which is the element number that is retrieved
+*** Attribute Name : Put the attibute name
+*** Value : Put the xpath (or any identifier) to retrieve the element *** Attribute : Put the attribute name to retrieve
+
+image:property_html_attribute_static_n.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+==== Get attribute of random HTML Element
+
+This property type retrieves the value of a specific attribute from a random HTML element that matches a specified selector. It takes an id, class, name, or any xpath as an argument, searches the DOM for the first matching element, and returns the value of the specified attribute. If no element is found or the attribute is not found, it returns NA, could not find . This function is useful for accessing specific attributes of a random HTML element matching criteria, such as the 'href' attribute of a link or the 'src' attribute of an image.
+
+* 1 - Define a property
+
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Attribute* option
+*** Nature : Choose *Random* option
+*** Attribute Name : Put the attibute name
+*** Value : Put the xpath (or any identifier) to retrieve the element *** Attribute : Put the attribute name to retrieve
+
+image:property_html_attribute_random.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get number of HTML element found
+
+This property type retrieves the number of HTML elements found on the page that match a specified selector. It takes an id, class, name, or any xpath as an argument and returns the number of matching elements. If no element is found, it returns 0. This function is useful for determining the number of elements on the page that meet specific criteria, such as the number of links on a page or the number of images in a specific section.
+
+* 1 - Define a property
+*** Type : Choose *getFromHtml* option
+*** Element Type : Choose *Count* option
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_count.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get table of value of all HTML element found
+
+This property type retrieves the values of all HTML elements found on the page that match a specified selector and returns them as a table. It takes an id, class, name, or any xpath as an argument, searches the DOM for all matching elements, and returns a table where each row represents a found element and each column represents a specific attribute of that element. If no element is found, it returns an empty table. This function is useful for extracting data from a list of elements, such as the text content of all links on a page or the image URLs of all images in a gallery.
+
+* 1 - Define a property
+*** Type : Choose getFromHtml option
+*** Element Type : Choose *Value List* option
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+
+image:property_html_valuelist.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]
+
+=== Get all HTML element found in raw format
+
+This property type retrieves all HTML elements found on the page that match a specified selector and returns them as a list of strings. It takes an id, class, name, or any xpath as an argument, searches the DOM for all matching elements, and returns a list containing the raw HTML code of each element. If no element is found, it returns an empty list. This function is useful for inspecting the structure of all matching elements and for extracting the HTML code for further processing.
+
+* 1 - Define a property
+*** Type : Choose getFromHtml option
+*** Element Type : Choose *Raw List* option
+*** Value : Put the xpath (or any identifier) to retrieve the element
+
+image:property_html_rawlist.png[Logo]
+
+* 2 - Then, use in in the scenario
+
+image:property_text_static_action.png[Logo]

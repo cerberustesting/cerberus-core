@@ -19,15 +19,23 @@ We are happy to welcome new contributors!
 =================================================
 
 ---
-= Execution Use Case
-:file-to-include: howto_exe_{lang}.adoc
+= Manage property on Testcase
+
+:file-to-include: howto_property_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
-link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
-
-== From SaaS Instance to my local Selenium/Appium installation
-:file-to-include: howto_exe_localexecution_{lang}.adoc
+== Use static string (text)
+:file-to-include: howto_property_text_static_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
+
+== Generate random string with defined length (text)
+:file-to-include: howto_property_text_random_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+== Get information from Web Page (getFromHTML)
+:file-to-include: howto_property_html_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
