@@ -489,7 +489,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val(robot.type);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
         formEdit.find("#extraParam").val(robot.extraParam);
-        formEdit.find("#acceptNotifications").find("input[data-accnotif="+robot.acceptNotifications+"]").click();
+        formEdit.find("#acceptNotifications").find("input[data-accnotif='"+robot.acceptNotifications+"']").click();
         formEdit.find("#isAcceptInsecureCerts").prop("checked", robot.isAcceptInsecureCerts);
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);
