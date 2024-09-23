@@ -923,6 +923,8 @@ public class RobotServerService implements IRobotServerService {
                         // SET CHROME OPTIONS
                         // 0 - Default, 1 - Allow, 2 - Block
                         contentSettings.put("notifications", tCExecution.getRobotObj().getAcceptNotifications());
+                        //TODO CREATE OWN PARAMETER
+                        contentSettings.put("geolocation", tCExecution.getRobotObj().getAcceptNotifications());
                         profileCH.put("managed_default_content_settings", contentSettings);
                         prefs.put("profile", profileCH);
                         optionsCH.setExperimentalOption("prefs", prefs);
