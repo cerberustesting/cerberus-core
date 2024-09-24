@@ -480,9 +480,9 @@ public class ApplicationDAO implements IApplicationDAO {
         List<String> individualColumnSearchValues = new ArrayList<>();
 
         StringBuilder query = new StringBuilder()
-                .append("SELECT distinct ")
+                .append("SELECT distinct `")
                 .append(columnName)
-                .append(" as distinctValues FROM application ");
+                .append("` as distinctValues FROM application ");
 
         searchSQL.append("WHERE 1=1");
         if (CollectionUtils.isNotEmpty(systems)) {
@@ -513,7 +513,7 @@ public class ApplicationDAO implements IApplicationDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
+        query.append(" order by `").append(columnName).append("` asc");
 
         LOG.debug("SQL : {}", query);
 
