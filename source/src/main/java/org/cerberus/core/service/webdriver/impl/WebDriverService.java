@@ -1373,7 +1373,47 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionReturnPreviousPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().back();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RETURNPREVIOUSPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionForwardNextPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().forward();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FORWARDNEXTPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FORWARDNEXTPAGE);
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());

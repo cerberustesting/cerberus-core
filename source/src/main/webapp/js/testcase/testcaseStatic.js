@@ -69,6 +69,8 @@ var actionOptList = {
     "manageDialogKeypress":{"group":"context_action","value": "manageDialogKeypress","label":{"en":"Manage Dialog pressing key","fr":"Switcher sur l'Iframe"},"application_types":["GUI"],
         "field1":{"label":{"en": "keys to press", "fr": "Touches à appuyer"},"picto":"images/action-keyboard.png", "class": "col-lg-12 crb-autocomplete-variable"}},
     "refreshCurrentPage":{"group":"context_action","value": "refreshCurrentPage","label":{"en":"Refresh Page","fr":"Recharger la page"},"application_types":["GUI"]},
+    "returnPreviousPage":{"group":"context_action","value": "returnPreviousPage","label":{"en":"Return Previous Page","fr":"Retourner page précédente"},"application_types":["GUI"]},
+    "forwardNextPage":{"group":"context_action","value": "forwardNextPage","label":{"en":"Forward Next Page","fr":"Aller à la page suivante"},"application_types":["GUI"]},
     "executeJS":{"group":"command","value": "executeJS","label":{"en":"Execute Javascript Command","fr":"Executer une commande Javascript"},"application_types":["GUI"],
         "field1":{"label":{"en": "JavaScript to execute", "fr": "JavaScript à executer"},"picto":"images/action-command-line.png", "class": "col-lg-12 crb-autocomplete-variable"}},
     "executeCommand":{"group":"command","value":"executeCommand","label":{"en":"Execute Appium Command","fr":"Executer une commande Appium"},"application_types":["GUI","IPA","APK"],

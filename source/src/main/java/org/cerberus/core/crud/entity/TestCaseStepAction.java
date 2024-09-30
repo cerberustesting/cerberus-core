@@ -104,6 +104,8 @@ public class TestCaseStepAction {
     public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
     public static final String ACTION_OPENURL = "openUrl";
     public static final String ACTION_REFRESHCURRENTPAGE = "refreshCurrentPage";
+    public static final String ACTION_RETURNPREVIOUSPAGE = "returnPreviousPage";
+    public static final String ACTION_FORWARDNEXTPAGE = "forwardNextPage";
     public static final String ACTION_EXECUTEJS = "executeJS";
     public static final String ACTION_EXECUTECOMMAND = "executeCommand";
     public static final String ACTION_EXECUTECERBERUSCOMMAND = "executeCerberusCommand";

@@ -374,6 +374,12 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
                     res = this.doActionRefreshCurrentPage(execution);
                     break;
+                case TestCaseStepAction.ACTION_RETURNPREVIOUSPAGE:
+                    res = this.doActionReturnPreviousPage(execution);
+                    break;
+                case TestCaseStepAction.ACTION_FORWARDNEXTPAGE:
+                    res = this.doActionForwardNextPage(execution);
+                    break;
                 case TestCaseStepAction.ACTION_EXECUTEJS:
                     res = this.doActionExecuteJS(execution, value1);
                     break;
@@ -2482,6 +2488,48 @@ public class ActionService implements IActionService {
             return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
+            return message;
+        }
+    }
+
+    private MessageEvent doActionReturnPreviousPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("RETURN PREVIOUS PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionReturnPreviousPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_RETURNPREVIOUSPAGE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_RETURNPREVIOUSPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
+            return message;
+        }
+    }
+
+    private MessageEvent doActionForwardNextPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("FORWARD NEXT PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionForwardNextPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_FORWARDNEXTPAGE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FORWARDNEXTPAGE);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
             LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
