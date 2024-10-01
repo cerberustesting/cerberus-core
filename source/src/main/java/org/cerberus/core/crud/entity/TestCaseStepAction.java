@@ -145,10 +145,6 @@ public class TestCaseStepAction {
     // ??? TODO. Clean this unused action.
     public static final String ACTION_PERFORMEDITORACTION = "performEditorAction";
 
-    // DEPRECATED
-    public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
-    public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
-
     /**
      * Invariant FORCEEXESTATUS String.
      */
