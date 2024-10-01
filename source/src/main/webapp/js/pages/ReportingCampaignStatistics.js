@@ -34,6 +34,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
             initGlobalPage();
         }
 
+        //Hide the columns header search bar (searchable activated on specific columns to allow the global search on datatable, but not useful to show the header filter search bar on each column)
+        $('#tagStatisticTable').on('draw.dt', function () {
+            $(".filterHeader span").hide();
+        });
+        $('#tagStatisticDetailTable').on('draw.dt', function () {
+            $(".filterHeader span").hide();
+        });
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -295,14 +303,14 @@ function aoColumnsFunc(tableId) {
         {
             "data": "campaign",
             "name": "campaign",
-            "searchable": false,
+            "searchable": true,
             "width": "80px",
             "title": doc.getDocLabel("page_campaignstatistics", "campaign_col")
         },
         {
             "data": "systemList",
             "name": "systems",
-            "searchable": false,
+            "searchable": true,
             "width": "120px",
             "className": "center",
             "title": doc.getDocLabel("page_campaignstatistics", "systems_col")
@@ -310,14 +318,14 @@ function aoColumnsFunc(tableId) {
         {
             "data": "applicationList",
             "name": "applications",
-            "searchable": false,
+            "searchable": true,
             "width": "120px",
             "title": doc.getDocLabel("page_campaignstatistics", "applications_col")
         },
         {
             "data": "campaignGroup1",
             "name": "Campaign Group 1",
-            "searchable": false,
+            "searchable": true,
             "width": "60px",
             "title": doc.getDocLabel("page_campaignstatistics", "group1_col")
         },
@@ -399,7 +407,7 @@ function aoColumnsDetailFunc(tableId) {
         {
             "data": "environment",
             "name": "environment",
-            "searchable": false,
+            "searchable": true,
             "width": "90px",
             "className": "center",
             "title": doc.getDocLabel("page_campaignstatistics", "environment_col")
@@ -407,7 +415,7 @@ function aoColumnsDetailFunc(tableId) {
         {
           "data": "country",
           "name": "country",
-          "searchable": false,
+          "searchable": true,
           "width": "90px",
           "className": "center",
           "title": doc.getDocLabel("page_campaignstatistics", "country_col")
@@ -415,7 +423,7 @@ function aoColumnsDetailFunc(tableId) {
         {
             "data": "systemList",
             "name": "systems",
-            "searchable": false,
+            "searchable": true,
             "width": "120px",
             "className": "center",
             "title": doc.getDocLabel("page_campaignstatistics", "systems_col")
@@ -423,7 +431,7 @@ function aoColumnsDetailFunc(tableId) {
         {
             "data": "applicationList",
             "name": "applications",
-            "searchable": false,
+            "searchable": true,
             "width": "120px",
             "title": doc.getDocLabel("page_campaignstatistics", "applications_col")
         },
