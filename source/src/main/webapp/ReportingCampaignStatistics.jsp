@@ -102,12 +102,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-2 col-md-2">
+                        <div class="col-md-4">
                             <div class="input-group-btn ">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton">Load</button>
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadButton" style="border-radius: 4px;">Load</button>
                             </div>
                             <div class="input-group-btn " style="display: none;">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton">Load</button>
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton" style="border-radius: 4px;">Load</button>
                             </div>
                         </div>
                     </div>

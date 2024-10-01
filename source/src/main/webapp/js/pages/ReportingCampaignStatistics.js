@@ -162,7 +162,7 @@ function initDetailedPage() {
     $('#envCountryFilters').show();
     $('#tagStatisticList').hide();
     $('#tagStatisticDetailList').show();
-    $('#loadbutton').closest('.input-group-btn').hide()
+    $('#loadButton').closest('.input-group-btn').hide()
     $('#loadDetailButton').closest('.input-group-btn').show()
     let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [0, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticDetailList", undefined, undefined, undefined, undefined);
@@ -222,7 +222,7 @@ function initGlobalPage() {
     setSystemSelectOptions();
     setApplicationSelectOptions();
 
-    $('#loadbutton').click(function()
+    $('#loadButton').click(function()
         {
             getStatistics();
         }
@@ -272,7 +272,7 @@ function displayPageLabel() {
     $("#labelGroup1Select").html(doc.getDocLabel("page_campaignstatistics", "labelGroup1Select"));
     $("#labelFromPicker").html(doc.getDocLabel("page_campaignstatistics", "labelFromPicker"));
     $("#labelToPicker").html(doc.getDocLabel("page_campaignstatistics", "labelToPicker"));
-    $("#loadbutton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
+    $("#loadButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
     $("#loadDetailButton").html(doc.getDocLabel("page_campaignstatistics", "buttonLoad"));
     displayHeaderLabel(doc);
     displayFooter(doc);
