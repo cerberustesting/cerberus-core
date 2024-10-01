@@ -127,7 +127,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionType(Session session, Identifier identifier, String valueToType, String propertyName, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
 

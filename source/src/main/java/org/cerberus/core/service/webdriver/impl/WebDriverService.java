@@ -1276,7 +1276,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -1284,10 +1284,11 @@ public class WebDriverService implements IWebDriverService {
                 WebElement menuHoverLink = (WebElement) answer.getItem();
                 if (menuHoverLink != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.moveToElement(menuHoverLink);
+                    actions.moveToElement(menuHoverLink, hOffset, vOffset);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
                     return message;
                 }
             }
@@ -1296,6 +1297,7 @@ public class WebDriverService implements IWebDriverService {
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
             LOG.debug(exception.toString());
             return message;
         } catch (TimeoutException exception) {

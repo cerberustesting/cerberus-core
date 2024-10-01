@@ -189,7 +189,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_DOUBLECLICK(200, "OK", "Element '%ELEMENT%' double clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_RIGHTCLICK(200, "OK", "Right click has been done on Element '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_URLLOGIN(200, "OK", "Opened '%URL%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_MOUSEOVER(200, "OK", "Mouse moved over '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_MOUSEOVER(200, "OK", "Mouse moved over '%ELEMENT%' with an offset %OFFSET%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_MOUSEOVERANDWAIT(200, "OK", "Mouse moved over '%ELEMENT%' and waited %TIME% ms.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_WAIT_TIME(200, "OK", "Waited %TIME% ms.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_WAIT_TIME_WITHWARNINGS(200, "OK", "Waited %TIME% ms with warning : %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
