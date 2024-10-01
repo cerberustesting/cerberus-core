@@ -177,7 +177,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
 
             if (!group1List.isEmpty()) {
                 for (String group1 : group1List) {
-                    preStat.setString(i++, group1);
+                    preStat.setString(i++, group1.replaceAll("%20", " ")); //Replace %20 (encoded space) by decoded space in case of group 1 contains spaces
                 }
             }
 
