@@ -23,8 +23,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.crud.service.ITagStatisticService;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,11 +111,11 @@ public class CampaignExecutionPrivateController {
             response.put("globalGroup1List", aggregateByCampaign.get("globalGroup1List").get("array"));
             response.put("campaignStatistics", aggregateListByCampaign);
             return ResponseEntity.ok(response.toString());
-        } catch (JSONException ex) {
-            LOG.error("Error when JSON processing: ", ex);
+        } catch (JSONException exception) {
+            LOG.error("Error when JSON processing: ", exception);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error when JSON processing: " + ex.getMessage());
+                    .body("Error when JSON processing: " + exception.getMessage());
         }
     }
 
@@ -124,7 +127,7 @@ public class CampaignExecutionPrivateController {
             @RequestParam(name = "environments", required = false) String[] environmentsParam,
             @RequestParam(name = "from") String fromParam,
             @RequestParam(name = "to") String toParam
-    ) throws JSONException {
+    ) {
         fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         List<String> countries = ParameterParserUtil.parseListParamAndDecode(countriesParam, new ArrayList<>(), "UTF8");
@@ -134,33 +137,49 @@ public class CampaignExecutionPrivateController {
         List<TagStatistic> tagStatistics;
         JSONObject response = new JSONObject();
 
-        tagStatistics = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted).getDataList();
+        AnswerList<TagStatistic> answer = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted);
+        tagStatistics = answer.getDataList();
 
-        boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
-        if (!userHasRightSystems) {
-            response.put("message", "User has no access to required systems.");
+        try {
+            if (tagStatistics.isEmpty()) {
+                response.put("message", answer.getResultMessage().getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(response.toString());
+            }
+
+            boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
+            if (!userHasRightSystems) {
+                response.put("message", new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE).getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(response.toString());
+            }
+
+            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
+            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
+            List<JSONObject> aggregateListByCampaign = new ArrayList<>();
+            countries.clear();
+            environments.clear();
+            aggregateByCampaign.forEach((key, value) -> {
+                aggregateListByCampaign.add(value);
+                String environment = key.split("_")[0];
+                String country = key.split("_")[1];
+                if (!environments.contains(environment)) environments.add(environment);
+                if (!countries.contains(country)) countries.add(country);
+            });
+
+            response.put("campaignStatistics", aggregateListByCampaign);
+            response.put("environments", environments);
+            response.put("countries", countries);
+            return ResponseEntity.ok(response.toString());
+        } catch (JSONException exception) {
+            LOG.error("Error when JSON processing: ", exception);
             return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(response.toString());
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error when JSON processing: " + exception.getMessage());
         }
 
-        Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
-        Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
-        List<JSONObject> aggregateListByCampaign = new ArrayList<>();
-        countries.clear();
-        environments.clear();
-        aggregateByCampaign.forEach((key, value) -> {
-            aggregateListByCampaign.add(value);
-            String environment = key.split("_")[0];
-            String country = key.split("_")[1];
-            if (!environments.contains(environment)) environments.add(environment);
-            if (!countries.contains(country)) countries.add(country);
-        });
-
-        response.put("campaignStatistics", aggregateListByCampaign);
-        response.put("environments", environments);
-        response.put("countries", countries);
-        return ResponseEntity.ok(response.toString());
     }
 
     @PostMapping("{executionId}/declareFalseNegative")

@@ -415,6 +415,7 @@ public class TagStatisticService implements ITagStatisticService {
             systemsAllowedforUser = getSystemsAllowedForUser(user);
         } catch (CerberusException exception) {
             LOG.error("Unable to get systems allowed for user: ", exception);
+            return false;
         }
         for (TagStatistic tagStatistic : tagStatistics) {
             List<String> systemList =Arrays.stream(
