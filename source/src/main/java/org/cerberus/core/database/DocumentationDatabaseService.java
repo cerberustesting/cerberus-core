@@ -2871,7 +2871,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_campaignreportovertime','title','','fa','گزارش اجرای کمپین در طول زمان','این صفحه برخی از آمارهای اجرا را در طول زمان ارائه می دهد.',NULL)");
         b.append(",('page_campaignreportovertime','title','','fr','Rapport d\\'execution des campagnes dans le temps','Cette page génère des rapports d\\'evolution de compteurs d\\'execution sur la durée',NULL)");
         b.append(",('page_campaignstatistics','title','','en','Campaign Statistics','This page provide some statistics at a campaign level to follow up.',NULL)");
-        b.append(",('page_campaignstatistics','title','','fr','Statistiques de campagnes','Cette page propose des statistiques de campagne pour permettre le suivi.',NULL)");
+        b.append(",('page_campaignstatistics','title','','fr','Statistiques de campagne','Cette page propose des statistiques concernant les campagnes pour permettre leur suivi.',NULL)");
         b.append(",('page_campaignstatistics','labelSystemSelect','','fr','Système','',NULL)");
         b.append(",('page_campaignstatistics','labelSystemSelect','','en','System','',NULL)");
         b.append(",('page_campaignstatistics','labelApplicationSelect','','fr','Application','',NULL)");
@@ -2902,10 +2902,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_campaignstatistics','applications_col','','en','Applications','',NULL)");
         b.append(",('page_campaignstatistics','group1_col','','fr','Groupe 1','',NULL)");
         b.append(",('page_campaignstatistics','group1_col','','en','Group 1','',NULL)");
-        b.append(",('page_campaignstatistics','minDateStart_col','','fr','Date de début minimale','',NULL)");
-        b.append(",('page_campaignstatistics','minDateStart_col','','en','Minimum start date','',NULL)");
-        b.append(",('page_campaignstatistics','maxDateEnd_col','','fr','Date de fin maximale','',NULL)");
-        b.append(",('page_campaignstatistics','maxDateEnd_col','','en','Maximum end date','',NULL)");
+        b.append(",('page_campaignstatistics','minDateStart_col','','fr','Date de première exécution','',NULL)");
+        b.append(",('page_campaignstatistics','minDateStart_col','','en','Date of first execution','',NULL)");
+        b.append(",('page_campaignstatistics','maxDateEnd_col','','fr','Date de dernière exécution','',NULL)");
+        b.append(",('page_campaignstatistics','maxDateEnd_col','','en','Date of last execution','',NULL)");
         b.append(",('page_campaignstatistics','avgOK_col','','fr','Pourcentage moyen de OK','',NULL)");
         b.append(",('page_campaignstatistics','avgOK_col','','en','Average percentage of OK','',NULL)");
         b.append(",('page_campaignstatistics','avgDuration_col','','fr','Durée moyenne','',NULL)");
