@@ -35,12 +35,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         }
 
         //Hide the columns header search bar (searchable activated on specific columns to allow the global search on datatable, but not useful to show the header filter search bar on each column)
-        $('#tagStatisticTable').on('draw.dt', function () {
-            $(".filterHeader span").hide();
-        });
-        $('#tagStatisticDetailTable').on('draw.dt', function () {
-            $(".filterHeader span").hide();
-        });
+        hideColumnSearchBar();
 
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
@@ -395,7 +390,14 @@ function aoColumnsFunc(tableId) {
             "name": "avgNbExeUsefull",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUsefull_col")
+            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUseful_col")
+        },
+        {
+            "data": "numberCampaignExecutions",
+            "name": "numberCampaignExecutions",
+            "searchable": false,
+            "width": "130px",
+            "title": doc.getDocLabel("page_campaignstatistics", "numberCampaignExecutions_col")
         },
     ];
     return aoColumns;
@@ -501,7 +503,7 @@ function aoColumnsDetailFunc(tableId) {
             "name": "avgNbExeUsefull",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUsefull_col")
+            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUseful_col")
         },
     ];
     return aoColumns;
@@ -511,4 +513,14 @@ function getGreenToRed(percent) {
     r = percent < 50 ? 255 : Math.floor(255 - (percent * 2 - 100) * 255 / 100);
     g = percent > 50 ? 255 : Math.floor((percent * 2) * 255 / 100);
     return 'rgb(' + r + ',' + g + ',0)';
+}
+
+function hideColumnSearchBar() {
+    $(".filterHeader span").hide();
+    $('#tagStatisticTable').on('draw.dt', function () {
+        $(".filterHeader span").hide();
+    });
+    $('#tagStatisticDetailTable').on('draw.dt', function () {
+        $(".filterHeader span").hide();
+    });
 }

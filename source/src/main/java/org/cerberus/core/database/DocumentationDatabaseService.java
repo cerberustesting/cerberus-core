@@ -2912,8 +2912,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_campaignstatistics','avgDuration_col','','en','Average duration','',NULL)");
         b.append(",('page_campaignstatistics','avgReliability_col','','fr','Fiabilité moyenne','',NULL)");
         b.append(",('page_campaignstatistics','avgReliability_col','','en','Average reliability','',NULL)");
-        b.append(",('page_campaignstatistics','avgNbExeUsefull_col','','fr','Nombre moyen d\\'exécutions utiles','',NULL)");
-        b.append(",('page_campaignstatistics','avgNbExeUsefull_col','','en','Average number of usefull executions','',NULL)");
+        b.append(",('page_campaignstatistics','avgNbExeUseful_col','','fr','Nombre moyen d\\'exécutions utiles','',NULL)");
+        b.append(",('page_campaignstatistics','avgNbExeUseful_col','','en','Average number of useful executions','',NULL)");
+        b.append(",('page_campaignstatistics','numberCampaignExecutions_col','','fr','Nombre d\\'exécutions de la campagne','',NULL)");
+        b.append(",('page_campaignstatistics','numberCampaignExecutions_col','','en','Number of campaign executions','',NULL)");
         b.append(",('page_robot','button_create','','en','Create new Robot','',NULL)");
         b.append(",('page_robot','button_create','','fa','ایجاد ربات جدید','',NULL)");
         b.append(",('page_robot','button_create','','fr','Créer un nouveau Robot','',NULL)");
