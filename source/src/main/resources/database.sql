@@ -6555,3 +6555,9 @@ DELETE FROM `invariant` WHERE (`idname` = 'PROPERTYTYPE') and (`value` = 'getRaw
 
 -- 1857 ADD COLUMN ACCEPTNOTIFICATIONS ON ROBOT
 ALTER TABLE `robot` ADD COLUMN `AcceptNotifications` TINYINT(1) NULL DEFAULT 0 AFTER `ProfileFolder`;
+
+-- 1858
+INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
+  VALUES ('', 'cerberus_executionloghar_enable', 'false', 'Enable saving of har file at the end of non OK executions.');
+
+

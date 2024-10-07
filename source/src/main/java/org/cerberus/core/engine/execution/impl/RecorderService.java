@@ -1029,6 +1029,34 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordHar(TestCaseExecution execution, JSONObject har) {
+        TestCaseExecutionFile object = null;
+
+        LOG.debug("Starting to save Har file.");
+
+        if ((StringUtil.isEmptyOrNull(har.toString()))) {
+            LOG.debug("No har to record.");
+            return null;
+        }
+
+        try {
+
+            // RESULT.
+            Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "enriched_har", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), har.toString(1), execution.getSecrets());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Network HAR File", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution execution) {
         TestCaseExecutionFile object = null;
 

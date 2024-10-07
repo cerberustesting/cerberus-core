@@ -913,7 +913,6 @@ public class RobotServerService implements IRobotServerService {
                         }
                     }
 
-
                     // Options
                     if (tCExecution.getRobotObj() != null) {
                         Map<String, Object> prefs = new HashMap<String, Object>();
@@ -1160,6 +1159,15 @@ public class RobotServerService implements IRobotServerService {
                         tce.setHttpStat(answHttpStat.getItem());
 
                         testCaseExecutionHttpStatService.create(answHttpStat.getItem());
+
+                        // Log Execution
+                        if ((tce.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionloghar_enable", tce.getSystem(), true)) {
+                            try {
+                                tce.addFileList(recorderService.recordHar(tce, har));
+                            } catch (Exception ex) {
+                                LOG.error("Exception Saving Har Files " + tce.getId(), ex);
+                            }
+                        }
 
                     } catch (Exception ex) {
                         LOG.warn("Exception collecting and saving stats for execution {}  Exception : {}", tce.getId(), ex.toString());
