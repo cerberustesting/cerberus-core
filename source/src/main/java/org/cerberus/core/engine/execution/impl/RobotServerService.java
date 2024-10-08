@@ -1161,7 +1161,9 @@ public class RobotServerService implements IRobotServerService {
                         testCaseExecutionHttpStatService.create(answHttpStat.getItem());
 
                         // Log Execution
-                        if ((tce.getVerbose() > 0) && parameterService.getParameterBooleanByKey("cerberus_executionloghar_enable", tce.getSystem(), true)) {
+                        if ((tce.getVerbose() > 0)
+                                && !(tce.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_KO))
+                                && parameterService.getParameterBooleanByKey("cerberus_executionloghar_enable", tce.getSystem(), true)) {
                             try {
                                 tce.addFileList(recorderService.recordHar(tce, har));
                             } catch (Exception ex) {
