@@ -21,7 +21,6 @@ package org.cerberus.core.crud.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tika.sax.Link;
 import org.cerberus.core.crud.dao.ITagStatisticDAO;
 import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.service.IApplicationService;
@@ -37,8 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -317,6 +314,7 @@ public class TagStatisticService implements ITagStatisticService {
             double sumPercOK = 0;
             double sumPercReliability = 0;
             int sumNumberExeUsefull = 0;
+            int numberCampaignExecutions = 0;
             String campaignGroup1 = "";
             JSONArray systemsByCampaign = new JSONArray();
             JSONArray applicationsByCampaign = new JSONArray();
@@ -338,6 +336,7 @@ public class TagStatisticService implements ITagStatisticService {
                 sumPercReliability += ((double) mapTagEntry.getInt("nbExeUsefull") / mapTagEntry.getInt("nbExe"));
                 sumNumberExeUsefull += mapTagEntry.getInt("nbExeUsefull");
                 totalDuration += mapTagEntry.getLong("duration");
+                numberCampaignExecutions++;
 
                 if (aggregateType.equals("CAMPAIGN")) {
                     campaignGroup1 = mapTagEntry.getString("campaignGroup1");
@@ -358,7 +357,7 @@ public class TagStatisticService implements ITagStatisticService {
                 String country = key.split("_")[1];
                 statistics = createJsonCampaignStatByEnvCountry(systemsByCampaign, applicationsByCampaign, environment, country, avgDuration, minDateStart, maxDateEnd, avgOK, avgReliability, avgNbExeUsefull);
             } else {
-                statistics = createJsonCampaignStat(key, systemsByCampaign, applicationsByCampaign, campaignGroup1, avgDuration, minDateStart, maxDateEnd, avgOK, avgReliability, avgNbExeUsefull);
+                statistics = createJsonCampaignStat(key, systemsByCampaign, applicationsByCampaign, campaignGroup1, avgDuration, minDateStart, maxDateEnd, avgOK, avgReliability, avgNbExeUsefull, numberCampaignExecutions);
             }
 
             aggregateByCampaign.put(key, statistics);
@@ -410,9 +409,9 @@ public class TagStatisticService implements ITagStatisticService {
     }
 
     public boolean userHasRightSystems(String user, List<TagStatistic> tagStatistics) {
-        List<String> systemsAllowedforUser = null;
+        List<String> systemsAllowedForUser;
         try {
-            systemsAllowedforUser = getSystemsAllowedForUser(user);
+            systemsAllowedForUser = getSystemsAllowedForUser(user);
         } catch (CerberusException exception) {
             LOG.error("Unable to get systems allowed for user: ", exception);
             return false;
@@ -425,7 +424,7 @@ public class TagStatisticService implements ITagStatisticService {
                                     .replace("]", "")
                                     .split(","))
                     .collect(Collectors.toList());
-            if (!new HashSet<>(systemsAllowedforUser).containsAll(systemList)) {
+            if (!new HashSet<>(systemsAllowedForUser).containsAll(systemList)) {
                 return false;
             }
         }
@@ -467,7 +466,7 @@ public class TagStatisticService implements ITagStatisticService {
                 .put("avgNbExeUsefull", avgNbExeUsefull);
     }
 
-    private JSONObject createJsonCampaignStat(String campaign, JSONArray systems, JSONArray applications, String group1, double avgDuration, String minDateStart, String maxDateEnd, double avgOK, double avgReliability, int avgNbExeUsefull) throws JSONException {
+    private JSONObject createJsonCampaignStat(String campaign, JSONArray systems, JSONArray applications, String group1, double avgDuration, String minDateStart, String maxDateEnd, double avgOK, double avgReliability, int avgNbExeUsefull, int numberCampaignExecutions) throws JSONException {
         return new JSONObject(new LinkedHashMap<>())
                 .put("campaign", campaign)
                 .put("systemList", systems)
@@ -478,7 +477,8 @@ public class TagStatisticService implements ITagStatisticService {
                 .put("maxDateEnd", maxDateEnd)
                 .put("avgOK", avgOK)
                 .put("avgReliability",avgReliability)
-                .put("avgNbExeUsefull", avgNbExeUsefull);
+                .put("avgNbExeUsefull", avgNbExeUsefull)
+                .put("numberCampaignExecutions", numberCampaignExecutions);
     }
 
     private String setKeyAccordingToAggregateType(String aggregateType, TagStatistic tagStatistic) {
