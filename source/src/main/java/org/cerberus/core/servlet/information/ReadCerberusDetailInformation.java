@@ -116,7 +116,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 executionArray.put(object);
             }
             jsonResponse.put("runningExecutionsList", executionArray);
-            
+
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
 
@@ -294,6 +294,8 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                                     }
                                 } catch (JSONException ex) {
                                     LOG.error("Exception on JSON Parse.", ex);
+                                } catch (ClassCastException ex) {
+                                    return 1;
                                 }
 
                             } else {
