@@ -257,7 +257,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String type = propJson.getString("type");
             String value = propJson.getString("value1");
             String value2 = propJson.getString("value2");
-            String value3 = propJson.getString("value3");
+            String value3 = "";
+            if (propJson.has("value3")) {
+                value3 = propJson.getString("value3");
+            }
             String length = propJson.getString("length");
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
@@ -415,8 +418,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort, 
-                        conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions, 
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, stepId, actionId, controlId, sort,
+                        conditionOperator, conditionValue1, conditionValue2, conditionValue3, conditionOptions,
                         controlValue, value1, value2, value3, options, isFatal, description, screenshot, doScreenshotBefore, doScreenshotAfter, waitBefore, waitAfter));
             }
         }
