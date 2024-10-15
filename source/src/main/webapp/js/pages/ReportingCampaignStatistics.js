@@ -364,13 +364,10 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_campaignstatistics", "avgDuration_col"),
             "render": function (data, type, obj) {
                 let roundedAvgDuration = Math.round(obj.avgDuration);
-                if (roundedAvgDuration <= 59) {
-                    return `${roundedAvgDuration} s`;
-                } else {
-                    let minutes = Math.floor(roundedAvgDuration / 60);
-                    let remainingSeconds = roundedAvgDuration % 60;
-                    return `${minutes} min ${remainingSeconds} sec`;
-                }
+                let hours = Math.floor(roundedAvgDuration / 3600);
+                let minutes = Math.floor((roundedAvgDuration % 3600) / 60);
+                let seconds = roundedAvgDuration % 60;
+                return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
             }
         },
         {
@@ -477,13 +474,10 @@ function aoColumnsDetailFunc(tableId) {
             "title": doc.getDocLabel("page_campaignstatistics", "avgDuration_col"),
             "render": function (data, type, obj) {
                 let roundedAvgDuration = Math.round(obj.avgDuration);
-                if (roundedAvgDuration <= 59) {
-                    return `${roundedAvgDuration} s`;
-                } else {
-                    let minutes = Math.floor(roundedAvgDuration / 60);
-                    let remainingSeconds = roundedAvgDuration % 60;
-                    return `${minutes} min ${remainingSeconds} sec`;
-                }
+                let hours = Math.floor(roundedAvgDuration / 3600);
+                let minutes = Math.floor((roundedAvgDuration % 3600) / 60);
+                let seconds = roundedAvgDuration % 60;
+                return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
             }
         },
         {
