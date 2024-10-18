@@ -75,31 +75,43 @@ public class CampaignExecutionPrivateController {
         String fromDateFormatted = tagStatisticService.formatDateForDb(fromParam);
         String toDateFormatted = tagStatisticService.formatDateForDb(toParam);
         List<TagStatistic> tagStatistics;
+        AnswerList<TagStatistic> daoAnswer;
         List<String> systemsAllowed;
         List<String> applicationsAllowed;
         JSONObject response = new JSONObject();
 
         try {
+            if (request.getUserPrincipal() == null) {
+                MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
+                message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                message.setDescription(message.getDescription().replace("%OPERATION%", "'Get statistics'"));
+                message.setDescription(message.getDescription().replace("%REASON%", "No user provided in the request, please refresh the page or login again."));
+                response.put("message", message.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(response.toString());
+            }
+
             systemsAllowed = tagStatisticService.getSystemsAllowedForUser(request.getUserPrincipal().getName());
-        } catch (CerberusException exception) {
-            LOG.error("Unable to get allowed systems: ", exception);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Unable to get allowed systems: " + exception.getMessage());
-        }
+            applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
 
-        applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
+            if (systems.isEmpty() && applications.isEmpty()) {
+                tagStatistics = new ArrayList<>();
+            } else {
+                //If user put in filter a system that is has no access, we delete from the list.
+                systems.removeIf(param -> !systemsAllowed.contains(param));
+                applications.removeIf(param -> !applicationsAllowed.contains(param));
+                daoAnswer = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted);
 
-        if (systems.isEmpty() && applications.isEmpty()) {
-            tagStatistics = new ArrayList<>();
-        } else {
-            //If user put in filter a system that is has no access, we delete from the list.
-            systems.removeIf(param -> !systemsAllowed.contains(param));
-            applications.removeIf(param -> !applicationsAllowed.contains(param));
-            tagStatistics = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted).getDataList();
-        }
+                if (daoAnswer.getDataList().isEmpty()) {
+                    response.put("message", daoAnswer.getResultMessage().getDescription());
+                    return ResponseEntity
+                            .status(HttpStatus.NOT_FOUND)
+                            .body(response.toString());
+                }
+                tagStatistics = daoAnswer.getDataList();
+            }
 
-        try {
             Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
             Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN");
             List<JSONObject> aggregateListByCampaign = new ArrayList<>();
@@ -116,6 +128,11 @@ public class CampaignExecutionPrivateController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error when JSON processing: " + exception.getMessage());
+        } catch (CerberusException exception) {
+            LOG.error("Unable to get allowed systems: ", exception);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unable to get allowed systems: " + exception.getMessage());
         }
     }
 
@@ -137,16 +154,28 @@ public class CampaignExecutionPrivateController {
         List<TagStatistic> tagStatistics;
         JSONObject response = new JSONObject();
 
-        AnswerList<TagStatistic> answer = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted);
-        tagStatistics = answer.getDataList();
-
         try {
-            if (tagStatistics.isEmpty()) {
-                response.put("message", answer.getResultMessage().getDescription());
+            if (request.getUserPrincipal() == null) {
+                MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
+                message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                message.setDescription(message.getDescription().replace("%OPERATION%", "'Get statistics'"));
+                message.setDescription(message.getDescription().replace("%REASON%", "No user provided in the request, please refresh the page or login again."));
+                response.put("message", message.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(response.toString());
+            }
+
+            AnswerList<TagStatistic> daoAnswer = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted);
+
+            if (daoAnswer.getDataList().isEmpty()) {
+                response.put("message", daoAnswer.getResultMessage().getDescription());
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .body(response.toString());
             }
+
+            tagStatistics = daoAnswer.getDataList();
 
             boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
             if (!userHasRightSystems) {

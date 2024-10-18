@@ -72,6 +72,11 @@ function updateDatatable(datatable, data) {
     datatable.DataTable().columns.adjust().draw();
 }
 
+function clearDatatable(datatable) {
+    datatable.DataTable().clear();
+    datatable.DataTable().columns.adjust().draw();
+}
+
 function setLoadingStatus(datatable) {
     $("#loading").show();
     datatable.css("filter", "blur(5px)");
@@ -193,6 +198,7 @@ function getStatisticsByEnvCountry() {
         error: function(jqXHR, textStatus, errorThrown) {
             removeLoadingStatus($("#tagStatisticDetailList"));
             let response = JSON.parse(jqXHR.responseText);
+            clearDatatable($("#tagStatisticDetailTable"));
             showMessageMainPage("danger", response.message, false);
         },
         success: function(data) {
@@ -246,6 +252,7 @@ function getStatistics() {
             error: function(jqXHR, textStatus, errorThrown) {
                 removeLoadingStatus($("#tagStatisticList"));
                 let response = JSON.parse(jqXHR.responseText);
+                clearDatatable($("#tagStatisticTable"));
                 showMessageMainPage("danger", response.message, false);
             },
             success: function(data) {
@@ -383,18 +390,11 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "avgNbExeUsefull",
-            "name": "avgNbExeUsefull",
+            "data": "nbCampaignExecutions",
+            "name": "nbCampaignExecutions",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUseful_col")
-        },
-        {
-            "data": "numberCampaignExecutions",
-            "name": "numberCampaignExecutions",
-            "searchable": false,
-            "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "numberCampaignExecutions_col")
+            "title": doc.getDocLabel("page_campaignstatistics", "nbCampaignExecutions_col")
         },
     ];
     return aoColumns;
@@ -493,11 +493,18 @@ function aoColumnsDetailFunc(tableId) {
             }
         },
         {
-            "data": "avgNbExeUsefull",
-            "name": "avgNbExeUsefull",
+            "data": "nbExeUseful",
+            "name": "nbExeUseful",
             "searchable": false,
-            "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgNbExeUseful_col")
+            "width": "120px",
+            "title": doc.getDocLabel("page_campaignstatistics", "nbExeUseful_col")
+        },
+        {
+            "data": "nbExe",
+            "name": "nbExe",
+            "searchable": false,
+            "width": "120px",
+            "title": doc.getDocLabel("page_campaignstatistics", "nbExe_col")
         },
     ];
     return aoColumns;

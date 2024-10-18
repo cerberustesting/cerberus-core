@@ -92,7 +92,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                 preStat.setTimestamp(parameterIndex++, tagStatisticEntry.getValue().getDateStartExe());
                 preStat.setTimestamp(parameterIndex++, tagStatisticEntry.getValue().getDateEndExe());
                 preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbExe());
-                preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbExeUsefull());
+                preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbExeUseful());
                 preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbOK());
                 preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbKO());
                 preStat.setInt(parameterIndex++, tagStatisticEntry.getValue().getNbFA());
@@ -390,7 +390,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
         Timestamp dateStartExe = resultSet.getTimestamp("DateStartExe");
         Timestamp dateEndExe = resultSet.getTimestamp("DateEndExe");
         int nbExe = resultSet.getInt("nbExe");
-        int nbExeUsefull = resultSet.getInt("nbExeUsefull");
+        int nbExeUseful = resultSet.getInt("nbExeUsefull");
         int nbOK = resultSet.getInt("nbOK");
         int nbKO = resultSet.getInt("nbKO");
         int nbFA = resultSet.getInt("nbFA");
@@ -414,7 +414,7 @@ public class TagStatisticDAO implements ITagStatisticDAO {
                 .dateStartExe(dateStartExe)
                 .dateEndExe(dateEndExe)
                 .nbExe(nbExe)
-                .nbExeUsefull(nbExeUsefull)
+                .nbExeUseful(nbExeUseful)
                 .nbOK(nbOK)
                 .nbKO(nbKO)
                 .nbFA(nbFA)
