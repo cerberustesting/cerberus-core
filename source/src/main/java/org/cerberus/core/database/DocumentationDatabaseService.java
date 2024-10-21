@@ -2917,7 +2917,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_campaignstatistics','nbExe_col','','fr','Test Exe Nb avec relances','Nombre d\\'exécutions de cas de test avec les relances.',NULL)");
         b.append(",('page_campaignstatistics','nbExe_col','','en','TC Exe Nb with retries','Testcase executions number including retries.',NULL)");
         b.append(",('page_campaignstatistics','nbCampaignExecutions_col','','fr','Nombre d\\'exécutions de campagne','Nombre de fois où la campagne a été exécutée sur la période choisie.',NULL)");
-        b.append(",('page_campaignstatistics','nbCampaignExecutions_col','','en','Campaign run count','Number of time the campaign was ran on the chosent iod.',NULL)");
+        b.append(",('page_campaignstatistics','nbCampaignExecutions_col','','en','Campaign run count','Number of time the campaign was ran on the chosen period.',NULL)");
         b.append(",('page_robot','button_create','','en','Create new Robot','',NULL)");
         b.append(",('page_robot','button_create','','fa','ایجاد ربات جدید','',NULL)");
         b.append(",('page_robot','button_create','','fr','Créer un nouveau Robot','',NULL)");
