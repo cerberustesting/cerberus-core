@@ -315,28 +315,28 @@ function aoColumnsFunc(tableId) {
             "searchable": true,
             "width": "120px",
             "className": "center",
-            "title": doc.getDocLabel("page_campaignstatistics", "systems_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "systems_col")
         },
         {
             "data": "applicationList",
             "name": "applications",
             "searchable": true,
             "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "applications_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "applications_col")
         },
         {
             "data": "campaignGroup1",
             "name": "Campaign Group 1",
             "searchable": true,
             "width": "60px",
-            "title": doc.getDocLabel("page_campaignstatistics", "group1_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "group1_col")
         },
         {
             "data": "minDateStart",
             "name": "minDateStart",
             "searchable": false,
-            "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "minDateStart_col"),
+            "width": "125px",
+            "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
             "render": function (data, type, obj) {
                 return new Date(obj.minDateStart).toLocaleString();
             }
@@ -345,8 +345,8 @@ function aoColumnsFunc(tableId) {
             "data": "maxDateEnd",
             "name": "maxDateEnd",
             "searchable": false,
-            "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "maxDateEnd_col"),
+            "width": "125px",
+            "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
             "render": function (data, type, obj) {
                 return new Date(obj.maxDateEnd).toLocaleString();
             }
@@ -356,7 +356,7 @@ function aoColumnsFunc(tableId) {
             "name": "avgOK",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgOK_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgOK_col"),
             "render": function (data, type, obj) {
                 let roundedPercentage = Math.round(obj.avgOK * 10) / 10;
                 let color = getGreenToRed(obj.avgOK);
@@ -368,7 +368,7 @@ function aoColumnsFunc(tableId) {
             "name": "avgDuration",
             "searchable": false,
             "width": "110px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgDuration_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgDuration_col"),
             "render": function (data, type, obj) {
                 let roundedAvgDuration = Math.round(obj.avgDuration);
                 let hours = Math.floor(roundedAvgDuration / 3600);
@@ -382,7 +382,7 @@ function aoColumnsFunc(tableId) {
             "name": "avgReliability",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgReliability_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgReliability_col"),
             "render": function (data, type, obj) {
                 let roundedPercentage = Math.round(obj.avgReliability * 10) / 10;
                 let color = getGreenToRed(roundedPercentage);
@@ -394,7 +394,7 @@ function aoColumnsFunc(tableId) {
             "name": "nbCampaignExecutions",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "nbCampaignExecutions_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "nbCampaignExecutions_col")
         },
     ];
     return aoColumns;
@@ -425,21 +425,21 @@ function aoColumnsDetailFunc(tableId) {
             "searchable": true,
             "width": "120px",
             "className": "center",
-            "title": doc.getDocLabel("page_campaignstatistics", "systems_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "systems_col")
         },
         {
             "data": "applicationList",
             "name": "applications",
             "searchable": true,
             "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "applications_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "applications_col")
         },
         {
             "data": "minDateStart",
             "name": "minDateStart",
             "searchable": false,
-            "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "minDateStart_col"),
+            "width": "125px",
+            "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
             "render": function (data, type, obj) {
                 return new Date(obj.minDateStart).toLocaleString();
             }
@@ -448,8 +448,8 @@ function aoColumnsDetailFunc(tableId) {
             "data": "maxDateEnd",
             "name": "maxDateEnd",
             "searchable": false,
-            "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "maxDateEnd_col"),
+            "width": "125px",
+            "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
             "render": function (data, type, obj) {
                 return new Date(obj.maxDateEnd).toLocaleString();
             }
@@ -459,7 +459,7 @@ function aoColumnsDetailFunc(tableId) {
             "name": "avgOK",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgOK_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgOK_col"),
             "render": function (data, type, obj) {
                 let roundedPercentage = Math.round(obj.avgOK * 10) / 10;
                 let color = getGreenToRed(obj.avgOK);
@@ -471,7 +471,7 @@ function aoColumnsDetailFunc(tableId) {
             "name": "avgDuration",
             "searchable": false,
             "width": "110px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgDuration_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgDuration_col"),
             "render": function (data, type, obj) {
                 let roundedAvgDuration = Math.round(obj.avgDuration);
                 let hours = Math.floor(roundedAvgDuration / 3600);
@@ -485,7 +485,7 @@ function aoColumnsDetailFunc(tableId) {
             "name": "avgReliability",
             "searchable": false,
             "width": "130px",
-            "title": doc.getDocLabel("page_campaignstatistics", "avgReliability_col"),
+            "title": doc.getDocOnline("page_campaignstatistics", "avgReliability_col"),
             "render": function (data, type, obj) {
                 let roundedPercentage = Math.round(obj.avgReliability * 10) / 10;
                 let color = getGreenToRed(roundedPercentage);
@@ -497,14 +497,14 @@ function aoColumnsDetailFunc(tableId) {
             "name": "nbExeUseful",
             "searchable": false,
             "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "nbExeUseful_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "nbExeUseful_col")
         },
         {
             "data": "nbExe",
             "name": "nbExe",
             "searchable": false,
             "width": "120px",
-            "title": doc.getDocLabel("page_campaignstatistics", "nbExe_col")
+            "title": doc.getDocOnline("page_campaignstatistics", "nbExe_col")
         },
     ];
     return aoColumns;
