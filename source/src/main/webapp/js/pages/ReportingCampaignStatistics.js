@@ -286,9 +286,10 @@ function aoColumnsFunc(tableId) {
     const aoColumns = [
         {
             "data": null,
+            "title": "Actions",
             "orderable": false,
             "searchable": false,
-            "width": "30px",
+            "width": "40px",
             "render": function (data, type, obj) {
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${$('#frompicker').data("DateTimePicker").date()}&to=${$('#topicker').data("DateTimePicker").date()}"
@@ -296,9 +297,13 @@ function aoColumnsFunc(tableId) {
                                         class="viewDetailByCountryEnv btn btn-default btn-xs margin-right5"
                                         title="${doc.getDocLabel("page_campaignstatistics", "buttonDetailByCountryEnv")}"
                                         type="button">
-                                        <span class="glyphicon glyphicon-stats"></span></a>`;
+                                        <span class="glyphicon glyphicon-zoom-in"></span></a>`;
+                const viewStatCampaign = `<button id="viewStatcampaign" onclick="viewStatEntryClick('${obj.campaign}');"
+                                                    class="viewStatcampaign btn btn-default btn-xs margin-right5"
+                                                    name="viewStatcampaign" title="${doc.getDocLabel("page_testcampaign", "button_taglist")}" type="button">
+                                                    <span class="glyphicon glyphicon-stats"></span></button>`;
 
-                return '<div class="center btn-group">' + viewDetailByCountryEnv + '</div>';
+                return `<div class="center btn-group">${viewStatCampaign}${viewDetailByCountryEnv}</div>`;
 
             }
         },
