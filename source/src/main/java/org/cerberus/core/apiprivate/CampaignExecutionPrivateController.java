@@ -78,9 +78,27 @@ public class CampaignExecutionPrivateController {
         AnswerList<TagStatistic> daoAnswer;
         List<String> systemsAllowed;
         List<String> applicationsAllowed;
-        JSONObject response = new JSONObject();
 
+        Map<String, Object> mandatoryFilters = new HashMap<>();
+        mandatoryFilters.put("System", systems);
+        mandatoryFilters.put("Application", applications);
+        mandatoryFilters.put("From date", fromParam);
+        mandatoryFilters.put("To date", toParam);
+
+        JSONObject response = new JSONObject();
         try {
+            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
+            if (!missingParameters.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
+                response.put("message", msg.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(response.toString());
+            }
+
             if (request.getUserPrincipal() == null) {
                 MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
                 message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
@@ -95,21 +113,18 @@ public class CampaignExecutionPrivateController {
             systemsAllowed = tagStatisticService.getSystemsAllowedForUser(request.getUserPrincipal().getName());
             applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
 
-            if (systems.isEmpty() && applications.isEmpty()) {
-                tagStatistics = new ArrayList<>();
-            } else {
-                //If user put in filter a system that is has no access, we delete from the list.
-                systems.removeIf(param -> !systemsAllowed.contains(param));
-                applications.removeIf(param -> !applicationsAllowed.contains(param));
-                daoAnswer = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted);
+            //If user put in filter a system that is has no access, we delete from the list.
+            systems.removeIf(param -> !systemsAllowed.contains(param));
+            applications.removeIf(param -> !applicationsAllowed.contains(param));
 
-                if (daoAnswer.getDataList().isEmpty()) {
-                    response.put("message", daoAnswer.getResultMessage().getDescription());
-                    return ResponseEntity
-                            .status(HttpStatus.NOT_FOUND)
-                            .body(response.toString());
-                }
-                tagStatistics = daoAnswer.getDataList();
+            daoAnswer = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted);
+            tagStatistics = daoAnswer.getDataList();
+
+            if (tagStatistics.isEmpty()) {
+                response.put("message", daoAnswer.getResultMessage().getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(response.toString());
             }
 
             Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
@@ -154,7 +169,25 @@ public class CampaignExecutionPrivateController {
         List<TagStatistic> tagStatistics;
         JSONObject response = new JSONObject();
 
+        Map<String, Object> mandatoryFilters = new HashMap<>();
+        mandatoryFilters.put("Campaign", campaign);
+        mandatoryFilters.put("From date", fromParam);
+        mandatoryFilters.put("To date", toParam);
+
         try {
+            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
+
+            if (!missingParameters.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
+                response.put("message", msg.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(response.toString());
+            }
+
             if (request.getUserPrincipal() == null) {
                 MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
                 message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
@@ -167,15 +200,14 @@ public class CampaignExecutionPrivateController {
             }
 
             AnswerList<TagStatistic> daoAnswer = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted);
+            tagStatistics = daoAnswer.getDataList();
 
-            if (daoAnswer.getDataList().isEmpty()) {
+            if (tagStatistics.isEmpty()) {
                 response.put("message", daoAnswer.getResultMessage().getDescription());
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
                         .body(response.toString());
             }
-
-            tagStatistics = daoAnswer.getDataList();
 
             boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
             if (!userHasRightSystems) {
@@ -241,6 +273,19 @@ public class CampaignExecutionPrivateController {
         }
         return "";
 
+    }
+
+    private List<String> checkMissingFilters(Map<String, Object> filters) {
+        List<String> missingParameters = new ArrayList<>();
+        for (Map.Entry<String, Object> filter : filters.entrySet()) {
+            if (filter.getValue() instanceof String && ((String) filter.getValue()).isEmpty()) {
+                missingParameters.add(filter.getKey());
+            }
+            if (filter.getValue() instanceof ArrayList && (((ArrayList<?>) filter.getValue()).isEmpty())) {
+                missingParameters.add(filter.getKey());
+            }
+        }
+        return missingParameters;
     }
 
 }
