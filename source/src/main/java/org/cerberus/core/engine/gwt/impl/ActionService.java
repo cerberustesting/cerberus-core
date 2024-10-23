@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -570,11 +573,6 @@ public class ActionService implements IActionService {
                 actionExecution.setValue3Init("");
                 break;
             // Only Value1
-            case TestCaseStepAction.ACTION_CLICK:
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
-            case TestCaseStepAction.ACTION_DOUBLECLICK:
-            case TestCaseStepAction.ACTION_RIGHTCLICK:
             case TestCaseStepAction.ACTION_MOUSEMOVE:
             case TestCaseStepAction.ACTION_OPENURLWITHBASE:
             case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
@@ -600,6 +598,11 @@ public class ActionService implements IActionService {
                 actionExecution.setValue3Init("");
                 break;
             // Only Value 1 and Value 2
+            case TestCaseStepAction.ACTION_CLICK:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
+            case TestCaseStepAction.ACTION_DOUBLECLICK:
+            case TestCaseStepAction.ACTION_RIGHTCLICK:
             case TestCaseStepAction.ACTION_LONGPRESS:
             case TestCaseStepAction.ACTION_EXECUTECOMMAND:
             case TestCaseStepAction.ACTION_OPENAPP:
@@ -929,9 +932,10 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         String element;
         try {
+            Offset offset = new Offset(offsetString);
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
@@ -946,7 +950,7 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, false, false);
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                         return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -954,17 +958,17 @@ public class ActionService implements IActionService {
                         return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return androidAppiumService.click(tCExecution.getSession(), identifier);
+                return androidAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return iosAppiumService.click(tCExecution.getSession(), identifier);
+                return iosAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
@@ -1017,27 +1021,23 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
-        String element;
+
         try {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                /**
-                 * Get element to use String object if not empty, String
-                 * property if object empty, throws Exception if both empty)
-                 */
-                element = getElementToUse(value1, value2, "mouseLeftButtonPress", tCExecution);
+                Offset offset = new Offset(offsetString);
                 /**
                  * Get Identifier (identifier, locator)
                  */
                 Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
+                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(),  true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS));
@@ -1049,19 +1049,15 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = value1;
+            Offset offset = new Offset(offsetString);
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
+            Identifier identifier = identifierService.convertStringToIdentifier(value1);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -1070,7 +1066,7 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
+                    return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
@@ -1093,26 +1089,21 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
-        String element;
         try {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                /**
-                 * Get element to use String object if not empty, String
-                 * property if object empty, throws Exception if both empty)
-                 */
-                element = getElementToUse(value1, value2, "mouseLeftButtonRelease", tCExecution);
+                Offset offset = new Offset(offsetString);
                 /**
                  * Get Identifier (identifier, locator)
                  */
-                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
+                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE));
@@ -1242,10 +1233,11 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
+            Offset offset = new Offset(offsetString);
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
@@ -1259,7 +1251,7 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, false, false);
+                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                         return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -1267,13 +1259,13 @@ public class ActionService implements IActionService {
                         return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
+                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, false);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");
@@ -1355,25 +1347,11 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String element, String offset) {
+    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String element, String offsetString) {
         MessageEvent message;
         try {
-            /**
-             * Check offset format
-             */
-            Integer hOffset = 0;
-            Integer vOffset = 0;
 
-            try {
-                if (!StringUtil.isEmptyOrNull(offset)) {
-                    String[] soffsets = offset.split(",");
-                    hOffset = Integer.valueOf(soffsets[0]);
-                    vOffset = Integer.valueOf(soffsets[1]);
-                }
-            } catch (Exception ex){
-                LOG.warn("Error decoding offset. It must be in two integers splited by comma. Continue with 0,0. Details :" +ex);
-            }
-
+            Offset offset = new Offset(offsetString);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -1382,23 +1360,23 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, hOffset, vOffset, false, false);
+                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offset);
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
                     } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offset);
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, hOffset, vOffset, true, true);
+                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offset);
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
                 } else {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offset);
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
                 }
             }
 
@@ -2466,5 +2444,26 @@ public class ActionService implements IActionService {
             return message;
         }
     }
+
+
+    @Getter
+    @Setter
+    private class Offset{
+        Integer hOffset = 0;
+        Integer vOffset = 0;
+
+        public Offset(String offsetString){
+            try {
+                if (!StringUtil.isEmptyOrNull(offsetString)) {
+                    String[] soffsets = offsetString.split(",");
+                    hOffset = Integer.valueOf(soffsets[0]);
+                    vOffset = Integer.valueOf(soffsets[1]);
+                }
+            } catch (Exception ex){
+                LOG.warn("Error decoding offset. It must be in two integers splited by comma. Continue with 0,0. Details :" +ex);
+            }
+        }
+    }
+
 
 }

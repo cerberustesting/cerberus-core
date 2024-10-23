@@ -64,7 +64,7 @@ public interface IAppiumService {
      * @param identifier
      * @return
      */
-    MessageEvent click(Session session, Identifier identifier);
+    MessageEvent click(Session session, Identifier identifier, Integer hOffset, Integer vOffset);
 
     /**
      * @param session

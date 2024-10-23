@@ -111,11 +111,11 @@ public interface IWebDriverService {
 
     MessageEvent scrollTo(Session session, Identifier identifier, String text, String offsets);
 
-    MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability);
 
-    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionSwitchToWindow(Session session, Identifier identifier);
 
@@ -123,7 +123,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionManageDialogKeyPress(Session session, String valueToPress);
 
-    MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
+    MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionType(Session session, Identifier identifier, String valueToType, String propertyName, boolean waitForVisibility, boolean waitForClickability);
 
@@ -145,7 +145,7 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionFocusDefaultIframe(Session session);
 
-    MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
+    MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset);
 
     MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property, boolean waitForVisibility, boolean waitForClickability) throws IOException;
 

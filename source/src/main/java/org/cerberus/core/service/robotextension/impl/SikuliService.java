@@ -504,6 +504,7 @@ public class SikuliService implements ISikuliService {
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+            message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", "At least 1 element found"));
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
@@ -630,6 +631,7 @@ public class SikuliService implements ISikuliService {
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+            message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", "At least 1 element found"));
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             message.setDescription(message.getDescription().replace("%DATA%", text));
             return message;
