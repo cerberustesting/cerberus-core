@@ -121,6 +121,9 @@ function initModalRobot() {
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);
     getSelectInvariant("ROBOTEXECUTORACTIVE", true);
+
+    getSelectInvariant('PROXYTYPE',false);
+
     // Adding rows in modals.
     $("#addEditCapability").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
     $("#addEditExecutor").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
