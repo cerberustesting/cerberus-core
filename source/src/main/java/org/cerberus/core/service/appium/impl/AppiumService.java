@@ -146,9 +146,14 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent type(Session session, Identifier identifier, String valueToType, String propertyName) {
         MessageEvent message;
+        MessageEvent foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
         try {
             if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 WebElement elmt = this.getElement(session, identifier, false, false);
+                Integer numberOfElement = this.getNumberOfElements(session, identifier);
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
                 if (elmt instanceof MobileElement) {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(valueToType);
                 } else { // FIXME See if we can delete it ??
@@ -163,7 +168,7 @@ public abstract class AppiumService implements IAppiumService {
                 }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("ELEMENTFOUND", foundElementMsg.getDescription()));
             if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                 message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
             } else {
@@ -182,16 +187,27 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent click(final Session session, final Identifier identifier) {
+    public MessageEvent click(final Session session, final Identifier identifier, Integer hOffset, Integer vOffset) {
         try {
+            MessageEvent foundElementMsg;
             final TouchAction action = new TouchAction(session.getAppiumDriver());
+
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.tap(PointOption.point(coordinates.getX(), coordinates.getY())).perform();
+                Point offset = new Point(coordinates.getX(), coordinates.getY());
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", "1");
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                action.tap(PointOption.point(offset)).perform();
             } else {
-                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();
+                WebElement element = getElement(session, identifier, false, false);
+                Integer numberOfElement = this.getNumberOfElements(session, identifier);
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                action.tap(ElementOption.element(element, hOffset, vOffset)).perform();
             }
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString());
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
         } catch (NoSuchElementException e) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(e.getMessage());
@@ -486,13 +502,9 @@ public abstract class AppiumService implements IAppiumService {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                click(session, identifier);
+                click(session, identifier,0, 0);
             } else {
-                click(session, identifier);
-                //action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
-                //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
-                //element.clear();
-                // WebElement elmt = this.getElement(session, identifier, false, false);
+                click(session, identifier, 0 ,0);
                 this.getElement(session, identifier, false, false).clear();
 
             }
@@ -507,5 +519,11 @@ public abstract class AppiumService implements IAppiumService {
             return parseWebDriverException(e);
         }
 
+    }
+
+    private Integer getNumberOfElements(Session session, Identifier identifier) {
+        By locator = this.getBy(identifier);
+        AppiumDriver driver = session.getAppiumDriver();
+        return driver.findElements(locator).size();
     }
 }

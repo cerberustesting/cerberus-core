@@ -407,7 +407,9 @@ public class WebDriverService implements IWebDriverService {
                 element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             }
             answer.setItem(element);
-            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            Integer numberOfElement = this.getNumberOfElements(session, identifier);
+            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+            msg.resolveDescription("NUMBER", numberOfElement.toString());
             msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
 
             /**
@@ -427,7 +429,12 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (TimeoutException exception) {
             LOG.warn("Exception waiting for element :" + exception);
-            //throw new NoSuchElementException(identifier.getIdentifier() + "=" + identifier.getLocator());
+            Integer numberOfElement = 0;
+            try {
+                numberOfElement = this.getNumberOfElements(session, identifier);
+            } catch(Exception ex){
+                //No element found
+            }
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
             msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() + erratumMessage);
         }
@@ -909,12 +916,13 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionClick(Session session, final Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionClick(Session session, final Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
 
             AnswerItem<WebElement> answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
-            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT.getCode())) {
+
                 final WebElement webElement = answer.getItem();
 
                 if (webElement != null) {
@@ -927,18 +935,12 @@ public class WebDriverService implements IWebDriverService {
                             || Platform.IOS.equals(session.getDesiredCapabilities().getPlatform())) {
                         webElement.click();
                     } else {
-                        /**
-                         * webElement.click(); did not provide good result for
-                         * generating Selenium error : Element is not clickable
-                         * at point
-                         * https://github.com/cerberustesting/cerberus-source/issues/2030
-                         */
-                        //                    webElement.click();
                         Actions actions = new Actions(session.getDriver());
-                        actions.click(webElement);
+                        actions.moveToElement(webElement, hOffset, vOffset).click();
                         actions.build().perform();
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+                    message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", answer.getResultMessage().getDescription()));
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
@@ -960,7 +962,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionMouseDown(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
 
@@ -969,7 +971,7 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.clickAndHold(webElement);
+                    actions.moveToElement(webElement, hOffset, vOffset).clickAndHold();
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEDOWN);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -995,7 +997,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionMouseUp(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -1003,7 +1005,7 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.release(webElement);
+                    actions.moveToElement(webElement, hOffset, vOffset).release();
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEUP);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -1203,7 +1205,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset,  boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -1211,7 +1213,7 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.doubleClick(webElement);
+                    actions.moveToElement(webElement, hOffset, vOffset).doubleClick();
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
@@ -1241,7 +1243,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
-            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     webElement.clear();
@@ -1249,6 +1251,7 @@ public class WebDriverService implements IWebDriverService {
                         webElement.sendKeys(valueToType);
                     }
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+                    message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", answer.getResultMessage().getDescription()));
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     if (!StringUtil.isEmptyOrNULLString(valueToType)) {
                         message.setDescription(message.getDescription().replace("%DATA%", ParameterParserUtil.securePassword(valueToType, propertyName)));
@@ -1276,7 +1279,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -1284,10 +1287,11 @@ public class WebDriverService implements IWebDriverService {
                 WebElement menuHoverLink = (WebElement) answer.getItem();
                 if (menuHoverLink != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.moveToElement(menuHoverLink);
+                    actions.moveToElement(menuHoverLink, hOffset, vOffset);
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
                     return message;
                 }
             }
@@ -1296,6 +1300,7 @@ public class WebDriverService implements IWebDriverService {
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
             LOG.debug(exception.toString());
             return message;
         } catch (TimeoutException exception) {
@@ -1314,20 +1319,6 @@ public class WebDriverService implements IWebDriverService {
 
         AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
         return answer.getResultMessage();
-
-//        MessageEvent message;
-//        try {
-//            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
-//            wait.until(ExpectedConditions.presenceOfElementLocated(this.getBy(identifier)));
-//            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-//            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-//            return message;
-//        } catch (TimeoutException exception) {
-//            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-//            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-//            LOG.debug(exception.toString());
-//            return message;
-//        }
     }
 
     @Override
@@ -1373,7 +1364,47 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionReturnPreviousPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().back();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RETURNPREVIOUSPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REFRESHCURRENTPAGE);
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.warn(exception.toString());
+            return parseWebDriverException(exception);
+        }
+        return message;
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionForwardNextPage(Session session) {
+
+        MessageEvent message;
+
+        try {
+            session.getDriver().navigate().forward();
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FORWARDNEXTPAGE);
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FORWARDNEXTPAGE);
+            message.setDescription(message.getDescription().replace("%DETAIL%", String.valueOf(exception)));
             LOG.warn(exception.toString());
         } catch (WebDriverException exception) {
             LOG.warn(exception.toString());
@@ -1953,7 +1984,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
@@ -1961,7 +1992,7 @@ public class WebDriverService implements IWebDriverService {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
                     Actions actions = new Actions(session.getDriver());
-                    actions.contextClick(webElement);
+                    actions.moveToElement(webElement, hOffset, vOffset).contextClick();
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));

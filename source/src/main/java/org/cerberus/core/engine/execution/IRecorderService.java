@@ -144,8 +144,7 @@ public interface IRecorderService {
      * @return
      */
     TestCaseExecutionFile recordRobotFile(TestCaseExecution execution, TestCaseStepActionExecution actionExecution, Integer control, String property, byte[] fileContent, String preFileName, String fileName, String ext);
-    
-    
+
     /**
      * @param runId
      * @param property
@@ -188,6 +187,14 @@ public interface IRecorderService {
     TestCaseExecutionFile recordServerCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsFinalList);
 
     /**
+     *
+     * @param execution
+     * @param har
+     * @return
+     */
+    public TestCaseExecutionFile recordHar(TestCaseExecution execution, JSONObject har);
+
+    /**
      * @param testCaseStepActionControlExecution
      * @param testCaseStepActionExecution
      * @param extension
@@ -196,10 +203,9 @@ public interface IRecorderService {
      * @param file
      * @param fileName
      * @param fileID
-     * @param fileDescription
      * @return
      */
-    AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, 
+    AnswerItem<TestCaseExecutionFile> recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution,
             String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID);
 
     /**

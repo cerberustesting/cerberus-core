@@ -162,7 +162,7 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text);
+    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text, String offset);
 
     /**
      *

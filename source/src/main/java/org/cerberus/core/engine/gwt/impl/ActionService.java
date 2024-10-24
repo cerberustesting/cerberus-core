@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -374,6 +377,12 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_REFRESHCURRENTPAGE:
                     res = this.doActionRefreshCurrentPage(execution);
                     break;
+                case TestCaseStepAction.ACTION_RETURNPREVIOUSPAGE:
+                    res = this.doActionReturnPreviousPage(execution);
+                    break;
+                case TestCaseStepAction.ACTION_FORWARDNEXTPAGE:
+                    res = this.doActionForwardNextPage(execution);
+                    break;
                 case TestCaseStepAction.ACTION_EXECUTEJS:
                     res = this.doActionExecuteJS(execution, value1);
                     break;
@@ -476,21 +485,6 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
-                /**
-                 * DEPRECATED ACTIONS FROM HERE.
-                 */
-                case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
-                    res = this.doActionMouseOverAndWait(execution, value1, value2);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
-                    res = this.doActionRemoveDifference(actionExecution, value1, value2);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", LogEvent.STATUS_WARN, MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + actionExecution.getTest() + "|" + actionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + actionExecution.getTest() + "'|'" + actionExecution.getTestCase() + "']");
-                    break;
                 default:
                     res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
                     res.setDescription(res.getDescription().replace("%ACTION%", actionExecution.getAction()));
@@ -579,12 +573,6 @@ public class ActionService implements IActionService {
                 actionExecution.setValue3Init("");
                 break;
             // Only Value1
-            case TestCaseStepAction.ACTION_CLICK:
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
-            case TestCaseStepAction.ACTION_DOUBLECLICK:
-            case TestCaseStepAction.ACTION_RIGHTCLICK:
-            case TestCaseStepAction.ACTION_MOUSEOVER:
             case TestCaseStepAction.ACTION_MOUSEMOVE:
             case TestCaseStepAction.ACTION_OPENURLWITHBASE:
             case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
@@ -610,6 +598,11 @@ public class ActionService implements IActionService {
                 actionExecution.setValue3Init("");
                 break;
             // Only Value 1 and Value 2
+            case TestCaseStepAction.ACTION_CLICK:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
+            case TestCaseStepAction.ACTION_DOUBLECLICK:
+            case TestCaseStepAction.ACTION_RIGHTCLICK:
             case TestCaseStepAction.ACTION_LONGPRESS:
             case TestCaseStepAction.ACTION_EXECUTECOMMAND:
             case TestCaseStepAction.ACTION_OPENAPP:
@@ -630,6 +623,7 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_GETROBOTFILE:
             case TestCaseStepAction.ACTION_SCROLLTO:
             case TestCaseStepAction.ACTION_UPLOADROBOTFILE:
+            case TestCaseStepAction.ACTION_MOUSEOVER:
                 break;
             default:
 
@@ -938,9 +932,10 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         String element;
         try {
+            Offset offset = new Offset(offsetString);
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
@@ -955,7 +950,7 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, false, false);
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                         return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -963,17 +958,17 @@ public class ActionService implements IActionService {
                         return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return androidAppiumService.click(tCExecution.getSession(), identifier);
+                return androidAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return iosAppiumService.click(tCExecution.getSession(), identifier);
+                return iosAppiumService.click(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
@@ -1026,27 +1021,23 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionMouseLeftButtonPress(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
-        String element;
+
         try {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonPress(tCExecution.getSession());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                /**
-                 * Get element to use String object if not empty, String
-                 * property if object empty, throws Exception if both empty)
-                 */
-                element = getElementToUse(value1, value2, "mouseLeftButtonPress", tCExecution);
+                Offset offset = new Offset(offsetString);
                 /**
                  * Get Identifier (identifier, locator)
                  */
                 Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, true, true);
+                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(),  true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS));
@@ -1058,19 +1049,15 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionRightClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = value1;
+            Offset offset = new Offset(offsetString);
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifier = identifierService.convertStringToIdentifier(element);
+            Identifier identifier = identifierService.convertStringToIdentifier(value1);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -1079,7 +1066,7 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
+                    return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset());
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
@@ -1102,26 +1089,21 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionMouseLeftButtonRelease(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
-        String element;
         try {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT) || StringUtil.isEmptyOrNull(value1)) {
                 // If value1 is empty, the Sikuli engine must be used in order to click without element to click.
                 return sikuliService.doSikuliActionLeftButtonRelease(tCExecution.getSession());
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                /**
-                 * Get element to use String object if not empty, String
-                 * property if object empty, throws Exception if both empty)
-                 */
-                element = getElementToUse(value1, value2, "mouseLeftButtonRelease", tCExecution);
+                Offset offset = new Offset(offsetString);
                 /**
                  * Get Identifier (identifier, locator)
                  */
-                Identifier identifier = identifierService.convertStringToIdentifier(element);
+                Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, true, true);
+                return webdriverService.doSeleniumActionMouseUp(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE));
@@ -1251,10 +1233,11 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String value2) {
+    private MessageEvent doActionDoubleClick(TestCaseExecution tCExecution, String value1, String offsetString) {
         MessageEvent message;
         String element;
         try {
+            Offset offset = new Offset(offsetString);
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
@@ -1268,7 +1251,7 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, false, false);
+                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                         return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
@@ -1276,13 +1259,13 @@ public class ActionService implements IActionService {
                         return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
+                        return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
+                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, false);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 if (StringUtil.isEmptyOrNull(identifier.getLocator())) {
                     return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", "");
@@ -1364,15 +1347,11 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionMouseOver(TestCaseExecution tCExecution, String element, String offsetString) {
         MessageEvent message;
-        String element;
         try {
-            /**
-             * Get element to use String object if not empty, String property if
-             * object empty, throws Exception if both empty)
-             */
-            element = getElementToUse(object, property, "mouseOver", tCExecution);
+
+            Offset offset = new Offset(offsetString);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -1381,23 +1360,23 @@ public class ActionService implements IActionService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, false, false);
+                    return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), false, false);
                 } else {
                     if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
                     } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
+                        return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
                     } else {
                         identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
+                        return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "", offsetString);
                 } else {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator(), offsetString);
                 }
             }
 
@@ -1407,44 +1386,6 @@ public class ActionService implements IActionService {
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action MouseOver :" + ex);
-            return ex.getMessageError();
-        }
-    }
-
-    private MessageEvent doActionMouseOverAndWait(TestCaseExecution tCExecution, String object, String property) {
-        MessageEvent message;
-        try {
-            /**
-             * Check object is not null
-             */
-            if (object == null) {
-                return new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVERANDWAIT_GENERIC);
-            }
-            /**
-             * Get Identifier (identifier, locator)
-             */
-            Identifier identifier = identifierService.convertStringToIdentifier(object);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
-                    message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier, true, true);
-                }
-                if (message.getCodeString().equals("OK")) {
-                    message = this.doActionWait(tCExecution, property, null);
-                }
-                return message;
-            }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSEOVERANDWAIT));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-            return message;
-        } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action MouseOverAndWait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -1873,33 +1814,6 @@ public class ActionService implements IActionService {
 
         return message;
 
-    }
-
-    private MessageEvent doActionRemoveDifference(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property) {
-        // Filters differences from the given object pattern
-        String filteredDifferences = xmlUnitService.removeDifference(object, property);
-
-        // If filtered differences are null then service has returned with errors
-        if (filteredDifferences == null) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_REMOVEDIFFERENCE);
-            message.setDescription(message.getDescription().replace("%DIFFERENCE%", object));
-            message.setDescription(message.getDescription().replace("%DIFFERENCES%", property));
-            return message;
-        }
-
-        // Sets the property value to the new filtered one
-        for (TestCaseExecutionData data : testCaseStepActionExecution.getTestCaseExecutionDataList()) {
-            if (data.getProperty().equals(testCaseStepActionExecution.getPropertyName())) {
-                data.setValue(filteredDifferences);
-                break;
-            }
-        }
-
-        // Sends success
-        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REMOVEDIFFERENCE);
-        message.setDescription(message.getDescription().replace("%DIFFERENCE%", object));
-        message.setDescription(message.getDescription().replace("%DIFFERENCES%", property));
-        return message;
     }
 
     private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
@@ -2488,5 +2402,68 @@ public class ActionService implements IActionService {
             return message;
         }
     }
+
+    private MessageEvent doActionReturnPreviousPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("RETURN PREVIOUS PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionReturnPreviousPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_RETURNPREVIOUSPAGE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_RETURNPREVIOUSPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
+            return message;
+        }
+    }
+
+    private MessageEvent doActionForwardNextPage(TestCaseExecution tCExecution) {
+        MessageEvent message;
+
+        try {
+            LOG.debug("FORWARD NEXT PAGE");
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return this.webdriverService.doSeleniumActionForwardNextPage(tCExecution.getSession());
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_FORWARDNEXTPAGE));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FORWARDNEXTPAGE);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception doing action refreshCurrentPage  :" + messageString, e);
+            return message;
+        }
+    }
+
+
+    @Getter
+    @Setter
+    private class Offset{
+        Integer hOffset = 0;
+        Integer vOffset = 0;
+
+        public Offset(String offsetString){
+            try {
+                if (!StringUtil.isEmptyOrNull(offsetString)) {
+                    String[] soffsets = offsetString.split(",");
+                    hOffset = Integer.valueOf(soffsets[0]);
+                    vOffset = Integer.valueOf(soffsets[1]);
+                }
+            } catch (Exception ex){
+                LOG.warn("Error decoding offset. It must be in two integers splited by comma. Continue with 0,0. Details :" +ex);
+            }
+        }
+    }
+
 
 }

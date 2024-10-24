@@ -152,11 +152,11 @@ public class QueueStatusEndPoint {
                 LOG.debug("Queue Status sent to session " + registeredSession.getId());
             } catch (Exception e) {
                 LOG.warn("Unable to send queue status to session " + registeredSession.getId() + " due to " + e.getMessage() + " --> Closing it.");
-                try {
-                    registeredSession.close();
-                } catch (IOException ex) {
-                    LOG.warn("Unable to close session " + registeredSession.getId() + " due to " + e.getMessage());
-                }
+//                try {
+//                    registeredSession.close();
+//                } catch (IOException ex) {
+//                    LOG.warn("Unable to close session " + registeredSession.getId() + " due to " + e.getMessage());
+//                }
             }
         }
 

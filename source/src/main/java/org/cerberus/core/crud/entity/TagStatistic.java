@@ -41,7 +41,7 @@ public class TagStatistic {
     private Timestamp dateStartExe;
     private Timestamp dateEndExe;
     private int nbExe;
-    private int nbExeUsefull;
+    private int nbExeUseful;
     private int nbOK;
     private int nbKO;
     private int nbFA;

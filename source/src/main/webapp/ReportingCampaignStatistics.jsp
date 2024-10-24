@@ -30,6 +30,7 @@
         <script type="text/javascript" src="dependencies/Moment-2.30.1/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.js"></script>
         <link rel="stylesheet" href="dependencies/Bootstrap-datetimepicker-4.17.47/bootstrap-datetimepicker.min.css" />
+        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
         <script type="text/javascript" src="js/pages/ReportingCampaignStatistics.js"></script>
     </head>
     <body>
@@ -37,6 +38,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
             <h1 class="page-title-line" id="title">Campaign Statistics </h1>
             <div class="panel panel-default">
                 <div class="panel-body" id="filters">
@@ -102,12 +104,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-2 col-md-2">
+                        <div class="col-md-4">
                             <div class="input-group-btn ">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadbutton">Load</button>
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadButton" style="border-radius: 4px;">Load</button>
                             </div>
                             <div class="input-group-btn " style="display: none;">
-                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton">Load</button>
+                                <button type="button" class="btn btn-primary btn-block marginTop20" id="loadDetailButton" style="border-radius: 4px;">Load</button>
                             </div>
                         </div>
                     </div>

@@ -168,6 +168,8 @@ public class CampaignPrivateController {
                     }
                 } catch (JSONException ex) {
                     LOG.error("Exception on JSON Parse.", ex);
+                } catch (ClassCastException ex) {
+                    return 1;
                 }
 
             } else {

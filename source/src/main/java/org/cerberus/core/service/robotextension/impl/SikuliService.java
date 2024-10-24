@@ -504,6 +504,7 @@ public class SikuliService implements ISikuliService {
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+            message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", "At least 1 element found"));
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
@@ -630,6 +631,7 @@ public class SikuliService implements ISikuliService {
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
+            message.setDescription(message.getDescription().replace("%ELEMENTFOUND%", "At least 1 element found"));
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             message.setDescription(message.getDescription().replace("%DATA%", text));
             return message;
@@ -644,23 +646,27 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text) {
+    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text, String offset) {
         AnswerItem<JSONObject> actionResult = null;
 
         if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, locator, null, "", "");
+            actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, null, null, text, "");
+            actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
         }
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%OFFSET%", "("+offset+")"));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%OFFSET%", "("+offset+")"));
             return mes;
         }
 

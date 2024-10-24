@@ -23,8 +23,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TagStatistic;
 import org.cerberus.core.crud.service.ITagStatisticService;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,31 +75,58 @@ public class CampaignExecutionPrivateController {
         String fromDateFormatted = tagStatisticService.formatDateForDb(fromParam);
         String toDateFormatted = tagStatisticService.formatDateForDb(toParam);
         List<TagStatistic> tagStatistics;
+        AnswerList<TagStatistic> daoAnswer;
         List<String> systemsAllowed;
         List<String> applicationsAllowed;
+
+        Map<String, Object> mandatoryFilters = new HashMap<>();
+        mandatoryFilters.put("System", systems);
+        mandatoryFilters.put("Application", applications);
+        mandatoryFilters.put("From date", fromParam);
+        mandatoryFilters.put("To date", toParam);
+
         JSONObject response = new JSONObject();
-
         try {
+            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
+            if (!missingParameters.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
+                response.put("message", msg.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(response.toString());
+            }
+
+            if (request.getUserPrincipal() == null) {
+                MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
+                message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                message.setDescription(message.getDescription().replace("%OPERATION%", "'Get statistics'"));
+                message.setDescription(message.getDescription().replace("%REASON%", "No user provided in the request, please refresh the page or login again."));
+                response.put("message", message.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(response.toString());
+            }
+
             systemsAllowed = tagStatisticService.getSystemsAllowedForUser(request.getUserPrincipal().getName());
-        } catch (CerberusException exception) {
-            LOG.error("Unable to get allowed systems: ", exception);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Unable to get allowed systems: " + exception.getMessage());
-        }
+            applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
 
-        applicationsAllowed = tagStatisticService.getApplicationsSystems(systemsAllowed);
-
-        if (systems.isEmpty() && applications.isEmpty()) {
-            tagStatistics = new ArrayList<>();
-        } else {
             //If user put in filter a system that is has no access, we delete from the list.
             systems.removeIf(param -> !systemsAllowed.contains(param));
             applications.removeIf(param -> !applicationsAllowed.contains(param));
-            tagStatistics = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted).getDataList();
-        }
 
-        try {
+            daoAnswer = tagStatisticService.readByCriteria(systems, applications, group1List, fromDateFormatted, toDateFormatted);
+            tagStatistics = daoAnswer.getDataList();
+
+            if (tagStatistics.isEmpty()) {
+                response.put("message", daoAnswer.getResultMessage().getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(response.toString());
+            }
+
             Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
             Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN");
             List<JSONObject> aggregateListByCampaign = new ArrayList<>();
@@ -108,11 +138,16 @@ public class CampaignExecutionPrivateController {
             response.put("globalGroup1List", aggregateByCampaign.get("globalGroup1List").get("array"));
             response.put("campaignStatistics", aggregateListByCampaign);
             return ResponseEntity.ok(response.toString());
-        } catch (JSONException ex) {
-            LOG.error("Error when JSON processing: ", ex);
+        } catch (JSONException exception) {
+            LOG.error("Error when JSON processing: ", exception);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error when JSON processing: " + ex.getMessage());
+                    .body("Error when JSON processing: " + exception.getMessage());
+        } catch (CerberusException exception) {
+            LOG.error("Unable to get allowed systems: ", exception);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unable to get allowed systems: " + exception.getMessage());
         }
     }
 
@@ -124,7 +159,7 @@ public class CampaignExecutionPrivateController {
             @RequestParam(name = "environments", required = false) String[] environmentsParam,
             @RequestParam(name = "from") String fromParam,
             @RequestParam(name = "to") String toParam
-    ) throws JSONException {
+    ) {
         fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
         List<String> countries = ParameterParserUtil.parseListParamAndDecode(countriesParam, new ArrayList<>(), "UTF8");
@@ -134,33 +169,78 @@ public class CampaignExecutionPrivateController {
         List<TagStatistic> tagStatistics;
         JSONObject response = new JSONObject();
 
-        tagStatistics = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted).getDataList();
+        Map<String, Object> mandatoryFilters = new HashMap<>();
+        mandatoryFilters.put("Campaign", campaign);
+        mandatoryFilters.put("From date", fromParam);
+        mandatoryFilters.put("To date", toParam);
 
-        boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
-        if (!userHasRightSystems) {
-            response.put("message", "User has no access to required systems.");
+        try {
+            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
+
+            if (!missingParameters.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
+                response.put("message", msg.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(response.toString());
+            }
+
+            if (request.getUserPrincipal() == null) {
+                MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
+                message.setDescription(message.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                message.setDescription(message.getDescription().replace("%OPERATION%", "'Get statistics'"));
+                message.setDescription(message.getDescription().replace("%REASON%", "No user provided in the request, please refresh the page or login again."));
+                response.put("message", message.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(response.toString());
+            }
+
+            AnswerList<TagStatistic> daoAnswer = tagStatisticService.readByCriteria(campaign, countries, environments, fromDateFormatted, toDateFormatted);
+            tagStatistics = daoAnswer.getDataList();
+
+            if (tagStatistics.isEmpty()) {
+                response.put("message", daoAnswer.getResultMessage().getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(response.toString());
+            }
+
+            boolean userHasRightSystems = tagStatisticService.userHasRightSystems(request.getUserPrincipal().getName(), tagStatistics);
+            if (!userHasRightSystems) {
+                response.put("message", new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE).getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(response.toString());
+            }
+
+            Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
+            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
+            List<JSONObject> aggregateListByCampaign = new ArrayList<>();
+            countries.clear();
+            environments.clear();
+            aggregateByCampaign.forEach((key, value) -> {
+                aggregateListByCampaign.add(value);
+                String environment = key.split("_")[0];
+                String country = key.split("_")[1];
+                if (!environments.contains(environment)) environments.add(environment);
+                if (!countries.contains(country)) countries.add(country);
+            });
+
+            response.put("campaignStatistics", aggregateListByCampaign);
+            response.put("environments", environments);
+            response.put("countries", countries);
+            return ResponseEntity.ok(response.toString());
+        } catch (JSONException exception) {
+            LOG.error("Error when JSON processing: ", exception);
             return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(response.toString());
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error when JSON processing: " + exception.getMessage());
         }
 
-        Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
-        Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
-        List<JSONObject> aggregateListByCampaign = new ArrayList<>();
-        countries.clear();
-        environments.clear();
-        aggregateByCampaign.forEach((key, value) -> {
-            aggregateListByCampaign.add(value);
-            String environment = key.split("_")[0];
-            String country = key.split("_")[1];
-            if (!environments.contains(environment)) environments.add(environment);
-            if (!countries.contains(country)) countries.add(country);
-        });
-
-        response.put("campaignStatistics", aggregateListByCampaign);
-        response.put("environments", environments);
-        response.put("countries", countries);
-        return ResponseEntity.ok(response.toString());
     }
 
     @PostMapping("{executionId}/declareFalseNegative")
@@ -193,6 +273,19 @@ public class CampaignExecutionPrivateController {
         }
         return "";
 
+    }
+
+    private List<String> checkMissingFilters(Map<String, Object> filters) {
+        List<String> missingParameters = new ArrayList<>();
+        for (Map.Entry<String, Object> filter : filters.entrySet()) {
+            if (filter.getValue() instanceof String && ((String) filter.getValue()).isEmpty()) {
+                missingParameters.add(filter.getKey());
+            }
+            if (filter.getValue() instanceof ArrayList && (((ArrayList<?>) filter.getValue()).isEmpty())) {
+                missingParameters.add(filter.getKey());
+            }
+        }
+        return missingParameters;
     }
 
 }
