@@ -297,8 +297,8 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return labelDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> systems, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return labelDAO.readDistinctValuesByCriteria(systems, searchParameter, individualSearch, columnName);
     }
 
     @Override

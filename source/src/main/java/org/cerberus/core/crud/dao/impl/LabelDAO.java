@@ -484,7 +484,7 @@ public class LabelDAO implements ILabelDAO {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> systems, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList<String> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -499,8 +499,9 @@ public class LabelDAO implements ILabelDAO {
         query.append(" as distinctValues FROM label ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isEmptyOrNull(system)) {
-            searchSQL.append(" and (`System` = ? or `System` = '' )");
+        if (systems != null && !systems.isEmpty()) {
+            searchSQL.append(" and ");
+            searchSQL.append(SqlUtil.generateInClause("`System`", systems));
         }
 
         if (!StringUtil.isEmptyOrNull(searchTerm)) {
@@ -542,8 +543,10 @@ public class LabelDAO implements ILabelDAO {
              Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isEmptyOrNull(system)) {
-                preStat.setString(i++, system);
+            if (systems != null && !systems.isEmpty()) {
+                for (String sys : systems) {
+                    preStat.setString(i++, sys);
+                }
             }
 
             if (!StringUtil.isEmptyOrNull(searchTerm)) {

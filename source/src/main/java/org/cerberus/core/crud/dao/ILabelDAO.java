@@ -99,12 +99,12 @@ public interface ILabelDAO {
 
     /**
      *
-     * @param system
+     * @param systems
      * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return
      */
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(List<String> systems, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

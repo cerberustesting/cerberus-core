@@ -123,7 +123,8 @@ public class ReadLabel extends HttpServlet {
                     answer = findLabelByKey(id, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null && !StringUtil.isEmptyOrNull(columnName)) {
-                    answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
+                    List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+                    answer = findDistinctValuesOfColumn(systems, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
@@ -427,7 +428,7 @@ public class ReadLabel extends HttpServlet {
         return result;
     }
 
-    private AnswerItem<JSONObject> findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem<JSONObject> findDistinctValuesOfColumn(List<String> systems, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem<JSONObject> answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -451,7 +452,7 @@ public class ReadLabel extends HttpServlet {
             }
         }
 
-        AnswerList testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+        AnswerList testCaseList = labelService.readDistinctValuesByCriteria(systems, searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", testCaseList.getDataList());
 
