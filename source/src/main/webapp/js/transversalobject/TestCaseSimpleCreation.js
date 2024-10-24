@@ -208,7 +208,7 @@ function submitSimpleCreationForm() {
         success: function (dataMessage) {
             hideLoaderInModal('#editTestCaseSimpleCreationModal');
             if (getAlertType(dataMessage.messageType) === "success") {
-                window.location.href = "./TestCaseScript.jsp?test="+dataMessage.test+"&testcase="+dataMessage.testcase+"&oneclickcreation=true";
+                window.location.href = "./TestCaseScript.jsp?test="+encodeURIComponent(dataMessage.test.replace(/\+/g, ' '))+"&testcase="+encodeURIComponent(dataMessage.testcase.replace(/\+/g, ' '))+"&oneclickcreation=true";
             } else {
                 showMessage(dataMessage, $('#editTestCaseSimpleCreationModal'));
             }
