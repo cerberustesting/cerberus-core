@@ -1178,9 +1178,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         if (columnName.equals("envGp")) {
             columnName = "inv.gp1";
         }
-        query.append("SELECT distinct ");
+        query.append("SELECT distinct `");
         query.append(columnName);
-        query.append(" as distinctValues FROM countryenvparam cev ");
+        query.append("` as distinctValues FROM countryenvparam cev ");
         query.append(" LEFT OUTER JOIN invariant inv on inv.idname='ENVIRONMENT' and inv.value=cev.environment ");
 
         searchSQL.append(" where 1=1 ");
@@ -1219,7 +1219,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
+        query.append(" order by `").append(columnName).append("` asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
