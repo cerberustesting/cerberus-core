@@ -164,7 +164,7 @@ function initDetailedPage() {
     $('#tagStatisticDetailList').show();
     $('#loadButton').closest('.input-group-btn').hide()
     $('#loadDetailButton').closest('.input-group-btn').show()
-    let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [0, 'asc']);
+    let config = new TableConfigurationsClientSide("tagStatisticDetailTable", "", aoColumnsDetailFunc(), true, [1, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticDetailList", undefined, undefined, undefined, undefined);
 
     $('#loadDetailButton').click(function()
@@ -217,7 +217,7 @@ function initGlobalPage() {
     createMultiSelect($('#group1-select'));
     createDateTimePicker($('#frompicker'));
     createDateTimePicker($('#topicker'));
-    let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [0, 'asc']);
+    let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [1, 'asc']);
     createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
     displayPageLabel();
     setSystemSelectOptions();
@@ -286,10 +286,10 @@ function aoColumnsFunc(tableId) {
     const aoColumns = [
         {
             "data": null,
-            "title": "Actions",
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "orderable": false,
             "searchable": false,
-            "width": "40px",
+            "width": "30px",
             "render": function (data, type, obj) {
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${$('#frompicker').data("DateTimePicker").date()}&to=${$('#topicker').data("DateTimePicker").date()}"
@@ -331,7 +331,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "campaignGroup1",
-            "name": "Campaign Group 1",
+            "name": "campaignGroup1",
             "searchable": true,
             "width": "60px",
             "title": doc.getDocOnline("page_campaignstatistics", "group1_col")
@@ -340,21 +340,17 @@ function aoColumnsFunc(tableId) {
             "data": "minDateStart",
             "name": "minDateStart",
             "searchable": false,
+            "type": "datetime",
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
-            "render": function (data, type, obj) {
-                return new Date(obj.minDateStart).toLocaleString();
-            }
         },
         {
             "data": "maxDateEnd",
             "name": "maxDateEnd",
             "searchable": false,
+            "type": "datetime",
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
-            "render": function (data, type, obj) {
-                return new Date(obj.maxDateEnd).toLocaleString();
-            }
         },
         {
             "data": "avgOK",
@@ -443,21 +439,17 @@ function aoColumnsDetailFunc(tableId) {
             "data": "minDateStart",
             "name": "minDateStart",
             "searchable": false,
+            "type": "datetime",
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "minDateStart_col"),
-            "render": function (data, type, obj) {
-                return new Date(obj.minDateStart).toLocaleString();
-            }
         },
         {
             "data": "maxDateEnd",
             "name": "maxDateEnd",
+            "type": "datetime",
             "searchable": false,
             "width": "125px",
             "title": doc.getDocOnline("page_campaignstatistics", "maxDateEnd_col"),
-            "render": function (data, type, obj) {
-                return new Date(obj.maxDateEnd).toLocaleString();
-            }
         },
         {
             "data": "avgOK",
