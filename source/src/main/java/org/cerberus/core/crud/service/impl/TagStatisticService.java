@@ -212,7 +212,7 @@ public class TagStatisticService implements ITagStatisticService {
         try {
             campaignGroup1 = campaignService.convert(campaignService.readByKey(campaign)).getGroup1();
         } catch (CerberusException exception) {
-            LOG.error("Unable to get campaign owner: ", exception);
+            LOG.error("Unable to get campaign group1: ", exception);
         }
         return campaignGroup1;
     }
@@ -303,9 +303,8 @@ public class TagStatisticService implements ITagStatisticService {
         return aggregateByTag;
     }
 
-    public Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType) throws JSONException {
+    public Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType, Map<String, String> campaignGroups1) throws JSONException {
         Map<String, JSONObject> aggregatedStatistics = new HashMap<>();
-        JSONArray globalGroup1List = new JSONArray();
         for (Map.Entry<String, Map<String, JSONObject>> aggregateByTagEntry : aggregateByTag.entrySet()) {
             String key = aggregateByTagEntry.getKey();
             double totalDuration = 0;
@@ -321,7 +320,6 @@ public class TagStatisticService implements ITagStatisticService {
             JSONArray applicationsByCampaign = new JSONArray();
 
             for (JSONObject mapTagEntry : aggregateByTagEntry.getValue().values()) {
-
                 JSONUtil.jsonArrayAddUniqueElement(
                         new JSONArray(mapTagEntry.getString("systemList")),
                         systemsByCampaign
@@ -341,9 +339,8 @@ public class TagStatisticService implements ITagStatisticService {
                 nbCampaignExecutions++;
 
                 if (aggregateType.equals("CAMPAIGN")) {
-                    campaignGroup1 = mapTagEntry.getString("campaignGroup1");
-                    if (StringUtil.isNotEmptyOrNull(campaignGroup1)) {
-                        updateGlobalGroup1List(globalGroup1List, campaignGroup1);
+                    if (StringUtil.isNotEmptyOrNull(campaignGroups1.get(key)) && campaignGroups1.get(key).equals(mapTagEntry.getString("campaignGroup1"))) {
+                        campaignGroup1 = mapTagEntry.getString("campaignGroup1");
                     }
                 }
             }
@@ -352,7 +349,6 @@ public class TagStatisticService implements ITagStatisticService {
             double avgDuration = totalDuration / aggregateByTagEntry.getValue().size();
             double avgOK = (sumPercOK * 100.0) / aggregateByTagEntry.getValue().size();
             double avgReliability = (sumPercReliability * 100) / aggregateByTagEntry.getValue().size();
-            //int avgNbExeUsefull = sumNumberExeUseful / aggregateByTagEntry.getValue().size();
 
             if (aggregateType.equals("ENV_COUNTRY")) {
                 String environment = key.split("_")[0];
@@ -364,11 +360,6 @@ public class TagStatisticService implements ITagStatisticService {
 
             aggregatedStatistics.put(key, statistics);
         }
-
-        if (aggregateType.equals("CAMPAIGN")) {
-            aggregatedStatistics.put("globalGroup1List", new JSONObject().put("array", globalGroup1List));
-        }
-
         return aggregatedStatistics;
     }
 
@@ -395,11 +386,18 @@ public class TagStatisticService implements ITagStatisticService {
         return dateFormatted;
     }
 
-    private JSONArray updateGlobalGroup1List(JSONArray campaignGroup1Array, String campaignGroup1) throws JSONException {
-        if (!JSONUtil.jsonArrayContains(campaignGroup1Array, campaignGroup1)) {
-            campaignGroup1Array.put(campaignGroup1);
+    public Map<String, String> generateGroup1List(Set<String> campaignsInTagstatistics) {
+        List<String> campaigns = new ArrayList<>(campaignsInTagstatistics);
+        Map<String, String> campaignGroups1 = new HashMap<>();
+        Map<String, List<String>> queryParams = new HashMap<>();
+        queryParams.put("campaign", campaigns);
+        List<Campaign> globalGroup1List = campaignService.readByCriteria(0, -1, "Group1", "asc", null, queryParams).getDataList();
+        for (Campaign campaign : globalGroup1List) {
+            if (StringUtil.isNotEmptyOrNull(campaign.getGroup1())) { //No interest to put empty group1
+                campaignGroups1.put(campaign.getCampaign(), campaign.getGroup1());
+            }
         }
-        return campaignGroup1Array;
+        return campaignGroups1;
     }
 
     private String updateMaxCampaignDateEnd(String maxDateEnd, JSONObject mapTagEntry) throws JSONException {

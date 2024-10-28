@@ -128,14 +128,22 @@ public class CampaignExecutionPrivateController {
             }
 
             Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "CAMPAIGN");
-            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN");
+            Map<String, String> campaignGroups1 = tagStatisticService.generateGroup1List(aggregateByTag.keySet());
+            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "CAMPAIGN", campaignGroups1);
             List<JSONObject> aggregateListByCampaign = new ArrayList<>();
-            aggregateByCampaign.forEach((key, value) -> {
-                if (!Objects.equals(key, "globalGroup1List")) {
+            for (Map.Entry<String, JSONObject> entry : aggregateByCampaign.entrySet()) {
+                String key = entry.getKey();
+                JSONObject value = entry.getValue();
+                group1List.replaceAll(g -> g.replace("%20", " "));
+                if (group1List.isEmpty()) {
                     aggregateListByCampaign.add(value);
+                } else {
+                    if (group1List.contains(value.getString("campaignGroup1"))) {
+                        aggregateListByCampaign.add(value);
+                    }
                 }
-            });
-            response.put("globalGroup1List", aggregateByCampaign.get("globalGroup1List").get("array"));
+            }
+            response.put("globalGroup1List", campaignGroups1);
             response.put("campaignStatistics", aggregateListByCampaign);
             return ResponseEntity.ok(response.toString());
         } catch (JSONException exception) {
@@ -218,7 +226,7 @@ public class CampaignExecutionPrivateController {
             }
 
             Map<String, Map<String, JSONObject>> aggregateByTag = tagStatisticService.createMapGroupedByTag(tagStatistics, "ENV_COUNTRY");
-            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY");
+            Map<String, JSONObject> aggregateByCampaign = tagStatisticService.createMapAggregatedStatistics(aggregateByTag, "ENV_COUNTRY", null);
             List<JSONObject> aggregateListByCampaign = new ArrayList<>();
             countries.clear();
             environments.clear();

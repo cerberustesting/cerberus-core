@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 public interface ITagStatisticService {
 
     /**
@@ -58,7 +60,8 @@ public interface ITagStatisticService {
 
     AnswerList<TagStatistic> readByCriteria(String campaign, List<String> countries, List<String> environment, String minDate, String maxDate);
     Map<String, Map<String, JSONObject>> createMapGroupedByTag(List<TagStatistic> tagStatistics, String aggregateType) throws JSONException;
-    Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType) throws JSONException;
+    Map<String, JSONObject> createMapAggregatedStatistics(Map<String, Map<String, JSONObject>> aggregateByTag, String aggregateType, Map<String, String> campaignGroups1) throws JSONException;
+    Map<String, String> generateGroup1List(Set<String> campaignsInTagStatistics);
     List<String> getSystemsAllowedForUser(String user) throws CerberusException;
     List<String> getApplicationsSystems(List<String> systems);
     String formatDateForDb(String date);

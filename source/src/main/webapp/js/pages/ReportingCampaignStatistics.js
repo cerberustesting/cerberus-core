@@ -289,7 +289,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "orderable": false,
             "searchable": false,
-            "width": "30px",
+            "width": "50px",
             "render": function (data, type, obj) {
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
                                         href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${$('#frompicker').data("DateTimePicker").date()}&to=${$('#topicker').data("DateTimePicker").date()}"
