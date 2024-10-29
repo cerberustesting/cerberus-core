@@ -2559,8 +2559,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuReportingCampaignOverTime','','en','Campaign Report Over Time','',NULL)");
         b.append(",('page_header','menuReportingCampaignOverTime','','fr','Rapport de Campagne dans le temps','',NULL)");
         b.append(",('page_header','menuReportingCampaignOverTime','','fa','گزارش در طول زمان کمپین','',NULL)");
-        b.append(",('page_header','menuReportingCampaignStatistic','','en','Campaign Statistics','',NULL)");
-        b.append(",('page_header','menuReportingCampaignStatistic','','fr','Statistiques de Campagne','',NULL)");
+        b.append(",('page_header','menuReportingCampaignStatistics','','en','Campaign Statistics','',NULL)");
+        b.append(",('page_header','menuReportingCampaignStatistics','','fr','Statistiques de Campagne','',NULL)");
         b.append(",('page_header','menuReportingExecutionList','','en','Execution List','',NULL)");
         b.append(",('page_header','menuReportingExecutionList','','fr','Liste d\\'Execution','',NULL)");
         b.append(",('page_header','menuReportingExecutionList','','fa','فهرست اجرا','',NULL)");
