@@ -865,15 +865,16 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
+            Offset offset = new Offset(offsets);
 
             Identifier identifier = identifierService.convertStringToIdentifierStrict(element);
-            LOG.debug("toto Identifier :'" + identifier.getIdentifier() + "' Locator '" + identifier.getLocator() + "'");
+            LOG.debug("Identifier :'" + identifier.getIdentifier() + "' Locator '" + identifier.getLocator() + "'");
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown);
+                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown);
+                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, identifier.isSameIdentifier("") ? element : null, offsets);

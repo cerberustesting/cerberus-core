@@ -112,7 +112,7 @@ public interface IAppiumService {
      * @return
      * @throws IllegalArgumentException
      */
-    MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax) throws IllegalArgumentException;
+    MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax, Integer hOffset, Integer vOffset) throws IllegalArgumentException;
 
     /**
      * install an application on mobile devices
