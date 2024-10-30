@@ -6560,4 +6560,6 @@ ALTER TABLE `robot` ADD COLUMN `AcceptNotifications` TINYINT(1) NULL DEFAULT 0 A
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
   VALUES ('', 'cerberus_executionloghar_enable', 'false', 'Enable saving of har file at the end of non OK executions.');
 
+-- 1859
+UPDATE parameter SET description='Enable saving of har file at the end of executions (robotlog=2 for all executions or robotlog=1 for all non OK executions).' WHERE param='cerberus_executionloghar_enable';
 

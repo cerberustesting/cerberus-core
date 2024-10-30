@@ -1039,18 +1039,23 @@ public class RecorderService implements IRecorderService {
             return null;
         }
 
-        try {
+        if ((execution.getRobotLog() == 2 || (execution.getRobotLog() == 1 && !execution.getControlStatus().equals("OK")))
+                && parameterService.getParameterBooleanByKey("cerberus_executionloghar_enable", execution.getSystem(), true)) {
 
-            // RESULT.
-            Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "enriched_har", "json", false);
-            recordFile(recorder.getFullPath(), recorder.getFileName(), har.toString(1), execution.getSecrets());
+            try {
 
-            // Index file created to database.
-            object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Network HAR File", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
-            testCaseExecutionFileService.save(object);
+                // RESULT.
+                Recorder recorder = this.initFilenames(execution.getId(), null, null, null, null, null, null, null, 0, "enriched_har", "json", false);
+                recordFile(recorder.getFullPath(), recorder.getFileName(), har.toString(1), execution.getSecrets());
 
-        } catch (Exception ex) {
-            LOG.error(ex.toString(), ex);
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Network HAR File", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+                testCaseExecutionFileService.save(object);
+
+            } catch (Exception ex) {
+                LOG.error(ex.toString(), ex);
+            }
+
         }
 
         return object;

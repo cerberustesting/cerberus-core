@@ -1160,15 +1160,11 @@ public class RobotServerService implements IRobotServerService {
 
                         testCaseExecutionHttpStatService.create(answHttpStat.getItem());
 
-                        // Log Execution
-                        if ((tce.getVerbose() > 0)
-                                && !tce.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)
-                                && parameterService.getParameterBooleanByKey("cerberus_executionloghar_enable", tce.getSystem(), true)) {
-                            try {
-                                tce.addFileList(recorderService.recordHar(tce, har));
-                            } catch (Exception ex) {
-                                LOG.error("Exception Saving Har Files " + tce.getId(), ex);
-                            }
+                        // Log Full HAR Network Execution
+                        try {
+                            tce.addFileList(recorderService.recordHar(tce, har));
+                        } catch (Exception ex) {
+                            LOG.error("Exception Saving Har Files " + tce.getId(), ex);
                         }
 
                     } catch (Exception ex) {
