@@ -138,7 +138,7 @@ var actionOptList = {
     "scrollTo":{"group":"mouse_action","value": "scrollTo","label":{"en":"Scroll to element","fr":"Scroller jusqu'à l'élément"},"application_types":["GUI","IPA","APK","FAT"],
         "field1":{"label":{"en": "Element path or Text to scroll to", "fr": "Chemin vers l'élement ou Texte à scroller"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},
         "field2":{"label":{"en": "Max scroll iteration [APK,IPA only]", "fr": "Nombre maximum de scroll vers le bas (8 par defaut) [seulement APK,IPA]"}, "class": "col-lg-12 crb-autocomplete-variable"},
-        "field3":{"label":{"en": "offsets (h,v) [GUI only]", "fr": "offsets (h,v) [seulement GUI]"}, "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
+        "field3":{"label":{"en": "offsets (h,v) [APK,IPA,GUI only]", "fr": "offsets (h,v) [seulement APK,IPA,GUI]"}, "class": "col-lg-6 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
     "installApp":{"group":"access_application","value": "installApp","label":{"en":"Install Application","fr":"Installer l'Application"},"application_types":["IPA","APK"],
         "field1":{"label":{"en": "Application path (ex : /root/toto.apk)", "fr": "Chemin vers l'application (ex : /root/toto.apk)"},"picto":"images/action-mobile-application.png", "class": "col-lg-12 crb-autocomplete-variable"},"documentation":{"en":"...","fr":"..."}},
     "removeApp":{"group":"access_application","value": "removeApp","label":{"en":"Uninstall Application","fr":"Désinstaller l'Application"},"application_types":["IPA","APK"],

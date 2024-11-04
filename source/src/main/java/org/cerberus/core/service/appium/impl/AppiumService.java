@@ -24,6 +24,8 @@ import io.appium.java_client.*;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.impl.ParameterService;
@@ -31,6 +33,7 @@ import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.MessageGeneral;
 import org.cerberus.core.engine.entity.Session;
+import org.cerberus.core.engine.gwt.impl.ActionService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.exception.CerberusEventException;
@@ -379,7 +382,7 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax) throws IllegalArgumentException {
+    public MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax, Integer hOffset, Integer vOffset) throws IllegalArgumentException {
         AppiumDriver driver = session.getAppiumDriver();
         MessageEvent message;
         try {
@@ -394,9 +397,9 @@ public abstract class AppiumService implements IAppiumService {
 
             // check text
             if (element.getIdentifier().equals("text")) {
-                scrollDown(driver, By.xpath("//*[contains(@text,'" + element.getLocator() + "')]"), numberOfScrollDown);
+                scrollDown(driver, By.xpath("//*[contains(@text,'" + element.getLocator() + "')]"), numberOfScrollDown, hOffset, vOffset);
             } else {
-                scrollDown(driver, this.getBy(element), numberOfScrollDown);
+                scrollDown(driver, this.getBy(element), numberOfScrollDown, hOffset, vOffset);
             }
 
             message.setDescription(message.getDescription().replace("%VALUE%", element.toString()));
@@ -420,7 +423,7 @@ public abstract class AppiumService implements IAppiumService {
      * @param element
      * @return
      */
-    private boolean scrollDown(AppiumDriver driver, By element, int numberOfScrollDown) throws CerberusEventException{
+    private boolean scrollDown(AppiumDriver driver, By element, int numberOfScrollDown, Integer hOffset, Integer vOffset) throws CerberusEventException{
 
         Dimension screenSize = driver.manage().window().getSize();
 
@@ -445,6 +448,11 @@ public abstract class AppiumService implements IAppiumService {
         do {
             boolean isPresent = driver.findElements(element).size() > 0;
             if (isPresent && driver.findElement(element).isDisplayed()) {
+                //Element found, perform another scroll to offset from middle of screen
+                int pressOffsetX = driver.manage().window().getSize().width / 2;
+                int pressOffsetY = driver.manage().window().getSize().height / 2;
+                scroll(driver, pressOffsetX, pressOffsetY, hOffset, vOffset);
+
                 return true;
             } else {
                 scroll(driver, pressX, bottomY, pressX, topY);
