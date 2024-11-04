@@ -30,6 +30,9 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.cerberus.core.engine.entity.MessageEvent;
+import org.cerberus.core.enums.MessageEventEnum;
+import org.cerberus.core.exception.CerberusEventException;
 
 /**
  * Database class, allow to get Connections defined on glassfish.
@@ -127,27 +130,36 @@ public class DatabaseSpring {
         endTransaction(false);
     }
 
-    public Connection connect(final String connection) {
+    public Connection connect(final String connection) throws CerberusEventException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
+
         try {
             InitialContext ic = new InitialContext();
             String conName = "jdbc/" + connection;
             LOG.info("connecting to '{}'", conName);
             DataSource ds = (DataSource) ic.lookup(conName);
             return ds.getConnection();
+
         } catch (SQLException ex) {
             LOG.warn(ex.toString());
+
         } catch (NamingException ex) {
             LOG.warn(ex.toString());
-            InitialContext ic;
-            try {
-                ic = new InitialContext();
-                String conName = "java:/comp/env/jdbc/" + connection;
-                LOG.info("connecting to '{}'", conName);
-                DataSource ds = (DataSource) ic.lookup(conName);
-                return ds.getConnection();
-            } catch (NamingException | SQLException ex1) {
-                LOG.warn(ex.toString());
-            }
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL);
+            msg
+                    .resolveDescription("JDBC", "jdbc/" + connection)
+                    .resolveDescription("ERROR", ex.toString());
+            throw new CerberusEventException(msg);
+//            InitialContext ic;
+//            try {
+//                ic = new InitialContext();
+//                String conName = "java:/comp/env/jdbc/" + connection;
+//                LOG.info("connecting to '{}'", conName);
+//                DataSource ds = (DataSource) ic.lookup(conName);
+//                return ds.getConnection();
+//            } catch (NamingException | SQLException ex1) {
+//                LOG.warn(ex.toString());
+//            }
         }
         return null;
     }

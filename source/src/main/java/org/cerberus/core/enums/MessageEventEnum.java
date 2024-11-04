@@ -74,7 +74,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED(150, "NA", "ERROR : Generic error on getting the property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_RECURSIVE(150, "FA", "Recursive calculation of property '%PROPERTY%' detected. The past property calculated in that context is : '%HISTO%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_NO_PROPERTY_DEFINITION(151, "NA", "Warning, Property not defined for '%PROP%' and country '%COUNTRY%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_FAILED_SQL(152, "FA", "An error occur when connecting to ?! Error detail: ?", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    PROPERTY_FAILED_SQL(152, "FA", "An error occur when connecting to %JDBC%! Error detail: %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SQL_COLUMNNOTMATCHING(192, "FA", "Some column(s) do not match with the SQL Query! Columns mapping in error : '%BADCOLUMNS%'. Database: '%DATABASE%'. SQL: '%SQL%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SQL_NOCOLUMNMATCH(192, "FA", "None of the column match with the SQL Query! Columns mapping in error : '%BADCOLUMNS%'. Database: '%DATABASE%'. SQL: '%SQL%'", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_SQL_NODATA(904, "NA", "The SQL performed against database '%DATABASE%' and JDBC Ressource '%JDBCPOOLNAME%' returned no data to test. SQL : '%SQL%'", true, false, false, MessageGeneralEnum.EXECUTION_NA),
