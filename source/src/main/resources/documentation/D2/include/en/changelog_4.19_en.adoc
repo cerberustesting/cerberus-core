@@ -3,6 +3,7 @@
 * [ENGINE] Fixed NPE when making a control on non successful service answer.
 * [GUI] Fixed an issue when adding an environment to an existing application.
 * [GUI] Environments with empty system, country or environment can be deleted.
+* [GUI] Error when creating datalib with file upload.
 
 *Improvements / New features*
 [square]

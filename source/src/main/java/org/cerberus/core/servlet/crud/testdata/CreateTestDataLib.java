@@ -125,7 +125,9 @@ public class CreateTestDataLib extends HttpServlet {
                 }
             }
         } catch (FileUploadException e) {
-            e.printStackTrace();
+            LOG.warn(e, e);
+        } catch (Exception e) {
+            LOG.warn(e, e);
         }
 
         try {
@@ -196,17 +198,29 @@ public class CreateTestDataLib extends HttpServlet {
 
                 List<TestDataLibData> tdldList = new ArrayList<>();
                 TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
-                
-                    // Getting list of SubData from JSON Call
-                    if (fileData.get("subDataList") != null) {
-                        JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                        tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray, (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
+
+                if (file != null) {
+                    String fileName;
+                    ans = libService.uploadFile(dataLibWithUploadedFile.getTestDataLibID(), file);
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        fileName = file.getName();
+                        dataLibWithUploadedFile.setCsvUrl(File.separator + dataLibWithUploadedFile.getTestDataLibID() + File.separator + fileName);
+                        lib.setTestDataLibID(dataLibWithUploadedFile.getTestDataLibID());
+                        ans = libService.update(lib);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
                     }
+                }
+
+                // Getting list of SubData from JSON Call
+                if (fileData.get("subDataList") != null) {
+                    JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
+                    tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray, (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")));
+                }
 
                 if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
-                    try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", null) + lib.getCsvUrl()));) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_testdatalibfile_path, "", null) + dataLibWithUploadedFile.getCsvUrl()));) {
                         firstLine = reader.readLine();
                         secondLine = reader.readLine();
                         LOG.debug(firstLine);
@@ -257,9 +271,11 @@ public class CreateTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             response.getWriter().flush();
+        } catch (Exception e) {
+            LOG.warn(e, e);
         }
 
     }
