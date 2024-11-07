@@ -139,6 +139,7 @@ function displayPageLabel() {
 
     displayInvariantList("system", "SYSTEM", false, '', '');
     displayInvariantList("type", "LABELTYPE", false, undefined, undefined, undefined, undefined, "editLabelModal");
+    displayInvariantList("type", "LABELTYPE", false, undefined, undefined, undefined, undefined, "addLabelModal");
     displayInvariantList("reqtype", "REQUIREMENTTYPE", false);
     displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
     displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);
