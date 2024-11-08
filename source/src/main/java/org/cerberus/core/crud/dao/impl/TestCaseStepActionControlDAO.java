@@ -514,8 +514,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepactioncontrol (`test`, `testcase`, `stepId`, `actionId`, `controlId`, `sort`, ");
         query.append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `control`, ");
-        query.append("`value1`, `value2`, `value3`, `Options`, `isFatal`, `Description`, `screenshotfilename`, `usrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("`value1`, `value2`, `value3`, `Options`, `isFatal`, `Description`, `screenshotfilename`, `waitBefore`, `waitAfter`, `doScreenshotBefore`, `doScreenshotAfter`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -544,6 +544,10 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
             preStat.setBoolean(i++, testCaseStepActionControl.isFatal());
             preStat.setString(i++, testCaseStepActionControl.getDescription());
             preStat.setString(i++, testCaseStepActionControl.getScreenshotFilename());
+            preStat.setInt(i++, testCaseStepActionControl.getWaitBefore());
+            preStat.setInt(i++, testCaseStepActionControl.getWaitAfter());
+            preStat.setBoolean(i++, testCaseStepActionControl.isDoScreenshotBefore());
+            preStat.setBoolean(i++, testCaseStepActionControl.isDoScreenshotAfter());
             preStat.setString(i++, testCaseStepActionControl.getUsrCreated() == null ? "" : testCaseStepActionControl.getUsrCreated());
             preStat.executeUpdate();
 

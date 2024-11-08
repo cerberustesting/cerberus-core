@@ -532,8 +532,9 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepaction (`test`, `testcase`, `stepId`, `actionId`, `sort`, ")
-                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `action`, `Value1`, `Value2`, `Value3`, `Options`, `IsFatal`, `description`, `screenshotfilename`, `usrCreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                .append("`conditionOperator`, `conditionValue1`, `conditionValue2`, `conditionValue3`, `conditionOptions`, `action`, `Value1`, `Value2`, `Value3`, `Options`"
+                        + ", `IsFatal`, `description`, `screenshotfilename`, `waitBefore`, `waitAfter`, `doScreenshotBefore`, `doScreenshotAfter`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -561,6 +562,10 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setBoolean(i++, testCaseStepAction.isFatal());
             preStat.setString(i++, testCaseStepAction.getDescription());
             preStat.setString(i++, testCaseStepAction.getScreenshotFilename());
+            preStat.setInt(i++, testCaseStepAction.getWaitBefore());
+            preStat.setInt(i++, testCaseStepAction.getWaitAfter());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotBefore());
+            preStat.setBoolean(i++, testCaseStepAction.isDoScreenshotAfter());
             preStat.setString(i++, testCaseStepAction.getUsrCreated() == null ? "" : testCaseStepAction.getUsrCreated());
             preStat.executeUpdate();
 
