@@ -141,27 +141,32 @@ public class DatabaseSpring {
             return ds.getConnection();
 
         } catch (SQLException ex) {
-            LOG.warn(ex.toString());
-
-        } catch (NamingException ex) {
-            LOG.warn(ex.toString());
+            LOG.warn(ex.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL);
             msg
                     .resolveDescription("JDBC", "jdbc/" + connection)
                     .resolveDescription("ERROR", ex.toString());
             throw new CerberusEventException(msg);
-//            InitialContext ic;
-//            try {
-//                ic = new InitialContext();
-//                String conName = "java:/comp/env/jdbc/" + connection;
-//                LOG.info("connecting to '{}'", conName);
-//                DataSource ds = (DataSource) ic.lookup(conName);
-//                return ds.getConnection();
-//            } catch (NamingException | SQLException ex1) {
-//                LOG.warn(ex.toString());
-//            }
+
+        } catch (NamingException ex) {
+            InitialContext ic;
+            try {
+                ic = new InitialContext();
+                String conName = "java:/comp/env/jdbc/" + connection;
+                LOG.info("failed with '" + "jdbc/" + connection + "' --> connecting to '{}'", conName);
+                DataSource ds = (DataSource) ic.lookup(conName);
+                return ds.getConnection();
+
+            } catch (NamingException | SQLException ex1) {
+
+                LOG.warn("failed connection with 'java:/comp/env/jdbc/" + connection + "'", ex.toString());
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL);
+                msg
+                        .resolveDescription("JDBC", "java:/comp/env/jdbc/" + connection)
+                        .resolveDescription("ERROR", ex.toString());
+                throw new CerberusEventException(msg);
+            }
         }
-        return null;
     }
 
     public boolean isOnTransaction() {
