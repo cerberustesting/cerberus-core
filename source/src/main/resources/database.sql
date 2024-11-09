@@ -6563,11 +6563,14 @@ INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
 -- 1859
 UPDATE parameter SET description='Enable saving of har file at the end of executions (robotlog=2 for all executions or robotlog=1 for all non OK executions).' WHERE param='cerberus_executionloghar_enable';
 
--- 1860-1865
+-- 1860-1868
 ALTER TABLE testcaseexecution MODIFY COLUMN `Start` timestamp(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
+UPDATE testcaseexecution SET `End`='1970-01-01 01:01:01.000' WHERE `End`=null;
 ALTER TABLE testcaseexecution MODIFY COLUMN `End` timestamp(3) NOT NULL DEFAULT '1970-01-01 01:01:01.000';
 ALTER TABLE testcasestepactionexecution MODIFY COLUMN `Start` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
+UPDATE testcasestepactionexecution SET `End`='1970-01-01 01:01:01.000' WHERE `End`=null;
 ALTER TABLE testcasestepactionexecution MODIFY COLUMN `End` timestamp(3) NOT NULL DEFAULT '1970-01-01 01:01:01.000';
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
+UPDATE testcasestepactioncontrolexecution SET `End`='1970-01-01 01:01:01.000' WHERE `End`=null;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NOT NULL DEFAULT '1970-01-01 01:01:01.000';
 
