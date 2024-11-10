@@ -1068,6 +1068,31 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
+    public void updateBugList(String test, String testcase, String newBugList) throws CerberusException {
+        final String query = new StringBuilder("UPDATE testcase tc ")
+                .append("SET tc.Bugs=?, tc.`dateModif` = CURRENT_TIMESTAMP , tc.`UsrModif` = 'Cerberus-Engine' ")
+                .append("where tc.test = ? and tc.testcase = ?;")
+                .toString();
+
+        LOG.debug("SQL " + query);
+        LOG.debug("SQL.param.service " + test);
+        LOG.debug("SQL.param.service " + testcase);
+        LOG.debug("SQL.param.service " + newBugList);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query);) {
+
+            int i = 1;
+            preStat.setString(i++, newBugList);
+            preStat.setString(i++, test);
+            preStat.setString(i++, testcase);
+
+            preStat.executeUpdate();
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        }
+    }
+
+    @Override
     public String getMaxTestcaseIdByTestFolder(String test) {
         String max = "";
         final String sql = "SELECT  Max( CAST(Testcase AS UNSIGNED) ) as MAXTC FROM testcase where test = ?";

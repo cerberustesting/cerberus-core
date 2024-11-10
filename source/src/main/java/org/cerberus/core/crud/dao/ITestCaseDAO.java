@@ -87,6 +87,15 @@ public interface ITestCaseDAO {
     void updateApplicationObject(String field, String application, String oldObject, String newObject) throws CerberusException;
 
     /**
+     *
+     * @param test
+     * @param testcase
+     * @param newBugList
+     * @throws CerberusException
+     */
+    void updateBugList(String test, String testcase, String newBugList) throws CerberusException;
+
+    /**
      * @param testCase
      * @return
      */
@@ -129,17 +138,17 @@ public interface ITestCaseDAO {
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     * @param campaign    the campaign name
-     * @param countries   arrays of country to filter
+     * @param campaign the campaign name
+     * @param countries arrays of country to filter
      * @param labelIdList
-     * @param status      arrays of status to filter
-     * @param system      arrays of system to filter
+     * @param status arrays of status to filter
+     * @param system arrays of system to filter
      * @param application arrays of application to filter
-     * @param priority    arrays of priority to filter
-     * @param type        arrays of type to filter
+     * @param priority arrays of priority to filter
+     * @param type arrays of type to filter
      * @param testFolder
-     * @param maxReturn   nd max of records to return. (Prevent from returning too
-     *                    large list)
+     * @param maxReturn nd max of records to return. (Prevent from returning too
+     * large list)
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
@@ -188,7 +197,6 @@ public interface ITestCaseDAO {
      */
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
-
     /**
      * @param system
      * @param test
@@ -216,7 +224,7 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList<TestCase> readByVarious(String[] test, String[] app, String[] creator, String[] implementer, String[] system,
-                                              String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
+            String[] campaign, List<Integer> labelid, String[] priority, String[] type, String[] status, int length);
 
     /**
      * @param test
@@ -245,7 +253,7 @@ public interface ITestCaseDAO {
     /**
      * @param keyTest
      * @param keyTestCase
-     * @param testCase    target object value.
+     * @param testCase target object value.
      * @return
      */
     public Answer update(String keyTest, String keyTestCase, TestCase testCase);
@@ -268,7 +276,7 @@ public interface ITestCaseDAO {
      * @param resultSet ResultSet relative to select from table TestCase
      * @return object {@link TestCase}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;

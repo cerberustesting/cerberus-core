@@ -144,13 +144,14 @@ public interface ITestCaseService {
      * Add the corresponding bug key to the list of bugs only if no other active
      * bug already exist.
      *
+     * @param tc
      * @param test
      * @param testFolder
      * @param bugKey
      * @param bugURL
      * @param description
      */
-    public void addNewBugEntry(String test, String testFolder, String bugKey, String bugURL, String description);
+    public void addNewBugEntry(TestCase tc, String test, String testFolder, String bugKey, String bugURL, String description);
 
     /**
      * @param tCase

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.text.SimpleDateFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,6 +83,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.cerberus.core.crud.entity.Parameter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -550,14 +554,41 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean isBugAlreadyOpen(TestCase testcase) {
-        LOG.debug("TO BE IMPLEMENTED");
+    public boolean isBugAlreadyOpen(TestCase tc) {
+        try {
+            JSONArray bugList = tc.getBugs();
+            for (int n = 0; n < bugList.length(); n++) {
+                JSONObject bug = bugList.getJSONObject(n);
+                if (bug.has("act")) {
+                    if (bug.getBoolean("act")) {
+                        return true;
+                    }
+                }
+            }
+        } catch (JSONException ex) {
+            LOG.warn(ex,ex);
+        }
         return false;
     }
 
     @Override
-    public void addNewBugEntry(String test, String testFolder, String bugKey, String bugURL, String description) {
-        LOG.debug("TO BE IMPLEMENTED");
+    public void addNewBugEntry(TestCase tc, String testFolder, String testCase, String bugKey, String bugURL, String description) {
+        try {
+            JSONArray bugList = tc.getBugs();
+            JSONObject newBug = new JSONObject();
+            newBug.put("act", true);
+            newBug.put("dateCreated", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new java.util.Date()));
+            newBug.put("id", bugKey);
+            newBug.put("dateClosed", "1970-01-01T00:00:00.000Z");
+            newBug.put("desc", description);
+            newBug.put("url", bugURL);
+            bugList.put(newBug);
+            tc.setBugs(bugList);
+            testCaseDao.updateBugList(testFolder, testCase, bugList.toString());
+        } catch (JSONException | CerberusException ex) {
+            LOG.warn(ex, ex);
+        }
+
     }
 
     @Override

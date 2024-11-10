@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.bug.github;
 
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 
 /**
@@ -29,10 +30,11 @@ public interface IGithubService {
 
     /**
      *
+     * @param tc
      * @param execution
      * @param repoName
      * @param labelType
      */
-    public void createGithubIssue(TestCaseExecution execution, String repoName, String labelType);
+    public void createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String labelType);
 
 }

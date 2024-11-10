@@ -446,13 +446,13 @@ function confirmTestCaseModalHandler(mode) {
     var bugIdDuplicated = false;
     var bugIdDuplicatedList = [];
     var table1 = $("#bugTableBody tr");
-    var listBugId = "";
+    var listBugId = "/";
     for (var i = 0; i < table1.length; i++) {
         var bug = $(table1[i]).data("bug");
         if (isEmpty(bug.desc)) {
             bugIdEmptyDesc = true;
         }
-        if (listBugId.indexOf(bug.id + "/") >= 0) {
+        if (listBugId.indexOf("/" + bug.id + "/") >= 0) {
             bugIdDuplicated = true;
             bugIdDuplicatedList.push(bug.id);
         }
@@ -600,6 +600,7 @@ function confirmTestCaseModalHandler(mode) {
             DataObj1.id = bug.id;
             DataObj1.desc = bug.desc;
             DataObj1.act = bug.act;
+            DataObj1.url = bug.url;
             DataObj1.dateCreated = bug.dateCreated;
             DataObj1.dateClosed = bug.dateClosed;
             table_bug.push(DataObj1);
@@ -1089,9 +1090,13 @@ function appendbugRow(obj, tablebody, bugTrackerUrl) {
     var table = $("#" + tablebody);
 
     var newbugTrackerUrl = "";
-    if (!isEmpty(bugTrackerUrl)) {
-        if (!isEmpty(obj.id)) {
-            newbugTrackerUrl = bugTrackerUrl.replace(/%BUGID%/g, obj.id);
+    if (!isEmpty(obj.url)) {
+        newbugTrackerUrl = obj.url;
+    } else {
+        if (!isEmpty(bugTrackerUrl)) {
+            if (!isEmpty(obj.id)) {
+                newbugTrackerUrl = bugTrackerUrl.replace(/%BUGID%/g, obj.id);
+            }
         }
     }
 

@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.bug.jira;
 
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 
 /**
@@ -29,10 +30,11 @@ public interface IJiraService {
 
     /**
      *
+     * @param testcase
      * @param execution
      * @param projectKey
      * @param issueType
      */
-    public void createJiraIssue(TestCaseExecution execution, String projectKey, String issueType);
+    public void createJiraIssue(TestCase testcase, TestCaseExecution execution, String projectKey, String issueType);
 
 }

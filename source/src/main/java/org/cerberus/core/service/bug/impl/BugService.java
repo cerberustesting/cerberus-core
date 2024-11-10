@@ -21,10 +21,12 @@ package org.cerberus.core.service.bug.impl;
 
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.service.bug.IBugService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,28 +60,49 @@ public class BugService implements IBugService {
     public void createIssue(TestCaseExecution execution) {
 
         if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
+            LOG.debug("Not creating issue due to parameter.");
             return;
         }
-
+        LOG.debug("Trying to create issue.");
+        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Trying To create the issue.");
         // Testcase should have a priority defined and in WORKING status
-        if ((execution.getTestCasePriority() >= 1) && ("WORKING".equals(execution.getStatus()))) {
-            // There should not be any already existing bug.
-            if (!testCaseService.isBugAlreadyOpen(execution.getTestCaseObj())) {
+        if ((execution.getTestCasePriority() >= 1)) {
+            LOG.debug("Execution is not OK, with prio > 0.");
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Execution is not OK, with prio > 0 ");
+            TestCase tc = null;
+            try {
+                tc = testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase());
 
-                // All is fine to open a new bug
-                Application currentAppli = new Application();
-                try {
-                    currentAppli = applicationService.convert(applicationService.readByKey(execution.getApplication()));
-                } catch (CerberusException ex) {
-                    LOG.warn(ex, ex);
-                }
+                // There should not be any already existing bug.
+                if (!testCaseService.isBugAlreadyOpen(tc)) {
 
-                if (currentAppli != null && Application.BUGTRACKER_JIRA.equalsIgnoreCase(currentAppli.getBugTrackerConnector())) {
-                    jiraService.createJiraIssue(execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+                    // All is fine to open a new bug
+                    Application currentAppli = new Application();
+                    try {
+                        currentAppli = applicationService.convert(applicationService.readByKey(execution.getApplication()));
+                    } catch (CerberusException ex) {
+                        LOG.warn(ex, ex);
+                    }
+
+                    if (currentAppli != null) {
+                        switch (currentAppli.getBugTrackerConnector()) {
+                            case Application.BUGTRACKER_JIRA:
+                                jiraService.createJiraIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+
+                                break;
+                            case Application.BUGTRACKER_GITHUB:
+                                githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
+
+                                break;
+                            default:
+                                throw new AssertionError();
+                        }
+                    }
+                } else {
+                    LOG.debug("Not opening Issue because issue is already open");
                 }
-                if (currentAppli != null && Application.BUGTRACKER_GITHUB.equalsIgnoreCase(currentAppli.getBugTrackerConnector())) {
-                    githubService.createGithubIssue(execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
-                }
+            } catch (CerberusException ex) {
+                LOG.warn(ex, ex);
             }
         }
     }

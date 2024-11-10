@@ -89,6 +89,7 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+---
 = Notifications
 :file-to-include: howto_notif_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
@@ -119,6 +120,26 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+---
+= Issue Automated creation
+:file-to-include: howto_issue_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== JIRA issue creation 
+:file-to-include: howto_issue_jira_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Github issue creation 
+:file-to-include: howto_issue_github_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
 = External tools
 :file-to-include: howto_externaltools_{lang}.adoc
 include::include/{lang}/{file-to-include}[]

@@ -3206,27 +3206,35 @@ function comboConfigApplication_format(application) {
 
 function getBugIdList(data, appUrl) {
     let link = "";
-    if (isEmpty(appUrl)) {
-        $.each(data, function (_, obj) {
-            if (obj.act) {
+    $.each(data, function (_, obj) {
+        let bugUrl = "";
+
+        if (!isEmpty(obj.url)) {
+            bugUrl = obj.url;
+        } else {
+            if (!isEmpty(appUrl)) {
+                bugUrl = appUrl.replace(/%BUGID%/g, obj.id);
+            }
+        }
+        if (obj.act) {
+            if (!isEmpty(bugUrl)) {
+                link = link + '<a target="_blank" href="' + bugUrl + '">' + obj.id;
+                if (obj.desc !== "") {
+                    link = link + " - " + obj.desc;
+                }
+                link = link + "</a><br>";
+
+            } else {
                 link = link + '' + obj.id;
                 if (obj.desc !== "") {
                     link = link + " - " + obj.desc;
                 }
                 link = link + "<br>";
+
             }
-        });
-    } else {
-        $.each(data, function (_, obj) {
-            if (obj.act) {
-                link = link + '<a target="_blank" href="' + appUrl.replace(/%BUGID%/g, obj.id) + '">' + obj.id;
-                if (obj.desc !== "") {
-                    link = link + " - " + obj.desc;
-                }
-                link = link + "</a><br>";
-            }
-        });
-    }
+
+        }
+    });
     return link;
 }
 

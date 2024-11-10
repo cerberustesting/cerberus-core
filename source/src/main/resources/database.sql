@@ -6574,3 +6574,5 @@ ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `Start` timestamp(3
 UPDATE testcasestepactioncontrolexecution SET `End`='1970-01-01 01:01:01.000' WHERE `End`=null;
 ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) NOT NULL DEFAULT '1970-01-01 01:01:01.000';
 
+-- 1869
+DELETE FROM `parameter` WHERE `param` in ('cerberus_apikey_value1','cerberus_apikey_value2','cerberus_apikey_value3','cerberus_apikey_value4','cerberus_apikey_value5') ;

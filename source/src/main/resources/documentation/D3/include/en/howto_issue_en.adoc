@@ -1,0 +1,9 @@
+In order to activate the feature, the following condition must be respected:
+
+- Parameter _cerberus_autobugcreation_enable_ must be configured to true
+- The corresponding testcase must have a priority > 0
+- Corresponding testcase does not already have an existing Bug Open
+- Application Bug tracker connector needs to be different from NONE
+
+Additional parameters needs to be defined depending on the connector that has been chosen.
+

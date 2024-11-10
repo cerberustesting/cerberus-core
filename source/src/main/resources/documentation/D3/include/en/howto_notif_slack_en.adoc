@@ -12,21 +12,18 @@
 * Navigate to *https://api.slack.com/apps* on the Slack account that contains your channel
 * Define your *"App Name"* and select your *"Workspace"*
 
-image:https://github.com/cerberustesting/cerberus-source/blob/master/source/src/main/resources/documentation/D3/include/en/howto_notif_slack_en_create-slack-app[alt=" "width=128,height=128]
 
 *2. Activate Workspace  Webhooks*
 
 * Navigate in the bottom page to *"Add features and functionality"*, and select *"Incoming Webhooks"*
 * Switch on the slider *"Active Incoming Webhooks"*
 
-image:https://github.com/cerberustesting/cerberus-source/blob/master/source/src/main/resources/documentation/D3/include/en/howto_notif_slack_en_activate-incoming-webhooks[alt=" "width=128,height=128]
 
 *3. Retrieve the Webhook URL*
 
 * Navigate in the botoom page to *"Webhook URLS for Your Workspace"* and click on *"Add New Webhook to Workspace"*
 * Keep the *Webhook URL* that has been created and verify it is set on the correct *channel*
 
-image:https://github.com/cerberustesting/cerberus-source/blob/master/source/src/main/resources/documentation/D3/include/en/howto_notif_slack_en_retrieve-webhook-url[alt=" "width=128,height=128]
 
 *4. Setting up the Campaign Parameters*
 
@@ -36,7 +33,6 @@ image:https://github.com/cerberustesting/cerberus-source/blob/master/source/src/
 * Set  the *Hook recipient* with the webhook url and the *Hook channel* with your #channel
 * Test your notifications by running the campaign and verify the slack message appears if the condition are met
 
-image:https://github.com/cerberustesting/cerberus-source/blob/master/source/src/main/resources/documentation/D3/include/en/howto_notif_slack_en_configure-notifications[alt=" "width=128,height=128]
 
 TIP: You can configure as many notifications using the event hooks combination
 

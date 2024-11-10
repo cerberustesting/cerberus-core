@@ -38,7 +38,8 @@
 * [GUI] Reports over time can now be filtered by result status (in order to focus and isolate non OK result for example)
 * [GUI] Report over time display spot with bigger radius when comment or description has been entered. False Negative are surrounded with green.
 * [GUI] New Impact analysis tool. You can search any text (ex: xpath or variable) across all testcases.
-* [GUI] Testcase can be Linked to JIRA Issue. That will display the associated label with URL on both execution and test script page.
+* [GUI] Testcase can be Linked to JIRA Issue. That will display the associated label with URL on execution page.
+* [GUI] Automatic issue creation with Github and Jira connector. Any non OK execution can now create an issue and link it to the Testcase. Please check the documentation for further details
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

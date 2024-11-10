@@ -1,0 +1,29 @@
+For Github connector, you needs to define at the application level on which projet the issue will be created using parameter _organisation/repo_
+
+For example for repo https://github.com/cerberustesting/cerberus-sample-application _organisation/repo_ should be : 
+----
+cerberustesting/cerberus-sample-application
+----
+
+Optionaly you can define a label that will be added to issue created.
+ex : _bug_
+
+In order to plug Cerberus to Github the parameter : _cerberus_github_apitoken_ needs to be defined with a valid api token.
+
+From your github account firt go to Developper settings menu
+
+image:github_01.png[Github,250]
+
+Then, select token
+
+image:github_02.png[Github,350]
+
+Then, Generate New Token
+
+image:github_03.png[Github,350]
+
+Then, Chosse a name, a duration and select the _repo_ scopes    
+
+image:github_04.png[Github,350]
+
+The generated token needs to be paste to _cerberus_github_apitoken_ parameter.

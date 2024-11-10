@@ -45,6 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ILogEventService;
@@ -94,7 +95,7 @@ public class GithubService implements IGithubService {
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
 
     @Override
-    public void createGithubIssue(TestCaseExecution execution, String repoName, String issueType) {
+    public void createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String issueType) {
 
         try {
 
@@ -189,7 +190,7 @@ public class GithubService implements IGithubService {
                             newGithubBugURL = ghURL.toString();
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addNewBugEntry(execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Cerberus Engine.");
+                        testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created automaticaly from Execution " + execution.getId());
                         LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
                     } else {
                         LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);

@@ -1,0 +1,28 @@
+For JIRA connector, you needs to define at the application level on which projet the issue will be created using parameter _Project Code_
+
+For ex : _CER_
+
+You also need to define the type of issue that will be created using __Ticket Type__ parameter.
+ex : _Bug_ , _Task_
+
+In order to plug Cerberus to JIRA the parameters :
+- _cerberus_jiracloud_apiuser_ needs to be defined with a valid Jira email account.
+- _cerberus_jiracloud_apiuser_apitoken_ needs to be defined with a valid Jira API Token that correspond to apiuser.
+
+From your Jira account firt go to _Security_  menu and click on _Create and manage API tokens_ link
+
+image:jira_01.png[Github,850]
+
+Then, select _Create API Token_
+
+image:jira_02.png[Github,650]
+
+Then, choose a name and hit _Create_ button
+
+image:jira_03.png[Github,350]
+
+Then, Copy the token and click on _Done_ button
+
+image:jira_04.png[Github,350]
+
+The generated token needs to be paste to _cerberus_jiracloud_apiuser_apitoken_ parameter.

@@ -45,11 +45,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.service.proxy.IProxyService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +95,7 @@ public class JiraService implements IJiraService {
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
 
     @Override
-    public void createJiraIssue(TestCaseExecution execution, String projectKey, String issueType) {
+    public void createJiraIssue(TestCase tc, TestCaseExecution execution, String projectKey, String issueType) {
 
         try {
 
@@ -187,12 +189,15 @@ public class JiraService implements IJiraService {
                             newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost();
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addNewBugEntry(execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Cerberus Engine.");
+                        testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created automaticaly from Execution " + execution.getId());
                         LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
+                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "JIRA Bug created");
+
                     } else {
                         LOG.warn("JIRA Issue creation request http return code : {} is missing 'key' entry.", rc);
                         String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString;
                         logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
+                        execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failed");
                         LOG.warn("Message sent to " + jiraUrl + " :");
                         LOG.warn(jiraRequest.toString(1));
                         LOG.warn("Response : {}", responseString);
@@ -202,6 +207,7 @@ public class JiraService implements IJiraService {
                     String responseString = EntityUtils.toString(response.getEntity());
                     String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". " + responseString;
                     logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
+                    execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failes");
                     LOG.warn("Message sent to " + jiraUrl + " :");
                     LOG.warn(jiraRequest.toString(1));
                     LOG.warn("Response : {}", responseString);
