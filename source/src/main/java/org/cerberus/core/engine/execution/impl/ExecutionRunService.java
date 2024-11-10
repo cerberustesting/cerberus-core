@@ -102,6 +102,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.execution.IIdentifierService;
 import org.cerberus.core.service.bug.IBugService;
@@ -310,6 +311,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
                     //TODO Why this variable has been declared ?
                     String newBuildHash = tagService.enrichTagWithCloudProviderBuild(execution.getRobotProvider(), execution.getSystem(), execution.getTag(), execution.getRobotExecutorObj().getHostUser(), execution.getRobotExecutorObj().getHostPassword());
+                    execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Retrieved new cloud provider hash '" + newBuildHash + "'");
                     Tag newTag = tagService.convert(tagService.readByKey(execution.getTag()));
                     execution.setTagObj(newTag);
                     break;
@@ -347,6 +349,8 @@ public class ExecutionRunService implements IExecutionRunService {
             updateExecutionWebSocketOnly(execution, true);
 
             LOG.debug("{}Loading Pre-testcases.", logPrefix);
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Loading pre-testcases");
+
             List<TestCase> preTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, execution.getTestCaseObj().getApplication(), execution.getCountry(),
                     execution.getSystem(), execution.getCountryEnvParam().getBuild(), execution.getCountryEnvParam().getRevision());
             List<TestCaseStep> preTestCaseStepList = new ArrayList<>();
@@ -365,6 +369,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             //Load Post TestCase information
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Loading post-testcases");
             LOG.debug("{}Loading Post-testcases.", logPrefix);
             List<TestCase> postTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, execution.getTestCaseObj().getApplication(), execution.getCountry(),
                     execution.getSystem(), execution.getCountryEnvParam().getBuild(), execution.getCountryEnvParam().getRevision());
@@ -384,6 +389,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             // Load Main TestCase with Step dependencies (Actions/Control)
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Loading steps information of main testcase");
             LOG.debug("{}Loading all Steps information of Main testcase.", logPrefix);
             List<TestCaseStep> testCaseStepList;
             testCaseStepList = this.loadTestCaseService.loadTestCaseStep(execution.getTestCaseObj());
@@ -435,6 +441,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // If execution is not manual, evaluate the condition at the top level
             if (!execution.getManualExecution().equals("Y")) {
+                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Decode execution eondition variables");
                 try {
                     answerDecode = variableService.decodeStringCompletly(execution.getConditionVal1(), execution, null, false);
                     execution.setConditionVal1(answerDecode.getItem());
@@ -486,6 +493,8 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             if (!conditionDecodeError) {
+
+                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Evaluate testcase condition");
 
                 conditionAnswerTc = this.conditionService.evaluateCondition(execution.getConditionOperator(),
                         execution.getConditionVal1(), execution.getConditionVal2(), execution.getConditionVal3(),
@@ -716,6 +725,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 //  Execute Step
                                 LOG.debug("{}Executing step : {} - {} - Step {} - Index {}",
                                         logPrefix, stepExecution.getTest(), stepExecution.getTestCase(), stepExecution.getStepId(), stepExecution.getStepId());
+                                execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing step : " + stepExecution.getStepId() + " - " + stepExecution.getDescription());
 
                                 if (doExecuteStep) {
                                     // We execute the step
@@ -933,6 +943,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(execution);
             }
 
+            // TODO Write log to file and make it available as a file on execution.
+            LOG.debug(execution.getExecutionLog().size());
+            for (ExecutionLog executionLog : execution.getExecutionLog()) {
+                LOG.debug(executionLog.getLogText());
+            }
+
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
 
@@ -1131,6 +1147,8 @@ public class ExecutionRunService implements IExecutionRunService {
                                 actionExecution.getValue2(),
                                 actionExecution.getValue3());
 
+                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing action : " + actionExecution.getSequence() + " - " + actionExecution.getDescription() + " Action '" + actionExecution.getAction() + "' with '" + actionExecution.getValue1() + "' | '" + actionExecution.getValue2() + "' | '" + actionExecution.getValue3() + "'");
+
                         // We execute the Action
                         actionExecution = this.executeAction(actionExecution, execution);
                         // If Action or property reported to stop the testcase, we stop it and update the step with the message.
@@ -1318,6 +1336,7 @@ public class ExecutionRunService implements IExecutionRunService {
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(controlExecution, execution.getSecrets());
 
             LOG.debug("Executing control : {} type : {}", controlExecution.getControlId(), controlExecution.getControl());
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Executing control : " + controlExecution.getControlId() + " - " + controlExecution.getDescription() + " Control '" + controlExecution.getControl() + "' with '" + controlExecution.getValue1() + "' | '" + controlExecution.getValue2() + "' | '" + controlExecution.getValue3() + "'");
 
             // We populate the TestCase Control List
             actionExecution.addTestCaseStepActionExecutionList(controlExecution);

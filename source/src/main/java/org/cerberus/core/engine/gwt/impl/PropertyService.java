@@ -84,6 +84,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.RobotExecutor;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
@@ -251,7 +252,7 @@ public class PropertyService implements IPropertyService {
                             now = new Date().getTime();
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "", "",
-                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "","", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
+                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
                             testCaseExecutionDataService.save(tcedS, execution.getSecrets());
                         }
                     }
@@ -612,8 +613,8 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("datalib varaible requested : " + valueA[2]);
 
                 String propName = "ENGINE-" + value;
-                TestCaseExecutionData dataExecution = factoryTestCaseExecutionData.create(0, propName, 0, "Engine Data", valueA[1], TestCaseCountryProperties.TYPE_GETFROMDATALIB, 0, valueA[1], "", "","",
-                        null, 0, 0, 0, 0, null, 0, 0, "", "", "","", "1", "1", 1, "STATIC", system, environment, country, valueA[1], "{}", "N");
+                TestCaseExecutionData dataExecution = factoryTestCaseExecutionData.create(0, propName, 0, "Engine Data", valueA[1], TestCaseCountryProperties.TYPE_GETFROMDATALIB, 0, valueA[1], "", "", "",
+                        null, 0, 0, 0, 0, null, 0, 0, "", "", "", "", "1", "1", 1, "STATIC", system, environment, country, valueA[1], "{}", "N");
                 TestCaseCountryProperties property = TestCaseCountryProperties.builder().nature(TestCaseCountryProperties.NATURE_STATIC).cacheExpire(0).length("1").property(propName).build();
                 dataExecution = property_getFromDataLib(dataExecution, execution, null, property, false);
                 String val = null;
@@ -694,6 +695,8 @@ public class PropertyService implements IPropertyService {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
+            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
+
         }
 
         // Checking recursive decode.
@@ -997,9 +1000,8 @@ public class PropertyService implements IPropertyService {
 
         testCaseExecutionData.setEnd(new Date().getTime());
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
-        }
+        LOG.debug("Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
+        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "' with value '" + testCaseExecutionData.getValue() + "'");
 
     }
 
@@ -1331,7 +1333,7 @@ public class PropertyService implements IPropertyService {
                 Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
                 String valueFromHTML = null;
 
-                switch(testCaseCountryProperty.getValue3()){
+                switch (testCaseCountryProperty.getValue3()) {
                     case (TestCaseCountryProperties.VALUE3_VALUE):
                         valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
                         break;
@@ -1351,9 +1353,9 @@ public class PropertyService implements IPropertyService {
                         valueFromHTML = this.webdriverService.getElements(tCExecution.getSession(), identifier);
                         break;
                     case (TestCaseCountryProperties.VALUE3_ATTRIBUTE):
-                        valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank() );
+                        valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
                         break;
-                    default :
+                    default:
                         valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier, false, 0);
                 }
 
@@ -1447,7 +1449,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent res;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
-            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank() );
+            String valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
             if (valueFromHTML != null) {
                 testCaseExecutionData.setValue(valueFromHTML);
                 res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETATTRIBUTEFROMHTML);
@@ -1752,7 +1754,7 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
             String valueFromJSON = this.jsonService
-                            .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
+                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJSON == null) {
                 throw new InvalidPathException();

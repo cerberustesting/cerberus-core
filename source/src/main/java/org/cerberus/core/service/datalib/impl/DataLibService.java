@@ -77,6 +77,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.cerberus.core.engine.entity.ExecutionLog;
 
 /**
  * @author bcivel
@@ -804,8 +805,12 @@ public class DataLibService implements IDataLibService {
                                         msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SQL);
                                         msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size())));
 
+                                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, msg.getDescription());
+
                                     } else {
                                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQLDATABASENODATA);
+                                        
+                                        execution.addExecutionLog(ExecutionLog.STATUS_WARN, msg.getDescription());
                                     }
 
                                 } else {

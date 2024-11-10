@@ -447,7 +447,7 @@ public class ActionService implements IActionService {
                     res = this.doActionExecuteSQLStoredProcedure(execution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
-                    res = this.doActionCalculateProperty(actionExecution, value1, value2);
+                    res = this.doActionCalculateProperty(execution, actionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SETNETWORKTRAFFICCONTENT:
                     res = this.doActionSetNetworkTrafficContent(execution, actionExecution, value1, value2);
@@ -1038,7 +1038,7 @@ public class ActionService implements IActionService {
                 Identifier identifier = identifierService.convertStringToIdentifier(value1);
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(),  true, true);
+                return webdriverService.doSeleniumActionMouseDown(tCExecution.getSession(), identifier, offset.getHOffset(), offset.getVOffset(), true, true);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS));
@@ -1817,7 +1817,7 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
+    private MessageEvent doActionCalculateProperty(TestCaseExecution execution, TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
         MessageEvent message;
         AnswerItem<String> answerDecode = new AnswerItem<>();
         if (StringUtil.isEmptyOrNull(value1)) {
@@ -1829,12 +1829,12 @@ public class ActionService implements IActionService {
         } else {
             try {
 
-                TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+//                TestCaseExecution execution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
                 // Getting the Country property definition.
                 TestCaseCountryProperties tccp = null;
                 boolean propertyExistOnAnyCountry = false;
-                for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
-                    if ((object.getProperty().equalsIgnoreCase(value1)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
+                for (TestCaseCountryProperties object : execution.getTestCaseCountryPropertyList()) {
+                    if ((object.getProperty().equalsIgnoreCase(value1)) && (object.getCountry().equalsIgnoreCase(execution.getCountry()))) {
                         tccp = object;
                     }
                     if ((object.getProperty().equalsIgnoreCase(value1))) {
@@ -1846,13 +1846,13 @@ public class ActionService implements IActionService {
                         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
                         message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
                                 .replace("%PROP%", value1)
-                                .replace("%COUNTRY%", tCExecution.getCountry()));
+                                .replace("%COUNTRY%", execution.getCountry()));
                         return message;
                     } else {
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
                         message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
                                 .replace("%PROP%", value1)
-                                .replace("%COUNTRY%", tCExecution.getCountry()));
+                                .replace("%COUNTRY%", execution.getCountry()));
                         return message;
                     }
 
@@ -1861,8 +1861,8 @@ public class ActionService implements IActionService {
                         // If value2 is fed with something, we control here that value is a valid property name and gets its defintion.
                         tccp = null;
                         propertyExistOnAnyCountry = false;
-                        for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
-                            if ((object.getProperty().equalsIgnoreCase(value2)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
+                        for (TestCaseCountryProperties object : execution.getTestCaseCountryPropertyList()) {
+                            if ((object.getProperty().equalsIgnoreCase(value2)) && (object.getCountry().equalsIgnoreCase(execution.getCountry()))) {
                                 tccp = object;
                             }
                             if ((object.getProperty().equalsIgnoreCase(value2))) {
@@ -1874,14 +1874,14 @@ public class ActionService implements IActionService {
                                 message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
                                 message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
                                         .replace("%PROP%", value2)
-                                        .replace("%COUNTRY%", tCExecution.getCountry()));
+                                        .replace("%COUNTRY%", execution.getCountry()));
                                 return message;
 
                             } else {
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
                                 message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
                                         .replace("%PROP%", value2)
-                                        .replace("%COUNTRY%", tCExecution.getCountry()));
+                                        .replace("%COUNTRY%", execution.getCountry()));
                                 return message;
 
                             }
@@ -1892,12 +1892,12 @@ public class ActionService implements IActionService {
                     long now = new Date().getTime();
                     TestCaseExecutionData tcExeData;
 
-                    tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
+                    tcExeData = factoryTestCaseExecutionData.create(execution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
                             tccp.getRank(), tccp.getValue1(), tccp.getValue2(), tccp.getValue3(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(),tccp.getValue3(), tccp.getLength(), tccp.getLength(),
+                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getValue3(), tccp.getLength(), tccp.getLength(),
                             tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "", "N");
                     tcExeData.setTestCaseCountryProperties(tccp);
-                    propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
+                    propertyService.calculateProperty(tcExeData, execution, testCaseStepActionExecution, tccp, true);
 
                     // Property message goes to Action message.
                     message = tcExeData.getPropertyResultMessage();
@@ -1919,16 +1919,16 @@ public class ActionService implements IActionService {
                     }
                     //saves the result
                     try {
-                        testCaseExecutionDataService.save(tcExeData, tCExecution.getSecrets());
+                        testCaseExecutionDataService.save(tcExeData, execution.getSecrets());
                         LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + tcExeData.getIndex() + "' Value : '" + tcExeData.getValue() + "'");
-                        tCExecution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
+                        execution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
                         if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                             for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                                 now = new Date().getTime();
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                         tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "", "",
                                         tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", "", 0, "", "", "", "", "", "", "N");
-                                testCaseExecutionDataService.save(tcedS, tCExecution.getSecrets());
+                                testCaseExecutionDataService.save(tcedS, execution.getSecrets());
                             }
                         }
                     } catch (CerberusException cex) {
@@ -2277,7 +2277,6 @@ public class ActionService implements IActionService {
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
     }
 
-
     private MessageEvent doActionSwipe(TestCaseExecution tCExecution, String object, String property) {
         // Check arguments
         if (tCExecution == null || object == null) {
@@ -2446,25 +2445,24 @@ public class ActionService implements IActionService {
         }
     }
 
-
     @Getter
     @Setter
-    private class Offset{
+    private class Offset {
+
         Integer hOffset = 0;
         Integer vOffset = 0;
 
-        public Offset(String offsetString){
+        public Offset(String offsetString) {
             try {
                 if (!StringUtil.isEmptyOrNull(offsetString)) {
                     String[] soffsets = offsetString.split(",");
                     hOffset = Integer.valueOf(soffsets[0]);
                     vOffset = Integer.valueOf(soffsets[1]);
                 }
-            } catch (Exception ex){
-                LOG.warn("Error decoding offset. It must be in two integers splited by comma. Continue with 0,0. Details :" +ex);
+            } catch (Exception ex) {
+                LOG.warn("Error decoding offset. It must be in two integers splited by comma. Continue with 0,0. Details :" + ex);
             }
         }
     }
-
 
 }

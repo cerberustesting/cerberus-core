@@ -85,6 +85,7 @@ import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.util.Utf8;
 import org.apache.kafka.common.errors.SerializationException;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.json.JSONException;
 
 /**
@@ -979,15 +980,18 @@ public class KafkaService implements IKafkaService {
                                     decodedContent.add(object);
                                 }
 
+                                tCExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Seek Kafka topic '" + decodedTopic);
                                 resultConsume = seekEvent(decodedTopic, decodedServicePath, decodedContent, parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", tCExecution.getSystem(), 60000));
 
                                 if (!(resultConsume.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE_SEARCHKAFKA.getCode()))) {
                                     LOG.debug("TestCase interupted due to error when opening Kafka consume. " + resultConsume.getMessageDescription());
+                                    tCExecution.addExecutionLog(ExecutionLog.STATUS_WARN, "TestCase interupted due to error when opening Kafka consume. " + resultConsume.getMessageDescription());
                                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_KAFKACONSUMERSEEK).resolveDescription("SERVICE", localService.getItem().getService())
                                             .resolveDescription("DETAIL", resultConsume.getMessageDescription()));
                                 }
                                 LOG.debug("Saving Map to key : " + getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()));
                                 tempKafka.put(getKafkaConsumerKey(decodedTopic, decodedServicePath), resultConsume.getItem());
+                                tCExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "Saving Map to key : " + getKafkaConsumerKey(localService.getItem().getKafkaTopic(), localService.getItem().getServicePath()) + " " + resultConsume.getItem().toString());
 
                             } catch (CerberusEventException ex) {
                                 LOG.error(ex);
@@ -1000,6 +1004,7 @@ public class KafkaService implements IKafkaService {
             }
         }
         LOG.debug(tempKafka.size() + " consumers lastest offset retrieved.");
+        tCExecution.addExecutionLog(ExecutionLog.STATUS_INFO, tempKafka.size() + " consumers lastest offset retrieved.");
         return tempKafka;
     }
 

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.cerberus.core.engine.entity.ExecutionLog;
 
 /**
  * @author bcivel
@@ -184,6 +185,7 @@ public class TestCaseExecution {
     // Http Stats
     private TestCaseExecutionHttpStat httpStat;
     private List<NetworkTrafficIndex> networkTrafficIndexList;
+    private List<ExecutionLog> executionLog;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -237,6 +239,15 @@ public class TestCaseExecution {
         if (resultMessage != null) {
             this.setControlMessage(resultMessage.getDescription());
             this.setControlStatus(resultMessage.getCodeString());
+        }
+    }
+
+    public void addExecutionLog(String status, String message) {
+        if (executionLog == null) {
+            executionLog = new ArrayList<>();
+        }
+        if (executionLog != null) {
+            this.executionLog.add(ExecutionLog.builder().message(StringUtil.secureFromSecrets(message, this.getSecrets())).status(status).datetime(new Timestamp(System.currentTimeMillis())).build());
         }
     }
 
@@ -318,27 +329,27 @@ public class TestCaseExecution {
         });
     }
 
-    public TestCaseStepExecution getTestCaseStepExecutionBySortId(int sortID){
-        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
-            if (sortID == tcse.getTestCaseStep().getSort()){
+    public TestCaseStepExecution getTestCaseStepExecutionBySortId(int sortID) {
+        for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
+            if (sortID == tcse.getTestCaseStep().getSort()) {
                 return tcse;
             }
         }
         return null;
     }
 
-    public TestCaseStepExecution getTestCaseStepExecutionByStepId(int stepId){
-        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
-            if (stepId == tcse.getTestCaseStep().getStepId()){
+    public TestCaseStepExecution getTestCaseStepExecutionByStepId(int stepId) {
+        for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
+            if (stepId == tcse.getTestCaseStep().getStepId()) {
                 return tcse;
             }
         }
         return null;
     }
 
-    public TestCaseStepExecution getTestCaseStepExecutionExecuting(){
-        for(TestCaseStepExecution tcse : this.testCaseStepExecutionList){
-            if ("PE".equals(tcse.getReturnCode())){
+    public TestCaseStepExecution getTestCaseStepExecutionExecuting() {
+        for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
+            if ("PE".equals(tcse.getReturnCode())) {
                 return tcse;
             }
         }
@@ -618,6 +629,5 @@ public class TestCaseExecution {
         }
         return color;
     }
-    
-    
+
 }
