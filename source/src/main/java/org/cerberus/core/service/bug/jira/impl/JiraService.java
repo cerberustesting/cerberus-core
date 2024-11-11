@@ -186,7 +186,7 @@ public class JiraService implements IJiraService {
                         jiraIssueKey = jiraResponse.getString("key");
                         if (jiraResponse.has("self")) {
                             URL jiURL = new URL(jiraResponse.getString("self"));
-                            newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost();
+                            newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost() + "/browse/" + jiraIssueKey;
                         }
                         // Update here the test case with new issue.
                         testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created automaticaly from Execution " + execution.getId());

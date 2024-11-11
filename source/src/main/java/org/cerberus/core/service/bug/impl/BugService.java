@@ -66,7 +66,7 @@ public class BugService implements IBugService {
         LOG.debug("Trying to create issue.");
         execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Trying To create the issue.");
         // Testcase should have a priority defined and in WORKING status
-        if ((execution.getTestCasePriority() >= 1)) {
+        if ((execution.getTestCasePriority() >= 1) && !"OK".equalsIgnoreCase(execution.getControlStatus())) {
             LOG.debug("Execution is not OK, with prio > 0.");
             execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Execution is not OK, with prio > 0 ");
             TestCase tc = null;
