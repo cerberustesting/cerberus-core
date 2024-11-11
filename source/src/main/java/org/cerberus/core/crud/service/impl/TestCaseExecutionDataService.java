@@ -37,6 +37,7 @@ import org.cerberus.core.crud.entity.TestCaseExecutionFile;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.util.StringUtil;
@@ -60,6 +61,8 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     ITestCaseExecutionDataDAO testCaseExecutionDataDao;
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
+    @Autowired
+    IRecorderService recorderService;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlExecutionService.class);
 
@@ -173,6 +176,9 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
         for (TestCaseExecutionData data : testCaseExecutionData) {
             data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY).resolveDescription("EXEID", String.valueOf(data.getId())));
             data.setId(execution.getId());
+            if ((data.getIndex() == 1) && StringUtil.isNotEmptyOrNull(data.getJsonResult())) {
+                recorderService.recordProperty(execution.getId(), data.getProperty(), 1, data.getJsonResult(), execution.getSecrets());
+            }
             if (!StringUtil.isEmptyOrNull(data.getJsonResult())) {
                 try {
                     JSONArray array = new JSONArray(data.getJsonResult());
