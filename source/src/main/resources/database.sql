@@ -6576,3 +6576,6 @@ ALTER TABLE testcasestepactioncontrolexecution MODIFY COLUMN `End` timestamp(3) 
 
 -- 1869
 DELETE FROM `parameter` WHERE `param` in ('cerberus_apikey_value1','cerberus_apikey_value2','cerberus_apikey_value3','cerberus_apikey_value4','cerberus_apikey_value5') ;
+
+-- 1870
+UPDATE application SET BugTrackerConnector='NONE' where BugTrackerConnector ='';

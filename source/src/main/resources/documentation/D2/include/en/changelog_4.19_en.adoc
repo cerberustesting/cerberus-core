@@ -20,9 +20,11 @@
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [ENGINE] Added Service REST Authorization support (Basic, API Key and Bearer).
 * [ENGINE] Added actions lockDevice, unlockDevice and rotateDevice for iOS and Android application
+* [ENGINE] when interact with an element, Cerberus report the number of elements found in order to better understand why an actoin could fail to provide the correct result
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
+* [GUI] Campaign execution and testcase execution can now be declared as false Negative. That can be used when the non OK result should be considered as OK because the used was on the testcase. That declaration will force the execution to be considered as OK on Availability KPI.
 * [GUI] direct access to Both campaign and execution reporting over time from campaign execution and test case execution screen.
 * [GUI] Testcase environment selection combo has been replaced by checkbox.
 * [GUI] new parameter in order to tune the nb of row above which the report by tag will auto hide the unnecessary lines cerberus_reportbytag_nblinestotriggerautohide_int (default to 50).
@@ -34,18 +36,17 @@
 * [GUI] Homepage now display also upcoming campaign execution from scheduler (nb can be tuned by 'cerberus_homepage_nbdisplayedscheduledtag' parameter).
 * [GUI] Homepage display Nb of Execution Running and in queue are displayed with direct access to execution running.
 * [GUI] Improved TestCaseScript page so that in case of change, the rerun button allow to save the change before rerun the testcase. (testcase can be saved and rerun in 1 click)
-* [GUI] Campaign execution and testcase execution can now be declared as false Negative. That can be used when the non OK resul should be considered as OK because the used was on the testcase. That declaration will force the execution to be considered as OK on Availability KPI.
 * [GUI] Reports over time can now be filtered by result status (in order to focus and isolate non OK result for example)
 * [GUI] Report over time display spot with bigger radius when comment or description has been entered. False Negative are surrounded with green.
 * [GUI] New Impact analysis tool. You can search any text (ex: xpath or variable) across all testcases.
 * [GUI] Testcase can be Linked to JIRA Issue. That will display the associated label with URL on execution page.
-* [GUI] Automatic issue creation with Github and Jira connector. Any non OK execution can now create an issue and link it to the Testcase. Please check the documentation for further details
+* [GUI] Automatic issue creation with Github and Jira connector. Any non OK execution can now create an issue and link it to the Testcase. Please check the documentation for further details.
+* [GUI] Improved property definition on testcase script.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* [ENGINE] Datalib no longuer support direct definition of SOAP Calls. You need to replace them by SOAP services.
+* [ENGINE] Datalib no longer support direct definition of SOAP Calls. You need to replace them by SOAP services.
 * [ENGINE] %SYS_YESTERDAY*, %SYS_TODAY*, %SYS_TOMORROW* are no longer supported, please change to %system.YESTERDAY*, %system.TODAY*, %system.TOMORROW* 
 * [ENGINE] %system.TODAY.doy*, %system.TOMORROW.doy*, %system.YESTERDAY.doy* should be replaced by %system.*.D*.
-* [GUI] Test Folder screen has been removed from menu (Folder creation are possible directly at testcase level and activation flag at Folder level can be replace by activation at testcase level).
+* [GUI] Test Folder screen has been removed from menu (Folder creation are possible directly at testcase level and activation flag at Folder level can be replaced by activation at testcase level).
 * [GUI] SQL Library screen has been removed from menu (SQL Can be triggered either from Datalib screen or stored inside datalib and used from properties if necessary).
-* [GUI] Deploy Type screen has been removed from menu.

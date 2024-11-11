@@ -369,6 +369,7 @@ function updateBugTrackerConnector() {
 
     } else if (connector === 'JIRA') {
         $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-JIRA.png")
+        $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
         $('#editApplicationModal #btP3').hide();
@@ -390,6 +391,7 @@ function updateBugTrackerConnector() {
         
     } else if (connector === 'GITHUB') {
         $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png")
+        $('#editApplicationModal #TrackerLogo').show();
         $('#editApplicationModal #btP1').show();
         $('#editApplicationModal #btP2').show();
         $('#editApplicationModal #btP3').hide();
@@ -409,8 +411,9 @@ function updateBugTrackerConnector() {
             $(this).autocomplete("search", "");
         });
         
-    } else if (connector === 'NONE') {
-        $('#editApplicationModal #TrackerLogo').attr("src", "")
+    } else {
+        $('#editApplicationModal #TrackerLogo').attr("src", "");
+        $('#editApplicationModal #TrackerLogo').hide();
         $('#editApplicationModal #btP1').hide();
         $('#editApplicationModal #btP2').hide();
         $('#editApplicationModal #btP3').hide();
