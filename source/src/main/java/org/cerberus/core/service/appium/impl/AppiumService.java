@@ -202,7 +202,12 @@ public abstract class AppiumService implements IAppiumService {
                 foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
                 action.tap(PointOption.point(offset)).perform();
             } else {
-                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+                WebElement element = getElement(session, identifier, false, false);
+                Integer numberOfElement = this.getNumberOfElements(session, identifier);
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                action.tap(ElementOption.element(element, hOffset, vOffset)).perform();
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString()).resolveDescription("ELEMENTFOUND", foundElementMsg.getDescription());
         } catch (NoSuchElementException e) {
