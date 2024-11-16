@@ -1036,6 +1036,7 @@ public class WebDriverService implements IWebDriverService {
         String windowTitle = identifier.getLocator();
 
         String currentHandle;
+        Set<String> handles = new HashSet<String>();
         // Current serial handle of the window.
         // Add try catch to handle not exist anymore window (like when popup is closed).
         try {
@@ -1047,7 +1048,7 @@ public class WebDriverService implements IWebDriverService {
 
         try {
             // Get serials handles list of all browser windows
-            Set<String> handles = session.getDriver().getWindowHandles();
+            handles = session.getDriver().getWindowHandles();
 
             // Loop into each of them
             for (String windowHandle : handles) {
@@ -1055,7 +1056,10 @@ public class WebDriverService implements IWebDriverService {
                     session.getDriver().switchTo().window(windowHandle);
                     if (checkIfExpectedWindow(session, identifier.getIdentifier(), identifier.getLocator())) {
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
-                        message.setDescription(message.getDescription().replace("%WINDOW%", windowTitle));
+                        message.setDescription(message.getDescription()
+                                .replace("%WINDOW%", windowTitle)
+                                .replace("%INITIALCONTEXT%", currentHandle)
+                                .replace("%ALLCONTEXTS%", String.join("-", handles)));
                         return message;
                     }
                 }
@@ -1076,7 +1080,10 @@ public class WebDriverService implements IWebDriverService {
             return parseWebDriverException(exception);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
-        message.setDescription(message.getDescription().replace("%WINDOW%", windowTitle));
+        message.setDescription(message.getDescription()
+                .replace("%WINDOW%", windowTitle)
+                .replace("%INITIALCONTEXT%", currentHandle)
+                .replace("%ALLCONTEXTS%", String.join("-", handles)));
         return message;
     }
 
