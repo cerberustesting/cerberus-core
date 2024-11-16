@@ -150,6 +150,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
 
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.system : {}", systems);
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement()) {
             int i = 1;

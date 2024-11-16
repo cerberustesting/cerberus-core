@@ -85,7 +85,7 @@ public class Homepage extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
 
             if (request.getParameter("system") != null) {
-                List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+                List<String> system = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
                 answer = readApplicationList(system, appContext);
                 jsonResponse = (JSONObject) answer.getItem();
             }

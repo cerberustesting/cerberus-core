@@ -107,7 +107,7 @@ public class ReadTagStat extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
-        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
+        List<String> system = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String from = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("from"), "2020-01-01T01:01:01.001Z", "UTF8");
         String to = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("to"), "2020-06-01T01:01:01.001Z", "UTF8");
 
@@ -136,30 +136,30 @@ public class ReadTagStat extends HttpServlet {
         LOG.debug("from : " + fromD);
         LOG.debug("to : " + toD);
 
-        List<String> gp1 = ParameterParserUtil.parseListParam(request.getParameterValues("group1s"), new ArrayList<>(), "UTF8");
-        List<String> gp2 = ParameterParserUtil.parseListParam(request.getParameterValues("group2s"), new ArrayList<>(), "UTF8");
-        List<String> gp3 = ParameterParserUtil.parseListParam(request.getParameterValues("group3s"), new ArrayList<>(), "UTF8");
+        List<String> gp1 = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("group1s"), new ArrayList<>(), "UTF8");
+        List<String> gp2 = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("group2s"), new ArrayList<>(), "UTF8");
+        List<String> gp3 = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("group3s"), new ArrayList<>(), "UTF8");
 
         List<String> defaultCampaigns = new ArrayList<>();
         if (gp1.isEmpty() && gp2.isEmpty() && gp3.isEmpty()) {
             // If none of the groups are defined we allow not to filter per campaign.
             defaultCampaigns.add("");
         }
-        List<String> campaigns = ParameterParserUtil.parseListParam(request.getParameterValues("campaigns"), defaultCampaigns, "UTF8");
+        List<String> campaigns = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("campaigns"), defaultCampaigns, "UTF8");
 
-        List<String> countries = ParameterParserUtil.parseListParam(request.getParameterValues("countries"), new ArrayList<>(), "UTF8");
+        List<String> countries = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("countries"), new ArrayList<>(), "UTF8");
         Boolean countriesDefined = (request.getParameterValues("countries") != null);
         LOG.debug("countries : " + countries);
 
-        List<String> environments = ParameterParserUtil.parseListParam(request.getParameterValues("environments"), new ArrayList<>(), "UTF8");
+        List<String> environments = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("environments"), new ArrayList<>(), "UTF8");
         Boolean environmentsDefined = (request.getParameterValues("environments") != null);
         LOG.debug("environments : " + environments);
 
-        List<String> robotDeclis = ParameterParserUtil.parseListParam(request.getParameterValues("robotDeclis"), new ArrayList<>(), "UTF8");
+        List<String> robotDeclis = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("robotDeclis"), new ArrayList<>(), "UTF8");
         Boolean robotDeclisDefined = (request.getParameterValues("robotDeclis") != null);
         LOG.debug("robotDeclis : " + robotDeclis);
 
-        List<String> ciResults = ParameterParserUtil.parseListParam(request.getParameterValues("ciResults"), new ArrayList<>(), "UTF8");
+        List<String> ciResults = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("ciResults"), new ArrayList<>(), "UTF8");
         Boolean ciResultsDefined = (request.getParameterValues("ciResults") != null);
         LOG.debug("ciResults : " + ciResults);
 

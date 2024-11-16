@@ -96,14 +96,15 @@ public class CreateApplication extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-        String system = policy.sanitize(request.getParameter("system"));
+//        String system = request.getParameter("system");
+        String system = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("system"), "", charset);
         String type = policy.sanitize(request.getParameter("type"));
         String deployType = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("deploytype"), "", charset);
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
-        String subSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subsystem"), "", charset);
+        String subSystem = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("subsystem"), "", charset);
         String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         int poolSize = ParameterParserUtil.parseIntegerParam(request.getParameter("poolSize"), 0);
         String repoUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repourl"), "", charset);

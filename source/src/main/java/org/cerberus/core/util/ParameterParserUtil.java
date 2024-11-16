@@ -282,7 +282,7 @@ public final class ParameterParserUtil {
      * @param defaultVal
      * @return
      */
-    public static List<String> parseListParam(String[] inParams, List<String> defaultVal, String charset) {
+    public static List<String> parseListParamAndSanitize(String[] inParams, List<String> defaultVal, String charset) {
         if (inParams == null) {
             return defaultVal;
         }
@@ -296,6 +296,51 @@ public final class ParameterParserUtil {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * Parses and decode a list from the given inParams one by decoding each of
+     * them
+     *
+     * @param inParams
+     * @param charset
+     * @param defaultVal
+     * @return
+     */
+    public static List<String> parseListParam(String[] inParams, List<String> defaultVal, String charset) {
+        if (inParams == null) {
+            return defaultVal;
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String item : inParams) {
+            try {
+                result.add(item);
+            } catch (Exception e) {
+                return defaultVal;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses and decode a list from the given inParams one by decoding each of
+     * them
+     *
+     * @param inParams
+     * @param defaultVal
+     * @param charset
+     * @return
+     */
+    public static List<String> parseListParamAndDeleteEmptyValue(String[] inParams, List<String> defaultVal, String charset) {
+        if (inParams == null) {
+            return null;
+        }
+        List<String> result = parseListParam(inParams, defaultVal, charset);
+        result.removeAll(Collections.singleton(""));
+        result.removeAll(Collections.singleton(null));
         return result;
     }
 

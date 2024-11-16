@@ -93,7 +93,7 @@ public class ReadCountryEnvParam extends HttpServlet {
          * Parsing and securing all required parameters.
          */
 //        String systems = policy.sanitize(request.getParameter("system"));
-        List <String> systems = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
+        List <String> systems = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
         String build = policy.sanitize(request.getParameter("build"));
@@ -207,7 +207,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
-        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+        List<String> systems = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -353,7 +353,7 @@ public class ReadCountryEnvParam extends HttpServlet {
             }
         }
 
-        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+        List<String> systems = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
         AnswerList cepList = cepService.readDistinctValuesByCriteria(systems, searchParameter, individualSearch, columnName);
 

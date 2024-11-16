@@ -203,10 +203,10 @@ function confirmApplicationModalHandler(mode) {
     console.info(table_environment);
     console.info($(table1[i]));
     console.info($(table1[i]).data("environment"));
-    
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
-
+    
     showLoaderInModal('#editApplicationModal');
     $.ajax({
         url: myServlet,
@@ -388,7 +388,7 @@ function updateBugTrackerConnector() {
         }).on("focus", function () {
             $(this).autocomplete("search", "");
         });
-        
+
     } else if (connector === 'GITHUB') {
         $('#editApplicationModal #TrackerLogo').attr("src", "./images/bt-GITHUB.png")
         $('#editApplicationModal #TrackerLogo').show();
@@ -410,7 +410,7 @@ function updateBugTrackerConnector() {
         }).on("focus", function () {
             $(this).autocomplete("search", "");
         });
-        
+
     } else {
         $('#editApplicationModal #TrackerLogo').attr("src", "");
         $('#editApplicationModal #TrackerLogo').hide();
@@ -509,7 +509,7 @@ function appendEnvironmentRow(env) {
     var secret2Name = $("<div class='form-group col-sm-4'></div>").append("<label for='secret2'>" + doc.getDocOnline("countryenvironmentparameters", "secret2") + "</label>").append(secret2Input);
     var mobileActivityName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
     var mobilePackageName = $("<div class='form-group col-sm-6'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
-    
+
     var drow1 = $("<div class='row'></div>").append(activeName).append(ipName).append(urlName).append(poolSizeName);
     var drow2 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(secret1Name).append(expandName);
     var drow3 = $("<div class='row'></div>").append(loginName).append(domainName);

@@ -121,7 +121,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%REASON%", "id must be an integer value."));
             seqid_error = true;
         }
-        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+        List<String> system = ParameterParserUtil.parseListParamAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String systemUnic = policy.sanitize(request.getParameter("system"));
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 

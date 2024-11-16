@@ -106,7 +106,7 @@ public class ReadTestCaseStat extends HttpServlet {
          */
         factoryTestCase = appContext.getBean(IFactoryTestCase.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
-        List<String> system = ParameterParserUtil.parseListParam(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
+        List<String> system = ParameterParserUtil.parseListParamAndSanitize(request.getParameterValues("system"), new ArrayList<>(), "UTF8");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem<JSONObject> answer = new AnswerItem<>(msg);

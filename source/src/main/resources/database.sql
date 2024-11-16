@@ -6579,3 +6579,7 @@ DELETE FROM `parameter` WHERE `param` in ('cerberus_apikey_value1','cerberus_api
 
 -- 1870
 UPDATE application SET BugTrackerConnector='NONE' where BugTrackerConnector ='';
+
+-- 1871-1872
+UPDATE application SET `System`=REPLACE(`System`, '%40', '@');
+UPDATE testcase SET `UsrModif`=REPLACE(REPLACE(`UsrModif`, '&#64;', '@'), '%40', '@'), `UsrCreated`=REPLACE(REPLACE(`UsrCreated`, '&#64;', '@'), '%40', '@');
