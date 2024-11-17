@@ -464,7 +464,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
                     if (manualExecution.equalsIgnoreCase("Y") || manualExecution.equalsIgnoreCase("A")) {
                         robotIP = "manual";
-                        robotsMap.put("", robotFactory.create(0, "", platform, browser, "", true, "", "", "", screenSize, "", 0,"", true, browser, ""));
+                        robotsMap.put("", robotFactory.create(0, "", platform, browser, "", true, "", "", "", screenSize, "", 0, "", true, browser, ""));
                     }
                     nbrobot = 1;
                 } else {
@@ -484,7 +484,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 nbrobot = 1;
                 robots = new ArrayList<>();
                 robots.add("");
-                robotsMap.put("", robotFactory.create(0, "", platform, browser, "", true, "", "", "", screenSize, "", 0,"", true, browser, ""));
+                robotsMap.put("", robotFactory.create(0, "", platform, browser, "", true, "", "", "", screenSize, "", 0, "", true, browser, ""));
             }
 
             HashMap<String, Application> appMap = new HashMap<>();
@@ -661,11 +661,18 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     LOG.warn(ex);
                 }
 
+                Map<String, TestCaseExecutionQueue> testCasesInserted = new HashMap<>();
+                for (TestCaseExecutionQueue toInsert : toInserts) {
+                    if (!testCasesInserted.containsKey(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()))) {
+                        testCasesInserted.put(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()), toInsert);
+                    }
+                }
+
                 // Part 2a: Try to insert all these test cases to the execution queue.
                 List<Long> queueInsertedIds = new ArrayList<>();
                 for (TestCaseExecutionQueue toInsert : toInserts) {
                     try {
-                        inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
+                        inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP, testCasesInserted));
                         nbExe++;
                         JSONObject value = new JSONObject();
                         value.put("queueId", toInsert.getId());

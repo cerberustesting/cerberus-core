@@ -20,7 +20,9 @@
 package org.cerberus.core.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.answer.Answer;
@@ -44,9 +46,13 @@ public interface ITestCaseExecutionQueueDepService {
      * @param tag
      * @param test
      * @param testcase
+     * @param queueToInsert Optionally that hashmap include all Execution of the
+     * context. This is used in order to avoid inserting a dependency on a
+     * testcase that is not included inside the campaign.
+     *
      * @return
      */
-    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase);
+    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert);
 
     /**
      * Insert execution dependencies to queueid from existing ExeQueueId

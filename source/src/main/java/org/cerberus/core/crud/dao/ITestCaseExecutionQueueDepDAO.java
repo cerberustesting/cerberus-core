@@ -25,6 +25,7 @@ import java.util.Map;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 
@@ -116,6 +117,13 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      */
     AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(TestCaseExecutionQueueDep object);
 
     /**
      *

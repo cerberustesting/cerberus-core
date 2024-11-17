@@ -171,7 +171,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueueId, TestCaseExecutionQueue.State targetState) {
+    public String getUniqKey(String test, String testCase, String country, String env) {
+        return "||" + test + "||" + testCase + "||" + country + "||" + env + "||";
+    }
+
+    @Override
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withNewDep, long exeQueueId, TestCaseExecutionQueue.State targetState, Map<String, TestCaseExecutionQueue> queueToInsert) {
 
         LOG.debug("Creating Queue entry : " + object.getId() + " From : " + exeQueueId + " targetState : " + targetState.toString());
         // We create the link between the tag and the system if it does not exist yet.
@@ -192,7 +197,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     // Get the QueueId Result from inserted record.
                     long insertedQueueId = ret.getItem().getId();
                     // Adding dependencies
-                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTestCaseDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
+                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTestCaseDep(insertedQueueId, object.getEnvironment(), object.getCountry(),
+                             object.getTag(), object.getTest(), object.getTestCase(), queueToInsert);
                     LOG.debug("Dep inserted : " + retDep.getItem());
                     if (retDep.getItem() < 1) {
                         // In case there are no dependencies, we release the execution moving to targetState State

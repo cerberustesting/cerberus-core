@@ -465,19 +465,15 @@ public class QueuedExecutionService {
             }
             LOG.debug("Nb of Testcases: {}", selectedTestcases.size());
             for (QueuedExecutionTestcase selectedTestcase : selectedTestcases) {
-                LOG.debug("PASS");
                 String test = selectedTestcase.getTestFolderId();
                 String testCase = selectedTestcase.getTestcaseId();
                 TestCase tc = testCaseService.convert(testCaseService.readByKey(test, testCase));
-                LOG.debug("PASS");
                 // TestCases that are not active are not inserted into queue.
                 if (tc != null) {
-                    LOG.debug("PASS");
                     if (tc.isActive()) {
                         // We only insert testcase that exist for the given country.
                         for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase, null))) {
                             if (countries.contains(country.getCountry())) {
-                                LOG.debug("PASS");
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {
                                     String envGp1 = invariantEnvMap.get(environment);
@@ -608,12 +604,20 @@ public class QueuedExecutionService {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         }
+
+        Map<String, TestCaseExecutionQueue> testCasesInserted = new HashMap<>();
+        for (TestCaseExecutionQueue toInsert : toInserts) {
+            if (!testCasesInserted.containsKey(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()))) {
+                testCasesInserted.put(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()), toInsert);
+            }
+        }
+
         // Part 2a: Try to insert all these test cases to the execution queue.
         List<Long> queueInsertedIds = new ArrayList<>();
         List<QueuedEntry> queuedEntries = new ArrayList<>();
         for (TestCaseExecutionQueue toInsert : toInserts) {
             try {
-                inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP));
+                inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUTEMP, testCasesInserted));
                 nbExe++;
                 queuedEntries.add(
                         QueuedEntry.builder()

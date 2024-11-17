@@ -28,11 +28,34 @@ import java.util.List;
 
 public interface ITestCaseDepService {
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param testDep
+     * @param testcaseDep
+     * @return
+     * @throws CerberusException
+     */
     TestCaseDep readByKey(String test, String testcase, String testDep, String testcaseDep) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseDep> readByTestAndTestcase(String test, String testcase) throws CerberusException;
+
+    /**
+     *
+     * @param testCaseList
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseDep> readByTestAndTestcase(List<TestCase> testCaseList) throws CerberusException;
-    
+
     HashMap<String, List<TestCaseDep>> convertTestCaseDependencyListToHash(List<TestCaseDep> testCaseDependencies);
 
     void create(TestCaseDep testCaseDep) throws CerberusException;

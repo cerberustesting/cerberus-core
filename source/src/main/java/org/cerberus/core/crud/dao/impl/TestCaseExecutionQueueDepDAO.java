@@ -36,6 +36,7 @@ import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.SqlUtil;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -547,6 +548,48 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             ans.setResultMessage(msg);
         }
         return ans;
+    }
+
+    @Override
+    public Answer create(TestCaseExecutionQueueDep object) {
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepTCDelay, DepEvent, Status, Comment, UsrCreated)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        LOG.debug("SQL : {}", query);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setLong(i++, object.getExeQueueId());
+            preStat.setString(i++, object.getEnvironment());
+            preStat.setString(i++, object.getCountry());
+            preStat.setString(i++, object.getTag());
+            preStat.setString(i++, object.getType());
+            preStat.setString(i++, object.getDepTest());
+            preStat.setString(i++, object.getDepTestCase());
+            preStat.setInt(i++, object.getDepTCDelay());
+            preStat.setString(i++, object.getDepEvent());
+            preStat.setString(i++, object.getStatus());
+            preStat.setString(i++, object.getComment());
+            preStat.setString(i++, object.getUsrCreated());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            }
+        }
+        return new Answer(msg);
     }
 
     @Override

@@ -225,11 +225,18 @@ public class AddToExecutionQueue extends HttpServlet {
                     LOG.warn(ex);
                 }
 
+                Map<String, TestCaseExecutionQueue> testCasesInserted = new HashMap<>();
+                for (TestCaseExecutionQueue toInsert : toInserts) {
+                    if (!testCasesInserted.containsKey(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()))) {
+                        testCasesInserted.put(inQueueService.getUniqKey(toInsert.getTest(), toInsert.getTestCase(), toInsert.getCountry(), toInsert.getEnvironment()), toInsert);
+                    }
+                }
+
                 // Part 2: Try to insert all these test cases to the execution queue.
                 List<String> errorMessages = new ArrayList<>();
                 for (TestCaseExecutionQueue toInsert : toInserts) {
                     try {
-                        inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED));
+                        inQueueService.convert(inQueueService.create(toInsert, true, 0, TestCaseExecutionQueue.State.QUEUED, testCasesInserted));
                     } catch (CerberusException e) {
                         String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
                         LOG.warn(errorMessage);

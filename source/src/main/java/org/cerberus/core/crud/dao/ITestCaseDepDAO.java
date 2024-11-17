@@ -30,15 +30,53 @@ import java.util.List;
  */
 public interface ITestCaseDepDAO {
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param testDep
+     * @param testcaseDep
+     * @return
+     * @throws CerberusException
+     */
     TestCaseDep readByKey(String test, String testcase, String testDep, String testcaseDep) throws CerberusException;
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException;
+
+    /**
+     *
+     * @param testCaseList
+     * @return
+     * @throws CerberusException
+     */
     List<TestCaseDep> readByTestAndTestCase(List<TestCase> testCaseList) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseDep
+     * @throws CerberusException
+     */
     void create(TestCaseDep testCaseDep) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseDep
+     * @throws CerberusException
+     */
     void update(TestCaseDep testCaseDep) throws CerberusException;
 
+    /**
+     *
+     * @param testCaseDep
+     * @throws CerberusException
+     */
     void delete(TestCaseDep testCaseDep) throws CerberusException;
 
 }

@@ -42,6 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.cerberus.core.crud.entity.TestCaseDep;
+import org.cerberus.core.crud.service.ITestCaseDepService;
+import org.cerberus.core.engine.entity.MessageEvent;
 
 /**
  * @author bcivel
@@ -52,6 +55,8 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     @Autowired
     private ITestCaseExecutionQueueDepDAO testCaseExecutionQueueDepDAO;
     @Autowired
+    private ITestCaseDepService testCaseDepService;
+    @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
     private static final Logger LOG = LogManager.getLogger("TestCaseExecutionQueueDepService");
@@ -59,8 +64,60 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     private final String OBJECT_NAME = "Test Case Execution Queue Dependency";
 
     @Override
-    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase) {
-        return testCaseExecutionQueueDepDAO.insertFromTestCaseDep(queueId, env, country, tag, test, testcase);
+    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
+        Integer nbInserted = 0;
+        MessageEvent msg = null;
+        try {
+            LOG.debug("toto : Quque already inserted inside context");
+            for (Map.Entry<String, TestCaseExecutionQueue> entry : queueToInsert.entrySet()) {
+                String key = entry.getKey();
+                Object val = entry.getValue();
+                LOG.debug(key);
+            }
+
+            // List of dep to insert from testcase definition.
+            List<TestCaseDep> depToInsert = testCaseDepService.readByTestAndTestcase(test, testcase);
+
+            // For each dependency we insert the queue dep.
+            for (TestCaseDep testCaseDep : depToInsert) {
+                if (testCaseDep.isActive()) {
+                    String status = TestCaseExecutionQueueDep.STATUS_WAITING;
+                    String comment = "";
+                    LOG.debug(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env));
+                    if (!queueToInsert.containsKey(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env))) {
+                        status = TestCaseExecutionQueueDep.STATUS_IGNORED;
+                        comment = "The corresponding test Case is not inside context of compaign execution";
+                    }
+                    nbInserted++;
+                    TestCaseExecutionQueueDep newDep = TestCaseExecutionQueueDep.builder()
+                            .comment(comment)
+                            .depTest(testCaseDep.getDependencyTest())
+                            .depTestCase(testCaseDep.getDependencyTestcase())
+                            .depEvent(testCaseDep.getDependencyEvent())
+                            .type(testCaseDep.getType())
+                            .status(status)
+                            .exeQueueId(queueId)
+                            .country(country)
+                            .environment(env)
+                            .tag(tag)
+                            .depTCDelay(testCaseDep.getDependencyTCDelay())
+                            .usrCreated("")
+                            .build();
+                    testCaseExecutionQueueDepDAO.create(newDep);
+                }
+            }
+
+            ans.setItem(nbInserted);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "INSERT_FROM_TESTCASE");
+            ans.setResultMessage(msg);
+
+            return ans;
+        } catch (CerberusException ex) {
+            LOG.warn("Could not insert dependency");
+        }
+        LOG.warn("{} dependency inserted in queueId {}.", nbInserted, queueId);
+        return ans;
     }
 
     @Override

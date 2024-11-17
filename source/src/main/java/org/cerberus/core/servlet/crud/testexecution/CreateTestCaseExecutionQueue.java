@@ -21,6 +21,7 @@ package org.cerberus.core.servlet.crud.testexecution;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -253,7 +254,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED);
+                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED, new HashMap<>());
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
                             insertedList.add(addedExecution);
                         }
