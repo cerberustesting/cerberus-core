@@ -85,7 +85,8 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                     String status = TestCaseExecutionQueueDep.STATUS_WAITING;
                     String comment = "";
                     LOG.debug(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env));
-                    if (!queueToInsert.containsKey(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env))) {
+                    if (!queueToInsert.containsKey(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env))
+                            && !queueToInsert.isEmpty()) {
                         status = TestCaseExecutionQueueDep.STATUS_IGNORED;
                         comment = "The corresponding test Case is not inside context of compaign execution";
                     }
