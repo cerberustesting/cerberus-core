@@ -88,7 +88,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                     if (!queueToInsert.containsKey(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env))
                             && !queueToInsert.isEmpty()) {
                         status = TestCaseExecutionQueueDep.STATUS_IGNORED;
-                        comment = "The corresponding test Case is not inside context of compaign execution";
+                        comment = "The corresponding test Case does not exist in the context of the campaign execution";
                     }
                     nbInserted++;
                     TestCaseExecutionQueueDep newDep = TestCaseExecutionQueueDep.builder()
