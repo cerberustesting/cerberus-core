@@ -150,15 +150,16 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         MessageEvent foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
         try {
-//            if (!StringUtil.isEmptyOrNULLString(valueToType)) {
-//                WebElement elmt = this.getElement(session, identifier, false, false);
-//                Integer numberOfElement = this.getNumberOfElements(session, identifier);
-//                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
-//                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
-//                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
-//                if (elmt instanceof MobileElement) {
-//                    ((MobileElement) this.getElement(session, identifier, false, false)).setValue(valueToType);
-//                } else { // FIXME See if we can delete it ??
+            if (!StringUtil.isEmptyOrNULLString(valueToType)) {
+                WebElement elmt = this.getElement(session, identifier, false, false);
+                Integer numberOfElement = this.getNumberOfElements(session, identifier);
+                foundElementMsg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_FOUND_ELEMENT);
+                foundElementMsg.resolveDescription("NUMBER", numberOfElement.toString());
+                foundElementMsg.resolveDescription("ELEMENT", identifier.toString());
+                if (elmt instanceof WebElement ) {
+                    ((WebElement) this.getElement(session, identifier, false, false)).sendKeys(valueToType);
+                }
+//                else { // FIXME See if we can delete it ??
 //                    TouchAction action = new TouchAction(session.getAppiumDriver());
 //                    action.press(ElementOption.element(this.getElement(session, identifier, false, false))).release().perform();
 //                    try {
@@ -168,7 +169,7 @@ public abstract class AppiumService implements IAppiumService {
 //                    }
 //                    session.getAppiumDriver().getKeyboard().sendKeys(valueToType);
 //                }
-//            }
+            }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("ELEMENTFOUND", foundElementMsg.getDescription()));
             if (!StringUtil.isEmptyOrNULLString(valueToType)) {
