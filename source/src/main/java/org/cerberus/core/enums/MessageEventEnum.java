@@ -230,7 +230,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove applcation with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_DRAGANDDROP(200, "OK", "Drag and drop from %SOURCE% to %TARGET% with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_LONG_CLICK(200, "OK", "Element '%ELEMENT%' long clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_CLEAR(200, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_CLEAR(200, "OK", "Field has been cleared.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_REFRESHCURRENTPAGE(200, "OK", "Current page refreshed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_RETURNPREVIOUSPAGE(200, "OK", "Returned to previous page", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_FORWARDNEXTPAGE(200, "OK", "Forwarded to next page", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
