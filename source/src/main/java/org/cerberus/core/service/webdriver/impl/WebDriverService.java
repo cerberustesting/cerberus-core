@@ -831,8 +831,7 @@ public class WebDriverService implements IWebDriverService {
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
             try {
-                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
-                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                File image = ((TakesScreenshot) session.getDriver()).getScreenshotAs(OutputType.FILE);
                 if (!StringUtil.isEmptyOrNull(cropValues)) {
                     BufferedImage fullImg = ImageIO.read(image);
                     // x - the X coordinate of the upper-left corner of the specified rectangular region y - the Y coordinate of the upper-left corner of the specified rectangular region w - the width of the specified rectangular region h - the height of the specified rectangular region 
@@ -890,8 +889,7 @@ public class WebDriverService implements IWebDriverService {
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
             try {
-                WebDriver augmentedDriver = new Augmenter().augment(session.getDriver());
-                File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+                File image = ((TakesScreenshot) session.getDriver()).getScreenshotAs(OutputType.FILE);
                 BufferedImage bufferedImage = ImageIO.read(image);
 
                 newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
