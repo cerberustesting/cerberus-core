@@ -96,12 +96,13 @@ function setSelectOptions(selectId, options, param) {
     if (select.val() === null) {
         select.empty();
         select.multiselect('rebuild');
+        let selectOptions = select.html();
         $.each(options, function(index, value) {
             if ($("#" + selectId + " option[value='" + options[index] + "']").length === 0) {
-                let option = $('<option></option>').attr('value', options[index]).text(options[index]);
-                select.append(option);
+                selectOptions += `<option value="${options[index]}">${options[index]}</option>`;
             }
         });
+        select.html(selectOptions);
         select.multiselect('rebuild');
         if (param == "selectAll") {
             select.multiselect('selectAll', false);
@@ -113,11 +114,12 @@ function setSelectOptions(selectId, options, param) {
 function setSystemSelectOptions() {
     let user = JSON.parse(sessionStorage.getItem('user'));
     let systems = user.system;
+    let options = $("#system-select").html();
     $.each(systems, function(index, value) {
-        let option = $('<option></option>').attr('value', value).text(value);
-        $("#system-select").append(option);
-        $("#system-select").multiselect('rebuild');
+        options += `<option value="${value}">${value}</option>`;
     })
+    $('#system-select').html(options);
+    $("#system-select").multiselect('rebuild');
 }
 
 function setApplicationSelectOptions() {
@@ -137,11 +139,12 @@ function setApplicationSelectOptions() {
             },
             success: function(data) {
                 let result = data.contentTable;
+                let options = $("#application-select").html();
                 $.each(result, function(index, value) {
-                    let option = $('<option></option>').attr('value', result[index].application).text(result[index].application);
-                    $("#application-select").append(option);
-                    $("#application-select").multiselect('rebuild');
+                    options += `<option value="${result[index].application}">${result[index].application}</option>`;
                 })
+                $('#application-select').html(options);
+                $("#application-select").multiselect('rebuild');
             }
         });
 }
