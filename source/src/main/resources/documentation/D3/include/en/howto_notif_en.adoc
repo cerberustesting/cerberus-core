@@ -1,1 +1,1 @@
-Blabla
+Cerberus can notify events to external connector such as email, slack, Teams and Google Chat.

@@ -1,1 +1,5 @@
-Blabla
+
+
+Webhook URL can be defined from Google Chat interface after creating a dedicated space.
+
+image:googlechat_01.png[Github,850]

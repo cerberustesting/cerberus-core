@@ -1,1 +1,1 @@
-Blabla
+You can integrate Cerberus easilly using documentation from this https://github.com/cerberustesting/cerberus-cicd-github-action[repo]

@@ -1,1 +1,1 @@
-Blabla
+Test data can be retrieved either from any database that have a jdbc driver or from csv flat files uploaded of accessible from Cerberus.

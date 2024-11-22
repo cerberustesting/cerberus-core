@@ -1,1 +1,56 @@
-Blabla
+* Create a connection pool from config files located inside conf Tomcat folder.
+Both context.xml & server.xml need to be changed
+
+_context.xml_
+
+    <ResourceLink name="jdbc/snowflake"
+                global="jdbc/snowflake"
+                type="javax.sql.DataSource"/>
+
+
+_server.xml_ 
+
+    <Resource   name="jdbc/snowflake"
+                global="jdbc/snowflake"
+                auth="Container"
+                type="javax.sql.DataSource"
+                factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                maxTotal="100"
+                maxIdle="30"
+                maxWaitMillis="10000"
+                validationQuery="select 1"
+                testOnBorrow="true"
+                user="CERBERUSACCOUNT"
+                username="CERBERUSACCOUNT"
+                password="${db.password}"
+                driverClassName="net.snowflake.client.jdbc.SnowflakeDriver"
+                url="jdbc:snowflake://XXXX.eu-central-1.snowflakecomputing.com/?"/>
+
+db.password parameter can be defined inside _catalina.properties_ in order to support special characters inside password.
+
+    # Snowflake Password
+    db.password=XXXXXXXXXXXX
+
+
+
+(Make sure not to remove the Cerberus database connectivity)
+
+* Copy the jdbc driver into lib Tomcat folder
+
+* Inside Cerberus, create a “PROPERTYDATABASE” invariant, with a clear value.
+
+image:testdatasql_01.png[Cerberus Database Property]
+
+
+* Inside Cerberus, at Environment level, you can link this database name with the right jdbc ressource depending on the correct environment
+
+image:testdatasql_02.png[Database Link]
+
+[NOTE]
+====
+Make sure that the name of the connection pool inside Tomcat starts by  “jdbc/”
+Inside Cerberus “jdbc/” should not be added
+
+====
+
+

@@ -1,1 +1,2 @@
-Blabla
+An official JENKINS plugin is available.
+You can get further information from this https://github.com/cerberustesting/cerberus-cicd-jenkins-plugin[repo]

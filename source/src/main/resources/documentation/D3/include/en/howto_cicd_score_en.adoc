@@ -1,1 +1,37 @@
-Blabla
+A campaign result is calculated at the end of the execution.
+The campaign is OK if the total score of all execution is bellow the defined threshold. It is KO in case the score is above.
+
+The score is calculated giving the following formula :[source,]
+----
+
+nb of non OK execution of prio 1 testcases * parameter cerberus_ci_okcoefprio1
++
+nb of non OK execution of prio 2 testcases * parameter cerberus_ci_okcoefprio2
++
+nb of non OK execution of prio 3 testcases * parameter cerberus_ci_okcoefprio"
++
+nb of non OK execution of prio 4 testcases * parameter cerberus_ci_okcoefprio4
++
+nb of non OK execution of prio 5 testcases * parameter cerberus_ci_okcoefprio5
+----
+
+The threshold is defined at global Cerberus level using parameter _cerberus_ci_threshold_.
+Is default value is 100.
+This value can be overwride at campaign level allowing to tune it depending on the nb of testcases that campaign have.
+
+.Campaign result1
+====
+Given a Campaign with a threshold of 100.
+If the parameters defined for prio1 = 100, prio2 = 50, prio3 = 20, prio4 = 10 and prio5 = 0
+
+* 1 non OK execution of prio1 testcase will result a global KO result
+* 2 non OK execution of prio2 testcase will result a global KO result
+* 5 non OK execution of prio3 testcase will result a global KO result
+* 10 non OK execution of prio4 testcase will result a global KO result
+
+====
+
+[NOTE]
+====
+Testcases can be temporary disabled from CICD result by moving its priority to 0.
+====
