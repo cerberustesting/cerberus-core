@@ -7,7 +7,7 @@ In order to perform the impact analysis of the systems that are calling your Cer
 Setting the parameter to Y will log every public API calls performed, reporting any deprecated calls that needs to be migrated to newer version of the same API.
 
 All Public API are secured using API Key.
-You can enable the API Authentification using the parameter `cerberus_apikey_enable` and define up to 5 values of API Key from `cerberus_apikey_value1` to `cerberus_apikey_value5`.
+You can enable the API Authentification using the parameter `cerberus_apikey_enable` and define an API Key from a service account that can be created from the Administrator / User Management.
 The API Key value must be added on every calls inside the HTTP header `apikey`.
 [source,]
 ----
