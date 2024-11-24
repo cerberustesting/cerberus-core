@@ -84,7 +84,7 @@
                                         <span id="environment"></span>
                                         <span name="Separator"> </span>
                                         <span id="controlstatus" style="font-weight: 900"></span>
-                                        <span id="duration"></span>
+                                        <span id="duration" data-toggle='tooltip' data-original-title=''></span>
                                     </div>
                                     <div class="text-wrap">
                                         <span id="AppName"> </span>
@@ -226,20 +226,13 @@
                         </div>
                         <div id="NavtabsScriptEdit" style="height:40px; background-color: #f5f6fa; padding-top:20px">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" style="background-color:#f5f6fa" data-tabs="tabs">
-                                <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep"
-                                                      name="tabSteps">Steps</a></li>
-                                <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties"
-                                       name="tabProperties">Properties</a></li>
-                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Execution
-                                        Details</a></li>
-                                <li><a data-toggle="tab" href="#tabEnv" class="tabSteps" id="editTabEnv" name="tabEnv">Environment</a>
-                                </li>
-                                <li><a data-toggle="tab" href="#tabRobot" class="tabSteps" id="editTabRobot" name="tabRobot">Robot</a>
-                                </li>
-                                <li><a data-toggle="tab" href="#tabDep" class="tabSteps" id="editTabDep" name="tabDep">Dependencies</a>
-                                </li>
-                                <li><a data-toggle="tab" href="#tabNetwork" class="tabSteps" id="editTabNetwork"
-                                       name="tabNetwork" style="display: none;">Network</a></li>
+                                <li class="active"><a data-toggle="tab" href="#tabSteps" class="tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
+                                <li><a data-toggle="tab" href="#tabProperties" class="tabSteps" id="editTabProperties" name="tabProperties">Properties</a></li>
+                                <li><a data-toggle="tab" href="#tabDetail" class="tabSteps" id="editTabDetail" name="tabDetail">Execution Details</a></li>
+                                <li><a data-toggle="tab" href="#tabEnv" class="tabSteps" id="editTabEnv" name="tabEnv">Environment</a></li>
+                                <li><a data-toggle="tab" href="#tabRobot" class="tabSteps" id="editTabRobot" name="tabRobot">Robot</a></li>
+                                <li><a data-toggle="tab" href="#tabDep" class="tabSteps" id="editTabDep" name="tabDep">Dependencies</a></li>
+                                <li><a data-toggle="tab" href="#tabNetwork" class="tabSteps" id="editTabNetwork" name="tabNetwork" style="display: none;">Network</a></li>
                                 <li><a data-toggle="tab" href="#tabTraca" class="tabSteps" id="editTabTraca" name="tabTraca">Traceability</a>
                                 </li>
                             </ul>
@@ -552,6 +545,10 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6" id="tcDetailFileContentField">
                                 </div>
                             </div>
                         </div>

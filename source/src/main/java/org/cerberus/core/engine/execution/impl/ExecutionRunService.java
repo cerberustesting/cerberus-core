@@ -943,11 +943,8 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(execution);
             }
 
-            // TODO Write log to file and make it available as a file on execution.
-            LOG.debug(execution.getExecutionLog().size());
-            for (ExecutionLog executionLog : execution.getExecutionLog()) {
-                LOG.debug(executionLog.getLogText());
-            }
+            // Write Execution log to file and make it available as a file on execution.
+            execution.addFileList(recorderService.recordExeLog(execution));
 
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);

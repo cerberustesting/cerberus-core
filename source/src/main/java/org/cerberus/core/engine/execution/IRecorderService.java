@@ -59,6 +59,7 @@ public interface IRecorderService {
      * @param control
      * @param cropValues
      * @param fileDescription
+     * @param fileName
      * @return
      */
     List<TestCaseExecutionFile> recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String cropValues, String fileDescription, String fileName);
@@ -71,6 +72,12 @@ public interface IRecorderService {
      * @return
      */
     TestCaseExecutionFile recordPicture(TestCaseStepActionExecution actionExecution, Integer controlId, String locator, String valueFieldName);
+
+    /**
+     * @param testCaseExecution
+     * @return
+     */
+    TestCaseExecutionFile recordExeLog(TestCaseExecution testCaseExecution);
 
     /**
      * @param testCaseExecution

@@ -163,6 +163,15 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
             } else {
                 pathString = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
             }
+            int nb = tceFile.getFileName().split("/").length;
+            String filenameDownload = "";
+            if (nb > 1) {
+                filenameDownload = String.valueOf(tceFile.getFileName().split("/")[nb - 2]) + "-" + tceFile.getFileName().split("/")[nb - 1];
+            } else if (nb > 0) {
+                filenameDownload = tceFile.getFileName().split("/")[nb - 1];
+            } else {
+                filenameDownload = tceFile.getFileName();
+            }
 
             switch (tceFile.getFileType()) {
                 case "JPG":
@@ -170,51 +179,62 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     if (autoContentType) {
                         response.setContentType("image/jpeg");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "PNG":
                     if (autoContentType) {
                         response.setContentType("image/png");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "GIF":
                     if (autoContentType) {
                         response.setContentType("image/gif");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "XML":
                     if (autoContentType) {
                         response.setContentType("application/xml");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "JSON":
                     if (autoContentType) {
                         response.setContentType("application/json");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "TXT":
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "PDF":
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnPDF(request, response, tceFile, pathString);
                     break;
                 case "HTML":
                     if (autoContentType) {
                         response.setContentType("text/html");
                     }
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnDownloadTXTFile(request, response, tceFile, pathString);
                     break;
                 case "BIN":
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnDownloadBinFile(request, response, tceFile, pathString);
                     break;
                 case "MP4":
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnMP4(request, response, tceFile, pathString);
                     break;
                 default:
+                    response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnNotSupported(request, response, tceFile, pathString);
             }
 
@@ -343,7 +363,6 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
-        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc() + "." + tc.getFileType().toLowerCase());
 
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
         File file = new File(filePath + tc.getFileName());
@@ -368,7 +387,6 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setDateHeader("Expires", 0);
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
-        response.setHeader("Content-Disposition", "attachment; filename=" + tc.getFileDesc());
 
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
         File file = new File(filePath + tc.getFileName());

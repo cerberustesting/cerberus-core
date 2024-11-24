@@ -517,7 +517,8 @@ function updatePage(data, steps) {
 
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
-    addFileLink(data.fileList, fileContainer, isTheExecutionManual);
+    var fileExeContainer = $("#testCaseConfig #tcDetailFileContentField");
+    addFileLink(data.fileList, fileContainer, fileExeContainer, isTheExecutionManual);
 
     var myURL = $("#bugs").data("appBugURL");
     if (myURL === undefined) {
@@ -1493,6 +1494,7 @@ function setConfigPanel(data) {
     if (data.controlStatus !== "PE") {
         configPanel.find("#duration").text("(" + (data.end - data.start) / 1000 + " s)");
     }
+    configPanel.find("#duration").attr("data-original-title", new Date(data.start).toLocaleString());
 
     if (isTheExecutionManual) {
         var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnMessageEx' placeholder='Execution Result Message'>");
@@ -3532,9 +3534,10 @@ function changeClickIfManual(isTheExecutionManual, container, idStep, file, even
 
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
-function addFileLink(fileList, container, manual, idStep) {
+function addFileLink(fileList, container, containerExe, manual, idStep) {
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
+    $(containerExe).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
         let index = i
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
@@ -3564,7 +3567,11 @@ function addFileLink(fileList, container, manual, idStep) {
                 changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                 return false;
             }));
-            container.append(linkBoxtxt);
+            if (fileList[i].fileDesc === "Execution Log") {
+                containerExe.append(linkBoxtxt);
+            } else {
+                container.append(linkBoxtxt);
+            }
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
 
             var linkBoxtxt = null;
