@@ -1,4 +1,4 @@
-FROM tomcat:8-jre8-alpine
+FROM tomcat:9-jre11-temurin
 
 ENV LOG_ROOT_PATH /usr/local/tomcat/logs/
 
@@ -14,14 +14,20 @@ ARG CERBERUS_NAME=cerberus-core
 ARG CERBERUS_VERSION=4.18
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
-ARG MYSQL_JAVA_CONNECTOR_VERSION=5.1.47
-ARG MYSQL_JAVA_CONNECTOR_NAME=mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
+ARG MYSQL_JAVA_CONNECTOR_VERSION=9.0.0
+ARG MYSQL_JAVA_CONNECTOR_NAME=mysql-connector-j-${MYSQL_JAVA_CONNECTOR_VERSION}
+
+
+RUN apt-get update -qqy \
+  && apt-get -qqy install \
+  unzip dos2unix \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # Download & install MySQL JDBC Drivers
 RUN echo "Download & install MySQL JDBC Drivers" && \
     wget -P /tmp/ https://downloads.mysql.com/archives/get/p/3/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     unzip -q -d /tmp/ /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
-    mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /usr/local/tomcat/lib/ && \
+    mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}.jar  /usr/local/tomcat/lib/ && \
     echo "Clean temp directory" && \
     rm /tmp/* -rf
 #COPY mysql-connector-java-5.1.20-bin.jar /usr/local/tomcat/lib/
