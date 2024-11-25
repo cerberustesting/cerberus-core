@@ -410,6 +410,7 @@ public class TagStatisticService implements ITagStatisticService {
 
     public boolean userHasRightSystems(String user, List<TagStatistic> tagStatistics) {
         List<String> systemsAllowedForUser;
+        List<String> systemList = new ArrayList<>();
         try {
             systemsAllowedForUser = getSystemsAllowedForUser(user);
         } catch (CerberusException exception) {
@@ -417,18 +418,11 @@ public class TagStatisticService implements ITagStatisticService {
             return false;
         }
         for (TagStatistic tagStatistic : tagStatistics) {
-            List<String> systemList =Arrays.stream(
-                            tagStatistic.getSystemList()
-                                    .replaceAll("\"", "")
-                                    .replace("[", "")
-                                    .replace("]", "")
-                                    .split(","))
-                    .collect(Collectors.toList());
-            if (!new HashSet<>(systemsAllowedForUser).containsAll(systemList)) {
-                return false;
-            }
+            String[] elements = tagStatistic.getSystemList().replaceAll("\"", "").replace("[", "").replace("]", "").split(",");
+            systemList.addAll(Arrays.asList(elements));
         }
-        return true;
+        return systemList.stream()
+                .anyMatch(system -> systemsAllowedForUser.contains(system));
     }
 
     private String updateMinCampaignDateStart(String minDateStart, JSONObject mapTagEntry) throws JSONException {
