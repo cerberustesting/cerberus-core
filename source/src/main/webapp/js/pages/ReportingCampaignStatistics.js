@@ -241,14 +241,17 @@ function getStatistics() {
         ({
             url: "api/campaignexecutions/statistics",
             async: true,
-            method: 'GET',
-            data: {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
                 systems: encodeURI(systems),
                 applications: encodeURI(applications),
                 group1: encodeURI(group1),
                 from: encodeURIComponent(new Date($('#frompicker').data("DateTimePicker").date()).toISOString()),
                 to: encodeURIComponent(new Date($('#topicker').data("DateTimePicker").date()).toISOString())
-            },
+            }),
             beforeSend: function() {
                 setLoadingStatus($("#tagStatisticList"));
             },

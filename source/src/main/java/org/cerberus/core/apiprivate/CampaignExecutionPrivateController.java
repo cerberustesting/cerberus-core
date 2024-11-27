@@ -27,6 +27,7 @@ import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.util.ParameterParserUtil;
+import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerList;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,18 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.util.servlet.ServletUtil;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/campaignexecutions/")
@@ -57,21 +53,28 @@ public class CampaignExecutionPrivateController {
     @Autowired
     private ITagService tagService;
 
-    @GetMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getTagStatistics(
             HttpServletRequest request,
-            @RequestParam(name = "systems") String[] systemsParam,
-            @RequestParam(name = "applications") String[] applicationsParam,
-            @RequestParam(name = "group1") String[] group1Param,
-            @RequestParam(name = "from") String fromParam,
-            @RequestParam(name = "to") String toParam
+            @RequestBody Map<String, String> body
     ) {
         //Retrieve and format URL parameter
-        fromParam = ParameterParserUtil.parseStringParamAndDecode(fromParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
-        toParam = ParameterParserUtil.parseStringParamAndDecode(toParam, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
-        List<String> systems = ParameterParserUtil.parseListParamAndDecode(systemsParam, new ArrayList<>(), "UTF8");
-        List<String> applications = ParameterParserUtil.parseListParamAndDecode(applicationsParam, new ArrayList<>(), "UTF8");
-        List<String> group1List = ParameterParserUtil.parseListParamAndDecode(group1Param, new ArrayList<>(), "UTF8");
+        String fromParam = StringUtil.isEmptyOrNull(body.get("from"))
+                ? new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date())
+                : ParameterParserUtil.parseStringParamAndDecode(body.get("from"), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
+        String toParam = StringUtil.isEmptyOrNull(body.get("to"))
+                ? new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date())
+                : ParameterParserUtil.parseStringParamAndDecode(body.get("to"), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'").format(new Date()), "UTF8");
+        List<String> systems = (body.get("systems") == null || body.get("systems").isEmpty())
+                ? new ArrayList<>()
+                : ParameterParserUtil.parseListParamAndDecode(body.get("systems").split(","), new ArrayList<>(), "UTF8");
+        List<String> applications = (body.get("applications") == null || body.get("applications").isEmpty())
+                ? new ArrayList<>()
+                : ParameterParserUtil.parseListParamAndDecode(body.get("applications").split(","), new ArrayList<>(), "UTF8");
+        List<String> group1List = (body.get("group1") == null || body.get("group1").isEmpty())
+                ? new ArrayList<>()
+                : ParameterParserUtil.parseListParamAndDecode(body.get("group1").split(","), new ArrayList<>(), "UTF8");
+
         String fromDateFormatted = tagStatisticService.formatDateForDb(fromParam);
         String toDateFormatted = tagStatisticService.formatDateForDb(toParam);
         List<TagStatistic> tagStatistics;
@@ -87,17 +90,6 @@ public class CampaignExecutionPrivateController {
 
         JSONObject response = new JSONObject();
         try {
-            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
-            if (!missingParameters.isEmpty()) {
-                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
-                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
-                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
-                response.put("message", msg.getDescription());
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(response.toString());
-            }
 
             if (request.getUserPrincipal() == null) {
                 MessageEvent message = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
@@ -107,6 +99,18 @@ public class CampaignExecutionPrivateController {
                 response.put("message", message.getDescription());
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
+                        .body(response.toString());
+            }
+
+            List<String> missingParameters = checkMissingFilters(mandatoryFilters);
+            if (!missingParameters.isEmpty()) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign Statistics"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Get Statistics"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", String.format("Missing filter(s): %s", missingParameters.toString())));
+                response.put("message", msg.getDescription());
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
                         .body(response.toString());
             }
 
