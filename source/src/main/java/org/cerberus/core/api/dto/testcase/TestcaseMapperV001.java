@@ -78,5 +78,6 @@ public interface TestcaseMapperV001 {
     @Mapping(target = "lastExecutionStatus", ignore = true)
     @Mapping(target = "testCaseCountries", ignore = true)
     @Mapping(target = "testCaseLabels", ignore = true)
+    @Mapping(target = "refOrigineUrl", ignore = true)
     TestCase toEntity(TestcaseDTOV001 testcaseDTO);
 }

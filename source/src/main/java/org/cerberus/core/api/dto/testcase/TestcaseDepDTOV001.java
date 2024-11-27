@@ -59,6 +59,10 @@ public class TestcaseDepDTOV001 {
     @ApiModelProperty(position = 3)
     private String dependencyEvent;
 
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 3)
+    private Integer dependencyTCDelay;
+
     @NotNull(message = "Type is mandatory")
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)

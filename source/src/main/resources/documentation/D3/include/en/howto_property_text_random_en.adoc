@@ -1,6 +1,6 @@
 In case you need to generate a random String
 
-=== Generate random String with any alpha numeric characters
+== Generate random String with any alpha numeric characters
 
 *  1 - Define a Random property
 
@@ -15,7 +15,7 @@ image:property_text_random.png[Logo]
 
 image:property_text_random_action.png[Logo]
 
-=== Generate random String with specific alpha numeric characters
+== Generate random String with specific alpha numeric characters
 
 *  1 - Define a Random property
 

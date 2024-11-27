@@ -66,7 +66,6 @@ public class TestCase {
     private String type;
     private String origine;
     private String refOrigine;
-    private String refOrigineUrl;
     private String comment;
     private String fromMajor;
     private String fromMinor;
@@ -91,6 +90,8 @@ public class TestCase {
     /**
      * Not included in table.
      */
+    @EqualsAndHashCode.Exclude
+    private String refOrigineUrl;
     @EqualsAndHashCode.Exclude
     private String system;
     @EqualsAndHashCode.Exclude

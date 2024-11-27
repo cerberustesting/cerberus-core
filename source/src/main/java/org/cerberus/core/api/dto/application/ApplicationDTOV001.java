@@ -76,6 +76,22 @@ public class ApplicationDTOV001 {
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     private String bugTrackerNewUrl;
 
+    @ApiModelProperty(position = 11)
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    private String bugTrackerConnector;
+
+    @ApiModelProperty(position = 11)
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    private String bugTrackerParam1;
+
+    @ApiModelProperty(position = 11)
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    private String bugTrackerParam2;
+
+    @ApiModelProperty(position = 11)
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    private String bugTrackerParam3;
+
     @ApiModelProperty(position = 9)
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     private Integer poolSize;

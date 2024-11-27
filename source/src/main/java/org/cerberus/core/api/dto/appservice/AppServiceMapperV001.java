@@ -72,5 +72,11 @@ public interface AppServiceMapperV001 {
     @Mapping(target = "responseNb", ignore = true)
     @Mapping(target = "bodyType", ignore = true)
     @Mapping(target = "simulationParameters", ignore = true)
+    @Mapping(target = "authType", ignore = true)
+    @Mapping(target = "authUser", ignore = true)
+    @Mapping(target = "authPassword", ignore = true)
+    @Mapping(target = "authAddTo", ignore = true)
+    @Mapping(target = "start", ignore = true)
+    @Mapping(target = "end", ignore = true)
     AppService toEntity(AppServiceDTOV001 appServiceDTO);
 }

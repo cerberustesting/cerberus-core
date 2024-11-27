@@ -38,6 +38,7 @@ import org.mapstruct.Mapping;
 public interface ApplicationMapperV001 {
 
     @Mapping(source = "environmentList", target = "environments")
+    @Mapping(source = "repoUrl", target = "svnurl")
     ApplicationDTOV001 toDTO(Application application);
 
     @InheritInverseConfiguration

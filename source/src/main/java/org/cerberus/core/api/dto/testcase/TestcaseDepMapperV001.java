@@ -37,6 +37,7 @@ public interface TestcaseDepMapperV001 {
 
     @Mapping(source = "dependencyTestFolderId", target = "dependencyTest")
     @Mapping(source = "dependencyTestcaseId", target = "dependencyTestcase")
+    @Mapping(source = "active", target = "isActive")
     @Mapping(target = "test", ignore = true)
     @Mapping(target = "testcase", ignore = true)
     @Mapping(target = "testcaseDescription", ignore = true)

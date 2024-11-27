@@ -211,10 +211,16 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "TXT":
+                    if (autoContentType) {
+                        response.setContentType("application/txt");
+                    }
                     response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "PDF":
+                    if (autoContentType) {
+                        response.setContentType("application/pdf");
+                    }
                     response.setHeader("Content-Disposition", "filename=" + filenameDownload);
                     returnPDF(request, response, tceFile, pathString);
                     break;

@@ -78,6 +78,9 @@ public class ApplicationEnvironmentApiService {
         newApplicationEnvironment.setVar3(newApplicationEnvironment.getVar3() == null ? cep.getItem().getVar3() : newApplicationEnvironment.getVar3());
         newApplicationEnvironment.setVar4(newApplicationEnvironment.getVar4() == null ? cep.getItem().getVar4() : newApplicationEnvironment.getVar4());
 
+        newApplicationEnvironment.setSecret1(newApplicationEnvironment.getSecret1()== null ? cep.getItem().getSecret1(): newApplicationEnvironment.getSecret1());
+        newApplicationEnvironment.setSecret2(newApplicationEnvironment.getSecret2()== null ? cep.getItem().getSecret2(): newApplicationEnvironment.getSecret2());
+        
         newApplicationEnvironment.setIp(newApplicationEnvironment.getIp() == null ? cep.getItem().getIp() : newApplicationEnvironment.getIp());
         newApplicationEnvironment.setDomain(newApplicationEnvironment.getDomain() == null ? cep.getItem().getDomain() : newApplicationEnvironment.getDomain());
         newApplicationEnvironment.setUrl(newApplicationEnvironment.getUrl() == null ? cep.getItem().getUrl() : newApplicationEnvironment.getUrl());

@@ -77,6 +77,10 @@ public class TestcaseCountryPropertiesDTOV001 {
     private String value2;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 7)
+    private String value3;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 8)
     private String length;
 

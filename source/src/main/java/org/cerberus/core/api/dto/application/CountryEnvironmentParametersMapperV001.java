@@ -35,8 +35,10 @@ public interface CountryEnvironmentParametersMapperV001 {
 
     @Mapping(source = "ip", target = "endPoint")
     @Mapping(source = "url", target = "contextRoot")
+    @Mapping(target = "isActive", ignore = true)
     CountryEnvironmentParametersDTOV001 toDTO(CountryEnvironmentParameters countryEnvironmentParameters);
 
     @InheritInverseConfiguration
+    @Mapping(target = "isActive", ignore = true)
     CountryEnvironmentParameters toEntity(CountryEnvironmentParametersDTOV001 countryEnvironmentParametersDTO);
 }

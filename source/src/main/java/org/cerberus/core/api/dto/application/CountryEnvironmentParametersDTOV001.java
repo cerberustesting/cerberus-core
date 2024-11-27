@@ -59,62 +59,74 @@ public class CountryEnvironmentParametersDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)
-    private String endPoint;
+    private boolean isActive;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
-    private String contextRoot;
+    private String endPoint;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 6)
-    private String urlLogin;
+    private String contextRoot;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 7)
-    private String domain;
+    private String urlLogin;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 8)
-    private String var1;
+    private String domain;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 9)
-    private String var2;
+    private String var1;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 10)
-    private String var3;
+    private String var2;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 11)
-    private String var4;
+    private String var3;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 12)
-    private int poolSize;
+    private String var4;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 13)
-    private String mobileActivity;
+    private String secret1;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 14)
+    private String secret2;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 15)
+    private int poolSize;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 16)
+    private String mobileActivity;
+
+    @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
+    @ApiModelProperty(position = 17)
     private String mobilePackage;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "cerberus", position = 15)
+    @ApiModelProperty(example = "cerberus", position = 18)
     private String usrCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "2012-06-19 09:56:40.0", position = 16)
+    @ApiModelProperty(example = "2012-06-19 09:56:40.0", position = 19)
     private String dateCreated;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "cerberus", position = 17)
+    @ApiModelProperty(example = "cerberus", position = 20)
     private String usrModif;
 
     @JsonView(value = {View.Public.GET.class})
-    @ApiModelProperty(example = "2019-04-06 10:15:09.0", position = 18)
+    @ApiModelProperty(example = "2019-04-06 10:15:09.0", position = 21)
     private String dateModif;
 
 }
