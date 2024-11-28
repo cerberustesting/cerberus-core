@@ -141,6 +141,7 @@ public class TestCaseExecution {
     private List<TestCaseExecutionFile> fileList;
     // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseStepExecution> testCaseStepExecutionList;
+    private TestCaseStepExecution testCaseStepInExecution;
     // Host the full list of data calculated during the execution.
     private TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap;
     // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
@@ -339,9 +340,20 @@ public class TestCaseExecution {
     }
 
     public TestCaseStepExecution getTestCaseStepExecutionByStepId(int stepId) {
-        for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
-            if (stepId == tcse.getTestCaseStep().getStepId()) {
-                return tcse;
+        TestCaseStepExecution tcsee = this.getTestCaseStepInExecution();
+        //If step executing if from library, return the step from the library instead
+        if (tcsee.isUsingLibraryStep()){
+            for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
+                if (stepId == tcse.getTestCaseStep().getLibraryStepStepId()) {
+                    return tcse;
+                }
+            }
+            return tcsee;
+        } else {
+            for (TestCaseStepExecution tcse : this.testCaseStepExecutionList) {
+                if (stepId == tcse.getTestCaseStep().getStepId()) {
+                    return tcse;
+                }
             }
         }
         return null;
