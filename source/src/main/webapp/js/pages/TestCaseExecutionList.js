@@ -129,7 +129,7 @@ function aoColumnsFunc() {
                                     <span class="glyphicon glyphicon-filter"></span>\n\
                                     </a>';
                 var tag = '<a id="tagExec' + (obj["id"]) + '" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(obj["tag"]) + '">\n\
                                     <span class="glyphicon glyphicon-tag"></span>\n\
                                     </a>';
 

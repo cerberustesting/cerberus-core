@@ -156,19 +156,19 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editTestcampaign = '<button id="editTestcampaign" onclick="editEntryClick(\'' + obj["campaign"] + '\');"\n\
+                var editTestcampaign = '<button id="editTestcampaign" onclick="editEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
                                         class="editCampaign btn btn-default btn-xs margin-right5" \n\
                                         name="editTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
-                var removeTestcampaign = '<button id="removeTestcampaign" onclick="removeEntryClick(\'' + obj["campaign"] + '\');"\n\
+                var removeTestcampaign = '<button id="removeTestcampaign" onclick="removeEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
                                         class="removeTestcampaign btn btn-default btn-xs margin-right25" \n\
                                         name="removeTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + obj["campaign"] + '\');"\n\
+                var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
                                         class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
                                         name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_testcaselist") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-list"></span></button>';
-                var viewStatcampaign = '<button id="viewStatcampaign" onclick="viewStatEntryClick(\'' + obj["campaign"] + '\');"\n\
+                var viewStatcampaign = '<button id="viewStatcampaign" onclick="viewStatEntryClick(\'' + escapeHtml(obj["campaign"]) + '\');"\n\
                                         class="viewStatcampaign btn btn-default btn-xs margin-right5" \n\
                                         name="viewStatcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_taglist") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-stats"></span></button>';

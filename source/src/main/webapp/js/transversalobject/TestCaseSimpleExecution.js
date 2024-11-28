@@ -226,7 +226,7 @@ function handleAddToQueueResponse(data, doRedirect) {
         data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Open Execution</button></a>";
     }
     if (data.nbExe > 1) {
-        data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+        data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + encodeURIComponent(data.tag) + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
     }
 
     if ((data.nbExe === 1) && doRedirect) {

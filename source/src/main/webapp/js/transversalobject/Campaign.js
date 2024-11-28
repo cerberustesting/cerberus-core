@@ -219,7 +219,7 @@ function viewEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?testcases=true&", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?testcases=true&", "campaign=" + encodeURIComponent(param));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -264,7 +264,7 @@ function viewStatEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?tags=true&", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?tags=true&", "campaign=" + encodeURIComponent(param));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -329,7 +329,7 @@ function editEntryClick(param) {
 
     showLoader("#testcampaignList");
 
-    var jqxhr = $.getJSON("ReadCampaign?parameters=true&labels=true&eventHooks=true&scheduledEntries=true", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?parameters=true&labels=true&eventHooks=true&scheduledEntries=true", "campaign=" + encodeURIComponent(param));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
         var parameters = [];

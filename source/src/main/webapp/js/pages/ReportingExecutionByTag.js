@@ -368,7 +368,7 @@ function loadReportingData(selectTag) {
         fullL = "fullList=" + !isRefreshAutoHide;
     }
 
-    var param = "?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
+    var param = "?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize() + fullL;
 
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag" + param, null, "json");
@@ -735,7 +735,7 @@ function filterCountryBrowserReport(selectTag, splitFilterSettings) {
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitFilter input");
-    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=statsChart";
+    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=statsChart";
     var jqxhr = $.get(requestToServlet, null, "json");
 
     $.when(jqxhr).then(function (data) {
@@ -749,7 +749,7 @@ function filterLabelReport(selectTag) {
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitLabelFilter input");
-    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=labelStat";
+    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=labelStat";
     var jqxhr = $.get(requestToServlet, null, "json");
 
     $.when(jqxhr).then(function (data) {

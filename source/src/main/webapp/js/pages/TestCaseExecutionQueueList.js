@@ -586,7 +586,7 @@ function aoColumnsFunc(tableId) {
                 if (isEmpty(obj["tag"])) {
                     return "";
                 } else {
-                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">' + obj["tag"] + '</a>';
+                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(obj["tag"]) + '">' + obj["tag"] + '</a>';
                 }
             }
         },
