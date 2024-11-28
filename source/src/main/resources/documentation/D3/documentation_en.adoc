@@ -32,7 +32,7 @@ include::include/{lang}/{file-to-include}[]
 :file-to-include: howto_property_text_random_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
-== Get information from Web Page (getFromHTML)
+== Get information from Web Page (getFromHtml)
 :file-to-include: howto_property_html_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 

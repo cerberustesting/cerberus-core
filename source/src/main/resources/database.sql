@@ -6583,3 +6583,7 @@ UPDATE application SET BugTrackerConnector='NONE' where BugTrackerConnector ='';
 -- 1871-1872
 UPDATE application SET `System`=REPLACE(`System`, '%40', '@');
 UPDATE testcase SET `UsrModif`=REPLACE(REPLACE(`UsrModif`, '&#64;', '@'), '%40', '@'), `UsrCreated`=REPLACE(REPLACE(`UsrCreated`, '&#64;', '@'), '%40', '@');
+
+-- 1873
+UPDATE testcasecountryproperties SET `Type` = 'getFromHtml' WHERE `Type` = 'getFromHTML';
+
