@@ -1018,6 +1018,7 @@ public class ExecutionRunService implements IExecutionRunService {
         List<TestCaseStepAction> testCaseStepActionList = stepExecution.getTestCaseStep().getActions();
         LOG.debug("{}Getting list of actions of the step. {} action(s) to perform.", logPrefix, testCaseStepActionList.size());
 
+        execution.setTestCaseStepInExecution(stepExecution);
         for (TestCaseStepAction tcAction : testCaseStepActionList) {
 
             // Start Execution of TestCaseStepAction
