@@ -643,6 +643,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('logevent','log','','en','Log','Log message of the action.',NULL)");
         b.append(",('logevent','log','','fr','Message','Message lié à l\\'action.',NULL)");
         b.append(",('logevent','log','','fa','پیام ثبت شده','ثبت پیام از اقدام صورت گرفته.',NULL)");
+        b.append(",('logevent','status','','en','Status','Event Status.',NULL)");
+        b.append(",('logevent','status','','fr','Statut','Statut de l\\'evenement.',NULL)");
         b.append(",('logevent','logeventid','','en','Log Entry ID','Unique identifier of the log entry.',NULL)");
         b.append(",('logevent','logeventid','','fr','Identifiant du log','Identifiant unique de l\\'entrée de log.',NULL)");
         b.append(",('logevent','logeventid','','fa','شناسه پیام ثبت شده','شناسه منحصربفرد پیام ثبت شده.',NULL)");
