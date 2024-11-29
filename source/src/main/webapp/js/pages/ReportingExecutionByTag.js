@@ -103,6 +103,32 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
 
+        $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
+            stopPropagation(event);
+            $(this).parent().find(".active").removeClass("active");
+            $(this).addClass("active");
+            if ($(this).prop("id") === "tab") {
+                $("#progressEnvCountryBrowser").hide();
+                $("#summaryTableDiv").show();
+            } else if ($(this).prop("id") === "graph") {
+                $("#progressEnvCountryBrowser").show();
+                $("#summaryTableDiv").hide();
+            }
+        });
+
+        $("#reportByLabel .nav li").on("click", function (event) {
+            stopPropagation(event);
+            $(this).parent().find(".active").removeClass("active");
+            $(this).addClass("active");
+            if ($(this).prop("id") === "requirements") {
+                $("#mainTreeExeS").hide();
+                $("#mainTreeExeR").show();
+            } else if ($(this).prop("id") === "stickers") {
+                $("#mainTreeExeS").show();
+                $("#mainTreeExeR").hide();
+            }
+        });
+
         displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
         displayInvariantList("video", "VIDEO", false, undefined, "");
         displayInvariantList("verbose", "VERBOSE", false, undefined, "");
