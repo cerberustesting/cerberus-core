@@ -175,6 +175,12 @@ public class UpdateAppService extends HttpServlet {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                     .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "AppService ID (originalService) is missing."));
+            finalAnswer.setResultMessage(msg);
+        } else if (StringUtil.isEmptyOrNull(service)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
+                    .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "AppService ID (service) is missing."));
             finalAnswer.setResultMessage(msg);
         } else {
