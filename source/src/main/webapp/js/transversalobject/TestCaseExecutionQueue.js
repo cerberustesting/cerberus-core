@@ -346,8 +346,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
 
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
-            || (mode === "DUPLICATE"));
+    var isEditable = (
+            ((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "QUWITHDEP") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
+            || (mode === "DUPLICATE")
+            );
 
     formEdit.find("#test").empty();
     formEdit.find("#testCase").empty();
@@ -625,11 +627,24 @@ function appendDepRow(dep, targetTableBody) {
         exeButton.attr("disabled", true);
     }
     exeButtonA.append(exeButton);
+    
+    var queButton = $("<button>").attr("type", "button").addClass("btn btn-sm").append($("<span>").addClass("glyphicon glyphicon-new-window"));
+    var queButtonA = $("<a>");
+    if (dep.exeId > 0) {
+        queButtonA.attr("href", "./TestCaseExecution.jsp?executionQueueId=" + dep.queueId);
+    } else {
+        queButton.attr("disabled", true);
+    }
+    queButtonA.append(queButton);
+    
     //onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\"
     var exeIdInput = $("<div>").addClass("input-group")
             .append($("<input readonly>").addClass("form-control input-sm").val(dep.exeId))
             .append($("<span>").addClass("input-group-btn").append(exeButtonA));
-    var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
+    var queueIdInput = $("<div>").addClass("input-group")
+            .append($("<input readonly>").addClass("form-control input-sm").val(dep.queueId))
+            .append($("<span>").addClass("input-group-btn").append(queButtonA));
+//    var queueIdInput = $("<input readonly>").addClass("form-control input-sm").val(dep.queueId);
     var table = $("#" + targetTableBody);
 
     var row = $("<tr></tr>");
