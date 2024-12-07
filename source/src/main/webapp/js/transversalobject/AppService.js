@@ -264,7 +264,6 @@ function addAppServiceClick(service, page) {
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
     srv_listennerForInputTypeFile('#editSoapLibraryModal')
     srv_pasteListennerForClipboardPicture('#editSoapLibraryModal');
-    $('#editServiceModal #service').val("");
 
 }
 
@@ -1402,7 +1401,6 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         formEdit.find("#kafkaFilterPath").removeProp("disabled");
         formEdit.find("#kafkaFilterValue").removeProp("disabled");
     }
-
 
 }
 

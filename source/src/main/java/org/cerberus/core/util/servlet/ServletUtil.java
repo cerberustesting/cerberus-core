@@ -58,6 +58,9 @@ public final class ServletUtil {
                     case "/ReadCampaign":
                         timeToWait = 10;
                         break;
+                    case "/ReadAppService":
+                        timeToWait = 50;
+                        break;
                     case "/ReadTestCaseExecutionByTag":
                         timeToWait = 30;
                         break;

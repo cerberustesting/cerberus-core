@@ -216,43 +216,43 @@ public class ReadAppService extends HttpServlet {
         response.put("contentTable", item);
         if (p != null) {
             item.put("hasPermissions", userHasPermissions);
-        }
-        String system = "";
-        if (StringUtil.isNotEmptyOrNull(p.getApplication())) {
-            try {
+            if (StringUtil.isNotEmptyOrNull(p.getApplication())) {
+                try {
+                    String system = "";
 
-                Application app = applicationService.convert(applicationService.readByKey(p.getApplication()));
-                system = app.getSystem();
-                List<CountryEnvironmentParameters> cepValue = cepService.convert(cepService.readByVarious(system, null, null, p.getApplication()));
-                Map<String, String> distinctEnv = new HashMap<>();
-                Map<String, String> distinctCountry = new HashMap<>();
-                for (CountryEnvironmentParameters countryEnvironmentParameters : cepValue) {
-                    distinctCountry.put(countryEnvironmentParameters.getCountry(), "");
-                    distinctEnv.put(countryEnvironmentParameters.getEnvironment(), "");
-                }
-                JSONObject extraInfo = new JSONObject();
-                extraInfo.put("system", system);
-                JSONArray countries = new JSONArray();
-                JSONArray environments = new JSONArray();
+                    Application app = applicationService.convert(applicationService.readByKey(p.getApplication()));
+                    system = app.getSystem();
+                    List<CountryEnvironmentParameters> cepValue = cepService.convert(cepService.readByVarious(system, null, null, p.getApplication()));
+                    Map<String, String> distinctEnv = new HashMap<>();
+                    Map<String, String> distinctCountry = new HashMap<>();
+                    for (CountryEnvironmentParameters countryEnvironmentParameters : cepValue) {
+                        distinctCountry.put(countryEnvironmentParameters.getCountry(), "");
+                        distinctEnv.put(countryEnvironmentParameters.getEnvironment(), "");
+                    }
+                    JSONObject extraInfo = new JSONObject();
+                    extraInfo.put("system", system);
+                    JSONArray countries = new JSONArray();
+                    JSONArray environments = new JSONArray();
 
-                for (Map.Entry<String, String> entry : distinctCountry.entrySet()) {
-                    String mycountry = entry.getKey();
-                    countries.put(mycountry);
-                }
-                for (Map.Entry<String, String> entry : distinctEnv.entrySet()) {
-                    String myenv = entry.getKey();
-                    environments.put(myenv);
-                }
-                extraInfo.put("countries", countries);
-                extraInfo.put("environments", environments);
-                response.put("extraInformation", extraInfo);
+                    for (Map.Entry<String, String> entry : distinctCountry.entrySet()) {
+                        String mycountry = entry.getKey();
+                        countries.put(mycountry);
+                    }
+                    for (Map.Entry<String, String> entry : distinctEnv.entrySet()) {
+                        String myenv = entry.getKey();
+                        environments.put(myenv);
+                    }
+                    extraInfo.put("countries", countries);
+                    extraInfo.put("environments", environments);
+                    response.put("extraInformation", extraInfo);
 
-            } catch (CerberusException e) {
-                LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
-            } catch (Exception e) {
-                LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
+                } catch (CerberusException e) {
+                    LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
+                } catch (Exception e) {
+                    LOG.error("Detailed information could not be retrieved for application '" + p.getApplication() + "'", e);
+                }
+
             }
-
         }
         answerItem.setItem(response);
         answerItem.setResultMessage(resp.getResultMessage());
