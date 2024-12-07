@@ -1035,14 +1035,19 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         String windowTitle = identifier.getLocator();
 
-        String currentHandle;
+        String currentWindowId;
+        String initialContext = "";
+        String targetContext = "";
         Set<String> handles = new HashSet<String>();
+        Set<String> allContexts = new HashSet<String>();
         // Current serial handle of the window.
         // Add try catch to handle not exist anymore window (like when popup is closed).
         try {
-            currentHandle = session.getDriver().getWindowHandle();
+            currentWindowId = session.getDriver().getWindowHandle();
+            initialContext = "URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle();
         } catch (NoSuchWindowException exception) {
-            currentHandle = null;
+            currentWindowId = null;
+            initialContext = "Page has been closed.";
             LOG.debug("Window is closed ? " + exception.toString());
         }
 
@@ -1051,19 +1056,28 @@ public class WebDriverService implements IWebDriverService {
             handles = session.getDriver().getWindowHandles();
 
             // Loop into each of them
+            String targetHandle = null;
             for (String windowHandle : handles) {
-                if (!windowHandle.equals(currentHandle)) {
+                //if (!windowHandle.equals(currentWindowId)) {
                     session.getDriver().switchTo().window(windowHandle);
+                    allContexts.add("URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle());
+
                     if (checkIfExpectedWindow(session, identifier.getIdentifier(), identifier.getLocator())) {
-                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
-                        message.setDescription(message.getDescription()
-                                .replace("%WINDOW%", windowTitle)
-                                .replace("%INITIALCONTEXT%", currentHandle)
-                                .replace("%ALLCONTEXTS%", String.join("-", handles)));
-                        return message;
+                        targetHandle = windowHandle;
+                        targetContext = "URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle();
                     }
-                }
+                //}
                 LOG.debug("windowHandle=" + windowHandle);
+            }
+
+            if (!StringUtil.isEmptyOrNull(targetHandle)){
+                session.getDriver().switchTo().window(targetHandle);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
+                message.setDescription(message.getDescription()
+                        .replace("%WINDOW%", targetContext)
+                        .replace("%INITIALCONTEXT%", initialContext)
+                        .replace("%ALLCONTEXTS%", String.join("-", allContexts)));
+                return message;
             }
 
         } catch (NoSuchElementException exception) {
@@ -1081,9 +1095,9 @@ public class WebDriverService implements IWebDriverService {
         }
         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT);
         message.setDescription(message.getDescription()
-                .replace("%WINDOW%", windowTitle)
-                .replace("%INITIALCONTEXT%", currentHandle)
-                .replace("%ALLCONTEXTS%", String.join("-", handles)));
+                .replace("%WINDOW%", targetContext)
+                .replace("%INITIALCONTEXT%", initialContext)
+                .replace("%ALLCONTEXTS%", String.join("-", allContexts)));
         return message;
     }
 
