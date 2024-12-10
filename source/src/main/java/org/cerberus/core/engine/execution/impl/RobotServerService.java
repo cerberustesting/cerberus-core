@@ -1109,7 +1109,13 @@ public class RobotServerService implements IRobotServerService {
             //  We remove manually the package if it is defined.
             if (session.getAppiumDriver() != null && tce.getCountryEnvApplicationParam() != null
                     && !StringUtil.isEmptyOrNull(tce.getCountryEnvApplicationParam().getMobilePackage())) {
-            //    session.getAppiumDriver().removeApp(tce.getCountryEnvApplicationParam().getMobilePackage());//#FIXME SELENIUM (should be cast to ISODriver or AndroidDriver if needed to be repair, but i don't see the case where this functionality needs a use)
+                if (tce.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                    ((AndroidDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage()); //#FIXME SELENIUM #APPIUM #TEST
+                } else if (tce.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                    ((IOSDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage()); //#FIXME SELENIUM #APPIUM #TEST
+                } else {
+                    LOG.warn("Application type is not supported for uninstalling the application");
+                }
             }
 
             // We lock device if deviceLockUnlock is active.
