@@ -871,10 +871,10 @@ public class ActionService implements IActionService {
             LOG.debug("Identifier :'" + identifier.getIdentifier() + "' Locator '" + identifier.getLocator() + "'");
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
+                return androidAppiumService.scrollTo(tCExecution, identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
+                return iosAppiumService.scrollTo(tCExecution, identifier, maxScrollDown, offset.getHOffset(), offset.getVOffset());
 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, identifier.isSameIdentifier("") ? element : null, offsets);
