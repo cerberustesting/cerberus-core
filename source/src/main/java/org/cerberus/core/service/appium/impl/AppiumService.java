@@ -337,7 +337,7 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 2,
                                 2 * window.getHeight() / 3,
-                                0,
+                                window.getWidth() / 2,
                                 -window.getHeight() / 3
                         )
                 );
@@ -347,8 +347,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 2,
                                 window.getHeight() / 3,
-                                0,
-                                window.getHeight() / 3
+                                window.getWidth() / 2,
+                                4 * window.getHeight() / 3
                         )
                 );
                 break;
@@ -358,7 +358,7 @@ public abstract class AppiumService implements IAppiumService {
                                 2 * window.getWidth() / 3,
                                 window.getHeight() / 2,
                                 -window.getWidth() / 3,
-                                0
+                                window.getHeight() / 2
                         )
                 );
                 break;
@@ -367,8 +367,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 3,
                                 window.getHeight() / 2,
-                                window.getWidth() / 3,
-                                0
+                                4 * window.getWidth() / 3,
+                                window.getHeight() / 2
                         )
                 );
                 break;
