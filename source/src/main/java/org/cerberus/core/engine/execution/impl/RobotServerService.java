@@ -85,6 +85,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+
 import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
 import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
@@ -334,7 +335,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM (proxy missing because url instead of executor)
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
