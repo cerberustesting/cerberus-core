@@ -39,10 +39,13 @@ import org.cerberus.core.util.JSONUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.ScreenOrientation;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -124,14 +127,31 @@ public class AndroidAppiumService extends AppiumService {
 
             // Get the parametrized swipe duration
             Parameter duration = parameters.findParameterByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "");
+            int swipeDuration = duration == null
+                    ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION
+                    : Integer.parseInt(duration.getValue());
 
-            // Do the swipe thanks to the Appium driver
-            TouchAction dragNDrop
-                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
-                    .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
-            dragNDrop.perform();
+            // Initialize PointerInput for touch gestures
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 0);
 
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
+            // Start point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(0),
+                    PointerInput.Origin.viewport(), direction.getX1(), direction.getY1()));
+            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Move to the end point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(swipeDuration),
+                    PointerInput.Origin.viewport(), direction.getX2(), direction.getY2()));
+
+            // Release touch
+            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Perform the swipe
+            session.getAppiumDriver().perform(Collections.singletonList(swipe));
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE)
+                    .resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
                     .resolveDescription("DIRECTION", action.getActionType().name())
