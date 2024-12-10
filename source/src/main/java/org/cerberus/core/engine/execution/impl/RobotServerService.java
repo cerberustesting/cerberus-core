@@ -24,12 +24,15 @@ import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.factory.IFactoryRobotCapability;
@@ -90,6 +93,7 @@ import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.service.robotproxy.IRobotProxyService;
+
 import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
 /**
@@ -350,7 +354,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM (proxy missing because url instead of executor)
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -1220,39 +1224,38 @@ public class RobotServerService implements IRobotServerService {
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
             Session session = tCExecution.getSession();
-            HttpCommandExecutor ce = (HttpCommandExecutor) ((RemoteWebDriver) session.getDriver()).getCommandExecutor();
-            SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
-            String hostName = ce.getAddressOfRemoteServer().getHost();
-            int port = ce.getAddressOfRemoteServer().getPort();
+            RemoteWebDriver driver = (RemoteWebDriver) session.getDriver();
+            SessionId sessionId = driver.getSessionId();
 
-            HttpHost host = new HttpHost(hostName, port);
+            // Create a HttpClient
+            HttpClient client = HttpClientBuilder.create().build();
 
-            HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
+            // Create a HttpGet request to the Selenium Grid's REST API
+            HttpGet request = new HttpGet("http://" + tCExecution.getRobotHost() + ":" + tCExecution.getRobotPort() + "/wd/hub/session/" + sessionId);
 
-            URL sessionURL = new URL(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
+            // Execute the request
+            HttpResponse response = client.execute(request);
 
-            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("GET", sessionURL.toExternalForm());
-            LOG.debug("Calling Hub to get the node information. {}", sessionURL);
-            HttpResponse response = client.execute(host, r);
-            if (!response.getStatusLine().toString().contains("403")
-                    && !response.getEntity().getContentType().getValue().contains("text/html")) {
-                InputStream contents = response.getEntity().getContent();
-                StringWriter writer = new StringWriter();
-                IOUtils.copy(contents, writer, "UTF8");
-                JSONObject object = new JSONObject(writer.toString());
-                if (object.has("proxyId")) {
-                    URL myURL = new URL(object.getString("proxyId"));
-                    if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
-                        LOG.debug("Get remote node information : {} - {}", myURL.getHost(), myURL.getPort());
-                        tCExecution.setRobotHost(myURL.getHost());
-                        tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
-                        // Node information at session level is now overwrite with real values.
-                        tCExecution.getSession().setNodeHost(myURL.getHost());
-                        tCExecution.getSession().setNodePort(String.valueOf(myURL.getPort()));
-                    }
-                } else {
-                    LOG.debug("'proxyId' json data not available from remote Selenium Server request : {}", writer);
+            // Parse the response
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            JSONObject json = new JSONObject(content);
+
+            // Get the IP of the node from the JSON response
+            String nodeIp = json.getJSONObject("value").getJSONObject("capabilities").getString("proxyId");
+
+            if (nodeIp != null) {
+                URL myURL = new URL(nodeIp);
+                if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                    LOG.debug("Get remote node information : {} - {}", myURL.getHost(), myURL.getPort());
+                    tCExecution.setRobotHost(myURL.getHost());
+                    tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
+                    // Node information at session level is now overwrite with real values.
+                    tCExecution.getSession().setNodeHost(myURL.getHost());
+                    tCExecution.getSession().setNodePort(String.valueOf(myURL.getPort()));
                 }
+            } else {
+                LOG.debug("'proxyId' json data not available from remote Selenium Server request");
             }
 
         } catch (IOException | JSONException ex) {
