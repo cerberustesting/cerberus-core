@@ -83,18 +83,18 @@ public abstract class AppiumService implements IAppiumService {
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
 
-//        @SuppressWarnings("unchecked") #FIXME SELENIUM what's the purpose of the for if u set the driver after anyway
-//        Set<String> contextNames = driver.getContextHandles();
-//
-//        for (String contextName : contextNames) {
-//            LOG.error("Context : " + contextName);
-//            if (contextName.contains("WEBVIEW")) {
-//                driver.context(contextName);
-//                newContext = contextName;
-//                break;
-//            }
-//        }
-//        driver.context("WEBVIEW_1");
+        @SuppressWarnings("unchecked") //#FIXME SELENIUM #TEST driver was cast to (SupportsContextSwitching)
+        Set<String> contextNames = ((SupportsContextSwitching) driver).getContextHandles();
+
+        for (String contextName : contextNames) {
+            LOG.error("Context : " + contextName);
+            if (contextName.contains("WEBVIEW")) {
+                ((SupportsContextSwitching) driver).context(contextName);
+                newContext = contextName;
+                break;
+            }
+        }
+        ((SupportsContextSwitching) driver).context("WEBVIEW_1");
         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
         message.setDescription(message.getDescription().replace("%WINDOW%", newContext));
         return message;
