@@ -450,7 +450,7 @@ public abstract class AppiumService implements IAppiumService {
                 //Element found, perform another scroll to offset from middle of screen
                 int pressOffsetX = driver.manage().window().getSize().width / 2;
                 int pressOffsetY = driver.manage().window().getSize().height / 2;
-                if (hOffset==0 && vOffset==0){
+                if (hOffset!=0 && vOffset!=0){
                     scroll(driver, pressOffsetX, pressOffsetY, pressOffsetX - hOffset, pressOffsetY - vOffset);
                     testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element "+element+" displayed. Applied the offset ("+hOffset+";"+vOffset+") scrolling from the coord("+pressOffsetX+";"+pressOffsetY+")");
                 } else {
