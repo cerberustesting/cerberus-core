@@ -19,6 +19,7 @@
  */
 package org.cerberus.core.service.appium;
 
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -112,7 +113,7 @@ public interface IAppiumService {
      * @return
      * @throws IllegalArgumentException
      */
-    MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax, Integer hOffset, Integer vOffset) throws IllegalArgumentException;
+    MessageEvent scrollTo(TestCaseExecution testCaseExecution, Identifier element, String numberScrollDownMax, Integer hOffset, Integer vOffset) throws IllegalArgumentException;
 
     /**
      * install an application on mobile devices
