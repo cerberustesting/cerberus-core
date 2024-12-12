@@ -239,7 +239,8 @@ public class ImportTestCase extends HttpServlet {
                     if (formItems.size() > 0) {
                         int i = 1;
                         for (FileItem item : formItems) {
-                            LOG.debug("Param to import (" + i++ + ") : " + item.toString() + " FieldName : " + item.getFieldName() + " ContentType : " + item.getContentType());
+                            i++;
+                            LOG.debug("Param to import (" + i + ") : " + item.toString() + " | FieldName : " + item.getFieldName() + " | ContentType : " + item.getContentType());
                             if (item.isFormField()) {
                                 result.put(item.getFieldName(), item.getString());
                             } else {

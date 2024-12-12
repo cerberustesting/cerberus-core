@@ -44,7 +44,7 @@ public class TestCaseExecutionQueueToTreat {
     public static final String CONSTRAIN2_APPLIENV = "constrain2_applienvironment";
     public static final String CONSTRAIN3_APPLICATION = "constrain3_application";
     public static final String CONSTRAIN4_ROBOT = "constrain4_robot";
-    public static final String CONSTRAIN5_EXECUTOREXTENSION = "constrain5_executorextension";
+    public static final String CONSTRAIN5_EXECUTOREXTENSION = "constrain5_proxyservice";
 
     public long getId() {
         return id;

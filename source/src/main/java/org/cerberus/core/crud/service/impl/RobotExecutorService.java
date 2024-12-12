@@ -125,9 +125,9 @@ public class RobotExecutorService implements IRobotExecutorService {
                     robotList2.add(myrobot);
                     AnswerList<RobotExecutor> rbtExecutor;
                     if (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(myrobotobj.getLbexemethod())) {
-                        rbtExecutor = robotExecutorDAO.readByVariousByCriteria(robotList2, "Y", 0, 0, "datelastexesubmitted", "asc", null, null);
+                        rbtExecutor = robotExecutorDAO.readByVariousByCriteria(robotList2, "1", 0, 0, "datelastexesubmitted", "asc", null, null);
                     } else {
-                        rbtExecutor = robotExecutorDAO.readByVariousByCriteria(robotList2, "Y", 0, 0, "rank", "asc", null, null);
+                        rbtExecutor = robotExecutorDAO.readByVariousByCriteria(robotList2, "1", 0, 0, "rank", "asc", null, null);
                     }
                     robot_executors.put(myrobot, rbtExecutor.getDataList());
                 }

@@ -188,6 +188,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.robot : " + robot);
+            LOG.debug("SQL.param.active : " + active);
         }
 
         try (Connection connection = this.databaseSpring.connect();

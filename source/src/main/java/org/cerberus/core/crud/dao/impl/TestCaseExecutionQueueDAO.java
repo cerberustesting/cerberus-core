@@ -1839,6 +1839,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + queryUpdate);
             LOG.debug("SQL.param.id : " + id);
+            LOG.debug("SQL.param.SelectedRobotHost : " + selectedRobot);
+            LOG.debug("SQL.param.SelectedRobotExtHost : " + selectedRobotExt);
         }
 
         try (

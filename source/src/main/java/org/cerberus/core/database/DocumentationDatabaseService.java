@@ -3716,11 +3716,15 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaselist','btn_import','','en','Import Test Cases',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import','','fa','واردکردن موارد آزمون',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import','','ru','Импортировать тестовые случаи',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import','','fr','Importer les Cas de Tests',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import_ide','','en','Import Test Case From Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import','','fr','Importer les Cas de Test',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','en','Import Test Cases From Selenium IDE',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import_ide','','fa','واردکردن مورد آزمون از Selenium IDE',NULL,NULL)");
         b.append(",('page_testcaselist','btn_import_ide','','ru','Импортировать тестовые случаи из Selenium IDE',NULL,NULL)");
-        b.append(",('page_testcaselist','btn_import_ide','','fr','Importer un Cas de Test de Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_ide','','fr','Importer les Cas de Test de Selenium IDE',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_testlink','','en','Import Test Cases From Testlink',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_testlink','','fa','واردکردن مورد آزمون از Testlink',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_testlink','','ru','Импортировать тестовые случаи из Testlink',NULL,NULL)");
+        b.append(",('page_testcaselist','btn_import_testlink','','fr','Importer les Cas de Test de Testlink',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export','','en','Export Test Cases',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export','','fa','استخراج مواردآزمون',NULL,NULL)");
         b.append(",('page_testcaselist','btn_export','','ru','Экспортировать тестовые случаи',NULL,NULL)");

@@ -427,7 +427,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         robotExelist.add(factoryRobotExecutor.create(0, "", "", true, 1, "", "", "", "", 0, "", "", null, false, "", 0, "", 0, "", "", "", null, "", null));
                     }
 
-                    // Looping other every potential executor on the corresponding robot.
+                    // Looping over every potential executor on the corresponding robot.
                     for (RobotExecutor robotExecutor1 : robotExelist) {
 
                         if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equalsIgnoreCase(robotExecutor1.getExecutorProxyType())) {
