@@ -1,14 +1,14 @@
 <!--Mass Action on a Test Case List -->
-<div data-backdrop="static" class="modal fade center" id="importTestCaseFromSIDEModal" role="dialog" aria-labelledby="importTestCaseFromSIDEModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="importTestCaseFromTestLinkModal" role="dialog" aria-labelledby="importTestCaseFromTestLinkModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="importTestCaseFromSIDEModalLabel" name="importTestCaseFromSIDEField">Import test cases from Selenium IDE</h4>
+                <h4 class="modal-title" id="importTestCaseFromTestLinkModalLabel" name="importTestCaseFromTestLinkField">Import test cases from Test Link</h4>
             </div>
             <div class="modal-body">
                 <!--edit form-->
-                <form id="importTestCaseFromSIDEModalForm" name="importTestCaseFromSIDEModalForm"  title="Import TestCase" role="form" enctype="multipart/form-data">
+                <form id="importTestCaseFromTestLinkModalForm" name="importTestCaseFromTestLinkModalForm"  title="Import TestCase" role="form" enctype="multipart/form-data">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -21,16 +21,12 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-3 text-center" style="height: 100%">
-                                <img height='100' src='./images/SeleniumIDE.jpg'>
+                            <div class="col-md-4 text-center" style="height: 100%">
+                                <img height='100' src='./images/TestLink.png'>
                             </div>
-                            <div class="col-sm-9 marginLeft20">
+                            <div class="col-md-8 marginLeft20">
                                 <br>
-                                <label>Download the Selenium IDE plugin from <a href="https://addons.mozilla.org/fr/firefox/addon/selenium-ide/" target="_blank">Firefox</a> or <a href="https://chrome.google.com/webstore/detail/selenium-ide/mooikfkahbdckldjjndioackbalphokd" target="_blank">Chrome</a></label>
-                                <br>
-                                <label>Record your scenario using Selenium IDE</label>
-                                <br>
-                                <label>Use the Form below in order to integrate them into Cerberus.</label>
+                                <label>Use the Form below in order to integrate your Test Link Test cases into Cerberus.</label>
                             </div>
                         </div>
 
@@ -51,18 +47,18 @@
 
                         <div class="row marginTop15">
                             <div class="form-group col-xs-12">
-                                <label for="filesSIDE">Select the Selenium IDE files to import (.side format)</label>
-                                <input class="form-control-file" type="file" multiple="multiple" name="files[]" id="filesSIDE">
+                                <label for="filesTestLink">Select the Test Link files to import (.xml format)</label>
+                                <input class="form-control-file" type="file" multiple="multiple" name="files[]" id="filesTestLink">
                             </div>
                         </div>
 
                     </div>
                 </form>
-                <div class="container-fluid center" id='fileside-list-display'></div>
+                <div class="container-fluid center" id='filetestlink-list-display'></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="importTestCaseFromSIDEButton" class="btn btn-primary" name="buttonImport">Import</button>
+                <button type="button" id="importTestCaseFromTestLinkButton" class="btn btn-primary" name="buttonImport">Import</button>
             </div>
         </div>
     </div>

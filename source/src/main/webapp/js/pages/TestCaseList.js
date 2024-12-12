@@ -180,6 +180,7 @@ function renderOptionsForTestCaseList(data) {
 //            contentToAdd += "<button id='exportTestCaseMenuButtonSingleFile' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export1file") + "</button>";
             contentToAdd += "<button id='importTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-import'></span> " + doc.getDocLabel("page_testcaselist", "btn_import") + "</button>";
             contentToAdd += "<button id='importFromSIDETestCaseMenuButton' type='button' class='btn btn-default'><img height='20 px' src='./images/SeleniumIDE.jpg'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_ide") + "</button>";
+            contentToAdd += "<button id='importFromTestLinkTestCaseMenuButton' type='button' style='display: none;' class='btn btn-default'><img height='20 px' src='./images/TestLink.png'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_testlink") + "</button>";
             contentToAdd += "</div>";
             contentToAdd += "</div>";
             contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
@@ -203,6 +204,7 @@ function renderOptionsForTestCaseList(data) {
             $("#testCaseList #exportTestCaseMenuButtonSingleFile").click(exportTestCasesMenuClick);
             $('#testCaseList #importTestCaseButton').click(importTestCasesMenuClick);
             $('#testCaseList #importFromSIDETestCaseMenuButton').click(importTestCasesFromSIDEMenuClick);
+            $('#testCaseList #importFromTestLinkTestCaseMenuButton').click(importTestCasesFromTestLinkMenuClick);
             $('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
@@ -603,7 +605,7 @@ function importTestCasesFromSIDEMenuClick() {
         for (var i = 0; i < fileInput.files.length; i++) {
             fileList.push(fileInput.files[i]);
         }
-        renderFileSIDEList(fileList, 'fileside-list-display');
+        renderFileList(fileList, 'fileside-list-display');
     });
 
     $("#importTestCaseFromSIDEButton").click(function () {
@@ -623,8 +625,36 @@ function importTestCasesFromSIDEMenuClick() {
     $('#importTestCaseFromSIDEModal').modal('show');
 }
 
-function renderFileSIDEList(fileList, elementId) {
-    console.log("render");
+function importTestCasesFromTestLinkMenuClick() {
+    $("#importTestCaseFromTestLinkButton").off("click");
+
+    var fileInput = document.getElementById('filesTestLink');
+    fileInput.addEventListener('change', function (evnt) {
+        fileList = [];
+        for (var i = 0; i < fileInput.files.length; i++) {
+            fileList.push(fileInput.files[i]);
+        }
+        renderFileList(fileList, 'filetestlink-list-display');
+    });
+
+    $("#importTestCaseFromTestLinkButton").click(function () {
+        confirmImportTestCaseFromTestLinkModalHandler();
+    });
+
+    var doc = new Doc();
+    var text = doc.getDocLabel("page_testcaselist", "import_testcase_msg");
+    $('#importTestCaseModalText').text(text);
+
+    $('#importTestCaseFromTestLinkModalForm #targetTest').empty();
+    $('#importTestCaseFromTestLinkModalForm #targetTest').select2(getComboConfigTest());
+
+    $('#importTestCaseFromTestLinkModalForm #targetApplication').empty();
+    $('#importTestCaseFromTestLinkModalForm #targetApplication').select2(getComboConfigApplication(false));
+
+    $('#importTestCaseFromTestLinkModal').modal('show');
+}
+
+function renderFileList(fileList, elementId) {
     var fileListDisplay = document.getElementById(elementId);
     fileListDisplay.innerHTML = '';
     fileList.forEach(function (file, index) {
@@ -633,7 +663,6 @@ function renderFileSIDEList(fileList, elementId) {
         fileListDisplay.appendChild(fileDisplayEl);
     });
 }
-
 
 function confirmImportTestCaseFromSIDEModalHandler() {
     clearResponseMessage($('#importTestCaseModal'));

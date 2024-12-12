@@ -50,6 +50,7 @@
             <%@ include file="include/pages/testcaselist/massActionTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCase.html"%>
             <%@ include file="include/pages/testcaselist/importTestCaseFromSIDE.html"%>
+            <%@ include file="include/pages/testcaselist/importTestCaseFromTestLink.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 
