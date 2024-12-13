@@ -202,9 +202,9 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "version",
+            "data": "testCaseVersion",
             "visible": false,
-            "sName": "exe.version",
+            "sName": "exe.TestCaseVersion",
             "title": doc.getDocOnline("testcase", "version"),
             "sWidth": "50px",
             "sDefaultContent": ""

@@ -329,7 +329,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("SELECT exe.* FROM testcaseexecution exe ")
                 .append("WHERE exe.test = ? AND exe.testcase = ? ")
                 .append("AND exe.environment LIKE ? AND exe.country = ? AND exe.build LIKE ? ")
-                .append("AND exe.revision LIKE ? AND exe.browser = ? AND exe.browserfullversion LIKE ? ")
+                .append("AND exe.revision LIKE ? AND exe.browser = ? AND exe.version LIKE ? ")
                 .append("AND exe.ip LIKE ? AND exe.port LIKE ? AND exe.tag LIKE ? ")
                 .append("ORDER BY exe.id DESC");
 
@@ -476,7 +476,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(") ");
         }
         if (StringUtil.isNotEmptyOrNULLString(browserVersion)) {
-            query.append("AND exe.browserfullversion LIKE ? ");
+            query.append("AND exe.version LIKE ? ");
         }
         if (StringUtil.isNotEmptyOrNULLString(ip)) {
             query.append("AND exe.ip LIKE ? ");
@@ -868,7 +868,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`browser` like ? ");
             query.append(" or exe.`version` like ? ");
             query.append(" or exe.`platform` like ? ");
-            query.append(" or exe.`browserfullversion` like ? ");
             query.append(" or exe.`start` like ? ");
             query.append(" or exe.`end` like ? ");
             query.append(" or exe.`controlstatus` like ? ");
@@ -914,7 +913,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
             int i = 1;
             if (StringUtil.isNotEmptyOrNull(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1070,7 +1068,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`browser` like ? ");
             query.append(" or exe.`version` like ? ");
             query.append(" or exe.`platform` like ? ");
-            query.append(" or exe.`browserfullversion` like ? ");
             query.append(" or exe.`start` like ? ");
             query.append(" or exe.`end` like ? ");
             query.append(" or exe.`controlstatus` like ? ");
@@ -1103,7 +1100,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
             int i = 1;
             if (StringUtil.isNotEmptyOrNull(searchParameter)) {
-                preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
