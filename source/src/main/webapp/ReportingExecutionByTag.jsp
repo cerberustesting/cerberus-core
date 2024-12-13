@@ -189,10 +189,10 @@
                     </div>
 
                     <div class="panel panel-default" id="BugReportByStatusPanel">
-                        <div class="panel-heading card refreshButtonHeader" >
+                        <div class="panel-heading card refreshButtonHeader" data-toggle="collapse" data-target="#BugReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
-                            <!--                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>-->
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="BugReportByStatus">
                             <div class="row">
