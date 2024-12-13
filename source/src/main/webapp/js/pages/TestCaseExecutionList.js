@@ -180,7 +180,7 @@ function aoColumnsFunc() {
             "sName": "exe.start",
             "like": true,
             "title": doc.getDocOnline("page_executiondetail", "start"),
-            "sWidth": "70px",
+            "sWidth": "110px",
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
                 return new Date(obj.start).toLocaleString();

@@ -136,7 +136,7 @@ public class WebDriverService implements IWebDriverService {
         return by;
     }
 
-    public AnswerItem<WebElement> getWebElement(Session session, Identifier identifier, boolean random, int rank){
+    public AnswerItem<WebElement> getWebElement(Session session, Identifier identifier, boolean random, int rank) {
 
         AnswerItem<WebElement> answer = new AnswerItem<>();
         MessageEvent msg;
@@ -147,32 +147,32 @@ public class WebDriverService implements IWebDriverService {
         Instant now = Instant.now();
         Instant stop = now.plus(session.getCerberus_selenium_wait_element(), ChronoUnit.MILLIS);
 
-        while(stop.isAfter(Instant.now()) && element==null) {
+        while (stop.isAfter(Instant.now()) && element == null) {
 
             try {
-                    //Find all elements retrieved
-                    List<WebElement> elements = session.getDriver().findElements(this.getBy(identifier));
+                //Find all elements retrieved
+                List<WebElement> elements = session.getDriver().findElements(this.getBy(identifier));
 
-                    // If random, overide rank with one random int from 1 to the size of the result
-                    if (random) {
-                        Random r = new Random();
-                        rank = r.nextInt(elements.size());
-                    }
-                    // -1 because default value is 1
-                    element = (WebElement) elements.get(rank);
+                // If random, overide rank with one random int from 1 to the size of the result
+                if (random) {
+                    Random r = new Random();
+                    rank = r.nextInt(elements.size());
+                }
+                // -1 because default value is 1
+                element = (WebElement) elements.get(rank);
 
             } catch (Exception ex) {
                 LOG.debug("ELEMENT NOT FOUND : ", identifier.getIdentifier() + "=" + identifier.getLocator() + " : TRYING AGAIN");
             }
         }
 
-        if (element == null){
+        if (element == null) {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
             msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
         } else {
             answer.setItem(element);
             msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
-            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator() );
+            msg.resolveDescription("ELEMENT", identifier.getIdentifier() + "=" + identifier.getLocator());
         }
 
         answer.setResultMessage(msg);
@@ -432,7 +432,7 @@ public class WebDriverService implements IWebDriverService {
             Integer numberOfElement = 0;
             try {
                 numberOfElement = this.getNumberOfElements(session, identifier);
-            } catch(Exception ex){
+            } catch (Exception ex) {
                 //No element found
             }
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
@@ -549,7 +549,7 @@ public class WebDriverService implements IWebDriverService {
         List<String> result = new ArrayList();
 
         List<WebElement> elements = driver.findElements(this.getBy(identifier));
-        for(WebElement element : elements){
+        for (WebElement element : elements) {
             result.add(element.getAttribute("innerHTML").toString());
         }
 
@@ -562,7 +562,7 @@ public class WebDriverService implements IWebDriverService {
         List<String> result = new ArrayList();
 
         List<WebElement> elements = driver.findElements(this.getBy(identifier));
-        for(WebElement webElement : elements){
+        for (WebElement webElement : elements) {
             if (webElement != null) {
                 if (webElement.getTagName().equalsIgnoreCase("select")) {
                     Select select = (Select) webElement;
@@ -642,7 +642,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public String getAttributeFromHtml(Session session, Identifier identifier, String attribute,  boolean random, Integer rank) {
+    public String getAttributeFromHtml(Session session, Identifier identifier, String attribute, boolean random, Integer rank) {
         String result = null;
         try {
             AnswerItem answer = this.getWebElement(session, identifier, random, rank);
@@ -1044,7 +1044,7 @@ public class WebDriverService implements IWebDriverService {
         // Add try catch to handle not exist anymore window (like when popup is closed).
         try {
             currentWindowId = session.getDriver().getWindowHandle();
-            initialContext = "URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle();
+            initialContext = "URL:" + session.getDriver().getCurrentUrl() + " | Title:" + session.getDriver().getTitle();
         } catch (NoSuchWindowException exception) {
             currentWindowId = null;
             initialContext = "Page has been closed.";
@@ -1059,18 +1059,18 @@ public class WebDriverService implements IWebDriverService {
             String targetHandle = null;
             for (String windowHandle : handles) {
                 //if (!windowHandle.equals(currentWindowId)) {
-                    session.getDriver().switchTo().window(windowHandle);
-                    allContexts.add("URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle());
+                session.getDriver().switchTo().window(windowHandle);
+                allContexts.add("URL:" + session.getDriver().getCurrentUrl() + " | Title:" + session.getDriver().getTitle());
 
-                    if (checkIfExpectedWindow(session, identifier.getIdentifier(), identifier.getLocator())) {
-                        targetHandle = windowHandle;
-                        targetContext = "URL:"+session.getDriver().getCurrentUrl()+" | Title:"+session.getDriver().getTitle();
-                    }
+                if (checkIfExpectedWindow(session, identifier.getIdentifier(), identifier.getLocator())) {
+                    targetHandle = windowHandle;
+                    targetContext = "URL:" + session.getDriver().getCurrentUrl() + " | Title:" + session.getDriver().getTitle();
+                }
                 //}
                 LOG.debug("windowHandle=" + windowHandle);
             }
 
-            if (!StringUtil.isEmptyOrNull(targetHandle)){
+            if (!StringUtil.isEmptyOrNull(targetHandle)) {
                 session.getDriver().switchTo().window(targetHandle);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                 message.setDescription(message.getDescription()
@@ -1226,7 +1226,7 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset,  boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, Integer hOffset, Integer vOffset, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
@@ -1312,7 +1312,7 @@ public class WebDriverService implements IWebDriverService {
                     actions.build().perform();
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
                     message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                    message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
+                    message.setDescription(message.getDescription().replace("%OFFSET%", "(" + hOffset + "," + vOffset + ")"));
                     return message;
                 }
             }
@@ -1321,7 +1321,7 @@ public class WebDriverService implements IWebDriverService {
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            message.setDescription(message.getDescription().replace("%OFFSET%", "("+hOffset+","+vOffset+")"));
+            message.setDescription(message.getDescription().replace("%OFFSET%", "(" + hOffset + "," + vOffset + ")"));
             LOG.debug(exception.toString());
             return message;
         } catch (TimeoutException exception) {
@@ -2046,7 +2046,7 @@ public class WebDriverService implements IWebDriverService {
     private MessageEvent parseWebDriverException(WebDriverException exception) {
         MessageEvent mes;
         LOG.fatal(exception.toString());
-        mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+        mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_EXCEPTION);
         mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
         return mes;
     }

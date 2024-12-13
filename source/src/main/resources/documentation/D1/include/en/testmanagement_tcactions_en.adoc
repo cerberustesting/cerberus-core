@@ -135,6 +135,11 @@ identifier can be **__title__**, **__url__**, *_regexUrl_* or *_regexTitle_*
 title=titleOfThisNewWindow
 ====
 
+.By Regex Tittle
+====
+regexTitle=.\*ThisNewWindow.*
+====
+
 .By Url
 ====
 url=http://url_of_this_new_window

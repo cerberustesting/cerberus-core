@@ -405,9 +405,9 @@ public class RecorderService implements IRecorderService {
             newImage = this.sikuliService.takeScreenShotFile(execution.getSession());
         }
 
+        long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
         if (newImage != null) {
             try {
-                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
 
                 Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, fileName, "png", false);
                 LOG.debug("{}FullPath {}", logPrefix, recorder.getFullPath());
@@ -439,36 +439,45 @@ public class RecorderService implements IRecorderService {
                 LOG.debug("{}Temp file deleted with success {}", logPrefix, newImage.getName());
                 LOG.debug("{}Screenshot done in : {}", logPrefix, recorder.getRelativeFilenameURL());
 
-                if (newImageDesktop != null) {
-                    Recorder recorderDestop = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, fileName + "-desktop", "png", false);
-                    LOG.debug("{}FullPath {}", logPrefix, recorderDestop.getFullPath());
-
-                    // Getting the max size of the screenshot.
-                    fileDesc = "Desktop " + fileDescription;
-                    if (maxSizeParam < newImageDesktop.length()) {
-                        LOG.warn("{}Screenshot size exceeds the maximum defined in configurations ({}>={}) {} destination: {}", logPrefix, newImageDesktop.length(), maxSizeParam, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
-                        fileDesc = "Desktop Screenshot Too Big !!";
-                    } else {
-                        // Copies the temp file to the execution file
-                        FileUtils.moveFile(newImageDesktop, new File(recorderDestop.getFullFilename()));
-                        LOG.debug("{}Moving file finished with success - source: {} destination: {}", logPrefix, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
-                        LOG.info("File saved : {}", recorderDestop.getFullFilename());
-                    }
-
-                    // Index file created to database.
-                    object = testCaseExecutionFileFactory.create(0, execution.getId(), recorderDestop.getLevel(), fileDesc, recorderDestop.getRelativeFilenameURL(), "PNG", "", null, "", null);
-                    objectList.add(object);
-                    testCaseExecutionFileService.save(object);
-
-                    //deletes the temporary file
-                    LOG.debug("{}Desktop Screenshot done in : {}", logPrefix, recorderDestop.getRelativeFilenameURL());
-                }
             } catch (IOException | CerberusException ex) {
                 LOG.error("{}{}", logPrefix, ex.toString(), ex);
             }
         } else {
             LOG.warn("{}Screenshot returned null.", logPrefix);
         }
+
+        if (newImageDesktop != null) {
+
+            try {
+
+                Recorder recorderDestop = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, fileName + "-desktop", "png", false);
+                LOG.debug("{}FullPath {}", logPrefix, recorderDestop.getFullPath());
+
+                // Getting the max size of the screenshot.
+                String fileDesc = "Desktop " + fileDescription;
+                if (maxSizeParam < newImageDesktop.length()) {
+                    LOG.warn("{}Screenshot size exceeds the maximum defined in configurations ({}>={}) {} destination: {}", logPrefix, newImageDesktop.length(), maxSizeParam, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
+                    fileDesc = "Desktop Screenshot Too Big !!";
+                } else {
+                    // Copies the temp file to the execution file
+                    FileUtils.moveFile(newImageDesktop, new File(recorderDestop.getFullFilename()));
+                    LOG.debug("{}Moving file finished with success - source: {} destination: {}", logPrefix, newImageDesktop.getName(), recorderDestop.getRelativeFilenameURL());
+                    LOG.info("File saved : {}", recorderDestop.getFullFilename());
+                }
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, execution.getId(), recorderDestop.getLevel(), fileDesc, recorderDestop.getRelativeFilenameURL(), "PNG", "", null, "", null);
+                objectList.add(object);
+                testCaseExecutionFileService.save(object);
+
+                //deletes the temporary file
+                LOG.debug("{}Desktop Screenshot done in : {}", logPrefix, recorderDestop.getRelativeFilenameURL());
+            } catch (IOException | CerberusException ex) {
+                LOG.error("{}{}", logPrefix, ex.toString(), ex);
+            }
+
+        }
+
         return objectList;
     }
 

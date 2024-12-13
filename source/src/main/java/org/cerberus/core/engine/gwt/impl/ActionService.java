@@ -1130,36 +1130,36 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private MessageEvent doActionSwitchToWindow(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionSwitchToWindow(TestCaseExecution execution, String object, String property) {
         String element;
         try {
             /**
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "switchToWindow", tCExecution);
+            element = getElementToUse(object, property, "switchToWindow", execution);
             /**
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
             //identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                return webdriverService.doSeleniumActionSwitchToWindow(tCExecution.getSession(), identifier);
+            if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return webdriverService.doSeleniumActionSwitchToWindow(execution.getSession(), identifier);
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.switchToContext(execution.getSession(), identifier);
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return iosAppiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.switchToContext(execution.getSession(), identifier);
 
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionSwitchApp(tCExecution.getSession(), identifier.getLocator());
+            } else if (execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionSwitchApp(execution.getSession(), identifier.getLocator());
 
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "SwitchToWindow")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", execution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action SwitchToWindow :" + ex);

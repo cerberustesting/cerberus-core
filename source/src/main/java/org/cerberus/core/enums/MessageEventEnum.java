@@ -247,6 +247,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_WITHDETAIL(250, "FA", "Action Error : %DETAIL%", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is cancelled due to lost connection to Selenium Server! Detailed error : %ERROR%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SELENIUM_EXCEPTION(252, "FA", "Action failed due to Selenium Exception! Detailed error : '%ERROR%'", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_NO_SUCH_ELEMENT(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: id=, name=, class=, css= , xpath= , link= , picture= or data-cerberus=.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_UNKOWN_IDENTIFIER_SIKULI(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: picture= or text=.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_UNKOWN_IDENTIFIER_SELENIUM(253, "FA", "Identifier '%IDENTIFIER%=' isn't recognized! Use: id=, name=, class=, css= , xpath= , link= , coord=, picture= or data-cerberus=.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
