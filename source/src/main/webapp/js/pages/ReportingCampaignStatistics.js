@@ -41,6 +41,26 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+        $("#system-select").change(function () {
+            if ($(this).val() == null) {
+                $('#application-select').multiselect("deselectAll", false);
+                $('#application-select').multiselect('updateButtonText');
+                $('#application-select').next('div').find('button').prop('disabled', true);
+                $('#loadButton').prop('disabled', true);
+            } else {
+                setApplicationSelectOptions($(this).val());
+                $('#application-select').next('div').find('button').prop('disabled', false);
+            }
+        });
+
+        $("#application-select").change(function () {
+            if ($(this).val() == null) {
+                $('#loadButton').prop('disabled', true);
+            } else {
+                $('#loadButton').prop('disabled', false);
+            }
+        })
     });
 });
 
@@ -94,13 +114,9 @@ function removeLoadingStatus(datatable) {
 function setSelectOptions(selectId, options, param) {
     let select = $('#' + selectId);
     if (select.val() === null) {
-        select.empty();
-        select.multiselect('rebuild');
-        let selectOptions = select.html();
+        let selectOptions = select.html("");
         $.each(options, function(index, value) {
-            if ($("#" + selectId + " option[value='" + options[index] + "']").length === 0) {
-                selectOptions += `<option value="${options[index]}">${options[index]}</option>`;
-            }
+            selectOptions += `<option value="${value}">${value}</option>`;
         });
         select.html(selectOptions);
         select.multiselect('rebuild');
@@ -114,7 +130,7 @@ function setSelectOptions(selectId, options, param) {
 function setSystemSelectOptions() {
     let user = JSON.parse(sessionStorage.getItem('user'));
     let systems = user.system;
-    let options = $("#system-select").html();
+    let options = $("#system-select").html("");
     $.each(systems, function(index, value) {
         options += `<option value="${value}">${value}</option>`;
     })
@@ -122,9 +138,10 @@ function setSystemSelectOptions() {
     $("#system-select").multiselect('rebuild');
 }
 
-function setApplicationSelectOptions() {
+function setApplicationSelectOptions(systems) {
     let systemsQ = "";
-    let systems = JSON.parse(sessionStorage.getItem('user')).system;
+    $("#application-select").html("");
+    $('#application-select').multiselect('refresh')
     $.each(systems, function(index, value) {
         systemsQ +=  "&system=" + encodeURI(systems[index]);
     })
@@ -135,7 +152,7 @@ function setApplicationSelectOptions() {
             dataType: "json",
             method: 'GET',
             data: {
-                system: encodeURI(JSON.parse(sessionStorage.getItem('user')).system),
+                system: encodeURI(systems),
             },
             success: function(data) {
                 let result = data.contentTable;
@@ -224,7 +241,9 @@ function initGlobalPage() {
     createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
     displayPageLabel();
     setSystemSelectOptions();
-    setApplicationSelectOptions();
+    $('#application-select').next('div').find('button').prop('disabled', true);
+    $('#group1-select').next('div').find('button').prop('disabled', true);
+    $('#loadButton').prop('disabled', true);
 
     $('#loadButton').click(function()
         {
@@ -264,6 +283,7 @@ function getStatistics() {
             success: function(data) {
                 updateDatatable($("#tagStatisticTable"), data);
                 removeLoadingStatus($("#tagStatisticList"));
+                $('#group1-select').prop('disabled', false);
                 setSelectOptions("group1-select", data.globalGroup1List);
             }
         });
