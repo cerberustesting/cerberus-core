@@ -4326,10 +4326,10 @@ ALTER TABLE `tag` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;
 ALTER TABLE `tag` DROP INDEX `IX_tag_01` , ADD UNIQUE INDEX `IX_tag_01` (`Tag` ASC);
 
 -- 1213
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "") ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != ') ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1214
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "") ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != '') ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1215
 DROP TABLE `tag`;
@@ -4342,16 +4342,16 @@ CREATE TABLE `tag` (  `id` INT(11) NOT NULL AUTO_INCREMENT,  `Tag` VARCHAR(50) N
 ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1` FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL  ON UPDATE CASCADE;
 
 -- 1218
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != '')  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1219
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != '')  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1220
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != '')  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1221
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != "")  ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != '')  ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1222
 select 1 from DUAL;
@@ -5005,10 +5005,10 @@ ALTER TABLE `testcaseexecution` ADD COLUMN `TestCasePriority` INT(1) UNSIGNED NO
 ALTER TABLE `tag`  ADD COLUMN `CountryList` TEXT NULL AFTER `CIResult`, ADD COLUMN `EnvironmentList` TEXT NULL AFTER `CountryList`, ADD COLUMN `RobotDecliList` TEXT NULL AFTER `EnvironmentList`, ADD COLUMN `SystemList` TEXT NULL AFTER `RobotDecliList`, ADD COLUMN `ApplicationList` TEXT NULL AFTER `SystemList`, ADD COLUMN `ReqCountryList` TEXT NULL AFTER `ApplicationList`, ADD COLUMN `ReqEnvironmentList` TEXT NULL AFTER `ReqCountryList`;
 
 -- 1402
-UPDATE `parameter` SET description="Cerberus End of tag execution notification email body. %TAG%, %ENVIRONMENTLIST%, %COUNTRYLIST%, %APPLICATIONLIST%, %SYSTEMLIST%, %ROBOTDECLILIST%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables." , value=replace(replace(value,'%CISCORETHRESHOLD%</td>','%CISCORETHRESHOLD%</td><td>%ENVIRONMENTLIST%</td><td>%COUNTRYLIST%</td>'),'Threshold</td>','Threshold</td><td>Environments</td><td>Countries</td>') where param='cerberus_notification_tagexecutionend_body';
+UPDATE `parameter` SET description='Cerberus End of tag execution notification email body. %TAG%, %ENVIRONMENTLIST%, %COUNTRYLIST%, %APPLICATIONLIST%, %SYSTEMLIST%, %ROBOTDECLILIST%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.' , value=replace(replace(value,'%CISCORETHRESHOLD%</td>','%CISCORETHRESHOLD%</td><td>%ENVIRONMENTLIST%</td><td>%COUNTRYLIST%</td>'),'Threshold</td>','Threshold</td><td>Environments</td><td>Countries</td>') where param='cerberus_notification_tagexecutionend_body';
 
 -- 1403
-UPDATE `parameter` SET description="Cerberus start of tag execution notification email body. %TAG%, %REQENVIRONMENTLIST%, %REQCOUNTRYLIST%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables." , value=replace(value,'The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.','Tag <b>%TAG%</b> from campaign <b>%CAMPAIGN%</b> has just started for %REQENVIRONMENTLIST% on %REQCOUNTRYLIST%.') where param='cerberus_notification_tagexecutionstart_body';
+UPDATE `parameter` SET description='Cerberus start of tag execution notification email body. %TAG%, %REQENVIRONMENTLIST%, %REQCOUNTRYLIST%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.' , value=replace(value,'The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.','Tag <b>%TAG%</b> from campaign <b>%CAMPAIGN%</b> has just started for %REQENVIRONMENTLIST% on %REQCOUNTRYLIST%.') where param='cerberus_notification_tagexecutionstart_body';
 
 -- 1404
 INSERT INTO `parameter` (`system`, `param`, `value`, `description`)
@@ -5222,7 +5222,7 @@ UPDATE testcasestepactioncontrol SET Value3 = '' WHERE Value3 IS NULL;
 ALTER TABLE `testcase` DROP FOREIGN KEY `FK_testcase_03`, DROP COLUMN `Ticket`, DROP COLUMN `Project`, ADD COLUMN `Executor` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Implementer`, CHANGE COLUMN `BugID` `BugID` TEXT NOT NULL, DROP INDEX `IX_testcase_04`  ;
 
 -- 1464
-UPDATE testcase SET bugID = CASE WHEN bugID = "" or bugID is null THEN "[]" ELSE concat('[{"id":"',bugID,'","desc":""}]') END;
+UPDATE testcase SET bugID = CASE WHEN bugID = '' or bugID is null THEN "[]" ELSE concat('[{"id":"',bugID,'","desc":""}]') END;
 
 -- 1465
 ALTER TABLE `test` ADD COLUMN `ParentTest` VARCHAR(45) NULL DEFAULT NULL AFTER `Active`;
@@ -5331,10 +5331,10 @@ INSERT INTO invariant (idname, value, sort, description, VeryShortDesc)
   VALUES('PROPERTYTYPE', 'getFromNetworkTraffic', 45, 'Get stats from Network Trafic JSON data structure.', 'Get Network Stats');
 
 -- 1492
-UPDATE testcasestepaction set Value2=concat("{'command': '", Value1, "', 'args': ['", Value2, "']}"), Value1="mobile: shell" where Action='executeCommand';
+UPDATE testcasestepaction set Value2=concat("{'command': '", Value1, "', 'args': ['", Value2, "']}"), Value1='mobile: shell' where Action='executeCommand';
 
 -- 1493
-UPDATE testcasecountryproperties set Value2=concat("{'command': '", Value1, "', 'args': ['']}"), Value1="mobile: shell" where Type='getFromCommand';
+UPDATE testcasecountryproperties set Value2=concat("{'command': '", Value1, "', 'args': ['']}"), Value1='mobile: shell' where Type='getFromCommand';
 
 -- 1494
 ALTER TABLE testcase CHANGE `Group` `Type` VARCHAR(45);
@@ -6313,7 +6313,7 @@ ALTER TABLE `tag` ADD COLUMN `BrowserstackAppBuildHash` VARCHAR(100) NOT NULL DE
 UPDATE testcasecountryproperties SET `Length` = 1 where `Length` = 0;
 
 -- 1775
-UPDATE testcasestepaction SET Value1 = Value2, Value2 = "" where action = 'scrollTo' and Value1 = "" and Value2 != "";
+UPDATE testcasestepaction SET Value1 = Value2, Value2 = '' where action = 'scrollTo' and Value1 = '' and Value2 != '';
 
 -- 1776
 ALTER TABLE `tag` ADD COLUMN `DateStartExe` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `Campaign`;
@@ -6508,7 +6508,7 @@ INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryS
     ('PRIORITY', '0', 0, 'No Priority defined', '');
 
 -- 1834
-UPDATE application set BugTrackerConnector = '' WHERE BugTrackerConnector ="REDIRECT";
+UPDATE application set BugTrackerConnector = '' WHERE BugTrackerConnector = 'REDIRECT';
 
 -- 1835
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`)
