@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -150,8 +151,9 @@ public interface ITestCaseService {
      * @param bugKey
      * @param bugURL
      * @param description
+     * @return 
      */
-    public void addNewBugEntry(TestCase tc, String test, String testFolder, String bugKey, String bugURL, String description);
+    public JSONObject addNewBugEntry(TestCase tc, String test, String testFolder, String bugKey, String bugURL, String description);
 
     /**
      * @param tCase

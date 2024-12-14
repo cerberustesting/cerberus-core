@@ -21,6 +21,7 @@ package org.cerberus.core.service.bug.jira;
 
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.json.JSONObject;
 
 /**
  *
@@ -33,8 +34,9 @@ public interface IJiraService {
      * @param testcase
      * @param execution
      * @param projectKey
-     * @param issueType
+     * @param bugType
+     * @return 
      */
-    public void createJiraIssue(TestCase testcase, TestCaseExecution execution, String projectKey, String issueType);
+    public JSONObject createJiraIssue(TestCase testcase, TestCaseExecution execution, String projectKey, String bugType);
 
 }

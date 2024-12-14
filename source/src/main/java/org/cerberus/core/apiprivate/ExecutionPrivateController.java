@@ -20,21 +20,19 @@
 package org.cerberus.core.apiprivate;
 
 import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.entity.ExecutionUUID;
-import org.cerberus.core.engine.execution.IExecutionStartService;
 import org.cerberus.core.exception.CerberusException;
+import org.cerberus.core.service.bug.IBugService;
 import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +52,8 @@ public class ExecutionPrivateController {
 
     @Autowired
     private ITestCaseExecutionService executionService;
+    @Autowired
+    private IBugService bugService;
     @Autowired
     private ExecutionUUID executionUUIDObject;
 
@@ -119,6 +119,7 @@ public class ExecutionPrivateController {
         try {
             executionService.updateFalseNegative(executionId, true, request.getUserPrincipal().getName());
         } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
             return ex.toString();
         }
         return "";
@@ -135,9 +136,27 @@ public class ExecutionPrivateController {
         try {
             executionService.updateFalseNegative(executionId, false, request.getUserPrincipal().getName());
         } catch (CerberusException ex) {
+            LOG.warn(ex, ex);
             return ex.toString();
         }
         return "";
+
+    }
+
+    @PostMapping("{executionId}/createBug")
+    public String createBug(
+            @PathVariable("executionId") long executionId,
+            HttpServletRequest request) {
+
+        JSONObject newBugCreated = new JSONObject();
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            newBugCreated = bugService.createBugFromID(executionId, "");
+        } catch (Exception ex) {
+            LOG.warn(ex, ex);
+        }
+        return newBugCreated.toString();
 
     }
 

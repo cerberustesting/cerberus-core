@@ -412,14 +412,15 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div id="bugsSection" class="col-lg-6">
                                     <div class="form-group">
                                         <label>Bugs</label>
                                         <div id="bugs"></div>
+                                        <div id="bugButtons"></div>
                                     </div>
                                 </div>
 
-                                <div class="col-sm-8">
+                                <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="tag">Tag</label>
                                         <div class="input-group">

@@ -52,7 +52,7 @@ public class JiraGenerationService implements IJiraGenerationService {
 
     @Override
     public JSONObject generateJiraIssue(TestCaseExecution execution, String projectKey, String issueTypeName) {
-        JSONObject issueObject = new JSONObject();
+        JSONObject bugObject = new JSONObject();
 
         try {
             String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
@@ -123,19 +123,19 @@ public class JiraGenerationService implements IJiraGenerationService {
             project.put("key", projectKey);
             fields.put("project", project);
 
-            issueObject.put("fields", fields);
+            bugObject.put("fields", fields);
 
             JSONObject updateObject = new JSONObject();
-            issueObject.put("update", updateObject);
+            bugObject.put("update", updateObject);
 
-            LOG.debug(issueObject.toString(1));
+            LOG.debug(bugObject.toString(1));
 
         } catch (JSONException ex) {
             LOG.debug(ex, ex);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(JiraGenerationService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return issueObject;
+        return bugObject;
 
     }
 

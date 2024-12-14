@@ -21,6 +21,7 @@ package org.cerberus.core.service.bug.github;
 
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.json.JSONObject;
 
 /**
  *
@@ -34,7 +35,8 @@ public interface IGithubService {
      * @param execution
      * @param repoName
      * @param labelType
+     * @return 
      */
-    public void createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String labelType);
+    public JSONObject createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String labelType);
 
 }

@@ -21,6 +21,7 @@ package org.cerberus.core.service.bug;
 
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -31,8 +32,24 @@ public interface IBugService {
     /**
      *
      * @param execution
+     * @param forceCreation
      */
-    public void createIssue(TestCaseExecution execution);
+    public void createBugAsync(TestCaseExecution execution, boolean forceCreation);
 
+    /**
+     *
+     * @param execution
+     * @param forceCreation
+     * @return 
+     */
+    public JSONObject createBug(TestCaseExecution execution, boolean forceCreation);
+
+    /**
+     *
+     * @param execution
+     * @param user
+     * @return 
+     */
+    public JSONObject createBugFromID(long execution, String user);
 
 }

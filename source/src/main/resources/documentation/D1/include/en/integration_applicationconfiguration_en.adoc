@@ -17,6 +17,8 @@ image:applicationpage.png[ApplicationPage]
 
 | Type | The Type of the *[red]#application#* define whether the *[red]#application#* is a GUI, a service or a batch treatment. More detail in the <<Application type>> section.
 
+| Bug URL    | This correspond to the URL that points to the bug on the Bug system of the application. Variable %BUGID% can be used on the URL.
+
 | New Bug URL    | This correspond to the URL that points to the page where a new bug can be created on the Bug system of the application. More detail in the <<New Bug URL>> section.
 
 |=== 

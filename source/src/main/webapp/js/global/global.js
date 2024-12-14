@@ -3207,34 +3207,42 @@ function comboConfigApplication_format(application) {
 function getBugIdList(data, appUrl) {
     let link = "";
     $.each(data, function (_, obj) {
-        let bugUrl = "";
 
-        if (!isEmpty(obj.url)) {
-            bugUrl = obj.url;
-        } else {
-            if (!isEmpty(appUrl)) {
-                bugUrl = appUrl.replace(/%BUGID%/g, obj.id);
-            }
-        }
-        if (obj.act) {
-            if (!isEmpty(bugUrl)) {
-                link = link + '<a target="_blank" href="' + bugUrl + '">' + obj.id;
-                if (obj.desc !== "") {
-                    link = link + " - " + obj.desc;
-                }
-                link = link + "</a><br>";
+        link = link + getBugIdRow(obj.id, obj.desc, obj.url, obj.act, appUrl);
 
-            } else {
-                link = link + '' + obj.id;
-                if (obj.desc !== "") {
-                    link = link + " - " + obj.desc;
-                }
-                link = link + "<br>";
-
-            }
-
-        }
     });
+    return link;
+}
+
+
+function getBugIdRow(id, desc, url, act, appUrl) {
+    let bugUrl = "";
+    let link = "";
+
+    if (!isEmpty(url)) {
+        bugUrl = url;
+    } else {
+        if (!isEmpty(appUrl)) {
+            bugUrl = appUrl.replace(/%BUGID%/g, id);
+        }
+    }
+    if (act) {
+        if (!isEmpty(bugUrl)) {
+            link = link + '<a target="_blank" href="' + bugUrl + '">' + id;
+            if (desc !== "") {
+                link = link + " - " + desc;
+            }
+            link = link + "</a><br>";
+
+        } else {
+            link = link + '' + id;
+            if (desc !== "") {
+                link = link + " - " + desc;
+            }
+            link = link + "<br>";
+
+        }
+    }
     return link;
 }
 

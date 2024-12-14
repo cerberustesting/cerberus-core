@@ -95,15 +95,16 @@ public class JiraService implements IJiraService {
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
 
     @Override
-    public void createJiraIssue(TestCase tc, TestCaseExecution execution, String projectKey, String issueType) {
+    public JSONObject createJiraIssue(TestCase tc, TestCaseExecution execution, String projectKey, String bugType) {
+        JSONObject newBugCreated = new JSONObject();
 
         try {
 
             JSONObject jiraRequest = new JSONObject();
 
-            LOG.debug("call JIRA Issue creation following execution {}", execution.getId());
+            LOG.debug("call JIRA Bug creation following execution {}", execution.getId());
 
-            jiraRequest = jiraGenerationService.generateJiraIssue(execution, projectKey, issueType);
+            jiraRequest = jiraGenerationService.generateJiraIssue(execution, projectKey, bugType);
 
             // TODO Make url to JIRA instance a parameter.
             String jiraUrl = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_url, "", JIRACLOUD_ISSUECREATION_URL_DEFAULT) + JIRACLOUD_ISSUECREATION_URLPATH;
@@ -189,7 +190,7 @@ public class JiraService implements IJiraService {
                             newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost() + "/browse/" + jiraIssueKey;
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created automaticaly from Execution " + execution.getId());
+                        newBugCreated = testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Execution " + execution.getId());
                         LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
                         execution.addExecutionLog(ExecutionLog.STATUS_INFO, "JIRA Bug created");
 
@@ -221,7 +222,7 @@ public class JiraService implements IJiraService {
         } catch (Exception ex) {
             LOG.error(ex, ex);
         }
-
+        return newBugCreated;
     }
 
 }

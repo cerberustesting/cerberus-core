@@ -921,7 +921,7 @@ public class ExecutionRunService implements IExecutionRunService {
             // JIRA Issue creation Connector is triggered at the end of every execution..
             // TODO Add conditions in order to create it only when testcase is stable enought.
             if (!willBeRetried) {
-                bugService.createIssue(execution);
+                bugService.createBugAsync(execution, false);
             }
 
             /*

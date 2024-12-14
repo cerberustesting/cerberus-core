@@ -95,7 +95,8 @@ public class GithubService implements IGithubService {
     private static final int DEFAULT_XRAY_CACHE_DURATION = 300;
 
     @Override
-    public void createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String issueType) {
+    public JSONObject createGithubIssue(TestCase tc, TestCaseExecution execution, String repoName, String issueType) {
+        JSONObject newBugCreated = new JSONObject();
 
         try {
 
@@ -190,7 +191,7 @@ public class GithubService implements IGithubService {
                             newGithubBugURL = ghURL.toString();
                         }
                         // Update here the test case with new issue.
-                        testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created automaticaly from Execution " + execution.getId());
+                        newBugCreated = testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Execution " + execution.getId());
                         LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
                     } else {
                         LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);
@@ -218,7 +219,7 @@ public class GithubService implements IGithubService {
         } catch (Exception ex) {
             LOG.error(ex, ex);
         }
-
+        return newBugCreated;
     }
 
 }

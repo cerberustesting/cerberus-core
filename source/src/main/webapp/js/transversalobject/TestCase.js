@@ -736,9 +736,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
         $.when(appInfo).then(function (appData) {
             var currentSys = getUser().defaultSystem;
             var t = appData.contentTable;
-            bugTrackerUrl = t.bugTrackerUrl;
-
-
+            let bugTrackerUrl = t.bugTrackerUrl;
 
             feedTestCaseData(testCase, modalId, mode, testperm, undefined, bugTrackerUrl);
 
@@ -1162,6 +1160,7 @@ function addNewBugRow(dataTableBody, bugTrackerUrl) {
     var newBugData = {
         id: "BUGID" + nbRows,
         desc: "",
+        url: "",
         act: true,
         dateCreated: new Date(),
         dateClosed: new Date('1970-01-01'),

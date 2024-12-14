@@ -566,13 +566,14 @@ public class TestCaseService implements ITestCaseService {
                 }
             }
         } catch (JSONException ex) {
-            LOG.warn(ex,ex);
+            LOG.warn(ex, ex);
         }
         return false;
     }
 
     @Override
-    public void addNewBugEntry(TestCase tc, String testFolder, String testCase, String bugKey, String bugURL, String description) {
+    public JSONObject addNewBugEntry(TestCase tc, String testFolder, String testCase, String bugKey, String bugURL, String description) {
+        JSONObject bugCreated = new JSONObject();
         try {
             JSONArray bugList = tc.getBugs();
             JSONObject newBug = new JSONObject();
@@ -585,10 +586,11 @@ public class TestCaseService implements ITestCaseService {
             bugList.put(newBug);
             tc.setBugs(bugList);
             testCaseDao.updateBugList(testFolder, testCase, bugList.toString());
+            return newBug;
         } catch (JSONException | CerberusException ex) {
             LOG.warn(ex, ex);
         }
-
+        return bugCreated;
     }
 
     @Override

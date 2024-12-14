@@ -66,6 +66,9 @@ function initModalApplication(application, mode, page) {
     $("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
 
+    $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
+    $("[name='bugtrackernewurlField']").html(doc.getDocOnline("application", "bugtrackernewurl"));
+
     displayInvariantList("system", "SYSTEM", false, undefined, undefined, undefined, undefined, "editApplicationModal");
     displayInvariantList("type", "APPLITYPE", false, undefined, undefined, undefined, undefined, "editApplicationModal");
     displayDeployTypeList("deploytype");
@@ -206,7 +209,7 @@ function confirmApplicationModalHandler(mode) {
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
-    
+
     showLoaderInModal('#editApplicationModal');
     $.ajax({
         url: myServlet,
