@@ -4326,7 +4326,7 @@ ALTER TABLE `tag` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;
 ALTER TABLE `tag` DROP INDEX `IX_tag_01` , ADD UNIQUE INDEX `IX_tag_01` (`Tag` ASC);
 
 -- 1213
-INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != ') ON DUPLICATE KEY UPDATE Tag=a.tag;
+INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != '') ON DUPLICATE KEY UPDATE Tag=a.tag;
 
 -- 1214
 INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != '') ON DUPLICATE KEY UPDATE Tag=a.tag;
@@ -6587,3 +6587,5 @@ UPDATE testcase SET `UsrModif`=REPLACE(REPLACE(`UsrModif`, '&#64;', '@'), '%40',
 -- 1873
 UPDATE testcasecountryproperties SET `Type` = 'getFromHtml' WHERE `Type` = 'getFromHTML';
 
+-- 1874
+UPDATE robot SET lbexemethod='BYRANKING' WHERE lbexemethod='';
