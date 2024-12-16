@@ -45,15 +45,15 @@
                     <div class="row" id="envCountryFilters" style="display: none;">
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="environment-select" id="labelEnvironmentSelect">Environnement</label>
-                                <select id="environment-select" class="form-control" multiple="multiple">
+                                <label for="environmentSelect" id="labelEnvironmentSelect">Environnement</label>
+                                <select id="environmentSelect" class="form-control" multiple="multiple">
                                 </select>
                             </div>
                         </div>
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="country-select" id="labelCountrySelect">Pays</label>
-                                <select id="country-select" class="form-control" multiple="multiple">
+                                <label for="countrySelect" id="labelCountrySelect">Pays</label>
+                                <select id="countrySelect" class="form-control" multiple="multiple">
                                 </select>
                             </div>
                         </div>
@@ -61,22 +61,22 @@
                     <div class="row" id="systemAppGroup1Filters">
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="system-select" id="labelSystemSelect">Système</label>
-                                <select id="system-select" class="form-control" multiple="multiple">
+                                <label for="systemSelect" id="labelSystemSelect">Système</label>
+                                <select id="systemSelect" class="form-control" multiple="multiple">
                                 </select>
                             </div>
                         </div>
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="application-select" id="labelApplicationSelect">Application</label>
-                                <select id="application-select" class="form-control" multiple="multiple">
+                                <label for="applicationSelect" id="labelApplicationSelect">Application</label>
+                                <select id="applicationSelect" class="form-control" multiple="multiple">
                                 </select>
                             </div>
                         </div>
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="group1-select" id="labelGroup1Select">Group 1</label>
-                                <select id="group1-select" class="form-control" multiple="multiple">
+                                <label for="group1Select" id="labelGroup1Select">Group 1</label>
+                                <select id="group1Select" class="form-control" multiple="multiple">
                                 </select>
                             </div>
                         </div>
@@ -84,8 +84,8 @@
                     <div class="row">
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="frompicker" id="labelFromPicker">From</label>
-                                <div class='input-group date' id='frompicker'>
+                                <label for="fromPicker" id="labelFromPicker">From</label>
+                                <div class='input-group date' id='fromPicker'>
                                     <input type='text' class="form-control" />
                                     <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
@@ -95,8 +95,8 @@
                         </div>
                         <div class='col-md-4'>
                             <div class="form-group">
-                                <label for="topicker" id="labelToPicker">To</label>
-                                <div class='input-group date' id='topicker'>
+                                <label for="toPicker" id="labelToPicker">To</label>
+                                <div class='input-group date' id='toPicker'>
                                     <input type='text' class="form-control" />
                                     <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
