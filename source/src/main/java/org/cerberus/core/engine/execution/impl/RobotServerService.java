@@ -669,6 +669,9 @@ public class RobotServerService implements IRobotServerService {
                 if (isNotAlreadyDefined(caps, "name")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_browserstack_defaultexename", tCExecution.getSystem(), "Exe : %EXEID%");
                     externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
+                    externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
+                    externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
+                    externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
                     caps.setCapability("name", externalExeName);
                 }
                 if (tCExecution.getVerbose() >= 2) {
