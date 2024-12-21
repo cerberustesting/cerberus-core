@@ -46,9 +46,6 @@ jobs:
         sudo rsync -chav \
           -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
           ${{env.source-war}} ${{env.destination}}
-        sudo rsync -chav \
-          -e 'ssh -i ./deploy_key -o StrictHostKeyChecking=no' \
-          ${{env.source-zip}} ${{env.destination}}
     - name: Deploy to PREPROD
       run: |
         cd source
