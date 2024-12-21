@@ -26,8 +26,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         if (campaign !== null && campaign !== "" && campaign !== undefined) {
             initDetailedPage();
             if ((fromDate !== null && fromDate !== "" && fromDate !== undefined) && (toDate !== null && toDate !== "" && toDate !== undefined)) {
-                $('#frompicker').datetimepicker().data("DateTimePicker").date(new Date(fromDate));
-                $('#topicker').datetimepicker().data("DateTimePicker").date(new Date(toDate));
+                $('#fromPicker').datetimepicker().data("DateTimePicker").date(new Date(fromDate));
+                $('#toPicker').datetimepicker().data("DateTimePicker").date(new Date(toDate));
                 getStatisticsByEnvCountry();
             }
         } else {
@@ -42,19 +42,19 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
-        $("#system-select").change(function () {
+        $("#systemSelect").change(function () {
             if ($(this).val() == null) {
-                $('#application-select').multiselect("deselectAll", false);
-                $('#application-select').multiselect('updateButtonText');
-                $('#application-select').next('div').find('button').prop('disabled', true);
+                $('#applicationSelect').multiselect("deselectAll", false);
+                $('#applicationSelect').multiselect('updateButtonText');
+                $('#applicationSelect').next('div').find('button').prop('disabled', true);
                 $('#loadButton').prop('disabled', true);
             } else {
                 setApplicationSelectOptions($(this).val());
-                $('#application-select').next('div').find('button').prop('disabled', false);
+                $('#applicationSelect').next('div').find('button').prop('disabled', false);
             }
         });
 
-        $("#application-select").change(function () {
+        $("#applicationSelect").change(function () {
             if ($(this).val() == null) {
                 $('#loadButton').prop('disabled', true);
             } else {
@@ -76,6 +76,11 @@ function createMultiSelect(select) {
     });
 }
 
+function createDateTimePicker(select) {
+    select.datetimepicker();
+    select.data("DateTimePicker").date(new Date());
+}
+
 function prepareFilterList(filter) {
     if (filter !== null) {
         for (let i = 0; i < filter.length; i++) {
@@ -86,6 +91,7 @@ function prepareFilterList(filter) {
     }
     return filter;
 }
+
 function updateDatatable(datatable, data) {
     datatable.DataTable().clear();
     datatable.DataTable().rows.add(data.campaignStatistics);
@@ -112,7 +118,7 @@ function removeLoadingStatus(datatable) {
 }
 
 function setSelectOptions(selectId, options, param) {
-    let select = $('#' + selectId);
+    let select = $(selectId);
     if (select.val() === null) {
         let selectOptions = select.html("");
         $.each(options, function(index, value) {
@@ -130,18 +136,18 @@ function setSelectOptions(selectId, options, param) {
 function setSystemSelectOptions() {
     let user = JSON.parse(sessionStorage.getItem('user'));
     let systems = user.system;
-    let options = $("#system-select").html("");
+    let options = $("#systemSelect").html("");
     $.each(systems, function(index, value) {
         options += `<option value="${value}">${value}</option>`;
     })
-    $('#system-select').html(options);
-    $("#system-select").multiselect('rebuild');
+    $('#systemSelect').html(options);
+    $("#systemSelect").multiselect('rebuild');
 }
 
 function setApplicationSelectOptions(systems) {
     let systemsQ = "";
-    $("#application-select").html("");
-    $('#application-select').multiselect('refresh')
+    $("#applicationSelect").html("");
+    $('#applicationSelect').multiselect('refresh')
     $.each(systems, function(index, value) {
         systemsQ +=  "&system=" + encodeURI(systems[index]);
     })
@@ -156,28 +162,44 @@ function setApplicationSelectOptions(systems) {
             },
             success: function(data) {
                 let result = data.contentTable;
-                let options = $("#application-select").html();
+                let options = $("#applicationSelect").html();
                 $.each(result, function(index, value) {
                     options += `<option value="${result[index].application}">${result[index].application}</option>`;
                 })
-                $('#application-select').html(options);
-                $("#application-select").multiselect('rebuild');
+                $('#applicationSelect').html(options);
+                $("#applicationSelect").multiselect('rebuild');
             }
         });
 }
 
-function createDateTimePicker(select) {
-    select.datetimepicker();
-    select.data("DateTimePicker").date(new Date());
+function initGlobalPage() {
+    createMultiSelect($('#systemSelect'));
+    createMultiSelect($('#applicationSelect'));
+    createMultiSelect($('#group1Select'));
+    createDateTimePicker($('#fromPicker'));
+    createDateTimePicker($('#toPicker'));
+    let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [1, 'asc']);
+    createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
+    displayPageLabel();
+    setSystemSelectOptions();
+    $('#applicationSelect').next('div').find('button').prop('disabled', true);
+    $('#group1Select').next('div').find('button').prop('disabled', true);
+    $('#loadButton').prop('disabled', true);
+
+    $('#loadButton').click(function()
+        {
+            getStatistics();
+        }
+    );
 }
 
 function initDetailedPage() {
     displayPageLabel();
     $('#systemAppGroup1Filters').hide();
-    createMultiSelect($('#environment-select'));
-    createMultiSelect($('#country-select'));
-    createDateTimePicker($('#frompicker'));
-    createDateTimePicker($('#topicker'));
+    createMultiSelect($('#environmentSelect'));
+    createMultiSelect($('#countrySelect'));
+    createDateTimePicker($('#fromPicker'));
+    createDateTimePicker($('#toPicker'));
     $('#campaign').text('"' + GetURLParameter("campaign") + '"');
     $('#envCountryFilters').show();
     $('#tagStatisticList').hide();
@@ -194,12 +216,50 @@ function initDetailedPage() {
     );
 }
 
+function getStatistics() {
+    let systems = prepareFilterList($('#systemSelect').val());
+    let applications = prepareFilterList($('#applicationSelect').val());
+    let group1 = prepareFilterList($('#group1Select').val());
+
+    $.ajax
+    ({
+        url: "api/campaignexecutions/statistics",
+        async: true,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({
+            systems: encodeURI(systems),
+            applications: encodeURI(applications),
+            group1: encodeURI(group1),
+            from: encodeURIComponent(new Date($('#fromPicker').data("DateTimePicker").date()).toISOString()),
+            to: encodeURIComponent(new Date($('#toPicker').data("DateTimePicker").date()).toISOString())
+        }),
+        beforeSend: function() {
+            setLoadingStatus($("#tagStatisticList"));
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            removeLoadingStatus($("#tagStatisticList"));
+            let response = JSON.parse(jqXHR.responseText);
+            clearDatatable($("#tagStatisticTable"));
+            showMessageMainPage("danger", response.message, false);
+        },
+        success: function(data) {
+            updateDatatable($("#tagStatisticTable"), data);
+            removeLoadingStatus($("#tagStatisticList"));
+            $('#group1Select').prop('disabled', false);
+            setSelectOptions("#group1Select", data.globalGroup1List);
+        }
+    });
+}
+
 function getStatisticsByEnvCountry() {
     let campaign = GetURLParameter("campaign");
-    let environments = prepareFilterList($('#environment-select').val());
-    let countries = prepareFilterList($('#country-select').val());
-    let from = new Date($('#frompicker').data("DateTimePicker").date()).toISOString();
-    let to = new Date($('#topicker').data("DateTimePicker").date()).toISOString();
+    let environments = prepareFilterList($('#environmentSelect').val());
+    let countries = prepareFilterList($('#countrySelect').val());
+    let from = new Date($('#fromPicker').data("DateTimePicker").date()).toISOString();
+    let to = new Date($('#toPicker').data("DateTimePicker").date()).toISOString();
 
     $.ajax
     ({
@@ -224,69 +284,11 @@ function getStatisticsByEnvCountry() {
         success: function(data) {
             updateDatatable($("#tagStatisticDetailTable"), data);
             removeLoadingStatus($("#tagStatisticDetailList"));
-            setSelectOptions("environment-select", data.environments, "selectAll");
-            setSelectOptions("country-select", data.countries, "selectAll");
+            setSelectOptions("#environmentSelect", data.environments, "selectAll");
+            setSelectOptions("#countrySelect", data.countries, "selectAll");
             InsertURLInHistory('ReportingCampaignStatistics.jsp?campaign=' + encodeURIComponent(campaign) + '&from=' + encodeURIComponent(from) + '&to=' + encodeURIComponent(to) + '&environments=' + encodeURI(environments) + '&countries=' + encodeURI(countries));
         }
     });
-}
-
-function initGlobalPage() {
-    createMultiSelect($('#system-select'));
-    createMultiSelect($('#application-select'));
-    createMultiSelect($('#group1-select'));
-    createDateTimePicker($('#frompicker'));
-    createDateTimePicker($('#topicker'));
-    let config = new TableConfigurationsClientSide("tagStatisticTable", "", aoColumnsFunc(), true, [1, 'asc']);
-    createDataTableWithPermissions(config, undefined, "#tagStatisticList", undefined, undefined, undefined, undefined);
-    displayPageLabel();
-    setSystemSelectOptions();
-    $('#application-select').next('div').find('button').prop('disabled', true);
-    $('#group1-select').next('div').find('button').prop('disabled', true);
-    $('#loadButton').prop('disabled', true);
-
-    $('#loadButton').click(function()
-        {
-            getStatistics();
-        }
-    );
-}
-function getStatistics() {
-        let systems = prepareFilterList($('#system-select').val());
-        let applications = prepareFilterList($('#application-select').val());
-        let group1 = prepareFilterList($('#group1-select').val());
-
-        $.ajax
-        ({
-            url: "api/campaignexecutions/statistics",
-            async: true,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify({
-                systems: encodeURI(systems),
-                applications: encodeURI(applications),
-                group1: encodeURI(group1),
-                from: encodeURIComponent(new Date($('#frompicker').data("DateTimePicker").date()).toISOString()),
-                to: encodeURIComponent(new Date($('#topicker').data("DateTimePicker").date()).toISOString())
-            }),
-            beforeSend: function() {
-                setLoadingStatus($("#tagStatisticList"));
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                removeLoadingStatus($("#tagStatisticList"));
-                let response = JSON.parse(jqXHR.responseText);
-                clearDatatable($("#tagStatisticTable"));
-                showMessageMainPage("danger", response.message, false);
-            },
-            success: function(data) {
-                updateDatatable($("#tagStatisticTable"), data);
-                removeLoadingStatus($("#tagStatisticList"));
-                $('#group1-select').prop('disabled', false);
-                setSelectOptions("group1-select", data.globalGroup1List);
-            }
-        });
 }
 
 function displayPageLabel() {
@@ -318,7 +320,7 @@ function aoColumnsFunc(tableId) {
             "width": "50px",
             "render": function (data, type, obj) {
                 const viewDetailByCountryEnv = `<a id="viewDetailByCountryEnv"
-                                        href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${$('#frompicker').data("DateTimePicker").date()}&to=${$('#topicker').data("DateTimePicker").date()}"
+                                        href="ReportingCampaignStatistics.jsp?campaign=${obj.campaign}&from=${$('#fromPicker').data("DateTimePicker").date()}&to=${$('#toPicker').data("DateTimePicker").date()}"
                                         target="_blank"
                                         class="viewDetailByCountryEnv btn btn-default btn-xs margin-right5"
                                         title="${doc.getDocLabel("page_campaignstatistics", "buttonDetailByCountryEnv")}"
