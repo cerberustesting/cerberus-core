@@ -20,22 +20,18 @@
 package org.cerberus.core.crud.entity;
 
 import java.sql.Timestamp;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
  * @author bcivel
  */
-@Entity
-@Getter
-@Setter
+@Data
 @Builder
 @EqualsAndHashCode
 @AllArgsConstructor

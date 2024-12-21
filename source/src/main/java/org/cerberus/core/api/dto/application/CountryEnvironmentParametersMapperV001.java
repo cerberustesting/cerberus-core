@@ -21,7 +21,6 @@ package org.cerberus.core.api.dto.application;
 
 import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -35,10 +34,16 @@ public interface CountryEnvironmentParametersMapperV001 {
 
     @Mapping(source = "ip", target = "endPoint")
     @Mapping(source = "url", target = "contextRoot")
-    @Mapping(target = "isActive", ignore = true)
+    @Mapping(source = "active", target = "isActive")
     CountryEnvironmentParametersDTOV001 toDTO(CountryEnvironmentParameters countryEnvironmentParameters);
 
-    @InheritInverseConfiguration
-    @Mapping(target = "isActive", ignore = true)
+    /**
+     *
+     * @param countryEnvironmentParametersDTO
+     * @return
+     */
+    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "endPoint", target = "ip")
+    @Mapping(source = "contextRoot", target = "url")
     CountryEnvironmentParameters toEntity(CountryEnvironmentParametersDTOV001 countryEnvironmentParametersDTO);
 }
