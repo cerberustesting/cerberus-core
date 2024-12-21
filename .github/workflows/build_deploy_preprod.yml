@@ -54,4 +54,4 @@ jobs:
         cd source
         echo "${{secrets.DEPLOY_KEY}}" > deploy_key
         chmod 600 ./deploy_key
-        ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployPREPROD.sh /opt/delivery/tmp/`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`"
+        ssh  -i ./deploy_key -o StrictHostKeyChecking=no debian@vm.cerberus-testing.org "/opt/bin/deployPREPROD.sh /opt/delivery/`find -type f -name cerberus-core*war | sed 's/.\/target\///g'`"
