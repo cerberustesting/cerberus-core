@@ -23,15 +23,11 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,26 +61,18 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.*;
-import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.openqa.selenium.safari.SafariOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.Parameter;
@@ -565,6 +553,10 @@ public class RobotServerService implements IRobotServerService {
     private MutableCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         // Instanciate DesiredCapabilities
         MutableCapabilities caps = new MutableCapabilities();
+        Map<String, Object> cloudOptions = new HashMap<>(); //Selenium Capabilities when testing cloud provider is used
+        Map<String, Object> appiumOptions = new HashMap<>(); //Appium Capabilities
+        Map<String, Object> cloudAppiumOptions = new HashMap<>(); //Appium Capabilities when testing cloud provider is used
+
         // In case browser is not defined at that level, we force it to firefox.
         if (StringUtil.isEmptyOrNull(tCExecution.getBrowser())) {
             tCExecution.setBrowser("");
@@ -648,7 +640,7 @@ public class RobotServerService implements IRobotServerService {
             }
         }
 
-        // if application is a mobile one, then set the "app" capability to theapplication binary path
+        // if application is a mobile one, then set the "app" capability to the application binary path
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
@@ -676,43 +668,47 @@ public class RobotServerService implements IRobotServerService {
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
                 if (!StringUtil.isEmptyOrNull(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
-                    caps.setCapability("build", tCExecution.getTag());
+                    cloudOptions.put("build", tCExecution.getTag());
                 }
+
                 if (isNotAlreadyDefined(caps, "project")) {
-                    caps.setCapability("project", tCExecution.getApplication());
+                    cloudOptions.put("project", tCExecution.getApplication());
+                } else {
+                    cloudOptions.put("project", caps.getCapability("project"));
                 }
+
                 if (isNotAlreadyDefined(caps, "name")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_browserstack_defaultexename", tCExecution.getSystem(), "Exe : %EXEID%");
                     externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
                     externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
                     externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
                     externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
-                    caps.setCapability("name", externalExeName);
+                    cloudOptions.put("name", externalExeName);
                 }
+
                 if (tCExecution.getVerbose() >= 2) {
                     if (isNotAlreadyDefined(caps, "browserstack.debug")) {
-                        caps.setCapability("browserstack.debug", true);
+                        cloudOptions.put("browserstack.debug", true);
                     }
                     if (isNotAlreadyDefined(caps, "browserstack.console")) {
-                        caps.setCapability("browserstack.console", "warnings");
+                        cloudOptions.put("browserstack.console", "warnings");
                     }
                     if (isNotAlreadyDefined(caps, "browserstack.networkLogs")) {
-                        caps.setCapability("browserstack.networkLogs", true);
+                        cloudOptions.put("browserstack.networkLogs", true);
                     }
                 }
 
                 //Create or override these capabilities if proxy required.
                 if (StringUtil.parseBoolean(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                    caps.setCapability("browserstack.local", true);
-                    caps.setCapability("browserstack.user", tCExecution.getRobotExecutorObj().getHostUser());
-                    caps.setCapability("browserstack.key", tCExecution.getRobotExecutorObj().getHostPassword());
-                    caps.setCapability("browserstack.localIdentifier", tCExecution.getExecutionUUID());
+                    cloudOptions.put("browserstack.local", true);
+                    cloudOptions.put("browserstack.user", tCExecution.getRobotExecutorObj().getHostUser());
+                    cloudOptions.put("browserstack.key", tCExecution.getRobotExecutorObj().getHostPassword());
+                    cloudOptions.put("browserstack.localIdentifier", tCExecution.getExecutionUUID());
                 }
-
                 break;
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
                 if (!StringUtil.isEmptyOrNull(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
-                    caps.setCapability("build", tCExecution.getTag());
+                    cloudOptions.put("build", tCExecution.getTag());
                 }
                 if (isNotAlreadyDefined(caps, "name")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_lambdatest_defaultexename", tCExecution.getSystem(), "Exe : %EXEID% - %TESTDESCRIPTION%");
@@ -720,20 +716,20 @@ public class RobotServerService implements IRobotServerService {
                     externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
                     externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
                     externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
-                    caps.setCapability("name", externalExeName);
+                    cloudOptions.put("name", externalExeName);
                 }
                 if (tCExecution.getVerbose() >= 2) {
                     if (isNotAlreadyDefined(caps, "video")) {
-                        caps.setCapability("video", true);
+                        cloudOptions.put("video", true);
                     }
                     if (isNotAlreadyDefined(caps, "visual")) {
-                        caps.setCapability("visual", true);
+                        cloudOptions.put("visual", true);
                     }
                     if (isNotAlreadyDefined(caps, "network")) {
-                        caps.setCapability("network", true);
+                        cloudOptions.put("network", true);
                     }
                     if (isNotAlreadyDefined(caps, "console")) {
-                        caps.setCapability("console", true);
+                        cloudOptions.put("console", true);
                     }
                 }
                 break;
@@ -746,7 +742,7 @@ public class RobotServerService implements IRobotServerService {
                     externalExeName = externalExeName.replace("%TEST%", String.valueOf(tCExecution.getTest()));
                     externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(tCExecution.getTestCase()));
                     externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(tCExecution.getTestCaseObj().getDescription()));
-                    caps.setCapability("sessionName", externalExeName);
+                    cloudOptions.put("sessionName", externalExeName);
                 }
                 if (isNotAlreadyDefined(caps, "sessionDescription")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_kobiton_defaultsessiondescription", tCExecution.getSystem(), "%TESTCASEDESC%");
@@ -756,18 +752,18 @@ public class RobotServerService implements IRobotServerService {
                     externalExeName = externalExeName.replace("%TEST%", String.valueOf(tCExecution.getTest()));
                     externalExeName = externalExeName.replace("%TESTCASE%", String.valueOf(tCExecution.getTestCase()));
                     externalExeName = externalExeName.replace("%TESTCASEDESC%", String.valueOf(tCExecution.getTestCaseObj().getDescription()));
-                    caps.setCapability("sessionDescription", externalExeName);
+                    cloudOptions.put("sessionDescription", externalExeName);
                 }
 
                 if (isNotAlreadyDefined(caps, "deviceGroup")) {
-                    caps.setCapability("deviceGroup", "KOBITON"); // use UIAutomator2 by default
+                    cloudOptions.put("deviceGroup", "KOBITON");
                 }
                 break;
             case TestCaseExecution.ROBOTPROVIDER_NONE:
                 break;
             default:
         }
-
+        caps.setCapability("cloud:options", cloudOptions);
         return caps;
     }
 
