@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.service.notifications.slack.ISlackGenerationService;
+import org.json.JSONArray;
 
 /**
  *
@@ -72,6 +73,29 @@ public class SlackGenerationService implements ISlackGenerationService {
     @Override
     public JSONObject generateNotifyEndTagExecution(Tag tag, String channel) throws UnsupportedEncodingException, Exception {
 
+        String jsonMessage = "{\n"
+                + "	\"attachments\": [\n"
+                + "		{\n"
+                + "			\"color\": \"%COLOR%\",\n"
+                + "			\"fallback\": \"%MESSAGE%\",\n"
+                + "            \n"
+                + "			\"blocks\": [\n"
+                + "				{\n"
+                + "					\"type\": \"section\",\n"
+                + "					\"fields\": [\n"
+                + "						{\n"
+                + "							\"type\": \"mrkdwn\",\n"
+                + "							\"text\": \"%MESSAGE%\\n*Campaign %STATUS-MESSAGE%. CI Score = %CISCORE% vs %CITHRESHOLD%*\\n%TAG-SUMMARY%\"\n"
+                + "						}\n"
+                + "					]\n"
+                + "				}\n"
+                + "			]\n"
+                + "		}\n"
+                + "	],\n"
+                + "	\"username\": \"Cerberus\",\n"
+                + "	\"channel\": \"%CHANNEL%\"\n"
+                + "}";
+
         String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
         if (StringUtil.isEmptyOrNull(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", "", "");
@@ -82,31 +106,29 @@ public class SlackGenerationService implements ISlackGenerationService {
         JSONObject slackMessage = new JSONObject();
         JSONObject attachementObj = new JSONObject();
 
-        attachementObj.put("fallback", "Execution Tag '" + tag.getTag() + "' Ended. <" + cerberusUrl + "|Click here> for details.");
-        attachementObj.put("pretext", "Execution Tag '" + tag.getTag() + "' Ended. <" + cerberusUrl + "|Click here> for details.");
+        String message = "Execution Tag '" + tag.getTag() + "' Ended. <" + cerberusUrl + "|Click here> for details.";
 
-        JSONObject slackattaMessage = new JSONObject();
+        String slackStatus = "";
+        String color = "";
         if ("OK".equalsIgnoreCase(tag.getCiResult())) {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_OK_COL_EXT);
-            slackattaMessage.put("title", "Campaign successfully Executed. CI Score = " + tag.getCiScore() + " (< " + tag.getCiScoreThreshold() + ")");
+            color = TestCaseExecution.CONTROLSTATUS_OK_COL_EXT;
+            slackStatus = "successfully executed";
         } else {
-            attachementObj.put("color", TestCaseExecution.CONTROLSTATUS_KO_COL_EXT);
-            slackattaMessage.put("title", "Campaign failed. CI Score = " + tag.getCiScore() + " >= " + tag.getCiScoreThreshold());
-
+            color = TestCaseExecution.CONTROLSTATUS_KO_COL_EXT;
+            slackStatus = "failed";
         }
-        slackattaMessage.put("value", tagService.formatResult(tag));
-        slackattaMessage.put("short", false);
-        attachementObj.append("fields", slackattaMessage);
 
-        slackMessage.append("attachments", attachementObj);
+        jsonMessage = jsonMessage
+                .replace("%COLOR%", color)
+                .replace("%MESSAGE%", message)
+                .replace("%CHANNEL%", channel)
+                .replace("%CISCORE%", String.valueOf(tag.getCiScore()))
+                .replace("%CITHRESHOLD%", String.valueOf(tag.getCiScoreThreshold()))
+                .replace("%STATUS-MESSAGE%", slackStatus)
+                .replace("%TAG-SUMMARY%", tagService.formatResult(tag));
 
-        if (!StringUtil.isEmptyOrNull(channel)) {
-            slackMessage.put("channel", channel);
-        }
-        slackMessage.put("username", "Cerberus");
-
-        LOG.debug(slackMessage.toString(1));
-        return slackMessage;
+        LOG.debug(jsonMessage);
+        return new JSONObject(jsonMessage);
 
     }
 

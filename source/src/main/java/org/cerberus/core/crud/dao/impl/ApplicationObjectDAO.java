@@ -178,13 +178,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             AnswerItem<ApplicationObject> applicationObjectAnswerItem = readByKey(application, object);
             if (applicationObjectAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject applicationObject = applicationObjectAnswerItem.getItem();
-                if (applicationObject != null) {
+                if ((applicationObject != null) && StringUtil.isNotEmptyOrNull(applicationObject.getScreenshotFilename())) {
                     String filePath = uploadPath + File.separator + applicationObject.getID() + File.separator + applicationObject.getScreenshotFilename();
                     File picture = new File(filePath);
                     try {
                         image = ImageIO.read(picture);
                     } catch (IOException e) {
-                        LOG.warn("Impossible to read the image : " + picture, e);
+                        LOG.warn("Impossible to read the image : " + picture, e.toString());
                     }
                 }
             } else {
