@@ -253,13 +253,12 @@ public class ControlService implements IControlService {
         // Record picture= files at action level.
         Identifier identifier = identifierService.convertStringToIdentifier(value1);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
-            LOG.warn("Saving Image 1 on Control : {}", identifier.getLocator());
-
+            LOG.debug("Saving Image 1 on Control : {}", identifier.getLocator());
             controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "1"));
         }
         identifier = identifierService.convertStringToIdentifier(value2);
         if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE) && !StringUtil.isEmptyOrNull(identifier.getLocator())) {
-            LOG.warn("Saving Image 2 on Control : {}", identifier.getLocator());
+            LOG.debug("Saving Image 2 on Control : {}", identifier.getLocator());
             controlExecution.addFileList(recorderService.recordPicture(controlExecution.getTestCaseStepActionExecution(), controlExecution.getControlId(), identifier.getLocator(), "2"));
         }
 
