@@ -25,10 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONStyle;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.service.json.IJsonService;
 import org.springframework.stereotype.Service;
@@ -42,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -111,7 +109,7 @@ public class JsonService implements IJsonService {
 
         switch (output) {
             case (TestCaseCountryProperties.VALUE3_COUNT):
-                valueFromJSON = String.valueOf(((JSONArray) JsonPath.read(document, jsonPath)).size());
+                valueFromJSON = String.valueOf(((JSONArray) JsonPath.read(document, jsonPath)).length());
                 break;
             case (TestCaseCountryProperties.VALUE3_VALUELIST):
                 valueFromJSON = castObjectAccordingToJson(JsonPath.read(document, jsonPath));
@@ -119,7 +117,7 @@ public class JsonService implements IJsonService {
             case (TestCaseCountryProperties.VALUE3_VALUE):
                 if (random) {
                     Random r = new Random();
-                    rank = r.nextInt(((JSONArray) JsonPath.read(document, jsonPath)).size());
+                    rank = r.nextInt(((JSONArray) JsonPath.read(document, jsonPath)).length());
                 }
                 valueFromJSON = ((JSONArray) JsonPath.read(document, jsonPath)).get(rank).toString();
                 break;
@@ -222,7 +220,7 @@ public class JsonService implements IJsonService {
         } else if (value instanceof Boolean) {
             return ((Boolean) value).toString();
         } else if (value instanceof JSONArray) {
-            return ((JSONArray) value).toString(JSONStyle.LT_COMPRESS);
+            return ((JSONArray) value).toString(1);
         } else if (value instanceof Double) {
             return ((Double) value).toString();
         } else {

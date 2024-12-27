@@ -47,7 +47,7 @@
         <jackson-databind.version>2.14.0-rc1</jackson-databind.version>
         <jackson-datatype-jsr310.version>2.13.2</jackson-datatype-jsr310.version>
         <!-- jsonpath -->
-        <jsonxpath.version>2.7.0</jsonxpath.version>
+        <jsonxpath.version>2.9.0</jsonxpath.version>
         <!-- Groovy Version -->
         <groovy.version>3.0.11</groovy.version>
         <!--        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>-->
@@ -81,7 +81,7 @@
         <!-- Mappers -->
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <!-- Swagger generator -->
-        <springfox.version>2.9.2</springfox.version>
+        <swagger.version>2.9.2</swagger.version>
         <!-- REST API Calls -->
         <httpmime.version>4.5.14</httpmime.version>
         <!-- Compile scope -->
@@ -490,12 +490,12 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox.version}</version>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>${springfox.version}</version>
+            <version>${swagger.version}</version>
         </dependency>
 
         <!-- PDF Generation -->

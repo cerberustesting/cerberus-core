@@ -28,7 +28,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.minidev.json.JSONArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
@@ -37,6 +36,7 @@ import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.version.Infos;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -94,7 +94,7 @@ public class ExportTestCase extends HttpServlet {
             tcInfoJSON.put("conditionOptions", tcInfo.getConditionOptions());
             
             JSONArray tcJA = new JSONArray();
-            tcJA.add(tcInfoJSON);
+            tcJA.put(tcInfoJSON);
             export.put("testcases", tcJA);
 
             // Contain the ** application ** of the testcase
