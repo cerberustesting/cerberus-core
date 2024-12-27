@@ -451,7 +451,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 // building Bug Status.
                 for (Map.Entry<String, JSONObject> entry : ttc.entrySet()) {
                     JSONObject val = entry.getValue();
-                    JSONArray bugA = new JSONArray(val.getString("bugs"));
+                    JSONArray bugA = val.getJSONArray("bugs");
                     int nbBug = bugA.length();
                     if (nbBug > 0) {
                         for (int i = 0; i < nbBug; i++) {
