@@ -1147,7 +1147,8 @@ public class PropertyService implements IPropertyService {
                 //Record result in filessytem.
                 testCaseExecutionData.addFileList(recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1), execution.getSecrets()));
 
-                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath, testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
+                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath,
+                        testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
                 if (valueFromJson != null) {
                     testCaseExecutionData.setValue(valueFromJson);
@@ -1234,7 +1235,8 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, executionObject, tCExecution.getSecrets());
 
             String valueFromJson = this.jsonService
-                    .getFromJson(executionObject, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
+                    .getFromJson(executionObject, null, testCaseExecutionData.getValue1(),
+                            testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJson == null) {
                 throw new InvalidPathException();
@@ -1754,7 +1756,8 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
             String valueFromJSON = this.jsonService
-                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
+                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), 
+                            testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJSON == null) {
                 throw new InvalidPathException();

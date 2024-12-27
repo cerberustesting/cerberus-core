@@ -92,7 +92,7 @@
         <xmlunit.version>1.5</xmlunit.version>
         <owasp-java-html-sanitizer.version>20211018.1</owasp-java-html-sanitizer.version>
         <commons-fileupload.version>1.5</commons-fileupload.version>
-        <commons-io.version>2.7</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <commons-net.version>3.9.0</commons-net.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
