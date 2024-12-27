@@ -13,6 +13,7 @@
 * [ENGINE] When callService that is attached to an application, host and contextroot of the corresponding application is used (if country env of the application does not exist on the test case application, search is also made on linked environments).
 * [ENGINE] New variable for system.dates. You can now for example do %system.DAY-13-d% that will return the day of month (d) of 13 days ago (DAY-13). (locale of country invariant is used)
 * [ENGINE] test case dependency engine now allow to define a delay between the end of an execution and the start of the next one. That allow to execute a campaign with some testcases on day 1 and release the rest of the testcases on day 2 (after some end of day treatments has been executed)
+* [ENGINE] Disable dependency when testcase is not part of campaign execution. Dependency is still displayed but in IGNORED status.
 * [ENGINE] Drag and drop now report error on Drop element and not drag when necessary.
 * [ENGINE] Timeout overwrite option now also overwrite pageLoadTimeout and setScriptTimeout.
 * [ENGINE] Every application environment now can have 2 secrets data that can be used for password of apikey (with %system.APP_SECRET1% and %system.APP_SECRET2%). Once application is updated with its secret data, you can't access it and data is protected during execution.
@@ -20,7 +21,8 @@
 * [GUI] Added service call simulation feature. When editing a service, you can make calls outside a testcase context in order to control and tune the definition of the call.
 * [ENGINE] Added Service REST Authorization support (Basic, API Key and Bearer).
 * [ENGINE] Added actions lockDevice, unlockDevice and rotateDevice for iOS and Android application
-* [ENGINE] when interact with an element, Cerberus report the number of elements found in order to better understand why an actoin could fail to provide the correct result
+* [ENGINE] when interact with an element, Cerberus report the number of elements found in order to better understand why an action could fail to provide the correct result
+* [ENGINE] switchToWindow action now have a better and detail message will all possible context to switch to.
 * [GUI] Improved autocompletion adding boolean, flags and contextual element for select and switchWindow actions.
 * [GUI] Improved navigation on campaign execution screen. Adding CTA on top of the screen and toggle buttons for reporting details hidden by default.
 * [GUI] Both campaign and execution reporting over time now include an availability KPI based on nb and time of OK.
@@ -41,8 +43,8 @@
 * [GUI] New Impact analysis tool. You can search any text (ex: xpath or variable) across all testcases.
 * [GUI] Testcase can be Linked to JIRA Issue. That will display the associated label with URL on execution page.
 * [GUI] Automatic issue creation with Github and Jira connector. Any non OK execution can now create an issue and link it to the Testcase. Please check the documentation for further details.
+* [GUI] Issue creation can be done server to server directly from Cerberus. 
 * [GUI] Improved property definition on testcase script.
-* [ENGINE] Disable dependency when testcase is not part of campaign execution. Dependency is still displayed but in IGNORED status.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
@@ -51,3 +53,4 @@
 * [ENGINE] %system.TODAY.doy*, %system.TOMORROW.doy*, %system.YESTERDAY.doy* should be replaced by %system.*.D*.
 * [GUI] Test Folder screen has been removed from menu (Folder creation are possible directly at testcase level and activation flag at Folder level can be replaced by activation at testcase level).
 * [GUI] SQL Library screen has been removed from menu (SQL Can be triggered either from Datalib screen or stored inside datalib and used from properties if necessary).
+* [KAFKA] Moved client library from 2.6.3 to 3.7.2
