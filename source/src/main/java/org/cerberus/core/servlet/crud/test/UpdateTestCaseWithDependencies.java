@@ -261,7 +261,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             if (propJson.has("value3")) {
                 value3 = propJson.getString("value3");
             }
-            String length = propJson.getString("length");
+            String length = String.valueOf(propJson.getInt("length"));
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
             int retryPeriod = propJson.optInt("retryPeriod");
@@ -313,7 +313,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = step.getString("conditionValue1");
             String conditionValue2 = step.getString("conditionValue2");
             String conditionValue3 = step.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(step.getString("conditionOptions"), new JSONArray(), "UTF8");
+            JSONArray conditionOptions = step.getJSONArray("conditionOptions");
             String description = step.getString("description");
             boolean isUsingLibraryStep = step.getBoolean("isUsingLibraryStep");
             String libraryStepTest = step.getString("libraryStepTest");
@@ -361,7 +361,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = tcsaJson.getString("conditionValue1");
             String conditionValue2 = tcsaJson.getString("conditionValue2");
             String conditionValue3 = tcsaJson.getString("conditionValue3");
-            JSONArray condOptionsArray = ParameterParserUtil.parseJSONArrayParamAndDecode(tcsaJson.getString("conditionOptions"), new JSONArray(), "UTF8");
+            JSONArray condOptionsArray = tcsaJson.getJSONArray("conditionOptions");
             String action = tcsaJson.getString("action");
             String value1 = tcsaJson.getString("object");
             String value2 = tcsaJson.getString("property");
@@ -403,7 +403,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String conditionValue1 = controlJson.isNull("conditionValue1") ? "" : controlJson.getString("conditionValue1");
             String conditionValue2 = controlJson.isNull("conditionValue2") ? "" : controlJson.getString("conditionValue2");
             String conditionValue3 = controlJson.isNull("conditionValue3") ? "" : controlJson.getString("conditionValue3");
-            JSONArray conditionOptions = ParameterParserUtil.parseJSONArrayParamAndDecode(controlJson.getString("conditionOptions"), new JSONArray(), "UTF8");
+            JSONArray conditionOptions = controlJson.getJSONArray("conditionOptions");
             //String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
