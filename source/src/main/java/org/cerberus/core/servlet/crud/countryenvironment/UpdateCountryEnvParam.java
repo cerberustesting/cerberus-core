@@ -183,7 +183,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
 
             AnswerItem resp = cepService.readByKey(system, country, environment);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -287,21 +287,9 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String var4 = tcsaJson.getString("var4");
             String secret1 = tcsaJson.getString("secret1");
             String secret2 = tcsaJson.getString("secret2");
-            String strPoolSize = tcsaJson.getString("poolSize");
+            int poolSize = tcsaJson.getInt("poolSize");
             String mobileActivity = tcsaJson.getString("mobileActivity");
             String mobilePackage = tcsaJson.getString("mobilePackage");
-            int poolSize;
-            if (strPoolSize.isEmpty()) {
-                poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
-            }
-            else {
-                try {
-                    poolSize = Integer.parseInt(strPoolSize);
-                } catch (NumberFormatException e) {
-                    LOG.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
-                    poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
-                }
-            }
 
             if (!delete) {
                 CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, isActive, ip, domain, url, urlLogin, var1, var2, var3, var4, secret1, secret2, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
@@ -368,7 +356,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 
@@ -389,7 +377,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 

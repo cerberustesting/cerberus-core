@@ -275,7 +275,7 @@ public class UpdateRobot extends HttpServlet {
                 executorProxyHost = reJson.getString("executorProxyHost");
             }
             Integer executorProxyPort = null;
-            if (reJson.has("executorProxyPort") && !StringUtil.isEmptyOrNull(reJson.getString("executorProxyPort"))) {
+            if (reJson.has("executorProxyPort")) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
             String executorProxyType = reJson.getString("executorProxyType");
@@ -284,7 +284,7 @@ public class UpdateRobot extends HttpServlet {
             if (reJson.has("executorExtensionHost")) {
                 executorExtensionHost = reJson.getString("executorExtensionHost");
             }
-            if (reJson.has("executorExtensionPort") && !StringUtil.isEmptyOrNull(reJson.getString("executorExtensionPort"))) {
+            if (reJson.has("executorExtensionPort")) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }
 
@@ -332,7 +332,7 @@ public class UpdateRobot extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 
@@ -353,7 +353,7 @@ public class UpdateRobot extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 

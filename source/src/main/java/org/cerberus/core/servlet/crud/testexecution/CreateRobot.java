@@ -196,7 +196,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder,acceptNotifications, extraParam, isAcceptInsecureCerts, capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, isActive, lbexemethod, description, userAgent, screenSize, profileFolder, acceptNotifications, extraParam, isAcceptInsecureCerts, capabilities, executors, robotDecli, type);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -249,7 +249,7 @@ public class CreateRobot extends HttpServlet {
                 executorProxyHost = reJson.getString("executorProxyHost");
             }
             Integer executorProxyPort = null;
-            if (reJson.has("executorProxyPort") && !StringUtil.isEmptyOrNull(reJson.getString("executorProxyPort"))) {
+            if (reJson.has("executorProxyPort")) {
                 executorProxyPort = reJson.getInt("executorProxyPort");
             }
             String executorProxyType = reJson.getString("executorProxyType");
@@ -258,7 +258,7 @@ public class CreateRobot extends HttpServlet {
             if (reJson.has("executorExtensionHost") && !StringUtil.isEmptyOrNull(reJson.getString("executorExtensionHost"))) {
                 executorExtensionHost = reJson.getString("executorExtensionHost");
             }
-            if (reJson.has("executorExtensionPort") && !StringUtil.isEmptyOrNull(reJson.getString("executorExtensionPort"))) {
+            if (reJson.has("executorExtensionPort")) {
                 executorExtensionPort = reJson.getInt("executorExtensionPort");
             }
             String description = reJson.getString("description");
