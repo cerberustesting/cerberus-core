@@ -840,9 +840,9 @@ function addNewExecutorRow(tableBody) {
         isDeviceLockUnlock: false,
         description: "",
         executorExtensionHost: "",
-        executorExtensionPort: "8093",
+        executorExtensionPort: 8093,
         executorProxyHost: "",
-        executorProxyPort: "",
+        executorProxyPort: 0,
         executorProxyType: "NONE"
     };
     appendExecutorRow(tableBody, newExecutor);
