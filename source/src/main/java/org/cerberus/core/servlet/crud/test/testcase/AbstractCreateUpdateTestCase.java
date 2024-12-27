@@ -290,7 +290,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
             Integer testcaseDependencyDelay = Integer.parseInt(jsonObj.getString("depDelay"));
             String test = jsonObj.getString("test");
             String description = jsonObj.getString("description");
-            boolean isActive = Boolean.valueOf(jsonObj.getString("isActive"));
+            boolean isActive = jsonObj.getBoolean("isActive");
             Timestamp creationDate = new Timestamp(new Date().getTime());
 
             testcaseDependencies.add(
