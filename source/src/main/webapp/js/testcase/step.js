@@ -801,7 +801,7 @@ function initStep() {
         "conditionValue1": "",
         "conditionValue2": "",
         "conditionValue3": "",
-        "conditionOptions": "[]",
+        "conditionOptions": [],
         "isExecutionForced": false
     };
 }
