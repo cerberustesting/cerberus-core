@@ -220,7 +220,7 @@ public class UpdateCampaign extends HttpServlet {
                         ArrayList<CampaignLabel> arr = new ArrayList<>();
                         for (int i = 0; i < labels.length(); i++) {
                             JSONArray bat = labels.getJSONArray(i);
-                            CampaignLabel co = factoryCampaignLabel.create(0, campaign, Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                            CampaignLabel co = factoryCampaignLabel.create(0, campaign, bat.getInt(2), request.getRemoteUser(), null, request.getRemoteUser(), null);
                             arr.add(co);
                         }
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, campaignLabelService.compareListAndUpdateInsertDeleteElements(campaign, arr));
@@ -254,22 +254,22 @@ public class UpdateCampaign extends HttpServlet {
             boolean delete = tcsaJson.getBoolean("toDelete");
             String cronExpression = policy.sanitize(tcsaJson.getString("cronDefinition"));
             String active = policy.sanitize(tcsaJson.getString("isActive"));
-            String strId = tcsaJson.getString("id");
+            long id = tcsaJson.getLong("id");
             String desc = tcsaJson.getString("description");
             String type = "CAMPAIGN";
             String name = campaign;
 
-            int id;
-            if (strId.isEmpty()) {
-                id = 0;
-            } else {
-                try {
-                    id = Integer.parseInt(strId);
-                } catch (NumberFormatException e) {
-                    LOG.warn("Unable to parse pool size: " + strId + ". Applying default value");
-                    id = 0;
-                }
-            }
+//            int id;
+//            if (strId.isEmpty()) {
+//                id = 0;
+//            } else {
+//                try {
+//                    id = Integer.parseInt(strId);
+//                } catch (NumberFormatException e) {
+//                    LOG.warn("Unable to parse pool size: " + strId + ". Applying default value");
+//                    id = 0;
+//                }
+//            }
 
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
@@ -299,19 +299,19 @@ public class UpdateCampaign extends HttpServlet {
             String description = policy.sanitize(objJson.getString("description"));
             boolean isActive = objJson.getBoolean("isActive");
             String hookChannel = policy.sanitize(objJson.getString("hookChannel"));
-            String strId = objJson.getString("id");
+            int id = objJson.getInt("id");
 
-            int id;
-            if (strId.isEmpty()) {
-                id = 0;
-            } else {
-                try {
-                    id = Integer.parseInt(strId);
-                } catch (NumberFormatException e) {
-                    LOG.warn("Unable to parse pool size: " + strId + ". Applying default value");
-                    id = 0;
-                }
-            }
+//            int id;
+//            if (strId.isEmpty()) {
+//                id = 0;
+//            } else {
+//                try {
+//                    id = Integer.parseInt(strId);
+//                } catch (NumberFormatException e) {
+//                    LOG.warn("Unable to parse pool size: " + strId + ". Applying default value");
+//                    id = 0;
+//                }
+//            }
 
             Timestamp timestampfactice = new Timestamp(System.currentTimeMillis());
 
@@ -340,7 +340,7 @@ public class UpdateCampaign extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex,ex);
         }
     }
 
@@ -361,7 +361,7 @@ public class UpdateCampaign extends HttpServlet {
         } catch (CerberusException ex) {
             LOG.warn(ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex,ex);
         }
     }
 
