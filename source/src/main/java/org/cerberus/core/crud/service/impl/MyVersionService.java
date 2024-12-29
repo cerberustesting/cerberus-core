@@ -66,6 +66,11 @@ public class MyVersionService implements IMyVersionService {
     }
 
     @Override
+    public boolean updateAndLockSchedulerVersion(long value) {
+        return this.myVersionDAO.updateAndLockSchedulerVersion(value);
+    }
+    
+    @Override
     public boolean flagMyVersionString(String key) {
         return this.myVersionDAO.flagMyVersionString(key);
     }

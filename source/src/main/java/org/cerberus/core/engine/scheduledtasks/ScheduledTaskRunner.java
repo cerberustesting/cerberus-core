@@ -19,6 +19,13 @@
  */
 package org.cerberus.core.engine.scheduledtasks;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.TimeZone;
+import org.cerberus.core.crud.service.IMyVersionService;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
@@ -47,6 +54,8 @@ public class ScheduledTaskRunner {
     private SchedulerInit schedulerInit;
     @Autowired
     private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
+    @Autowired
+    private IMyVersionService myVersionService;
 
     private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
@@ -54,57 +63,110 @@ public class ScheduledTaskRunner {
     private int b2TickNumber = 1;
     private int b3TickNumberTarget = 1;
     private int b3TickNumber = 1;
+    private int b4TickNumberTarget = 1;
+    private int b4TickNumber = 1;
+
+    private long loadingTimestamp = 0;
+    private boolean instanceActive = true;
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S";
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {
-        LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget + " - " + b3TickNumber + "/" + b3TickNumberTarget);
 
-        // We get the new period from parameter and trigger the Queue automatic cancellation job.
-        b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 60);
-        b2TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueueprocessingjob_period", "", 30);
-
-        if (b1TickNumber < b1TickNumberTarget) {
-            b1TickNumber++;
-        } else {
-            b1TickNumber = 1;
-            performBatch1_CancelOldQueueEntries();
+        /**
+         * Secure only 1 Task trigger on a given cerberus instance. Multiple
+         * jobs could be triggered if several instance is running. The first
+         * scheduler trigger will define loadingTimestamp and instanceActive
+         * based on a lock value defined at database level. Only the 1st update
+         * (within 10 second delay) will be considered as active. All others
+         * will be disabled.
+         */
+        if (loadingTimestamp == 0) {
+            Date d = new Date();
+            TimeZone tz = TimeZone.getTimeZone("UTC");
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            df.setTimeZone(tz);
+            long newVersion = new java.util.Date().getTime();
+            loadingTimestamp = newVersion;
+            LOG.debug("Setting local scheduler Version to : {}", newVersion);
+            instanceActive = myVersionService.updateAndLockSchedulerVersion(newVersion);
         }
 
-        if (b2TickNumber < b2TickNumberTarget) {
-            b2TickNumber++;
+        if (instanceActive) {
+
+            LOG.debug("Schedule ({}) Start. "
+                    + b1TickNumber + "/" + b1TickNumberTarget + " - "
+                    + b2TickNumber + "/" + b2TickNumberTarget + " - "
+                    + b3TickNumber + "/" + b3TickNumberTarget + " - "
+                    + b4TickNumber + "/" + b4TickNumberTarget,
+                    loadingTimestamp);
+
+            // We get the new period of each job from parameter.
+            b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 60);
+            b2TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueueprocessingjob_period", "", 30);
+            b3TickNumberTarget = 1;
+            b4TickNumberTarget = 1;
+
+            if (b1TickNumber < b1TickNumberTarget) {
+                b1TickNumber++;
+            } else {
+                b1TickNumber = 1;
+                performBatch1_CancelOldQueueEntries();
+            }
+
+            if (b2TickNumber < b2TickNumberTarget) {
+                b2TickNumber++;
+            } else {
+                b2TickNumber = 1;
+                // We trigger the Queue Processing job.
+                performBatch2_ProcessQueue();
+            }
+
+            if (b3TickNumber < b3TickNumberTarget) {
+                b3TickNumber++;
+            } else {
+                b3TickNumber = 1;
+                // We trigger the Scheduler init job.
+                performBatch3_SchedulerInit();
+            }
+
+            if (b4TickNumber < b4TickNumberTarget) {
+                b4TickNumber++;
+            } else {
+                b4TickNumber = 1;
+                // We trigger the Queue dependencies release by timing.
+                performBatch4_ProcessTimingBasedQueueDependencies();
+            }
+
+            LOG.debug("Schedule ({}) Stop. "
+                    + b1TickNumber + "/" + b1TickNumberTarget + " - "
+                    + b2TickNumber + "/" + b2TickNumberTarget + " - "
+                    + b3TickNumber + "/" + b3TickNumberTarget + " - "
+                    + b4TickNumber + "/" + b4TickNumberTarget,
+                    loadingTimestamp);
+
         } else {
-            b2TickNumber = 1;
-            // We trigger the Queue Processing job.
-            performBatch2_ProcessQueue();
+            LOG.debug("Schedule ({}) disabled. ", loadingTimestamp);
+
         }
 
-        if (b3TickNumber < b3TickNumberTarget) {
-            b3TickNumber++;
-        } else {
-            b3TickNumber = 1;
-            // We trigger the Scheduler init job.
-            performBatch3_SchedulerInit();
-        }
-
-        performBatch3_ProcessTimingBasedQueueDependencies();
-
-        LOG.debug("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget + " - " + b3TickNumber + "/" + b3TickNumberTarget);
     }
 
     private void performBatch1_CancelOldQueueEntries() {
-        LOG.info("automaticqueuecancellationjob Task triggered.");
+        LOG.info("Schedule ({}) : automaticqueuecancellationjob Task triggered.", loadingTimestamp);
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueuecancellationjob_active", "", true)) {
             testCaseExecutionQueueService.cancelRunningOldQueueEntries();
         } else {
-            LOG.info("automaticqueuecancellationjob Task disabled by config (cerberus_automaticqueuecancellationjob_active).");
+            LOG.info("Schedule ({}) : automaticqueuecancellationjob Task disabled by config (cerberus_automaticqueuecancellationjob_active).", loadingTimestamp);
         }
-        LOG.info("automaticqueuecancellationjob Task ended.");
+        LOG.info("Schedule ({}) : automaticqueuecancellationjob Task ended.", loadingTimestamp);
     }
 
     private void performBatch2_ProcessQueue() {
-        LOG.info("automaticqueueprocessingjob Task triggered.");
+        LOG.info("Schedule ({}) : automaticqueueprocessingjob Task triggered.", loadingTimestamp);
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueueprocessingjob_active", "", true)) {
             try {
                 executionThreadPoolService.executeNextInQueue(false);
@@ -112,33 +174,33 @@ public class ScheduledTaskRunner {
                 LOG.error(ex.toString(), ex);
             }
         } else {
-            LOG.info("automaticqueueprocessingjob Task disabled by config (cerberus_automaticqueueprocessingjob_active).");
+            LOG.info("Schedule ({}) : automaticqueueprocessingjob Task disabled by config (cerberus_automaticqueueprocessingjob_active).", loadingTimestamp);
         }
-        LOG.info("automaticqueueprocessingjob Task ended.");
+        LOG.info("Schedule ({}) : automaticqueueprocessingjob Task ended.", loadingTimestamp);
     }
 
     private void performBatch3_SchedulerInit() {
         try {
-            LOG.debug("SchedulerInit Task triggered.");
+            LOG.debug("Schedule ({}) : SchedulerInit Task triggered.", loadingTimestamp);
             schedulerInit.init();
-            LOG.debug("SchedulerInit Task ended.");
+            LOG.debug("Schedule ({}) : SchedulerInit Task ended.", loadingTimestamp);
         } catch (Exception e) {
-            LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e);
+            LOG.error("ScheduleEntry init from scheduletaskrunner failed : " + e, e);
         }
 
     }
 
-    private void performBatch3_ProcessTimingBasedQueueDependencies() {
+    private void performBatch4_ProcessTimingBasedQueueDependencies() {
         try {
-            LOG.debug("Queue dep timing Task triggered.");
+            LOG.debug("Schedule ({}) : Queue dep timing Task triggered.", loadingTimestamp);
             int nbReleased = testCaseExecutionQueueDepService.manageDependenciesCheckTimingWaiting();
             if (nbReleased > 0) {
-                LOG.info(nbReleased + " Queue entry(ies) has(have) been released due to TIMING dependencies. We trigger now the processing of the queue entry.");
+                LOG.info("Schedule ({}) : " + nbReleased + " Queue entry(ies) has(have) been released due to TIMING dependencies. We trigger now the processing of the queue entry.", loadingTimestamp);
                 executionThreadPoolService.executeNextInQueue(false);
             }
-            LOG.debug("Queue dep timing Task ended.");
+            LOG.debug("Schedule ({}) : Queue dep timing Task ended.", loadingTimestamp);
         } catch (Exception e) {
-            LOG.error("Queue dep timing Task from scheduletaskrunner failed : " + e);
+            LOG.error("Queue dep timing Task from scheduletaskrunner failed : " + e, e);
         }
 
     }

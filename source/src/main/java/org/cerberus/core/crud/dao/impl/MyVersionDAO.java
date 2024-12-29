@@ -170,6 +170,50 @@ public class MyVersionDAO implements IMyVersionDAO {
     }
 
     @Override
+    public boolean updateAndLockSchedulerVersion(long myVersion) {
+        boolean result = false;
+        final String query = "UPDATE myversion SET value = ? WHERE `key` = 'scheduler_active_instance_version' and value < ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.value : " + myVersion);
+            LOG.debug("SQL.param.value : " + (myVersion - 10000));
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setLong(1, myVersion);
+                preStat.setLong(2, myVersion - 10000);
+
+                if (preStat.executeUpdate() >= 1) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
     public boolean flagMyVersionString(String key) {
         boolean result = false;
         final String query = "UPDATE myversion SET valueString = 'Y' WHERE `key` = ? and valueString = 'N'";
