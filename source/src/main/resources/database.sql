@@ -6590,7 +6590,8 @@ UPDATE testcasecountryproperties SET `Type` = 'getFromHtml' WHERE `Type` = 'getF
 -- 1874
 UPDATE robot SET lbexemethod='BYRANKING' WHERE lbexemethod='';
 
--- 1875-1876
+-- 1875-1877
 ALTER TABLE myversion MODIFY COLUMN Value BIGINT NULL;
 INSERT INTO myversion (`Key`,Value) VALUES ('scheduler_active_instance_version',0);
+INSERT INTO myversion (`Key`,Value) VALUES ('documentation_database_last_refresh',0);
 

@@ -92,7 +92,7 @@ public class ScheduledTaskRunner {
             long newVersion = new java.util.Date().getTime();
             loadingTimestamp = newVersion;
             LOG.debug("Setting local scheduler Version to : {}", newVersion);
-            instanceActive = myVersionService.updateAndLockSchedulerVersion(newVersion);
+            instanceActive = myVersionService.updateAndLockVersionEntryDuringMs("scheduler_active_instance_version", newVersion, 10000);
         }
 
         if (instanceActive) {
@@ -156,7 +156,7 @@ public class ScheduledTaskRunner {
     }
 
     private void performBatch1_CancelOldQueueEntries() {
-        LOG.info("Schedule ({}) : automaticqueuecancellationjob Task triggered.", loadingTimestamp);
+        LOG.info("Schedule ({}) : automaticqueuecancellationjob Task triggered. (triggered every {} minutes)", loadingTimestamp, b1TickNumberTarget);
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueuecancellationjob_active", "", true)) {
             testCaseExecutionQueueService.cancelRunningOldQueueEntries();
         } else {
@@ -166,7 +166,7 @@ public class ScheduledTaskRunner {
     }
 
     private void performBatch2_ProcessQueue() {
-        LOG.info("Schedule ({}) : automaticqueueprocessingjob Task triggered.", loadingTimestamp);
+        LOG.info("Schedule ({}) : automaticqueueprocessingjob Task triggered. (triggered every {} minutes)", loadingTimestamp, b2TickNumberTarget);
         if (parameterService.getParameterBooleanByKey("cerberus_automaticqueueprocessingjob_active", "", true)) {
             try {
                 executionThreadPoolService.executeNextInQueue(false);
@@ -181,7 +181,7 @@ public class ScheduledTaskRunner {
 
     private void performBatch3_SchedulerInit() {
         try {
-            LOG.debug("Schedule ({}) : SchedulerInit Task triggered.", loadingTimestamp);
+            LOG.debug("Schedule ({}) : SchedulerInit Task triggered. (Quartz User Scheduler)", loadingTimestamp);
             schedulerInit.init();
             LOG.debug("Schedule ({}) : SchedulerInit Task ended.", loadingTimestamp);
         } catch (Exception e) {
@@ -202,7 +202,6 @@ public class ScheduledTaskRunner {
         } catch (Exception e) {
             LOG.error("Queue dep timing Task from scheduletaskrunner failed : " + e, e);
         }
-
     }
 
 }

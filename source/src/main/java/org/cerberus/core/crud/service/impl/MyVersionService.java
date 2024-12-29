@@ -66,10 +66,13 @@ public class MyVersionService implements IMyVersionService {
     }
 
     @Override
-    public boolean updateAndLockSchedulerVersion(long value) {
-        return this.myVersionDAO.updateAndLockSchedulerVersion(value);
+    public boolean updateAndLockVersionEntryDuringMs(String version, long value, long lockDurationMs) {
+        if (value == 0) {
+            value = new java.util.Date().getTime();
+        }
+        return this.myVersionDAO.updateAndLockVersionEntryDuringMs(version, value, lockDurationMs);
     }
-    
+
     @Override
     public boolean flagMyVersionString(String key) {
         return this.myVersionDAO.flagMyVersionString(key);

@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.cerberus.core.crud.service.IMyVersionService;
 
 /**
  * @author ryltar this is a singleton. 1 per instance
@@ -38,16 +39,26 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
     @Override
     @PostConstruct
     public void init() {
-        LOG.info("Starting to Refresh documentation table");
-        for (String currentRequest : this.getSqlDocumentation()) {
-            this.exeSQL(currentRequest);
+
+        if (myVersionService.updateAndLockVersionEntryDuringMs("documentation_database_last_refresh", 0, 5000)) {
+
+            LOG.info("Starting to Refresh documentation table");
+            for (String currentRequest : this.getSqlDocumentation()) {
+                this.exeSQL(currentRequest);
+            }
+
+        } else {
+            LOG.debug("Refresh documentation table bypassed because already triggered less than 5s ago");
         }
+
     }
 
     private static final Logger LOG = LogManager.getLogger(DocumentationDatabaseService.class);
 
     @Autowired
     private DatabaseSpring databaseSpring;
+    @Autowired
+    private IMyVersionService myVersionService;
 
     @Override
     public String exeSQL(String sqlString) {

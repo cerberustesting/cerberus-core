@@ -53,10 +53,12 @@ public interface IMyVersionDAO {
 
     /**
      *
-     * @param myVersion
+     * @param version
+     * @param value
+     * @param lockDurationMs
      * @return
      */
-    boolean updateAndLockSchedulerVersion(long myVersion);
+    boolean updateAndLockVersionEntryDuringMs(String version, long value, long lockDurationMs);
 
     /**
      *
