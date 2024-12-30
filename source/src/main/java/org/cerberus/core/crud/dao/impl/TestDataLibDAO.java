@@ -44,6 +44,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -1046,7 +1047,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             subDataParsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.parsingAnswer"));
             subDataColumnPosition = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.columnPosition"));
         } catch (Exception ex) {
-            LOG.warn(ex.toString());
+            LOG.debug(ex.toString());
         }
 
         return factoryTestDataLib.create(testDataLibID, name, system, environment, country, privateData, group, type, database, script, databaseUrl, service, servicePath,

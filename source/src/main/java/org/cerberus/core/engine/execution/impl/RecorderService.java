@@ -543,38 +543,40 @@ public class RecorderService implements IRecorderService {
         LOG.debug("Starting to save Execution log File.");
 
         TestCaseExecutionFile object = null;
-        String test = execution.getTest();
-        String testCase = execution.getTestCase();
+        if ((execution != null) && (execution.getExecutionLog() != null)) {
+            String test = execution.getTest();
+            String testCase = execution.getTestCase();
 
-        try {
-            Recorder recorder = this.initFilenames(execution.getId(), test, testCase, null, null, null, null, null, 0, "exeLog", "log", false);
-            File dir = new File(recorder.getFullPath());
-            dir.mkdirs();
+            try {
+                Recorder recorder = this.initFilenames(execution.getId(), test, testCase, null, null, null, null, null, 0, "exeLog", "log", false);
+                File dir = new File(recorder.getFullPath());
+                dir.mkdirs();
 
-            File file = new File(recorder.getFullFilename());
+                File file = new File(recorder.getFullFilename());
 
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
-                for (ExecutionLog executionLog : execution.getExecutionLog()) {
-                    fileOutputStream.write(executionLog.getLogText().getBytes());
-                    fileOutputStream.write("\r\n".getBytes());
-                    LOG.debug(executionLog.getLogText());
+                try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+                    for (ExecutionLog executionLog : execution.getExecutionLog()) {
+                        fileOutputStream.write(executionLog.getLogText().getBytes());
+                        fileOutputStream.write("\r\n".getBytes());
+                        LOG.debug(executionLog.getLogText());
+                    }
+
+                    LOG.info("File saved : {}", recorder.getFullFilename());
+
+                    // Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Execution Log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+
+                } catch (IOException ex) {
+                    LOG.error(ex.toString(), ex);
+                } catch (WebDriverException ex) {
+                    LOG.debug("Exception recording execution log on execution : {}", execution.getId(), ex);
+                    object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Execution Log [ERROR]", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
+                    testCaseExecutionFileService.save(object);
                 }
-
-                LOG.info("File saved : {}", recorder.getFullFilename());
-
-                // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Execution Log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
-                testCaseExecutionFileService.save(object);
-
-            } catch (IOException ex) {
+            } catch (CerberusException ex) {
                 LOG.error(ex.toString(), ex);
-            } catch (WebDriverException ex) {
-                LOG.debug("Exception recording execution log on execution : {}", execution.getId(), ex);
-                object = testCaseExecutionFileFactory.create(0, execution.getId(), recorder.getLevel(), "Execution Log [ERROR]", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
-                testCaseExecutionFileService.save(object);
             }
-        } catch (CerberusException ex) {
-            LOG.error(ex.toString(), ex);
         }
         return object;
 
