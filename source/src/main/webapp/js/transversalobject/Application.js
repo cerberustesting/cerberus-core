@@ -280,7 +280,7 @@ function feedApplicationModal(application, mode, system) {
         appObj1.type = "NONE";
         appObj1.system = getUser().defaultSystem;
         appObj1.subsystem = "";
-        appObj1.poolSize = "";
+        appObj1.poolSize = 10;
         appObj1.repourl = "";
         appObj1.bugTrackerUrl = "";
         appObj1.bugTrackerConnector = "";
@@ -604,7 +604,7 @@ function addNewEnvironmentRow() {
         var4: "",
         secret1: "",
         secret2: "",
-        poolSize: "",
+        poolSize: 10,
         mobileActivity: "",
         mobilePackage: "",
         toDelete: false

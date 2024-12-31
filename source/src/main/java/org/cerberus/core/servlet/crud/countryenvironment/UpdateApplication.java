@@ -258,21 +258,9 @@ public class UpdateApplication extends HttpServlet {
             String var4 = tcsaJson.getString("var4");
             String secret1 = tcsaJson.getString("secret1");
             String secret2 = tcsaJson.getString("secret2");
-            String strPoolSize = tcsaJson.getString("poolSize");
+            int poolSize = tcsaJson.getInt("poolSize");
             String mobileActivity = tcsaJson.getString("mobileActivity");
             String mobilePackage = tcsaJson.getString("mobilePackage");
-
-            int poolSize;
-            if (strPoolSize.isEmpty()) {
-                poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
-            } else {
-                try {
-                    poolSize = Integer.parseInt(strPoolSize);
-                } catch (NumberFormatException e) {
-                    LOG.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
-                    poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
-                }
-            }
 
             if (!delete) {
                 CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, isActive, ip, domain, url, urlLogin, var1, var2, var3, var4, secret1, secret2, poolSize, mobileActivity, mobilePackage, request.getRemoteUser(), null, request.getRemoteUser(), null);
