@@ -412,7 +412,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.lbexemethod = "BYRANKING";
         robotObj1.type = "";
         robotObj1.extraParam = "";
-        robotObj1.acceptNotifications = "";
+        robotObj1.acceptNotifications = 0;
         robotObj1.isAcceptInsecureCerts = true;
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
