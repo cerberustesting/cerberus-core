@@ -1180,16 +1180,22 @@ public class RobotServerService implements IRobotServerService {
 
             // We Stop the Robot Session (Selenium or Appium).
             LOG.info("Stop execution robot session");
-            if (tce.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_KOBITON)) {
-                // For Kobiton, we should first close Appium session.
-                if (session.getAppiumDriver() != null) {
-                    session.getAppiumDriver().close();
-                }
-                if (session.getDriver() != null) {
-                    session.getDriver().quit();
-                }
-            } else {
-                session.quit();
+            switch (tce.getRobotProvider()) {
+                case TestCaseExecution.ROBOTPROVIDER_KOBITON:
+                    if (session.getAppiumDriver() != null) {
+                        session.getAppiumDriver().close();
+                    }
+                    if (session.getDriver() != null) {
+                        session.getDriver().quit();
+                    }
+                    break;
+                case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
+                    if (session.getDriver() != null) {
+                        session.getDriver().quit();
+                    }
+                    break;
+                default:
+                    session.quit();
             }
 
             return true;
