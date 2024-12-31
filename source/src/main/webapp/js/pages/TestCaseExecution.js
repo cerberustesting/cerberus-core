@@ -520,7 +520,7 @@ function updatePage(data, steps) {
     var fileExeContainer = $("#testCaseConfig #tcDetailFileContentField");
     addFileLink(data.fileList, fileContainer, fileExeContainer, isTheExecutionManual);
 
-    var myURL = $("#bugs").data("appBugURL");
+    var myURL = $("#bugButtons").data("appBugURL");
     if (myURL === undefined) {
         // We only refresh the bugURL and call readApplication if the information is not already filed.
         $.ajax({
