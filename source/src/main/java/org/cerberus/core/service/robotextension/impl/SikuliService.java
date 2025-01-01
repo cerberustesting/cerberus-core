@@ -298,7 +298,7 @@ public class SikuliService implements ISikuliService {
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                LOG.warn("Responce code different from 200 when calling '" + urlToConnect + "'");
+                LOG.info("Responce code different from 200 when calling '" + urlToConnect + "'. Disable Cerberus extension features.");
                 return false;
             }
 

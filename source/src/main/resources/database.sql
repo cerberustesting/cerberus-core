@@ -6595,3 +6595,7 @@ ALTER TABLE myversion MODIFY COLUMN Value BIGINT NULL;
 INSERT INTO myversion (`Key`,Value) VALUES ('scheduler_active_instance_version',0);
 INSERT INTO myversion (`Key`,Value) VALUES ('documentation_database_last_refresh',0);
 
+-- 1878
+INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
+  VALUES   ('CAPABILITY', 'unhandledPromptBehavior', 10, 'Defines how the driver should respond when a non-alert action is taken while an alert is present. Possible values : dismiss, accept, ignore, dismiss and notify, accept and notify');
+

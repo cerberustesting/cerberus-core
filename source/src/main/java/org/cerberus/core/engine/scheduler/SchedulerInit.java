@@ -96,15 +96,15 @@ public class SchedulerInit {
             MyVersion databaseSchedulerVersion;
             try {
                 databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
-                LOG.debug("Instance scheduler version : " + instanceSchedulerVersion + " / DB scheduler version : " + databaseSchedulerVersion.getValueString());
+                LOG.debug("Instance Quartz User scheduler version : " + instanceSchedulerVersion + " / DB scheduler version : " + databaseSchedulerVersion.getValueString());
 
                 //Compare version between database and instance
                 if (databaseSchedulerVersion.getValueString() == null || instanceSchedulerVersion.equalsIgnoreCase(databaseSchedulerVersion.getValueString())) {
-                    LOG.debug("Instance scheduler version is up to date.");
+                    LOG.debug("Instance Quartz User scheduler version is up to date.");
                 } else {
                     if (isRunning == false) {
                         isRunning = true;
-                        LOG.info("Start of Reload Scheduler entries from database.");
+                        LOG.info("Start of Reload Quartz User Scheduler entries from database.");
                         Set<Trigger> myTriggersSetList = new HashSet<>();
 
                         try {
@@ -162,7 +162,7 @@ public class SchedulerInit {
                                     instanceSchedulerVersion = databaseSchedulerVersion.getValueString();
 
                                 } catch (Exception e) {
-                                    LOG.error("Failed to load scheduler table. " + myTriggersSetList);
+                                    LOG.error("Failed to load Quartz User scheduler table. " + myTriggersSetList);
                                     LOG.error(e);
                                 }
                             } else {
@@ -170,16 +170,16 @@ public class SchedulerInit {
                             }
 
                         } catch (Exception e) {
-                            LOG.debug("Failed to load schedule entry : " + e);
+                            LOG.debug("Failed to load Quartz User schedule entry : " + e);
                         } finally {
                             isRunning = false;
                         }
                     } else {
-                        LOG.debug("Scheduler version is already in updating");
+                        LOG.debug("Quartz User Scheduler version is already in updating");
                     }
                 }
             } catch (Exception e) {
-                LOG.debug("failed to launch scheduler init :" + e);
+                LOG.debug("failed to launch Quartz User scheduler init :" + e);
             }
         } catch (Exception e) {
             LOG.debug("Execption : ", e);
@@ -190,16 +190,16 @@ public class SchedulerInit {
     @PreDestroy
     public void closeScheduler() {
         try {
-            LOG.info("Removing all Schedule entries.");
+            LOG.info("Removing all Quartz User Schedule entries.");
             Collection<Scheduler> myCollectionScheduller = schFactory.getAllSchedulers();
             Iterator it = myCollectionScheduller.iterator();
             for (Scheduler mySched : myCollectionScheduller) {
                 mySched.clear();
                 mySched.shutdown(true);
             }
-            LOG.info("end of Removing all Schedule entries.");
+            LOG.info("end of Removing all Quartz User Schedule entries.");
         } catch (Exception e) {
-            LOG.error("Failed to clear Scheduler entries.");
+            LOG.error("Failed to clear Quartz User Scheduler entries.");
             LOG.error(e);
         }
     }

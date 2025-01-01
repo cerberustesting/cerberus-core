@@ -472,9 +472,11 @@ public class RobotServerService implements IRobotServerService {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
 
-            // Check if Sikuli is available on node.
-            if (driver != null) {
+            // Check if Sikuli is available on node. (only if robot is not provided by cloud services)
+            if ((driver != null) && (TestCaseExecution.ROBOTPROVIDER_NONE.equals(execution.getRobotProvider()))) {
                 execution.getSession().setSikuliAvailable(sikuliService.isSikuliServerReachableOnNode(execution.getSession()));
+            } else {
+                execution.getSession().setSikuliAvailable(false);
             }
 
             execution.getSession().setStarted(true);
@@ -483,12 +485,12 @@ public class RobotServerService implements IRobotServerService {
             LOG.error(exception.toString(), exception);
             throw new CerberusException(exception.getMessageError(), exception);
         } catch (MalformedURLException exception) {
-            LOG.error(exception.toString(), exception);
+            LOG.warn(exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", execution.getSession().getHost() + ":" + execution.getSession().getPort()));
             throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
-            LOG.warn("Could not connect to : {}:{}", execution.getSeleniumIP(), execution.getSeleniumPort());
+            LOG.warn("Could not connect to Robot : {}:{}", execution.getSeleniumIP(), execution.getSeleniumPort());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", execution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", execution.getSeleniumPort()));
