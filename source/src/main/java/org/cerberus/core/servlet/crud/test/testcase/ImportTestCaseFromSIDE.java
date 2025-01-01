@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -426,7 +425,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 }
             }
         } catch (FileUploadException ex) {
-            java.util.logging.Logger.getLogger(ImportTestCaseFromSIDE.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
         LOG.debug("result : " + result.size());
         return result;
@@ -463,7 +462,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                 }
             }
         } catch (FileUploadException ex) {
-            java.util.logging.Logger.getLogger(ImportTestCaseFromSIDE.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
         LOG.debug("result Param : " + result.size());
         return result;
