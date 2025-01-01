@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.IRobotExecutorDAO;
 import org.cerberus.core.crud.entity.Robot;
 import org.cerberus.core.crud.entity.RobotExecutor;
@@ -133,7 +132,7 @@ public class RobotExecutorService implements IRobotExecutorService {
                 }
             }
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(RobotExecutorService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
 
 //        List<RobotExecutor> robotExeList = new ArrayList<>();

@@ -44,10 +44,7 @@ import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
-import com.itextpdf.signatures.PdfSignature;
-import com.itextpdf.signatures.SignatureUtil;
 import java.io.File;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -64,8 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.entity.Tag;
 import org.cerberus.core.crud.entity.Test;
@@ -77,14 +72,13 @@ import org.cerberus.core.crud.entity.TestCaseStepExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.exception.CerberusException;
-import org.springframework.stereotype.Service;
-
+import org.cerberus.core.service.pdf.IPDFCampaignReportService;
 import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.cerberus.core.service.pdf.IPDFCampaignReportService;
+import org.springframework.stereotype.Service;
 
 /**
  * @author bcivel

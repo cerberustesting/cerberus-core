@@ -29,46 +29,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CampaignParameter;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.entity.TestCase;
 import org.cerberus.core.crud.entity.TestCaseCountry;
 import org.cerberus.core.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.core.crud.service.IApplicationService;
 import org.cerberus.core.crud.service.ICampaignParameterService;
+import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.ILogEventService;
+import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.crud.service.ITestCaseCountryService;
+import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.core.crud.service.ITestCaseService;
+import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
 import org.cerberus.core.exception.FactoryCreationException;
-import org.cerberus.core.util.ParameterParserUtil;
-import org.cerberus.core.util.answer.AnswerItem;
-import org.cerberus.core.util.servlet.ServletUtil;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.core.crud.factory.IFactoryTestCaseExecutionQueue;
-import org.cerberus.core.crud.service.IApplicationService;
-import org.cerberus.core.crud.service.IInvariantService;
-import org.cerberus.core.crud.service.ITagService;
-import org.cerberus.core.crud.service.ITestCaseCountryService;
-import org.cerberus.core.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.service.authentification.IAPIKeyService;
+import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.answer.AnswerList;
 import org.cerberus.core.util.answer.AnswerUtil;
+import org.cerberus.core.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -440,7 +439,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                         errorMessages.add(errorMessageTmp);
                         continue;
                     } catch (JSONException ex) {
-                        java.util.logging.Logger.getLogger(AddToExecutionQueueV001.class.getName()).log(Level.SEVERE, null, ex);
+                        LOG.error(ex, ex);
                     }
                 }
 

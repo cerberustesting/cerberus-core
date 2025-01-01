@@ -19,6 +19,12 @@
  */
 package org.cerberus.core.crud.service.impl;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.dao.ITagDAO;
@@ -43,10 +49,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.logging.Level;
 
 /**
  *
@@ -234,11 +236,11 @@ public class TagService implements ITagService {
             return tagDAO.updateDateEndQueue(mytag);
 
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex, ex);
             return null;
 
         } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex, ex);
             return null;
         }
 

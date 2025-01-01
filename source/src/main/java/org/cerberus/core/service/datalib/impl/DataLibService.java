@@ -19,10 +19,23 @@
  */
 package org.cerberus.core.service.datalib.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.BufferedReader;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.core.crud.entity.Parameter;
@@ -36,6 +49,7 @@ import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.crud.service.ITestDataLibDataService;
 import org.cerberus.core.crud.service.ITestDataLibService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.engine.gwt.IVariableService;
@@ -61,23 +75,6 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.cerberus.core.engine.entity.ExecutionLog;
 
 /**
  * @author bcivel

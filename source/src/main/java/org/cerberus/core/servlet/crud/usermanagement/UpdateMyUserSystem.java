@@ -20,7 +20,6 @@
 package org.cerberus.core.servlet.crud.usermanagement;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -67,7 +66,7 @@ public class UpdateMyUserSystem extends HttpServlet {
             sysArray = new JSONArray(sys);
             LOG.debug(sysArray.toString());
         } catch (JSONException ex) {
-            java.util.logging.Logger.getLogger(UpdateMyUserSystem.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
         
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());

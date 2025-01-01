@@ -23,12 +23,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.InvalidPathException;
 import java.io.File;
 import java.io.IOException;
-
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.AppService;
 import org.cerberus.core.crud.entity.Application;
+import org.cerberus.core.crud.entity.Parameter;
+import org.cerberus.core.crud.entity.RobotExecutor;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.entity.TestCaseExecutionData;
@@ -41,6 +50,7 @@ import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ISqlLibraryService;
 import org.cerberus.core.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.core.crud.service.ITestDataLibService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.execution.IIdentifierService;
@@ -56,6 +66,7 @@ import org.cerberus.core.service.datalib.IDataLibService;
 import org.cerberus.core.service.groovy.IGroovyService;
 import org.cerberus.core.service.har.IHarService;
 import org.cerberus.core.service.json.IJsonService;
+import org.cerberus.core.service.robotproxy.IRobotProxyService;
 import org.cerberus.core.service.soap.ISoapService;
 import org.cerberus.core.service.sql.ISQLService;
 import org.cerberus.core.service.webdriver.IWebDriverService;
@@ -72,20 +83,6 @@ import org.json.JSONObject;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.cerberus.core.crud.entity.Parameter;
-import org.cerberus.core.crud.entity.RobotExecutor;
-import org.cerberus.core.engine.entity.ExecutionLog;
-import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 /**
  * {Insert class description here}
@@ -977,7 +974,6 @@ public class PropertyService implements IPropertyService {
                             result.add(resultHash);
                         }
                     } catch (JSONException ex) {
-                        java.util.logging.Logger.getLogger(PropertyService.class.getName()).log(Level.SEVERE, null, ex);
                         LOG.error(ex, ex);
                     }
                     testCaseExecutionData.setDataLibRawData(result);
@@ -1756,7 +1752,7 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
             String valueFromJSON = this.jsonService
-                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), 
+                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(),
                             testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJSON == null) {
@@ -1934,7 +1930,7 @@ public class PropertyService implements IPropertyService {
                         jsonResult = dataLibService.convertToJSONObject(result);
                         jsonText = jsonResult.toString();
                     } catch (JSONException ex) {
-                        java.util.logging.Logger.getLogger(PropertyService.class.getName()).log(Level.SEVERE, null, ex);
+                        LOG.error(ex, ex);
                     }
 
                     executionData.setJsonResult(jsonText);

@@ -23,18 +23,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.service.bug.github.IGithubGenerationService;
 import org.cerberus.core.util.StringUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.cerberus.core.service.bug.github.IGithubGenerationService;
 
 /**
  *

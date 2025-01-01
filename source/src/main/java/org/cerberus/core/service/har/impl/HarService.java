@@ -19,6 +19,18 @@
  */
 package org.cerberus.core.service.har.impl;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCaseExecutionHttpStat;
 import org.cerberus.core.crud.service.IInvariantService;
@@ -33,21 +45,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  * @author bcivel
@@ -333,7 +330,7 @@ public class HarService implements IHarService {
             return PROVIDER_UNKNOWN;
 
         } catch (MalformedURLException ex) {
-            Logger.getLogger(HarService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
         return PROVIDER_UNKNOWN;
     }

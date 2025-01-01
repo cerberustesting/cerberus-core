@@ -23,18 +23,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.IParameterService;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.service.bug.jira.IJiraGenerationService;
 import org.cerberus.core.util.StringUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.cerberus.core.service.bug.jira.IJiraGenerationService;
 
 /**
  *
@@ -131,9 +129,9 @@ public class JiraGenerationService implements IJiraGenerationService {
             LOG.debug(bugObject.toString(1));
 
         } catch (JSONException ex) {
-            LOG.debug(ex, ex);
+            LOG.error(ex, ex);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(JiraGenerationService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex,ex);
         }
         return bugObject;
 
