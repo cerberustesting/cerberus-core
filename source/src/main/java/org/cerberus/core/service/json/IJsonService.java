@@ -21,6 +21,7 @@ package org.cerberus.core.service.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.InvalidPathException;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -43,7 +44,7 @@ public interface IJsonService {
      * @return
      * @throws java.lang.Exception
      */
-    String getFromJson(String jsonMessage, String url, String attribute, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException;
+    String getFromJson(TestCaseExecution testCaseExecution, String jsonMessage, String url, String attribute, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException;
 
     /**
      * @param jsonMessage

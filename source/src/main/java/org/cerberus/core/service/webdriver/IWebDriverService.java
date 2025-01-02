@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -48,6 +50,8 @@ public interface IWebDriverService {
     String getElements(Session session, Identifier identifier);
 
     String getElementsValues(Session session, Identifier identifier);
+
+    String getElementsValuesSum(TestCaseExecution testCaseExecution, Identifier identifier);
 
     String getAlertText(Session session);
 

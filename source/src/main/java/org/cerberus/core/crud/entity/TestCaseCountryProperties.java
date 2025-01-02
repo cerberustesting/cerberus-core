@@ -140,6 +140,7 @@ public class TestCaseCountryProperties {
     public static final String VALUE3_RAW = "raw";
     public static final String VALUE3_COORDINATE = "coordinate";
     public static final String VALUE3_COUNT = "count";
+    public static final String VALUE3_VALUESUM = "valueSum";
     public static final String VALUE3_ATTRIBUTE = "attribute";
     public static final String VALUE3_VALUELIST = "valueList";
     public static final String VALUE3_RAWLIST = "rawList";

@@ -28,7 +28,9 @@ import mantu.lab.treematching.TreeMatcher;
 import mantu.lab.treematching.TreeMatcherResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.TestCaseExecution;
 import org.cerberus.core.crud.service.impl.ParameterService;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -576,6 +578,40 @@ public class WebDriverService implements IWebDriverService {
         }
 
         return result.toString();
+    }
+
+    @Override
+    public String getElementsValuesSum(TestCaseExecution testCaseExecution, Identifier identifier) {
+        WebDriver driver = testCaseExecution.getSession().getDriver();
+        Double resultSum = 0.0;
+
+        List<WebElement> elements = driver.findElements(this.getBy(identifier));
+        for (WebElement webElement : elements) {
+            String preparedString = "";
+            if (webElement != null) {
+                if (webElement.getTagName().equalsIgnoreCase("select")) {
+                    Select select = (Select) webElement;
+                    preparedString = StringUtil.prepareToNumeric(select.getFirstSelectedOption().getText());
+                    if (!StringUtil.isEmptyOrNull(preparedString)) {
+                        resultSum += Double.valueOf(preparedString);
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+select.getFirstSelectedOption().getText()+"] to previous sum ["+ resultSum+"].");
+                    }
+                } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
+                    preparedString = StringUtil.prepareToNumeric(webElement.getAttribute("value"));
+                    if (!StringUtil.isEmptyOrNull(preparedString)) {
+                        resultSum += Double.valueOf(preparedString);
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+webElement.getAttribute("value")+"] to previous sum ["+ resultSum+"].");
+                    }
+                } else {
+                    preparedString = StringUtil.prepareToNumeric(webElement.getText());
+                    if (!StringUtil.isEmptyOrNull(preparedString)) {
+                        resultSum += Double.valueOf(preparedString);
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromHTML] : Adding ["+preparedString+"] from init value ["+webElement.getText()+"] to previous sum ["+ resultSum+"].");
+                    }
+                }
+            }
+        }
+        return resultSum.toString();
     }
 
     @Override

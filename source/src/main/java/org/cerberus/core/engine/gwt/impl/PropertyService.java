@@ -24,6 +24,7 @@ import com.jayway.jsonpath.InvalidPathException;
 import java.io.File;
 import java.io.IOException;
 
+import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1147,7 +1148,7 @@ public class PropertyService implements IPropertyService {
                 //Record result in filessytem.
                 testCaseExecutionData.addFileList(recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, harRes.toString(1), execution.getSecrets()));
 
-                String valueFromJson = this.jsonService.getFromJson(harRes.toString(), null, jsonPath,
+                String valueFromJson = this.jsonService.getFromJson(execution, harRes.toString(), null, jsonPath,
                         testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
                 if (valueFromJson != null) {
@@ -1235,7 +1236,7 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, executionObject, tCExecution.getSecrets());
 
             String valueFromJson = this.jsonService
-                    .getFromJson(executionObject, null, testCaseExecutionData.getValue1(),
+                    .getFromJson(tCExecution, executionObject, null, testCaseExecutionData.getValue1(),
                             testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJson == null) {
@@ -1352,7 +1353,10 @@ public class PropertyService implements IPropertyService {
                         valueFromHTML = this.webdriverService.getElements(tCExecution.getSession(), identifier);
                         break;
                     case (TestCaseCountryProperties.VALUE3_VALUELIST):
-                        valueFromHTML = this.webdriverService.getElements(tCExecution.getSession(), identifier);
+                        valueFromHTML = this.webdriverService.getElementsValues(tCExecution.getSession(), identifier);
+                        break;
+                    case (TestCaseCountryProperties.VALUE3_VALUESUM):
+                        valueFromHTML = this.webdriverService.getElementsValuesSum(tCExecution, identifier);
                         break;
                     case (TestCaseCountryProperties.VALUE3_ATTRIBUTE):
                         valueFromHTML = this.webdriverService.getAttributeFromHtml(tCExecution.getSession(), identifier, testCaseExecutionData.getValue2(), TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseExecutionData.getNature()), testCaseExecutionData.getRank());
@@ -1756,7 +1760,7 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(execution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse, execution.getSecrets());
 
             String valueFromJSON = this.jsonService
-                    .getFromJson(jsonResponse, null, testCaseExecutionData.getValue1(), 
+                    .getFromJson(execution, jsonResponse, null, testCaseExecutionData.getValue1(),
                             testCaseExecutionData.getNature().equals(TestCaseCountryProperties.NATURE_RANDOM), testCaseExecutionData.getRank(), testCaseExecutionData.getValue3());
 
             if (valueFromJSON == null) {

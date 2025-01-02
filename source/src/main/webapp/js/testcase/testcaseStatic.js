@@ -342,6 +342,15 @@ var newControlOptList = {
 };
 
 //PROPERTY
+//Structure :
+//      > type of the property
+//        > field
+//          > label : text to display
+//          > class : class to add (to determine length for example
+//          > editorMode : Which ace editor choose (json, xml, html, cerberus)
+//          > picto : Picto to display
+//          > insertAfter : name of the previous field
+//          > displayConditions : if present, condition of display regarding the value of defined field
 var newPropertyPlaceholder = {
     "text": {
         "value1": {
@@ -650,6 +659,13 @@ var newPropertyPlaceholder = {
                     }
                 },
                 {
+                    "value": "valueSum",
+                    "label":{
+                        "en":"Value Sum",
+                        "fr":"Somme des valeurs"
+                    }
+                },
+                {
                     "value": "rawList",
                     "label":{
                         "en":"Raw List",
@@ -733,6 +749,7 @@ var newPropertyPlaceholder = {
             "helper-attribute-RANDOM" : "Get attribute of random HTML element",
             "helper-count" : "Get number of HTML element found",
             "helper-valueList" : "Get table of value of all HTML element found",
+            "helper-valueSum": "Get sum of values of all elements found",
             "helper-rawList" : "Get all HTML element found in raw format"
         }
     },
@@ -864,6 +881,13 @@ var newPropertyPlaceholder = {
                     }
                 },
                 {
+                    "value": "valueSum",
+                    "label":{
+                        "en":"Value Sum",
+                        "fr":"Somme des valeurs"
+                    }
+                },
+                {
                     "value": "valueList",
                     "label":{
                         "en":"Value List",
@@ -903,7 +927,11 @@ var newPropertyPlaceholder = {
                     }
                 }
             ],
-            "insertAfter": "value3"
+            "insertAfter": "value3",
+            "displayConditions": [{
+                "key" : "value3",
+                "values" : ["value"]
+            }]
         },
         "rank": {
             "label": {
@@ -912,7 +940,11 @@ var newPropertyPlaceholder = {
             },
             "class": "col-sm-3",
             "picto": "images/property-rank.png",
-            "insertAfter": "nature"
+            "insertAfter": "nature",
+            "displayConditions": [{
+                "key" : "value3",
+                "values" : ["value"]
+            }]
         },
         "helperInformation": ["value3","nature","rank"],
         "helperMessages": {
@@ -923,8 +955,9 @@ var newPropertyPlaceholder = {
             "helper-raw-STATIC-x": "Get specific raw Element",
             "helper-raw-RANDOM": "Get random raw Element",
             "helper-count": "Get number of element found",
-            "helper-valueList": "Get table of value of all element found",
-            "helper-rawList": "Get all element found in raw format",
+            "helper-valueList": "Get table of values of all elements found",
+            "helper-valueSum": "Get sum of values of all elements found",
+            "helper-rawList": "Get all elements found in raw format",
         }
     },
     "getFromNetworkTraffic": {
