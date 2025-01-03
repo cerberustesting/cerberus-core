@@ -518,6 +518,7 @@ function updatePage(data, steps) {
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     var fileExeContainer = $("#testCaseConfig #tcDetailFileContentField");
+    console.info("call1 " + isTheExecutionManual);
     addFileLink(data.fileList, fileContainer, fileExeContainer, isTheExecutionManual);
 
     var myURL = $("#bugButtons").data("appBugURL");
@@ -1907,7 +1908,8 @@ function drawProperty(property, table, isSecondary) {
     // Starting to reduce the size of the row by the length of elements.
     $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length)).addClass("col-sm-" + (9 - property.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(property.fileList, $(row).find("#contentRow"), isTheExecutionManual);
+    console.info("call2 " + isTheExecutionManual);
+    addFileLink(property.fileList, $(row).find("#contentRow"), $(row).find("#contentRow"), isTheExecutionManual);
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -2768,7 +2770,8 @@ Action.prototype.draw = function (idMotherStep, id) {
     fullActionElement.append(htmlElement);
     fullActionElement.append(content);
     this.parentStep.stepActionContainer.append(fullActionElement);
-    addFileLink(this.fileList, media, isTheExecutionManual, idMotherStep);
+    console.info("call3 " + isTheExecutionManual);
+    addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
 
@@ -3352,7 +3355,8 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     // Starting to reduce the size of the row by the length of elements.
     //$(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
     // Adding all media attached to control execution.
-    addFileLink(this.fileList, media, isTheExecutionManual, idMotherStep);
+    console.info("call4 " + isTheExecutionManual);
+    addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
 Control.prototype.setStep = function (step) {

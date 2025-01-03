@@ -769,7 +769,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
+                                if (!jsonService.getFromJson(tCExecution, responseBody, null, elementPath, false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -888,7 +888,7 @@ public class ControlService implements IControlService {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                             try {
                                 //Return of getFromJson can be "[]" in case when the path has this pattern "$..ex" and no elements found. Two dots after $ return a list.
-                                if (!jsonService.getFromJson(responseBody, null, elementPath,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
+                                if (!jsonService.getFromJson(execution, responseBody, null, elementPath,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST).equals("[]")) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
                                     mes.resolveDescription("STRING1", elementPath);
                                     return mes;
@@ -1259,7 +1259,7 @@ public class ControlService implements IControlService {
 
                             case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
                                 try {
-                                    actual = jsonService.getFromJson(responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
+                                    actual = jsonService.getFromJson(tCExecution, responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                                 } catch (Exception ex) {
                                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                                     mes.resolveDescription("ERROR", ex.toString());
@@ -1473,7 +1473,7 @@ public class ControlService implements IControlService {
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
-                            pathContent = jsonService.getFromJson(responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
+                            pathContent = jsonService.getFromJson(tCExecution, responseBody, null, path,false, 0, TestCaseCountryProperties.VALUE3_VALUELIST);
                         } catch (Exception ex) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
                             mes.resolveDescription("ERROR", ex.toString());

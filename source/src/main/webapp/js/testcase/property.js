@@ -690,7 +690,7 @@ function displayPropertyHelper(elementLine, property){
     }
     if (informationForHelper.indexOf("nature")!==-1){
         // Do not use nature 3 if value is count, valueList or rawList
-        if (property.value3 === "count" || property.value3 === "valueList" || property.value3 === "rawList") {
+        if (property.value3 === "count" || property.value3 === "valueList" || property.value3 === "valueSum" || property.value3 === "rawList") {
         } else {
             helperString += "-" + property.nature;
         }
@@ -701,6 +701,7 @@ function displayPropertyHelper(elementLine, property){
     if (informationForHelper.indexOf("rank")!==-1){
         if (property.value3 !== "count" &&
             property.value3 !== "valueList" &&
+            property.value3 !== "valueSum" &&
             property.value3 !== "rawList" &&
             property.nature !== 'RANDOM') {
             helperString += property.rank !== 0 ? "-x" : "-0";

@@ -180,7 +180,7 @@ function renderOptionsForTestCaseList(data) {
 //            contentToAdd += "<button id='exportTestCaseMenuButtonSingleFile' type='button' class='btn btn-default' name='buttonExport'><span class='glyphicon glyphicon-export'></span> " + doc.getDocLabel("page_testcaselist", "btn_export1file") + "</button>";
             contentToAdd += "<button id='importTestCaseButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-import'></span> " + doc.getDocLabel("page_testcaselist", "btn_import") + "</button>";
             contentToAdd += "<button id='importFromSIDETestCaseMenuButton' type='button' class='btn btn-default'><img height='20 px' src='./images/SeleniumIDE.jpg'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_ide") + "</button>";
-            contentToAdd += "<button id='importFromTestLinkTestCaseMenuButton' type='button' style='display: none;' class='btn btn-default'><img height='20 px' src='./images/TestLink.png'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_testlink") + "</button>";
+            contentToAdd += "<button id='importFromTestLinkTestCaseMenuButton' type='button' style='display: none1;' class='btn btn-default'><img height='20 px' src='./images/TestLink.png'></span> " + doc.getDocLabel("page_testcaselist", "btn_import_testlink") + "</button>";
             contentToAdd += "</div>";
             contentToAdd += "</div>";
             contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
@@ -705,6 +705,52 @@ function confirmImportTestCaseFromSIDEModalHandler() {
                 showMessage(data, $('#importTestCaseFromSIDEModal'));
             }
             hideLoaderInModal('#importTestCaseFromSIDEModal');
+        },
+        error: showUnexpectedError
+    });
+}
+
+function confirmImportTestCaseFromTestLinkModalHandler() {
+    clearResponseMessage($('#importTestCaseModal'));
+
+    var formEdit = $('#importTestCaseFromTestLinkModal #importTestCaseFromTestLinkModalForm');
+
+    var sa = formEdit.serializeArray();
+    var formData = new FormData();
+
+    for (var i in sa) {
+        formData.append(sa[i].name, sa[i].value);
+    }
+
+    var file = $("#importTestCaseFromTestLinkModal input[type=file]");
+    for (var i = 0; i < $($(file).get(0)).prop("files").length; i++) {
+        formData.append("file", file.prop("files")[i]);
+    }
+
+    // Calculate servlet name to call.
+    var myServlet = "ImportTestCaseFromTestLink";
+
+    // Get the header data from the form.
+    showLoaderInModal('#importTestCaseFromTestLinkModal');
+
+    $.ajax({
+        url: myServlet,
+        async: true,
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            data = JSON.parse(data);
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#testCaseTable").dataTable();
+                oTable.fnDraw(false);
+                $('#importTestCaseFromTestLinkModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#importTestCaseFromTestLinkModal'));
+            }
+            hideLoaderInModal('#importTestCaseFromTestLinkModal');
         },
         error: showUnexpectedError
     });

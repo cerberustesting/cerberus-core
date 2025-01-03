@@ -26,8 +26,13 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import net.minidev.json.JSONStyle;
+import net.minidev.json.JSONArray;
 import org.cerberus.core.crud.entity.TestCaseCountryProperties;
+import org.cerberus.core.crud.entity.TestCaseExecution;
+import org.cerberus.core.engine.entity.ExecutionLog;
 import org.cerberus.core.service.json.IJsonService;
+import org.cerberus.core.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -39,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.json.JSONArray;
 
 /**
  * @author bcivel
@@ -83,7 +87,7 @@ public class JsonService implements IJsonService {
      * not found.
      */
     @Override
-    public String getFromJson(String jsonMessage, String url, String attributeToFind, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException {
+    public String getFromJson(TestCaseExecution testCaseExecution, String jsonMessage, String url, String attributeToFind, boolean random, Integer rank, String output) throws InvalidPathException, JsonProcessingException {
         if (attributeToFind == null) {
             LOG.warn("Null argument");
             return DEFAULT_GET_FROM_JSON_VALUE;
@@ -109,7 +113,21 @@ public class JsonService implements IJsonService {
 
         switch (output) {
             case (TestCaseCountryProperties.VALUE3_COUNT):
-                valueFromJSON = String.valueOf(((JSONArray) JsonPath.read(document, jsonPath)).length());
+                valueFromJSON = String.valueOf(((JSONArray) JsonPath.read(document, jsonPath)).size());
+                break;
+            case (TestCaseCountryProperties.VALUE3_VALUESUM):
+                JSONArray array = (JSONArray) JsonPath.read(document, jsonPath);
+                Double result = 0.0;
+                for (Object object : array){
+                    String preparedString = StringUtil.prepareToNumeric(object.toString());
+                    if (!StringUtil.isEmptyOrNull(preparedString)) {
+                        result += Double.valueOf(preparedString);
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromJSON] : Adding ["+preparedString+"] from init value ["+object.toString()+"] to previous sum ["+ result+"].");
+                    }else{
+                        testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Property:GetFromJSON] : Do not add empty value from init value ["+object.toString()+"] to previous sum ["+ result+"].");
+                    }
+                }
+                valueFromJSON = result.toString();
                 break;
             case (TestCaseCountryProperties.VALUE3_VALUELIST):
                 valueFromJSON = castObjectAccordingToJson(JsonPath.read(document, jsonPath));
@@ -117,7 +135,7 @@ public class JsonService implements IJsonService {
             case (TestCaseCountryProperties.VALUE3_VALUE):
                 if (random) {
                     Random r = new Random();
-                    rank = r.nextInt(((JSONArray) JsonPath.read(document, jsonPath)).length());
+                    rank = r.nextInt(((JSONArray) JsonPath.read(document, jsonPath)).size());
                 }
                 valueFromJSON = ((JSONArray) JsonPath.read(document, jsonPath)).get(rank).toString();
                 break;
@@ -220,7 +238,7 @@ public class JsonService implements IJsonService {
         } else if (value instanceof Boolean) {
             return ((Boolean) value).toString();
         } else if (value instanceof JSONArray) {
-            return ((JSONArray) value).toString(1);
+            return ((JSONArray) value).toString(JSONStyle.LT_COMPRESS);
         } else if (value instanceof Double) {
             return ((Double) value).toString();
         } else {

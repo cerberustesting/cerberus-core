@@ -48,6 +48,7 @@
         <jackson-datatype-jsr310.version>2.13.2</jackson-datatype-jsr310.version>
         <!-- jsonpath -->
         <jsonxpath.version>2.9.0</jsonxpath.version>
+        <minidev.version>2.5.1</minidev.version>
         <!-- Groovy Version -->
         <groovy.version>3.0.11</groovy.version>
         <!--        <groovy-dateutil.version>3.0.11</groovy-dateutil.version>-->
@@ -311,6 +312,11 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${jsonxpath.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>${minidev.version}</version>
         </dependency>
 
         <!-- Kafka -->
