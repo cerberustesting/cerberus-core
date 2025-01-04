@@ -89,8 +89,10 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                             && !queueToInsert.isEmpty()) {
                         status = TestCaseExecutionQueueDep.STATUS_IGNORED;
                         comment = "The corresponding test Case does not exist in the context of the campaign execution";
+                    } else {
+                        // nbInserted is not incremented if Dependency is IGNORED. We count only the blocking dependencies.
+                        nbInserted++;
                     }
-                    nbInserted++;
                     TestCaseExecutionQueueDep newDep = TestCaseExecutionQueueDep.builder()
                             .comment(comment)
                             .depTest(testCaseDep.getDependencyTest())

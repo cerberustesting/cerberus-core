@@ -198,7 +198,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     long insertedQueueId = ret.getItem().getId();
                     // Adding dependencies
                     AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTestCaseDep(insertedQueueId, object.getEnvironment(), object.getCountry(),
-                             object.getTag(), object.getTest(), object.getTestCase(), queueToInsert);
+                            object.getTag(), object.getTest(), object.getTestCase(), queueToInsert);
                     LOG.debug("Dep inserted : " + retDep.getItem());
                     if (retDep.getItem() < 1) {
                         // In case there are no dependencies, we release the execution moving to targetState State
@@ -220,6 +220,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     // Adding dependencies
                     AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromExeQueueIdDep(insertedQueueId, exeQueueId);
                     LOG.debug("Dep inserted from old entries : " + retDep.getItem());
+                    // Move Original Queue entry to CANCELLED
+                    this.updateToCancelled(exeQueueId, "Cancelled because duplicated to new Queue entry " + insertedQueueId);
                 }
             }
         }
