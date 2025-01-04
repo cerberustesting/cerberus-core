@@ -230,6 +230,7 @@ public class ManageV001 extends HttpServlet {
                 }
 
                 if (request.getParameter("action") != null && request.getParameter("action").equals("start")) {
+                    
                     if (request.getParameter("scope") != null && request.getParameter("scope").equals("instance")) {
                         logEventService.createForPublicCalls(SERVLETNAME, "START", LogEvent.STATUS_INFO, "Instance requested to start.", request);
 

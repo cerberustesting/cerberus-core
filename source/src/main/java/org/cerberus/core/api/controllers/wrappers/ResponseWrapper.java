@@ -71,6 +71,11 @@ public class ResponseWrapper<T> {
         this.debugMessage = ex.getLocalizedMessage();
     }
 
+    public ResponseWrapper(HttpStatus status, String message) {
+        this(status);
+        this.message = message;
+    }
+
     public ResponseWrapper(HttpStatus status, String message, Throwable ex) {
         this(status, ex);
         this.message = message;
