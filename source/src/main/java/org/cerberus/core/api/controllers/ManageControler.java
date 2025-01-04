@@ -107,6 +107,7 @@ public class ManageControler {
 
     }
 
+    /*
     @ApiOperation("Clean Cerberus Instance from old PE executions")
     @ApiResponse(code = 200, message = "ok")
     @JsonView(View.Public.POST.class)
@@ -142,5 +143,5 @@ public class ManageControler {
         return new ResponseWrapper<>(HttpStatus.ACCEPTED, String.valueOf(executionArray.length()) + " PE Execution(s) cleaned");
 
     }
-
+     */
 }
