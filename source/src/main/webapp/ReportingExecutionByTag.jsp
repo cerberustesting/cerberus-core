@@ -158,7 +158,7 @@
 
                                     <div class="input-group-btn">
                                         <a id="buttonDownloadPdfReport" class="pull-left marginTop10">
-                                            <button type="button" class="btn btn-default marginRight10">
+                                            <button type="button" id="buttonDownloadPdfReportButton" class="btn btn-default marginRight10">
                                                 <span class="glyphicon glyphicon-floppy-save"></span> Download Report
                                             </button>
                                         </a>

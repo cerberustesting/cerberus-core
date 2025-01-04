@@ -171,20 +171,22 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
                     .add(getTextFromString(String.valueOf(tagDur), 12, true))
                     .add(getTextFromString(" min)", 10, false))
             );
-            if (displayCountryColumn) {
-                document.add(new Paragraph()
-                        .add(getTextFromString("Executed on Country(ies): ", 10, false))
-                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getCountryList()), ","), 12, true))
-                        .add(getTextFromString(", Environment(s): ", 10, false))
-                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
-                        .add(getTextFromString(" and Robot(s): ", 10, false))
-                        .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
-            } else {
-                document.add(new Paragraph()
-                        .add(getTextFromString("Executed on Environment(s): ", 10, false))
-                        .add(getTextFromString(tag.getEnvironmentList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
-                        .add(getTextFromString(" and Robot(s): ", 10, false))
-                        .add(getTextFromString(tag.getRobotDecliList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+            if (tag.getCountryList() != null) {
+                if (displayCountryColumn) {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Executed on Country(ies): ", 10, false))
+                            .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getCountryList()), ","), 12, true))
+                            .add(getTextFromString(", Environment(s): ", 10, false))
+                            .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                            .add(getTextFromString(" and Robot(s): ", 10, false))
+                            .add(getTextFromString(StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+                } else {
+                    document.add(new Paragraph()
+                            .add(getTextFromString("Executed on Environment(s): ", 10, false))
+                            .add(getTextFromString(tag.getEnvironmentList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getEnvironmentList()), ","), 12, true))
+                            .add(getTextFromString(" and Robot(s): ", 10, false))
+                            .add(getTextFromString(tag.getRobotDecliList() == null ? "" : StringUtil.convertToString(new JSONArray(tag.getRobotDecliList()), ","), 12, true)));
+                }
             }
 
             /**

@@ -417,8 +417,17 @@ function loadReportingData(selectTag) {
             $("#Tagcampaign").val(data.tagObject.campaign);
             $("#TagComment").val(data.tagObject.comment);
             $("#TagDesc").val(data.tagObject.description);
-            $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + data.tagObject.tag);
-            $("#buttonOpenQueue").attr("href", "./TestCaseExecutionQueueList.jsp?tag=" + data.tagObject.tag);
+            if (data.tagObject.ciResult !== "") {
+                $("#buttonDownloadPdfReportButton").removeAttr("disabled");
+                $("#buttonDownloadPdfReportButton").removeAttr("title");
+                $("#buttonDownloadPdfReport").attr("href", "./api/public/campaignexecutions/pdf/" + encodeURIComponent(data.tagObject.tag));
+            } else {
+                $("#buttonDownloadPdfReportButton").attr("disabled", true);
+                $("#buttonDownloadPdfReportButton").attr("title", "Report only available when campaign finished!");
+                $("#buttonDownloadPdfReport").removeAttr("href");
+
+            }
+            $("#buttonOpenQueue").attr("href", "./TestCaseExecutionQueueList.jsp?tag=" + encodeURIComponent(data.tagObject.tag));
 
             if (isEmpty(data.tagObject.campaign)) {
                 $("#TagcampaignCel1").addClass("hidden");
@@ -430,8 +439,8 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").removeClass("hidden");
                 $("#buttonSeeStatsCampaign").removeClass("hidden");
-                $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
-                $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + data.tagObject.campaign);
+                $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + encodeURIComponent(data.tagObject.campaign));
+                $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + encodeURIComponent(data.tagObject.campaign));
                 $("#buttonEditCampaign").attr("onclick", "editEntryClick('" + data.tagObject.campaign + "');");
 
             }
@@ -1080,7 +1089,7 @@ function appendPanelStatus(status, total, selectTag) {
     if ((rowClass.panel === "panelQU") || (rowClass.panel === "panelQE")) {
         // When we display the QU or QE status, we add a link to all executions in the queue on the queue page.
         $("#ReportByStatusTable").append(
-                $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'></a>").append(
+                $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + encodeURIComponent(selectTag) + "'></a>").append(
                 $("<div class='panel " + rowClass.panel + "'></div>").append(
                 $('<div class="panel-heading"></div>').append(
                 $('<div class="row"></div>').append(
