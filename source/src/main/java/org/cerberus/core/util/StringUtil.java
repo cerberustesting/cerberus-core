@@ -22,16 +22,6 @@ package org.cerberus.core.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -41,6 +31,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Utility class centralizing string utility methods
@@ -483,6 +483,10 @@ public final class StringUtil {
             LOG.error("JSONException in convertToString.", ex);
         }
         return result.toString();
+    }
+
+    public static String convertHtmlToString(String html) {
+        return HtmlUtils.htmlUnescape(html.replaceAll("\\<.*?\\>", "").replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\t", " ").replaceAll("  ", ""));
     }
 
     public static String convertToString(List<String> listString, String separator) {

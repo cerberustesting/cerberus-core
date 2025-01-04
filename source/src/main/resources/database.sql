@@ -6599,3 +6599,5 @@ INSERT INTO myversion (`Key`,Value) VALUES ('documentation_database_last_refresh
 INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
   VALUES   ('CAPABILITY', 'unhandledPromptBehavior', 10, 'Defines how the driver should respond when a non-alert action is taken while an alert is present. Possible values : dismiss, accept, ignore, dismiss and notify, accept and notify');
 
+-- 1879
+INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('EXTERNALPROVIDER', 'TestLink', '120', 'Test Link', '');

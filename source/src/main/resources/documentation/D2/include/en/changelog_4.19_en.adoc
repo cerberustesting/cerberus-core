@@ -45,6 +45,7 @@
 * [GUI] Automatic issue creation with Github and Jira connector. Any non OK execution can now create an issue and link it to the Testcase. Please check the documentation for further details.
 * [GUI] Issue creation can be done server to server directly from Cerberus. 
 * [GUI] Improved property definition on testcase script.
+* [GUI] New Test case import available for Test Link xml files.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

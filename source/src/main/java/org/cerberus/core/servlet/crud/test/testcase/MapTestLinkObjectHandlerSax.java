@@ -24,6 +24,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCase;
+import org.cerberus.core.crud.entity.TestCaseStep;
+import org.cerberus.core.crud.entity.TestCaseStepAction;
+import org.cerberus.core.crud.entity.TestCaseStepActionControl;
+import org.cerberus.core.crud.service.ITestCaseService;
+import static org.cerberus.core.engine.execution.enums.ConditionOperatorEnum.CONDITIONOPERATOR_ALWAYS;
+import org.cerberus.core.util.StringUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -38,6 +44,30 @@ public class MapTestLinkObjectHandlerSax extends DefaultHandler {
     private StringBuilder currentValue = new StringBuilder();
     List<TestCase> result;
     TestCase currentTestCase;
+    TestCaseStep currentStep;
+    List<TestCaseStep> currentStepList;
+    int stepId;
+
+    TestCaseStepAction currentAction;
+    List<TestCaseStepAction> currentActionList;
+    int actionId;
+
+    TestCaseStepActionControl currentControl;
+    List<TestCaseStepActionControl> currentControlList;
+    int controlId;
+
+    String testFolder;
+    String application;
+    String userCreated;
+
+    private ITestCaseService testcaseService;
+
+    public MapTestLinkObjectHandlerSax(String test, String application, String userCreated, ITestCaseService testcaseService) {
+        this.testFolder = test;
+        this.application = application;
+        this.testcaseService = testcaseService;
+        this.userCreated = userCreated;
+    }
 
     public List<TestCase> getResult() {
         return result;
@@ -63,20 +93,85 @@ public class MapTestLinkObjectHandlerSax extends DefaultHandler {
         LOG.debug("Start Element. '{}' '{}' '{}' '{}'", uri, localName, qName, attributes);
 
         // start of loop
-        if (qName.equalsIgnoreCase("staff")) {
+        if (qName.equalsIgnoreCase("testcase")) {
 
             // new staff
             currentTestCase = new TestCase();
 
+            currentTestCase.setTest(testFolder);
+            currentTestCase.setTestcase(testcaseService.getNextAvailableTestcaseId(testFolder));
+
+            currentTestCase.setOrigine("TestLink");
+            currentTestCase.setActive(true);
+            currentTestCase.setActiveQA(true);
+            currentTestCase.setActiveUAT(true);
+            currentTestCase.setActivePROD(false);
+            currentTestCase.setApplication(application);
+            currentTestCase.setType(TestCase.TESTCASE_TYPE_MANUAL);
+            currentTestCase.setStatus("WORKING");
+            currentTestCase.setConditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition());
+            currentTestCase.setUsrCreated(userCreated);
+
             // staff id
-            String id = attributes.getValue("id");
-            currentTestCase.setTestcase(String.valueOf(id));
+            String internalid = attributes.getValue("internalid");
+            currentTestCase.setRefOrigine(internalid);
+
+            String name = attributes.getValue("name");
+            currentTestCase.setDescription(name);
         }
 
-        if (qName.equalsIgnoreCase("salary")) {
-            // salary currency
-            String currency = attributes.getValue("currency");
-            currentTestCase.setDescription(currency);
+        if (qName.equalsIgnoreCase("steps")) {
+            currentStepList = new ArrayList<>();
+            stepId = 1;
+        }
+
+        if (qName.equalsIgnoreCase("step")) {
+            actionId = 1;
+            controlId = 1;
+            
+            currentStep = new TestCaseStep();
+            currentStep.setLibraryStepStepId(0);
+            currentStep.setStepId(stepId);
+            currentStep.setSort(stepId);
+            currentStep.setConditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition());
+            currentStep.setLoop(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE);
+            currentStep.setUsrCreated(userCreated);
+        }
+
+        if (qName.equalsIgnoreCase("actions")) {
+            currentActionList = new ArrayList<>();
+            currentAction = new TestCaseStepAction();
+            currentAction.setAction(TestCaseStepAction.ACTION_DONOTHING);
+            currentAction.setConditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition());
+            currentAction.setUsrCreated(userCreated);
+            currentAction.setStepId(stepId);
+            currentAction.setActionId(actionId);
+            currentAction.setSort(actionId);
+            currentAction.setScreenshotFilename("");
+            currentAction.setValue1("");
+            currentAction.setValue2("");
+            currentAction.setValue3("");
+            currentAction.setConditionValue1("");
+            currentAction.setConditionValue2("");
+            currentAction.setConditionValue3("");
+
+            currentControlList = new ArrayList<>();
+            currentControl = new TestCaseStepActionControl();
+            currentControl.setControl(TestCaseStepActionControl.CONTROL_UNKNOWN);
+            currentControl.setConditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition());
+            currentControl.setUsrCreated(userCreated);
+            currentControl.setStepId(stepId);
+            currentControl.setActionId(actionId);
+            currentControl.setControlId(controlId);
+            currentControl.setSort(controlId);
+            currentControl.setScreenshotFilename("");
+            currentControl.setValue1("");
+            currentControl.setValue2("");
+            currentControl.setValue3("");
+            currentControl.setConditionValue1("");
+            currentControl.setConditionValue2("");
+            currentControl.setConditionValue3("");
+
         }
 
     }
@@ -85,26 +180,40 @@ public class MapTestLinkObjectHandlerSax extends DefaultHandler {
     public void endElement(String uri,
             String localName,
             String qName) {
-        LOG.debug("End Element.");
+        LOG.debug("End Element. '{}' '{}' '{}' '{}'", uri, localName, qName);
 
-        if (qName.equalsIgnoreCase("name")) {
-            currentTestCase.setTestcase(currentValue.toString());
+        if (qName.equalsIgnoreCase("summary")) {
+            currentTestCase.setDetailedDescription(currentValue.toString());
         }
 
-        if (qName.equalsIgnoreCase("role")) {
-            currentTestCase.setTestcase(currentValue.toString());
-        }
-
-//        if (qName.equalsIgnoreCase("salary")) {
-//            currentTestCase.setPriority(currentValue.toString());
-//        }
-//
-//        if (qName.equalsIgnoreCase("bio")) {
-//            currentTestCase.setBio(currentValue.toString());
-//        }
-        // end of loop
-        if (qName.equalsIgnoreCase("staff")) {
+        if (qName.equalsIgnoreCase("testcase")) {
             result.add(currentTestCase);
+        }
+
+        if (qName.equalsIgnoreCase("steps")) {
+            currentTestCase.setSteps(currentStepList);
+        }
+
+        if (qName.equalsIgnoreCase("step")) {
+            currentControlList.add(currentControl);
+
+            currentAction.setControls(currentControlList);
+            currentActionList.add(currentAction);
+
+            currentStep.setActions(currentActionList);
+            currentStepList.add(currentStep);
+            stepId++;
+        }
+        if (qName.equalsIgnoreCase("step_number")) {
+            currentStep.setDescription(currentValue.toString());
+        }
+
+        if (qName.equalsIgnoreCase("actions")) {
+            currentAction.setDescription(StringUtil.getLeftString(StringUtil.convertHtmlToString(currentValue.toString()), 250));
+        }
+
+        if (qName.equalsIgnoreCase("expectedresults")) {
+            currentControl.setDescription(StringUtil.getLeftString(StringUtil.convertHtmlToString(currentValue.toString()), 250));
         }
 
     }

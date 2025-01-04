@@ -23,9 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +47,6 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.core.crud.entity.Invariant;
 import org.cerberus.core.crud.entity.TestCase;
-import org.cerberus.core.crud.entity.TestCaseStepAction;
-import org.cerberus.core.crud.entity.TestCaseStepActionControl;
 import org.cerberus.core.crud.factory.IFactoryTestCase;
 import org.cerberus.core.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.core.crud.factory.IFactoryTestCaseStep;
@@ -62,10 +58,8 @@ import org.cerberus.core.crud.service.IInvariantService;
 import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
-import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -153,77 +147,25 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
 
                         SAXParserFactory factory = SAXParserFactory.newInstance();
 
-                        try (InputStream is = new ByteArrayInputStream(val.getBytes(StandardCharsets.UTF_8))) {
+                        try (InputStream is = new ByteArrayInputStream(val.getBytes())) {
 
                             SAXParser saxParser = factory.newSAXParser();
 
-                            // parse XML and map to object, it works, but not recommend, try JAXB
-                            MapTestLinkObjectHandlerSax handler = new MapTestLinkObjectHandlerSax();
+                            // parse XML and map to object,
+                            MapTestLinkObjectHandlerSax handler = new MapTestLinkObjectHandlerSax(targetFolder, targetApplication, userCreated, testcaseService);
 
                             saxParser.parse(is, handler);
 
                             // print all
                             List<TestCase> result = handler.getResult();
-                            result.forEach(System.out::println);
+
+                            for (TestCase testCase : result) {
+                                testcaseService.createTestcaseWithDependenciesAPI(testCase);
+                            }
 
                         } catch (ParserConfigurationException | SAXException | IOException e) {
                             LOG.error(e, e);
                         }
-
-//                        JSONObject json = new JSONObject(val);
-//                        if (isCompatible(json)) {
-//                            String masterSIDEURL = json.getString("url");
-//                            JSONArray testList = new JSONArray();
-//                            testList = json.getJSONArray("tests");
-
-
-
-//                        for (int i = 0; i < testList.length(); i++) {
-//
-//                            JSONObject test = new JSONObject();
-//                            test = testList.getJSONObject(i);
-//                            LOG.debug("importing :" + i + " : " + test.toString());
-//
-//                            // Dynamically get a new testcase ID.
-//                            String targetTestcase = testcaseService.getNextAvailableTestcaseId(targetFolder);
-//                            TestCase newTC = testcaseFactory.create(targetFolder, targetTestcase, test.getString("name"));
-//                            newTC.setComment("Imported from Selenium IDE. Test ID : " + test.getString("id"));
-//                            newTC.setApplication(targetApplication);
-//                            newTC.setType(TestCase.TESTCASE_TYPE_AUTOMATED);
-//                            newTC.setConditionOperator("always");
-//                            newTC.setOrigine(TestCase.TESTCASE_ORIGIN_TESTLINK);
-//                            newTC.setRefOrigine(test.getString("id"));
-//                            newTC.setStatus("WORKING");
-//                            newTC.setUsrCreated(userCreated);
-//
-//                            countries.forEach(country -> {
-//                                newTC.appendTestCaseCountries(testcaseCountryFactory.create(targetFolder, targetTestcase, country.getValue()));
-//                            });
-//                            // Step
-//                            TestCaseStep newStep = testcaseStepFactory.create(targetFolder, targetTestcase, 1, 1, TestCaseStep.LOOP_ONCEIFCONDITIONTRUE, "always", "", "", "", new JSONArray(), "", false, null, null, 0, false, false, userCreated, null, null, null);
-//
-//                            // Action
-//                            for (int j = 0; j < test.getJSONArray("commands").length(); j++) {
-//                                JSONObject command = test.getJSONArray("commands").getJSONObject(j);
-//                                TestCaseStepAction newA = getActionFromSIDE(command, (j + 1), masterSIDEURL, urls, targetFolder, targetTestcase);
-//                                if (newA != null) {
-//                                    newStep.appendActions(newA);
-//                                }
-//                            }
-//
-//                            newTC.appendSteps(newStep);
-//
-//                            testcaseService.createTestcaseWithDependencies(newTC);
-
-//                        }
-//                        } else {
-//                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-//                            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase ")
-//                                    .replace("%OPERATION%", "Import")
-//                                    .replace("%REASON%", "The file you're trying to import is not supported or is not in a compatible version format."));
-//                            ans.setResultMessage(msg);
-//                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
-//                        }
 
                     }
                 }
@@ -243,147 +185,6 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
             httpServletResponse.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
         httpServletResponse.getWriter().print(jsonResponse.toString());
-    }
-
-    private TestCaseStepAction getActionFromSIDE(JSONObject command, Integer i, String masterSIDEURL, List<String> applicationURLs, String targetFolder, String targetTestcase) {
-        TestCaseStepAction newAction = null;
-        TestCaseStepActionControl newControl = null;
-        try {
-            String action = null;
-            String action_value1 = "";
-            String action_value2 = "";
-            String control = null;
-            String control_value1 = "";
-            String description = command.getString("comment");
-            String cond = TestCaseStepAction.CONDITIONOPERATOR_ALWAYS;
-            String commandS = command.getString("command");
-            if (commandS.startsWith("//")) {
-                cond = TestCaseStepAction.CONDITIONOPERATOR_NEVER;
-                commandS = commandS.substring(2);
-            }
-
-            switch (commandS) {
-                case "setWindowSize":
-                case "mouseOut":
-                    // Those commands are ignored.
-                    break;
-                case "open":
-                    LOG.debug(masterSIDEURL);
-                    LOG.debug(applicationURLs);
-                    action_value1 = masterSIDEURL + command.getString("target");
-                    if (!isURLInApplication(action_value1, applicationURLs)) {
-                        action = TestCaseStepAction.ACTION_OPENURL;
-                    } else {
-                        action = TestCaseStepAction.ACTION_OPENURLWITHBASE;
-                        action_value1 = command.getString("target");
-                    }
-                    break;
-                case "type":
-                    action = TestCaseStepAction.ACTION_TYPE;
-                    action_value1 = convertElement(command);
-                    action_value2 = command.getString("value");
-                    break;
-                case "click":
-                    action = TestCaseStepAction.ACTION_CLICK;
-                    action_value1 = convertElement(command);
-                    break;
-                case "mouseDown":
-                    action = TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS;
-                    action_value1 = convertElement(command);
-                    break;
-                case "sendKeys":
-                    action = TestCaseStepAction.ACTION_KEYPRESS;
-                    action_value1 = convertElement(command);
-                    action_value2 = mappKey(command.getString("value"));
-                    break;
-                case "mouseUp":
-                    action = TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE;
-                    action_value1 = convertElement(command);
-                    break;
-                case "mouseOver":
-                    action = TestCaseStepAction.ACTION_MOUSEOVER;
-                    action_value1 = convertElement(command);
-                    break;
-                case "waitForElementVisible":
-                    action = TestCaseStepAction.ACTION_WAIT;
-                    action_value1 = convertElement(command);
-                    break;
-                case "verifyText":
-                    action = TestCaseStepAction.ACTION_DONOTHING;
-                    control = TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT;
-                    control_value1 = convertElement(command);
-                    break;
-                default:
-                    action = TestCaseStepAction.ACTION_DONOTHING;
-                    description = "Unknow Selenium IDE command '" + commandS + "'";
-                    if (!StringUtil.isEmptyOrNull(command.getString("target"))) {
-                        description += " on target '" + convertElement(command) + "'";
-                    }
-                    if (!StringUtil.isEmptyOrNull(command.getString("value"))) {
-                        description += " with value '" + command.getString("value") + "'";
-                    }
-                    if (!StringUtil.isEmptyOrNull(command.getString("comment"))) {
-                        description += " - " + command.getString("comment");
-                    }
-            }
-            if (action != null) {
-                newAction = testcaseStepActionFactory.create(targetFolder, targetTestcase, 1, i, i, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), action, action_value1, action_value2, "",
-                        new JSONArray(), false, description, null,
-                        false, false, 0, 0);
-                if (control != null) {
-                    newControl = testcaseStepActionControlFactory.create(targetFolder, targetTestcase, 1, i, 1, 1, TestCaseStepAction.CONDITIONOPERATOR_ALWAYS, "", "", "", new JSONArray(), control, control_value1, "", "", new JSONArray(), true, description, null, false, false, 0, 0);
-                    List<TestCaseStepActionControl> controlList = new ArrayList<>();
-                    controlList.add(newControl);
-                    newAction.setControls(controlList);
-                }
-
-            }
-        } catch (JSONException ex) {
-            LOG.error(ex, ex);
-        }
-        return newAction;
-
-    }
-
-    private static String convertElement(JSONObject command) throws JSONException {
-        String target = command.getString("target");
-        if (target.startsWith("name=") || target.startsWith("xpath=") || target.startsWith("id=")) {
-            return target;
-        }
-        JSONArray targets = command.getJSONArray("targets");
-        for (int i = 0; i < targets.length(); i++) {
-            if (targets.getJSONArray(i).getString(0).startsWith("xpath=")) {
-                return targets.getJSONArray(i).getString(0);
-            }
-        }
-        return target;
-
-    }
-
-    private static String mappKey(String key) throws JSONException {
-        switch (key) {
-            case "${KEY_ENTER}":
-                return "ENTER";
-            default:
-                return key;
-        }
-    }
-
-    private static boolean isURLInApplication(String url, List<String> appURLs) throws JSONException {
-        String cleanedUrl = StringUtil.addSuffixIfNotAlready(StringUtil.removeProtocolFromHostURL(url), "/");
-        for (String appURL : appURLs) {
-            appURL = StringUtil.addSuffixIfNotAlready(StringUtil.removeProtocolFromHostURL(appURL), "/");
-            LOG.debug(appURL + " - " + cleanedUrl);
-            if (appURL.equalsIgnoreCase(cleanedUrl)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
-        String content = new String(Files.readAllBytes(Paths.get(filename)));
-        return new JSONObject(content);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -425,40 +226,6 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private List<String> getFiles(HttpServletRequest httpServletRequest) {
-        List<String> result = new ArrayList<>();
-
-        try {
-            if (ServletFileUpload.isMultipartContent(httpServletRequest)) {
-                DiskFileItemFactory factory = new DiskFileItemFactory();
-
-                ServletContext servletContext = this.getServletConfig().getServletContext();
-                File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-                factory.setRepository(repository);
-
-                ServletFileUpload upload = new ServletFileUpload(factory);
-
-                List<FileItem> formItems = upload.parseRequest(httpServletRequest);
-                if (formItems != null) {
-                    LOG.debug("Nb of Files to import : " + formItems.size());
-                    if (formItems.size() > 0) {
-                        int i = 1;
-                        for (FileItem item : formItems) {
-                            LOG.debug("File to import (" + i++ + ") : " + item.toString() + " FieldName : " + item.getFieldName() + " ContentType : " + item.getContentType());
-                            if (!item.isFormField()) {
-                                result.add(item.getString());
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (FileUploadException ex) {
-            LOG.error(ex,ex);
-        }
-        LOG.debug("result : " + result.size());
-        return result;
-    }
-
     private HashMap<String, String> getParams(HttpServletRequest httpServletRequest) {
         HashMap<String, String> result = new HashMap<>();
 
@@ -482,36 +249,21 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
                             if (item.isFormField()) {
                                 result.put(item.getFieldName(), item.getString());
                             } else {
-                                result.put(item.getFieldName() + i, item.getString());
-
+                                try {
+                                    result.put(item.getFieldName() + i, item.getString("utf-8"));
+                                } catch (UnsupportedEncodingException ex) {
+                                    LOG.warn(ex, ex);
+                                }
                             }
                         }
                     }
                 }
             }
         } catch (FileUploadException ex) {
-            LOG.error(ex,ex);
+            LOG.error(ex, ex);
         }
         LOG.debug("result Param : " + result.size());
         return result;
-    }
-
-    private boolean isCompatible(JSONObject json) {
-
-        try {
-            if (!json.has("version")) {
-                return false;
-            }
-            String fileVersion = json.getString("version");
-            LOG.debug("Version from import file : " + fileVersion);
-
-            return true;
-
-            //Compatibility Matrix. To update if testcase (including dependencies) model change.
-        } catch (JSONException ex) {
-            LOG.warn(ex);
-            return false;
-        }
     }
 
 }
