@@ -90,6 +90,25 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
+    public Invariant readFirstByIdName(String id) throws CerberusException {
+        final String query = "SELECT * FROM `invariant` WHERE `idname` = ? order by sort LIMIT 1;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL.param.id : " + id);
+        }
+
+        return RequestDbUtils.executeQuery(databaseSpring, query,
+                ps -> {
+                    ps.setString(1, id);
+                },
+                resultSet -> {
+                    return loadFromResultSet(resultSet);
+                }
+            );
+    }
+
+    @Override
     public List<Invariant> readByIdname(String idName) throws CerberusException {
 
         // secure invariant with allow System user

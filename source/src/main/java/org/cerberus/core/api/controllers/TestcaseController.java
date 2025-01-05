@@ -57,6 +57,7 @@ import org.cerberus.core.crud.service.ITestCaseService;
 import org.cerberus.core.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.core.crud.service.ITestCaseStepActionService;
 import org.cerberus.core.crud.service.ITestCaseStepService;
+import static org.cerberus.core.engine.execution.enums.ConditionOperatorEnum.CONDITIONOPERATOR_ALWAYS;
 import org.cerberus.core.exception.CerberusException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -226,12 +227,12 @@ public class TestcaseController {
                         .application(newTestcase.getApplication())
                         .description(newTestcase.getDescription())
                         .priority(1)
-                        .status("WORKING")
-                        .conditionOperator("always")
+                        .status(invariantService.convert(invariantService.readFirstByIdName(Invariant.IDNAME_TCSTATUS)).getValue())
+                        .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
                         .conditionValue1("")
                         .conditionValue2("")
                         .conditionValue3("")
-                        .type("AUTOMATED")
+                        .type(TestCase.TESTCASE_TYPE_AUTOMATED)
                         .isActive(true)
                         .isActivePROD(true)
                         .isActiveQA(true)
@@ -261,8 +262,8 @@ public class TestcaseController {
                             .sort(1)
                             .isUsingLibraryStep(false)
                             .libraryStepStepId(0)
-                            .loop("onceIfConditionTrue")
-                            .conditionOperator("always")
+                            .loop(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
+                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
                             .description("Go to the homepage and take a screenshot")
                             .usrCreated(login)
                             .build());
@@ -274,7 +275,7 @@ public class TestcaseController {
                             .stepId(0)
                             .actionId(0)
                             .sort(1)
-                            .conditionOperator("always")
+                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
                             .conditionValue1("")
                             .conditionValue2("")
                             .conditionValue3("")
@@ -283,7 +284,7 @@ public class TestcaseController {
                             .value2("")
                             .value3("")
                             .description("Open the homepage")
-                            .conditionOperator("always")
+                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
                             .usrCreated(login)
                             .build());
 
@@ -295,7 +296,7 @@ public class TestcaseController {
                             .actionId(0)
                             .controlId(0)
                             .sort(1)
-                            .conditionOperator("always")
+                            .conditionOperator(CONDITIONOPERATOR_ALWAYS.getCondition())
                             .conditionValue1("")
                             .conditionValue2("")
                             .conditionValue3("")

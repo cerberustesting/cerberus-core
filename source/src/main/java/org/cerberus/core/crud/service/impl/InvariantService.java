@@ -68,6 +68,11 @@ public class InvariantService implements IInvariantService {
         return AnswerUtil.convertToAnswerItem(() -> invariantDao.readByKey(id, value));
     }
 
+    @Override
+    public AnswerItem<Invariant> readFirstByIdName(String id) {
+        return AnswerUtil.convertToAnswerItem(() -> invariantDao.readFirstByIdName(id));
+    }
+
     /**
      * Use readByIdName instead to avoid Answer
      *

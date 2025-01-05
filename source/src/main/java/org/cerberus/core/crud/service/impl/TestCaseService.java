@@ -661,7 +661,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public boolean hasPermissionsUpdate(TestCase testCase, HttpServletRequest request) {
         // Access right calculation.
-        if (testCase.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+        if (testCase.getStatus().equalsIgnoreCase(TestCase.TESTCASE_STATUS_WORKING)) { // If testcase is WORKING only TestAdmin can update it
             return request.isUserInRole("TestAdmin");
         } else {
             return request.isUserInRole("Test");
@@ -671,7 +671,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public boolean hasPermissionsUpdateFromStatus(String status, HttpServletRequest request) {
         // Access right calculation.
-        if (status.equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+        if (status.equalsIgnoreCase(TestCase.TESTCASE_STATUS_WORKING)) { // If testcase is WORKING only TestAdmin can update it
             return request.isUserInRole("TestAdmin");
         } else {
             return request.isUserInRole("Test");

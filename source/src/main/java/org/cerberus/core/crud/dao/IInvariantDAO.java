@@ -46,6 +46,15 @@ public interface IInvariantDAO {
     Invariant readByKey(String id, String value) throws CerberusException;
 
     /**
+     * Get a {@link Invariant} in database
+     *
+     * @param id
+     * @return
+     * @throws org.cerberus.core.exception.CerberusException
+     */
+    Invariant readFirstByIdName(String id) throws CerberusException;
+
+    /**
      * @param idName
      * @return
      * @throws org.cerberus.core.exception.CerberusException

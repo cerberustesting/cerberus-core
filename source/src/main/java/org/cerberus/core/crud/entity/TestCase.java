@@ -113,6 +113,8 @@ public class TestCase {
     @EqualsAndHashCode.Exclude
     private List<TestCaseDep> dependencies;
 
+    public static final String TESTCASE_STATUS_WORKING = "WORKING";
+
     public static final String TESTCASE_TYPE_MANUAL = "MANUAL";
     public static final String TESTCASE_TYPE_AUTOMATED = "AUTOMATED";
     public static final String TESTCASE_TYPE_PRIVATE = "PRIVATE";

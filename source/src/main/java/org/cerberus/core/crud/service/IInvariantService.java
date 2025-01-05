@@ -207,6 +207,12 @@ public interface IInvariantService {
     AnswerItem<Invariant> readByKey(String id, String value);
 
     /**
+     * @param id
+     * @return
+     */
+    AnswerItem<Invariant> readFirstByIdName(String id);
+
+    /**
      * @param invariant
      * @return
      */

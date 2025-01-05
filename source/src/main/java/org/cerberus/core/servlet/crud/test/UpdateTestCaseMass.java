@@ -136,7 +136,7 @@ public class UpdateTestCaseMass extends HttpServlet {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                             .replace("%OPERATION%", "Update")
-                            .replace("%REASON%", "Not enought privilege to update the testcase. You must belong to Test Privilege or even TestAdmin in case the test is in WORKING status."));
+                            .replace("%REASON%", "Not enought privilege to update the testcase. You must belong to Test Privilege or even TestAdmin in case the test is in " + TestCase.TESTCASE_STATUS_WORKING + " status."));
                     ans.setResultMessage(msg);
                     massErrorCounter++;
                     output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(msg.getDescription());

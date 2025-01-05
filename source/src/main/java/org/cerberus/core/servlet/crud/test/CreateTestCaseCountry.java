@@ -58,7 +58,7 @@ import org.owasp.html.Sanitizers;
 public class CreateTestCaseCountry extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateTestCaseCountry.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -130,11 +130,11 @@ public class CreateTestCaseCountry extends HttpServlet {
                         .replace("%REASON%", "Not enought privilege to create the testCaseCountry. You must belong to Test Privilege."));
                 ans.setResultMessage(msg);
 
-            } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
+            } else if ((tc.getStatus().equalsIgnoreCase(TestCase.TESTCASE_STATUS_WORKING)) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry")
                         .replace("%OPERATION%", "Create")
-                        .replace("%REASON%", "Not enought privilege to create the testCaseCountry. The test case is in WORKING status and needs TestAdmin privilege to be updated"));
+                        .replace("%REASON%", "Not enought privilege to create the testCaseCountry. The test case is in " + TestCase.TESTCASE_STATUS_WORKING + " status and needs TestAdmin privilege to be updated"));
                 ans.setResultMessage(msg);
 
             } else {

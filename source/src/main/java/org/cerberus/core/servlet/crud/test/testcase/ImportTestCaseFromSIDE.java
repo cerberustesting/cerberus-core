@@ -165,7 +165,7 @@ public class ImportTestCaseFromSIDE extends HttpServlet {
                                 newTC.setConditionOperator("always");
                                 newTC.setOrigine(TestCase.TESTCASE_ORIGIN_SIDE);
                                 newTC.setRefOrigine(test.getString("id"));
-                                newTC.setStatus("WORKING");
+                                newTC.setStatus(invariantService.convert(invariantService.readFirstByIdName(Invariant.IDNAME_TCSTATUS)).getValue());
                                 newTC.setUsrCreated(userCreated);
 
                                 countries.forEach(country -> {

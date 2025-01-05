@@ -152,7 +152,7 @@ public class ImportTestCaseFromTestLink extends HttpServlet {
                             SAXParser saxParser = factory.newSAXParser();
 
                             // parse XML and map to object,
-                            MapTestLinkObjectHandlerSax handler = new MapTestLinkObjectHandlerSax(targetFolder, targetApplication, userCreated, testcaseService);
+                            MapTestLinkObjectHandlerSax handler = new MapTestLinkObjectHandlerSax(targetFolder, targetApplication, userCreated, testcaseService, invariantService);
 
                             saxParser.parse(is, handler);
 

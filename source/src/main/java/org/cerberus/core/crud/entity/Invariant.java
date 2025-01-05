@@ -53,6 +53,7 @@ public class Invariant {
     public static final String IDNAME_PRIORITY = "PRIORITY";
     public static final String IDNAME_ENVIRONMENT = "ENVIRONMENT";
     public static final String IDNAME_SYSTEM = "SYSTEM";
+    public static final String IDNAME_TCSTATUS = "TCSTATUS";
 
     public String getDescription() {
         return description;
