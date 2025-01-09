@@ -449,6 +449,7 @@ function getHistoryTestcase(object) {
     result.id = object.test + '-' + object.testcase;
     result.test = object.test;
     result.testcase = object.testcase;
+    result.description = object.description;
     return result;
 }
 
@@ -807,7 +808,7 @@ function generateImportInfoId(stepInfo) {
 
 var importInfoIdx = 0;
 
-function appendActionsForConditionCombobox(combo, operator){
+function appendActionsForConditionCombobox(combo, operator) {
 
     combo.empty();
     var steps = $("#steps li").data("item").steps;
@@ -815,9 +816,9 @@ function appendActionsForConditionCombobox(combo, operator){
         if (operator.startsWith("ifStepStatus")) {
             if (steps[s].sort != undefined) {
                 combo.append($("<option></option>")
-                    .text("Step " + steps[s].sort + " - " + steps[s].description)
-                    .attr("stepId", steps[s].stepId)
-                    .val(steps[s].stepId));
+                        .text("Step " + steps[s].sort + " - " + steps[s].description)
+                        .attr("stepId", steps[s].stepId)
+                        .val(steps[s].stepId));
             }
         } else {
             var actions = $("#steps li").data("item").steps[s].actions;
@@ -825,21 +826,21 @@ function appendActionsForConditionCombobox(combo, operator){
                 if (operator.startsWith("ifActionStatus")) {
                     if (actions[a].sort != undefined) {
                         combo.append($("<option></option>")
-                            .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - " + actions[a].description)
-                            .attr("actionId", actions[a].actionId)
-                            .attr("stepId", steps[s].stepId)
-                            .val(steps[s].stepId + "-" + actions[a].actionId));
+                                .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - " + actions[a].description)
+                                .attr("actionId", actions[a].actionId)
+                                .attr("stepId", steps[s].stepId)
+                                .val(steps[s].stepId + "-" + actions[a].actionId));
                     }
                 } else {
                     var controls = $("#steps li").data("item").steps[s].actions[a].controls;
                     for (c in controls) {
                         if (controls[c].sort != undefined) {
                             combo.append($("<option></option>")
-                                .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - Control " + controls[c].sort + " - " + controls[c].description)
-                                .attr("actionId", actions[a].actionId)
-                                .attr("stepId", steps[s].stepId)
-                                .attr("controlId", controls[c].controlId)
-                                .val(steps[s].stepId + "-" + actions[a].actionId+ "-" + controls[c].controlId));
+                                    .text("Step " + steps[s].sort + " - Action " + actions[a].sort + " - Control " + controls[c].sort + " - " + controls[c].description)
+                                    .attr("actionId", actions[a].actionId)
+                                    .attr("stepId", steps[s].stepId)
+                                    .attr("controlId", controls[c].controlId)
+                                    .val(steps[s].stepId + "-" + actions[a].actionId + "-" + controls[c].controlId));
                         }
                     }
                 }

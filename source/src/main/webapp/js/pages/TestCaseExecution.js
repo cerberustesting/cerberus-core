@@ -265,6 +265,7 @@ function getHistoryExecution(tce) {
     result.country = tce.country;
     result.robot = tce.robot;
     result.description = tce.description;
+    result.controlStatus = tce.controlStatus;
     return result;
 }
 
@@ -518,7 +519,6 @@ function updatePage(data, steps) {
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     var fileExeContainer = $("#testCaseConfig #tcDetailFileContentField");
-    console.info("call1 " + isTheExecutionManual);
     addFileLink(data.fileList, fileContainer, fileExeContainer, isTheExecutionManual);
 
     var myURL = $("#bugButtons").data("appBugURL");
@@ -561,7 +561,6 @@ function updatePage(data, steps) {
                     $("#bugButtons").append(link);
 
 
-                    console.info(dataApp.contentTable);
                     // Open Bug with direct call to BugTracker using connector
                     if (dataApp.contentTable.bugTrackerConnector !== "NONE") {
                         link = $("<button class='btn btn-default btn-block marginTop5'>").attr("id", "addBugFromExternal").text(" Open a new bug using " + dataApp.contentTable.bugTrackerConnector + " connector").prepend($(" <span class='glyphicon glyphicon-cloud'></span>"));
