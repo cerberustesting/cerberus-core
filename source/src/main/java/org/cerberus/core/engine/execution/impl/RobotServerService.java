@@ -88,8 +88,6 @@ import org.cerberus.core.service.robotproxy.IRobotProxyService;
 
 import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
 
-import static org.cerberus.core.util.StringUtil.getExceptionCauseFromString;
-
 /**
  * @author bcivel
  */
