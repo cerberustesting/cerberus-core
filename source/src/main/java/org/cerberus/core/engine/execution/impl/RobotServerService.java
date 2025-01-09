@@ -66,6 +66,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -276,59 +277,52 @@ public class RobotServerService implements IRobotServerService {
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
                             execution.getSession().getHostUser(),
-                            execution.getSession().getHostPassword(), session.getHost()),
+                            execution.getSession().getHostPassword(),
+                            session.getHost()),
                     session.getPort())) + "/wd/hub";
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
+
             HttpCommandExecutor executor = null;
 
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
-//            // TODO #FIXME SELENIUM
-//
+            Factory factory = new OkHttpClient.Factory();
+
+            // TODO #FIXME SELENIUM
+
 //            CloseableHttpClient httpclient = null;
 //            HttpClientBuilder httpclientBuilder;
 //            httpclientBuilder = HttpClientBuilder.create();
 //            httpclient = httpclientBuilder.build();
-
+//
 //            Factory factory = new HttpClient();
 
             // Timeout Management
             int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
             Duration rbtTimeOut = Duration.ofMillis(robotTimeout);
-//            factory.builder().connectionTimeout(rbtTimeOut);
-//
-//            if (isProxy) {
-//
-//                // Proxy Management
-//                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
-//                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
-//
-//                java.net.Proxy myproxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-//
-//                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-//
-//                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
-//                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
-//
-//                    // TODO delete if comment bellow has no impact on the non reg campaign
-///*
-//                    Authenticator proxyAuthenticator = new Authenticator() {
-//                        public Request authenticate(Route route, Response response) throws IOException {
-//                            String credential = Credentials.basic(proxyUser, proxyPassword);
-//                            return response.request().newBuilder()
-//                                    .header("Proxy-Authorization", credential)
-//                                    .build();
-//                        }
-//                    };
-//                     */
-//                }
-//                factory.builder().proxy(myproxy);
-//            } else {
-//                factory.builder().proxy(java.net.Proxy.NO_PROXY);
-//            }
+            factory.builder().connectionTimeout(rbtTimeOut);
 
-//            executor = new HttpCommandExecutor(new HashMap<>(), url, factory);
+            if (isProxy) {
+
+                // Proxy Management
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
+
+                java.net.Proxy myproxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+
+                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+
+                }
+                factory.builder().proxy(myproxy);
+            } else {
+                factory.builder().proxy(java.net.Proxy.NO_PROXY);
+            }
+
+            executor = new HttpCommandExecutor(new HashMap<>(), url, factory);
 
             // SetUp Driver
             LOG.debug("Set Driver");
