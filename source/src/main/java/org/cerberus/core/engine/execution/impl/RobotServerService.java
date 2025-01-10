@@ -274,6 +274,8 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
 
+            // TODO #FIXME SELENIUM #TEST
+
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
                             execution.getSession().getHostUser(),
@@ -284,45 +286,34 @@ public class RobotServerService implements IRobotServerService {
             URL url = new URL(hubUrl);
 
             HttpCommandExecutor executor = null;
-
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
-            Factory factory = new OkHttpClient.Factory();
-
-            // TODO #FIXME SELENIUM
-
-//            CloseableHttpClient httpclient = null;
-//            HttpClientBuilder httpclientBuilder;
-//            httpclientBuilder = HttpClientBuilder.create();
-//            httpclient = httpclientBuilder.build();
-//
-//            Factory factory = new HttpClient();
-
-            // Timeout Management
             int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
-            Duration rbtTimeOut = Duration.ofMillis(robotTimeout);
-            factory.builder().connectionTimeout(rbtTimeOut);
+
+            org.openqa.selenium.remote.http.ClientConfig clientConfig = org.openqa.selenium.remote.http.ClientConfig.defaultConfig()
+                    .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                    .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                    .baseUri(url.toURI());
 
             if (isProxy) {
-
-                // Proxy Management
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
 
-                java.net.Proxy myproxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-
                 if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
-
                 }
-                factory.builder().proxy(myproxy);
-            } else {
-                factory.builder().proxy(java.net.Proxy.NO_PROXY);
+                clientConfig.proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
             }
 
-            executor = new HttpCommandExecutor(new HashMap<>(), url, factory);
+            org.openqa.selenium.remote.http.HttpClient.Factory factory = new org.openqa.selenium.remote.http.HttpClient.Factory() {
+                @Override
+                public org.openqa.selenium.remote.http.HttpClient createClient(org.openqa.selenium.remote.http.ClientConfig ignored) {
+                    return new org.openqa.selenium.remote.http.jdk.JdkHttpClient.Factory().createClient(clientConfig);
+                }
+            };
+
+            executor = new HttpCommandExecutor(new java.util.HashMap<>(), url, factory);
 
             // SetUp Driver
             LOG.debug("Set Driver");
@@ -336,7 +327,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(url, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM (proxy missing because url instead of executor)
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
