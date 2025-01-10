@@ -71,7 +71,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.cerberus.core.crud.entity.Application;
@@ -1328,8 +1327,8 @@ public class RobotServerService implements IRobotServerService {
             if ((session.getDriver() != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_pageLoadTimeout() != timeout)) {
                 LOG.debug("Setting Selenium Robot Options (pageLoadTimeout & setScriptTimeout) timeout to : {}", timeout);
                 WebDriver driver = session.getDriver();
-                driver.manage().timeouts().pageLoadTimeout(timeout, TimeUnit.MILLISECONDS);
-                driver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(timeout));
+                driver.manage().timeouts().setScriptTimeout(Duration.ofMillis(timeout));
                 session.setCerberus_selenium_pageLoadTimeout(timeout);
                 session.setCerberus_selenium_setScriptTimeout(timeout);
             }
@@ -1337,7 +1336,7 @@ public class RobotServerService implements IRobotServerService {
             if ((session.getAppiumDriver() != null) && (session.getCerberus_appium_wait_element() != timeout)) {
                 LOG.debug("Setting Appium Robot Options timeout to : {}", timeout);
                 AppiumDriver appiumDriver = session.getAppiumDriver();
-                appiumDriver.manage().timeouts().implicitlyWait(timeout, TimeUnit.MILLISECONDS);
+                appiumDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(timeout));
             }
             session.setCerberus_appium_wait_element(timeout);
         }
@@ -1382,12 +1381,12 @@ public class RobotServerService implements IRobotServerService {
             WebDriver driver = session.getDriver();
             if ((driver != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_pageLoadTimeout() != session.getCerberus_selenium_pageLoadTimeout_default())) {
                 LOG.debug("Setting Selenium Robot Options (pageLoadTimeout) timeout to : {}", session.getCerberus_selenium_pageLoadTimeout_default());
-                driver.manage().timeouts().pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default(), TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(session.getCerberus_selenium_pageLoadTimeout_default()));
                 session.setCerberus_selenium_pageLoadTimeout(session.getCerberus_selenium_pageLoadTimeout_default());
             }
             if ((driver != null) && (session.getAppiumDriver() == null) && (session.getCerberus_selenium_setScriptTimeout() != session.getCerberus_selenium_setScriptTimeout_default())) {
                 LOG.debug("Setting Selenium Robot Options (setScriptTimeout) timeout to : {}", session.getCerberus_selenium_setScriptTimeout_default());
-                driver.manage().timeouts().setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default(), TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().setScriptTimeout(Duration.ofMillis(session.getCerberus_selenium_setScriptTimeout_default()));
                 session.setCerberus_selenium_setScriptTimeout(session.getCerberus_selenium_setScriptTimeout_default());
             }
             LOG.debug("Setting Robot highlightElement back to default values : Selenium {} Sikuli {}",
@@ -1404,7 +1403,7 @@ public class RobotServerService implements IRobotServerService {
             if ((session.getAppiumDriver() != null) && (session.getCerberus_appium_wait_element() != session.getCerberus_appium_wait_element_default())) {
                 LOG.debug("Setting Appium Robot Options back to default timeout : {}", session.getCerberus_appium_wait_element_default());
                 AppiumDriver appiumDriver = session.getAppiumDriver();
-                appiumDriver.manage().timeouts().implicitlyWait(session.getCerberus_appium_wait_element_default(), TimeUnit.MILLISECONDS);
+                appiumDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(session.getCerberus_appium_wait_element_default()));
             }
             session.setCerberus_appium_wait_element(session.getCerberus_appium_wait_element_default());
 
