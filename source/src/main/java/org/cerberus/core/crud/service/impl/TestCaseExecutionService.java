@@ -253,6 +253,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String test, String testCase, String country, String environment, String tag) {
+        return testCaseExecutionDao.readLastByCriteria(test, testCase, country, environment, tag);
+    }
+
+    @Override
     public AnswerItem<TestCaseExecution> readByKeyWithDependency(long executionId) {
         // Get Main Execution.
         AnswerItem<TestCaseExecution> tce = this.readByKey(executionId);

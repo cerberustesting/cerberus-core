@@ -995,6 +995,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<>();
 
+        LOG.debug("SQL : {}", query);
+
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             preStat.setString(1, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -1021,9 +1023,50 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        LOG.debug("SQL : {}", query);
+
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
                 query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preStat.setLong(1, executionId);
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String test, String testCase, String country, String environment, String tag) {
+        AnswerItem<TestCaseExecution> ans = new AnswerItem<>();
+        TestCaseExecution result;
+        final String query = "select * from testcaseexecution exe where Test=? and TestCase=? and country=? and Environment=?  and tag=? order by id desc limit 1;";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.test : {}", test);
+        LOG.debug("SQL.param.testcase : {}", testCase);
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(
+                query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            int i = 1;
+            preStat.setString(i++, test);
+            preStat.setString(i++, testCase);
+            preStat.setString(i++, country);
+            preStat.setString(i++, environment);
+            preStat.setString(i++, tag);
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);

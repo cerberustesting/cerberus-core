@@ -6601,3 +6601,7 @@ INSERT IGNORE INTO `invariant` (`idname`, `value`, `sort`, `description`)
 
 -- 1879
 INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('EXTERNALPROVIDER', 'TestLink', '120', 'Test Link', '');
+
+-- 1880-1881
+UPDATE testcasedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND';
+UPDATE testcaseexecutionqueuedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND';

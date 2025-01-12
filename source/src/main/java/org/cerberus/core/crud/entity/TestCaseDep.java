@@ -66,8 +66,10 @@ public class TestCaseDep {
     @EqualsAndHashCode.Exclude
     private String testcaseDescription;
 
-    public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testcase Execution.
+    public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testCase Execution any status.
+    public static final String TYPE_TCEXEENDOK = "TCEXEENDOK"; // End of a testCase Execution only OK.
     public static final String TYPE_EVENT = "EVENT"; // Creation of an Event.
+    public static final String TYPE_TIMING = "TIMING"; // Waiting for a specific timing.
 
     private static final Logger LOG = LogManager.getLogger(TestCaseDep.class);
 

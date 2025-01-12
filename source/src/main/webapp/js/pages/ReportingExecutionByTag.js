@@ -1788,6 +1788,8 @@ function massAction_copyQueue(option) {
     if (option === undefined) {
         option = "toQUEUED";
     }
+    var tag = $('#selectTag').val();
+
     clearResponseMessageMainPage();
 
     var doc = new Doc();
@@ -1799,7 +1801,7 @@ function massAction_copyQueue(option) {
         showMessage(localMessage, null);
     } else {
 
-        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&actionSave=save", "json");
+        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=" + option + "&tag=" + encodeURIComponent(tag) + "&actionSave=save", "json");
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
@@ -1920,7 +1922,7 @@ function aoColumnsFunc(Columns) {
                     // Getting selected Tag;
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
-                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.Country + "_" + data.Environment + "_" + data.RobotDecli).replace(/\./g, '_').replace(/ /g, '_').replace(/\:/g, '_');
+                    let idProgressBar = generateAnchor(data.Test, data.TestCase, data.Country, data.Environment, data.RobotDecli);
                     var cell = "";
                     cell += '<div class="input-group mainCell" id="' + idProgressBar + '">';
                     cell += '<span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
@@ -1962,13 +1964,13 @@ function aoColumnsFunc(Columns) {
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + '</span>';
                     }
                     if (data.TestCaseDep.length > 0) {
-                        let button = ""
-                        let txt = ""
-                        let dependencyArray = ""
+                        let button = "";
+                        let txt = "";
+                        let dependencyArray = "";
                         for (let dep of data.TestCaseDep) {
-                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',Country:'" + data.Country + "',Environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},"
+                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',country:'" + data.Country + "',environment:'" + data.Environment + "',robotdecli:'" + data.RobotDecli + "'},";
                         }
-                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
+                        var dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);";
                     }
                     cell += '</div>';
                     if (data.TestCaseDep.length > 0) {
@@ -2033,11 +2035,11 @@ function aoColumnsFunc(Columns) {
 }
 
 function renderDependency(id, dependencyArray) {
-    let text = ""
+    let text = "";
     // Remove all background of mainCell
     $(".mainCell").parent().removeClass("info");
     dependencyArray.forEach(dep => {
-        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.Country + "_" + dep.Environment + "_" + dep.robotdecli).replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_');
+        let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.environment, dep.robotdecli);
         let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
         text += "<a style='cursor: pointer;' onclick='$(\"#" + idProgressBar + "\").click()' style='font-size: xx-small'><div style='width: 20%' class='progress-bar status" + tcDepResult + "'>" + tcDepResult + "</div></a><a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + "</a><br>";
         // Add background of mainCell that are dependent.
@@ -2049,6 +2051,10 @@ function renderDependency(id, dependencyArray) {
             .attr("data-content", text)
             .attr("data-placement", "right")
             .popover('show');
+}
+
+function generateAnchor(test, testcase, country, env, robot) {
+    return (test.replace("\/", "_") + "_" + testcase.replace("\/", "_") + "_" + country + "_" + env + "_" + robot.replace(/ /g, '_').replace(/\./g, '_').replace(/\:/g, '_'));
 }
 
 function customConfig(config) {

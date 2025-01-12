@@ -49,10 +49,11 @@ public interface ITestCaseExecutionQueueDepService {
      * @param queueToInsert Optionally that hashmap include all Execution of the
      * context. This is used in order to avoid inserting a dependency on a
      * testcase that is not included inside the campaign.
+     * @param withDep
      *
      * @return
      */
-    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert);
+    AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert, boolean withDep);
 
     /**
      * Insert execution dependencies to queueid from existing ExeQueueId
@@ -70,14 +71,24 @@ public interface ITestCaseExecutionQueueDepService {
      * @param env
      * @param Country
      * @param tag
-     * @param type
      * @param test
      * @param testCase
      * @param comment
      * @param exeId
+     * @param queueId
      * @return
      */
-    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
+    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String test, String testCase, String comment, long exeId, long queueId);
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param exeId
+     * @param queueId
+     * @return
+     */
+    AnswerItem<Integer> updateStatusToRelease(long id, String comment, long exeId, long queueId);
 
     /**
      *
@@ -155,6 +166,16 @@ public interface ITestCaseExecutionQueueDepService {
      * @param tCExecution
      */
     void manageDependenciesEndOfExecution(TestCaseExecution tCExecution);
+
+    /**
+     *
+     * That method manage the dependency after a queue dep has been inserted. It
+     * will release all associated dependencies and check the associated queue
+     * execution if they can also be released to QUEUED status
+     *
+     * @param executionQueueDep
+     */
+    void manageDependenciesNewOfQueueDep(TestCaseExecutionQueueDep executionQueueDep);
 
     /**
      *

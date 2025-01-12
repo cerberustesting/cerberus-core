@@ -214,13 +214,13 @@ function initModalTestCase() {
         } else if (indexTest === 0 || indexTestCase === 0) {
             showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
         } else {
-            addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "", 0)
+            addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "", 0, "TCEXEEND");
         }
     })
 
 }
 
-function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description = "", delay = 0) {
+function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description = "", delay = 0, type) {
     let checked = "";
     if (activate)
         checked = "checked";
@@ -233,12 +233,31 @@ function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, des
             '</button>' +
             '</div>' +
             '</td>' +
-            '<td>' + test + ' - ' + testCaseTxt + '</td>' +
+            '<td>' + test + ' - ' + testCaseTxt + depTypeSelect(type) +
+//            '<input class="form-control input-sm" style="width: 150px;" name="type" value="' + type + '"/></td>' +
+            '</td>' +
             '<td style="width: 50px;">  <input class="form-control input-xs"  type="checkbox"  name="activate" ' + checked + '/></td>' +
             '<td style="width: 60px;">  <input class="form-control input-sm" name="depDelay" value="' + delay + '"/></td>' +
             '<td>  <input class="form-control input-sm" name="depDescription" value="' + description + '"/></td>' +
             '</tr>'
             );
+}
+
+function depTypeSelect(value) {
+    let descOK = "Execution ends OK";
+    let desc = "Execution ends in any status";
+    let selectedOK = "selected='selected'";
+    let selected = "selected='selected'";
+    if (value === "TCEXEENDOK") {
+        selected = "";
+    } else {
+        selectedOK = "";
+    }
+    return "<select type='text' class='form-control input-sm marginTop5' name='type'>" +
+            "<option value='TCEXEEND' " + selected + ">" + desc + "</option>" +
+            "<option value='TCEXEENDOK' " + selectedOK + ">" + descOK + "</option>" +
+            "</select>";
+
 }
 
 function getHtmlIdForTestCase(test, testCase) {
@@ -572,6 +591,7 @@ function confirmTestCaseModalHandler(mode) {
                             testcase: $(v).attr("testcase"),
                             description: $(v).find("[name='depDescription']").val(),
                             depDelay: $(v).find("[name='depDelay']").val(),
+                            type: $(v).find("[name='type']").val(),
                             isActive: $(v).find("[name='activate']").is(":checked")
                         }
                 )
@@ -1242,7 +1262,7 @@ function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove();// clean the table
 
     testCase.dependencies.forEach((dep) => {
-        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description, dep.dependencyTCDelay);
+        addHtmlForDependencyLine(dep.id, dep.dependencyTest, dep.dependencyTestcase, dep.dependencyTestcase + " - " + dep.testcaseDescription, dep.isActive, dep.description, dep.dependencyTCDelay, dep.type);
     });
 }
 

@@ -186,7 +186,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
         final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd "
                 + "LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id "
-                + "WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tcd.Type = 'TCEXEEND'  and (tce.controlstatus is null or tce.controlstatus != 'OK');";
+                + "WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tcd.Type = 'TCEXEENDOK'  and (tce.controlstatus is null or tce.controlstatus != 'OK');";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -551,15 +551,18 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public Answer create(TestCaseExecutionQueueDep object) {
+    public AnswerItem<Long> create(TestCaseExecutionQueueDep object) {
         MessageEvent msg;
+        AnswerItem<Long> ans = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepTCDelay, DepEvent, Status, Comment, UsrCreated)");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepTCDelay, DepEvent, Status, Comment, ExeId, QueueId, UsrCreated)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.exeid : {}", object.getQueueId());
+        LOG.debug("SQL.param.queueid : {}", object.getExeId());
 
-        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS)) {
 
             int i = 1;
             preStat.setLong(i++, object.getExeQueueId());
@@ -573,9 +576,17 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             preStat.setString(i++, object.getDepEvent());
             preStat.setString(i++, object.getStatus());
             preStat.setString(i++, object.getComment());
+            preStat.setLong(i++, object.getExeId());
+            preStat.setLong(i++, object.getQueueId());
             preStat.setString(i++, object.getUsrCreated());
 
             preStat.executeUpdate();
+            try (ResultSet resultSet = preStat.getGeneratedKeys()) {
+                if (resultSet.first()) {
+                    LOG.debug("Inserted Queue Dep id : " + resultSet.getLong(1));
+                    ans.setItem(resultSet.getLong(1));
+                }
+            }
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
         } catch (SQLException exception) {
@@ -589,7 +600,8 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         }
-        return new Answer(msg);
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override
@@ -638,11 +650,12 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         String query = "INSERT INTO testcaseexecutionqueuedep (ExeQueueId, Environment, Country, Tag, `Type` , DepDate, Status, Comment) "
                 + " SELECT ExeQueueId, Environment, Country , Tag , 'TIMING', DATE_ADD(NOW(), INTERVAL DepTCDelay MINUTE) , 'WAITING', concat('Extra ', DepTCDelay, ' min delay following end of execution ', ?, ' of ', DepTest, '-', DepTestCase) "
                 + "  FROM testcaseexecutionqueuedep "
-                + "  WHERE `Status` = 'WAITING' and `Type` = 'TCEXEEND' and `DepTest` = ? and `DepTestCase` = ? "
+                + "  WHERE `Status` = 'WAITING' and `Type` in ('TCEXEEND','TCEXEENDOK') and `DepTest` = ? and `DepTestCase` = ? "
                 + "   and `Tag` = ? and `Environment` = ? and `Country` = ? and DepTCDelay > 0;";
 
         // Debug message on SQL.
         LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + String.valueOf(exeID));
 
         try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
@@ -669,11 +682,11 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
+    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String test, String testCase, String comment, long exeId, long queueId) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
         String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , `ExeId` = ?, `QueueId` = ?, ReleaseDate = NOW(), DateModif = NOW() "
-                + " WHERE `Status` = 'WAITING' and `Type` = ? and `DepTest` = ? and `DepTestCase` = ? and `Tag` = ? and `Environment` = ? and `Country` = ? ";
+                + " WHERE `Status` = 'WAITING' and `Type` in ('TCEXEENDOK','TCEXEEND') and `DepTest` = ? and `DepTestCase` = ? and `Tag` = ? and `Environment` = ? and `Country` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -686,12 +699,45 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             preStat.setString(i++, comment);
             preStat.setLong(i++, exeId);
             preStat.setLong(i++, queueId);
-            preStat.setString(i++, type);
             preStat.setString(i++, test);
             preStat.setString(i++, testCase);
             preStat.setString(i++, tag);
             preStat.setString(i++, env);
             preStat.setString(i++, Country);
+            Integer resnb = preStat.executeUpdate();
+            ans.setItem(resnb);
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.error("Unable to update object: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public AnswerItem<Integer> updateStatusToRelease(long id, String comment, long exeId, long queueId) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+        String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', ExeId = ?, QueueId = ?, `Comment` = ? , ReleaseDate = NOW(), DateModif = NOW() "
+                + " WHERE `Status` = 'WAITING' and id = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            int i = 1;
+            preStat.setLong(i++, exeId);
+            preStat.setLong(i++, queueId);
+            preStat.setString(i++, comment);
+            preStat.setLong(i++, id);
             Integer resnb = preStat.executeUpdate();
             ans.setItem(resnb);
 

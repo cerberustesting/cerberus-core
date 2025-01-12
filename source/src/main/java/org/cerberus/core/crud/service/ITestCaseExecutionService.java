@@ -253,6 +253,17 @@ public interface ITestCaseExecutionService {
     AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
+     *
+     * @param test
+     * @param testCase
+     * @param country
+     * @param environment
+     * @param tag
+     * @return
+     */
+    AnswerItem<TestCaseExecution> readLastByCriteria(String test, String testCase, String country, String environment, String tag);
+
+    /**
      * Read TestCaseExecution knowing the Key
      *
      * @param executionId : ID of the execution

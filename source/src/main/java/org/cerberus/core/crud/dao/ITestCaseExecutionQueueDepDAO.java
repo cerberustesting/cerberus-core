@@ -123,7 +123,7 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param object
      * @return
      */
-    Answer create(TestCaseExecutionQueueDep object);
+    AnswerItem<Long> create(TestCaseExecutionQueueDep object);
 
     /**
      *
@@ -158,7 +158,17 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param queueId
      * @return
      */
-    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
+    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String test, String testCase, String comment, long exeId, long queueId);
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param exeId
+     * @param queueId
+     * @return
+     */
+    AnswerItem<Integer> updateStatusToRelease(long id, String comment, long exeId, long queueId);
 
     /**
      *

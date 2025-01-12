@@ -186,7 +186,7 @@ public interface ITestCaseExecutionQueueService {
      * existing dependencies from queue entry exeQueue.
      *
      * @param object the {@link queue entry} to Create
-     * @param withNewDep
+     * @param withNewDep when true, queue will be inserted with released even if past execution could be released. when false, dependencies from queue inserted will be released incase a past execution exist.
      * @param exeQueue original queue entry id from which the duplication is
      * done.
      * @param targetState

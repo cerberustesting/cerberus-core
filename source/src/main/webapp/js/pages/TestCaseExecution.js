@@ -1577,7 +1577,7 @@ function setConfigPanel(data) {
     configPanel.find("input#platform").val(data.platform);
     if (data.platform !== "") {
         $("#exOS").text(data.platform);
-        $("#exOSLogo").attr("src", "./images/platform-" + data.platform + ".png");
+        $("#exOSLogo").attr("src", "./images/platform-" + data.platform.toUpperCase() + ".png");
     }
     configPanel.find("input#browser").val(data.browser);
     if (data.browser !== "") {

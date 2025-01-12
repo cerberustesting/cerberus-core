@@ -289,6 +289,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
             Long testcaseDependencyId = jsonObj.getLong("id");
             Integer testcaseDependencyDelay = Integer.parseInt(jsonObj.getString("depDelay"));
             String test = jsonObj.getString("test");
+            String type = jsonObj.getString("type");
             String description = jsonObj.getString("description");
             boolean isActive = jsonObj.getBoolean("isActive");
             Timestamp creationDate = new Timestamp(new Date().getTime());
@@ -297,7 +298,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
                     TestCaseDep.builder()
                             .id(testcaseDependencyId).test(testcase.getTest()).testcase(testcase.getTestcase())
                             .dependencyTest(test).dependencyTestcase(testcaseId).dependencyTCDelay(testcaseDependencyDelay)
-                            .type(TestCaseExecutionQueueDep.TYPE_TCEXEEND).isActive(isActive)
+                            .type(type).isActive(isActive)
                             .description(description)
                             .dateCreated(creationDate).dateModif(creationDate).usrCreated(request.getRemoteUser()).usrModif(request.getRemoteUser())
                             .build());

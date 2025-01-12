@@ -43,7 +43,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.cerberus.core.crud.entity.TestCaseDep;
+import org.cerberus.core.crud.service.ITagService;
 import org.cerberus.core.crud.service.ITestCaseDepService;
+import org.cerberus.core.crud.service.ITestCaseExecutionService;
 import org.cerberus.core.engine.entity.MessageEvent;
 
 /**
@@ -57,6 +59,10 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     @Autowired
     private ITestCaseDepService testCaseDepService;
     @Autowired
+    private ITestCaseExecutionService executionService;
+    @Autowired
+    private ITagService tagService;
+    @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
     private static final Logger LOG = LogManager.getLogger("TestCaseExecutionQueueDepService");
@@ -64,18 +70,11 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     private final String OBJECT_NAME = "Test Case Execution Queue Dependency";
 
     @Override
-    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert) {
+    public AnswerItem<Integer> insertFromTestCaseDep(long queueId, String env, String country, String tag, String test, String testcase, Map<String, TestCaseExecutionQueue> queueToInsert, boolean withDep) {
         AnswerItem<Integer> ans = new AnswerItem<>();
         Integer nbInserted = 0;
         MessageEvent msg = null;
         try {
-            LOG.debug("toto : Quque already inserted inside context");
-            for (Map.Entry<String, TestCaseExecutionQueue> entry : queueToInsert.entrySet()) {
-                String key = entry.getKey();
-                Object val = entry.getValue();
-                LOG.debug(key);
-            }
-
             // List of dep to insert from testcase definition.
             List<TestCaseDep> depToInsert = testCaseDepService.readByTestAndTestcase(test, testcase);
 
@@ -84,13 +83,17 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                 if (testCaseDep.isActive()) {
                     String status = TestCaseExecutionQueueDep.STATUS_WAITING;
                     String comment = "";
-                    LOG.debug(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env));
+                    LOG.debug("Checking if dependency " + executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env)
+                            + " is in the scope of the existing queue that has " + queueToInsert.size() + " entry(ies)");
+
                     if (!queueToInsert.containsKey(executionQueueService.getUniqKey(testCaseDep.getDependencyTest(), testCaseDep.getDependencyTestcase(), country, env))
                             && !queueToInsert.isEmpty()) {
                         status = TestCaseExecutionQueueDep.STATUS_IGNORED;
                         comment = "The corresponding test Case does not exist in the context of the campaign execution";
+                        LOG.debug("Dependency in IGNORED state. TestCase does not exist in inserted Queue entries.");
                     } else {
                         // nbInserted is not incremented if Dependency is IGNORED. We count only the blocking dependencies.
+                        LOG.debug("Dependency is valid and will be created in WAITING Status.");
                         nbInserted++;
                     }
                     TestCaseExecutionQueueDep newDep = TestCaseExecutionQueueDep.builder()
@@ -107,7 +110,15 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                             .depTCDelay(testCaseDep.getDependencyTCDelay())
                             .usrCreated("")
                             .build();
-                    testCaseExecutionQueueDepDAO.create(newDep);
+                    long newQueueDep = testCaseExecutionQueueDepDAO.create(newDep).getItem();
+                    newDep.setId(newQueueDep);
+                    // Trigger check of dependency.
+                    if (!withDep) {
+                        // Queues has been inserted without their dependencies so we can check against the past executions.
+                        LOG.debug("Checking if Dependency inserted cannot be already released checking on past executions.");
+                        this.manageDependenciesNewOfQueueDep(newDep);
+
+                    }
                 }
             }
 
@@ -119,7 +130,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
         } catch (CerberusException ex) {
             LOG.warn("Could not insert dependency");
         }
-        LOG.warn("{} dependency inserted in queueId {}.", nbInserted, queueId);
+        LOG.debug("{} dependency inserted in queueId {}.", nbInserted, queueId);
         return ans;
     }
 
@@ -129,8 +140,13 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
-    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
-        return testCaseExecutionQueueDepDAO.updateStatusToRelease(env, Country, tag, type, test, testCase, comment, exeId, queueId);
+    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String test, String testCase, String comment, long exeId, long queueId) {
+        return testCaseExecutionQueueDepDAO.updateStatusToRelease(env, Country, tag, test, testCase, comment, exeId, queueId);
+    }
+
+    @Override
+    public AnswerItem<Integer> updateStatusToRelease(long id, String comment, long exeId, long queueId) {
+        return testCaseExecutionQueueDepDAO.updateStatusToRelease(id, comment, exeId, queueId);
     }
 
     @Override
@@ -195,7 +211,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
             // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
-                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), tCExecution.getQueueID());
+                    tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), tCExecution.getQueueID());
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.
             if (nbdep > 0) {
@@ -212,6 +228,63 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
+    public void manageDependenciesNewOfQueueDep(TestCaseExecutionQueueDep executionQueueDep) {
+        if (executionQueueDep != null) {
+            LOG.debug("Controling and release inserted dependency  : " + executionQueueDep.getId() + ".");
+
+            // We first get the latest execution that match the dependency.
+            TestCaseExecution latestExe;
+            try {
+                latestExe = executionService.convert(executionService.readLastByCriteria(executionQueueDep.getDepTest(), executionQueueDep.getDepTestCase(),
+                        executionQueueDep.getCountry(), executionQueueDep.getEnvironment(), executionQueueDep.getTag()));
+
+                if (latestExe != null) {
+                    // Insert new dependency based on TIMING in case the initial dependency has a delay. Type TIMING Status WAITING
+                    LOG.debug("Insert TIMING dep is exist.");
+                    AnswerItem ansNbDep = insertNewTimingDep(executionQueueDep.getEnvironment(), executionQueueDep.getCountry(), executionQueueDep.getTag(),
+                            executionQueueDep.getDepTest(), executionQueueDep.getDepTestCase(), latestExe.getId());
+                    LOG.debug("Inserted TIMING dep : " + ansNbDep.getItem());
+
+                    // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
+                    LOG.debug("Update to RELEASE or CANCELLED dep of TCEXEEND depending on Execution status.");
+                    switch (executionQueueDep.getType()) {
+                        case TestCaseDep.TYPE_TCEXEENDOK:
+                            if (TestCaseExecution.CONTROLSTATUS_OK.equals(latestExe.getControlStatus())) {
+                                ansNbDep = updateStatusToRelease(executionQueueDep.getId(), "", latestExe.getId(), latestExe.getQueueID());
+                            } else {
+                                try {
+                                    // All dependencies of exeQueueId has been free but some with error that force to move the queue entry in ERROR status
+                                    String notExecutedMessage = "1 RELEASED dependency not OK.";
+                                    executionQueueService.updateToErrorFromQuWithDep(executionQueueDep.getExeQueueId(), notExecutedMessage);
+                                    // We now trigger the check that the queue entry that move to ERROR status can release other dependencies
+                                    manageDependenciesEndOfQueueExecution(executionQueueDep.getExeQueueId());
+                                    // Tag execution could end here if that queue entry was the last one.
+                                    tagService.manageCampaignEndOfExecution(latestExe.getTag());
+                                } catch (CerberusException ex) {
+                                    LOG.error(ex.toString(), ex);
+                                }
+
+                            }
+                            break;
+                        case TestCaseDep.TYPE_TCEXEEND:
+                            ansNbDep = updateStatusToRelease(executionQueueDep.getId(), "", latestExe.getId(), latestExe.getQueueID());
+                            break;
+                        default:
+                    }
+                    // Only check status of each Queue Entries if we RELEASED at least 1 entry.
+                    executionQueueService.checkAndReleaseQueuedEntry(executionQueueDep.getExeQueueId(), latestExe.getTag());
+                }
+
+            } catch (CerberusException ex) {
+                LOG.warn(ex, ex);
+            } catch (Exception ex) {
+                LOG.warn(ex, ex);
+            }
+
+        }
+    }
+
+    @Override
     public void manageDependenciesEndOfQueueExecution(long idQueue) {
         LOG.debug("Release dependencies of Queue : " + idQueue + ".");
 
@@ -221,7 +294,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
             // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             AnswerItem ansNbDep = updateStatusToRelease(queueEntry.getEnvironment(), queueEntry.getCountry(), queueEntry.getTag(),
-                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, queueEntry.getTest(), queueEntry.getTestCase(), "Queue Entry " + idQueue + " in ERROR.", 0, idQueue);
+                    queueEntry.getTest(), queueEntry.getTestCase(), "Queue Entry " + idQueue + " in ERROR.", 0, idQueue);
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.
             if (nbdep > 0) {
@@ -306,7 +379,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     public List<Long> enrichWithDependencies(List<Long> queueIdList) {
 
         try {
-            // Loading list of labelId into a map in order to dedup it.
+            // Loading list of id into a map in order to dedup it.
             HashMap<Long, Long> finalMap = new HashMap<>();
             HashMap<Long, Long> initMap = new HashMap<>();
             // Dedup list on a MAP
@@ -334,7 +407,9 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                     List<TestCaseExecutionQueueDep> queueIdLinkList = this.convert(this.readByExeQueueId(key));
                     // for each dependency found, we add the dependency to the FinalMap.
                     for (TestCaseExecutionQueueDep queueDepEntry : queueIdLinkList) {
-                        finalMap.put(queueDepEntry.getQueueId(), Long.valueOf(0));
+                        if (!TestCaseExecutionQueueDep.STATUS_IGNORED.equals(queueDepEntry.getStatus())) {
+                            finalMap.put(queueDepEntry.getQueueId(), Long.valueOf(0));
+                        }
                     }
                 }
                 finalSize = finalMap.size();

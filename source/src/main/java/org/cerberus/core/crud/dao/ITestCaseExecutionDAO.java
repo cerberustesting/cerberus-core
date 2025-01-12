@@ -255,6 +255,16 @@ public interface ITestCaseExecutionDAO {
     public AnswerItem<TestCaseExecution> readByKey(long executionId);
 
     /**
+     * @param test
+     * @param testCase
+     * @param country
+     * @param environment
+     * @param tag
+     * @return
+     */
+    public AnswerItem<TestCaseExecution> readLastByCriteria(String test, String testCase, String country, String environment, String tag);
+
+    /**
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
      * @param resultSet ResultSet relative to select from table

@@ -1581,7 +1581,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.searchText = "";
     this.searchMenu = "";
     this.tableWidth = "1500px";
-    this.displayLength = 10;
+    this.displayLength = 15;
     this.bJQueryUI = true; //Enable jQuery UI ThemeRoller support (required as ThemeRoller requires some slightly different and additional mark-up from what DataTables has traditionally used
     this.bPaginate = true;
     this.sPaginationType = "full_numbers";

@@ -1261,7 +1261,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.prio : " + object.getPriority());
             LOG.debug("SQL.param.debug : " + object.getDebugFlag());
-            LOG.debug("SQL.param.exeid : " + object.getExeId());
             LOG.debug("SQL.param.comment : " + object.getComment());
             LOG.debug("SQL.param.state : " + object.getState());
             LOG.debug("SQL.param.ManualExecution : " + object.getManualExecution());

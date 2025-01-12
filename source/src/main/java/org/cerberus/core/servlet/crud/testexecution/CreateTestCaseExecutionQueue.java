@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -248,13 +249,25 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                                 executionQueueData.setUsrCreated(request.getRemoteUser());
                                 ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
                             } else {
-                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED).resolveDescription("ITEM", "Execution Queue").resolveDescription("OPERATION", "Read").resolveDescription("REASON", "Could not find previous queue entry " + id + ". Maybe it was purged."));
+                                ansItem.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
+                                        .resolveDescription("ITEM", "Execution Queue")
+                                        .resolveDescription("OPERATION", "Read")
+                                        .resolveDescription("REASON", "Could not find previous queue entry " + id + ". Maybe it was purged."));
                             }
                         }
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED, new HashMap<>());
+
+                            // Feed all queue entries already existing in tag contaxt.
+                            LOG.debug("We don't have the list of all already inserted entries. Let's get it from tag value : " + tag);
+                            List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readByTagByCriteria(tag, 0, 0, null, null, null));
+                            Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();
+                            for (TestCaseExecutionQueue tceQueue : queueFromTag) {
+                                queueAlreadyInsertedInTag.put(executionQueueService.getUniqKey(tceQueue.getTest(), tceQueue.getTestCase(), tceQueue.getCountry(), tceQueue.getEnvironment()), tceQueue);
+                            }
+
+                            ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED, queueAlreadyInsertedInTag);
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
                             insertedList.add(addedExecution);
                         }
