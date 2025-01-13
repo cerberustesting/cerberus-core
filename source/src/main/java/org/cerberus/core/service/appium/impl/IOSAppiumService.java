@@ -39,6 +39,7 @@ import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.ScreenOrientation;
+import org.openqa.selenium.interactions.Actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,7 +99,9 @@ public class IOSAppiumService extends AppiumService {
 
         // Then do the key press
         try {
-//            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode()); #FIXME SELENIUM
+            Actions actions = new Actions(session.getAppiumDriver());
+            actions.sendKeys(keyToPress.getCode()).perform(); //#FIXME SELENIUM #TEST // replacement method to do session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
+
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOG.warn("Unable to key press due to " + e.getMessage());
