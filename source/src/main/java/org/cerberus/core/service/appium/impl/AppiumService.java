@@ -565,9 +565,7 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent clearField(final Session session, final Identifier identifier) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
-                final Coordinates coordinates = getCoordinates(identifier);
                 click(session, identifier,0, 0);
             } else {
                 click(session, identifier, 0 ,0);
@@ -584,7 +582,6 @@ public abstract class AppiumService implements IAppiumService {
             LOG.warn(e.getMessage());
             return parseWebDriverException(e);
         }
-
     }
 
     private Integer getNumberOfElements(Session session, Identifier identifier) {
