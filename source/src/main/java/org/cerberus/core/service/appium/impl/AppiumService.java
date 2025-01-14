@@ -184,7 +184,7 @@ public abstract class AppiumService implements IAppiumService {
         }
     }
 
-    @Override
+    @Override //#FIXME SELENIUM #TEST (respect w3c)
     public MessageEvent click(final Session session, final Identifier identifier, Integer hOffset, Integer vOffset) {
         try {
             MessageEvent foundElementMsg;
