@@ -243,7 +243,7 @@ public class IOSAppiumService extends AppiumService {
         try {
 
             if (StringUtil.isEmptyOrNull(appPackage)) {
-                ((IOSDriver) session.getAppiumDriver()).launchApp(); //#FIXME SELENIUM #TEST (was cast to IOSDriver)
+                session.getAppiumDriver().executeScript("mobile: launchApp");//#FIXME SELENIUM #TEST
             } else {
                 ((IOSDriver) session.getAppiumDriver()).activateApp(appPackage);//#FIXME SELENIUM #TEST (was cast to IOSDriver)
             }
