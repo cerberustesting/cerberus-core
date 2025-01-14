@@ -500,11 +500,17 @@ public abstract class AppiumService implements IAppiumService {
         return false;
     }
 
-    private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
+    private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) { //#FIXME SELENIUM #TEST (I assume this method is working but the calling methods are crashing in previous versions already)
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence scrollSequence = new Sequence(finger, 0);
+        scrollSequence.addAction(finger.createPointerMove(
+                Duration.ofMillis(0), PointerInput.Origin.viewport(), fromX, fromY));
+        scrollSequence.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        scrollSequence.addAction(finger.createPointerMove(
+                Duration.ofMillis(1000), PointerInput.Origin.viewport(), toX, toY));
+        scrollSequence.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
-        TouchAction touchAction = new TouchAction((PerformsTouchActions) driver);
-        touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
-
+        driver.perform(List.of(scrollSequence));
     }
 
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
