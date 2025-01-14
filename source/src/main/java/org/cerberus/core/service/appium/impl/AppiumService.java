@@ -44,6 +44,7 @@ import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.json.JSONException;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -193,7 +194,7 @@ public abstract class AppiumService implements IAppiumService {
         }
     }
 
-    @Override
+    @Override //#FIXME SELENIUM #TEST (respect w3c)
     public MessageEvent click(final Session session, final Identifier identifier, Integer hOffset, Integer vOffset) {
         try {
             MessageEvent foundElementMsg;
@@ -520,13 +521,29 @@ public abstract class AppiumService implements IAppiumService {
     @Override
     public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
         try {
-            final TouchAction action = new TouchAction((PerformsTouchActions) session.getAppiumDriver());//#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence longPressSequence = new Sequence(finger, 0);
+            int elementX;
+            int elementY;
+
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+                elementX = coordinates.getX();
+                elementY = coordinates.getY();
             } else {
-                action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+                WebElement element = getElement(session, identifier, false, false);
+                Rectangle rect = element.getRect();
+                elementX = rect.getX() + rect.getWidth() / 2;
+                elementY = rect.getY() + rect.getHeight() / 2;
             }
+
+            longPressSequence.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), elementX, elementY));
+            longPressSequence.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            longPressSequence.addAction(new Pause(finger, Duration.ofMillis(timeDuration)));
+            longPressSequence.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            session.getAppiumDriver().perform(List.of(longPressSequence));
+
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LONG_CLICK).resolveDescription("ELEMENT", identifier.toString());
         } catch (NoSuchElementException e) {
             if (LOG.isDebugEnabled()) {
@@ -537,7 +554,6 @@ public abstract class AppiumService implements IAppiumService {
             LOG.warn(e.getMessage());
             return parseWebDriverException(e);
         }
-
     }
 
     @Override
