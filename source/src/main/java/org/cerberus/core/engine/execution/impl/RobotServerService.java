@@ -23,10 +23,13 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,6 +69,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -1209,30 +1214,22 @@ public class RobotServerService implements IRobotServerService {
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
             Session session = tCExecution.getSession();
-            RemoteWebDriver driver = (RemoteWebDriver) session.getDriver();
-            SessionId sessionId = driver.getSessionId();
+            String nodeUri;
 
-            // Create a HttpClient
             HttpClient client = HttpClientBuilder.create().build();
 
-            // Create a HttpGet request to the Selenium Grid's REST API
-            HttpGet request = new HttpGet("http://" + tCExecution.getRobotHost() + ":" + tCExecution.getRobotPort() + "/wd/hub/session/" + sessionId);
+            nodeUri = getIpOfNodeSelenium4(client, session);
 
-            // Execute the request
-            HttpResponse response = client.execute(request);
+            //If null, we are on selenium 3
+            if (StringUtil.isEmptyOrNull(nodeUri)) {
+                LOG.debug("nodeUri is null. Trying to get with Selenium 3.");
+                nodeUri = getIpOfNodeSelenium3(client, session);
+            }
 
-            // Parse the response
-            HttpEntity entity = response.getEntity();
-            String content = EntityUtils.toString(entity);
-            JSONObject json = new JSONObject(content);
-
-            // Get the IP of the node from the JSON response
-            String nodeIp = json.getJSONObject("value").getJSONObject("capabilities").getString("proxyId");
-
-            if (nodeIp != null) {
-                URL myURL = new URL(nodeIp);
+            if (nodeUri != null) {
+                URL myURL = new URL(nodeUri);
                 if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
-                    LOG.debug("Get remote node information : {} - {}", myURL.getHost(), myURL.getPort());
+                    LOG.debug("Obtained remote node information : {} - {}", myURL.getHost(), myURL.getPort());
                     tCExecution.setRobotHost(myURL.getHost());
                     tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
                     // Node information at session level is now overwrite with real values.
@@ -1240,11 +1237,56 @@ public class RobotServerService implements IRobotServerService {
                     tCExecution.getSession().setNodePort(String.valueOf(myURL.getPort()));
                 }
             } else {
-                LOG.debug("'proxyId' json data not available from remote Selenium Server request");
+                LOG.debug("'proxyId' (selenium 3) or 'nodeUri' (selenium 4) json data not available from remote Selenium Server request");
             }
-
         } catch (IOException | JSONException ex) {
             LOG.error(ex.toString(), ex);
+        }
+    }
+
+    private static String getIpOfNodeSelenium3(HttpClient client, Session session) {
+        String nodeUri = "";
+        try {
+            SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
+            HttpGet request = new HttpGet(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
+            LOG.debug("Calling Hub to get the node information. {}", request.getURI());
+            HttpResponse response = client.execute(request);
+            if (!response.getStatusLine().toString().contains("403")
+                    && !response.getEntity().getContentType().getValue().contains("text/html")) {
+                InputStream contents = response.getEntity().getContent();
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(contents, writer, "UTF8");
+                JSONObject object = new JSONObject(writer.toString());
+                if (object.has("proxyId")) {
+                    nodeUri = object.getString("proxyId");
+                } else {
+                    LOG.debug("'proxyId' json data not available from remote Selenium Server request : {}", writer);
+                    nodeUri = null;
+                }
+            }
+        } catch (IOException | JSONException ex) {
+            LOG.error(ex.toString(), ex);
+        }
+        return nodeUri;
+    }
+
+    private static String getIpOfNodeSelenium4(HttpClient client, Session session) throws IOException, JSONException {
+        LOG.debug("Trying to get node IP with Selenium 4.");
+        SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
+        HttpPost request = new HttpPost(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/graphql");
+        StringEntity params = new StringEntity(String.format("{\"query\":\"{ session (id: \\\"%s\\\") { id, uri, nodeId, nodeUri } } \"}", sessionId));
+        request.addHeader("Content-Type", "application/json");
+        request.setEntity(params);
+        LOG.debug("Calling Hub to get the node information. {}", request.getURI());
+        HttpResponse response = client.execute(request);
+        //If 404, we are on Selenium 3
+        if (response.getStatusLine().getStatusCode() == 404) {
+            return null;
+        } else {
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            JSONObject json = new JSONObject(content);
+            return json.getJSONObject("data").getJSONObject("session").getString("nodeUri");
         }
     }
 
