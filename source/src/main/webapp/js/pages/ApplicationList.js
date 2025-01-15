@@ -229,7 +229,6 @@ function aoColumnsFunc(tableId) {
         {
             "data": "bugTrackerConnector",
             "visible": false,
-            "like": true,
             "sName": "bugTrackerConnector",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugTrackerConnector")

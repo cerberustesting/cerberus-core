@@ -80,7 +80,6 @@ public class ParameterService implements IParameterService {
                     if (parameter == null || key.contains(parameter)) {
                         cacheEntry.remove(key);
                         LOG.debug("Purged Parameter " + key + " from cache entries.");
-
                     }
                 }
             } catch (ConcurrentModificationException e) {
@@ -135,14 +134,14 @@ public class ParameterService implements IParameterService {
             LOG.debug("Trying to retrieve parameter (default value) : " + key + " - []");
             myParameter = parameterDao.findParameterByKey("", key);
             if (myParameter != null) {
-                LOG.debug("Insert parameter to cache.");
+                LOG.debug("Insert parameter '" + cacheKey + "' to cache.");
                 myParameter.setCacheEntryCreation(currentTime);
                 cacheEntry.put(cacheKey, myParameter);
             }
             return myParameter;
         }
         if (myParameter != null) {
-            LOG.debug("Insert parameter to cache.");
+            LOG.debug("Insert parameter '" + cacheKey + "' to cache.");
             myParameter.setCacheEntryCreation(currentTime);
             cacheEntry.put(cacheKey, myParameter);
         }

@@ -576,12 +576,12 @@ function updatePage(data, steps) {
                                 success: function (bugCreated) {
                                     try {
                                         let bugCreatedJ = JSON.parse(bugCreated);
-                                        console.info(bugCreatedJ);
+//                                        console.info(bugCreatedJ);
                                         if (bugCreatedJ.bug) {
-                                            console.info(bugCreatedJ.bug);
-                                            console.info(getBugIdRow(bugCreatedJ.bug.id, bugCreatedJ.bug.desc, bugCreatedJ.bug.url, bugCreatedJ.bug.act, dataApp.contentTable.bugTrackerUrl));
+//                                            console.info(bugCreatedJ.bug);
                                             $("#bugs").append(getBugIdRow(bugCreatedJ.bug.id, bugCreatedJ.bug.desc, bugCreatedJ.bug.url, bugCreatedJ.bug.act, dataApp.contentTable.bugTrackerUrlF));
                                         }
+                                        showMessageMainPage(getAlertHttpType(bugCreatedJ.statusCode), bugCreatedJ.message, false, 30000);
                                     } catch (e) {
 
                                     }

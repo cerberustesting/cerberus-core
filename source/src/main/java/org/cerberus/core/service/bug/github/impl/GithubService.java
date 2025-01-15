@@ -171,52 +171,68 @@ public class GithubService implements IGithubService {
             String bearerAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_github_apitoken, "", "");
             post.setHeader("Authorization", "Bearer " + bearerAuth);
 
-            try {
+            if (StringUtil.isEmptyOrNull(bearerAuth)) {
+                newBugCreated.put("message", "Mandatory parameter value not defined for parameter : '" + Parameter.VALUE_cerberus_github_apitoken + "'");
+                newBugCreated.put("statusCode", 500);
+            } else {
 
-                LOG.debug("Calling {} with Authent {}", githubUrl, bearerAuth);
-                HttpResponse response = httpclient.execute(post);
+                try {
 
-                int rc = response.getStatusLine().getStatusCode();
-                if (rc >= 200 && rc < 300) {
-                    LOG.debug("Github Issue Creation request http return code : " + rc);
-                    String responseString = EntityUtils.toString(response.getEntity());
-                    LOG.debug("Response : {}", responseString);
-                    JSONObject githubResponse = new JSONObject(responseString);
-                    String newGithubBugURL = "";
-                    int githubIssueKey = 0;
-                    if (githubResponse.has("number")) {
-                        githubIssueKey = githubResponse.getInt("number");
-                        if (githubResponse.has("html_url")) {
-                            URL ghURL = new URL(githubResponse.getString("html_url"));
-                            newGithubBugURL = ghURL.toString();
+                    LOG.debug("Calling {} with Authent {}", githubUrl, bearerAuth);
+                    HttpResponse response = httpclient.execute(post);
+
+                    int rc = response.getStatusLine().getStatusCode();
+                    if (rc >= 200 && rc < 300) {
+                        LOG.debug("Github Issue Creation request http return code : " + rc);
+                        String responseString = EntityUtils.toString(response.getEntity());
+                        LOG.debug("Response : {}", responseString);
+                        JSONObject githubResponse = new JSONObject(responseString);
+                        String newGithubBugURL = "";
+                        int githubIssueKey = 0;
+                        if (githubResponse.has("number")) {
+                            githubIssueKey = githubResponse.getInt("number");
+                            if (githubResponse.has("html_url")) {
+                                URL ghURL = new URL(githubResponse.getString("html_url"));
+                                newGithubBugURL = ghURL.toString();
+                            }
+                            // Update here the test case with new issue.
+                            newBugCreated.put("bug", testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Execution " + execution.getId()));
+                            newBugCreated.put("message", "Bug '" + String.valueOf(githubIssueKey) + "' successfully created on Test case : '" + execution.getTest() + "' - '" + execution.getTestCase() + "' from execution : " + execution.getId());
+                            newBugCreated.put("statusCode", 200);
+                            LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
+                        } else {
+                            LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);
+                            String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". and no 'number' entry. " + responseString;
+                            logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
+                            LOG.warn("Message sent to " + githubUrl + " :");
+                            LOG.warn(githubRequest.toString(1));
+                            LOG.warn("Response : {}", responseString);
+                            newBugCreated.put("message", message);
+                            newBugCreated.put("statusCode", 500);
                         }
-                        // Update here the test case with new issue.
-                        newBugCreated = testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), String.valueOf(githubIssueKey), newGithubBugURL, "Created from Execution " + execution.getId());
-                        LOG.debug("Setting new GITHUB Issue '{}' to test case '{} - {}'", githubResponse.getInt("number"), execution.getTest() + execution.getTestCase());
                     } else {
-                        LOG.warn("Github Issue creation request http return code : {} is missing 'number' entry.", rc);
-                        String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". and no 'number' entry. " + responseString;
+                        LOG.warn("Github Issue creation request http return code : " + rc);
+                        String responseString = EntityUtils.toString(response.getEntity());
+                        String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". " + responseString;
                         logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
                         LOG.warn("Message sent to " + githubUrl + " :");
                         LOG.warn(githubRequest.toString(1));
                         LOG.warn("Response : {}", responseString);
+                        newBugCreated.put("message", message);
+                        newBugCreated.put("statusCode", 500);
                     }
-                } else {
-                    LOG.warn("Github Issue creation request http return code : " + rc);
-                    String responseString = EntityUtils.toString(response.getEntity());
-                    String message = "Github Issue creation request to '" + githubUrl + "' failed with http return code : " + rc + ". " + responseString;
-                    logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, message);
-                    LOG.warn("Message sent to " + githubUrl + " :");
-                    LOG.warn(githubRequest.toString(1));
-                    LOG.warn("Response : {}", responseString);
-                }
 
-            } catch (IOException e) {
-                LOG.warn("Github Issue creation request Exception : " + e, e);
-                logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, "GITHUB Issue creation request to '" + githubUrl + "' failed : " + e.toString() + ".");
+                } catch (IOException e) {
+                    LOG.warn("Github Issue creation request Exception : " + e, e);
+                    logEventService.createForPrivateCalls("GITHUB", "APICALL", LogEvent.STATUS_WARN, "GITHUB Issue creation request to '" + githubUrl + "' failed : " + e.toString() + ".");
+                    newBugCreated.put("message", "GITHUB Issue creation request Exception : " + e.toString());
+                    newBugCreated.put("statusCode", 500);
+                }
             }
 
         } catch (Exception ex) {
+            newBugCreated.put("message", ex.toString());
+            newBugCreated.put("statusCode", 500);
             LOG.error(ex, ex);
         }
         return newBugCreated;

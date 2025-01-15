@@ -58,6 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.core.service.bug.jira.IJiraGenerationService;
 import org.cerberus.core.service.bug.jira.IJiraService;
+import org.cerberus.core.util.StringUtil;
 
 /**
  *
@@ -166,60 +167,78 @@ public class JiraService implements IJiraService {
             post.setHeader("Content-type", "application/json");
             // TODO Make auth based on parameters
 
-            String basicAuth = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser, "", "") + ":" + parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken, "", "");
+            String user = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser, "", "");
+            String pass = parameterService.getParameterStringByKey(Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken, "", "");
+            String basicAuth = user + ":" + pass;
             String basicAuth64 = Base64.getEncoder().encodeToString(basicAuth.getBytes());
             post.setHeader("Authorization", "Basic " + basicAuth64);
 
-            try {
+            if ((StringUtil.isEmptyOrNull(user)) || (StringUtil.isEmptyOrNull(pass))) {
+                newBugCreated.put("message", "Mandatory parameter value not defined for either parameter : '" + Parameter.VALUE_cerberus_jiracloud_apiuser + "' or '" + Parameter.VALUE_cerberus_jiracloud_apiuser_apitoken + "'");
+                newBugCreated.put("statusCode", 500);
+            } else {
 
-                LOG.debug("Calling {} with Authent {}", jiraUrl, basicAuth64);
-                HttpResponse response = httpclient.execute(post);
+                try {
 
-                int rc = response.getStatusLine().getStatusCode();
-                if (rc >= 200 && rc < 300) {
-                    LOG.debug("Jira Issue Creation request http return code : " + rc);
-                    String responseString = EntityUtils.toString(response.getEntity());
-                    LOG.debug("Response : {}", responseString);
-                    JSONObject jiraResponse = new JSONObject(responseString);
-                    String newJiraBugURL = "";
-                    String jiraIssueKey = "";
-                    if (jiraResponse.has("key")) {
-                        jiraIssueKey = jiraResponse.getString("key");
-                        if (jiraResponse.has("self")) {
-                            URL jiURL = new URL(jiraResponse.getString("self"));
-                            newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost() + "/browse/" + jiraIssueKey;
+                    LOG.debug("Calling {} with Authent {}", jiraUrl, basicAuth64);
+                    HttpResponse response = httpclient.execute(post);
+
+                    int rc = response.getStatusLine().getStatusCode();
+                    if (rc >= 200 && rc < 300) {
+                        LOG.debug("Jira Issue Creation request http return code : " + rc);
+                        String responseString = EntityUtils.toString(response.getEntity());
+                        LOG.debug("Response : {}", responseString);
+                        JSONObject jiraResponse = new JSONObject(responseString);
+                        String newJiraBugURL = "";
+                        String jiraIssueKey = "";
+                        if (jiraResponse.has("key")) {
+                            jiraIssueKey = jiraResponse.getString("key");
+                            if (jiraResponse.has("self")) {
+                                URL jiURL = new URL(jiraResponse.getString("self"));
+                                newJiraBugURL = jiURL.getProtocol() + "://" + jiURL.getHost() + "/browse/" + jiraIssueKey;
+                            }
+                            // Update here the test case with new issue.
+                            newBugCreated.put("bug", testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Execution " + execution.getId()));
+                            newBugCreated.put("message", "Bug '" + jiraIssueKey + "' successfully created on Test case : '" + execution.getTest() + "' - '" + execution.getTestCase() + "' from execution : " + execution.getId());
+                            newBugCreated.put("statusCode", 200);
+                            LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
+                            execution.addExecutionLog(ExecutionLog.STATUS_INFO, "JIRA Bug created");
+
+                        } else {
+                            LOG.warn("JIRA Issue creation request http return code : {} is missing 'key' entry.", rc);
+                            String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString;
+                            logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
+                            execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failed");
+                            LOG.warn("Message sent to " + jiraUrl + " :");
+                            LOG.warn(jiraRequest.toString(1));
+                            LOG.warn("Response : {}", responseString);
+                            newBugCreated.put("message", message);
+                            newBugCreated.put("statusCode", 500);
                         }
-                        // Update here the test case with new issue.
-                        newBugCreated = testCaseService.addNewBugEntry(tc, execution.getTest(), execution.getTestCase(), jiraIssueKey, newJiraBugURL, "Created from Execution " + execution.getId());
-                        LOG.debug("Setting new JIRA Issue '{}' to test case '{} - {}'", jiraResponse.getString("key"), execution.getTest() + execution.getTestCase());
-                        execution.addExecutionLog(ExecutionLog.STATUS_INFO, "JIRA Bug created");
-
                     } else {
-                        LOG.warn("JIRA Issue creation request http return code : {} is missing 'key' entry.", rc);
-                        String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". and no 'key' entry. " + responseString;
+                        LOG.warn("JIRA Issue creation request http return code : " + rc);
+                        String responseString = EntityUtils.toString(response.getEntity());
+                        String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". " + responseString;
                         logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
-                        execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failed");
+                        execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failes");
                         LOG.warn("Message sent to " + jiraUrl + " :");
                         LOG.warn(jiraRequest.toString(1));
                         LOG.warn("Response : {}", responseString);
+                        newBugCreated.put("message", message);
+                        newBugCreated.put("statusCode", 500);
                     }
-                } else {
-                    LOG.warn("JIRA Issue creation request http return code : " + rc);
-                    String responseString = EntityUtils.toString(response.getEntity());
-                    String message = "JIRA Issue creation request to '" + jiraUrl + "' failed with http return code : " + rc + ". " + responseString;
-                    logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, message);
-                    execution.addExecutionLog(ExecutionLog.STATUS_WARN, "JIRA Bug creation failes");
-                    LOG.warn("Message sent to " + jiraUrl + " :");
-                    LOG.warn(jiraRequest.toString(1));
-                    LOG.warn("Response : {}", responseString);
-                }
 
-            } catch (IOException e) {
-                LOG.warn("JIRA Issue creation request Exception : " + e, e);
-                logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, "JIRA Issue creation request to '" + jiraUrl + "' failed : " + e.toString() + ".");
+                } catch (IOException e) {
+                    LOG.warn("JIRA Issue creation request Exception : " + e, e);
+                    logEventService.createForPrivateCalls("JIRA", "APICALL", LogEvent.STATUS_WARN, "JIRA Issue creation request to '" + jiraUrl + "' failed : " + e.toString() + ".");
+                    newBugCreated.put("message", "JIRA Issue creation request Exception : " + e.toString());
+                    newBugCreated.put("statusCode", 500);
+                }
             }
 
         } catch (Exception ex) {
+            newBugCreated.put("message", ex.toString());
+            newBugCreated.put("statusCode", 500);
             LOG.error(ex, ex);
         }
         return newBugCreated;

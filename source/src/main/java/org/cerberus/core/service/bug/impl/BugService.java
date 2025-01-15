@@ -74,6 +74,7 @@ public class BugService implements IBugService {
             if (!parameterService.getParameterBooleanByKey(Parameter.VALUE_cerberus_autobugcreation_enable, execution.getSystem(), false)) {
                 LOG.debug("Not creating bug due to parameter.");
                 newBugCreated.put("message", "Not creating bug due to parameter : " + Parameter.VALUE_cerberus_autobugcreation_enable);
+                newBugCreated.put("statusCode", 400);
                 return newBugCreated;
             }
             LOG.debug("Trying to create bug.");
@@ -97,16 +98,17 @@ public class BugService implements IBugService {
                         } catch (CerberusException ex) {
                             LOG.warn(ex, ex);
                             newBugCreated.put("message", ex.toString());
+                            newBugCreated.put("statusCode", 500);
                         }
 
                         if (currentAppli != null) {
                             switch (currentAppli.getBugTrackerConnector()) {
                                 case Application.BUGTRACKER_JIRA:
-                                    newBugCreated.put("bug", jiraService.createJiraIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2()));
+                                    newBugCreated = jiraService.createJiraIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
                                 case Application.BUGTRACKER_GITHUB:
-                                    newBugCreated.put("bug", githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2()));
+                                    newBugCreated = githubService.createGithubIssue(tc, execution, currentAppli.getBugTrackerParam1(), currentAppli.getBugTrackerParam2());
 
                                     break;
                                 default:
@@ -115,11 +117,13 @@ public class BugService implements IBugService {
                         }
                     } else {
                         LOG.debug("Not opening Issue because issue is already open");
-                        newBugCreated.put("message", "Not opening Issue because issue is already open");
+                        newBugCreated.put("message", "Issue not created because an issue is already open on the same testcase");
+                        newBugCreated.put("statusCode", 400);
                         execution.addExecutionLog(ExecutionLog.STATUS_INFO, "Bug creation - There is already an open bug reported.");
                     }
                 } catch (CerberusException ex) {
                     newBugCreated.put("message", ex.toString());
+                    newBugCreated.put("statusCode", 500);
                     LOG.warn(ex, ex);
                 }
             }

@@ -1109,7 +1109,16 @@ function getAlertType(code) {
     } else if (code === "WARNING") {
         return "warning";
     }
-
+    return "danger";
+}
+function getAlertHttpType(code) {
+    if ((code >= 200) && (code < 300)) {
+        return "success";
+    } else if ((code < 200)) {
+        return "warning";
+    } else if (code >= 300) {
+        return "danger";
+    }
     return "danger";
 }
 
@@ -1241,9 +1250,10 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
 
         // We feed the new content and disply the alert.
         $("#mainAlert").removeClass("alert-success");
+        $("#mainAlert").removeClass("alert-warning");
+        $("#mainAlert").removeClass("alert-danger");
         $("#mainAlert").removeClass("alert-error");
         $("#mainAlert").removeClass("alert-info");
-        $("#mainAlert").removeClass("alert-warning");
         $("#mainAlert").addClass("alert-" + type);
         $("#alertDescription").html(message);
         $("#mainAlert").slideDown(10);
