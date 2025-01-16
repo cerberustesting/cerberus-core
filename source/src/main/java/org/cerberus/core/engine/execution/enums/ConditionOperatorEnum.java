@@ -31,6 +31,7 @@ public enum ConditionOperatorEnum {
     CONDITIONOPERATOR_IFELEMENTNOTPRESENT("ifElementNotPresent", true),
     CONDITIONOPERATOR_IFELEMENTVISIBLE("ifElementVisible", true),
     CONDITIONOPERATOR_IFELEMENTNOTVISIBLE("ifElementNotVisible", true),
+    CONDITIONOPERATOR_IFELEMENTNOTPRESENTANDNOTVISIBLE("ifElementNotPresentAndNotVisible", true),
     CONDITIONOPERATOR_IFPROPERTYEXIST("ifPropertyExist", false),
     CONDITIONOPERATOR_IFPROPERTYNOTEXIST("ifPropertyNotExist", false),
     CONDITIONOPERATOR_IFNUMERICEQUAL("ifNumericEqual", false),

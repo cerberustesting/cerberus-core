@@ -527,6 +527,7 @@ public enum MessageEventEnum {
     CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT(1240, "NA", "Element %ELEMENT% present.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FALSE_IFELEMENTVISIBLE(1240, "NA", "Element %STRING1% not visible.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE(1240, "NA", "Element %STRING1% visible.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLEELEMENTPRESENT(1240, "NA", "Didn't evaluate if Element %STRING1% was visible or not because presence of element not in the expected status (default behavior expect element to be present in the DOM).", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FALSE_STRINGEQUAL(1210, "NA", "'%STR1%' is not equal to '%STR2%', %STRING3%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FALSE_STRINGDIFFERENT(1210, "NA", "'%STR1%' is not different from '%STR2%', %STRING3%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FALSE_STRINGGREATER(1210, "NA", "'%STR1%' is not greater than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

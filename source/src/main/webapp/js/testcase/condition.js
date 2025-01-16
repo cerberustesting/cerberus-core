@@ -76,6 +76,14 @@ function setPlaceholderCondition(conditionElement) {
         $(conditionElement).parents("div[class*='conditions']").find(".v4").hide();
     }
 
+    if (typeof placeHolders.field5 !== 'undefined') {
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal5Label']").parent().show();
+        $(conditionElement).parents("div[class*='conditions']").find("label[class='conditionVal5Label']").text(placeHolders.field5.label[user.language]);
+
+    } else {
+        $(conditionElement).parents("div[class*='conditions']").find(".v5").hide();
+    }
+
 }
 
 function displayOverrideOptionsModal(action, htmlElement) {
@@ -136,6 +144,10 @@ function displayOverrideOptionsModal(action, htmlElement) {
         if (conditionNewUIList[action.conditionOperator].level ==="control"){
             $("#actionconditionval4").val(action.conditionValue1+"-"+action.conditionValue2+"-"+action.conditionValue3);
         }
+    }
+    if (conditionNewUIList[action.conditionOperator].field5 != undefined) {
+        let checked = action.conditionValue2=="false"?false:true;
+        $("#actionconditionval5").prop("checked", checked);
     }
 
 
@@ -271,6 +283,10 @@ function displayOverrideOptionsModal(action, htmlElement) {
             action.conditionValue1 = $("#actionconditionval4 option:selected").attr("stepId");
             action.conditionValue2 = $("#actionconditionval4 option:selected").attr("actionId") === undefined ? "":$("#actionconditionval4 option:selected").attr("actionId");
             action.conditionValue3 = $("#actionconditionval4 option:selected").attr("controlId")=== undefined ? "":$("#actionconditionval4 option:selected").attr("controlId");
+        }
+        console.log(conditionNewUIList[action.conditionOperator].field5);
+        if (conditionNewUIList[action.conditionOperator].field5 != undefined) {
+            action.conditionValue2 = $("#actionconditionval5").is(':checked').toString();
         }
 
         let newOpts = [];
