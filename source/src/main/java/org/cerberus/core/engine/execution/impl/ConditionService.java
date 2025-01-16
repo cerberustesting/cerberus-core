@@ -274,7 +274,6 @@ public class ConditionService implements IConditionService {
             case CONDITIONOPERATOR_IFELEMENTPRESENT:
             case CONDITIONOPERATOR_IFELEMENTNOTPRESENT:
             case CONDITIONOPERATOR_IFELEMENTVISIBLE:
-            case CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
                 return "";
             default:
                 return value2;
