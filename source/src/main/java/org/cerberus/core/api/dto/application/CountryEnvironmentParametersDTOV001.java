@@ -60,7 +60,7 @@ public class CountryEnvironmentParametersDTOV001 {
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 4)
     @JsonProperty("isActive")
-    private boolean isActive;
+    private Boolean isActive;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 5)
@@ -104,7 +104,7 @@ public class CountryEnvironmentParametersDTOV001 {
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 15)
-    private int poolSize;
+    private Integer poolSize;
 
     @JsonView(value = {View.Public.GET.class, View.Public.PATCH.class, View.Public.PUT.class, View.Public.POST.class})
     @ApiModelProperty(position = 16)

@@ -23,6 +23,7 @@ import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.dto.application.CountryEnvironmentParametersDTOV001;
 import org.cerberus.core.api.exceptions.EntityNotFoundException;
 import org.cerberus.core.api.exceptions.InvalidRequestException;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
@@ -57,7 +58,7 @@ public class ApplicationEnvironmentApiService {
     }
 
     public CountryEnvironmentParameters updateApplicationEnvironmentPATCH(String system, String applicationId, String countryId, String environmentId,
-            CountryEnvironmentParameters newApplicationEnvironment, Principal principal, String login) throws CerberusException {
+            CountryEnvironmentParametersDTOV001 newApplicationEnvironmentFromSource, Principal principal, String login) throws CerberusException {
 
         AnswerItem<CountryEnvironmentParameters> cep = this.applicationEnvironmentService.readByKey(system, countryId, environmentId, applicationId);
         if (cep.getItem() == null) {
@@ -65,6 +66,7 @@ public class ApplicationEnvironmentApiService {
             throw new EntityNotFoundException(CountryEnvironmentParameters.class, "system", system, "application", applicationId, "country", countryId, "environment", environmentId);
         }
         LOG.debug("Exist.");
+        CountryEnvironmentParameters newApplicationEnvironment = cep.getItem();
 
         newApplicationEnvironment.setUsrModif(login != null ? login : "");
 
@@ -73,20 +75,22 @@ public class ApplicationEnvironmentApiService {
         newApplicationEnvironment.setEnvironment(environmentId);
         newApplicationEnvironment.setApplication(applicationId);
 
-        newApplicationEnvironment.setVar1(newApplicationEnvironment.getVar1() == null ? cep.getItem().getVar1() : newApplicationEnvironment.getVar1());
-        newApplicationEnvironment.setVar2(newApplicationEnvironment.getVar2() == null ? cep.getItem().getVar2() : newApplicationEnvironment.getVar2());
-        newApplicationEnvironment.setVar3(newApplicationEnvironment.getVar3() == null ? cep.getItem().getVar3() : newApplicationEnvironment.getVar3());
-        newApplicationEnvironment.setVar4(newApplicationEnvironment.getVar4() == null ? cep.getItem().getVar4() : newApplicationEnvironment.getVar4());
+        newApplicationEnvironment.setVar1(newApplicationEnvironmentFromSource.getVar1() == null ? cep.getItem().getVar1() : newApplicationEnvironmentFromSource.getVar1());
+        newApplicationEnvironment.setVar2(newApplicationEnvironmentFromSource.getVar2() == null ? cep.getItem().getVar2() : newApplicationEnvironmentFromSource.getVar2());
+        newApplicationEnvironment.setVar3(newApplicationEnvironmentFromSource.getVar3() == null ? cep.getItem().getVar3() : newApplicationEnvironmentFromSource.getVar3());
+        newApplicationEnvironment.setVar4(newApplicationEnvironmentFromSource.getVar4() == null ? cep.getItem().getVar4() : newApplicationEnvironmentFromSource.getVar4());
 
-        newApplicationEnvironment.setSecret1(newApplicationEnvironment.getSecret1()== null ? cep.getItem().getSecret1(): newApplicationEnvironment.getSecret1());
-        newApplicationEnvironment.setSecret2(newApplicationEnvironment.getSecret2()== null ? cep.getItem().getSecret2(): newApplicationEnvironment.getSecret2());
-        
-        newApplicationEnvironment.setIp(newApplicationEnvironment.getIp() == null ? cep.getItem().getIp() : newApplicationEnvironment.getIp());
-        newApplicationEnvironment.setDomain(newApplicationEnvironment.getDomain() == null ? cep.getItem().getDomain() : newApplicationEnvironment.getDomain());
-        newApplicationEnvironment.setUrl(newApplicationEnvironment.getUrl() == null ? cep.getItem().getUrl() : newApplicationEnvironment.getUrl());
-        newApplicationEnvironment.setUrlLogin(newApplicationEnvironment.getUrlLogin() == null ? cep.getItem().getUrlLogin() : newApplicationEnvironment.getUrlLogin());
+        newApplicationEnvironment.setSecret1(newApplicationEnvironmentFromSource.getSecret1() == null ? cep.getItem().getSecret1() : newApplicationEnvironmentFromSource.getSecret1());
+        newApplicationEnvironment.setSecret2(newApplicationEnvironmentFromSource.getSecret2() == null ? cep.getItem().getSecret2() : newApplicationEnvironmentFromSource.getSecret2());
 
-        newApplicationEnvironment.setPoolSize(0 == newApplicationEnvironment.getPoolSize() ? cep.getItem().getPoolSize() : newApplicationEnvironment.getPoolSize());
+        newApplicationEnvironment.setIp(newApplicationEnvironmentFromSource.getEndPoint()== null ? cep.getItem().getIp() : newApplicationEnvironmentFromSource.getEndPoint());
+        newApplicationEnvironment.setDomain(newApplicationEnvironmentFromSource.getDomain() == null ? cep.getItem().getDomain() : newApplicationEnvironmentFromSource.getDomain());
+        newApplicationEnvironment.setUrl(newApplicationEnvironmentFromSource.getContextRoot()== null ? cep.getItem().getUrl() : newApplicationEnvironmentFromSource.getContextRoot());
+        newApplicationEnvironment.setUrlLogin(newApplicationEnvironmentFromSource.getUrlLogin() == null ? cep.getItem().getUrlLogin() : newApplicationEnvironmentFromSource.getUrlLogin());
+
+        newApplicationEnvironment.setPoolSize(null == newApplicationEnvironmentFromSource.getPoolSize() ? cep.getItem().getPoolSize() : newApplicationEnvironmentFromSource.getPoolSize());
+
+        newApplicationEnvironment.setActive(null == newApplicationEnvironmentFromSource.getIsActive() ? cep.getItem().isActive() : newApplicationEnvironmentFromSource.getIsActive());
 
         applicationEnvironmentService.update(newApplicationEnvironment);
 
@@ -104,7 +108,7 @@ public class ApplicationEnvironmentApiService {
         LOG.debug("Exist.");
 
         newApplicationEnvironment.setUsrModif(login != null ? login : "");
-        
+
         newApplicationEnvironment.setSystem(system);
         newApplicationEnvironment.setCountry(countryId);
         newApplicationEnvironment.setEnvironment(environmentId);

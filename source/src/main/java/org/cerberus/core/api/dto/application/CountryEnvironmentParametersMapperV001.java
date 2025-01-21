@@ -19,6 +19,10 @@
  */
 package org.cerberus.core.api.dto.application;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.core.api.mappers.BooleanMapper;
+import org.cerberus.core.api.mappers.IntegerMapper;
 import org.cerberus.core.api.mappers.TimestampMapper;
 import org.cerberus.core.crud.entity.CountryEnvironmentParameters;
 import org.mapstruct.Mapper;
@@ -26,11 +30,15 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring",
         uses = {
-            TimestampMapper.class
+            TimestampMapper.class,
+            BooleanMapper.class,
+            IntegerMapper.class
         }
 )
 
 public interface CountryEnvironmentParametersMapperV001 {
+
+    static final Logger LOG = LogManager.getLogger(CountryEnvironmentParametersMapperV001.class);
 
     @Mapping(source = "ip", target = "endPoint")
     @Mapping(source = "url", target = "contextRoot")
@@ -42,7 +50,7 @@ public interface CountryEnvironmentParametersMapperV001 {
      * @param countryEnvironmentParametersDTO
      * @return
      */
-    @Mapping(source = "active", target = "isActive")
+    @Mapping(source = "isActive", target = "isActive")
     @Mapping(source = "endPoint", target = "ip")
     @Mapping(source = "contextRoot", target = "url")
     CountryEnvironmentParameters toEntity(CountryEnvironmentParametersDTOV001 countryEnvironmentParametersDTO);

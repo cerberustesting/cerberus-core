@@ -24,32 +24,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mapstruct.Mapper;
 
-import static org.cerberus.core.util.StringUtil.parseBoolean;
 
 /**
  * @author lucashimpens
  */
 @Mapper(componentModel = "spring")
-public interface BooleanMapper {
+public interface IntegerMapper {
 
-    static final Logger LOG = LogManager.getLogger(BooleanMapper.class);
+    static final Logger LOG = LogManager.getLogger(IntegerMapper.class);
 
-    public default boolean toBoolean(String text) {
-        return parseBoolean(text);
-    }
-
-    default boolean toBoolean(Optional<Boolean> value) {
-        boolean products = true;
-        LOG.debug("mapping from Optional " + value + " to boolean");
+     default int toInteger(Optional<Integer> value) {
+        LOG.debug("mapping from Optional " + value + " to int");
 
         //add your custom mapping implementation
-        return products;
+        return value.get();
     }
 
-    default Optional<Boolean> toOptionalBoolean(boolean value) {
-        Optional<Boolean> products = null;
-        LOG.debug("mapping from boolean : " + value + " to Optional ");
+    default Optional<Integer> toOptionalInteger(int value) {
+        LOG.debug("mapping from int : " + value + " to Optional ");
         //add your custom mapping implementation
-        return products;
+        return Optional.of(value);
     }
 }

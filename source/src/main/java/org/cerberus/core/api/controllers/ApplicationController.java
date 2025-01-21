@@ -43,6 +43,7 @@ import org.cerberus.core.crud.entity.Application;
 import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.exception.CerberusException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,10 +87,10 @@ public class ApplicationController {
             @RequestHeader(name = API_KEY, required = false) String apiKey,
             HttpServletRequest request,
             Principal principal) throws CerberusException {
-        
+
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
-        
+
         return ResponseWrapper.wrap(
                 this.applicationMapper.toDTO(
                         this.applicationApiService.readByKeyWithDependency(application)
@@ -112,7 +113,7 @@ public class ApplicationController {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-GET", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
-        
+
         // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(application);
         if (applicationObj == null) {
@@ -142,7 +143,7 @@ public class ApplicationController {
 
         String login = this.apiAuthenticationService.authenticateLogin(principal, apiKey);
         logEventService.createForPublicCalls("/public/applications", "CALL-PUT", LogEvent.STATUS_INFO, String.format("API /applications called with URL: %s", request.getRequestURL()), request, login);
-        
+
         // We first get the application in order to retreive the system.
         Application applicationObj = this.applicationApiService.readByKey(applicationId);
         if (applicationObj == null) {
@@ -195,7 +196,7 @@ public class ApplicationController {
                                 applicationId,
                                 countryId,
                                 environmentId,
-                                this.applicationEnvironmentMapper.toEntity(applicationEnvironmentToUpdate),
+                                applicationEnvironmentToUpdate,
                                 principal,
                                 login
                         ))
