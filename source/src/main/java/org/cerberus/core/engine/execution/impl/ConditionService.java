@@ -131,7 +131,7 @@ public class ConditionService implements IConditionService {
                 break;
 
             case CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
-                ans = evaluateCondition_ifElementNotVisible(conditionToEvaluate.getCondition(), conditionValue1, execution);
+                ans = evaluateCondition_ifElementNotVisible(conditionToEvaluate.getCondition(), conditionValue1, conditionValue2, execution);
                 mes = ans.getResultMessage();
                 break;
 
@@ -274,7 +274,6 @@ public class ConditionService implements IConditionService {
             case CONDITIONOPERATOR_IFELEMENTPRESENT:
             case CONDITIONOPERATOR_IFELEMENTNOTPRESENT:
             case CONDITIONOPERATOR_IFELEMENTVISIBLE:
-            case CONDITIONOPERATOR_IFELEMENTNOTVISIBLE:
                 return "";
             default:
                 return value2;
@@ -783,7 +782,7 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
-    private AnswerItem<Boolean> evaluateCondition_ifElementNotVisible(String conditionOperator, String conditionValue1, TestCaseExecution tCExecution) {
+    private AnswerItem<Boolean> evaluateCondition_ifElementNotVisible(String conditionOperator, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution) {
         LOG.debug("Checking if Element is Not Visible");
         AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent mes;
@@ -800,7 +799,9 @@ public class ConditionService implements IConditionService {
 
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
-                if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                boolean elementMustBePresent = ParameterParserUtil.parseBooleanParam(conditionValue2, true);
+
+                if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)==elementMustBePresent) {
                     if (this.webdriverService.isElementNotVisible(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTNOTVISIBLE);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
@@ -811,7 +812,7 @@ public class ConditionService implements IConditionService {
 
                     }
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLE);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTVISIBLEELEMENTPRESENT);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", conditionValue1));
 
                 }
