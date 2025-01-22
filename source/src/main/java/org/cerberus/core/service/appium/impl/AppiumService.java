@@ -450,6 +450,8 @@ public abstract class AppiumService implements IAppiumService {
 
                 //Element found, perform another scroll to put the element at the middle of the screen at the defined offset.
                 int distanceFromMiddleOfTheScreen = (driver.manage().window().getSize().height / 2) - driver.findElement(element).getLocation().getY();
+                testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Coordinate : (" + driver.findElement(element).getLocation().getX() + ";" + driver.findElement(element).getLocation().getY() + "). Distance from the middle of the screen ("+distanceFromMiddleOfTheScreen+"px)");
+
 
                 if (distanceFromMiddleOfTheScreen > 0) {
                     scroll(driver, pressX, topY, pressX, topY + distanceFromMiddleOfTheScreen + vOffset);
