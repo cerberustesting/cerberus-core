@@ -466,6 +466,10 @@ Will swipe from the point (100;100) to the point (100;200)
 |=== 
 Scroll to either an element or a text.
 
+For *[green]#GUI#* applications, screen will be scrolled until the targeted element is at the top of the screen (shifted according to the defined offset).
+
+For *[green]#APK#* and *[green]#IPA#* applications, screen will be scrolled until the targeted element is at the middle of the screen (shifted according to the defined offset).
+
 *[blue]#Value1#* : Identifier of the element or text where the scroll will move the screen to. Has the form of : identifier=html_reference.
 
 .Scroll to an xpath element

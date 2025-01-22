@@ -25,6 +25,7 @@
 * [ENGINE] [GUI] Added actions lockDevice, unlockDevice and rotateDevice for iOS and Android application
 * [ENGINE] [GUI] when interact with an element, Cerberus report the number of elements found in order to better understand why an action could fail to provide the correct result
 * [ENGINE] [GUI] switchToWindow action now have a better and detail message will all possible context to switch to.
+* [ENGINE] [GUI] scrollToElement action now finish when element is at the middle of the screen for iOS and Android application. It's also possible to define an offset.
 * [GUI] [GENERAL] Save datatable layout on pages no longer save the current page position.
 * [GUI] [GENERAL] Optimization of datatable loading time on execution list and queue list.
 * [GUI] [GENERAL] new refresh button on pages with datatable on order to refresh the data content without a full reload of the page.
