@@ -445,6 +445,7 @@ public abstract class AppiumService implements IAppiumService {
         int i = 0;
 
         do {
+            i++;
             boolean isPresent = driver.findElements(element).size() > 0;
             if (isPresent && driver.findElement(element).isDisplayed()) {
 
@@ -454,11 +455,13 @@ public abstract class AppiumService implements IAppiumService {
 
 
                 if (distanceFromMiddleOfTheScreen > 0) {
-                    scroll(driver, pressX, topY, pressX, topY + distanceFromMiddleOfTheScreen + vOffset);
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+topY+") to coord("+pressX+";"+topY + distanceFromMiddleOfTheScreen + vOffset+")");
+                    int targetCoordinateY = topY + distanceFromMiddleOfTheScreen + vOffset;
+                    scroll(driver, pressX, topY, pressX, targetCoordinateY);
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+topY+") to coord("+pressX+";"+targetCoordinateY+")");
                 } else if (distanceFromMiddleOfTheScreen < 0 ){
-                    scroll(driver, pressX, bottomY, pressX, bottomY + distanceFromMiddleOfTheScreen + vOffset);
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+bottomY + distanceFromMiddleOfTheScreen + vOffset+")");
+                    int targetCoordinateY = bottomY + distanceFromMiddleOfTheScreen + vOffset;
+                    scroll(driver, pressX, bottomY, pressX, targetCoordinateY);
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+targetCoordinateY+")");
                 }
 
                 return true;
@@ -466,7 +469,6 @@ public abstract class AppiumService implements IAppiumService {
                 scroll(driver, pressX, bottomY, pressX, topY);
                 testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element "+element+" not displayed. Scrolled "+i+"/"+numberOfScrollDown+" from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+topY+")");
             }
-            i++;
 
         } while (i < numberOfScrollDown);
 
