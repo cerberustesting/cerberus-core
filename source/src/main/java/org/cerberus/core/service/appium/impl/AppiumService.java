@@ -447,14 +447,16 @@ public abstract class AppiumService implements IAppiumService {
         do {
             boolean isPresent = driver.findElements(element).size() > 0;
             if (isPresent && driver.findElement(element).isDisplayed()) {
-                //Element found, perform another scroll to offset from middle of screen
-                int pressOffsetX = driver.manage().window().getSize().width / 2;
-                int pressOffsetY = driver.manage().window().getSize().height / 2;
-                if (hOffset!=0 && vOffset!=0){
-                    scroll(driver, pressOffsetX, pressOffsetY, pressOffsetX - hOffset, pressOffsetY - vOffset);
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element "+element+" displayed. Applied the offset ("+hOffset+";"+vOffset+") scrolling from the coord("+pressOffsetX+";"+pressOffsetY+")");
-                } else {
-                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element "+element+" displayed. No offset defined.");
+
+                //Element found, perform another scroll to put the element at the middle of the screen at the defined offset.
+                int distanceFromMiddleOfTheScreen = (driver.manage().window().getSize().height / 2) - driver.findElement(element).getLocation().getY();
+
+                if (distanceFromMiddleOfTheScreen > 0) {
+                    scroll(driver, pressX, topY, pressX, topY + distanceFromMiddleOfTheScreen + vOffset);
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+topY+") to coord("+pressX+";"+topY + distanceFromMiddleOfTheScreen + vOffset+")");
+                } else if (distanceFromMiddleOfTheScreen < 0 ){
+                    scroll(driver, pressX, bottomY, pressX, bottomY + distanceFromMiddleOfTheScreen + vOffset);
+                    testCaseExecution.addExecutionLog(ExecutionLog.STATUS_INFO, "[Action:ScrollTo] : Element " + element + " displayed. Perform another scroll to get it at the middle of the screen after applied the offset (" + hOffset + ";" + vOffset + ") scrolling from coord("+pressX+";"+bottomY+") to coord("+pressX+";"+bottomY + distanceFromMiddleOfTheScreen + vOffset+")");
                 }
 
                 return true;
