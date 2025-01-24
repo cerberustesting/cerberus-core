@@ -159,11 +159,11 @@ public class DatabaseSpring {
 
             } catch (NamingException | SQLException ex1) {
 
-                LOG.warn("failed connection with 'java:/comp/env/jdbc/" + connection + "'", ex.toString());
+                LOG.warn("failed connection with 'java:/comp/env/jdbc/" + connection + "'", ex1.toString());
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL);
                 msg
                         .resolveDescription("JDBC", "java:/comp/env/jdbc/" + connection)
-                        .resolveDescription("ERROR", ex.toString());
+                        .resolveDescription("ERROR", ex1.toString());
                 throw new CerberusEventException(msg);
             }
         }
