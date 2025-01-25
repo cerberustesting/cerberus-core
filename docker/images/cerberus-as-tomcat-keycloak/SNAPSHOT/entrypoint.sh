@@ -19,7 +19,7 @@
 
 # Cerberus Tomcat configuration (with Keycloack acticated)
 
-export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD -Dorg.cerberus.keycloak.realm=${KEYCLOACK_REALM} -Dorg.cerberus.keycloak.client=${KEYCLOACK_CLIENT} -Dorg.cerberus.keycloak.url=${KEYCLOACK_URL}"
+export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=${KEYCLOAK_REALM} -Dorg.cerberus.keycloak.client=${KEYCLOAK_CLIENT} -Dorg.cerberus.keycloak.url=${KEYCLOAK_URL}"
 
 /usr/local/tomcat/bin/catalina.sh start
 
