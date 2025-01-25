@@ -583,14 +583,12 @@ function buildTagGraphs(data) {
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? 3
                         : 1;
             },
             pointBorderColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? '#00d27a'
                         : get_Color_fromindex(i);
             },
@@ -616,14 +614,12 @@ function buildTagGraphs(data) {
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? 3
                         : 1;
             },
             pointBorderColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? '#00d27a'
                         : get_Color_fromindex(i);
             },
@@ -633,10 +629,8 @@ function buildTagGraphs(data) {
                 return getExeStatusRowColor(value.ciResult);
             },
             pointRadius: function (context) {
-//                                console.info(context);
                 var index = context.dataIndex;
                 var value = context.dataset.data[index];
-//                console.info(value.comment);
 
                 return value.comment === '' ? 4 : 8;
             },
@@ -652,14 +646,12 @@ function buildTagGraphs(data) {
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? 3
                         : 1;
             },
             pointBorderColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? '#00d27a'
                         : get_Color_fromindex(i);
             },
@@ -686,14 +678,12 @@ function buildTagGraphs(data) {
             pointBorderWidth: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? 3
                         : 1;
             },
             pointBorderColor: function (d) {
                 var index = d.dataIndex;
                 var value = d.dataset.data[index];
-                console.info(value);
                 return value.falseNegative === true ? '#00d27a'
                         : get_Color_fromindex(i);
             },
@@ -722,10 +712,8 @@ function buildTagGraphs(data) {
                 return getExeStatusRowColor(value.ciResult);
             },
             pointRadius: function (context) {
-//                                console.info(context);
                 var index = context.dataIndex;
                 var value = context.dataset.data[index];
-//                console.info(value.comment);
 
                 return value.comment === '' ? 4 : 8;
             },

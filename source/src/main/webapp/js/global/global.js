@@ -2656,7 +2656,7 @@ function setTimeRange(id) {
         fromD.setDate(toD.getDate() - 1);
     } else if (id === 7) { // This Month
         fromD.setDate(1);
-    } else if (id === 8) { // Last Calendar Month
+    } else if (id === 8) { // Last Calendar Month       
         fromD.setMonth(fromD.getMonth() - 1);
         fromD.setDate(1);
         toD.setDate(1);

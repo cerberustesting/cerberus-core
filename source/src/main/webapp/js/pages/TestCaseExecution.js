@@ -566,7 +566,6 @@ function updatePage(data, steps) {
                         link = $("<button class='btn btn-default btn-block marginTop5'>").attr("id", "addBugFromExternal").text(" Open a new bug using " + dataApp.contentTable.bugTrackerConnector + " connector").prepend($(" <span class='glyphicon glyphicon-cloud'></span>"));
                         $("#bugButtons").append(link);
                         $("#addBugFromExternal").click(function () {
-                            console.info("click");
                             $('#addBugFromExternal').attr('disabled', 'disabled');
 
                             $.ajax({
@@ -1907,7 +1906,6 @@ function drawProperty(property, table, isSecondary) {
     // Starting to reduce the size of the row by the length of elements.
     $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length)).addClass("col-sm-" + (9 - property.fileList.length));
     // Adding all media attached to action execution.
-    console.info("call2 " + isTheExecutionManual);
     addFileLink(property.fileList, $(row).find("#contentRow"), $(row).find("#contentRow"), isTheExecutionManual);
 
     htmlElement.prepend(button);
@@ -2769,7 +2767,6 @@ Action.prototype.draw = function (idMotherStep, id) {
     fullActionElement.append(htmlElement);
     fullActionElement.append(content);
     this.parentStep.stepActionContainer.append(fullActionElement);
-    console.info("call3 " + isTheExecutionManual);
     addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
@@ -3354,7 +3351,6 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     // Starting to reduce the size of the row by the length of elements.
     //$(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length * 2)).addClass("col-sm-" + (12 - this.fileList.length * 2));
     // Adding all media attached to control execution.
-    console.info("call4 " + isTheExecutionManual);
     addFileLink(this.fileList, media, media, isTheExecutionManual, idMotherStep);
 };
 
