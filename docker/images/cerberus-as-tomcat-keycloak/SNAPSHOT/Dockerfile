@@ -16,7 +16,7 @@ ENV DATABASE_USER cerberus
 ENV DATABASE_PASSWORD toto
 
 ARG CERBERUS_NAME=cerberus-core
-ARG CERBERUS_VERSION=4.18
+ARG CERBERUS_VERSION=SNAPSHOT
 ARG CERBERUS_PACKAGE_NAME=${CERBERUS_NAME}-${CERBERUS_VERSION}
 
 ARG MYSQL_JAVA_CONNECTOR_VERSION=9.0.0
@@ -53,13 +53,11 @@ RUN wget -P /tmp/ https://github.com/keycloak/keycloak/releases/download/${KEYCL
 
 # Download & install Cerberus Application
 RUN echo "Download & install Cerberus Application" && \
-    wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/cerberus-core-${CERBERUS_VERSION}.zip && \
-    unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip && \
+    wget -P /tmp/ https://vm.cerberus-testing.org/delivery/${CERBERUS_PACKAGE_NAME}.war && \
     rm -rf /usr/local/tomcat/webapps/* && \
-    cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war && \
+    cp /tmp/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war && \
     echo "Clean temp directory" && \
     rm /tmp/* -rf
-#COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
 # Only for debug purpose
 #RUN ls -al /usr/local/tomcat/webapps/
