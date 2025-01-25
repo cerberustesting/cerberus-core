@@ -11,6 +11,7 @@ Hereafter list of available tags:
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
 latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/latest/Dockerfile)
+4.19   | Use the 4.19 Cerberus version     | [4.19/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/4.19/Dockerfile)
 4.18   | Use the 4.18 Cerberus version     | [4.18/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/4.18/Dockerfile)
 4.17   | Use the 4.17 Cerberus version     | [4.17/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/4.17/Dockerfile)
 4.16   | Use the 4.16 Cerberus version     | [4.16/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/4.16/Dockerfile)
