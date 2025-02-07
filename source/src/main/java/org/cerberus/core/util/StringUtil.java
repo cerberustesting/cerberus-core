@@ -128,13 +128,18 @@ public final class StringUtil {
     }
 
     /**
-     * This method just reformat a string in order to increase the change it can
+     * This method just reformat a string in order to increase the chance it can
      * get converted to float. For ex, it replace , with .
      */
     public static String prepareToNumeric(String str) {
-        String result = str.replaceAll("[^0-9.,]", "");
+        String result = str.replaceAll("[^0-9.,-]", "");
         if (result.contains(",")) {
             result = result.replace(",", ".");
+        }
+        if (result.startsWith("-")) {
+            result = "-" + result.replace("-", "");
+        } else {
+            result = result.replace("-", "");
         }
         int i = 0;
         while (nbChars(result, ".") > 1 && i++ < 100) {
