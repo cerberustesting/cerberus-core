@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.ConnectException;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +46,6 @@ import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.IParameterService;
-import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.Identifier;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -259,7 +259,8 @@ public class SikuliService implements ISikuliService {
             if (connection == null || connection.getResponseCode() != 200) {
                 return false;
             }
-
+        } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            return false;
         } catch (IOException ex) {
             LOG.warn(ex);
             return false;
@@ -298,10 +299,11 @@ public class SikuliService implements ISikuliService {
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                LOG.info("Responce code different from 200 when calling '" + urlToConnect + "'. Disable Cerberus extension features.");
+                LOG.warn("Response code different from 200 when calling '" + urlToConnect + "'");
                 return false;
             }
-
+        } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            return false;
         } catch (IOException ex) {
             LOG.warn("Exception catch when calling '" + urlToConnect + "' " + ex, ex);
             return false;
