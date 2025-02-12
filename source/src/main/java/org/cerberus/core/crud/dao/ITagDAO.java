@@ -152,6 +152,14 @@ public interface ITagDAO {
      * @param object
      * @return
      */
+    Answer appendComment(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param object
+     * @return
+     */
     Answer updateXRayTestExecution(String tag, Tag object);
 
     /**

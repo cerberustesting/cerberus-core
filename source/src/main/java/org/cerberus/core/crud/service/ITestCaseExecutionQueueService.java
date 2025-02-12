@@ -186,7 +186,9 @@ public interface ITestCaseExecutionQueueService {
      * existing dependencies from queue entry exeQueue.
      *
      * @param object the {@link queue entry} to Create
-     * @param withNewDep when true, queue will be inserted with released even if past execution could be released. when false, dependencies from queue inserted will be released incase a past execution exist.
+     * @param withNewDep when true, queue will be inserted with released even if
+     * past execution could be released. when false, dependencies from queue
+     * inserted will be released incase a past execution exist.
      * @param exeQueue original queue entry id from which the duplication is
      * done.
      * @param targetState
@@ -338,6 +340,30 @@ public interface ITestCaseExecutionQueueService {
      */
     void cancelRunningOldQueueEntries();
 
+    /**
+     * Cancel all queue entries that were not already triggered.
+     * @param tag
+     * @param usrModif
+     * @return number of queue entries that moved to cancel.
+     */
+    AnswerItem<Integer> cancelPendingQueueEntries(String tag, String usrModif);
+
+    /**
+     * Pause all queue entries that were not already triggered.
+     * @param tag
+     * @param usrModif
+     * @return number of queue entries that moved to cancel.
+     */
+    AnswerItem<Integer> pausePendingQueueEntries(String tag, String usrModif);
+
+    /**
+     * Pause all queue entries that were not already triggered.
+     * @param tag
+     * @param usrModif
+     * @return number of queue entries that moved to cancel.
+     */
+    AnswerItem<Integer> resumePausedQueueEntries(String tag, String usrModif);
+    
     /**
      * @param answerItem
      * @return

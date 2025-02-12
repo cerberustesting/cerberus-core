@@ -221,6 +221,9 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL = "var(--crb-purple-dark-color)"; // Test is stuck in Queue.
     public static final String CONTROLSTATUS_QE_COL_EXT = "#5C025C"; // Test is stuck in Queue.
+    public static final String CONTROLSTATUS_PA = "PA"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_PA_COL = "var(--crb-thistle-color)"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_PA_COL_EXT = "#D8BFD8"; // Test is still waiting in queue.
 
     public enum ControlStatus {
         OK, KO, FA, NA, NE, WE, PE, CA, QU, QE
@@ -634,6 +637,8 @@ public class TestCaseExecution {
             color = TestCaseExecution.CONTROLSTATUS_PE_COL_EXT;
         } else if ("QU".equals(controlStatus)) {
             color = TestCaseExecution.CONTROLSTATUS_QU_COL_EXT;
+        } else if ("PA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_PA_COL_EXT;
         } else if ("QE".equals(controlStatus)) {
             color = TestCaseExecution.CONTROLSTATUS_QE_COL_EXT;
         } else {

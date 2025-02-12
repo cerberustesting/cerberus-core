@@ -19,7 +19,7 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 
-var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
+var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "PA", "CA"];
 // Define if execution detail must automaticly hide OK records.
 var isRefreshAutoHide = true;
 var isRefreshAutoHideManualDefined = false;
@@ -71,6 +71,18 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $("#falseNegative").click(function () {
             toggleFalseNegative();
+        });
+
+        $("#cancelTag").click(function () {
+            cancelTag();
+        });
+
+        $("#pauseTag").click(function () {
+            pauseTag();
+        });
+
+        $("#resumeTag").click(function () {
+            resumeTag();
         });
 
         $("#splitFilter input").click(function () {
@@ -425,9 +437,26 @@ function loadReportingData(selectTag) {
                 $("#buttonDownloadPdfReportButton").attr("disabled", true);
                 $("#buttonDownloadPdfReportButton").attr("title", "Report only available when campaign finished!");
                 $("#buttonDownloadPdfReport").removeAttr("href");
-
             }
             $("#buttonOpenQueue").attr("href", "./TestCaseExecutionQueueList.jsp?tag=" + encodeURIComponent(data.tagObject.tag));
+
+            if ((data.statsChart.contentTable.total.QU === 0) && (data.statsChart.contentTable.total.PA === 0)) {
+                $("#cancelTagRow").addClass("hidden");
+            } else {
+                $("#cancelTagRow").removeClass("hidden");
+                $("#cancelTagButton").removeClass("hidden");
+                if (data.statsChart.contentTable.total.QU > 0) {
+                    $("#pauseTagButton").removeClass("hidden");
+                } else {
+                    $("#pauseTagButton").addClass("hidden");
+                }
+                if (data.statsChart.contentTable.total.PA > 0) {
+                    $("#resumeTagButton").removeClass("hidden");
+                } else {
+                    $("#resumeTagButton").addClass("hidden");
+                }
+            }
+
 
             if (isEmpty(data.tagObject.campaign)) {
                 $("#TagcampaignCel1").addClass("hidden");
@@ -442,7 +471,6 @@ function loadReportingData(selectTag) {
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + encodeURIComponent(data.tagObject.campaign));
                 $("#buttonSeeStatsCampaign").attr("href", "./ReportingCampaignOverTime.jsp?campaigns=" + encodeURIComponent(data.tagObject.campaign));
                 $("#buttonEditCampaign").attr("onclick", "editEntryClick('" + data.tagObject.campaign + "');");
-
             }
             if (isEmpty(data.tagObject.xRayTestExecution)) {
                 $("#xRayTestExecutionBlock").addClass("hidden");
@@ -591,6 +619,39 @@ function toggleFalseNegative() {
         });
 
     }
+}
+
+function cancelTag() {
+    $.ajax({
+        url: "api/campaignexecutions/" + encodeURIComponent($('#selectTag').val()) + "/cancel",
+        method: "POST",
+        success: function (data) {
+            showMessageMainPage(getAlertType(data.status), data.message, false, 10000);
+            loadAllReports();
+        }
+    });
+}
+
+function pauseTag() {
+    $.ajax({
+        url: "api/campaignexecutions/" + encodeURIComponent($('#selectTag').val()) + "/pause",
+        method: "POST",
+        success: function (data) {
+            showMessageMainPage(getAlertType(data.status), data.message, false, 10000);
+            loadAllReports();
+        }
+    });
+}
+
+function resumeTag() {
+    $.ajax({
+        url: "api/campaignexecutions/" + encodeURIComponent($('#selectTag').val()) + "/resume",
+        method: "POST",
+        success: function (data) {
+            showMessageMainPage(getAlertType(data.status), data.message, false, 10000);
+            loadAllReports();
+        }
+    });
 }
 
 
@@ -1942,14 +2003,14 @@ function aoColumnsFunc(Columns) {
                         cell += '</div>';
                         statWidth = "80";
                     }
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
                         cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
                     } else {
                         cell += '<div class="progress-bar status' + data.ControlStatus + '" id1="' + idProgressBar + '" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ' + statWidth + '%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
-                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE") || (data.ControlStatus === "PA")) {
                         cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
                         cell += ' onclick="window.open(\'./TestCaseExecution.jsp?executionId=' + data.ID + '\')">';

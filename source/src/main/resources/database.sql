@@ -6605,3 +6605,7 @@ INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDes
 -- 1880-1881
 UPDATE testcasedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND';
 UPDATE testcaseexecutionqueuedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND';
+
+-- 1882
+ALTER TABLE testcaseexecutionqueue MODIFY COLUMN `State` VARCHAR(20) NOT NULL DEFAULT 'QUEUED';
+

@@ -413,6 +413,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_WE, TestCaseExecution.CONTROLSTATUS_WE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_PE, TestCaseExecution.CONTROLSTATUS_PE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QU, TestCaseExecution.CONTROLSTATUS_QU_COL_EXT);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_PA, TestCaseExecution.CONTROLSTATUS_PA_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QE, TestCaseExecution.CONTROLSTATUS_QE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_CA, TestCaseExecution.CONTROLSTATUS_CA_COL_EXT);
             // Map that will contain the nb of execution for global status.
@@ -425,6 +426,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             statNbMap.put(TestCaseExecution.CONTROLSTATUS_WE, tag.getNbWE());
             statNbMap.put(TestCaseExecution.CONTROLSTATUS_PE, tag.getNbPE());
             statNbMap.put(TestCaseExecution.CONTROLSTATUS_QU, tag.getNbQU());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_PA, tag.getNbQU());
             statNbMap.put(TestCaseExecution.CONTROLSTATUS_QE, tag.getNbQE());
             statNbMap.put(TestCaseExecution.CONTROLSTATUS_CA, tag.getNbCA());
             // Status list in the correct order.

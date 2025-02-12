@@ -638,7 +638,35 @@ public class TagDAO implements ITagDAO {
         query.append("  WHERE Tag = ?");
 
         LOG.debug("SQL : {}", query);
-        LOG.debug("SQL.param.tag : {}", object.getTag());
+        LOG.debug("SQL.param.tag : {}", tag);
+        LOG.debug("SQL.param.comment : {}", object.getComment());
+
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            preStat.setString(i++, object.getComment());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i, tag);
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : {}", exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer appendComment(String tag, Tag object) {
+        MessageEvent msg;
+        StringBuilder query = new StringBuilder("UPDATE tag SET comment = trim(concat (comment, ?)), dateModif = NOW(), usrModif= ?");
+        query.append("  WHERE Tag = ?");
+
+        LOG.debug("SQL : {}", query);
+        LOG.debug("SQL.param.tag : {}", tag);
+        LOG.debug("SQL.param.comment : {}", object.getComment());
 
         try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 

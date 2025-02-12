@@ -784,9 +784,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString());
-                Statement stm = connection.createStatement();) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString()); Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isEmptyOrNull(searchTerm)) {
@@ -803,8 +801,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try (ResultSet resultSet = preStat.executeQuery();
-                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+            try (ResultSet resultSet = preStat.executeQuery(); ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
                 //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
@@ -1225,8 +1222,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) "
                 + "WHERE `" + COLUMN_ID + "` = ?";
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement selectStatement = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement selectStatement = connection.prepareStatement(query);) {
             selectStatement.setLong(1, id);
             try (ResultSet result = selectStatement.executeQuery();) {
                 if (!result.next()) {
@@ -1266,8 +1262,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.ManualExecution : " + object.getManualExecution());
         }
 
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+        try (Connection connection = this.databaseSpring.connect(); PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
 
             int i = 1;
             preStat.setString(i++, object.getSystem());
@@ -1708,10 +1703,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` IN ('QUWITHDEP')";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + id);
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -1764,15 +1757,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` = 'QUEUED'";
 
         try (
-                Connection connection = this.databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
+                Connection connection = this.databaseSpring.connect(); PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
             try {
                 // Debug message on SQL.
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("SQL : " + queryUpdate);
-                    LOG.debug("SQL.param.id : " + id);
-                }
+                LOG.debug("SQL : " + queryUpdate);
+                LOG.debug("SQL.param.id : " + id);
 
                 updateStateStatement.setLong(1, id);
 
@@ -1803,14 +1793,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` in ('STARTING')";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + queryUpdate);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + queryUpdate);
+        LOG.debug("SQL.param.id : " + id);
 
         try (
-                Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
+                Connection connection = databaseSpring.connect(); PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
             updateStateStatement.setLong(1, exeId);
             updateStateStatement.setString(2, comment);
@@ -1835,16 +1822,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` = 'WAITING'";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + queryUpdate);
-            LOG.debug("SQL.param.id : " + id);
-            LOG.debug("SQL.param.SelectedRobotHost : " + selectedRobot);
-            LOG.debug("SQL.param.SelectedRobotExtHost : " + selectedRobotExt);
-        }
+        LOG.debug("SQL : " + queryUpdate);
+        LOG.debug("SQL.param.id : " + id);
+        LOG.debug("SQL.param.SelectedRobotHost : " + selectedRobot);
+        LOG.debug("SQL.param.SelectedRobotExtHost : " + selectedRobotExt);
 
         try (
-                Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
+                Connection connection = databaseSpring.connect(); PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
             updateStateStatement.setString(1, selectedRobot);
             updateStateStatement.setString(2, selectedRobotExt);
@@ -1870,13 +1854,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` in ('STARTING', 'EXECUTING')";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + id);
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -1901,13 +1882,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "AND `" + COLUMN_STATE + "` = 'QUWITHDEP'";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + id);
 
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+        try (Connection connection = databaseSpring.connect(); PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
             updateStateAndCommentStatement.setString(1, comment);
             updateStateAndCommentStatement.setLong(2, id);
@@ -1932,16 +1910,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "WHERE `" + COLUMN_ID + "` = ? ";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + id);
 
         try (
-                Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+                Connection connection = databaseSpring.connect(); PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
 
-//            fillUpdateStateAndCommentAndIdStatement(id, TestCaseExecutionQueue.State.DONE, comment, exeId, updateStateAndCommentStatement);
             updateStateAndCommentStatement.setLong(1, exeId);
             updateStateAndCommentStatement.setString(2, comment);
             updateStateAndCommentStatement.setLong(3, id);
@@ -1964,13 +1938,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` IN ('ERROR','QUEUED','QUWITHDEP')";
+                + "AND `" + COLUMN_STATE + "` IN ('ERROR','QUEUED','QUWITHDEP','QUEUED_PAUSED','QUWITHDEP_PAUSED')";
 
         // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.id : " + id);
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -1982,8 +1955,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 int updateResult = preStat.executeUpdate();
                 if (updateResult <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR or QUEUED ?"));
-                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR or QUEUED or QUWITHDEP ?");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR, QUEUED, QUWITHDEP, QUEUED_PAUSED or QUWITHDEP_PAUSED ?"));
+                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR, QUEUED, QUWITHDEP, QUEUED_PAUSED or QUWITHDEP_PAUSED ?");
 //                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -2021,7 +1994,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING','ERROR','QUEUED','QUWITHDEP')";
+                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING','ERROR','QUEUED','QUWITHDEP','QUEUED_PAUSED','QUWITHDEP_PAUSED')";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -2038,8 +2011,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 int updateResult = preStat.executeUpdate();
                 if (updateResult <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING or STARTING or EXECUTING or ERROR or QUEUED or QUWITHDEP ?"));
-                    LOG.warn("Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING or STARTING or EXECUTING or ERROR or QUEUED or QUWITHDEP ?");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING, STARTING, EXECUTING, ERROR, QUEUED, QUWITHDEP, QUEUED_PAUSED or QUWITHDEP_PAUSED ?"));
+                    LOG.warn("Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING, STARTING, EXECUTING, ERROR, QUEUED, QUWITHDEP, QUEUED_PAUSED or QUWITHDEP_PAUSED ?");
 //                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -2124,6 +2097,195 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
         }
         return new AnswerItem<>(msg);
+    }
+
+    @Override
+    public AnswerItem<Integer> updateToCancelledPendingRecord(String tag, String user, String comment) {
+
+        MessageEvent msg = null;
+        AnswerItem<Integer> ansReturn = new AnswerItem<>();
+        String query
+                = "UPDATE testcaseexecutionqueue "
+                + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_USRMODIF + "` = ? "
+                + "WHERE Tag = ? "
+                + "AND `" + COLUMN_STATE + "` IN ('QUEUED','QUWITHDEP','QUEUED_PAUSED','QUWITHDEP_PAUSED')";
+
+        // Debug message on SQL.
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.tag : " + tag);
+        LOG.debug("SQL.param.comment : " + comment);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setString(i++, user);
+                preStat.setString(i++, tag);
+
+                int updateResult = preStat.executeUpdate();
+                ansReturn.setItem(updateResult);
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED (forced) for execution in queue (update result: " + updateResult + "). Maybe execution is no longuer in QUEUE or QUWITHDEP ?"));
+                    LOG.info("No queue entries to cancel.");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                            .resolveDescription("ITEM", OBJECT_NAME)
+                            .resolveDescription("OPERATION", "UPDATE");
+                    msg.setDescription(msg.getDescription() + " - " + updateResult + " queue entry(ies) was(were) cancelled.");
+                    LOG.info(updateResult + " - " + updateResult + " queue entry(ies) was(were) cancelled.");
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        ansReturn.setResultMessage(msg);
+        return ansReturn;
+    }
+
+    @Override
+    public AnswerItem<Integer> updateToPausedPendingRecord(String tag, String user, String comment) {
+
+        MessageEvent msg = null;
+        AnswerItem<Integer> ansReturn = new AnswerItem<>();
+        String query
+                = "UPDATE testcaseexecutionqueue "
+                + "SET `" + COLUMN_STATE + "` = concat(`" + COLUMN_STATE + "`,'_PAUSED'), `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_USRMODIF + "` = ? "
+                + "WHERE Tag = ? "
+                + "AND `" + COLUMN_STATE + "` IN ('QUEUED','QUWITHDEP')";
+
+        // Debug message on SQL.
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.tag : " + tag);
+        LOG.debug("SQL.param.comment : " + comment);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setString(i++, user);
+                preStat.setString(i++, tag);
+
+                int updateResult = preStat.executeUpdate();
+                ansReturn.setItem(updateResult);
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to *_PAUSED for execution in queue (update result: " + updateResult + "). Maybe execution is no longuer in QUEUE or QUWITHDEP ?"));
+                    LOG.info("No queue entries to cancel.");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                            .resolveDescription("ITEM", OBJECT_NAME)
+                            .resolveDescription("OPERATION", "UPDATE");
+                    msg.setDescription(msg.getDescription() + " - " + updateResult + " queue entry(ies) was(were) paused.");
+                    LOG.info(updateResult + " - " + updateResult + " queue entry(ies) was(were) paused.");
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        ansReturn.setResultMessage(msg);
+        return ansReturn;
+    }
+
+    @Override
+    public AnswerItem<Integer> updateToNonPausedPendingRecord(String tag, String user, String comment) {
+
+        MessageEvent msg = null;
+        AnswerItem<Integer> ansReturn = new AnswerItem<>();
+        String query
+                = "UPDATE testcaseexecutionqueue "
+                + "SET `" + COLUMN_STATE + "` = REPLACE(`" + COLUMN_STATE + "`, '_PAUSED',''), `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_USRMODIF + "` = ? "
+                + "WHERE Tag = ? "
+                + "AND `" + COLUMN_STATE + "` LIKE '%_PAUSED'";
+
+        // Debug message on SQL.
+        LOG.debug("SQL : " + query);
+        LOG.debug("SQL.param.tag : " + tag);
+        LOG.debug("SQL.param.comment : " + comment);
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setString(i++, user);
+                preStat.setString(i++, tag);
+
+                int updateResult = preStat.executeUpdate();
+                ansReturn.setItem(updateResult);
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state from *_PAUSED for execution in queue (update result: " + updateResult + "). Maybe execution is no longuer in *_PAUSED ?"));
+                    LOG.info("No queue entries to cancel.");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK)
+                            .resolveDescription("ITEM", OBJECT_NAME)
+                            .resolveDescription("OPERATION", "UPDATE");
+                    msg.setDescription(msg.getDescription() + " - " + updateResult + " queue entry(ies) was(were) resumed.");
+                    LOG.info(updateResult + " - " + updateResult + " queue entry(ies) was(were) resumed.");
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        ansReturn.setResultMessage(msg);
+        return ansReturn;
     }
 
     @Override

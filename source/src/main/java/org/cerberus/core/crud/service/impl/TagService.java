@@ -20,7 +20,11 @@
 package org.cerberus.core.crud.service.impl;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +36,7 @@ import org.cerberus.core.crud.entity.*;
 import org.cerberus.core.crud.factory.IFactoryTag;
 import org.cerberus.core.crud.service.*;
 import org.cerberus.core.engine.entity.MessageGeneral;
+import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.enums.MessageGeneralEnum;
 import org.cerberus.core.event.IEventService;
@@ -40,6 +45,7 @@ import org.cerberus.core.service.ciresult.ICIService;
 import org.cerberus.core.service.notification.INotificationService;
 import org.cerberus.core.service.robotproviders.IBrowserstackService;
 import org.cerberus.core.service.robotproviders.ILambdaTestService;
+import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -65,6 +71,8 @@ public class TagService implements ITagService {
     private INotificationService notificationService;
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    private ITestCaseExecutionQueueService testCaseExecutionQueueService;
     @Autowired
     private ICIService ciService;
     @Autowired
@@ -247,24 +255,6 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public Answer pauseExecution(String tag) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Answer resumeExecution(String tag) {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public Answer cancelExecution(String tag) {
-        // TODO
-        return null;
-    }
-
-    @Override
     public Answer updateDescription(String tag, Tag object) {
         return tagDAO.updateDescription(tag, object);
     }
@@ -282,6 +272,60 @@ public class TagService implements ITagService {
     @Override
     public void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException {
         tagDAO.updateFalseNegative(tag, falseNegative, usrModif);
+    }
+
+    @Override
+    public AnswerItem<Integer> cancelAllExecutions(String tag, String usrModif) throws CerberusException {
+        AnswerItem<Integer> ansNb = testCaseExecutionQueueService.cancelPendingQueueEntries(tag, usrModif);
+
+        if (ansNb.getItem() > 0) {
+            Date today = Calendar.getInstance().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+
+            Tag newTag = Tag.builder().tag(tag).usrModif(usrModif).comment(" Campaign cancelled by user " + usrModif + " on " + String.valueOf(df.format(today)) + ". " + ansNb.getItem() + " queue entry(ies) was(were) cancelled.").build();
+            tagDAO.appendComment(tag, newTag);
+        }
+        return ansNb;
+    }
+
+    @Override
+    public AnswerItem<Integer> pauseAllExecutions(String tag, String usrModif) throws CerberusException {
+        AnswerItem<Integer> ansNb = testCaseExecutionQueueService.pausePendingQueueEntries(tag, usrModif);
+
+        if (ansNb.getItem() > 0) {
+            Date today = Calendar.getInstance().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+
+            Tag newTag = Tag.builder().tag(tag).usrModif(usrModif).comment(" Campaign paused by user " + usrModif + " on " + String.valueOf(df.format(today)) + ". " + ansNb.getItem() + " queue entry(ies) was(were) paused.").build();
+            tagDAO.appendComment(tag, newTag);
+        }
+        return ansNb;
+    }
+
+    @Override
+    public AnswerItem<Integer> resumeAllExecutions(String tag, String usrModif) throws CerberusException {
+
+        List<String> stateList = new ArrayList<>();
+        // We select here the list of state where no execution exist yet (or will never exist).
+        stateList.add(TestCaseExecutionQueue.State.QUWITHDEP_PAUSED.name());
+        AnswerList<TestCaseExecutionQueue> ansListQueue = testCaseExecutionQueueService.readByVarious1(tag, stateList, false);
+        List<TestCaseExecutionQueue> listQueue = testCaseExecutionQueueService.convert(ansListQueue);
+
+        AnswerItem<Integer> ansNb = testCaseExecutionQueueService.resumePausedQueueEntries(tag, usrModif);
+
+        if (ansNb.getItem() > 0) {
+
+            for (TestCaseExecutionQueue exeQueue : listQueue) {
+                executionQueueService.checkAndReleaseQueuedEntry(exeQueue.getId(), tag);
+            }
+            Date today = Calendar.getInstance().getTime();
+            DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+
+            Tag newTag = Tag.builder().tag(tag).usrModif(usrModif).comment(" Campaign resumed by user " + usrModif + " on " + String.valueOf(df.format(today)) + ". " + ansNb.getItem() + " queue entry(ies) was(were) resumed.").build();
+            tagDAO.appendComment(tag, newTag);
+
+        }
+        return ansNb;
     }
 
     @Override

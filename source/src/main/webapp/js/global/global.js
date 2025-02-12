@@ -2445,6 +2445,8 @@ function getRowClass(status) {
         rowClass["glyph"] = "fa fa-question";
     } else if (status === "QU") {
         rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "PA") {
+        rowClass["glyph"] = "glyphicon glyphicon-pause blink";
     } else if (status === "QE") {
         rowClass["glyph"] = "glyphicon glyphicon-tasks";
     } else {
@@ -2472,6 +2474,8 @@ function getExeStatusRowColor(status) {
         return '#F1C40F';
     } else if (status === "QU") {
         return '#BF00BF';
+    } else if (status === "PA") {
+        return '#D8BFD8';
     } else if (status === "QE") {
         return '#5C025C';
     } else {

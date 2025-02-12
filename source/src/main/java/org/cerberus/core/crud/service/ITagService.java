@@ -153,30 +153,6 @@ public interface ITagService {
     Answer updateEndOfQueueData(String tag);
 
     /**
-     * Pause all non executed executions of the current tag.
-     *
-     * @param tag
-     * @return
-     */
-    Answer pauseExecution(String tag);
-
-    /**
-     * Resume all paused executions of the current tag.
-     *
-     * @param tag
-     * @return
-     */
-    Answer resumeExecution(String tag);
-
-    /**
-     * Cancel all executions of the current tag.
-     *
-     * @param tag
-     * @return
-     */
-    Answer cancelExecution(String tag);
-
-    /**
      *
      * @param tag
      * @param object
@@ -207,9 +183,40 @@ public interface ITagService {
      *
      * @param tag :
      * @param falseNegative : value of falseNegative.
+     * @param usrModif
      * @throws CerberusException when exception occur during the update.
      */
     void updateFalseNegative(String tag, boolean falseNegative, String usrModif) throws CerberusException;
+
+    /**
+     * Set Tag to an Execution
+     *
+     * @param tag :
+     * @param usrModif
+     * @return 
+     * @throws CerberusException when exception occur during the update.
+     */
+    AnswerItem<Integer> cancelAllExecutions(String tag, String usrModif) throws CerberusException;
+
+    /**
+     * Set Tag to an Execution
+     *
+     * @param tag :
+     * @param usrModif
+     * @return 
+     * @throws CerberusException when exception occur during the update.
+     */
+    AnswerItem<Integer> pauseAllExecutions(String tag, String usrModif) throws CerberusException;
+
+    /**
+     * Set Tag to an Execution
+     *
+     * @param tag :
+     * @param usrModif
+     * @return 
+     * @throws CerberusException when exception occur during the update.
+     */
+    AnswerItem<Integer> resumeAllExecutions(String tag, String usrModif) throws CerberusException;
 
     /**
      * That method update the XRay reference to PENDING.

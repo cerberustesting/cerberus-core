@@ -278,6 +278,39 @@ public interface ITestCaseExecutionQueueDAO {
     AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment);
 
     /**
+     * This method moves queue State to CANCELLED any queue entry that belong to
+     * tag and that is still to be executed (QUEUED or QUWITHDEP)
+     *
+     * @param tag
+     * @param user
+     * @param comment
+     * @return
+     */
+    AnswerItem<Integer> updateToCancelledPendingRecord(String tag, String user, String comment);
+
+    /**
+     * This method moves queue State to *-PAUSED any queue entry that belong to
+     * tag and that is still to be executed (QUEUED or QUWITHDEP)
+     *
+     * @param tag
+     * @param user
+     * @param comment
+     * @return
+     */
+    AnswerItem<Integer> updateToPausedPendingRecord(String tag, String user, String comment);
+
+    /**
+     * This method removes queue State from -PAUSED any queue entry that belong to
+     * tag and that has been paused (*-PAUSED)
+     *
+     * @param tag
+     * @param user
+     * @param comment
+     * @return
+     */
+    AnswerItem<Integer> updateToNonPausedPendingRecord(String tag, String user, String comment);
+
+    /**
      * @param id
      * @param comment
      * @return

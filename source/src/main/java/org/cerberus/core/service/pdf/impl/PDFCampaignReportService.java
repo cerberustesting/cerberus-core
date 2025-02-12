@@ -209,6 +209,7 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_WE, TestCaseExecution.CONTROLSTATUS_WE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_PE, TestCaseExecution.CONTROLSTATUS_PE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QU, TestCaseExecution.CONTROLSTATUS_QU_COL_EXT);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_PA, TestCaseExecution.CONTROLSTATUS_PA_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_QE, TestCaseExecution.CONTROLSTATUS_QE_COL_EXT);
             statColorMap.put(TestCaseExecution.CONTROLSTATUS_CA, TestCaseExecution.CONTROLSTATUS_CA_COL_EXT);
 
@@ -866,6 +867,8 @@ public class PDFCampaignReportService implements IPDFCampaignReportService {
             color = TestCaseExecution.CONTROLSTATUS_PE_COL_EXT;
         } else if ("QU".equals(controlStatus)) {
             color = TestCaseExecution.CONTROLSTATUS_QU_COL_EXT;
+        } else if ("PA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_PA_COL_EXT;
         } else if ("QE".equals(controlStatus)) {
             color = TestCaseExecution.CONTROLSTATUS_QE_COL_EXT;
         } else {

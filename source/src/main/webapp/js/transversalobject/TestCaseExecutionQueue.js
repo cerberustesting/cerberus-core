@@ -277,7 +277,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                         hasPermissions = false;
                     }
                     // Cannot resubmit an execution that is already in queue.
-                    if ((exeQ.state === "QUEUED")) {
+                    if ((exeQ.state === "QUEUED") || (exeQ.state === "QUWITHDEP") || (exeQ.state === "QUEUED_PAUSED") || (exeQ.state === "QUWITHDEP_PAUSED")) {
                         $('#submitExecutionQueueButton').attr('class', '');
                         $('#submitExecutionQueueButton').prop('hidden', 'hidden');
                     }
@@ -347,7 +347,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     var formEdit = $('#' + modalId);
     var doc = new Doc();
     var isEditable = (
-            ((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "QUWITHDEP") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
+            ((hasPermissionsUpdate) 
+            && (mode === "EDIT") 
+            && ((exeQ.state === "WAITING") 
+            || (exeQ.state === "QUEUED") || (exeQ.state === "QUWITHDEP") || (exeQ.state === "QUEUED_PAUSED") || (exeQ.state === "QUWITHDEP_PAUSED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
             || (mode === "DUPLICATE")
             );
 

@@ -40,14 +40,20 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import lombok.AllArgsConstructor;
+import org.cerberus.core.api.controllers.wrappers.ResponseWrapper;
 import org.cerberus.core.crud.service.ITagService;
+import org.cerberus.core.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.core.util.answer.AnswerItem;
 import org.cerberus.core.util.servlet.ServletUtil;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/campaignexecutions/")
 public class CampaignExecutionPrivateController {
 
     private static final Logger LOG = LogManager.getLogger(CampaignExecutionPrivateController.class);
+    private final IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private ITagStatisticService tagStatisticService;
     @Autowired
@@ -238,8 +244,12 @@ public class CampaignExecutionPrivateController {
                 aggregateListByCampaign.add(value);
                 String environment = key.split("_")[0];
                 String country = key.split("_")[1];
-                if (!environments.contains(environment)) environments.add(environment);
-                if (!countries.contains(country)) countries.add(country);
+                if (!environments.contains(environment)) {
+                    environments.add(environment);
+                }
+                if (!countries.contains(country)) {
+                    countries.add(country);
+                }
             });
 
             response.put("campaignStatistics", aggregateListByCampaign);
@@ -285,6 +295,77 @@ public class CampaignExecutionPrivateController {
         }
         return "";
 
+    }
+
+    @PostMapping(path = "{executionId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper cancelTag(
+            @PathVariable("executionId") String tag,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            AnswerItem<Integer> ansNb = tagService.cancelAllExecutions(tag, request.getUserPrincipal().getName());
+            String message = "";
+            if (ansNb.getItem() <= 0) {
+                message = "No queue entries were canceled. Probably all of them were already triggered.";
+            } else {
+                message = ansNb.getItem() + " queue entry(ies) was(were) cancelled.";
+            }
+            return new ResponseWrapper(HttpStatus.OK, message);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+            return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        }
+    }
+
+    @PostMapping(path = "{executionId}/pause", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper pauseTag(
+            @PathVariable("executionId") String tag,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            AnswerItem<Integer> ansNb = tagService.pauseAllExecutions(tag, request.getUserPrincipal().getName());
+            String message = "";
+            if (ansNb.getItem() <= 0) {
+                message = "No queue entries were paused. Probably all of them were already triggered.";
+            } else {
+                message = ansNb.getItem() + " queue entry(ies) was(were) paused.";
+            }
+            return new ResponseWrapper(HttpStatus.OK, message);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+            return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        }
+    }
+
+    @PostMapping(path = "{executionId}/resume", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWrapper resumeTag(
+            @PathVariable("executionId") String tag,
+            HttpServletRequest request) {
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        try {
+            AnswerItem<Integer> ansNb = tagService.resumeAllExecutions(tag, request.getUserPrincipal().getName());
+            String message = "";
+            if (ansNb.getItem() <= 0) {
+                message = "No queue entry were resumed. No paused queue entry(ies) was(were) found.";
+            } else {
+                //                    executionQueueService.checkAndReleaseQueuedEntry(long1, tCExecution.getTag());
+
+                message = ansNb.getItem() + " queue entry(ies) was(were) resumed.";
+                // After every execution finished we try to trigger more from the queue;-).
+                executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+
+            }
+            return new ResponseWrapper(HttpStatus.OK, message);
+        } catch (CerberusException ex) {
+            LOG.error(ex, ex);
+            return new ResponseWrapper(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
+        }
     }
 
     private List<String> checkMissingFilters(Map<String, Object> filters) {

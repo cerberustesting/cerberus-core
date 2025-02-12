@@ -78,7 +78,9 @@ public class TestCaseExecutionQueue {
     public enum State {
         QUTEMP,
         QUWITHDEP,
+        QUWITHDEP_PAUSED,
         QUEUED,
+        QUEUED_PAUSED,
         WAITING,
         STARTING,
         EXECUTING,

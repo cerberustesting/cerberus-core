@@ -63,6 +63,7 @@ public class TreeNode {
     private Integer nbQE;
     private Integer nbQU;
     private Integer nbCA;
+    private Integer nbPA;
     private Label labelObj;
 
     private static final Logger LOG = LogManager.getLogger(TreeNode.class);
@@ -88,6 +89,7 @@ public class TreeNode {
         this.nbPE = 0;
         this.nbQE = 0;
         this.nbQU = 0;
+        this.nbPA = 0;
         this.nbCA = 0;
     }
 
@@ -153,6 +155,14 @@ public class TreeNode {
 
     public void setNbNA(Integer nbNA) {
         this.nbNA = nbNA;
+    }
+
+    public Integer getNbPA() {
+        return nbPA;
+    }
+
+    public void setNbPA(Integer nbPA) {
+        this.nbPA = nbPA;
     }
 
     public Integer getNbNE() {
@@ -415,6 +425,7 @@ public class TreeNode {
                             .replace("%NBPE%", this.getNbPE().toString())
                             .replace("%NBQE%", this.getNbQE().toString())
                             .replace("%NBQU%", this.getNbQU().toString())
+                            .replace("%NBPA%", this.getNbPA().toString())
                             .replace("%NBCA%", this.getNbCA().toString())
             );
             result.put("icon", this.getIcon());
@@ -440,6 +451,7 @@ public class TreeNode {
             stats.put("nbNE", this.nbNE);
             stats.put("nbQE", this.nbQE);
             stats.put("nbQU", this.nbQU);
+            stats.put("nbPA", this.nbPA);
             stats.put("nbWE", this.nbWE);
             stats.put("nbElement", this.counter1);
             stats.put("nbElementWithChild", this.counter1WithChild);

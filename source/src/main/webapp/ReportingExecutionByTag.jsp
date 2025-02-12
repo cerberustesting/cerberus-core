@@ -135,6 +135,10 @@
                                             <span class="fontQE">QE</span>
                                         </label>
                                         <label class="checkbox-inline">
+                                            <input type="checkbox" name="PA" checked/>
+                                            <span class="fontQU">PA</span>
+                                        </label>
+                                        <label class="checkbox-inline">
                                             <input type="checkbox" name="CA" checked/>
                                             <span class="fontCA">CA</span>
                                         </label>
@@ -189,7 +193,7 @@
                     </div>
 
                     <div class="panel panel-default" id="BugReportByStatusPanel">
-                        <div class="panel-heading card refreshButtonHeader" data-toggle="collapse" data-target="#BugReportByStatus">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#BugReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
@@ -262,11 +266,11 @@
                                             <label for="tagDetailCI">CI Result :</label>
                                             <div class="marginTop10" id="tagDetailCI">
                                             </div>
-                                    <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
-                                        <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                            <span class="sr-only"></span>FALSE NEGATIVE
-                                        </div>
-                                    </div>
+                                            <div id="false-negative-bar" class="progress" style="height: 22px; margin-bottom: 0px; display: none;">
+                                                <div class="progress-bar statusOK" role="progressbar" style="width: 100%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                    <span class="sr-only"></span>FALSE NEGATIVE
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-xs-5 marginTop20">
                                             <span class="input-group-btn">
@@ -281,6 +285,27 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="row" id="cancelTagRow">
+                                <div class="col-xs-6 marginTop20" id="cancelTagButton">
+                                    <span class="input-group-btn">
+                                        <button id="cancelTag" class="btn btn-default" title="Cancel all non executed queue entries"><span class="glyphicon glyphicon-stop"></span> Cancel all non already triggered executions</button>
+                                    </span>
+                                </div>
+                                <div class="col-xs-6 marginTop20" id="pauseTagButton">
+                                    <span class="input-group-btn">
+                                        <button id="pauseTag" class="btn btn-default" title="Pause all non executed queue entries"><span class="glyphicon glyphicon-pause"></span> Pause all non already triggered executions</button>
+                                    </span>
+                                </div>
+                                <div class="col-xs-6 marginTop20" id="resumeTagButton">
+                                    <span class="input-group-btn">
+                                        <button id="resumeTag" class="btn btn-default" title="Resume all paused queue entries"><span class="glyphicon glyphicon-play"></span> Resume all paused executions</button>
+                                    </span>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
 
@@ -336,8 +361,8 @@
                                 <div class="col-sm-6" id="TagCommentCel">
                                     <label class="marginTop10" for="TagComment">Comment :</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="TagComment" id="TagComment" readonly
-                                               aria-describedby="basic-addon1">
+                                        <textarea type="text" class="form-control" name="TagComment" id="TagComment" readonly
+                                                  aria-describedby="basic-addon1"></textarea>
                                         <span class="input-group-btn">
                                             <button id="editTagComment" class="btn btn-default">Edit</button>
                                             <button id="saveTagComment" class="btn btn-primary" style="display : none;">Save</button>

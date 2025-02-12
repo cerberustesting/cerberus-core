@@ -64,6 +64,7 @@ public class Tag {
     private int nbWE;
     private int nbPE;
     private int nbQU;
+    private int nbPA;
     private int nbQE;
     private int nbCA;
     private int ciScore;
@@ -142,6 +143,7 @@ public class Tag {
             result.put("nbWE", this.nbWE);
             result.put("nbPE", this.nbPE);
             result.put("nbQU", this.nbQU);
+            result.put("nbPA", this.nbPA);
             result.put("nbQE", this.nbQE);
             result.put("nbCA", this.nbCA);
             result.put("ciScore", this.ciScore);
@@ -210,6 +212,7 @@ public class Tag {
             result1.put("PE", this.nbPE);
             result1.put("CA", this.nbCA);
             result1.put("QU", this.nbQU);
+            result1.put("PA", this.nbPA);
             result1.put("WE", this.nbWE);
             result1.put("NE", this.nbNE);
             result1.put("QE", this.nbQE);

@@ -271,6 +271,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
             statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
+            statusList.put("PA", ParameterParserUtil.parseStringParam(request.getParameter("PA"), "off"));
             statusList.put("QE", ParameterParserUtil.parseStringParam(request.getParameter("QE"), "off"));
         } catch (JSONException ex) {
             LOG.error("Error on getStatusList : " + ex, ex);
@@ -932,6 +933,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             color = TestCaseExecution.CONTROLSTATUS_QU_COL;
         } else if ("QE".equals(controlStatus)) {
             color = TestCaseExecution.CONTROLSTATUS_QE_COL;
+        } else if ("PA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_PA_COL;
         } else {
             color = "#000000";
         }
@@ -1070,6 +1073,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                                         break;
                                     case TestCaseExecution.CONTROLSTATUS_QU:
                                         curTreenode.setNbQU(curTreenode.getNbQU() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_PA:
+                                        curTreenode.setNbPA(curTreenode.getNbPA() + 1);
                                         break;
                                     case TestCaseExecution.CONTROLSTATUS_CA:
                                         curTreenode.setNbCA(curTreenode.getNbCA() + 1);

@@ -77,8 +77,9 @@ public class ResponseWrapper<T> {
     }
 
     public ResponseWrapper(HttpStatus status, String message, Throwable ex) {
-        this(status, ex);
+        this(status);
         this.message = message;
+        this.debugMessage = ex.getLocalizedMessage();
     }
 
     private void addSubError(ISubErrorWrapper subError) {

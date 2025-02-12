@@ -40,6 +40,7 @@ public class SummaryStatisticsDTO {
     private int PE;
     private int QE;
     private int QU;
+    private int PA;
     private int CA;
     private int total;
     private int notOKTotal;
@@ -52,6 +53,7 @@ public class SummaryStatisticsDTO {
     private float percPE;
     private float percQE;
     private float percQU;
+    private float percPA;
     private float percCA;
     private float percNotOKTotal;
 
@@ -69,6 +71,7 @@ public class SummaryStatisticsDTO {
         this.PE = 0;
         this.QE = 0;
         this.QU = 0;
+        this.PA = 0;
         this.CA = 0;
         this.total = 0;
         this.notOKTotal = 0;
@@ -99,6 +102,9 @@ public class SummaryStatisticsDTO {
         } else if (status.equalsIgnoreCase("QU")) {
             this.QU++;
             this.notOKTotal++;
+        } else if (status.equalsIgnoreCase("PA")) {
+            this.PA++;
+            this.notOKTotal++;
         } else if (status.equalsIgnoreCase("FA")) {
             this.FA++;
             this.notOKTotal++;
@@ -118,6 +124,7 @@ public class SummaryStatisticsDTO {
         this.percPE = (float) Math.round(((float) (this.PE * 100) / this.total) * 10) / 10;
         this.percQE = (float) Math.round(((float) (this.QE * 100) / this.total) * 10) / 10;
         this.percQU = (float) Math.round(((float) (this.QU * 100) / this.total) * 10) / 10;
+        this.percPA = (float) Math.round(((float) (this.PA * 100) / this.total) * 10) / 10;
         this.percCA = (float) Math.round(((float) (this.CA * 100) / this.total) * 10) / 10;
         this.percNotOKTotal = (float) Math.round(((float) (this.notOKTotal * 100) / this.total) * 10) / 10;
     }
@@ -136,6 +143,22 @@ public class SummaryStatisticsDTO {
 
     public String getRobotDecli() {
         return robotDecli;
+    }
+
+    public int getPA() {
+        return PA;
+    }
+
+    public void setPA(int PA) {
+        this.PA = PA;
+    }
+
+    public float getPercPA() {
+        return percPA;
+    }
+
+    public void setPercPA(float percPA) {
+        this.percPA = percPA;
     }
 
     public int getWE() {
