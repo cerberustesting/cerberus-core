@@ -768,12 +768,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','Port','','en','Port','Port number of the Executor.',NULL)");
         b.append(",('robotexecutor','Port','','fr','Port','Numéro de port de l\\'Executor.',NULL)");
         b.append(",('robotexecutor','Port','','fa','درگاه','شماره درگاه مجری.',NULL)");
-        b.append(",('robotexecutor','host_user','','en','Host User','In case of authentication this is the username that will be used.',NULL)");
-        b.append(",('robotexecutor','host_user','','fr','Nom d\\'Utilisateur pour l\\'hote','En cas d\\'authentification, Nom de l\\'utilisateur à utiliser pour l\\'Executor.',NULL)");
-        b.append(",('robotexecutor','host_user','','fa','کاربر میزبان','درصورت احراز هویت این نام کاربری است که استفاده می شود.',NULL)");
-        b.append(",('robotexecutor','host_password','','en','Host Password','In case of authentification this is the user password that will be used.',NULL)");
-        b.append(",('robotexecutor','host_password','','fr','Mot de passe de l\\'utilisateur','En cas d\\'authentification, Mot de passe à utiliser pour l\\'Executor.',NULL)");
-        b.append(",('robotexecutor','host_password','','fa','رمز عبور میزبان','در صورت احراز هویت این رمز عبور استفاده می شود.',NULL)");
+        b.append(",('robotexecutor','hostUser','','en','Host User','In case of authentication this is the username that will be used.',NULL)");
+        b.append(",('robotexecutor','hostUser','','fr','Nom d\\'Utilisateur pour l\\'hote','En cas d\\'authentification, Nom de l\\'utilisateur à utiliser pour l\\'Executor.',NULL)");
+        b.append(",('robotexecutor','hostUser','','fa','کاربر میزبان','درصورت احراز هویت این نام کاربری است که استفاده می شود.',NULL)");
+        b.append(",('robotexecutor','hostPassword','','en','Host Password','In case of authentification this is the user password that will be used.',NULL)");
+        b.append(",('robotexecutor','hostPassword','','fr','Mot de passe de l\\'utilisateur','En cas d\\'authentification, Mot de passe à utiliser pour l\\'Executor.',NULL)");
+        b.append(",('robotexecutor','hostPassword','','fa','رمز عبور میزبان','در صورت احراز هویت این رمز عبور استفاده می شود.',NULL)");
         b.append(",('robotexecutor','deviceUdid','','en','Device UDID','When defined, it feed the \\'deviceUdid\\' capability..',NULL)");
         b.append(",('robotexecutor','deviceUdid','','fr','UDID du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceUdid\\.',NULL)");
         b.append(",('robotexecutor','deviceUdid','','fa','دستگاه UDID','زمانیکه تعریف شود, قابلیت \\'deviceUdid\\' را تغذیه می کند.',NULL)");
