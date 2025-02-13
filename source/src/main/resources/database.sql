@@ -6656,8 +6656,9 @@ UPDATE testcaseexecution SET `TestCaseisMuted` = 1 WHERE `TestCasePriority`=0;
 -- 1897
 DELETE FROM parameter WHERE `param` = 'cerberus_featureflipping_tagstatistics_enable';
 
--- 1898-1902
+-- 1898-1903
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionHost TO ExecutorProxyServiceHost;
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionPort TO ExecutorProxyServicePort;
 ALTER TABLE robotexecutor RENAME COLUMN executorProxyHost TO ExecutorBrowserProxyHost;
 ALTER TABLE robotexecutor RENAME COLUMN executorProxyPort TO ExecutorBrowserProxyPort;
+ALTER TABLE robotexecutor RENAME COLUMN NodeProxyPort TO ExecutorExtensionProxyPort;

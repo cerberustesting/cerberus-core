@@ -231,10 +231,10 @@ public class RobotServerService implements IRobotServerService {
             session.setNodeHost(execution.getSeleniumIP());
             session.setNodePort(execution.getSeleniumPort());
             if (execution.getRobotExecutorObj() != null) {
-                LOG.debug("Session node proxy set : {}", execution.getRobotExecutorObj().getNodeProxyPort());
-                session.setNodeProxyPort(execution.getRobotExecutorObj().getNodeProxyPort());
+                LOG.debug("Session node proxy set : {}", execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
+                session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
             } else {
-                session.setNodeProxyPort(0);
+                session.setExecutorExtensionProxyPort(0);
             }
             session.setConsoleLogs(new JSONArray());
 
