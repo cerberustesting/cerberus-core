@@ -38,7 +38,7 @@ public class Session {
     private String nodeHost;
     private String nodePort;
 
-    private Integer nodeProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
+    private Integer executorExtensionProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
     
     private boolean started;
     private boolean sikuliAvailable;
@@ -91,12 +91,12 @@ public class Session {
         this.sikuliAvailable = sikuliAvailable;
     }
 
-    public Integer getNodeProxyPort() {
-        return nodeProxyPort;
+    public Integer getExecutorExtensionProxyPort() {
+        return executorExtensionProxyPort;
     }
 
-    public void setNodeProxyPort(Integer nodeProxyPort) {
-        this.nodeProxyPort = nodeProxyPort;
+    public void setExecutorExtensionProxyPort(Integer executorExtensionProxyPort) {
+        this.executorExtensionProxyPort = executorExtensionProxyPort;
     }
 
     public Integer getCerberus_selenium_highlightElement_default() {

@@ -43,7 +43,7 @@ public class RobotExecutor {
     private String port;
     private String hostUser;
     private String hostPassword;
-    private Integer nodeProxyPort; // In case the node has a private IP, we can use that proxy in order to access it.
+    private Integer executorExtensionProxyPort; // In case the node has a private IP, we can use that proxy in order to access it.
     private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
@@ -67,12 +67,12 @@ public class RobotExecutor {
     public static final String PROXY_TYPE_MANUAL = "MANUAL"; // A Manual proxy is configured on executorBrowserProxyHost and executorBrowserProxyPort
     public static final String PROXY_TYPE_NETWORKTRAFFIC = "NETWORKTRAFFIC"; // Proxy will be configured to Cerberus robot proxy component --> Network traffic features will be activated.
 
-    public Integer getNodeProxyPort() {
-        return nodeProxyPort;
+    public Integer getExecutorExtensionProxyPort() {
+        return executorExtensionProxyPort;
     }
 
-    public void setNodeProxyPort(Integer nodeProxyPort) {
-        this.nodeProxyPort = nodeProxyPort;
+    public void setExecutorExtensionProxyPort(Integer executorExtensionProxyPort) {
+        this.executorExtensionProxyPort = executorExtensionProxyPort;
     }
 
     public Integer getID() {
