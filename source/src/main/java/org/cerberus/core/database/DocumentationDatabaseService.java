@@ -795,10 +795,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fr','Timestamp de la dernière execution soumise','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fa','مهر زمانی آخرین اجرای ارسال شده','',NULL)");
-        b.append(",('robotexecutor','executorExtensionHost','','fr','Nom d\\'hote du service de proxy','Nom de la machine qui heberge le service Cerberus robot-proxy. Si vide, le host est le même que celui de l\\'executor.',NULL)");
-        b.append(",('robotexecutor','executorExtensionHost','','en','Proxy service host', 'Host of the Cerberus robot-proxy service. If empty, the executor Host will be used.',NULL)");
+        b.append(",('robotexecutor','executorProxyServiceHost','','fr','Nom d\\'hote du service de proxy','Nom de la machine qui heberge le service Cerberus robot-proxy. Si vide, le host est le même que celui de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorProxyServiceHost','','en','Proxy service host', 'Host of the Cerberus robot-proxy service. If empty, the executor Host will be used.',NULL)");
         b.append(",('robotexecutor','executorExtensionPort','','fr','Port du service de proxy','Port d\\'écoute du service Cerberus robot-proxy.',NULL)");
-        b.append(",('robotexecutor','executorExtensionHost','','fa','میزبان سرویس پراکسی', 'میزبان سرویس پروکسی ربات Cerberus. اگر خالی باشد، میزبان مجری استفاده خواهد شد.',NULL)");
+        b.append(",('robotexecutor','executorProxyServiceHost','','fa','میزبان سرویس پراکسی', 'میزبان سرویس پروکسی ربات Cerberus. اگر خالی باشد، میزبان مجری استفاده خواهد شد.',NULL)");
         b.append(",('robotexecutor','executorExtensionPort','','en','Proxy service port', 'Port of the robot-proxy service.',NULL)");
         b.append(",('robotexecutor','executorProxyHost','','fr','Nom d\\'hote du proxy pour le navigateur', 'Nom d\\'hote qui sera donné au navigateur pour acceder au service de proxy. Si vide, le nom d\\'hote du service robot-proxy sera utilisé.',NULL)");
         b.append(",('robotexecutor','executorExtensionPort','','fa','درگاه سرویس پروکسی', 'درگاه سرویس ربات پروکسی.',NULL)");
