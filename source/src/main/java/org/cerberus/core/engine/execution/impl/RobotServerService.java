@@ -1037,10 +1037,10 @@ public class RobotServerService implements IRobotServerService {
             return proxy;
         }
         if (executor != null && RobotExecutor.PROXY_TYPE_MANUAL.equals(executor.getExecutorProxyType())
-                && executor.getExecutorProxyPort() != 0 && StringUtil.isNotEmptyOrNull(executor.getExecutorBrowserProxyHost())) {
+                && executor.getExecutorBrowserProxyPort() != 0 && StringUtil.isNotEmptyOrNull(executor.getExecutorBrowserProxyHost())) {
             Proxy proxy = new Proxy();
-            proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorProxyPort());
-            proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorProxyPort());
+            proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorBrowserProxyPort());
+            proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorBrowserProxyPort());
             proxy.setNoProxy("");
             proxy.setProxyType(Proxy.ProxyType.MANUAL);
             LOG.debug("Setting Chrome proxy to : {}", proxy);

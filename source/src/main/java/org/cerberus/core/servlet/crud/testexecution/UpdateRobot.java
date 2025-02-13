@@ -274,9 +274,9 @@ public class UpdateRobot extends HttpServlet {
             if (reJson.has("executorBrowserProxyHost") && !StringUtil.isEmptyOrNull(reJson.getString("executorBrowserProxyHost"))) {
                 executorBrowserProxyHost = reJson.getString("executorBrowserProxyHost");
             }
-            Integer executorProxyPort = null;
-            if (reJson.has("executorProxyPort")) {
-                executorProxyPort = reJson.getInt("executorProxyPort");
+            Integer executorBrowserProxyPort = null;
+            if (reJson.has("executorBrowserProxyPort")) {
+                executorBrowserProxyPort = reJson.getInt("executorBrowserProxyPort");
             }
             String executorProxyType = reJson.getString("executorProxyType");
             Integer executorProxyServicePort = null;
@@ -307,7 +307,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorProxyPort, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }
