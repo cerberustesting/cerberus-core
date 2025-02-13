@@ -465,7 +465,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         int rank = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.rank"), 0);
         String host = ParameterParserUtil.parseStringParam(rs.getString("rbe.host"), "");
         String port = ParameterParserUtil.parseStringParam(rs.getString("rbe.port"), "");
-        int nodeProxyPort = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.nodeProxyPort"), 0);
+        int executorExtensionProxyPort = ParameterParserUtil.parseIntegerParam(rs.getString("rbe.ExecutorExtensionProxyPort"), 0);
         String host_user = ParameterParserUtil.parseStringParam(rs.getString("rbe.host_user"), "");
         String host_password = ParameterParserUtil.parseStringParam(rs.getString("rbe.host_password"), "");
         String deviceudid = ParameterParserUtil.parseStringParam(rs.getString("rbe.deviceudid"), "");
@@ -489,7 +489,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, executorExtensionProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override

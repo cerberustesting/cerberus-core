@@ -103,10 +103,10 @@ public class FilemanagementService implements IFilemanagementService {
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
-            if (session.getNodeProxyPort() > 0) {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getNodeProxyPort()));
+            if (session.getExecutorExtensionProxyPort() > 0) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getExecutorExtensionProxyPort()));
 
-                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getNodeProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Filemanagement (using proxy : " + session.getHost() + ":" + session.getExecutorExtensionProxyPort() + ") : " + urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
