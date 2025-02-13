@@ -238,6 +238,25 @@ public final class StringUtil {
     }
 
     /**
+     * Return x part of offset.
+     *
+     * @param offset
+     * @return the {length} first character of the string1.
+     */
+    public static Integer[] getxFromOffset(String offset) throws NumberFormatException {
+        Integer[] res = new Integer[2];
+        if (offset.contains(",")) {
+            String x = offset.split(",")[0];
+            res[0] = Integer.valueOf(x);
+            String y = offset.split(",")[1];
+            res[1] = Integer.valueOf(y);
+            return res;
+        } else {
+            throw new NumberFormatException();
+        }
+    }
+
+    /**
      * Return left part of the string adding ... at the end.
      *
      * @param string1 String to treat.
