@@ -260,6 +260,7 @@ public class SikuliService implements ISikuliService {
                 return false;
             }
         } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            LOG.info("Robot extension not reachable.");
             return false;
         } catch (IOException ex) {
             LOG.warn(ex);
@@ -303,6 +304,7 @@ public class SikuliService implements ISikuliService {
                 return false;
             }
         } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
+            LOG.info("Robot extension not reachable.");
             return false;
         } catch (IOException ex) {
             LOG.warn("Exception catch when calling '" + urlToConnect + "' " + ex, ex);
