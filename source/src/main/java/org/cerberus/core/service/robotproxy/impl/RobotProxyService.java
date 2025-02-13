@@ -67,8 +67,8 @@ public class RobotProxyService implements IRobotProxyService {
 
         String url = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort()
                 + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
-        if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
-            url += "&port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
+        if (tce.getRobotExecutorObj().getExecutorBrowserProxyPort() != 0) {
+            url += "&port=" + tce.getRobotExecutorObj().getExecutorBrowserProxyPort();
         }
 
         if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tce.getRobotProvider())) {
