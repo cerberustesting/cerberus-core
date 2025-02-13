@@ -973,8 +973,8 @@ public class RobotServerService implements IRobotServerService {
 //                    OperaOptions optionsOP = new OperaOptions();
 //                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) {
 //                        Proxy proxy = new Proxy();
-//                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-//                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+//                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+//                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                        optionsOP.setProxy(proxy);
 //                    }
 //                    optionsOP.setCapability("browser", "opera");
@@ -986,8 +986,8 @@ public class RobotServerService implements IRobotServerService {
                 case "android":
 //                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) { #FIXME SELENIUM Might have been deleted in rebase
 //                        Proxy proxy = new Proxy();
-//                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
-//                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+//                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
+//                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                    }
 //                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM #APPIUM
                     break;
@@ -1029,18 +1029,18 @@ public class RobotServerService implements IRobotServerService {
 
         if (executor != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(executor.getExecutorProxyType())) {
             Proxy proxy = new Proxy();
-            proxy.setHttpProxy(executor.getExecutorProxyHost() + ":" + remoteProxyPort);
-            proxy.setSslProxy(executor.getExecutorProxyHost() + ":" + remoteProxyPort);
+            proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
+            proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + remoteProxyPort);
             proxy.setNoProxy("");
             proxy.setProxyType(Proxy.ProxyType.MANUAL);
             LOG.debug("Setting Chrome proxy with Cerberus Robot Proxy Service to : {}", proxy);
             return proxy;
         }
         if (executor != null && RobotExecutor.PROXY_TYPE_MANUAL.equals(executor.getExecutorProxyType())
-                && executor.getExecutorProxyPort() != 0 && StringUtil.isNotEmptyOrNull(executor.getExecutorProxyHost())) {
+                && executor.getExecutorProxyPort() != 0 && StringUtil.isNotEmptyOrNull(executor.getExecutorBrowserProxyHost())) {
             Proxy proxy = new Proxy();
-            proxy.setHttpProxy(executor.getExecutorProxyHost() + ":" + executor.getExecutorProxyPort());
-            proxy.setSslProxy(executor.getExecutorProxyHost() + ":" + executor.getExecutorProxyPort());
+            proxy.setHttpProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorProxyPort());
+            proxy.setSslProxy(executor.getExecutorBrowserProxyHost() + ":" + executor.getExecutorProxyPort());
             proxy.setNoProxy("");
             proxy.setProxyType(Proxy.ProxyType.MANUAL);
             LOG.debug("Setting Chrome proxy to : {}", proxy);

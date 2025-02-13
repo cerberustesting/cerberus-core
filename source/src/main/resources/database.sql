@@ -6609,6 +6609,7 @@ UPDATE testcaseexecutionqueuedep SET `Type`='TCEXEENDOK' where `Type`='TCEXEEND'
 -- 1882
 ALTER TABLE testcaseexecutionqueue MODIFY COLUMN `State` VARCHAR(20) NOT NULL DEFAULT 'QUEUED';
 
--- 1883-1884
+-- 1883-1885
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionHost TO ExecutorProxyServiceHost;
 ALTER TABLE robotexecutor RENAME COLUMN executorExtensionPort TO ExecutorProxyServicePort;
+ALTER TABLE robotexecutor RENAME COLUMN executorProxyHost TO ExecutorBrowserProxyHost;

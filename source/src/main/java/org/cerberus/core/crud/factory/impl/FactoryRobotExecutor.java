@@ -32,7 +32,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
 
     @Override
     public RobotExecutor create(Integer ID, String robot, String executor, boolean isActive, Integer rank, String host, String port, String hostUser, String hostPassword,
-                                Integer nodeProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorProxyHost, Integer executorProxyPort, String executorProxyType, String description,
+                                Integer nodeProxyPort, String deviceUdid, String deviceName, Integer devicePort, boolean isDeviceLockUnlock, String executorProxyServiceHost, Integer executorProxyServicePort, String executorBrowserProxyHost, Integer executorProxyPort, String executorProxyType, String description,
                                 String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         RobotExecutor newRobot = new RobotExecutor();
         newRobot.setID(ID);
@@ -50,7 +50,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
         newRobot.setIsDeviceLockUnlock(isDeviceLockUnlock);
         newRobot.setExecutorProxyServiceHost(executorProxyServiceHost);
         newRobot.setExecutorProxyServicePort(executorProxyServicePort);
-        newRobot.setExecutorProxyHost(executorProxyHost);
+        newRobot.setExecutorBrowserProxyHost(executorBrowserProxyHost);
         newRobot.setExecutorProxyType(executorProxyType);
         newRobot.setExecutorProxyPort(executorProxyPort);
         newRobot.setDescription(description);
