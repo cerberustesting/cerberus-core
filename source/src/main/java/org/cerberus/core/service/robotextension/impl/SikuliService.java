@@ -182,14 +182,14 @@ public class SikuliService implements ISikuliService {
                         try {
                             xOffset = Integer.valueOf(xOffsetS);
                         } catch (NumberFormatException e) {
-                            LOG.warn("Failed to convert xOffset : " + xOffsetS, e);
+                            LOG.warn("Failed to convert xOffset : {}", xOffsetS, e);
                         }
                     }
                     if (!StringUtil.isEmptyOrNull(yOffsetS)) {
                         try {
                             yOffset = Integer.valueOf(yOffsetS);
                         } catch (NumberFormatException e) {
-                            LOG.warn("Failed to convert xOffset : " + yOffsetS, e);
+                            LOG.warn("Failed to convert xOffset : {}", yOffsetS, e);
                         }
                     }
                 }
@@ -250,17 +250,17 @@ public class SikuliService implements ISikuliService {
              */
             url = new URL(urlToConnect);
             connection = (HttpURLConnection) url.openConnection();
-            LOG.debug("Trying to connect to: " + urlToConnect);
+            LOG.debug("Trying to connect to: {}.", urlToConnect);
 
             if (connection != null) {
-                LOG.debug("Answer from Server: " + connection.getResponseCode());
+                LOG.debug("Answer from Server: {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
                 return false;
             }
         } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
-            LOG.info("Robot extension not reachable.");
+            LOG.info("Robot extension not reachable at '{}'.", urlToConnect);
             return false;
         } catch (IOException ex) {
             LOG.warn(ex);
@@ -293,21 +293,21 @@ public class SikuliService implements ISikuliService {
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
-            LOG.debug("Trying to connect to: " + urlToConnect);
+            LOG.debug("Trying to connect to: {}", urlToConnect);
 
             if (connection != null) {
-                LOG.debug("Answer from Server: " + connection.getResponseCode());
+                LOG.debug("Answer from Server: {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
-                LOG.warn("Response code different from 200 when calling '" + urlToConnect + "'");
+                LOG.warn("Response code different from 200 when calling '{}'", urlToConnect);
                 return false;
             }
         } catch (ConnectException exception) { //Handle Sikuli not reachable with Selenium 4
-            LOG.info("Robot extension not reachable.");
+            LOG.info("Robot extension not reachable at '{}'.", urlToConnect);
             return false;
         } catch (IOException ex) {
-            LOG.warn("Exception catch when calling '" + urlToConnect + "' " + ex, ex);
+            LOG.warn("Exception catch when calling '{}' {}", urlToConnect, ex, ex);
             return false;
         } finally {
             if (os != null) {
@@ -340,11 +340,11 @@ public class SikuliService implements ISikuliService {
             if (session.getExecutorExtensionProxyPort() > 0) {
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(session.getHost(), session.getExecutorExtensionProxyPort()));
 
-                LOG.info("Open Connection to Robot Node Sikuli (using proxy : " + session.getHost() + ":" + session.getExecutorExtensionProxyPort() + ") : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli (using proxy : {}:{}) : {}", session.getHost(), session.getExecutorExtensionProxyPort(), urlToConnect);
                 connection = (HttpURLConnection) url.openConnection(proxy);
 
             } else {
-                LOG.info("Open Connection to Robot Node Sikuli : " + urlToConnect);
+                LOG.info("Open Connection to Robot Node Sikuli : {}", urlToConnect);
                 connection = (HttpURLConnection) url.openConnection();
             }
             // We let Sikuli extension the sikuli timeout + 60 s to perform the action/control.
@@ -365,14 +365,14 @@ public class SikuliService implements ISikuliService {
 
             // Send post request
             os = new PrintStream(connection.getOutputStream());
-            LOG.debug("Sending JSON : " + postParameters.toString(1));
+            LOG.debug("Sending JSON : {}", postParameters.toString(1));
             os.println(postParameters.toString());
 //            os.println("|ENDS|");
 
             if (connection == null) {
                 LOG.warn("No response from Robot Node Sikuli !!");
             } else {
-                LOG.debug("Robot Node Sikuli http response status code : " + connection.getResponseCode());
+                LOG.debug("Robot Node Sikuli http response status code : {}", connection.getResponseCode());
             }
 
             if (connection == null || connection.getResponseCode() != 200) {
@@ -395,7 +395,7 @@ public class SikuliService implements ISikuliService {
                 }
             }
 
-            LOG.debug("Robot Node Sikuli Answer: " + response.toString());
+            LOG.debug("Robot Node Sikuli Answer: {}", response.toString());
 
             if (response.toString() != null && response.length() > 0) {
                 /**
@@ -438,7 +438,7 @@ public class SikuliService implements ISikuliService {
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_ROBOTEXTENSION_SERVER_BADURL);
             msg.resolveDescription("URL", urlToConnect);
         } catch (JSONException ex) {
-            LOG.warn("Exception when converting response to JSON : " + response.toString(), ex);
+            LOG.warn("Exception when converting response to JSON : {}", response.toString(), ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (MimeTypeException ex) {
             LOG.warn(ex, ex);
@@ -881,7 +881,7 @@ public class SikuliService implements ISikuliService {
 
             if (image != null) {
                 //logs for debug purposes
-                LOG.info("Screenshot taken with succes: " + image.getName() + " (size : " + image.length() + " b)");
+                LOG.info("Screenshot taken with success: {} (size : {} b)", image.getName(), image.length());
             } else {
                 LOG.warn("Screenshot returned null: ");
             }
