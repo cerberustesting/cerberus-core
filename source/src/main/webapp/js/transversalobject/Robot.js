@@ -634,7 +634,7 @@ function appendExecutorRow(tableBody, executor) {
     var devicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control input-sm").val(executor.devicePort);
     var deviceLockUnlockInput = $("<input type='checkbox' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceLockUnlock") + " --\">").addClass("form-control input-sm").prop("checked", executor.isDeviceLockUnlock);
     var executorProxyServiceHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyServiceHost") + " --\">").addClass("form-control input-sm").val(executor.executorProxyServiceHost);
-    var executorExtensionPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionPort") + " --\">").addClass("form-control input-sm").val(executor.executorExtensionPort);
+    var executorProxyServicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyServicePort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyServicePort);
     var executorProxyHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyHost") + " --\">").addClass("form-control input-sm").val(executor.executorProxyHost);
     var executorProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyPort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyPort);
     var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false);
@@ -642,10 +642,10 @@ function appendExecutorRow(tableBody, executor) {
 
     if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
         executorProxyServiceHostInput.prop("readonly", true);
-        executorExtensionPortInput.prop("readonly", true);
+        executorProxyServicePortInput.prop("readonly", true);
     } else {
         executorProxyServiceHostInput.prop("readonly", false);
-        executorExtensionPortInput.prop("readonly", false);
+        executorProxyServicePortInput.prop("readonly", false);
     }
     if (executor.executorProxyType === 'NONE') {
         executorProxyHostInput.prop("readonly", true);
@@ -661,10 +661,10 @@ function appendExecutorRow(tableBody, executor) {
         executor.executorProxyType = $(this).val();
         if (executor.executorProxyType === 'NONE' || executor.executorProxyType === 'MANUAL') {
             executorProxyServiceHostInput.prop("readonly", true);
-            executorExtensionPortInput.prop("readonly", true);
+            executorProxyServicePortInput.prop("readonly", true);
         } else {
             executorProxyServiceHostInput.prop("readonly", false);
-            executorExtensionPortInput.prop("readonly", false);
+            executorProxyServicePortInput.prop("readonly", false);
         }
         if (executor.executorProxyType === 'NONE') {
             executorProxyHostInput.prop("readonly", true);
@@ -697,7 +697,7 @@ function appendExecutorRow(tableBody, executor) {
     var dLockUnlock = $("<div class='form-group col-sm-2'></div>").append("<label for='devicelockunlockinput'>" + doc.getDocOnline("robotexecutor", "deviceLockUnlock") + "</label>").append(deviceLockUnlockInput);
     var epType = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxytype'>" + doc.getDocOnline("robotexecutor", "executorProxyType") + "</label>").append(selectProxyTypeLnk.val(executor.executorProxyType));
     var eehost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorProxyServiceHost'>" + doc.getDocOnline("robotexecutor", "executorProxyServiceHost") + "</label>").append(executorProxyServiceHostInput);
-    var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorextensionport'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
+    var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorProxyServicePort'>" + doc.getDocOnline("robotexecutor", "executorProxyServicePort") + "</label>").append(executorProxyServicePortInput);
     var ephost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorproxyhost'>" + doc.getDocOnline("robotexecutor", "executorProxyHost") + "</label>").append(executorProxyHostInput);
     var epport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorproxyport'>" + doc.getDocOnline("robotexecutor", "executorProxyPort") + "</label>").append(executorProxyPortInput);
     var drow1 = $("<div class='row'></div>").append(active).append(rank).append(expandName);
@@ -754,8 +754,8 @@ function appendExecutorRow(tableBody, executor) {
     executorProxyServiceHostInput.change(function () {
         executor.executorProxyServiceHost = $(this).val();
     });
-    executorExtensionPortInput.change(function () {
-        executor.executorExtensionPort = $(this).val();
+    executorProxyServicePortInput.change(function () {
+        executor.executorProxyServicePort = $(this).val();
     });
     executorProxyHostInput.change(function () {
         executor.executorProxyHost = $(this).val();
@@ -841,7 +841,7 @@ function addNewExecutorRow(tableBody) {
         isDeviceLockUnlock: false,
         description: "",
         executorProxyServiceHost: "",
-        executorExtensionPort: 8093,
+        executorProxyServicePort: 8093,
         executorProxyHost: "",
         executorProxyPort: 0,
         executorProxyType: "NONE"

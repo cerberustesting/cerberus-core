@@ -1155,10 +1155,10 @@ public class RobotServerService implements IRobotServerService {
                         && tce.getVerbose() >= 1 && (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false))) {
 
                     // Before collecting the stats, we wait the network idles for few minutes
-                    executorService.waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem());
+                    executorService.waitForIdleNetwork(tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), tce.getRemoteProxyUUID(), tce.getSystem());
 
                     // We now get the har data.
-                    JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), tce.getRemoteProxyUUID(), tce.getSystem(), 0);
+                    JSONObject har = executorService.getHar(null, false, tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), tce.getRemoteProxyUUID(), tce.getSystem(), 0);
 
                     // and enrich it with stat entry.
                     har = harService.enrichWithStats(har, tce.getCountryEnvApplicationParam().getDomain(), tce.getSystem(), tce.getNetworkTrafficIndexList());
