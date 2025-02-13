@@ -311,7 +311,7 @@ public class VariableService implements IVariableService {
                 stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", execution.getRemoteProxyUUID());
             }
             if (execution.getRobotExecutorObj() != null) {
-                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + execution.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + execution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + execution.getRemoteProxyUUID());
+                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + execution.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + execution.getRobotExecutorObj().getExecutorProxyServicePort() + "/getHar?uuid=" + execution.getRemoteProxyUUID());
             }
             /**
              * Trying to replace by system environment variables from Step

@@ -1134,14 +1134,14 @@ public class PropertyService implements IPropertyService {
 
             try {
                 //TODO : check if HAR is the same than the last one to avoid to download same har file several times
-                // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
+                // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorProxyServicePort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
                 Integer indexFrom = 0;
                 if (!execution.getNetworkTrafficIndexList().isEmpty()) {
                     // Take the value from the last entry.
                     indexFrom = execution.getNetworkTrafficIndexList().get(execution.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
                 }
 
-                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorProxyServiceHost(), execution.getRobotExecutorObj().getExecutorExtensionPort(),
+                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorProxyServiceHost(), execution.getRobotExecutorObj().getExecutorProxyServicePort(),
                         execution.getRemoteProxyUUID(), execution.getSystem(), indexFrom);
 
                 harRes = harService.enrichWithStats(harRes, execution.getCountryEnvApplicationParam().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());

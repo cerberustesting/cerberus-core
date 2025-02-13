@@ -52,7 +52,7 @@ public class RobotExecutor {
     private long dateLastExeSubmitted;
     private String executorProxyType;
     private String executorProxyServiceHost;
-    private Integer executorExtensionPort;
+    private Integer executorProxyServicePort;
     private String executorProxyHost;
     private Integer executorProxyPort;
     private String UsrCreated;
@@ -223,12 +223,12 @@ public class RobotExecutor {
         this.executorProxyServiceHost = executorProxyServiceHost;
     }
 
-    public Integer getExecutorExtensionPort() {
-        return executorExtensionPort;
+    public Integer getExecutorProxyServicePort() {
+        return executorProxyServicePort;
     }
 
-    public void setExecutorExtensionPort(Integer executorExtensionPort) {
-        this.executorExtensionPort = executorExtensionPort;
+    public void setExecutorProxyServicePort(Integer executorProxyServicePort) {
+        this.executorProxyServicePort = executorProxyServicePort;
     }
 
     public String getExecutorProxyHost() {
@@ -368,7 +368,7 @@ public class RobotExecutor {
         if ((this.executorProxyServiceHost == null) ? (other.executorProxyServiceHost != null) : !this.executorProxyServiceHost.equals(other.executorProxyServiceHost)) {
             return false;
         }
-        if ((this.executorExtensionPort == null) ? (other.executorExtensionPort != null) : !this.executorExtensionPort.equals(other.executorExtensionPort)) {
+        if ((this.executorProxyServicePort == null) ? (other.executorProxyServicePort != null) : !this.executorProxyServicePort.equals(other.executorProxyServicePort)) {
             return false;
         }
         if ((this.executorProxyHost == null) ? (other.executorProxyHost != null) : !this.executorProxyHost.equals(other.executorProxyHost)) {
@@ -400,7 +400,7 @@ public class RobotExecutor {
             result.put("devicePort", this.getDevicePort());
             result.put("isDeviceLockUnlock", this.isDeviceLockUnlock());
             result.put("executorProxyServiceHost", this.getExecutorProxyServiceHost());
-            result.put("executorExtensionPort", this.getExecutorExtensionPort());
+            result.put("executorProxyServicePort", this.getExecutorProxyServicePort());
             result.put("executorProxyHost", this.getExecutorProxyHost());
             result.put("executorProxyPort", this.getExecutorProxyPort());
             result.put("executorProxyType", this.getExecutorProxyType());
