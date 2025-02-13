@@ -6665,8 +6665,8 @@ ALTER TABLE robotexecutor RENAME COLUMN NodeProxyPort TO ExecutorExtensionProxyP
 ALTER TABLE robotexecutor RENAME COLUMN host_user TO HostUser;
 ALTER TABLE robotexecutor RENAME COLUMN host_password TO HostPassword;
 
--- 1890
+-- 1905
 ALTER TABLE robotexecutor ADD COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER ExecutorBrowserProxyPort;
 
--- 1891
+-- 1906
 ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER HostPassword;
