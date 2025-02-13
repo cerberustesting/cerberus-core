@@ -269,7 +269,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     public Answer create(RobotExecutor object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `isactive`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `isdevicelockunlock`, `ExecutorProxyServiceHost`, `ExecutorProxyServicePort`, `executorproxyhost`, `executorproxyport`, `executorproxytype`, `description`, `usrcreated`) ");
+        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `isactive`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `isdevicelockunlock`, `ExecutorProxyServiceHost`, `ExecutorProxyServicePort`, `ExecutorBrowserProxyHost`, `executorproxyport`, `executorproxytype`, `description`, `usrcreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
@@ -303,7 +303,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 } else {
                     preStat.setNull(i++, Types.INTEGER);
                 }
-                preStat.setString(i++, object.getExecutorProxyHost());
+                preStat.setString(i++, object.getExecutorBrowserProxyHost());
                 if (object.getExecutorProxyPort() != null) {
                     preStat.setInt(i++, object.getExecutorProxyPort());
                 } else {
@@ -367,7 +367,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     @Override
     public Answer update(String robot, String executor, RobotExecutor object) {
         MessageEvent msg = null;
-        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, isactive = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `isdevicelockunlock` = ?,  `ExecutorProxyServiceHost` = ?,  `ExecutorProxyServicePort` = ?, `executorproxyhost` = ?,  `executorproxyport` = ?, `executorproxytype` = ?, "
+        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, isactive = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceudid` = ?, `devicename` = ?, `deviceport` = ?,  `isdevicelockunlock` = ?,  `ExecutorProxyServiceHost` = ?,  `ExecutorProxyServicePort` = ?, `ExecutorBrowserProxyHost` = ?,  `executorproxyport` = ?, `executorproxytype` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `robot` = ? and `executor` = ?";
 
         // Debug message on SQL.
@@ -403,7 +403,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             } else {
                 preStat.setNull(i++, Types.INTEGER);
             }
-            preStat.setString(i++, object.getExecutorProxyHost());
+            preStat.setString(i++, object.getExecutorBrowserProxyHost());
             if (object.getExecutorProxyPort() != null) {
                 preStat.setInt(i++, object.getExecutorProxyPort());
             } else {
@@ -474,7 +474,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         boolean isDevicelockunlock = rs.getBoolean("rbe.isdevicelockunlock");
         String executorProxyServiceHost = rs.getString("rbe.ExecutorProxyServiceHost");
         Integer executorProxyServicePort = rs.getInt("rbe.ExecutorProxyServicePort");
-        String executorProxyHost = rs.getString("rbe.executorproxyhost");
+        String executorBrowserProxyHost = rs.getString("rbe.ExecutorBrowserProxyHost");
         Integer executorProxyPort = rs.getInt("rbe.executorproxyport");
         String executorProxyType = rs.getString("rbe.executorproxytype");
         if(deviceport == 0) {
@@ -489,7 +489,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorProxyServiceHost, executorProxyServicePort, executorProxyHost, executorProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, isActive, rank, host, port, host_user, host_password, nodeProxyPort, deviceudid, devicename, deviceport, isDevicelockunlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorProxyPort, executorProxyType, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
