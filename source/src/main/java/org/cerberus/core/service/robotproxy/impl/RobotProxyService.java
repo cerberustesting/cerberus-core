@@ -65,7 +65,7 @@ public class RobotProxyService implements IRobotProxyService {
     @Override
     public void startRemoteProxy(TestCaseExecution tce) {
 
-        String url = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
+        String url = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort()
                 + "/startProxy?timeout=" + String.valueOf(parameterService.getParameterIntegerByKey("cerberus_executorproxy_timeoutms", tce.getSystem(), 3600000));
         if (tce.getRobotExecutorObj().getExecutorProxyPort() != 0) {
             url += "&port=" + tce.getRobotExecutorObj().getExecutorProxyPort();
@@ -73,7 +73,7 @@ public class RobotProxyService implements IRobotProxyService {
 
         if (TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK.equals(tce.getRobotProvider())) {
             url += "&bsLocalProxyActive=true";
-            url += "&bsLocalProxyHost=" + tce.getRobotExecutorObj().getExecutorExtensionHost();
+            url += "&bsLocalProxyHost=" + tce.getRobotExecutorObj().getExecutorProxyServiceHost();
             url += "&bsKey=" + tce.getRobotExecutorObj().getHostPassword();
             url += "&bsLocalIdentifier=" + tce.getExecutionUUID();
         }
@@ -97,7 +97,7 @@ public class RobotProxyService implements IRobotProxyService {
 
         } catch (Exception ex) {
             logEventService.createForPrivateCalls("", "EXEC", LogEvent.STATUS_ERROR, "Error when trying to open a remote proxy on Cerberus Robot Proxy. " + ex.toString());
-            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
+            LOG.error("Exception Starting Remote Proxy " + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + " Exception :" + ex.toString(), ex);
         }
 
     }
@@ -114,7 +114,7 @@ public class RobotProxyService implements IRobotProxyService {
                 // Ask the Proxy to stop.
                 if (tce.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())) {
 
-                    String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorExtensionHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
+                    String urlStop = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/stopProxy?uuid=" + tce.getRemoteProxyUUID();
 
                     LOG.debug("Shutting down of Proxy on Cerberus Executor calling : " + urlStop);
 

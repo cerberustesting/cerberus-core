@@ -30,7 +30,6 @@ import org.cerberus.core.engine.execution.IRecorderService;
 import org.cerberus.core.engine.gwt.IVariableService;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusEventException;
-import org.cerberus.core.util.DateUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -312,7 +311,7 @@ public class VariableService implements IVariableService {
                 stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", execution.getRemoteProxyUUID());
             }
             if (execution.getRobotExecutorObj() != null) {
-                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + execution.getRobotExecutorObj().getExecutorExtensionHost() + ":" + execution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + execution.getRemoteProxyUUID());
+                stringToDecode = stringToDecode.replace("%system.REMOTEPROXY_HAR_URL%", "http://" + execution.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + execution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + execution.getRemoteProxyUUID());
             }
             /**
              * Trying to replace by system environment variables from Step
