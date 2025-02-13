@@ -266,7 +266,7 @@ public class UpdateRobot extends HttpServlet {
             Integer rank = reJson.getInt("rank");
             String host = reJson.getString("host");
             String port = reJson.getString("port");
-            String host_user = reJson.getString("hostUser");
+            String hostUser = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
             boolean isDeviceLockUnlock = reJson.getBoolean("isDeviceLockUnlock");
@@ -295,19 +295,19 @@ public class UpdateRobot extends HttpServlet {
 
             String description = reJson.getString("description");
 
-            String host_password = reJson.getString("hostPassword");
-            if (host_password.equals(StringUtil.SECRET_STRING)) {
-                host_password = "";
+            String hostPassword = reJson.getString("hostPassword");
+            if (hostPassword.equals(StringUtil.SECRET_STRING)) {
+                hostPassword = "";
                 for (RobotExecutor robotExecutor : reList1) {
                     if (robotExecutor.getID() == id) {
-                        host_password = robotExecutor.getHostPassword();
+                        hostPassword = robotExecutor.getHostPassword();
                         LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
                     }
                 }
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, host_user, host_password, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, isDeviceLockUnlock, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }
