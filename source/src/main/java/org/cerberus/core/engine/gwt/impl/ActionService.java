@@ -1644,7 +1644,7 @@ public class ActionService implements IActionService {
     private MessageEvent doActionWaitNetworkTrafficIdle(TestCaseExecution tCExecution) {
         try {
 
-            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorProxyServiceHost(), tCExecution.getRobotExecutorObj().getExecutorExtensionPort(),
+            return executorService.waitForIdleNetwork(tCExecution.getRobotExecutorObj().getExecutorProxyServiceHost(), tCExecution.getRobotExecutorObj().getExecutorProxyServicePort(),
                     tCExecution.getRemoteProxyUUID(), tCExecution.getSystem());
 
         } catch (CerberusEventException ex) {
@@ -1965,7 +1965,7 @@ public class ActionService implements IActionService {
 
             // We now get the har data.
             boolean doWithResponse = ParameterParserUtil.parseBooleanParam(withResponseContent, false);
-            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
+            JSONObject har = executorService.getHar(urlToFilter, doWithResponse, exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID(), exe.getSystem(), indexFrom);
 
             har = harService.enrichWithStats(har, exe.getCountryEnvApplicationParam().getDomain(), exe.getSystem(), exe.getNetworkTrafficIndexList());
 
@@ -2013,7 +2013,7 @@ public class ActionService implements IActionService {
             /**
              * Building the url to get the Latest index from cerberus-executor
              */
-            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorExtensionPort(), exe.getRemoteProxyUUID());
+            Integer nbHits = executorService.getHitsNb(exe.getRobotExecutorObj().getExecutorProxyServiceHost(), exe.getRobotExecutorObj().getExecutorProxyServicePort(), exe.getRemoteProxyUUID());
 
             NetworkTrafficIndex nti = new NetworkTrafficIndex();
             if (StringUtil.isEmptyOrNull(value1)) {

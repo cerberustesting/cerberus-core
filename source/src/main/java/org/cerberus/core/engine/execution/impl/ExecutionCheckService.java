@@ -374,7 +374,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
                 tce.getRobotExecutorObj().setExecutorProxyServiceHost(tce.getRobotExecutorObj().getHost());
             }
 
-            String urlString = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
+            String urlString = "http://" + tce.getRobotExecutorObj().getExecutorProxyServiceHost() + ":" + tce.getRobotExecutorObj().getExecutorProxyServicePort() + "/check";
             LOG.debug("Url to check Proxy Executor : {}", urlString);
 
             URL url;
@@ -399,16 +399,16 @@ public class ExecutionCheckService implements IExecutionCheckService {
                         return true;
                     }
                 } catch (Exception ex) {
-                    LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
+                    LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), ex.toString());
                 }
 
             } catch (IOException ex) {
-                LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorExtensionPort(), ex.toString());
+                LOG.warn("Exception Reaching Cerberus Extension {}:{} Exception: {}", tce.getRobotExecutorObj().getExecutorProxyServiceHost(), tce.getRobotExecutorObj().getExecutorProxyServicePort(), ex.toString());
             }
 
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE);
             message.resolveDescription("HOST", tce.getRobotExecutorObj().getExecutorProxyServiceHost())
-                    .resolveDescription("PORT", String.valueOf(tce.getRobotExecutorObj().getExecutorExtensionPort()))
+                    .resolveDescription("PORT", String.valueOf(tce.getRobotExecutorObj().getExecutorProxyServicePort()))
                     .resolveDescription("ROBOT", String.valueOf(tce.getRobotExecutorObj().getRobot()))
                     .resolveDescription("ROBOTEXE", String.valueOf(tce.getRobotExecutorObj().getExecutor()));
             return false;
