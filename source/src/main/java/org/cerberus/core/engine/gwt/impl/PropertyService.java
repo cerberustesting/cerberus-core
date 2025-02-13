@@ -1141,7 +1141,7 @@ public class PropertyService implements IPropertyService {
                     indexFrom = execution.getNetworkTrafficIndexList().get(execution.getNetworkTrafficIndexList().size() - 1).getIndexRequestNb();
                 }
 
-                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorExtensionHost(), execution.getRobotExecutorObj().getExecutorExtensionPort(),
+                JSONObject harRes = executorService.getHar(testCaseExecutionData.getValue1(), false, execution.getRobotExecutorObj().getExecutorProxyServiceHost(), execution.getRobotExecutorObj().getExecutorExtensionPort(),
                         execution.getRemoteProxyUUID(), execution.getSystem(), indexFrom);
 
                 harRes = harService.enrichWithStats(harRes, execution.getCountryEnvApplicationParam().getDomain(), execution.getSystem(), execution.getNetworkTrafficIndexList());
