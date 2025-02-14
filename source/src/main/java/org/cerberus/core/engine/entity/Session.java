@@ -38,6 +38,7 @@ public class Session {
     private String nodeHost;
     private String nodePort;
 
+    private Integer executorExtensionPort; //Port where the cerberus robot extension is available on the node host
     private Integer executorExtensionProxyPort; // if >0, we use the proxy on host:proxyPort in order to connect to sikuli API (host is the host of the robot - ie the proxy should run on the same server as the robot server).
     
     private boolean started;
@@ -97,6 +98,14 @@ public class Session {
 
     public void setExecutorExtensionProxyPort(Integer executorExtensionProxyPort) {
         this.executorExtensionProxyPort = executorExtensionProxyPort;
+    }
+
+    public Integer getExecutorExtensionPort() {
+        return executorExtensionPort;
+    }
+
+    public void setExecutorExtensionPort(Integer executorExtensionPort) {
+        this.executorExtensionPort = executorExtensionPort;
     }
 
     public Integer getCerberus_selenium_highlightElement_default() {

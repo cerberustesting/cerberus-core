@@ -636,6 +636,8 @@ function appendExecutorRow(tableBody, executor) {
     var executorProxyServicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorProxyServicePort") + " --\">").addClass("form-control input-sm").val(executor.executorProxyServicePort);
     var executorBrowserProxyHostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorBrowserProxyHost") + " --\">").addClass("form-control input-sm").val(executor.executorBrowserProxyHost);
     var executorBrowserProxyPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorBrowserProxyPort") + " --\">").addClass("form-control input-sm").val(executor.executorBrowserProxyPort);
+    var executorExtensionPortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executorExtensionPort") + " --\">").addClass("form-control input-sm").val(executor.executorExtensionPort);
+
     var selectProxyTypeLnk = getSelectInvariant('PROXYTYPE', false);
     var table = $("#" + tableBody);
 
@@ -699,12 +701,14 @@ function appendExecutorRow(tableBody, executor) {
     var eeport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorProxyServicePort'>" + doc.getDocOnline("robotexecutor", "executorProxyServicePort") + "</label>").append(executorProxyServicePortInput);
     var ephost = $("<div class='form-group col-sm-3'></div>").append("<label for='executorBrowserProxyHost'>" + doc.getDocOnline("robotexecutor", "executorBrowserProxyHost") + "</label>").append(executorBrowserProxyHostInput);
     var epport = $("<div class='form-group col-sm-2'></div>").append("<label for='executorBrowserProxyPort'>" + doc.getDocOnline("robotexecutor", "executorBrowserProxyPort") + "</label>").append(executorBrowserProxyPortInput);
+    var executorExtensionPortGroup = $("<div class='form-group col-sm-2'></div>").append("<label for='executorExtensionPort'>" + doc.getDocOnline("robotexecutor", "executorExtensionPort") + "</label>").append(executorExtensionPortInput);
     var drow1 = $("<div class='row'></div>").append(active).append(rank).append(expandName);
     var drow2 = $("<div class='row'></div>").append(host).append(port).append(hostUser).append(hostPassword);
 //    var drow3 = $("<div class='row'></div>").append(hostUser).append(hostPassword);
     var drow4 = $("<div class='row alert alert-warning'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
     var drow5 = $("<div class='row alert alert-warning'></div>").append(epType).append(eehost).append(eeport).append(ephost).append(epport);
-    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5);
+    var drow6 = $("<div class='row alert alert-warning'></div>").append(executorExtensionPortGroup);
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow4).append(drow5).append(drow6);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(panelExtra);
 
 
@@ -761,6 +765,9 @@ function appendExecutorRow(tableBody, executor) {
     });
     executorBrowserProxyPortInput.change(function () {
         executor.executorBrowserProxyPort = $(this).val();
+    });
+    executorExtensionPortInput.change(function () {
+        executor.executorExtensionPort = $(this).val();
     });
 
     hostInput.autocomplete({
@@ -843,6 +850,7 @@ function addNewExecutorRow(tableBody) {
         executorProxyServicePort: 8093,
         executorBrowserProxyHost: "",
         executorBrowserProxyPort: 0,
+        executorExtensionPort: 0,
         executorProxyType: "NONE"
     };
     appendExecutorRow(tableBody, newExecutor);

@@ -274,8 +274,11 @@ public class CreateRobot extends HttpServlet {
                 }
             }
 
+            //Front (json serialize) send string empty when user provides no value. So, need to check first if value is not an empty string to secure and affect 0.
+            Integer executorExtensionPort = (reJson.has("executorExtensionPort") && !reJson.get("executorExtensionPort").toString().isEmpty()) ? reJson.getInt("executorExtensionPort") : 0;
+
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, false, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorProxyType, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, isActive, rank, host, port, hostUser, hostPassword, 0, deviceUdid, deviceName, devicePort, false, executorProxyServiceHost, executorProxyServicePort, executorBrowserProxyHost, executorBrowserProxyPort, executorExtensionPort, executorProxyType, description, "", null, "", null);
                 reList.add(reo);
             }
         }

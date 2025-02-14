@@ -55,6 +55,7 @@ public class RobotExecutor {
     private Integer executorProxyServicePort;
     private String executorBrowserProxyHost;
     private Integer executorBrowserProxyPort;
+    private Integer executorExtensionPort;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -247,6 +248,14 @@ public class RobotExecutor {
         this.executorBrowserProxyPort = executorBrowserProxyPort;
     }
 
+    public Integer getExecutorExtensionPort() {
+        return executorExtensionPort;
+    }
+
+    public void setExecutorExtensionPort(Integer executorExtensionPort) {
+        this.executorExtensionPort = executorExtensionPort;
+    }
+
     public String getExecutorProxyType() {
         return executorProxyType;
     }
@@ -377,6 +386,9 @@ public class RobotExecutor {
         if ((this.executorBrowserProxyPort == null) ? (other.executorBrowserProxyPort != null) : !this.executorBrowserProxyPort.equals(other.executorBrowserProxyPort)) {
             return false;
         }
+        if ((this.executorExtensionPort == null) ? (other.executorExtensionPort != null) : !this.executorExtensionPort.equals(other.executorExtensionPort)) {
+            return false;
+        }
         return true;
     }
 
@@ -403,6 +415,7 @@ public class RobotExecutor {
             result.put("executorProxyServicePort", this.getExecutorProxyServicePort());
             result.put("executorBrowserProxyHost", this.getExecutorBrowserProxyHost());
             result.put("executorBrowserProxyPort", this.getExecutorBrowserProxyPort());
+            result.put("executorExtensionPort", this.getExecutorExtensionPort());
             result.put("executorProxyType", this.getExecutorProxyType());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());

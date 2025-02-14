@@ -97,6 +97,8 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
 
+    private static final String SIKULI_EXECUTEACTION_PATH = "/extra/ExecuteSikuliAction";
+
     private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2,
                                               long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
@@ -242,8 +244,7 @@ public class SikuliService implements ISikuliService {
         PrintStream os = null;
 
         URL url;
-        String host = StringUtil.cleanHostURL(session.getHost());
-        String urlToConnect = host + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnRobot(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
@@ -283,8 +284,7 @@ public class SikuliService implements ISikuliService {
         PrintStream os = null;
 
         URL url;
-        String host = StringUtil.cleanHostURL(session.getNodeHost());
-        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnNode(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
@@ -330,8 +330,7 @@ public class SikuliService implements ISikuliService {
 
         StringBuilder response = new StringBuilder();
         URL url;
-        String host = StringUtil.cleanHostURL(session.getNodeHost());
-        String urlToConnect = host + ":" + session.getNodePort() + "/extra/ExecuteSikuliAction";
+        String urlToConnect = generateSikuliUrlOnNode(session, SIKULI_EXECUTEACTION_PATH);
         try {
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
@@ -856,6 +855,16 @@ public class SikuliService implements ISikuliService {
             LOG.warn(ex, ex);
         }
         return image;
+    }
+
+    private String generateSikuliUrlOnRobot(Session session, String path) {
+        int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getPort());
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getHost()), port, path);
+    }
+
+    private String generateSikuliUrlOnNode(Session session, String path) {
+        int port = session.getExecutorExtensionPort() != 0 ? session.getExecutorExtensionPort() : Integer.parseInt(session.getNodePort());
+        return String.format("%s:%d%s", StringUtil.cleanHostURL(session.getNodeHost()), port, path);
     }
 
 }
