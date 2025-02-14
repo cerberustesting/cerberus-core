@@ -233,8 +233,11 @@ public class RobotServerService implements IRobotServerService {
             if (execution.getRobotExecutorObj() != null) {
                 LOG.debug("Session node proxy set : {}", execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
                 session.setExecutorExtensionProxyPort(execution.getRobotExecutorObj().getExecutorExtensionProxyPort());
+                LOG.debug("Extension port set: {}", execution.getRobotExecutorObj().getExecutorExtensionPort());
+                session.setExecutorExtensionPort(execution.getRobotExecutorObj().getExecutorExtensionPort());
             } else {
                 session.setExecutorExtensionProxyPort(0);
+                session.setExecutorExtensionPort(0);
             }
             session.setConsoleLogs(new JSONArray());
 
