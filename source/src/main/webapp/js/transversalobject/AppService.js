@@ -633,15 +633,17 @@ function performCall(service) {
                     ace.edit($("#editSoapLibraryModal #srvResponseDet")[0]).destroy();
                     $('#editSoapLibraryModal  #srvResponseDet').text(JSON.stringify(CallContent.call.Response, null, '\t'));
                     //Highlight envelop on modal loading
-                    var editorResponse = ace.edit($('#editSoapLibraryModal  #srvResponseDet')[0]);
-                    editorResponse.setTheme("ace/theme/chrome");
-                    editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
-                    editorResponse.setOptions({
+                    var editorResponseDet = ace.edit($('#editSoapLibraryModal  #srvResponseDet')[0]);
+                    editorResponseDet.setTheme("ace/theme/chrome");
+                    editorResponseDet.getSession().setMode(defineAceMode(editorResponseDet.getSession().getDocument().getValue()));
+                    editorResponseDet.setOptions({
                         maxLines: 50
                     });
+                    document.getElementById('srvResponseDet').style.fontSize = '14px';
+                    editorResponseDet.setReadOnly(true);
                     $($("#editSoapLibraryModal #srvResponseDet").get(0)).keyup(function () {
-                        if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
-                            editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                        if (editorResponseDet.getSession().getMode().$id === "ace/mode/text") {
+                            editorResponseDet.getSession().setMode(defineAceMode(editorResponseDet.getSession().getDocument().getValue()));
                         }
                     });
 
@@ -670,6 +672,8 @@ function performCall(service) {
                         editorResponse.setOptions({
                             maxLines: 50
                         });
+                        document.getElementById('srvResponse').style.fontSize = '14px';
+                        editorResponse.setReadOnly(true);
                         $($("#editSoapLibraryModal #srvResponse").get(0)).keyup(function () {
                             if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
                                 editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
@@ -699,15 +703,17 @@ function performCall(service) {
                     ace.edit($("#editSoapLibraryModal #srvRequestDet")[0]).destroy();
                     $('#editSoapLibraryModal  #srvRequestDet').text(JSON.stringify(CallContent.call.Request, null, '\t'));
                     //Highlight envelop on modal loading
-                    var editorResponse = ace.edit($('#editSoapLibraryModal  #srvRequestDet')[0]);
-                    editorResponse.setTheme("ace/theme/chrome");
-                    editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
-                    editorResponse.setOptions({
+                    var editorRequestDet = ace.edit($('#editSoapLibraryModal  #srvRequestDet')[0]);
+                    editorRequestDet.setTheme("ace/theme/chrome");
+                    editorRequestDet.getSession().setMode(defineAceMode(editorRequestDet.getSession().getDocument().getValue()));
+                    editorRequestDet.setOptions({
                         maxLines: 50
                     });
+                    document.getElementById('srvRequestDet').style.fontSize = '14px';
+                    editorRequestDet.setReadOnly(true);
                     $($("#editSoapLibraryModal #srvRequestDet").get(0)).keyup(function () {
-                        if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
-                            editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                        if (editorRequestDet.getSession().getMode().$id === "ace/mode/text") {
+                            editorRequestDet.getSession().setMode(defineAceMode(editorRequestDet.getSession().getDocument().getValue()));
                         }
                     });
 
@@ -719,15 +725,17 @@ function performCall(service) {
                         $('#editSoapLibraryModal  #srvCallRequest').text(JSON.stringify(CallContent.call.Request["HTTP-Request"], null, '\t'));
                     }
                     //Highlight envelop on modal loading
-                    var editorResponse = ace.edit($('#editSoapLibraryModal  #srvCallRequest')[0]);
-                    editorResponse.setTheme("ace/theme/chrome");
-                    editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
-                    editorResponse.setOptions({
+                    var editorRequestSrvCall = ace.edit($('#editSoapLibraryModal  #srvCallRequest')[0]);
+                    editorRequestSrvCall.setTheme("ace/theme/chrome");
+                    editorRequestSrvCall.getSession().setMode(defineAceMode(editorRequestSrvCall.getSession().getDocument().getValue()));
+                    editorRequestSrvCall.setOptions({
                         maxLines: 50
                     });
+                    document.getElementById('srvCallRequest').style.fontSize = '14px';
+                    editorRequestSrvCall.setReadOnly(true);
                     $($("#editSoapLibraryModal #srvCallRequest").get(0)).keyup(function () {
-                        if (editorResponse.getSession().getMode().$id === "ace/mode/text") {
-                            editorResponse.getSession().setMode(defineAceMode(editorResponse.getSession().getDocument().getValue()));
+                        if (editorRequestSrvCall.getSession().getMode().$id === "ace/mode/text") {
+                            editorRequestSrvCall.getSession().setMode(defineAceMode(editorRequestSrvCall.getSession().getDocument().getValue()));
                         }
                     });
 
@@ -1301,24 +1309,31 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
     editor.setOptions({
         maxLines: 50
     });
+    document.getElementById('srvRequest').style.fontSize = '14px';
+
     var editorKey = ace.edit($("#editSoapLibraryModal #kfkKey")[0]);
     editorKey.setTheme("ace/theme/chrome");
     editorKey.getSession().setMode(defineAceMode(editorKey.getSession().getDocument().getValue()));
     editorKey.setOptions({
         maxLines: 50
     });
+    document.getElementById('kfkKey').style.fontSize = '14px';
+    
     var editorSchemaKey = ace.edit($("#editSoapLibraryModal #avrSchemaKey")[0]);
     editorSchemaKey.setTheme("ace/theme/chrome");
-    editorSchemaKey.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editorSchemaKey.getSession().setMode(defineAceMode(editorSchemaKey.getSession().getDocument().getValue()));
     editorSchemaKey.setOptions({
         maxLines: 50
     });
+    document.getElementById('avrSchemaKey').style.fontSize = '14px';
+    
     var editorSchemaValue = ace.edit($("#editSoapLibraryModal #avrSchemaValue")[0]);
     editorSchemaValue.setTheme("ace/theme/chrome");
-    editorSchemaValue.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editorSchemaValue.getSession().setMode(defineAceMode(editorSchemaValue.getSession().getDocument().getValue()));
     editorSchemaValue.setOptions({
         maxLines: 50
     });
+    document.getElementById('avrSchemaValue').style.fontSize = '14px';
 
     //On ADD, try to autodetect Ace mode until it is defined
 

@@ -282,7 +282,10 @@ function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto
                 editor.setOptions({
                     maxLines: 30
                 });
-
+                if (!isEditable) { // If readonly, we readonly all fields
+                    editor.setReadOnly(true);
+                }
+                $("#previewContent")[0].style.fontSize = "14px";
                 //Autoindentation
                 var jsbOpts = {
                     indent_size: 2

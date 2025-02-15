@@ -27,8 +27,8 @@ function setPlaceholderProperty(property, propertyObject) {
 
     if (typeof placeHolders.database !== 'undefined') {
         property.find("div[class*='database']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.database.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.database.class);
         property.find("div[class*='database']").show();
         property.find("div[class*='database']").find('input').attr("placeholder", placeHolders.database.label[user.language]);
         property.find("div[class*='database']").find('#propertyDatabaseAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.database.label[user.language]);
@@ -36,35 +36,36 @@ function setPlaceholderProperty(property, propertyObject) {
             property.find("div[class*='database']").find('img').attr("src", placeHolders.database.picto);
         }
 
-        property.find("div[class*='database']").insertAfter(property.find("div[class*='"+placeHolders.database.insertAfter+"']"));
+        property.find("div[class*='database']").insertAfter(property.find("div[class*='" + placeHolders.database.insertAfter + "']"));
     } else {
         property.find("div[class*='database']").hide();
     }
 
     if (typeof placeHolders.value1 !== 'undefined') {
         var className = "value1";
-        if (typeof placeHolders.value1.editorMode === 'undefined'){
+        if (typeof placeHolders.value1.editorMode === 'undefined') {
             className = "valueInput1";
             property.find("div[class*='value1']").hide();
         } else {
             className = "value1";
             property.find("div[class*='valueInput1']").hide();
         }
-        property.find("div[class*='"+className+"']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.value1.class);
-        property.find("div[class*='"+className+"']").show();
-        property.find("div[class*='"+className+"']").find('input').attr("placeholder", placeHolders.value1.label[user.language]);
-        property.find("div[class*='"+className+"']").find('#propertyValue1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.value1.label[user.language]);
+        property.find("div[class*='" + className + "']")
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.value1.class);
+        property.find("div[class*='" + className + "']").show();
+        property.find("div[class*='" + className + "']").find('input').attr("placeholder", placeHolders.value1.label[user.language]);
+        property.find("div[class*='" + className + "']").find('#propertyValue1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.value1.label[user.language]);
         if (typeof placeHolders.value1.picto !== 'undefined') {
-            property.find("div[class*='"+className+"']").find('img').attr("src", placeHolders.value1.picto);
+            property.find("div[class*='" + className + "']").find('img').attr("src", placeHolders.value1.picto);
         }
 
-        property.find("div[class*='"+className+"']").insertAfter(property.find("div[class*='"+placeHolders.value1.insertAfter+"']"));
+        property.find("div[class*='" + className + "']").insertAfter(property.find("div[class*='" + placeHolders.value1.insertAfter + "']"));
 
-        if(propertyObject.type === 'getFromDataLib'){
+        if (propertyObject.type === 'getFromDataLib') {
 
             var editor = ace.edit($(property.find("pre[name='propertyValue']"))[0]);
+            $(property.find("pre[name='propertyValue']"))[0].style.fontSize = '16px';
             var escaped = propertyObject.value1;
 
             property.find("div[class*='editDataLib']").show();
@@ -79,18 +80,18 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     if (typeof placeHolders.value2 !== 'undefined') {
-        var display = displayField(placeHolders.value2.displayConditions,propertyObject);
+        var display = displayField(placeHolders.value2.displayConditions, propertyObject);
         if (display) {
-        property.find("div[class*='value2']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.value2.class);
-        property.find("div[class*='value2']").show();
-        property.find("div[class*='value2']").find('input').attr("placeholder", placeHolders.value2.label[user.language]);
-        property.find("div[class*='value2']").find('#propertyValue2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.value2.label[user.language]);
-        if (typeof placeHolders.value2.picto !== 'undefined') {
-            property.find("div[class*='value2']").find('img').attr("src", placeHolders.value2.picto);
-        }
-        property.find("div[class*='value2']").insertAfter(property.find("div[class*='"+placeHolders.value2.insertAfter+"']"));
+            property.find("div[class*='value2']")
+                    .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                    .addClass(placeHolders.value2.class);
+            property.find("div[class*='value2']").show();
+            property.find("div[class*='value2']").find('input').attr("placeholder", placeHolders.value2.label[user.language]);
+            property.find("div[class*='value2']").find('#propertyValue2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.value2.label[user.language]);
+            if (typeof placeHolders.value2.picto !== 'undefined') {
+                property.find("div[class*='value2']").find('img').attr("src", placeHolders.value2.picto);
+            }
+            property.find("div[class*='value2']").insertAfter(property.find("div[class*='" + placeHolders.value2.insertAfter + "']"));
         } else {
             property.find("div[class*='value2']").hide();
         }
@@ -100,14 +101,14 @@ function setPlaceholderProperty(property, propertyObject) {
 
     if (typeof placeHolders.value3 !== 'undefined') {
         property.find("div[class*='value3']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.value3.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.value3.class);
         property.find("div[class*='value3']").show();
         property.find("div[class*='value3']").find('#propertyValue3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.value3.label[user.language]);
         if (typeof placeHolders.value3.picto !== 'undefined') {
             property.find("div[class*='value3']").find('img').attr("src", placeHolders.value3.picto);
         }
-        property.find("div[class*='value3']").insertAfter(property.find("div[class*='"+placeHolders.value3.insertAfter+"']"));
+        property.find("div[class*='value3']").insertAfter(property.find("div[class*='" + placeHolders.value3.insertAfter + "']"));
         feedOption(propertyObject.type, "value3", property.find("div[class*='value3']").find('select'), propertyObject.value3);
     } else {
         property.find("div[class*='value3']").hide();
@@ -115,18 +116,18 @@ function setPlaceholderProperty(property, propertyObject) {
 
 
     if (typeof placeHolders.length !== 'undefined') {
-        var display = displayField(placeHolders.length.displayConditions,propertyObject);
+        var display = displayField(placeHolders.length.displayConditions, propertyObject);
         if (display) {
-        property.find("div[class*='length']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.length.class);
-        property.find("div[class*='length']").show();
-        property.find("div[class*='length']").find('input').attr("placeholder", placeHolders.length.label[user.language]);
-        property.find("div[class*='length']").find('#propertyLengthAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.length.label[user.language]);
-        if (typeof placeHolders.length.picto !== 'undefined') {
-            property.find("div[class*='length']").find('img').attr("src", placeHolders.length.picto);
-        }
-        property.find("div[class*='length']").insertAfter(property.find("div[class*='"+placeHolders.length.insertAfter+"']"));
+            property.find("div[class*='length']")
+                    .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                    .addClass(placeHolders.length.class);
+            property.find("div[class*='length']").show();
+            property.find("div[class*='length']").find('input').attr("placeholder", placeHolders.length.label[user.language]);
+            property.find("div[class*='length']").find('#propertyLengthAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.length.label[user.language]);
+            if (typeof placeHolders.length.picto !== 'undefined') {
+                property.find("div[class*='length']").find('img').attr("src", placeHolders.length.picto);
+            }
+            property.find("div[class*='length']").insertAfter(property.find("div[class*='" + placeHolders.length.insertAfter + "']"));
         } else {
             property.find("div[class*='length']").hide();
         }
@@ -136,25 +137,25 @@ function setPlaceholderProperty(property, propertyObject) {
 
     if (typeof placeHolders.rowLimit !== 'undefined') {
         property.find("div[class*='rowLimit']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.rowLimit.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.rowLimit.class);
         property.find("div[class*='rowLimit']").show();
         property.find("div[class*='rowLimit']").find('input').attr("placeholder", placeHolders.rowLimit.label[user.language]);
         property.find("div[class*='rowLimit']").find('#propertyRowLimitAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.rowLimit.label[user.language]);
         if (typeof placeHolders.rowLimit.picto !== 'undefined') {
             property.find("div[class*='rowLimit']").find('img').attr("src", placeHolders.rowLimit.picto);
         }
-        property.find("div[class*='rowLimit']").insertAfter(property.find("div[class*='"+placeHolders.rowLimit.insertAfter+"']"));
+        property.find("div[class*='rowLimit']").insertAfter(property.find("div[class*='" + placeHolders.rowLimit.insertAfter + "']"));
     } else {
         property.find("div[class*='rowLimit']").hide();
     }
 
     if (typeof placeHolders.nature !== 'undefined') {
-        var display = displayField(placeHolders.nature.displayConditions,propertyObject);
+        var display = displayField(placeHolders.nature.displayConditions, propertyObject);
         if (display) {
             property.find("div[class*='nature']")
-                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-                .addClass(placeHolders.nature.class);
+                    .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                    .addClass(placeHolders.nature.class);
             property.find("div[class*='nature']").show();
             property.find("div[class*='nature']").find('input').attr("placeholder", placeHolders.nature.label[user.language]);
             property.find("div[class*='nature']").find('#propertyNatureAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.nature.label[user.language]);
@@ -172,62 +173,62 @@ function setPlaceholderProperty(property, propertyObject) {
 
     if (typeof placeHolders.cacheExpire !== 'undefined') {
         property.find("div[class*='cacheExpire']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.cacheExpire.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.cacheExpire.class);
         property.find("div[class*='cacheExpire']").show();
         property.find("div[class*='cacheExpire']").find('input').attr("placeholder", placeHolders.cacheExpire.label[user.language]);
         property.find("div[class*='cacheExpire']").find('#propertyCacheExpireAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.cacheExpire.label[user.language]);
         if (typeof placeHolders.cacheExpire.picto !== 'undefined') {
             property.find("div[class*='cacheExpire']").find('img').attr("src", placeHolders.cacheExpire.picto);
         }
-        property.find("div[class*='cacheExpire']").insertAfter(property.find("div[class*='"+placeHolders.cacheExpire.insertAfter+"']"));
+        property.find("div[class*='cacheExpire']").insertAfter(property.find("div[class*='" + placeHolders.cacheExpire.insertAfter + "']"));
     } else {
         property.find("div[class*='cacheExpire']").hide();
     }
 
     if (typeof placeHolders.retryNb !== 'undefined') {
         property.find("div[class*='retryNb']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.retryNb.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.retryNb.class);
         property.find("div[class*='retryNb']").show();
         property.find("div[class*='retryNb']").find('input').attr("placeholder", placeHolders.retryNb.label[user.language]);
         property.find("div[class*='retryNb']").find('#propertyRetryNbAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.retryNb.label[user.language]);
         if (typeof placeHolders.retryNb.picto !== 'undefined') {
             property.find("div[class*='retryNb']").find('img').attr("src", placeHolders.retryNb.picto);
         }
-        property.find("div[class*='retryNb']").insertAfter(property.find("div[class*='"+placeHolders.retryNb.insertAfter+"']"));
+        property.find("div[class*='retryNb']").insertAfter(property.find("div[class*='" + placeHolders.retryNb.insertAfter + "']"));
     } else {
         property.find("div[class*='retryNb']").hide();
     }
 
     if (typeof placeHolders.retryPeriod !== 'undefined') {
         property.find("div[class*='retryPeriod']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.retryPeriod.class);
+                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                .addClass(placeHolders.retryPeriod.class);
         property.find("div[class*='retryPeriod']").show();
         property.find("div[class*='retryPeriod']").find('input').attr("placeholder", placeHolders.retryPeriod.label[user.language]);
         property.find("div[class*='retryPeriod']").find('#propertyRetryPeriodAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.retryPeriod.label[user.language]);
         if (typeof placeHolders.retryPeriod.picto !== 'undefined') {
             property.find("div[class*='retryPeriod']").find('img').attr("src", placeHolders.retryPeriod.picto);
         }
-        property.find("div[class*='retryPeriod']").insertAfter(property.find("div[class*='"+placeHolders.retryPeriod.insertAfter+"']"));
+        property.find("div[class*='retryPeriod']").insertAfter(property.find("div[class*='" + placeHolders.retryPeriod.insertAfter + "']"));
     } else {
         property.find("div[class*='retryPeriod']").hide();
     }
 
     if (typeof placeHolders.rank !== 'undefined') {
-        var display = displayField(placeHolders.rank.displayConditions,propertyObject);
+        var display = displayField(placeHolders.rank.displayConditions, propertyObject);
         if (display) {
-        property.find("div[class*='rank']")
-            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-            .addClass(placeHolders.rank.class);
-        property.find("div[class*='rank']").show();
-        property.find("div[class*='rank']").find('input').attr("placeholder", placeHolders.rank.label[user.language]);
-        property.find("div[class*='rank']").find('#propertyRankAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.rank.label[user.language]);
-        if (typeof placeHolders.rank.picto !== 'undefined') {
-            property.find("div[class*='rank']").find('img').attr("src", placeHolders.rank.picto);
-        }
-        property.find("div[class*='rank']").insertAfter(property.find("div[class*='"+placeHolders.rank.insertAfter+"']"));
+            property.find("div[class*='rank']")
+                    .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+                    .addClass(placeHolders.rank.class);
+            property.find("div[class*='rank']").show();
+            property.find("div[class*='rank']").find('input').attr("placeholder", placeHolders.rank.label[user.language]);
+            property.find("div[class*='rank']").find('#propertyRankAddon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.rank.label[user.language]);
+            if (typeof placeHolders.rank.picto !== 'undefined') {
+                property.find("div[class*='rank']").find('img').attr("src", placeHolders.rank.picto);
+            }
+            property.find("div[class*='rank']").insertAfter(property.find("div[class*='" + placeHolders.rank.insertAfter + "']"));
         } else {
             property.find("div[class*='rank']").hide();
         }
@@ -236,6 +237,7 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     var editor = ace.edit($(property.find("pre[name='propertyValue']"))[0]);
+    $(property.find("pre[name='propertyValue']"))[0].style.fontSize = '16px';
 
     editor.removeAllListeners('change');
 
@@ -244,9 +246,9 @@ function setPlaceholderProperty(property, propertyObject) {
     $('[data-toggle="tooltip"]').tooltip();
 }
 
-function displayField(conditions,propertyObject){
+function displayField(conditions, propertyObject) {
     var display = true;
-    if(typeof conditions !== 'undefined'){
+    if (typeof conditions !== 'undefined') {
         conditions.forEach(function (condition) {
             if (condition.values.indexOf(propertyObject[condition.key]) === -1) {
                 display = false;
@@ -279,7 +281,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -677,48 +679,49 @@ function drawProperty(property, testcaseObject, canUpdate, index) {
     return [props, property];
 }
 
-function displayPropertyHelper(elementLine, property){
+function displayPropertyHelper(elementLine, property) {
 
     var informationForHelper = newPropertyPlaceholder[property.type].helperInformation;
     var helperString = "helper";
 
-    if (informationForHelper.indexOf("value3")!==-1){
-        helperString+="-"+property.value3;
+    if (informationForHelper.indexOf("value3") !== -1) {
+        helperString += "-" + property.value3;
     }
-    if (informationForHelper.indexOf("rowLimit")!==-1){
-        helperString+=property.rowLimit !== "0" ?"-x":"-0";
+    if (informationForHelper.indexOf("rowLimit") !== -1) {
+        helperString += property.rowLimit !== "0" ? "-x" : "-0";
     }
-    if (informationForHelper.indexOf("nature")!==-1){
+    if (informationForHelper.indexOf("nature") !== -1) {
         // Do not use nature 3 if value is count, valueList or rawList
         if (property.value3 === "count" || property.value3 === "valueList" || property.value3 === "valueSum" || property.value3 === "rawList") {
         } else {
             helperString += "-" + property.nature;
         }
     }
-    if (informationForHelper.indexOf("length")!==-1){
-        helperString+= property["length"] !== "0" ? "-x" : "-0";
+    if (informationForHelper.indexOf("length") !== -1) {
+        helperString += property["length"] !== "0" ? "-x" : "-0";
     }
-    if (informationForHelper.indexOf("rank")!==-1){
+    if (informationForHelper.indexOf("rank") !== -1) {
         if (property.value3 !== "count" &&
-            property.value3 !== "valueList" &&
-            property.value3 !== "valueSum" &&
-            property.value3 !== "rawList" &&
-            property.nature !== 'RANDOM') {
+                property.value3 !== "valueList" &&
+                property.value3 !== "valueSum" &&
+                property.value3 !== "rawList" &&
+                property.nature !== 'RANDOM') {
             helperString += property.rank !== 0 ? "-x" : "-0";
         }
     }
 
-    var helper = '<p class="col-sm-12" name="propertyHelper">'+newPropertyPlaceholder[property.type].helperMessages[helperString]+'</p>';
+    var helper = '<p class="col-sm-12" name="propertyHelper">' + newPropertyPlaceholder[property.type].helperMessages[helperString] + '</p>';
 
     console.log(helperString);
     $(elementLine).find(".helper").empty();
     $(elementLine).find(".helper").append(helper);
-};
+}
+;
 
-function feedOption(propertyType, propertyField, element, selectedValue){
-    if(typeof newPropertyPlaceholder[propertyType][propertyField] !== "undefined") {
+function feedOption(propertyType, propertyField, element, selectedValue) {
+    if (typeof newPropertyPlaceholder[propertyType][propertyField] !== "undefined") {
         element.empty();
-        for (var j = 0 ; j < newPropertyPlaceholder[propertyType][propertyField].options.length ; j++) {
+        for (var j = 0; j < newPropertyPlaceholder[propertyType][propertyField].options.length; j++) {
             element.append($("<option></option>").text(newPropertyPlaceholder[propertyType][propertyField].options[j].label.en).val(newPropertyPlaceholder[propertyType][propertyField].options[j].value));
         }
         //var propertyNatureField = getSelectInvariant("PROPERTYNATURE", false, false);
@@ -768,9 +771,9 @@ function drawInheritedProperty(propList) {
 
         //DB
         var db = $("<div name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
-        if (typeof placeHolders.database !== 'undefined'){
+        if (typeof placeHolders.database !== 'undefined') {
             db.addClass(placeHolders.database.class)
-        }else{
+        } else {
             db.hide();
         }
 
@@ -1080,33 +1083,33 @@ function configureAceEditor(editor, mode, property) {
     editor.gotoLine(count, editor.getSession().getLine(count - 1).length);
 }
 
-function setDatalibButtonOnClick(element, datalib, editorId){
+function setDatalibButtonOnClick(element, datalib, editorId) {
 
-   if (!isEmpty(datalib)) {
-                    $.ajax({
-                        url: "ReadTestDataLib",
-                        data: {
-                            name: datalib,
-                            limit: 15,
-                            like: "N"
-                        },
-                        async: true,
-                        method: "GET",
-                        success: function (data) {
-                            if (data.messageType === "OK") {
-                                var service = data.contentTable;
-                                if (service.length >= 1) {
-                                    element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'EDIT\', \'TestCaseScript_Props\', \'" + editorId + "\')");
-                                    element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-pencil");
-                                    element.attr("data-original-title", "Edit DataLib");
-                                } else {
-                                    element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'ADD\', \'TestCaseScript_Props\', \'" + editorId + "\')");
-                                    element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-plus");
-                                    element.attr("data-original-title", "Add DataLib");
-                                }
-                            }
-                        },
-                        error: showUnexpectedError
-                    });
+    if (!isEmpty(datalib)) {
+        $.ajax({
+            url: "ReadTestDataLib",
+            data: {
+                name: datalib,
+                limit: 15,
+                like: "N"
+            },
+            async: true,
+            method: "GET",
+            success: function (data) {
+                if (data.messageType === "OK") {
+                    var service = data.contentTable;
+                    if (service.length >= 1) {
+                        element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'EDIT\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                        element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-pencil");
+                        element.attr("data-original-title", "Edit DataLib");
+                    } else {
+                        element.find("span[class*='glyphicon']").attr("onclick", "openModalDataLib(null, \'" + datalib + "\', \'ADD\', \'TestCaseScript_Props\', \'" + editorId + "\')");
+                        element.find("span[class*='glyphicon']").removeClass().addClass("glyphicon glyphicon-plus");
+                        element.attr("data-original-title", "Add DataLib");
+                    }
                 }
+            },
+            error: showUnexpectedError
+        });
+    }
 }

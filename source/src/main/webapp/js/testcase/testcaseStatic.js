@@ -1074,7 +1074,7 @@ var newPropertyPlaceholder = {
                 "fr": "Commande Appium (ex : \"mobile:deviceInfo\")"
             },
             "class": "col-sm-12",
-            "editorMode": "ace/mode/shell",
+            "editorMode": "ace/mode/sh",
             "picto": "images/action-html.png",
             "insertAfter": "pType"
         },

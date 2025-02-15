@@ -2916,6 +2916,7 @@ function showTextArea(title, text, fileUrl) {
         editor.setOptions({
             maxLines: Infinity
         });
+        editor.setReadOnly(true);
 
         //Autoindentation
         var jsbOpts = {
