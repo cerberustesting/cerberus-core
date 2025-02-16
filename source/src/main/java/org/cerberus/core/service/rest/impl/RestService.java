@@ -326,7 +326,7 @@ public class RestService implements IRestService {
                     }
                     break;
                 case AppService.AUTHTYPE_BASICAUTH:
-                    if (!StringUtil.isEmptyOrNull(authPassword) && !StringUtil.isEmptyOrNull(authUser)) {
+                    if (!StringUtil.isEmptyOrNull(authPassword) || !StringUtil.isEmptyOrNull(authUser)) {
                         String authHeader = authUser + ":" + authPassword;
                         headerList.add(factoryAppServiceHeader.create(null, "authorization", "Basic " + Base64.getEncoder().encodeToString(authHeader.getBytes()), true, 0, "", "", null, "", null));
                     }
