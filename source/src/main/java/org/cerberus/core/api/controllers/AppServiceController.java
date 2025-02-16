@@ -42,6 +42,8 @@ import org.cerberus.core.crud.entity.LogEvent;
 import org.cerberus.core.crud.service.IAppServiceService;
 import org.cerberus.core.crud.service.ILogEventService;
 import org.cerberus.core.service.appservice.IServiceService;
+import org.cerberus.core.util.StringUtil;
+import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -167,6 +169,13 @@ public class AppServiceController {
 
         AnswerItem<AppService> ans = serviceService.callAPI(service, serviceCallDTO.getCountry(), serviceCallDTO.getEnvironment(), serviceCallDTO.getApplication(), serviceCallDTO.getSystem(),
                 serviceCallDTO.getTimeout(), serviceCallDTO.getKafkanb(), serviceCallDTO.getKafkaTime(), serviceCallDTO.getProps(), login);
+
+        // If the service to call is a temporary create service, we clean it right after the call.
+        if (service.contains(AppService.SERVICENAME_SIMULATIONCALL)) {
+            Answer ans1 = appServiceService.delete(
+                    AppService.builder().service(service).build()
+            );
+        }
 
         if (ans != null) {
             try {

@@ -6,6 +6,7 @@
 [square]
 * Campaign execution can now be cancelled, paused and resumed #2211
 * Allow basic authentication with only user or password.
+* You can now perform a service simulation call without saving the service (allowing to tune the call before commit the change to the database)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

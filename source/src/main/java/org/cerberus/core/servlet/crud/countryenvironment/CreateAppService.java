@@ -127,6 +127,8 @@ public class CreateAppService extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
+        String originalService = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("originalService"), null, charset);
+        
         String collection = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("collection"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), "", charset);
         String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), "", charset);
@@ -197,6 +199,11 @@ public class CreateAppService extends HttpServlet {
             appService.setAuthUser(authUser);
             appService.setAuthPassword(authPass);
             appService.setAuthAddTo(authAddTo);
+            if (StringUtil.SECRET_STRING.equals(authPass)) {
+                AppService appServiceTmp = appServiceService.findAppServiceByKey(originalService);
+                authPass = appServiceTmp.getAuthPassword();
+                appService.setAuthPassword(authPass);
+            }
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ans);
 
