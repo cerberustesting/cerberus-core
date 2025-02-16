@@ -31,6 +31,11 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Map la table Service
@@ -38,6 +43,11 @@ import java.util.List;
  * @author cte
  */
 @Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AppService {
 
     private String service; // Name and reference of the service
@@ -71,10 +81,10 @@ public class AppService {
     private String authAddTo;
     private JSONObject simulationParameters;
     private String description;
-    private String UsrCreated;
-    private Timestamp DateCreated;
-    private String UsrModif;
-    private Timestamp DateModif;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     /**
      * From here are data outside database model.
@@ -158,6 +168,9 @@ public class AppService {
     public static final String AUTHTYPE_BASICAUTH = "Basic Auth";
     public static final String AUTHADDTO_QUERYSTRING = "Query String";
     public static final String AUTHADDTO_HEADERS = "Header";
+    
+    public static final String SERVICENAME_SIMULATIONCALL = "$TMP";
+    
 
     public void addResponseHeaderList(AppServiceHeader object) {
         this.responseHeaderList.add(object);

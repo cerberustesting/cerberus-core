@@ -29,7 +29,7 @@
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label for="service" name="serviceField" class="col">Service</label>
                                     <input type="text" class="form-control" name="service" id="service" aria-describedby="basic-editon1"> </input>
-                                    <input type="text" class="form-control input-sm" name="originalService" id="originalService" style="display:none;"/>
+                                    <input type="text" class="form-control" name="originalService" id="originalService" style="display:none;"/>
                                 </div>
                                 <div class="form-group col-md-4 col-sm-8">
                                     <label for="type" name="typeField">Type</label>
@@ -372,7 +372,6 @@
                                     <button type="button" id="addSoapLibraryButton" class="btn btn-primary pull-right" name="buttonAdd">Add</button>
                                     <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary pull-right" name="buttonDuplicate">Duplicate</button>
                                     <button type="button" class="btn btn-default pull-right marginLeft5" data-dismiss="modal" name="buttonClose">Close</button>
-                                    <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right" name="buttonCall">Save and Call</button>
                                 </div>
                             </td>
                         </tr>
@@ -387,6 +386,7 @@
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Response Details</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-3" id="tabSimulRequest" name="tabsSimul3">Request</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-5" id="tabSimulRequestDetails" name="tabsSimul5">Request Details</a></li>
+                        <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right marginTop10" name="buttonCall">Call</button>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in" id="tabsSimul-1">

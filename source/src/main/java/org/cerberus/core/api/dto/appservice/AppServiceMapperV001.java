@@ -41,16 +41,16 @@ public interface AppServiceMapperV001 {
     @Mapping(source = "collection", target = "group")
     AppServiceDTOV001 toDTO(AppService appService);
 
-    @InheritInverseConfiguration
-    @Mapping(source = "followingRedirection", target = "followRedir")
+//    @InheritInverseConfiguration
+    @Mapping(source = "followingRedirection", target = "isFollowRedir")
     @Mapping(target = "kafkaFilterHeaderPath", ignore = true)
     @Mapping(target = "kafkaFilterHeaderValue", ignore = true)
-    @Mapping(target = "avroEnable", ignore = true)
+    @Mapping(target = "isAvroEnable", ignore = true)
     @Mapping(target = "schemaRegistryURL", ignore = true)
-    @Mapping(target = "avroEnableKey", ignore = true)
+    @Mapping(target = "isAvroEnableKey", ignore = true)
     @Mapping(target = "avroSchemaKey", ignore = true)
     @Mapping(target = "avroSchemaValue", ignore = true)
-    @Mapping(target = "avroEnableValue", ignore = true)
+    @Mapping(target = "isAvroEnableValue", ignore = true)
     @Mapping(target = "parentContentService", ignore = true)
     @Mapping(target = "proxyHost", ignore = true)
     @Mapping(target = "proxyPort", ignore = true)
@@ -73,7 +73,10 @@ public interface AppServiceMapperV001 {
     @Mapping(target = "bodyType", ignore = true)
     @Mapping(target = "simulationParameters", ignore = true)
     @Mapping(target = "authType", ignore = true)
+    @Mapping(target = "collection", ignore = true)
     @Mapping(target = "authUser", ignore = true)
+    @Mapping(target = "contentList", ignore = true)
+    @Mapping(target = "headerList", ignore = true)
     @Mapping(target = "authPassword", ignore = true)
     @Mapping(target = "authAddTo", ignore = true)
     @Mapping(target = "start", ignore = true)
