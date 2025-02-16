@@ -799,6 +799,7 @@
                     <excludes>
                         <exclude>src/main/webapp/dependencies/**</exclude>
                         <exclude>localdata/**</exclude>
+                        <exclude>nb-configuration.xml</exclude>
                     </excludes>
                 </configuration>
                 <executions>

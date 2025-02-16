@@ -40,11 +40,11 @@ function openModalAppService(service, mode, page = undefined) {
         editAppServiceClick(service, page);
 
     } else if (mode === "ADD") {
-        $('#callSoapLibraryButton').hide();
+        $('#callSoapLibraryButton').show();
         addAppServiceClick(service, page);
 
     } else {
-        $('#callSoapLibraryButton').hide();
+        $('#callSoapLibraryButton').show();
         duplicateAppServiceClick(service);
 }
 
@@ -360,7 +360,12 @@ function refreshAuthorDisplayOnAnyChange() {
  */
 function confirmAppServiceModalHandler(mode, page, doCall = false) {
     clearResponseMessage($('#editSoapLibraryModal'));
-
+    var tempService = "";
+    // If we make a call, we save the service to a temporary service name and clean it at the end.
+    if (doCall) {
+        mode = "ADD";
+        tempService = "$TMP-" + generateUUID().substring(0, 18);
+    }
     var serviceName = $('#editServiceModal #service').val();
     $('#editServiceModal #service').val($.trim(serviceName));
     serviceName = $('#editServiceModal #service').val();
@@ -375,6 +380,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
 //    if (mode === 'EDIT') {
 //        formEdit.find("#service").removeAttr("disabled");
 //    }
+
     // Calculate servlet name to call.
     var myServlet = "UpdateAppService";
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
@@ -408,9 +414,12 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
     var file = $("#editSoapLibraryModal input[type=file]");
 
     for (var i in data) {
-        formData.append(data[i].name, encodeURIComponent(data[i].value));
+        if ((doCall) && (data[i].name === "service")) {
+            formData.append(data[i].name, encodeURIComponent(tempService));
+        } else {
+            formData.append(data[i].name, encodeURIComponent(data[i].value));
+        }
     }
-
     formData.append("contentList", JSON.stringify(table_content));
     formData.append("headerList", JSON.stringify(table_header));
     formData.append("kafkaKey", encodeURIComponent(editorKey.getSession().getDocument().getValue()));
@@ -469,7 +478,7 @@ function confirmAppServiceModalHandler(mode, page, doCall = false) {
             if (getAlertType(data.messageType) === "success") {
                 if (doCall) {
 
-                    performCall(serviceName);
+                    performCall(tempService);
 
                 } else {
                     if (page === "TestCase") {
@@ -716,7 +725,7 @@ function performCall(service) {
                     if (CallContent.call.Request.ServiceType === "SOAP") {
                         $('#editSoapLibraryModal  #srvCallRequest').text(CallContent.call.Request["HTTP-Request"], null, '\t');
                     } else {
-                        $('#editSoapLibraryModal  #srvCallRequest').text(JSON.stringify(CallContent.call.Request["HTTP-Request"], null, '\t'));
+                        $('#editSoapLibraryModal  #srvCallRequest').text(CallContent.call.Request["HTTP-Request"], null, '\t');
                     }
                     //Highlight envelop on modal loading
                     var editorResponse = ace.edit($('#editSoapLibraryModal  #srvCallRequest')[0]);
@@ -1173,10 +1182,10 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate, e
         appendAppServiceListServiceModal(service.parentContentService);
         formEdit.find("#service").prop("value", service.service);
         formEdit.find("#originalService").prop("value", service.service);
-        formEdit.find("#usrcreated").prop("value", service.UsrCreated);
-        formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
-        formEdit.find("#usrmodif").prop("value", service.UsrModif);
-        formEdit.find("#datemodif").prop("value", getDate(service.DateModif));
+        formEdit.find("#usrcreated").prop("value", service.usrCreated);
+        formEdit.find("#datecreated").prop("value", getDate(service.dateCreated));
+        formEdit.find("#usrmodif").prop("value", service.usrModif);
+        formEdit.find("#datemodif").prop("value", getDate(service.dateModif));
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
@@ -1455,10 +1464,10 @@ function appendContentRow(content) {
         activeSelect.prop("disabled", "disabled");
     }
 
-    var sortInput = $("<input " + ro + "maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
-    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm crb-autocomplete-variable").val(content.key);
-    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm crb-autocomplete-variable").val(content.value);
-    var descriptionInput = $("<input  " + ro + "maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    var sortInput = $("<input " + ro + "maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control").val(content.sort);
+    var keyInput = $("<input " + ro + "maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control crb-autocomplete-variable").val(content.key);
+    var valueInput = $("<textarea " + ro + "rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control crb-autocomplete-variable").val(content.value);
+    var descriptionInput = $("<input  " + ro + "maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
     var table = $("#contentTableBody");
 
     var row = $("<tr></tr>");
@@ -1534,10 +1543,10 @@ function appendHeaderRow(content) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
-    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm crb-autocomplete-header").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm crb-autocomplete-headervalue").val(content.value);
-    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control").val(content.sort);
+    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control crb-autocomplete-header").val(content.key);
+    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control crb-autocomplete-headervalue").val(content.value);
+    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
     var table = $("#headerTableBody");
 
     var row = $("<tr></tr>");
@@ -1614,9 +1623,9 @@ function appendCallPropRow(content) {
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var activeSelect = $("<input type=\"checkbox\"></button>").addClass("form-control input-sm").prop("checked", content.isActive);
 //    console.info(content.isActive);
-    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
-    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
-    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control").val(content.key);
+    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control").val(content.value);
+    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control").val(content.description);
     var table = $("#callPropTableBody");
 
     var row = $("<tr></tr>");

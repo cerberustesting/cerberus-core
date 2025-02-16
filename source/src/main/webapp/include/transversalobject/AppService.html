@@ -29,7 +29,7 @@
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label for="service" name="serviceField" class="col">Service</label>
                                     <input type="text" class="form-control" name="service" id="service" aria-describedby="basic-editon1"> </input>
-                                    <input type="text" class="form-control input-sm" name="originalService" id="originalService" style="display:none;"/>
+                                    <input type="text" class="form-control" name="originalService" id="originalService" style="display:none;"/>
                                 </div>
                                 <div class="form-group col-md-4 col-sm-8">
                                     <label for="type" name="typeField">Type</label>
@@ -58,10 +58,10 @@
                                         <input type="text" class="form-control" name="collection" id="collection"
                                                aria-describedby="basic-editon1" autocomplete="off">
                                     </div>
-                                    <div class="form-group form-group-sm col-md-6">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label" for="application" name="applicationField">Application</label>
                                         <div class="input-group col-xs-12">                               	
-                                            <select type="text" class="form-control input-sm" name="application" id="application" style="width:100%;"></select>
+                                            <select type="text" class="form-control" name="application" id="application" style="width:100%;"></select>
                                             <span class="input-group-btn">
                                                 <button type="button" id="editApplication" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-pencil"></span></button>
                                             </span>
@@ -191,7 +191,7 @@
                                     <div class="form-group form-group-sm col-sm-12">
                                         <label class="control-label" for="parentContentService" name="parentContentServiceField">Parent Service</label>
                                         <div class="input-group col-xs-12">
-                                            <select type="text" class="form-control input-sm" name="parentContentService" id="parentContentService" style="width:100%;"></select>
+                                            <select type="text" class="form-control" name="parentContentService" id="parentContentService" style="width:100%;"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -275,10 +275,10 @@
                             </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-7">
                                 <div class="row" id="authTypeSection">
-                                    <div class="form-group form-group-sm col-md-6">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label" for="authType" name="authTypeField">Authorization Type</label>
                                         <div class="input-group col-xs-12">                               	
-                                            <select type="text" class="form-control input-sm" name="authType" id="authType" style="width:100%;"></select>
+                                            <select type="text" class="form-control" name="authType" id="authType" style="width:100%;"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -295,10 +295,10 @@
                                     </div>
                                 </div>
                                 <div class="row" id="authAddToSection">
-                                    <div class="form-group form-group-sm col-md-6">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label" for="authAddTo" name="authAddToField">Add To</label>
                                         <div class="input-group col-xs-12">                               	
-                                            <select type="text" class="form-control input-sm" name="authAddTo" id="authAddTo" style="width:100%;"></select>
+                                            <select type="text" class="form-control" name="authAddTo" id="authAddTo" style="width:100%;"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -372,7 +372,6 @@
                                     <button type="button" id="addSoapLibraryButton" class="btn btn-primary pull-right" name="buttonAdd">Add</button>
                                     <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary pull-right" name="buttonDuplicate">Duplicate</button>
                                     <button type="button" class="btn btn-default pull-right marginLeft5" data-dismiss="modal" name="buttonClose">Close</button>
-                                    <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right" name="buttonCall">Save and Call</button>
                                 </div>
                             </td>
                         </tr>
@@ -387,6 +386,7 @@
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-2" id="tabSimulDetails" name="tabsSimul2">Response Details</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-3" id="tabSimulRequest" name="tabsSimul3">Request</a></li>
                         <li><a data-toggle="tab" class="marginTop10" href="#tabsSimul-5" id="tabSimulRequestDetails" name="tabsSimul5">Request Details</a></li>
+                        <button type="button" id="callSoapLibraryButton" class="btn btn-primary pull-right marginTop10" name="buttonCall">Call</button>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in" id="tabsSimul-1">
