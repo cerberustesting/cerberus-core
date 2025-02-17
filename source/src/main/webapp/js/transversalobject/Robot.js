@@ -562,6 +562,12 @@ function loadExecutorsTable(tableBody, executors) {
         executor.toDelete = false;
         appendExecutorRow(tableBody, executor);
     });
+
+    //As the executors list is dynamically generated after the global popover initialization, need to init popover again on executors list only.
+    $('#' + tableBody + ' [data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': '#listPanelEditExecutors'}
+    );
 }
 
 function appendCapabilityRow(tableBody, capability) {
