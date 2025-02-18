@@ -25,6 +25,7 @@ var allDelete = false;
 var Tags = [];
 var exeId = 0;
 var lastExecutedQueueId = 0;
+var uniqid = 1000;
 
 $.when($.getScript("js/global/global.js")
         , $.getScript("js/global/autocomplete.js")
