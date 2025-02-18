@@ -46,7 +46,9 @@ function openModalAppService(service, mode, page = undefined) {
     } else {
         $('#callSoapLibraryButton').show();
         duplicateAppServiceClick(service);
-}
+    }
+
+    bindToggleFullscreen();
 
 }
 

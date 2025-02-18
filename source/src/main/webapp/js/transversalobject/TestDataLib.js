@@ -190,6 +190,8 @@ function openModalDataLib(dataLibEntryId, dataLibName, mode, page, aceElementId)
         confirmDataLibModalHandler("DUPLICATE", page, aceElementId, dataLibName);
     });
 
+    bindToggleFullscreen();
+
 }
 
 function initModalDataLib() {
