@@ -656,45 +656,49 @@ public class RobotServerService implements IRobotServerService {
         // Setting specific capabilities of external cloud providers.
         switch (tCExecution.getRobotProvider()) {
             case TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK:
-                if (!StringUtil.isEmptyOrNull(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
-                    cloudOptions.put("build", tCExecution.getTag());
+                Map<String, Object> browserstackOptions = new HashMap<>();
+                if (!StringUtil.isEmptyOrNull(tCExecution.getTag()) && isNotAlreadyDefined(caps, "buildName")) {
+                    browserstackOptions.put("buildName", tCExecution.getTag());
                 }
 
-                if (isNotAlreadyDefined(caps, "project")) {
-                    cloudOptions.put("project", tCExecution.getApplication());
+                if (isNotAlreadyDefined(caps, "projectName")) {
+                    browserstackOptions.put("projectName", tCExecution.getApplication());
                 } else {
-                    cloudOptions.put("project", caps.getCapability("project"));
+                    browserstackOptions.put("projectName", caps.getCapability("projectName"));
                 }
 
-                if (isNotAlreadyDefined(caps, "name")) {
+                if (isNotAlreadyDefined(caps, "sessionName")) {
                     String externalExeName = parameterService.getParameterStringByKey("cerberus_browserstack_defaultexename", tCExecution.getSystem(), "Exe : %EXEID%");
                     externalExeName = externalExeName.replace("%EXEID%", String.valueOf(tCExecution.getId()));
                     externalExeName = externalExeName.replace("%TESTFOLDER%", String.valueOf(tCExecution.getTest()));
                     externalExeName = externalExeName.replace("%TESTID%", String.valueOf(tCExecution.getTestCase()));
                     externalExeName = externalExeName.replace("%TESTDESCRIPTION%", String.valueOf(tCExecution.getDescription()));
-                    cloudOptions.put("name", externalExeName);
+                    browserstackOptions.put("sessionName", externalExeName);
                 }
 
                 if (tCExecution.getVerbose() >= 2) {
-                    if (isNotAlreadyDefined(caps, "browserstack.debug")) {
-                        cloudOptions.put("browserstack.debug", true);
+                    if (isNotAlreadyDefined(caps, "debug")) {
+                        browserstackOptions.put("debug", true);
                     }
-                    if (isNotAlreadyDefined(caps, "browserstack.console")) {
-                        cloudOptions.put("browserstack.console", "warnings");
+                    if (isNotAlreadyDefined(caps, "consoleLogs")) {
+                        browserstackOptions.put("consoleLogs", "warnings");
                     }
-                    if (isNotAlreadyDefined(caps, "browserstack.networkLogs")) {
-                        cloudOptions.put("browserstack.networkLogs", true);
+                    if (isNotAlreadyDefined(caps, "networkLogs")) {
+                        browserstackOptions.put("networkLogs", true);
                     }
                 }
 
                 //Create or override these capabilities if proxy required.
                 if (StringUtil.parseBoolean(tCExecution.getRobotExecutorObj().getExecutorProxyType())) {
-                    cloudOptions.put("browserstack.local", true);
-                    cloudOptions.put("browserstack.user", tCExecution.getRobotExecutorObj().getHostUser());
-                    cloudOptions.put("browserstack.key", tCExecution.getRobotExecutorObj().getHostPassword());
-                    cloudOptions.put("browserstack.localIdentifier", tCExecution.getExecutionUUID());
+                    browserstackOptions.put("local", true);
+                    browserstackOptions.put("userName", tCExecution.getRobotExecutorObj().getHostUser());
+                    browserstackOptions.put("accessKey", tCExecution.getRobotExecutorObj().getHostPassword());
+                    browserstackOptions.put("localIdentifier", tCExecution.getExecutionUUID());
                 }
+
+                caps.setCapability("bstack:options", browserstackOptions);
                 break;
+
             case TestCaseExecution.ROBOTPROVIDER_LAMBDATEST:
                 if (!StringUtil.isEmptyOrNull(tCExecution.getTag()) && isNotAlreadyDefined(caps, "build")) {
                     cloudOptions.put("build", tCExecution.getTag());
@@ -721,6 +725,7 @@ public class RobotServerService implements IRobotServerService {
                         cloudOptions.put("console", true);
                     }
                 }
+                caps.setCapability("cloud:options", cloudOptions);
                 break;
             case TestCaseExecution.ROBOTPROVIDER_KOBITON:
                 if (isNotAlreadyDefined(caps, "sessionName")) {
@@ -747,12 +752,12 @@ public class RobotServerService implements IRobotServerService {
                 if (isNotAlreadyDefined(caps, "deviceGroup")) {
                     cloudOptions.put("deviceGroup", "KOBITON");
                 }
+                caps.setCapability("cloud:options", cloudOptions);
                 break;
             case TestCaseExecution.ROBOTPROVIDER_NONE:
                 break;
             default:
         }
-        caps.setCapability("cloud:options", cloudOptions);
         return caps;
     }
 
