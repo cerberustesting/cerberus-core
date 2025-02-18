@@ -65,6 +65,7 @@ function setPlaceholderProperty(property, propertyObject) {
         if (propertyObject.type === 'getFromDataLib') {
 
             var editor = ace.edit($(property.find("pre[name='propertyValue']"))[0]);
+            $(property.find("pre[name='propertyValue']"))[0].style.fontSize = '16px';
             var escaped = propertyObject.value1;
 
             property.find("div[class*='editDataLib']").show();
@@ -236,6 +237,7 @@ function setPlaceholderProperty(property, propertyObject) {
     }
 
     var editor = ace.edit($(property.find("pre[name='propertyValue']"))[0]);
+    $(property.find("pre[name='propertyValue']"))[0].style.fontSize = '16px';
 
     editor.removeAllListeners('change');
 

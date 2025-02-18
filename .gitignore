@@ -19,6 +19,7 @@
 /.idea/
 *.mwb.beforefix
 *.DS_Store
+nb-configuration.xml
 
 source/\.idea/
 

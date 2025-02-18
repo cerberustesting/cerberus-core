@@ -55,9 +55,9 @@ var actionOptList = {
         "field2":{"label":{"en": "[Optional] Offset. (ex : 50,100) [GUI only]", "fr": "[Optionnel] Offset (ex : 50,100) [seulement GUI]"},"picto":"images/action-numeric.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
     "mouseOver":{"group":"mouse_action", "value": "mouseOver", "label":{"en":"Mouse Over","fr":"Souris sur l'élément"}, "application_types":["GUI","FAT"],
         "field1":{"label":{"en": "Element path", "fr": "Chemin vers l'élement"},"picto":"images/action-html.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"},
-        "field2":{"label":{"en": "[Optional] Offset. (ex : 50,100) [GUI, FAT only]", "fr": "[Optionnel] Offset (ex : 50,100) [seulement GUI,FAT]"},"picto":"images/action-numeric.png", "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
+        "field2":{"label":{"en": "[Optional] Offset. (ex : 50,100) [GUI, FAT only]", "fr": "[Optionnel] Offset (ex : 50,100) [seulement GUI,FAT]"},"picto":"images/action-numeric.png", "class": "col-lg-12 crb-autocomplete-variable"}},
     "mouseMove":{"group":"mouse_action", "value": "mouseMove", "label":{"en":"Move Mouse","fr":"Déplacer la souris"}, "application_types":["GUI","FAT"],
-        "field1":{"label":{"en": "Relative coord. (ex : 50,100 ; 200,50)", "fr": "Coordonnées relatives (ex : 50,100 ; 200,50)"}, "class": "col-lg-12 crb-autocomplete-element crb-contextual-button"}},
+        "field1":{"label":{"en": "Relative coord. (ex : 50,100 ; 200,50)", "fr": "Coordonnées relatives (ex : 50,100 ; 200,50)"}, "class": "col-lg-12 crb-autocomplete-variable"}},
     "openUrlWithBase":{"group":"access_application","value": "openUrlWithBase","label":{"en":"openUrlWithBase","fr":"Appeler l'URI"},"application_types":["GUI","IPA","APK"],
         "field1":{"label":{"en": "URI to call  (ex : /index.html)", "fr": "URI à appeler (ex : /index.html)"},"picto":"images/action-link.png", "class": "col-lg-12 crb-autocomplete-variable"}},
     "openUrlLogin":{"group":"access_application","value": "openUrlLogin","label":{"en":"openUrlLogin","fr":"Appeler l'URL de Login"},"application_types":["GUI","IPA","APK"]},
@@ -1074,7 +1074,7 @@ var newPropertyPlaceholder = {
                 "fr": "Commande Appium (ex : \"mobile:deviceInfo\")"
             },
             "class": "col-sm-12",
-            "editorMode": "ace/mode/shell",
+            "editorMode": "ace/mode/sh",
             "picto": "images/action-html.png",
             "insertAfter": "pType"
         },

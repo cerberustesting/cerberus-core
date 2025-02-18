@@ -58,43 +58,6 @@ function initPage() {
 
 }
 
-/**
- * After table feeds,
- * @returns {undefined}
- */
-function afterTableLoad() {
-    $.each($("pre[name='envelopeField']"), function (i, e) {
-        //Highlight envelop on modal loading
-        var editor = ace.edit($(e).get(0));
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode("ace/mode/xml");
-        editor.setOptions({
-            maxLines: 1,
-            showLineNumbers: false,
-            showGutter: false,
-            highlightActiveLine: false,
-            highlightGutterLine: false,
-            readOnly: true
-        });
-        editor.renderer.$cursorLayer.element.style.opacity = 0;
-    });
-    $.each($("pre[name='scriptField']"), function (i, e) {
-        //Highlight envelop on modal loading
-        var editor = ace.edit($(e).get(0));
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode("ace/mode/sql");
-        editor.setOptions({
-            maxLines: 1,
-            showLineNumbers: false,
-            showGutter: false,
-            highlightActiveLine: false,
-            highlightGutterLine: false,
-            readOnly: true
-        });
-        editor.renderer.$cursorLayer.element.style.opacity = 0;
-    });
-
-}
 
 function displayPageLabel() {
     var doc = new Doc();

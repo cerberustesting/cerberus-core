@@ -1,19 +1,19 @@
 /**
  * Cerberus Copyright (C) 2013 - 2025 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- * 
+ *
  * This file is part of Cerberus.
- * 
+ *
  * Cerberus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Cerberus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -100,7 +100,7 @@ public class SikuliService implements ISikuliService {
     private static final String SIKULI_EXECUTEACTION_PATH = "/extra/ExecuteSikuliAction";
 
     private JSONObject generatePostParameters(String action, String locator, String locator2, String text, String text2,
-                                              long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
+            long defaultWait, String minSimilarity, Integer highlightElement, String typeDelay) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture = "";
         String extension = "";
@@ -364,7 +364,7 @@ public class SikuliService implements ISikuliService {
 
             // Send post request
             os = new PrintStream(connection.getOutputStream());
-            LOG.debug("Sending JSON : {}", postParameters.toString());
+            LOG.debug("Sending JSON : {}", postParameters.toString(1));
             os.println(postParameters.toString());
 //            os.println("|ENDS|");
 
@@ -593,7 +593,28 @@ public class SikuliService implements ISikuliService {
 
     @Override
     public MessageEvent doSikuliActionMouseMove(Session session, String xyoffset) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, xyoffset, "");
+        AnswerItem<JSONObject> actionResult = null;
+
+        if (StringUtil.isNotEmptyOrNull(xyoffset)) {
+            actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, xyoffset, "");
+        } else {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEMOVE);
+            message.resolveDescription("%COORD%", "0,0");
+            return message;
+        }
+
+        if (actionResult == null || actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEMOVE);
+            message.resolveDescription("COORD", xyoffset);
+            return message;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEMOVE);
+            mes.resolveDescription("ERROR", actionResult.getMessageDescription());
+            mes.resolveDescription("COORD", xyoffset);
+            return mes;
+        }
+
         return actionResult.getResultMessage();
 
     }
@@ -652,24 +673,39 @@ public class SikuliService implements ISikuliService {
     public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text, String offset) {
         AnswerItem<JSONObject> actionResult = null;
 
+        // We check here that offxet format is correct and report an error if invalid.
+        if (StringUtil.isNotEmptyOrNull(offset)) {
+            try {
+                Integer[] offsetInt = StringUtil.getxFromOffset(offset);
+            } catch (Exception e) {
+                MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_OFFSETFORMAT);
+                mes.setDescription(mes.getDescription().replace("%OFFSET%", offset));
+                return mes;
+            }
+        }
+
         if (!locator.isEmpty()) {
             actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, locator, null, "", "");
-            actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
+            if (StringUtil.isNotEmptyOrNull(offset)) {
+                actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
+            }
         } else {
             actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, null, null, text, "");
-            actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
+            if (StringUtil.isNotEmptyOrNull(offset)) {
+                actionResult = doSikuliAction(session, this.SIKULI_MOUSEMOVE, null, null, offset, "");
+            }
         }
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-            message.setDescription(message.getDescription().replace("%OFFSET%", "("+offset+")"));
+            message.setDescription(message.getDescription().replace("%OFFSET%", offset));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
-            mes.setDescription(mes.getDescription().replace("%OFFSET%", "("+offset+")"));
+            mes.setDescription(mes.getDescription().replace("%OFFSET%", offset));
             return mes;
         }
 

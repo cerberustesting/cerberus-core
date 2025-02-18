@@ -712,6 +712,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         editor.setOptions({
             maxLines: Infinity
         });
+        document.getElementById('envelope').style.fontSize = '16px';
 
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #script")[0]);
@@ -720,6 +721,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         editor.setOptions({
             maxLines: Infinity
         });
+        document.getElementById('script').style.fontSize = '16px';
     }
 
     formEdit.find("#testdatalibid").prop("readonly", "readonly");
