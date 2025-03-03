@@ -2389,10 +2389,13 @@ function bindToggleFullscreen() {
     $(".togglefullscreen").unbind("click").click(function () {
         let idTomove = this.getAttribute('for');
         let myButton = document.getElementById(idTomove);
+        console.info(myButton);
         if (myButton.classList.contains("overlay")) {
+            console.info("remove");
             myButton.classList.remove('overlay');
             $(document).unbind("keydown");
         } else {
+            console.info("add");
             myButton.classList.add('overlay');
 
             $(document).bind("keydown", function (e) {
