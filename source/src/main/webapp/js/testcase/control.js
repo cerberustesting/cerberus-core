@@ -54,8 +54,6 @@ Control.prototype.getJsonData = function () {
 Control.prototype.generateContent = function () {
     var control = this;
     var doc = new Doc();
-    let uniqfieldid = 'c' + uniqid++;
-    
     var row = this.html;
     var content = $("<div></div>").addClass("content col-lg-8");
     var firstRow = $("<div style='margin-top:15px;margin-left:0px'></div>").addClass("fieldRow row input-group marginBottom10 col-xs-12 col-lg-12");
@@ -63,10 +61,10 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow input-group");
 
     var picture = $("<div></div>").addClass("col-lg-2").css("height", "100%")
-            .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
-                    .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
-                    .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
+        .append($("<div style='margin-top:10px;margin-left:10px;margin-right:10px;max-width: 250px'></div>")
+            .append($("<img>").attr("id", "ApplicationObjectImg1").css("width", "100%").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg2").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer"))
+            .append($("<img>").attr("id", "ApplicationObjectImg3").css("width", "100%").css("margin-top", "10px").css("cursor", "pointer")));
 
 
     var plusBtn = $("<button></button>").addClass("btn add-btn config-btn").attr("data-toggle", "modal").attr("data-target", "#modalOptions").append($("<span></span>").addClass("glyphicon glyphicon-cog"));
@@ -139,7 +137,7 @@ Control.prototype.generateContent = function () {
         control.value1 = convertValueWithErratum(control.value1, controlValue1Field.val());
     });
     var controlField1Container = $("<div class='input-group'></div>");
-    var controlField1Addon = $("<span></span>").attr("id", "controlField1Addon").attr('for', uniqfieldid + 'v1').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
+    var controlField1Addon = $("<span></span>").attr("id", "controlField1Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField1Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     controlValue1Field.attr("aria-describedby", "controlField1Addon");
     controlField1Container.append(controlField1Addon).append(controlValue1Field);
@@ -154,7 +152,7 @@ Control.prototype.generateContent = function () {
         control.value2 = convertValueWithErratum(control.value2, controlValue2Field.val());
     });
     var controlField2Container = $("<div class='input-group'></div>");
-    var controlField2Addon = $("<span></span>").attr("id", "controlField2Addon").attr('for', uniqfieldid + 'v2').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
+    var controlField2Addon = $("<span></span>").attr("id", "controlField2Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField2Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     controlValue2Field.attr("aria-describedby", "controlField2Addon");
     controlField2Container.append(controlField2Addon).append(controlValue2Field);
@@ -169,7 +167,7 @@ Control.prototype.generateContent = function () {
         control.value3 = controlValue3Field.val();
     });
     var controlField3Container = $("<div class='input-group'></div>");
-    var controlField3Addon = $("<span></span>").attr("id", "controlField3Addon").attr('for', uniqfieldid + 'v3').addClass("input-group-addon togglefullscreen").attr("style", "font-weight: 700;");
+    var controlField3Addon = $("<span></span>").attr("id", "controlField3Addon").addClass("input-group-addon").attr("style", "font-weight: 700;");
     controlField3Addon.append("<img width='15px' height='15px' src='images/action-website.png'>");
     controlValue3Field.attr("aria-describedby", "controlField3Addon");
     controlField3Container.append(controlField3Addon).append(controlValue3Field);
@@ -177,10 +175,10 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descContainer);
     secondRow.append(controlDivContainer);
-    secondRow.append($("<div></div>").addClass("v1 col-lg-3 form-group marginBottom10").attr('id', uniqfieldid + 'v1').append(controlField1Container));
+    secondRow.append($("<div></div>").addClass("v1 col-lg-3 form-group marginBottom10").append(controlField1Container));
     secondRow.append(controlOperatorDivContainer);
-    secondRow.append($("<div></div>").addClass("v2 col-lg-3 form-group marginBottom10").attr('id', uniqfieldid + 'v2').append(controlField2Container));
-    secondRow.append($("<div></div>").addClass("v3 col-lg-3 form-group marginBottom10").attr('id', uniqfieldid + 'v3').append(controlField3Container));
+    secondRow.append($("<div></div>").addClass("v2 col-lg-3 form-group marginBottom10").append(controlField2Container));
+    secondRow.append($("<div></div>").addClass("v3 col-lg-3 form-group marginBottom10").append(controlField3Container));
 
 
     if ((this.parentStep.isUsingLibraryStep) || (!control.hasPermissionsUpdate)) {
@@ -342,8 +340,8 @@ function setPlaceholderControl(control) {
 
     if (typeof placeHolders.field1 !== 'undefined') {
         control.find("div[class*='v1']")
-                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-                .addClass(placeHolders.field1.class);
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field1.class);
         control.find("div[class*='v1']").show();
         control.find("div[class*='v1']").find('input').attr("placeholder", placeHolders.field1.label[user.language]);
         control.find("div[class*='v1']").find('#controlField1Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field1.label[user.language]);
@@ -356,8 +354,8 @@ function setPlaceholderControl(control) {
     }
     if (typeof placeHolders.field2 !== 'undefined') {
         control.find("div[class*='v2']")
-                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-                .addClass(placeHolders.field2.class);
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field2.class);
         control.find("div[class*='v2']").show();
         control.find("div[class*='v2']").find('input').attr("placeholder", placeHolders.field2.label[user.language]);
         control.find("div[class*='v2']").find('#controlField2Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field2.label[user.language]);
@@ -369,8 +367,8 @@ function setPlaceholderControl(control) {
     }
     if (typeof placeHolders.field3 !== 'undefined') {
         control.find("div[class*='v3']")
-                .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
-                .addClass(placeHolders.field3.class);
+            .removeClass("col-lg-2 col-lg-3 col-lg-4 col-lg-5 col-lg-6 col-lg-7 col-lg-8 col-lg-9 crb-autocomplete-element crb-autocomplete-property crb-autocomplete-service crb-autocomplete-variable crb-autocomplete-fileuploadflag crb-autocomplete-filesortflag crb-autocomplete-boolean crb-autocomplete-select crb-autocomplete-switch crb-contextual-button")
+            .addClass(placeHolders.field3.class);
         control.find("div[class*='v3']").show();
         control.find("div[class*='v3']").find('input').attr("placeholder", placeHolders.field3.label[user.language]);
         control.find("div[class*='v3']").find('#controlField3Addon').attr("data-toggle", "tooltip").attr("data-original-title", placeHolders.field3.label[user.language]);
