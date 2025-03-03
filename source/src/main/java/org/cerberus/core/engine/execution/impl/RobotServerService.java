@@ -430,7 +430,11 @@ public class RobotServerService implements IRobotServerService {
                 if (!caps.getBrowserName().equals(Browser.CHROME.browserName()) && !execution.getBrowser().equalsIgnoreCase("opera")) {
                     driver.manage().window().maximize();
                 }
-                getIPOfNode(execution);
+
+                //Retrieve the IP of node only if we are on our own infrastructure (no sense to do it when robot cloud provider is used.)
+                if (execution.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_NONE)) {
+                    getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
+                }
 
                 // If screenSize is defined, set the size of the screen.
                 String targetScreensize = getScreenSizeToUse(execution.getTestCaseObj().getScreenSize(), execution.getScreenSize());
@@ -1255,7 +1259,7 @@ public class RobotServerService implements IRobotServerService {
         try {
             SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
             HttpGet request = new HttpGet(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
-            LOG.debug("Calling Hub to get the node information. {}", request.getURI());
+            LOG.debug("Calling Hub to get the node information (Selenium 3). {}", request.getURI());
             HttpResponse response = client.execute(request);
             if (!response.getStatusLine().toString().contains("403")
                     && !response.getEntity().getContentType().getValue().contains("text/html")) {
@@ -1277,16 +1281,15 @@ public class RobotServerService implements IRobotServerService {
     }
 
     private static String getIpOfNodeSelenium4(HttpClient client, Session session) throws IOException, JSONException {
-        LOG.debug("Trying to get node IP with Selenium 4.");
         SessionId sessionId = ((RemoteWebDriver) session.getDriver()).getSessionId();
         HttpPost request = new HttpPost(RobotServerService.getBaseUrl(session.getHost(), session.getPort()) + "/graphql");
         StringEntity params = new StringEntity(String.format("{\"query\":\"{ session (id: \\\"%s\\\") { id, uri, nodeId, nodeUri } } \"}", sessionId));
         request.addHeader("Content-Type", "application/json");
         request.setEntity(params);
-        LOG.debug("Calling Hub to get the node information. {}", request.getURI());
+        LOG.debug("Calling Hub to get the node information (Selenium 4). {}", request.getURI());
         HttpResponse response = client.execute(request);
         //If 404, we are on Selenium 3
-        if (response.getStatusLine().getStatusCode() == 404) {
+        if (response.getStatusLine().getStatusCode() != 200) {
             return null;
         } else {
             HttpEntity entity = response.getEntity();
