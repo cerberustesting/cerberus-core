@@ -197,6 +197,17 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         Answer finalAnswer = new Answer(msg1);
         List<TestCaseExecutionQueue> insertedList = new ArrayList<>();
 
+        // Feed all queue entries already existing in tag contaxt.
+        executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();
+        if (StringUtil.isNotEmptyOrNull(tag)) {
+            LOG.debug("We don't have the list of all already inserted entries. Let's get it from tag value : " + tag);
+            List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readByTagByCriteria(tag, 0, 0, null, null, null));
+            for (TestCaseExecutionQueue tceQueue : queueFromTag) {
+                queueAlreadyInsertedInTag.put(executionQueueService.getUniqKey(tceQueue.getTest(), tceQueue.getTestCase(), tceQueue.getCountry(), tceQueue.getEnvironment()), tceQueue);
+            }
+        }
+
         for (Long myId : idList) {
 
             id = myId;
@@ -222,7 +233,6 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                     /**
                      * All data seems cleans so we can call the services.
                      */
-                    executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
                     executionQueueFactory = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
 
                     if (actionSave.equals("save")) {
@@ -258,14 +268,6 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-
-                            // Feed all queue entries already existing in tag contaxt.
-                            LOG.debug("We don't have the list of all already inserted entries. Let's get it from tag value : " + tag);
-                            List<TestCaseExecutionQueue> queueFromTag = executionQueueService.convert(executionQueueService.readByTagByCriteria(tag, 0, 0, null, null, null));
-                            Map<String, TestCaseExecutionQueue> queueAlreadyInsertedInTag = new HashMap<>();
-                            for (TestCaseExecutionQueue tceQueue : queueFromTag) {
-                                queueAlreadyInsertedInTag.put(executionQueueService.getUniqKey(tceQueue.getTest(), tceQueue.getTestCase(), tceQueue.getCountry(), tceQueue.getEnvironment()), tceQueue);
-                            }
 
                             ansItem = executionQueueService.create(executionQueueData, withNewDep, id, TestCaseExecutionQueue.State.QUEUED, queueAlreadyInsertedInTag);
                             TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();

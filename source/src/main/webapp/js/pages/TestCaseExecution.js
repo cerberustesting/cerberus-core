@@ -512,7 +512,7 @@ function updatePage(data, steps) {
         $("#rerunFromQueueandSee").attr("disabled", false);
         $("#rerunFromQueueandSee").unbind("click");
         $("#rerunFromQueueandSee").click(function () {
-            triggerTestCaseExecutionQueueandSee(data.queueId);
+            triggerTestCaseExecutionQueueandSee(data.queueId, data.tag);
         });
     }
 
@@ -1479,7 +1479,7 @@ function createVideo(videos) {
 
 }
 
-function triggerTestCaseExecutionQueueandSee(queueId) {
+function triggerTestCaseExecutionQueueandSee(queueId, tag) {
     $.ajax({
         url: "CreateTestCaseExecutionQueue",
         async: true,
@@ -1487,7 +1487,8 @@ function triggerTestCaseExecutionQueueandSee(queueId) {
         data: {
             id: queueId,
             actionState: "toQUEUED",
-            actionSave: "save"
+            actionSave: "save",
+            tag: tag
         },
         success: function (data) {
             if (getAlertType(data.messageType) === "success") {
