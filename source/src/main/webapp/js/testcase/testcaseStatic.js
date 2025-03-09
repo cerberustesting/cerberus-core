@@ -757,7 +757,7 @@ var newPropertyPlaceholder = {
         "value1": {
             "label": {
                 "en": "Javascript command",
-                "fr": "Commnde Javascript"
+                "fr": "Commande Javascript"
             },
             "class": "col-sm-9",
             "editorMode": "ace/mode/javascript",
