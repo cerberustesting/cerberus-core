@@ -245,13 +245,13 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug("Session is set.");
 
             /*
-             * Starting Cerberus Executor Proxy if it has been activated at
+             * Starting Cerberus Robot Proxy if it has been activated at
              * robot level.
              */
             if (execution.getRobotExecutorObj() != null && RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(execution.getRobotExecutorObj().getExecutorProxyType())) {
-                LOG.debug("Start Remote Proxy");
+                LOG.debug("Start Remote Cerberus Proxy");
                 executorService.startRemoteProxy(execution);
-                LOG.debug("Started Remote Proxy on port: {}", execution.getRemoteProxyPort());
+                LOG.debug("Started Remote Cerberus Robot Proxy on port: {}", execution.getRemoteProxyPort());
             }
 
             // SetUp Capabilities
@@ -1142,7 +1142,7 @@ public class RobotServerService implements IRobotServerService {
                 default:
             }
             try {
-                // Get Har File when Cerberus Executor is activated.
+                // Get Har File when Cerberus Robot Proxy is activated.
                 // If proxy started and parameter verbose >= 1 activated
                 if (RobotExecutor.PROXY_TYPE_NETWORKTRAFFIC.equals(tce.getRobotExecutorObj().getExecutorProxyType())
                         && tce.getVerbose() >= 1 && (parameterService.getParameterBooleanByKey("cerberus_networkstatsave_active", tce.getSystem(), false))) {
@@ -1176,7 +1176,7 @@ public class RobotServerService implements IRobotServerService {
                     }
                 }
             } catch (Exception ex) {
-                LOG.error("Exception Getting Har File from Cerberus Executor {}", tce.getId(), ex);
+                LOG.error("Exception Getting Har File from Cerberus Robot Proxy for execution id {}", tce.getId(), ex);
             }
 
             // We Stop the Robot Session (Selenium or Appium).

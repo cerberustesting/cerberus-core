@@ -621,7 +621,7 @@ public class ExecutionStartService implements IExecutionStartService {
             execution.setExecutor(execution.getTestCaseObj().getExecutor());
         }
 
-        //Stop the Cerberus Executor Proxy
+        //Define websocket parameter
         execution.setCerberus_featureflipping_activatewebsocketpush(parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatewebsocketpush", "", false));
         execution.setCerberus_featureflipping_websocketpushperiod(parameterService.getParameterLongByKey("cerberus_featureflipping_websocketpushperiod", "", 5000));
 
