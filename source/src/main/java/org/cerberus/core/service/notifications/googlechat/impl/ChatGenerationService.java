@@ -205,7 +205,11 @@ public class ChatGenerationService implements IChatGenerationService {
         JSONObject widget = new JSONObject();
 
         widget.put("widgets", widgets);
-        widget.put("collapsible", true);
+        if (totaldisplayed == 0) {
+            widget.put("collapsible", false);
+        } else {
+            widget.put("collapsible", true);
+        }
         widget.put("uncollapsibleWidgetsCount", 1);
 
         widget.put("header", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.");
