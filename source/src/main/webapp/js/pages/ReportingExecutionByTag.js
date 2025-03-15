@@ -2097,7 +2097,9 @@ function aoColumnsFunc(Columns) {
 
 function renderDependency(id, dependencyArray) {
     let text = "";
-    // Remove all background of mainCell
+    // Remove all already open popover
+    $(".popover").remove();
+
     $(".mainCell").parent().removeClass("info");
     dependencyArray.forEach(dep => {
         let idProgressBar = generateAnchor(dep.test, dep.testcase, dep.country, dep.environment, dep.robotdecli);
