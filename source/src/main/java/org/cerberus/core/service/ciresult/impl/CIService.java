@@ -118,6 +118,12 @@ public class CIService implements ICIService {
             int nbkop4 = 0;
             int nbkop5 = 0;
 
+            int nbp1 = 0;
+            int nbp2 = 0;
+            int nbp3 = 0;
+            int nbp4 = 0;
+            int nbp5 = 0;
+
             long longStart = 0;
             long longEnd = 0;
 
@@ -192,6 +198,25 @@ public class CIService implements ICIService {
                             break;
                     }
                 }
+
+                switch (curExe.getTestCaseObj().getPriority()) {
+                    case 1:
+                        nbp1++;
+                        break;
+                    case 2:
+                        nbp2++;
+                        break;
+                    case 3:
+                        nbp3++;
+                        break;
+                    case 4:
+                        nbp4++;
+                        break;
+                    case 5:
+                        nbp5++;
+                        break;
+                }
+
             }
 
             int pond1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
@@ -229,6 +254,8 @@ public class CIService implements ICIService {
                 result = getFinalResult(resultCal, resultCalThreshold, nbtotal, nbok);
             }
 
+            int resultCalMax = (nbp1 * pond1) + (nbp2 * pond2) + (nbp3 * pond3) + (nbp4 * pond4) + (nbp5 * pond5);
+            
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "CI result calculated with success.");
             jsonResponse.put("tag", tag);
@@ -238,6 +265,7 @@ public class CIService implements ICIService {
             jsonResponse.put("CI_OK_prio4", pond4);
             jsonResponse.put("CI_OK_prio5", pond5);
             jsonResponse.put("CI_finalResult", resultCal);
+            jsonResponse.put("CI_finalResultMax", resultCalMax);
             jsonResponse.put("CI_finalResultThreshold", resultCalThreshold);
             jsonResponse.put("NonOK_prio1_nbOfExecution", nbkop1);
             jsonResponse.put("NonOK_prio2_nbOfExecution", nbkop2);
@@ -312,12 +340,10 @@ public class CIService implements ICIService {
             Map<Integer, Long> statusKoCountPriority = executions
                     .stream()
                     .filter(
-                            testCaseExecution -> (
-                                    !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_NE) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_PE) &&
-                                            !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU)
-                            )
+                            testCaseExecution -> (!testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_OK)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_NE)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_PE)
+                            && !testCaseExecution.getControlStatus().equals(TestCaseExecution.CONTROLSTATUS_QU))
                     )
                     .collect(Collectors.groupingBy(testCaseExecution -> testCaseExecution.getTestCaseObj().getPriority(), Collectors.counting()));
 
@@ -330,7 +356,6 @@ public class CIService implements ICIService {
             int resultCalThreshold = convertCIScoreThreshold(campaign);
             int resultCal = (nbKoPriority1 * coefficientLevel1) + (nbKoPriority2 * coefficientLevel2) + (nbKoPriority3 * coefficientLevel3) + (nbKoPriority4 * coefficientLevel4) + (nbKoPriority5 * coefficientLevel5);
             String globalResult = ((nbTotal > 0) && nbQu + nbPe > 0) ? "PE" : this.getFinalResult(resultCal, resultCalThreshold, nbTotal, nbOk);
-
 
             CampaignExecutionResult campaignResult = CampaignExecutionResult.builder()
                     .ok(nbOk)

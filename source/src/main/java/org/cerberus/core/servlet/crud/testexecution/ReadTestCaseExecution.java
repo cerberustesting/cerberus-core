@@ -147,6 +147,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                         result.put("id", lastExec.getId());
                         result.put("queueId", lastExec.getQueueID());
                         result.put("controlStatus", lastExec.getControlStatus());
+                        result.put("tag", lastExec.getTag());
 
                         result.put("env", lastExec.getEnvironment());
                         result.put("country", lastExec.getCountry());

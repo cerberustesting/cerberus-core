@@ -757,7 +757,7 @@ public class TagDAO implements ITagDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, ");
         query.append("  nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, ");
-        query.append("  CIScore = ?, CIScoreThreshold = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, ");
+        query.append("  CIScore = ?, CIScoreThreshold = ?, CIScoreMax = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, ");
         query.append("  RobotDecliList = ?, SystemList = ?, ApplicationList = ?  ");
         query.append("WHERE Tag = ?");
 
@@ -782,6 +782,7 @@ public class TagDAO implements ITagDAO {
             preStat.setInt(i++, tag.getNbCA());
             preStat.setInt(i++, tag.getCiScore());
             preStat.setInt(i++, tag.getCiScoreThreshold());
+            preStat.setInt(i++, tag.getCiScoreMax());
             preStat.setString(i++, tag.getCiResult());
             preStat.setString(i++, tag.getEnvironmentList());
             preStat.setString(i++, tag.getCountryList());
@@ -942,6 +943,7 @@ public class TagDAO implements ITagDAO {
         int nbCA = rs.getInt("tag.nbCA");
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
+        int ciScoreMax = rs.getInt("tag.ciScoreMax");
         String ciResult = rs.getString("tag.ciResult");
         boolean falseNegative = rs.getBoolean("tag.FalseNegative");
         String environmentList = rs.getString("tag.EnvironmentList");
@@ -963,7 +965,7 @@ public class TagDAO implements ITagDAO {
                 .campaign(campaign).dateEndQueue(dateEndQueue).dateStartExe(dateStartExe).nbExe(nbExe)
                 .nbExeUsefull(nbExeUsefull).nbOK(nbOK).nbKO(nbKO).nbFA(nbFA)
                 .nbNA(nbNA).nbNE(nbNE).nbWE(nbWE).nbPE(nbPE).nbQU(nbQU).nbQE(nbQE)
-                .nbCA(nbCA).ciScore(ciScore).ciScoreThreshold(ciScoreThreshold)
+                .nbCA(nbCA).ciScore(ciScore).ciScoreThreshold(ciScoreThreshold).ciScoreMax(ciScoreMax)
                 .ciResult(ciResult).falseNegative(falseNegative).environmentList(environmentList)
                 .countryList(countryList).robotDecliList(robotDecliList)
                 .systemList(systemList).applicationList(applicationList)

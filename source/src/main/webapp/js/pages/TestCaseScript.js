@@ -25,6 +25,7 @@ var allDelete = false;
 var Tags = [];
 var exeId = 0;
 var lastExecutedQueueId = 0;
+var lastExecutedTag = "";
 
 $.when($.getScript("js/global/global.js")
         , $.getScript("js/global/autocomplete.js")
@@ -357,9 +358,10 @@ $.when($.getScript("js/global/global.js")
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueueandSee").off("click");
                             $("#rerunFromQueueandSee").click(function () {
-                                triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId);
+                                triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId, data.contentTable.tag);
                             });
                             lastExecutedQueueId = data.contentTable.queueId;
+                            lastExecutedTag = data.contentTable.tag;
                         } else {
                             $("#rerunFromQueueandSee").attr("disabled", true);
                         }
@@ -533,7 +535,7 @@ function displayPageLabel(doc) {
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
 }
 
-function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
+function triggerTestCaseExecutionQueueandSeeFromTC(queueId, tag) {
     $.ajax({
         url: "CreateTestCaseExecutionQueue",
         async: true,
@@ -541,7 +543,8 @@ function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
         data: {
             id: queueId,
             actionState: "toQUEUED",
-            actionSave: "save"
+            actionSave: "save",
+            tag: tag
         },
         success: function (data) {
             if (getAlertType(data.messageType) === "success") {
@@ -621,7 +624,7 @@ function setAllSort() {
     return stepArr;
 }
 
-function saveScript(queueid = 0) {
+function saveScript(queueid = 0, tag = "") {
     // If queueid != 0, rerun will be triggered
 
     // Disable the save button to avoid double click.
@@ -694,7 +697,7 @@ function saveScript(queueid = 0) {
 
                 if (queueid !== 0) {
                     // ReRun the execution
-                    triggerTestCaseExecutionQueueandSeeFromTC(queueid);
+                    triggerTestCaseExecutionQueueandSeeFromTC(queueid, tag);
 
                 } else {
                     // Force reload of the page once save has been done
@@ -871,7 +874,7 @@ var getModif, setModif, initModification;
                 $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "savererunqueueandsee_testcase"));
                 $("#rerunFromQueueandSee").off("click");
                 $("#rerunFromQueueandSee").click(function () {
-                    saveScript(lastExecutedQueueId);
+                    saveScript(lastExecutedQueueId, lastExecutedTag);
                 });
 
 

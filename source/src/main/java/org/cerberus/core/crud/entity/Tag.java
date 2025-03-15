@@ -69,6 +69,7 @@ public class Tag {
     private int nbCA;
     private int ciScore;
     private int ciScoreThreshold;
+    private int ciScoreMax;
     private String ciResult;
     private boolean falseNegative;
     private String environmentList;
@@ -148,6 +149,7 @@ public class Tag {
             result.put("nbCA", this.nbCA);
             result.put("ciScore", this.ciScore);
             result.put("ciScoreThreshold", this.ciScoreThreshold);
+            result.put("ciScoreMax", this.ciScoreMax);
             result.put("ciResult", this.ciResult);
             result.put("falseNegative", this.falseNegative);
             result.put("environmentList", this.environmentList);

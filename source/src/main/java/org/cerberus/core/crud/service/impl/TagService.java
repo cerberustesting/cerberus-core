@@ -195,6 +195,8 @@ public class TagService implements ITagService {
             // All the rest of the data are coming from ResultCI Servlet.
             JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign(), executions);
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
+            mytag.setCiScoreMax(jsonResponse.getInt("CI_finalResultMax"));
+            
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
 
             if (jsonResponse.getString("result").equalsIgnoreCase("PE")) {
