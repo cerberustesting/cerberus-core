@@ -1910,19 +1910,19 @@ function aoColumnsFunc(Columns) {
             "data": "test",
             "sName": "tec.test",
             "sWidth": "80px",
-            "title": doc.getDocOnline("test", "Test"),
+            "title": doc.getDocLabel("test", "Test"),
             "sClass": "bold",
             "fnCreatedCell": function (row, data, dataIndex) {
                 // Set the data-status attribute, and add a class
-                $(row).attr('data-original-title', data)
-                $(row).attr('data-toggle', "tooltip")
+                $(row).attr('data-original-title', data);
+                $(row).attr('data-toggle', "tooltip");
             }
         },
         {
             "data": "testCase",
             "sName": "tec.testCase",
             "sWidth": "60px",
-            "title": doc.getDocOnline("testcase", "TestCase"),
+            "title": doc.getDocLabel("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
                 var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
@@ -1940,7 +1940,7 @@ function aoColumnsFunc(Columns) {
             "data": "application",
             "sName": "app.application",
             "sWidth": "60px",
-            "title": doc.getDocOnline("application", "Application"),
+            "title": doc.getDocLabel("application", "Application"),
             "mRender": function (data, type, obj, meta) {
                 var result = obj.application;
                 var editEntry = '<button id="editEntry" onclick="openModalApplication(\'' + escapeHtml(obj["application"]) + '\',\'EDIT\');"\n\
@@ -1957,7 +1957,7 @@ function aoColumnsFunc(Columns) {
             "sClass": "selectLineCell",
             "mRender": function (row) {
                 return "<input type='checkbox' class='selectByLine'/>";
-            },
+            }
         }
     ];
     for (var i = 0; i < colNb; i++) {
@@ -1968,7 +1968,7 @@ function aoColumnsFunc(Columns) {
             "bSortable": true,
             "bSearchable": true,
             "class": "mainCell",
-            "sWidth": "40px",
+            "sWidth": "50px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
@@ -2056,7 +2056,7 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.priority",
                 "sClass": "priority",
                 "sWidth": "20px",
-                "title": doc.getDocOnline("invariant", "PRIORITY")
+                "title": doc.getDocLabel("invariant", "PRIORITY")
             };
     aoColumns.push(col);
     var col =
@@ -2065,7 +2065,46 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.comment",
                 "sClass": "comment",
                 "sWidth": "60px",
-                "title": doc.getDocOnline("testcase", "Comment")
+                "title": doc.getDocLabel("testcase", "Comment")
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "firstExeStart",
+                "sName": "tec.firstExeStart",
+                "mRender": function (data, type, obj) {
+                    return getDateTime(obj.firstExeStart);
+                },
+                "visible": false,
+                "sClass": "firstStart",
+                "sWidth": "60px",
+                "title": "First Exe Start"
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "lastExeStart",
+                "sName": "tec.lastExeStart",
+                "mRender": function (data, type, obj) {
+                    return getDateTime(obj.lastExeStart);
+                },
+                "visible": false,
+                "sClass": "lastStart",
+                "sWidth": "60px",
+                "title": "Last Exe Start"
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "lastExeEnd",
+                "sName": "tec.lastExeEnd",
+                "mRender": function (data, type, obj) {
+                    return getDateTime(obj.lastExeEnd);
+                },
+                "visible": false,
+                "sClass": "lastEnd",
+                "sWidth": "60px",
+                "title": "Last Exe End"
             };
     aoColumns.push(col);
     var col =
@@ -2078,7 +2117,7 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.bugs",
                 "sClass": "bugid",
                 "sWidth": "40px",
-                "title": doc.getDocOnline("testcase", "BugID")
+                "title": doc.getDocLabel("testcase", "BugID")
             };
     aoColumns.push(col);
 

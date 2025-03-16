@@ -236,6 +236,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
         result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
         result.put("previousExeId", testCaseExecution.getPreviousExeId());
+        result.put("firstExeStart", testCaseExecution.getFirstExeStart());
+        result.put("lastExeStart", testCaseExecution.getLastExeStart());
+        result.put("lastExeEnd", testCaseExecution.getLastExeEnd());
         if (testCaseExecution.getPreviousExeStatus() != null) {
             result.put("previousExeControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getPreviousExeStatus()));
         }
@@ -349,6 +352,14 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             nbExeTmp = (Integer) ttcObject.get("NbExeUsefullIsPending");
                             ttcObject.put("NbExeUsefullIsPending", ++nbExeTmp);
                         }
+
+                        // first Exe Start
+                        ttcObject.put("firstExeStart", testCaseExecution.getFirstExeStart() < ttcObject.getLong("firstExeStart") && testCaseExecution.getFirstExeStart() > 0 ? testCaseExecution.getFirstExeStart() : ttcObject.getLong("firstExeStart"));
+                        // last Exe Start
+                        ttcObject.put("lastExeStart", testCaseExecution.getLastExeEnd() > ttcObject.getLong("lastExeEnd") ? testCaseExecution.getLastExeStart() : ttcObject.getLong("lastExeStart"));
+                        // last Exe End
+                        ttcObject.put("lastExeEnd", testCaseExecution.getLastExeEnd() > ttcObject.getLong("lastExeEnd") ? testCaseExecution.getLastExeEnd() : ttcObject.getLong("lastExeEnd"));
+
                     } else {
                         // We add a new testcase entry (with The current execution).
                         ttcObject.put("test", testCaseExecution.getTest());
@@ -375,6 +386,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
                         }
 
+                        // first Exe Start
+                        ttcObject.put("firstExeStart", testCaseExecution.getFirstExeStart());
+                        // last Exe Start
+                        ttcObject.put("lastExeStart", testCaseExecution.getLastExeStart());
+                        // last Exe End
+                        ttcObject.put("lastExeEnd", testCaseExecution.getLastExeEnd());
+
                         // Flag that report if test case still exist.
                         ttcObject.put("testExist", testExist);
 
@@ -393,19 +411,19 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         } else {
                             ttcObject.put("NbExeUsefullToHide", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions with no bug to report
                         if (isNotBug(controlStatus)) {
                             ttcObject.put("NbExeUsefullOK", 1);
                         } else {
                             ttcObject.put("NbExeUsefullOK", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions with bug to report
                         if (isBug(controlStatus)) {
                             ttcObject.put("NbExeUsefullHasBug", 1);
                         } else {
                             ttcObject.put("NbExeUsefullHasBug", 0);
                         }
-                        // Nb Total Usefull Executions in QU or OK status
+                        // Nb Total Usefull Executions still to run
                         if (isPending(controlStatus)) {
                             ttcObject.put("NbExeUsefullIsPending", 1);
                         } else {

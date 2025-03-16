@@ -478,10 +478,9 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     }
 
     //call the displayColumnSearch when table configuration is changed
-
     $("#" + tableId + "_wrapper #showHideColumnsButton").click(function () {
-        // FIX #1508, auto datatable to show/hide column display documation (<a href= ....)
-        // To fix it, i replace correct name of column on firest click on show/hide button
+        // FIX #1508, auto datatable to show/hide column display documentation (<a href= ....)
+        // To fix it, i replace correct name of column on first click on show/hide button
         if (firstclickOnShowHide) {
 
             $(".dt-button.buttons-columnVisibility").each(function (index, value) {

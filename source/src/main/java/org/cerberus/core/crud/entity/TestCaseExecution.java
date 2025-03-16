@@ -158,6 +158,9 @@ public class TestCaseExecution {
     // Used in reporting page to report the previous executions from the same tag.
     private long previousExeId;
     private String previousExeStatus;
+    private long firstExeStart;
+    private long lastExeStart;
+    private long lastExeEnd;
 
     // Others
     private MessageGeneral resultMessage;
