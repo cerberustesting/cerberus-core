@@ -1,10 +1,12 @@
 *Bug fixes*
 [square]
-* none
+* Numeric comparison allow negative values.
 
 *Improvements / New features*
 [square]
 * Campaign execution can now be cancelled, paused and resumed #2211
+* Display first Execution start time, Last execution start and end time on Campaign execution report.
+* Ace editor layout improvement (Readonly when necessary and bigger font)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
