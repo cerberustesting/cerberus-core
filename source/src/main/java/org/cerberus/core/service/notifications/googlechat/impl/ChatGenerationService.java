@@ -195,24 +195,26 @@ public class ChatGenerationService implements IChatGenerationService {
             executionText += "... Hidden more " + (totaltodisplay - totaldisplayed) + " line(s).";
         }
 
-        textContent = new JSONObject();
-        textContent.put("text", executionText);
-        textParaContent = new JSONObject();
-        textParaContent.put("textParagraph", textContent);
-        widgets.put(textParaContent);
-
-        JSONArray sections = new JSONArray();
         JSONObject widget = new JSONObject();
 
-        widget.put("widgets", widgets);
-        if (totaldisplayed == 0) {
-            widget.put("collapsible", false);
-        } else {
+        if (totaldisplayed > 0) {
+            textContent = new JSONObject();
+            textContent.put("text", executionText);
+
+            textParaContent = new JSONObject();
+            textParaContent.put("textParagraph", textContent);
+            widgets.put(textParaContent);
+            widget.put("widgets", widgets);
             widget.put("collapsible", true);
+            widget.put("uncollapsibleWidgetsCount", 1);
+        } else {
+            widget.put("widgets", widgets);
+
         }
-        widget.put("uncollapsibleWidgetsCount", 1);
 
         widget.put("header", "Execution Tag <b>'" + tag.getTag() + "'</b> Ended.");
+
+        JSONArray sections = new JSONArray();
         sections.put(widget);
         card.put("sections", sections);
 
