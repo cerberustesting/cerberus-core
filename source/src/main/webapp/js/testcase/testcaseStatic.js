@@ -179,6 +179,7 @@ var operatorOptList = {
     "isNotChecked":{"value":"isNotChecked","label":{"en":"isNotChecked","fr":"isNotChecked"},"control_type":["element"]},
     "isClickable":{"value":"isClickable","label":{"en":"isClickable","fr":"isClickable"},"control_type":["element"]},
     "isNotClickable":{"value":"isNotClickable","label":{"en":"isNotClickable","fr":"isNotClickable"},"control_type":["element"]},
+    "inElement":{"value":"inElement","label":{"en":"inElement","fr":"inElement"},"control_type":["element"]},
     "isArrayString":{"value":"isArrayString","label":{"en":"isArrayString","fr":"isArrayString"},"control_type":["array"]},
     "isArrayNumeric":{"value":"isArrayNumeric","label":{"en":"isArrayNumeric","fr":"isArrayNumeric"},"control_type":["array"]},
     "isElementArrayString":{"value":"isElementArrayString","label":{"en":"isElementArrayString","fr":"isElementArrayString"},"control_type":["array"]},
@@ -253,7 +254,9 @@ var convertToGui = {
         "field1":{"label":{"en": "Path of the element", "fr": "Chemin de l'élément"},"picto":"images/action-settings.png","class": "col-lg-8 crb-autocomplete-element crb-contextual-button"},
         "field2":{"label":{"en": "Expected element", "fr": "Element"},"picto":"images/action-html.png","class": "col-lg-8 crb-autocomplete-variable"},
         "field3":{"label":{"en": "Case sensitive (true/false)", "fr": "[opt] Sensible à la Casse (true/false)"},"picto":"images/action-vote.png","class": "col-lg-4 crb-autocomplete-boolean"}},
-
+    "verifyElementInElement":{"control":"element","operator":"inElement",
+        "field1":{"label":{"en": "Parent Element", "fr": "Élément parent"},"picto":"images/action-html.png","class": "col-lg-8 crb-autocomplete-element crb-contextual-button"},
+        "field2":{"label":{"en": "Child Element", "fr": "Élément enfant"},"picto":"images/action-html.png","class": "col-lg-8 crb-autocomplete-variable"}},
 
     "verifyStringArrayContains":{"control":"array","operator":"isArrayString",
         "field1":{"label":{"en": "Array (ex : [\"a\",\"b\",\"c\"])", "fr": "Tableau (ex : [\"a\",\"b\",\"c\"])"},"picto":"images/action-font.png","class": "col-lg-8 crb-autocomplete-variable"},
@@ -328,7 +331,7 @@ var newControlOptList = {
     "unknown":{"value":"unknown","label":{"en":"Define a control","fr":"Choisir un control"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"]},
     "string_comparison":{"value":"string_comparison","label":{"en":"String Comparison","fr":"Comparaison de Textes"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"equals":"verifyStringEqual","different":"verifyStringDifferent","greater":"verifyStringGreater","minor":"verifyStringMinor", "contains":"verifyStringContains", "notContains":"verifyStringNotContains" },
     "numeric_comparison":{"value":"numeric_comparison","label":{"en":"Numeric Comparison","fr":"Comparaison de Numériques"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"equals":"verifyNumericEquals","different":"verifyNumericDifferent","greater":"verifyNumericGreater","greaterOrEqual":"verifyNumericGreaterOrEqual","minor":"verifyNumericMinor", "minorOrEqual":"verifyNumericMinorOrEqual"},
-    "element":{"value":"element","label":{"en":"Verify Element","fr":"Vérifier l'élément"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"isPresent":"verifyElementPresent","isNotPresent":"verifyElementNotPresent","isVisible":"verifyElementVisible","isNotVisible":"verifyElementNotVisible","isChecked":"verifyElementChecked","isNotChecked":"verifyElementNotChecked","isClickable":"verifyElementClickable","isNotClickable":"verifyElementNotClickable","equals":"verifyElementEquals", "different":"verifyElementDifferent"},
+    "element":{"value":"element","label":{"en":"Verify Element","fr":"Vérifier l'élément"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"isPresent":"verifyElementPresent","isNotPresent":"verifyElementNotPresent","isVisible":"verifyElementVisible","isNotVisible":"verifyElementNotVisible","isChecked":"verifyElementChecked","isNotChecked":"verifyElementNotChecked","isClickable":"verifyElementClickable","isNotClickable":"verifyElementNotClickable","equals":"verifyElementEquals", "different":"verifyElementDifferent", "inElement":"verifyElementInElement"},
     "element_text":{"value":"element_text","label":{"en":"Verify Text in Element","fr":"Vérifier le texte de l'élément"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"equals":"verifyElementTextEqual","matchRegex":"verifyElementTextMatchRegex","different":"verifyElementTextDifferent", "contains":"verifyElementTextContains", "notContains":"verifyElementTextNotContains"},
     "element_numeric":{"value":"element_numeric","label":{"en":"Verify Numeric in Element","fr":"Vérifier la valeur numérique de l'élément"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"equals":"verifyElementNumericEqual","different":"verifyElementNumericDifferent","greater":"verifyElementNumericGreater","greaterOrEqual":"verifyElementNumericGreaterOrEqual","minor":"verifyElementNumericMinor", "minorOrEqual":"verifyElementNumericMinorOrEqual"},
     "array":{"value":"array","label":{"en":"Verify Array Content","fr":"Vérifier le contenu d'un tableau"},"application_types":["GUI","SRV","IPA","APK","BAT","FAT","NONE"],"isArrayString":"verifyStringArrayContains","isArrayNumeric":"verifyNumericArrayContains","isElementArrayString":"verifyElementTextArrayContains", "isElementArrayNumeric":"verifyElementNumericArrayContains"},
