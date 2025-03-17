@@ -28,6 +28,7 @@ import io.appium.java_client.touch.offset.PointOption;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.core.crud.entity.Parameter;
 import org.cerberus.core.crud.service.impl.ParameterService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.engine.entity.Session;
@@ -40,10 +41,13 @@ import org.json.JSONException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -159,22 +163,30 @@ public class IOSAppiumService extends AppiumService {
             Direction direction = this.getDirectionForSwipe(session, action);
 
             // Get the parametrized swipe duration
-            Integer myduration = parameters.getParameterIntegerByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "", DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION);
+            Parameter duration = parameters.findParameterByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "");
+            int swipeDuration = duration == null
+                    ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION
+                    : Integer.parseInt(duration.getValue());
 
-            // Do the swipe thanks to the Appium driver
-            TouchAction dragNDrop
-                    = new TouchAction((PerformsTouchActions) session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(myduration))) //#FIXME SELENIUM #TEST (was cast to PerformsTouchActions)
-                    .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
-            dragNDrop.perform();
+            // Initialize PointerInput for touch gestures
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence swipe = new Sequence(finger, 0);
 
-//            JavascriptExecutor js = (JavascriptExecutor) session.getAppiumDriver();
-//            HashMap<String, Integer> swipeObject = new HashMap<String, Integer>();
-//            swipeObject.put("startX", direction.getX1());
-//            swipeObject.put("startY", direction.getY1());
-//            swipeObject.put("endX", direction.getX2());
-//            swipeObject.put("endY", direction.getY2());
-//            swipeObject.put("duration", myduration);
-//            js.executeScript("mobile: swipe", swipeObject);
+            // Start point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(0),
+                    PointerInput.Origin.viewport(), direction.getX1(), direction.getY1()));
+            swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Move to the end point of the swipe
+            swipe.addAction(finger.createPointerMove(Duration.ofMillis(swipeDuration),
+                    PointerInput.Origin.viewport(), direction.getX2(), direction.getY2()));
+
+            // Release touch
+            swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            // Perform the swipe
+            session.getAppiumDriver().perform(Collections.singletonList(swipe));
+
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
