@@ -996,20 +996,20 @@ public class RobotServerService implements IRobotServerService {
 ////                    }
 //                    return optionsOP;
                 case "android":
-//                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) { #FIXME SELENIUM Might have been deleted in rebase
+//                    if (tCExecution.getRobotExecutorObj() != null && "Y".equals(tCExecution.getRobotExecutorObj().getExecutorProxyActive())) { // Might have been deleted in rebase
 //                        Proxy proxy = new Proxy();
 //                        proxy.setHttpProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                        proxy.setSslProxy(tCExecution.getRobotExecutorObj().getExecutorBrowserProxyHost() + ":" + tCExecution.getRemoteProxyPort());
 //                    }
-//                    capabilities = DesiredCapabilities.android(); //#FIXME SELENIUM #APPIUM
+                    capabilities.setCapability("browserName", "android"); //#FIXME SELENIUM #APPIUM #TEST
                     break;
 
                 case "ipad":
-//                    capabilities = DesiredCapabilities.ipad(); //#FIXME SELENIUM #APPIUM
+                    capabilities.setCapability("browserName", "iPad"); //#FIXME SELENIUM #APPIUM #TEST
                     break;
 
                 case "iphone":
-//                    capabilities = DesiredCapabilities.iphone(); //#FIXME SELENIUM #APPIUM
+                    capabilities.setCapability("browserName", "iPhone"); //#FIXME SELENIUM #APPIUM #TEST
                     break;
 
                 case "":
