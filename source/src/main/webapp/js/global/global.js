@@ -3317,3 +3317,11 @@ function cleanErratum(oldValue) {
     return oldValue;
 }
 
+function refreshPopoverDocumentation(containerid) {
+    //As the executors list is dynamically generated after the global popover initialization, need to init popover again on executors list only.
+    let popDefinition = {
+        'placement': 'auto',
+        'container': '#editApplicationModalForm'};
+    $('#' + containerid + ' [data-toggle="popover"]').popover(popDefinition);
+}
+

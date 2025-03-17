@@ -203,9 +203,6 @@ function confirmApplicationModalHandler(mode) {
     for (var i = 0; i < table1.length; i++) {
         table_environment.push($(table1[i]).data("environment"));
     }
-    console.info(table_environment);
-    console.info($(table1[i]));
-    console.info($(table1[i]).data("environment"));
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
@@ -359,6 +356,8 @@ function feedApplicationModalData(application, mode, hasPermissionsUpdate) {
     }
     updateBugTrackerConnector();
 
+    refreshPopoverDocumentation("editApplicationModalForm");
+
 }
 
 function updateBugTrackerConnector() {
@@ -457,6 +456,8 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
             obj.toDelete = false;
             appendEnvironmentRow(obj);
         });
+        refreshPopoverDocumentation("editApplicationModalForm");
+
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
@@ -610,6 +611,8 @@ function addNewEnvironmentRow() {
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);
+    refreshPopoverDocumentation("editApplicationModalForm");
+
 }
 
 function displayWarningOnChangeApplicationKey() {
