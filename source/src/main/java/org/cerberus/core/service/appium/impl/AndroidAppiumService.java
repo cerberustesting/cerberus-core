@@ -263,7 +263,8 @@ public class AndroidAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-            ((AndroidDriver) session.getAppiumDriver()).closeApp();
+            AndroidDriver appiumDriver = (AndroidDriver) session.getAppiumDriver();
+            appiumDriver.terminateApp(appiumDriver.getCurrentPackage());
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 
