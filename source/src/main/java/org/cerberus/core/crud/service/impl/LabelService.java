@@ -125,6 +125,21 @@ public class LabelService implements ILabelService {
                 labelsToReturn.get(keyTC).add(labelsMap.get(value.getLabelId()));
             }
         });
+
+        for (Map.Entry<String, List<Label>> entry : labelsToReturn.entrySet()) {
+            String key = entry.getKey();
+            List<Label> val = entry.getValue();
+
+            // Sort Label List
+            Collections.sort(val, (Label label1, Label label2) -> {
+                int compareResult = label1.getLabel().compareTo(label2.getLabel());
+                return compareResult;
+            });
+
+            labelsToReturn.put(key, val);
+
+        }
+
         return labelsToReturn;
     }
 
