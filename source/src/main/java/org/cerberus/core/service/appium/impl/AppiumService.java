@@ -298,7 +298,7 @@ public abstract class AppiumService implements IAppiumService {
             return By.name(identifier.getLocator());
 
         } else if (identifier.getIdentifier().equalsIgnoreCase("class")) {
-            return By.className(identifier.getLocator());
+            return AppiumBy.className(identifier.getLocator());
 
         } else if (identifier.getIdentifier().equalsIgnoreCase("css")) {
             return By.cssSelector(identifier.getLocator());
@@ -313,7 +313,7 @@ public abstract class AppiumService implements IAppiumService {
             return By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
 
         } else if (identifier.getIdentifier().equalsIgnoreCase("accesibility-id")) {
-            return MobileBy.AccessibilityId(identifier.getLocator());
+            return AppiumBy.accessibilityId(identifier.getLocator());
 
         } else {
             throw new NoSuchElementException(identifier.getIdentifier());
