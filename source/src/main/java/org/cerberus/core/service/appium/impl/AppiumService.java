@@ -505,7 +505,7 @@ public abstract class AppiumService implements IAppiumService {
 
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
 
-    public String getElementPosition(Session session, Identifier identifier) { //#FIXME SELENIUM #TEST
+    public String getElementPosition(Session session, Identifier identifier) { // not used anymore
         AppiumDriver driver = session.getAppiumDriver();
 
         WebElement element = driver.findElement(this.getBy(identifier));
