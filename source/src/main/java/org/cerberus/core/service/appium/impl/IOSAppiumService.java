@@ -101,7 +101,7 @@ public class IOSAppiumService extends AppiumService {
         // Then do the key press
         try {
             Actions actions = new Actions(session.getAppiumDriver());
-            actions.sendKeys(keyToPress.getCode()).perform(); //#FIXME SELENIUM #TEST // replacement method to do session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
+            actions.sendKeys(keyToPress.getCode()).perform();
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT_NO_MODIFIER).resolveDescription("KEY", keyName);
         } catch (Exception e) {

@@ -73,12 +73,12 @@ public abstract class AppiumService implements IAppiumService {
     private ParameterService parameters;
 
     @Override
-    public MessageEvent switchToContext(Session session, Identifier identifier) {
+    public MessageEvent switchToContext(Session session, Identifier identifier) { //#FIXME SELENIUM #TEST
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
         String newContext = "";
 
-        @SuppressWarnings("unchecked") //#FIXME SELENIUM #TEST driver was cast to (SupportsContextSwitching)
+        @SuppressWarnings("unchecked")
         Set<String> contextNames = ((SupportsContextSwitching) driver).getContextHandles();
 
         for (String contextName : contextNames) {
@@ -96,16 +96,16 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent switchToContext(Session session, String context) {
+    public MessageEvent switchToContext(Session session, String context) { //#FIXME SELENIUM #TEST
         MessageEvent message;
         AppiumDriver driver = session.getAppiumDriver();
-        Set<String> contexts = ((SupportsContextSwitching) driver).getContextHandles(); //#FIXME SELENIUM #TEST (was cast to SupportsContextSwitching)
+        Set<String> contexts = ((SupportsContextSwitching) driver).getContextHandles();
 
         try {
             if (context.isEmpty()) {
                 context = "NATIVE_APP";
             }
-            ((SupportsContextSwitching) driver).context(context); //#FIXME SELENIUM #TEST (was cast to SupportsContextSwitching)
+            ((SupportsContextSwitching) driver).context(context);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOCONTEXT);
             message.setDescription(message.getDescription().replace("%CONTEXT%", context));
         } catch (NoSuchContextException exception) {
@@ -113,7 +113,7 @@ public abstract class AppiumService implements IAppiumService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SWITCHTOCONTEXT_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription()
                     .replace("%CONTEXT%", context)
-                    .replace("%CONTEXTS%", contexts.toString()) //#FIXME SELENIUM #TEST (was not modified)
+                    .replace("%CONTEXTS%", contexts.toString())
                     .replace("%ERROR%", exception.getMessage()));
         }
         return message;
@@ -184,7 +184,7 @@ public abstract class AppiumService implements IAppiumService {
         }
     }
 
-    @Override //#FIXME SELENIUM #TEST (respect w3c)
+    @Override
     public MessageEvent click(final Session session, final Identifier identifier, Integer hOffset, Integer vOffset) {
         try {
             MessageEvent foundElementMsg;
@@ -491,6 +491,7 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) { //#FIXME SELENIUM #TEST (I assume this method is working but the calling methods are crashing in previous versions already)
+        LOG.warn("patate");
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence scrollSequence = new Sequence(finger, 0);
         scrollSequence.addAction(finger.createPointerMove(
@@ -505,17 +506,18 @@ public abstract class AppiumService implements IAppiumService {
 
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
 
-    public String getElementPosition(Session session, Identifier identifier) {
+    public String getElementPosition(Session session, Identifier identifier) { //#FIXME SELENIUM #TEST
+        LOG.warn("potiron");
         AppiumDriver driver = session.getAppiumDriver();
 
-        WebElement element = driver.findElement(this.getBy(identifier)); //#FIXME SELENIUM #TEST
+        WebElement element = driver.findElement(this.getBy(identifier));
         Point location = element.getLocation();
 
         return location.getX() + ";" + location.getY();
     }
 
     @Override
-    public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
+    public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) { //#FIXME SELENIUM #TEST
         try {
             PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
             Sequence longPressSequence = new Sequence(finger, 0);
