@@ -280,7 +280,7 @@ public class RobotServerService implements IRobotServerService {
                 LOG.error("Exception Saving Robot Caps {} Exception: {}", execution.getId(), ex.toString(), ex);
             }
 
-            // TODO #FIXME SELENIUM #TEST
+            // TODO #FIXME SELENIUM
 
             // SetUp Proxy
             String hubUrl = StringUtil.cleanHostURL(RobotServerService.getBaseUrl(StringUtil.formatURLCredential(
@@ -333,7 +333,7 @@ public class RobotServerService implements IRobotServerService {
                     } else if (caps.getPlatformName() != null && (caps.getPlatformName().is(Platform.IOS) || caps.getPlatformName().is(Platform.MAC))) {
                         appiumDriver = new IOSDriver(url, caps);
                     }
-                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver; // #FIXME SELENIUM #TEST APPIUM
+                    driver = appiumDriver == null ? new RemoteWebDriver(executor, caps) : appiumDriver;
 
                     execution.setRobotProviderSessionID(getSession(driver, execution.getRobotProvider()));
                     execution.setRobotSessionID(getSession(driver));
@@ -435,7 +435,7 @@ public class RobotServerService implements IRobotServerService {
 
                 //Retrieve the IP of node only if we are on our own infrastructure (no sense to do it when robot cloud provider is used.)
                 if (execution.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_NONE)) {
-                    getIPOfNode(execution); //#FIXME SELENIUM (seems to work well without it but can't retrieve the linux logo)
+                    getIPOfNode(execution);
                 }
 
                 // If screenSize is defined, set the size of the screen.
@@ -1092,7 +1092,7 @@ public class RobotServerService implements IRobotServerService {
     }
 
     @Override
-    public boolean stopServer(TestCaseExecution tce) {
+    public boolean stopServer(TestCaseExecution tce) { //#FIXME SELENIUM #APPIUM #TEST
         Session session = tce.getSession();
         if (session != null && session.isStarted()) {
             try {
@@ -1106,9 +1106,9 @@ public class RobotServerService implements IRobotServerService {
             if (session.getAppiumDriver() != null && tce.getCountryEnvApplicationParam() != null
                     && !StringUtil.isEmptyOrNull(tce.getCountryEnvApplicationParam().getMobilePackage())) {
                 if (tce.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                    ((AndroidDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage()); //#FIXME SELENIUM #APPIUM #TEST
+                    ((AndroidDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage());
                 } else if (tce.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                    ((IOSDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage()); //#FIXME SELENIUM #APPIUM #TEST
+                    ((IOSDriver) session.getAppiumDriver()).removeApp(tce.getCountryEnvApplicationParam().getMobilePackage());
                 } else {
                     LOG.warn("Application type is not supported for uninstalling the application");
                 }
@@ -1223,7 +1223,7 @@ public class RobotServerService implements IRobotServerService {
         return false;
     }
 
-    private static void getIPOfNode(TestCaseExecution tCExecution) {
+    private static void getIPOfNode(TestCaseExecution tCExecution) { //#FIXME SELENIUM #TEST
         try {
             Session session = tCExecution.getSession();
             String nodeUri;
