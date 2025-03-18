@@ -6670,3 +6670,6 @@ ALTER TABLE robotexecutor ADD COLUMN ExecutorExtensionPort int DEFAULT NULL AFTE
 
 -- 1906
 ALTER TABLE robotexecutor MODIFY COLUMN ExecutorExtensionPort int DEFAULT NULL AFTER HostPassword;
+
+-- 1907
+DELETE FROM `invariant` WHERE `idname` = 'BROWSER' AND `value` = 'opera';
