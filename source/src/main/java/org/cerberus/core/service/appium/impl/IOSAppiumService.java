@@ -19,6 +19,8 @@
  */
 package org.cerberus.core.service.appium.impl;
 
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.InteractsWithApps;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Specific IOS implementation of the {@link AppiumService}
@@ -267,7 +270,11 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent closeApp(Session session) {
         try {
 
-            ((IOSDriver) session.getAppiumDriver()).closeApp();//#FIXME SELENIUM #TEST (was cast to IOSDriver)
+            IOSDriver appiumDriver = (IOSDriver) session.getAppiumDriver();
+
+//            appiumDriver.terminateApp(appiumDriver.getCapabilities().getCapability("appium:bundleID").toString());
+            appiumDriver.runAppInBackground(Duration.ofSeconds(-1));
+
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 
