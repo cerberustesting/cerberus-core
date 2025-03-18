@@ -64,6 +64,7 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.*;
+import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.safari.SafariOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -292,22 +293,32 @@ public class RobotServerService implements IRobotServerService {
             HttpCommandExecutor executor = null;
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
+            // Timeout Management
             int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
 
-            org.openqa.selenium.remote.http.ClientConfig clientConfig = org.openqa.selenium.remote.http.ClientConfig.defaultConfig()
-                    .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
-                    .readTimeout(java.time.Duration.ofMillis(robotTimeout))
-                    .baseUri(url.toURI());
+            ClientConfig clientConfig = null;
 
+            // Proxy Management
             if (isProxy) {
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
 
+                // user and password are never used yet
                 if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
                 }
-                clientConfig.proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
+                clientConfig = ClientConfig.defaultConfig()
+                                .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                                .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                                .baseUri(url.toURI())
+                                .proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
+
+            } else {
+                clientConfig = ClientConfig.defaultConfig()
+                        .connectionTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .readTimeout(java.time.Duration.ofMillis(robotTimeout))
+                        .baseUri(url.toURI());
             }
 
             executor = new HttpCommandExecutor(clientConfig);
