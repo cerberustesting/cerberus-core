@@ -250,12 +250,7 @@ public class IOSAppiumService extends AppiumService {
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
         try {
-
-            if (StringUtil.isEmptyOrNull(appPackage)) {
-                session.getAppiumDriver().executeScript("mobile: launchApp");//#FIXME SELENIUM #TEST
-            } else {
-                ((IOSDriver) session.getAppiumDriver()).activateApp(appPackage);//#FIXME SELENIUM #TEST (was cast to IOSDriver)
-            }
+            ((IOSDriver) session.getAppiumDriver()).activateApp(appPackage);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
 
@@ -269,12 +264,9 @@ public class IOSAppiumService extends AppiumService {
     @Override
     public MessageEvent closeApp(Session session) {
         try {
-
             IOSDriver appiumDriver = (IOSDriver) session.getAppiumDriver();
 
-//            appiumDriver.terminateApp(appiumDriver.getCapabilities().getCapability("appium:bundleID").toString());
-            appiumDriver.runAppInBackground(Duration.ofSeconds(-1));
-
+            appiumDriver.terminateApp(appiumDriver.getCapabilities().getCapability("appium:bundleId").toString());
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 

@@ -239,15 +239,9 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent openApp(Session session, String appPackage, String appActivity) {
 
-        //return executeCommand(session, "mobile:shell", "{'command': 'am start', 'args': ['-n " + appPackage + "/" + appActivity + "']}");
-
         try {
-
-            if (StringUtil.isEmptyOrNull(appPackage)) {
-                ((AndroidDriver) session.getAppiumDriver()).launchApp();
-            } else {
-                ((AndroidDriver) session.getAppiumDriver()).activateApp(appPackage);
-            }
+            AndroidDriver appiumDriver = (AndroidDriver) session.getAppiumDriver();
+            appiumDriver.activateApp(appPackage);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP).resolveDescription("APP", appPackage);
 
@@ -264,7 +258,7 @@ public class AndroidAppiumService extends AppiumService {
         try {
 
             AndroidDriver appiumDriver = (AndroidDriver) session.getAppiumDriver();
-            appiumDriver.terminateApp(appiumDriver.getCurrentPackage());
+            appiumDriver.terminateApp(appiumDriver.getCapabilities().getCapability("appium:bundleId").toString());
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP_GENERIC);
 
