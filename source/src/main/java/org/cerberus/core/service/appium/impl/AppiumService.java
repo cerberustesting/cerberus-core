@@ -491,7 +491,6 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) { //#FIXME SELENIUM #TEST (I assume this method is working but the calling methods are crashing in previous versions already)
-        LOG.warn("patate");
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence scrollSequence = new Sequence(finger, 0);
         scrollSequence.addAction(finger.createPointerMove(
@@ -507,7 +506,6 @@ public abstract class AppiumService implements IAppiumService {
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException, JSONException;
 
     public String getElementPosition(Session session, Identifier identifier) { //#FIXME SELENIUM #TEST
-        LOG.warn("potiron");
         AppiumDriver driver = session.getAppiumDriver();
 
         WebElement element = driver.findElement(this.getBy(identifier));
