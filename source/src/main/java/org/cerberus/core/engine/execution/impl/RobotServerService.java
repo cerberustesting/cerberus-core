@@ -285,7 +285,7 @@ public class RobotServerService implements IRobotServerService {
                             execution.getSession().getHostUser(),
                             execution.getSession().getHostPassword(),
                             session.getHost()),
-                    session.getPort())) + "/wd/hub";
+                    session.getPort()));
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
 
@@ -310,14 +310,7 @@ public class RobotServerService implements IRobotServerService {
                 clientConfig.proxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(proxyHost, proxyPort)));
             }
 
-            org.openqa.selenium.remote.http.HttpClient.Factory factory = new org.openqa.selenium.remote.http.HttpClient.Factory() {
-                @Override
-                public org.openqa.selenium.remote.http.HttpClient createClient(org.openqa.selenium.remote.http.ClientConfig ignored) {
-                    return new org.openqa.selenium.remote.http.jdk.JdkHttpClient.Factory().createClient(clientConfig);
-                }
-            };
-
-            executor = new HttpCommandExecutor(new java.util.HashMap<>(), url, factory);
+            executor = new HttpCommandExecutor(clientConfig);
 
             // SetUp Driver
             LOG.debug("Set Driver");
