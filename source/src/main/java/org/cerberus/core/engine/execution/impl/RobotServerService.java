@@ -121,7 +121,6 @@ public class RobotServerService implements IRobotServerService {
     private IRobotProxyService executorService;
 
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
-    private static int totocpt = 0;
 
     private static final Logger LOG = LogManager.getLogger(RobotServerService.class);
     // Proxy default config. (Should never be used as default config is inserted into database)
@@ -296,13 +295,12 @@ public class RobotServerService implements IRobotServerService {
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
 
-            HttpCommandExecutor executor = null;
             boolean isProxy = proxyService.useProxy(hubUrl, system);
 
             // Timeout Management
             int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 60000);
 
-            ClientConfig clientConfig = null;
+            ClientConfig clientConfig;
 
             // Proxy Management
             if (isProxy) {
@@ -327,7 +325,7 @@ public class RobotServerService implements IRobotServerService {
                         .baseUri(url.toURI());
             }
 
-            executor = new HttpCommandExecutor(clientConfig);
+            HttpCommandExecutor executor = new HttpCommandExecutor(clientConfig);
 
             // SetUp Driver
             LOG.debug("Set Driver");
@@ -528,9 +526,7 @@ public class RobotServerService implements IRobotServerService {
     }
 
     private String getSession(WebDriver driver) {
-        String session = "";
-        session = ((RemoteWebDriver) driver).getSessionId().toString();
-        return session;
+        return ((RemoteWebDriver) driver).getSessionId().toString();
     }
 
     private String guessRobotProvider(String host) {
