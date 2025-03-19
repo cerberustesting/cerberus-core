@@ -287,6 +287,12 @@ public class RobotServerService implements IRobotServerService {
                             execution.getSession().getHostPassword(),
                             session.getHost()),
                     session.getPort()));
+
+            //Even if /wd/hub is not the standard anymore with Selenium 4, BS still continue to use it.
+            if (execution.getRobotProvider().equals(TestCaseExecution.ROBOTPROVIDER_BROWSERSTACK)) {
+                hubUrl += "/wd/hub";
+            }
+
             LOG.debug("Hub URL :{}", hubUrl);
             URL url = new URL(hubUrl);
 
