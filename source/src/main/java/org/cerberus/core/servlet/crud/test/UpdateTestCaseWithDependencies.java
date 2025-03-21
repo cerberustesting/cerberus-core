@@ -19,7 +19,6 @@
  */
 package org.cerberus.core.servlet.crud.test;
 
-import io.swagger.models.auth.In;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.core.crud.entity.TestCase;
@@ -40,7 +39,6 @@ import org.cerberus.core.crud.service.impl.LogEventService;
 import org.cerberus.core.engine.entity.MessageEvent;
 import org.cerberus.core.enums.MessageEventEnum;
 import org.cerberus.core.exception.CerberusException;
-import org.cerberus.core.util.ParameterParserUtil;
 import org.cerberus.core.util.StringUtil;
 import org.cerberus.core.util.answer.Answer;
 import org.cerberus.core.util.answer.AnswerItem;
@@ -102,9 +100,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
-        /**
-         * Parsing and securing all required parameters.
-         */
+        //Parsing and securing all required parameters.
         StringBuilder sb = new StringBuilder();
         BufferedReader br = request.getReader();
         String str;
@@ -119,9 +115,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         JSONArray properties = jObj.getJSONArray("properties");
         JSONArray steps = jObj.getJSONArray("steps");
 
-        /**
-         * Checking all constrains before calling the services.
-         */
+        //Checking all constrains before calling the services.
         if (StringUtil.isEmptyOrNull(testId) || StringUtil.isEmptyOrNull(testCaseId)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
@@ -139,9 +133,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             AnswerItem<TestCase> testcaseAnswerItem = testCaseService.readByKey(testId, testCaseId);
             TestCase testcase = testcaseAnswerItem.getItem();
             if (!(testcaseAnswerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && testcaseAnswerItem.getItem() != null)) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
+                //Object could not be found. We stop here and report the error.
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                         .replace("%OPERATION%", "Update")
@@ -149,10 +141,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 ans.setResultMessage(msg);
 
             } else if (!testCaseService.hasPermissionsUpdate(testcase, request)) { // We cannot update the testcase if the user is not at least in Test role.
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
+                //The service was able to perform the query and confirm the object exist, then we can update it.
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                         .replace("%OPERATION%", "Update")
@@ -221,13 +210,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
 
                 testCaseService.update(testcase.getTest(), testcase.getTestcase(), testcase);
 
-                /**
-                 * Adding Log entry.
-                 */
+                //Adding Log entry.
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was successful. Adding Log entry.
-                     */
+                    //Update was successful. Adding Log entry.
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies", "UPDATE", LogEvent.STATUS_INFO, "Update TestCase Script : ['" + testcase.getTest() + "'|'" + testcase.getTestcase() + "'] version : " + testcase.getVersion(), request);
                 }
@@ -235,9 +220,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             }
         }
 
-        /**
-         * Formating and returning the json result.
-         */
+        //Formating and returning the json result.
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
